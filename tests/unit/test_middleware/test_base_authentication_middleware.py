@@ -12,6 +12,7 @@ from litestar.middleware.authentication import (
     AuthenticationResult,
 )
 from litestar.middleware.base import DefineMiddleware
+from litestar.params import FromPath
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_403_FORBIDDEN,
@@ -133,7 +134,7 @@ def test_authentication_middleware_exclude() -> None:
     auth_mw = DefineMiddleware(AuthMiddleware, exclude=["north", "south"])
 
     @get("/north/{value:int}")
-    def north_handler(value: int) -> Dict[str, int]:
+    def north_handler(value: FromPath[int]) -> Dict[str, int]:
         return {"value": value}
 
     @get("/south")
@@ -162,7 +163,7 @@ def test_authentication_middleware_exclude_from_auth() -> None:
     auth_mw = DefineMiddleware(AuthMiddleware, exclude=["south", "east"])
 
     @get("/north/{value:int}", exclude_from_auth=True)
-    def north_handler(value: int) -> Dict[str, int]:
+    def north_handler(value: FromPath[int]) -> Dict[str, int]:
         return {"value": value}
 
     @get("/south")
@@ -198,7 +199,7 @@ def test_authentication_middleware_exclude_from_auth_custom_key() -> None:
     auth_mw = DefineMiddleware(AuthMiddleware, exclude=["south", "east"], exclude_from_auth_key="my_exclude_key")
 
     @get("/north/{value:int}", my_exclude_key=True)
-    def north_handler(value: int) -> Dict[str, int]:
+    def north_handler(value: FromPath[int]) -> Dict[str, int]:
         return {"value": value}
 
     @get("/south")

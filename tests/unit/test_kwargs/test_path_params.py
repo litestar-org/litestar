@@ -6,10 +6,11 @@ from unittest.mock import MagicMock
 from uuid import UUID, uuid1, uuid4
 
 import pytest
+from typing_extensions import Annotated
 
 from litestar import Litestar, MediaType, get, post
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import Parameter
+from litestar.params import FromPath, Parameter, PathParameter
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -69,10 +70,10 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
 
     @get(path=test_path)
     def test_method(
-        order_id: UUID,
-        version: float = Parameter(gt=0.1, le=4.0),
-        service_id: int = Parameter(gt=0, le=100),
-        user_id: str = Parameter(min_length=1, max_length=10),
+        order_id: FromPath[UUID],
+        version: Annotated[float, PathParameter(gt=0.1, le=4.0)],
+        service_id: Annotated[int, PathParameter(gt=0, le=100)],
+        user_id: Annotated[str, PathParameter(min_length=1, max_length=10)],
     ) -> None:
         assert version
         assert service_id
@@ -123,7 +124,7 @@ def test_duplicate_path_param_validation() -> None:
 
 def test_path_param_defined_in_layered_params_error() -> None:
     @get(path="/{param:int}")
-    def test_method(param: int) -> None:
+    def test_method(param: FromPath[int]) -> None:
         raise AssertionError("should not be called")
 
     with pytest.raises(ImproperlyConfiguredException) as exc_info:
@@ -157,7 +158,7 @@ def test_path_param_type_resolution(
     mock = MagicMock()
 
     @get("/some/test/path/{test:" + param_type_name + "}")
-    def handler(test: param_type_class) -> None:
+    def handler(test: Annotated[param_type_class, PathParameter()]) -> None:
         mock(test)
 
     with create_test_client(handler) as client:
@@ -169,11 +170,11 @@ def test_path_param_type_resolution(
 
 def test_differently_named_path_params_on_same_level() -> None:
     @get("/{name:str}", media_type=MediaType.TEXT)
-    def get_greeting(name: str) -> str:
+    def get_greeting(name: FromPath[str]) -> str:
         return f"Hello, {name}!"
 
     @post("/{title:str}", media_type=MediaType.TEXT)
-    def post_greeting(title: str) -> str:
+    def post_greeting(title: FromPath[str]) -> str:
         return f"Hello, {title}!"
 
     with create_test_client(route_handlers=[get_greeting, post_greeting]) as client:
@@ -187,7 +188,7 @@ def test_differently_named_path_params_on_same_level() -> None:
 
 def test_optional_path_parameter() -> None:
     @get(path=["/", "/{message:str}"], media_type=MediaType.TEXT, sync_to_thread=False)
-    def handler(message: Optional[str]) -> str:
+    def handler(message: FromPath[Optional[str]]) -> str:
         return message or "no message"
 
     with create_test_client(route_handlers=[handler]) as client:

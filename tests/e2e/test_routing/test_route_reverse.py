@@ -8,6 +8,7 @@ import pytest
 from litestar import Litestar, Router, delete, get, patch, post, put
 from litestar.exceptions import NoRouteMatchFoundException
 from litestar.handlers import HTTPRouteHandler
+from litestar.params import FromPath
 
 
 @pytest.mark.parametrize("decorator", [get, post, patch, put, delete])
@@ -32,11 +33,11 @@ def test_route_reverse(decorator: Type[HTTPRouteHandler]) -> None:
         ["/handler3", "/handler3/{str_param:str}/", "/handler3/{str_param:str}/{int_param:int}/"],
         name="multiple-default-params",
     )  # type: ignore[call-arg]
-    def handler3(str_param: str = "default", int_param: int = 0) -> None:
+    def handler3(str_param: FromPath[str] = "default", int_param: FromPath[int] = 0) -> None:
         return None
 
     @decorator(["/handler4/int/{int_param:int}", "/handler4/str/{str_param:str}"], name="handler4")  # type: ignore[call-arg]
-    def handler4(int_param: int = 1, str_param: str = "str") -> None:
+    def handler4(int_param: FromPath[int] = 1, str_param: FromPath[str] = "str") -> None:
         return None
 
     router = Router("router-path/", route_handlers=[handler, handler_nameless, handler_no_params, handler3, handler4])
@@ -121,13 +122,13 @@ def test_route_reverse_allow_string_params() -> None:
         name="strings-everywhere-handler",
     )
     def strings_everywhere_handler(
-        datetime_param: datetime,
-        date_param: date,
-        time_param: time,
-        timedelta_param: timedelta,
-        float_param: float,
-        uuid_param: UUID,
-        path_param: Path,
+        datetime_param: FromPath[datetime],
+        date_param: FromPath[date],
+        time_param: FromPath[time],
+        timedelta_param: FromPath[timedelta],
+        float_param: FromPath[float],
+        uuid_param: FromPath[UUID],
+        path_param: FromPath[Path],
     ) -> None:
         return None
 

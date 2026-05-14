@@ -17,7 +17,18 @@ from litestar.handlers import HTTPRouteHandler
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Example, OpenAPI, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
-from litestar.params import Dependency, Parameter
+from litestar.params import (
+    CookieParameter,
+    Dependency,
+    FromCookie,
+    FromHeader,
+    FromPath,
+    FromQuery,
+    HeaderParameter,
+    Parameter,
+    PathParameter,
+    QueryParameter,
+)
 from litestar.routes import BaseRoute
 from litestar.testing import create_test_client
 from litestar.utils import find_index
@@ -51,7 +62,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
 
     parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
     assert len(parameters) == 10
-    service_id, page, name, page_size, from_date, to_date, gender, lucky_number, secret_header, cookie_value = tuple(
+    service_id, page, name, lucky_number, secret_header, cookie_value, gender, page_size, from_date, to_date = tuple(
         parameters
     )
 
@@ -111,7 +122,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
             Schema(
                 type=OpenAPIType.ARRAY,
                 items=Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_Gender"),
-                examples=[[Gender.FEMALE]],
+                examples=[[Gender.MALE]],
             ),
             Schema(type=OpenAPIType.NULL),
         ],
@@ -146,16 +157,16 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
 
 def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
     class BaseDep:
-        def __init__(self, query_param: str) -> None: ...
+        def __init__(self, query_param: FromQuery[str]) -> None: ...
 
     class ADep(BaseDep): ...
 
     class BDep(BaseDep): ...
 
-    async def c_dep(other_param: float) -> float:
+    async def c_dep(other_param: FromQuery[float]) -> float:
         return other_param
 
-    async def d_dep(other_param: float) -> float:
+    async def d_dep(other_param: FromQuery[float]) -> float:
         return other_param
 
     @get(
@@ -179,10 +190,10 @@ def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
 
 
 def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> None:
-    async def a_dep(query_param: int) -> int:
+    async def a_dep(query_param: FromQuery[int]) -> int:
         return query_param
 
-    async def b_dep(query_param: str) -> int:
+    async def b_dep(query_param: FromQuery[str]) -> int:
         return 1
 
     @get("/test", dependencies={"a": Provide(a_dep), "b": Provide(b_dep)})
@@ -196,7 +207,7 @@ def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> Non
 
 
 def test_dependency_params_in_docs_if_dependency_provided() -> None:
-    async def produce_dep(param: str) -> int:
+    async def produce_dep(param: FromQuery[str]) -> int:
         return 13
 
     @get(dependencies={"dep": Provide(produce_dep)})
@@ -211,7 +222,7 @@ def test_dependency_params_in_docs_if_dependency_provided() -> None:
 
 def test_dependency_not_in_doc_params_if_not_provided() -> None:
     @get()
-    def handler(dep: Optional[int] = Dependency()) -> None:
+    def handler(dep: Annotated[Optional[int], Dependency()]) -> None:
         return None
 
     app = Litestar(route_handlers=[handler])
@@ -220,7 +231,7 @@ def test_dependency_not_in_doc_params_if_not_provided() -> None:
 
 def test_non_dependency_in_doc_params_if_not_provided() -> None:
     @get()
-    def handler(param: Optional[int]) -> None:
+    def handler(param: FromQuery[Optional[int]]) -> None:
         return None
 
     app = Litestar(route_handlers=[handler])
@@ -233,19 +244,19 @@ def test_layered_parameters() -> None:
         path = "/controller"
         parameters = {
             "controller1": Parameter(lt=100),
-            "controller2": Parameter(str, query="controller3"),
+            "controller2": QueryParameter(annotation=str, name="controller3"),
         }
 
         @get("/{local:int}")
         def my_handler(
             self,
-            local: int,
+            local: FromPath[int],
             controller1: int,
             router1: str,
             router2: float,
             app1: str,
             app2: List[str],
-            controller2: float = Parameter(float, ge=5.0),
+            controller2: Annotated[float, QueryParameter(ge=5.0)],
         ) -> dict:
             return {}
 
@@ -254,7 +265,7 @@ def test_layered_parameters() -> None:
         route_handlers=[MyController],
         parameters={
             "router1": Parameter(str, pattern="^[a-zA-Z]$"),
-            "router2": Parameter(float, multiple_of=5.0, header="router3"),
+            "router2": HeaderParameter(annotation=float, multiple_of=5.0, name="router3"),
         },
     )
 
@@ -262,7 +273,7 @@ def test_layered_parameters() -> None:
         app=Litestar(
             route_handlers=[router],
             parameters={
-                "app1": Parameter(str, cookie="app4"),
+                "app1": CookieParameter(annotation=str, name="app4"),
                 "app2": Parameter(List[str], min_items=2),
                 "app3": Parameter(bool, required=False),
             },
@@ -319,7 +330,7 @@ def test_layered_parameters() -> None:
 def test_parameter_examples() -> None:
     @get(path="/")
     async def index(
-        text: Annotated[str, Parameter(examples=[Example(value="example value", summary="example summary")])],
+        text: Annotated[str, QueryParameter(examples=[Example(value="example value", summary="example summary")])],
     ) -> str:
         return text
 
@@ -337,7 +348,7 @@ def test_parameter_schema_extra() -> None:
     async def handler(
         query1: Annotated[
             str,
-            Parameter(
+            QueryParameter(
                 schema_extra={
                     "schema_not": Schema(
                         any_of=[
@@ -350,14 +361,14 @@ def test_parameter_schema_extra() -> None:
         ],
         query2: Annotated[
             Gender,
-            Parameter(description="gender description", schema_extra={"format": "foo"}, schema_component_key="q2"),
+            QueryParameter(description="gender description", schema_extra={"format": "foo"}, schema_component_key="q2"),
         ],
-        query3: Annotated[Gender, Parameter(schema_extra={"format": "bar"}, schema_component_key="q3")],
+        query3: Annotated[Gender, QueryParameter(schema_extra={"format": "bar"}, schema_component_key="q3")],
     ) -> Any:
         return query1
 
     @get()
-    async def error_handler(query1: Annotated[str, Parameter(schema_extra={"invalid": "dummy"})]) -> Any:
+    async def error_handler(query1: Annotated[str, QueryParameter(schema_extra={"invalid": "dummy"})]) -> Any:
         return query1
 
     # Success
@@ -386,11 +397,11 @@ def test_parameter_schema_extra() -> None:
 def test_uuid_path_description_generation() -> None:
     # https://github.com/litestar-org/litestar/issues/2967
     @get("str/{id:str}")
-    async def str_path(id: Annotated[str, Parameter(description="String ID")]) -> str:
+    async def str_path(id: Annotated[str, PathParameter(description="String ID")]) -> str:
         return id
 
     @get("uuid/{id:uuid}")
-    async def uuid_path(id: Annotated[UUID, Parameter(description="UUID ID")]) -> UUID:
+    async def uuid_path(id: Annotated[UUID, PathParameter(description="UUID ID")]) -> UUID:
         return id
 
     with create_test_client(
@@ -406,9 +417,9 @@ def test_unwrap_new_type() -> None:
 
     @get("/{path_param:str}")
     async def handler(
-        param: FancyString,
-        optional_param: Optional[FancyString],
-        path_param: FancyString,
+        param: FromQuery[FancyString],
+        optional_param: FromQuery[Optional[FancyString]],
+        path_param: FromPath[FancyString],
     ) -> FancyString:
         return FancyString("")
 
@@ -431,7 +442,7 @@ def test_unwrap_nested_new_type() -> None:
 
     @get("/")
     async def handler(
-        param: FancierString,
+        param: FromQuery[FancierString],
     ) -> None:
         return None
 
@@ -448,7 +459,7 @@ def test_unwrap_annotated_new_type() -> None:
 
     @get("/")
     async def handler(
-        param: TestModel,
+        param: FromQuery[TestModel],
     ) -> None:
         return None
 
@@ -462,10 +473,10 @@ def test_query_param_only_properties() -> None:
     # https://github.com/litestar-org/litestar/issues/3908
     @get("/{path_param:str}")
     def handler(
-        path_param: str,
-        query_param: str,
-        header_param: Annotated[str, Parameter(header="header_param")],
-        cookie_param: Annotated[str, Parameter(cookie="cookie_param")],
+        path_param: FromPath[str],
+        query_param: FromQuery[str],
+        header_param: FromHeader[str],
+        cookie_param: FromCookie[str],
     ) -> None:
         pass
 
@@ -490,7 +501,7 @@ def test_query_param_only_properties() -> None:
 
 def test_not_included_in_schema_parameter() -> None:
     @get("/handler")
-    async def handler(param: Annotated[str, Parameter(include_in_schema=False)]) -> None:
+    async def handler(param: Annotated[str, QueryParameter(include_in_schema=False)]) -> None:
         pass
 
     with create_test_client(handler) as client:
@@ -503,7 +514,7 @@ def test_not_included_in_schema_parameter() -> None:
 
 def test_two_parameters_but_one_not_included_in_schema() -> None:
     @get("/handler")
-    def handler(param1: str, param2: str = Parameter(include_in_schema=False)) -> None:
+    def handler(param1: FromQuery[str], param2: Annotated[str, QueryParameter(include_in_schema=False)]) -> None:
         pass
 
     with create_test_client(handler) as client:
@@ -516,3 +527,55 @@ def test_two_parameters_but_one_not_included_in_schema() -> None:
         parameter_names = {param["name"] for param in handler_schema["parameters"]}
         assert "param1" in parameter_names
         assert "param2" not in parameter_names
+
+
+def test_explicit_path_param_excluded_from_routes_without_placeholder() -> None:
+    """A handler annotated with FromPath but registered against multiple paths must
+    only advertise the path parameter on routes whose URL actually contains the
+    placeholder. Otherwise the schema would describe an in-path parameter for a URL
+    that has no such placeholder.
+    """
+
+    @get(path=["/", "/{message:str}"], sync_to_thread=False)
+    def handler(message: FromPath[Optional[str]]) -> str:
+        return message or ""
+
+    with create_test_client(handler) as client:
+        response = client.get("/schema/openapi.json")
+        paths = response.json()["paths"]
+
+        # the placeholder-less route has no parameters at all
+        assert "parameters" not in paths["/"]["get"]
+
+        # the route with the placeholder advertises the path parameter
+        parameters = paths["/{message}"]["get"]["parameters"]
+        assert len(parameters) == 1
+        assert parameters[0]["in"] == ParamType.PATH
+        assert parameters[0]["name"] == "message"
+
+
+def test_explicit_path_param_with_alias_excluded_when_alias_not_in_path() -> None:
+    """When the handler aliases a path parameter via ``PathParameter(name=...)``, the
+    alias is what matters for the URL. The aliased path parameter must:
+    - be omitted from routes whose URL doesn't contain the alias placeholder, and
+    - appear under the alias on routes that do contain it (without being duplicated by
+      the ``unconsumed_path_parameters`` stub injection).
+    """
+
+    @get(path=["/", "/{aliased:str}"], sync_to_thread=False)
+    def handler(local: Annotated[Optional[str], PathParameter(name="aliased")]) -> str:
+        return local or ""
+
+    with create_test_client(handler) as client:
+        response = client.get("/schema/openapi.json")
+        paths = response.json()["paths"]
+
+        assert "parameters" not in paths["/"]["get"]
+        parameters = paths["/{aliased}"]["get"]["parameters"]
+        assert len(parameters) == 1
+        assert parameters[0]["in"] == ParamType.PATH
+        assert parameters[0]["name"] == "aliased"
+
+        # routing also works for the aliased path parameter
+        assert client.get("/foo").text == "foo"
+        assert client.get("/").text == ""

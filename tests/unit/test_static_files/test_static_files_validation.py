@@ -6,6 +6,7 @@ import pytest
 
 from litestar import HttpMethod, Litestar, MediaType, get
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import FromPath
 from litestar.static_files import StaticFilesConfig, create_static_files_router
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_405_METHOD_NOT_ALLOWED
 from litestar.testing import create_test_client
@@ -64,7 +65,7 @@ def test_runtime_validation_of_static_path_and_path_parameter(tmpdir: "Path") ->
     path.write_text("content", "utf-8")
 
     @get("/static/{f:str}", media_type=MediaType.TEXT)
-    def handler(f: str) -> str:
+    def handler(f: FromPath[str]) -> str:
         return f
 
     with pytest.raises(ImproperlyConfiguredException):

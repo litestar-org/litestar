@@ -13,6 +13,7 @@ from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_
 from typing_extensions import TypeAlias
 
 from litestar import Litestar, Request, Response, get
+from litestar.params import FromPath
 from litestar.security.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
@@ -383,7 +384,7 @@ async def test_path_exclusion() -> None:
     )
 
     @get("/north/{value:int}")
-    def north_handler(value: int) -> Dict[str, int]:
+    def north_handler(value: FromPath[int]) -> Dict[str, int]:
         return {"value": value}
 
     @get("/south")

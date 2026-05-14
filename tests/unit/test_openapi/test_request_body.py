@@ -5,7 +5,7 @@ from unittest.mock import ANY, MagicMock
 import pytest
 from typing_extensions import Annotated, ReadOnly
 
-from litestar import Controller, Litestar, get, post
+from litestar import Controller, Litestar, post
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.request_body import create_request_body
 from litestar.datastructures.upload_file import UploadFile
@@ -62,9 +62,9 @@ def test_request_body_schema_extra() -> None:
     class RequestBody:
         foo: str
 
-    @get()
+    @post()
     async def handler(
-        body1: Annotated[
+        data: Annotated[
             RequestBody,
             Body(
                 title="Default title",
@@ -74,7 +74,7 @@ def test_request_body_schema_extra() -> None:
             ),
         ],
     ) -> Any:
-        return body1
+        return data
 
     app = Litestar([handler])
     schema = app.openapi_schema.to_schema()

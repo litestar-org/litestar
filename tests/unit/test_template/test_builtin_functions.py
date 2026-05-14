@@ -8,6 +8,7 @@ from litestar import get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
+from litestar.params import FromPath
 from litestar.response.template import Template
 from litestar.static_files.config import StaticFilesConfig
 from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
@@ -186,7 +187,7 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
     template_config = TemplateConfig(engine=MiniJinjaTemplateEngine, directory=tmp_path)
 
     @get(path="/{path:path}")
-    def tpl_renderer(path: Path) -> Template:
+    def tpl_renderer(path: FromPath[Path]) -> Template:
         return Template(template_name=path.name)
 
     @get(path="/simple", name="simple")
@@ -250,7 +251,7 @@ def test_minijinja_url_for_static_asset(tmp_path: Path) -> None:
     template_config = TemplateConfig(engine=MiniJinjaTemplateEngine, directory=tmp_path)
 
     @get(path="/{path:path}", name="tpl_renderer")
-    def tpl_renderer(path: Path) -> Template:
+    def tpl_renderer(path: FromPath[Path]) -> Template:
         return Template(template_name=path.name)
 
     with create_test_client(

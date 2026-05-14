@@ -17,7 +17,7 @@ from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig, OpenAPIController
 from litestar.openapi.spec import Parameter as OpenAPIParameter
 from litestar.openapi.spec import Schema
-from litestar.params import Parameter
+from litestar.params import FromCookie, FromPath, FromQuery, HeaderParameter
 from litestar.serialization.msgspec_hooks import decode_json, encode_json, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
@@ -272,7 +272,7 @@ def test_struct_field_default() -> None:
 
 def test_schema_for_optional_path_parameter(openapi_controller: type[OpenAPIController] | None) -> None:
     @get(path=["/", "/{test_message:str}"], media_type=MediaType.TEXT, sync_to_thread=False)
-    def handler(test_message: Optional[str]) -> str:
+    def handler(test_message: FromPath[Optional[str]]) -> str:
         return test_message or "no message"
 
     with create_test_client(
@@ -286,7 +286,7 @@ def test_schema_for_optional_path_parameter(openapi_controller: type[OpenAPICont
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
-        assert "parameters" not in response.json()["paths"]["/"]["get"]  # type[ignore]
+        assert "parameters" not in response.json()["paths"]["/"]["get"]
         parameter = response.json()["paths"]["/{test_message}"]["get"]["parameters"][0]  # type[ignore]
         assert parameter
         assert parameter["in"] == ParamType.PATH
@@ -381,8 +381,8 @@ def test_allow_multiple_parameters_with_same_name_but_different_location() -> No
 
     @post("/test")
     async def route(
-        name: Annotated[Optional[str], Parameter(cookie="name")] = None,
-        name_header: Annotated[Optional[str], Parameter(header="name")] = None,
+        name: FromCookie[Optional[str]] = None,
+        name_header: Annotated[Optional[str], HeaderParameter(name="name")] = None,
     ) -> str:
         return name or name_header or ""
 
@@ -508,10 +508,10 @@ def test_multiple_handlers_for_same_route() -> None:
 @pytest.mark.parametrize(("random_seed_one", "random_seed_two", "should_be_equal"), [(10, 10, True), (10, 20, False)])
 def test_seeding(random_seed_one: int, random_seed_two: int, should_be_equal: bool) -> None:
     @post("/", sync_to_thread=False)
-    def post_handler(q: str) -> None: ...
+    def post_handler(q: FromQuery[str]) -> None: ...
 
     @get("/", sync_to_thread=False)
-    def get_handler(q: str) -> None: ...
+    def get_handler(q: FromQuery[str]) -> None: ...
 
     app = Litestar(
         [get_handler, post_handler], openapi_config=OpenAPIConfig("Litestar", "v0.0.1", True, random_seed_one)

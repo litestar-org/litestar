@@ -10,6 +10,7 @@ import pytest
 from typing_extensions import TypeAlias
 
 from litestar import MediaType, Router, get
+from litestar.params import FromPath
 from litestar.static_files import StaticFiles, StaticFilesConfig, create_static_files_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -144,7 +145,7 @@ def test_sub_path_under_static_path(tmpdir: Path, make_config: MakeConfig) -> No
     path.write_text("content", "utf-8")
 
     @get("/static/sub/{f:str}", media_type=MediaType.TEXT)
-    def handler(f: str) -> str:
+    def handler(f: FromPath[str]) -> str:
         return f
 
     configs, handlers = make_config(StaticFilesConfig(path="/static", directories=[tmpdir]))
