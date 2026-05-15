@@ -134,15 +134,6 @@ A huge thank you to our current sponsors:
 
          `Telemetry Sports <https://telemetrysports.com/>`_
 
-      .. grid-item-card::
-         :link: https://www.stok.kr/
-
-         .. image:: https://avatars.githubusercontent.com/u/144093421
-            :alt: Stok
-            :class: sponsor
-
-         `Stok <https://www.stok.kr/>`_
-
 We invite organizations and individuals to join our sponsorship program.
 By becoming a sponsor on platforms like `Polar <sponsor-polar_>`_, `GitHub <sponsor-github_>`_
 and `Open Collective <sponsor-oc_>`_, you can play a pivotal role in our project's growth.
