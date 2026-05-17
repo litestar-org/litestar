@@ -32,7 +32,7 @@ if TYPE_CHECKING:
         from pydantic.typing import AbstractSetIntStr, MappingIntStrAny
     except ImportError:
         BaseModel = Any  # type: ignore[assignment, misc]
-        IncEx = Any  # type: ignore[misc]
+        IncEx = Any
         AbstractSetIntStr = Any
         MappingIntStrAny = Any
 
