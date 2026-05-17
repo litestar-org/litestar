@@ -99,6 +99,81 @@ def test_repository_deprecations(import_path: str, import_name: str) -> None:
     assert getattr(module, import_name)
 
 
+@pytest.mark.parametrize(
+    "import_path, import_name, expected_alternative",
+    (
+        ("litestar.repository", "AbstractAsyncRepository", "advanced_alchemy.repository.SQLAlchemyAsyncRepository"),
+        ("litestar.repository", "AbstractSyncRepository", "advanced_alchemy.repository.SQLAlchemySyncRepository"),
+        ("litestar.repository", "ConflictError", "advanced_alchemy.exceptions.IntegrityError"),
+        ("litestar.repository", "FilterTypes", "advanced_alchemy.filters.FilterTypes"),
+        ("litestar.repository", "NotFoundError", "advanced_alchemy.exceptions.NotFoundError"),
+        ("litestar.repository", "RepositoryError", "advanced_alchemy.exceptions.RepositoryError"),
+        ("litestar.repository.exceptions", "ConflictError", "advanced_alchemy.exceptions.IntegrityError"),
+        ("litestar.repository.exceptions", "NotFoundError", "advanced_alchemy.exceptions.NotFoundError"),
+        ("litestar.repository.exceptions", "RepositoryError", "advanced_alchemy.exceptions.RepositoryError"),
+        ("litestar.repository.filters", "BeforeAfter", "advanced_alchemy.filters.BeforeAfter"),
+        ("litestar.repository.filters", "CollectionFilter", "advanced_alchemy.filters.CollectionFilter"),
+        ("litestar.repository.filters", "FilterTypes", "advanced_alchemy.filters.FilterTypes"),
+        ("litestar.repository.filters", "LimitOffset", "advanced_alchemy.filters.LimitOffset"),
+        ("litestar.repository.filters", "NotInCollectionFilter", "advanced_alchemy.filters.NotInCollectionFilter"),
+        ("litestar.repository.filters", "NotInSearchFilter", "advanced_alchemy.filters.NotInSearchFilter"),
+        ("litestar.repository.filters", "OnBeforeAfter", "advanced_alchemy.filters.OnBeforeAfter"),
+        ("litestar.repository.filters", "OrderBy", "advanced_alchemy.filters.OrderBy"),
+        ("litestar.repository.filters", "SearchFilter", "advanced_alchemy.filters.SearchFilter"),
+        ("litestar.repository.abc", "AbstractAsyncRepository", "advanced_alchemy.repository.SQLAlchemyAsyncRepository"),
+        ("litestar.repository.abc", "AbstractSyncRepository", "advanced_alchemy.repository.SQLAlchemySyncRepository"),
+        ("litestar.repository.handlers", "on_app_init", None),
+        ("litestar.repository.handlers", "signature_namespace_values", None),
+        (
+            "litestar.repository.testing",
+            "GenericAsyncMockRepository",
+            "advanced_alchemy.repository.memory.SQLAlchemyAsyncMockRepository",
+        ),
+        (
+            "litestar.repository.testing",
+            "GenericSyncMockRepository",
+            "advanced_alchemy.repository.memory.SQLAlchemySyncMockRepository",
+        ),
+    ),
+)
+def test_litestar_repository_deprecations(
+    import_path: str, import_name: str, expected_alternative: "str | None"
+) -> None:
+    """Every public symbol under ``litestar.repository.*`` fires DeprecationWarning."""
+    module = importlib.import_module(import_path)
+    # Make sure the symbol isn't already cached from a prior test run.
+    module.__dict__.pop(import_name, None)
+    with pytest.warns(DeprecationWarning, match=rf"{import_name}.*{import_path}.*deprecated") as records:
+        value = getattr(module, import_name)
+    assert value is not None
+    if expected_alternative is not None:
+        # The deprecation warning should name the advanced_alchemy replacement.
+        assert any(expected_alternative in str(r.message) for r in records)
+        # Where the shim hands back the advanced_alchemy class itself, confirm identity.
+        alt_module_path, _, alt_attr = expected_alternative.rpartition(".")
+        alt = getattr(importlib.import_module(alt_module_path), alt_attr, None)
+        if alt is not None and import_path != "litestar.repository.testing":
+            assert value is alt
+
+
+@pytest.mark.parametrize(
+    "import_path",
+    (
+        "litestar.repository",
+        "litestar.repository.abc",
+        "litestar.repository.exceptions",
+        "litestar.repository.filters",
+        "litestar.repository.handlers",
+        "litestar.repository.testing",
+    ),
+)
+def test_litestar_repository_unknown_attribute_raises(import_path: str) -> None:
+    """Unknown attributes on the deprecated shim modules raise AttributeError."""
+    module = importlib.import_module(import_path)
+    with pytest.raises(AttributeError, match="DoesNotExist"):
+        module.DoesNotExist
+
+
 def test_litestar_type_deprecation() -> None:
     with pytest.warns(DeprecationWarning):
         from litestar.types.internal_types import LitestarType  # noqa: F401

@@ -196,6 +196,9 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
     (PY_CLASS, "advanced_alchemy.types.JsonB"),
     (PY_CLASS, "advanced_alchemy.repository.SQLAlchemyAsyncRepository"),
+    (PY_CLASS, "advanced_alchemy.repository.SQLAlchemySyncRepository"),
+    (PY_CLASS, "advanced_alchemy.repository.memory.SQLAlchemyAsyncMockRepository"),
+    (PY_CLASS, "advanced_alchemy.repository.memory.SQLAlchemySyncMockRepository"),
     # docs in flux as we prepare for `advanced_alchemy` 1.0 release. re-enable when finished
     (PY_CLASS, "advanced_alchemy.base.UUIDBase"),
     (PY_CLASS, "advanced_alchemy.base.UUIDAuditBase"),
