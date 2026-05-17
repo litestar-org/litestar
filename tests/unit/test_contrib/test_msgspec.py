@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import itertools
 from dataclasses import replace
-from typing import TYPE_CHECKING, Annotated, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 from unittest.mock import ANY
 
 import pytest
