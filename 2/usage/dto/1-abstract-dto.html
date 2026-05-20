@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -1553,7 +1557,7 @@ and from raw bytes.</p>
 <li><p><a class="reference internal" href="../../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO" title="litestar.dto.dataclass_dto.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataclassDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO" title="litestar.dto.msgspec_dto.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">MsgspecDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO" title="litestar.plugins.pydantic.PydanticDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticDTO</span></code></a></p></li>
-<li><p><a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a></p></li>
+<li><p><a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a></p></li>
 </ul>
 <section id="using-dto-factories">
 <h2>Using DTO Factories<a class="headerlink" href="#using-dto-factories" title="Link to this heading">#</a></h2>
@@ -1594,13 +1598,13 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;08e95e67-1103-4fb9-a077-c52fb7701ee5&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;d303ef6a-2473-4df8-8045-13bc85f52004&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
 <p>Here we see that a SQLAlchemy model is used as both the <code class="docutils literal notranslate"><span class="pre">data</span></code> and return annotation for the handler, and while
 Litestar does not natively support encoding/decoding to/from SQLAlchemy models, through
-<a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> we can do this.</p>
+<a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> we can do this.</p>
 <p>However, we do have some issues with the above example. Firstly, the user’s password has been returned to them in the
 response from the handler. Secondly, the user is able to set the <code class="docutils literal notranslate"><span class="pre">created_at</span></code> field on the model, which should only
 ever be set once, and defined internally.</p>
@@ -1656,7 +1660,7 @@ configuration.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;55b6609e-5126-489f-9a9e-382641564bbe&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;12f98e08-4d6e-449f-ad70-4210305a322e&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1920,7 +1924,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;f692067c-a1dc-45e0-8bc6-1cbbbd78ece5&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;39f18321-cf2e-46e1-a263-af708b50187b&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -2012,7 +2016,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;f0750616-2914-45e6-8748-fc63a1a04e55&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;2fdf16d4-9b2a-4e71-ae3d-3cfdcfa658e7&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -2321,7 +2325,7 @@ handler.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;b5ae6ae6-a88d-464b-afe0-1db725ae23c4&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;92bd7ec5-5b7e-48c6-9838-045a9fa879c2&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -2367,7 +2371,7 @@ type of the data that it will contain, and provides useful methods for interacti
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="w"> </span><span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;255461fc-5eb2-492b-bc71-f28b74524ba8&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;9eea5e1b-79df-4c33-8087-d9ee35c579f3&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -2449,32 +2453,33 @@ attributes in the client payload, which requires some special handling internall
 <span class="linenos"> 5</span>
 <span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">patch</span>
 <span class="hll"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
-</span><span class="linenos"> 8</span>
+</span><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 <span class="linenos"> 9</span>
-<span class="linenos">10</span><span class="nd">@dataclass</span>
-<span class="linenos">11</span><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
-<span class="linenos">12</span>    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
-<span class="linenos">13</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos">14</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
-<span class="linenos">15</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nd">@dataclass</span>
+<span class="linenos">12</span><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
+<span class="linenos">13</span>    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
+<span class="linenos">14</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">15</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
 <span class="linenos">16</span>
-<span class="linenos">17</span><span class="k">class</span><span class="w"> </span><span class="nc">PatchDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-<span class="linenos">18</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Don&#39;t allow client to set the id, and allow partial updates.&quot;&quot;&quot;</span>
-<span class="linenos">19</span>
-<span class="hll"><span class="linenos">20</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">},</span> <span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span class="linenos">21</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="k">class</span><span class="w"> </span><span class="nc">PatchDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
+<span class="linenos">19</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Don&#39;t allow client to set the id, and allow partial updates.&quot;&quot;&quot;</span>
+<span class="hll"><span class="linenos">20</span>
+</span><span class="linenos">21</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">},</span> <span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="linenos">22</span>
-<span class="linenos">23</span><span class="n">peter_uuid</span> <span class="o">=</span> <span class="n">UUID</span><span class="p">(</span><span class="s2">&quot;f32ff2ce-e32f-4537-9dc0-26e7599f1380&quot;</span><span class="p">)</span>
-<span class="linenos">24</span><span class="n">database</span> <span class="o">=</span> <span class="p">{</span><span class="n">peter_uuid</span><span class="p">:</span> <span class="n">Person</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">peter_uuid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Peter&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">40</span><span class="p">)}</span>
-<span class="linenos">25</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span><span class="n">peter_uuid</span> <span class="o">=</span> <span class="n">UUID</span><span class="p">(</span><span class="s2">&quot;f32ff2ce-e32f-4537-9dc0-26e7599f1380&quot;</span><span class="p">)</span>
+<span class="linenos">25</span><span class="n">database</span> <span class="o">=</span> <span class="p">{</span><span class="n">peter_uuid</span><span class="p">:</span> <span class="n">Person</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">peter_uuid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Peter&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">40</span><span class="p">)}</span>
 <span class="linenos">26</span>
-<span class="hll"><span class="linenos">27</span><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;/person/{person_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PatchDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos">28</span><span class="k">def</span><span class="w"> </span><span class="nf">update_person</span><span class="p">(</span><span class="n">person_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">Person</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
-</span><span class="linenos">29</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Partially update a person.&quot;&quot;&quot;</span>
-<span class="hll"><span class="linenos">30</span>    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">update_instance</span><span class="p">(</span><span class="n">database</span><span class="p">[</span><span class="n">person_id</span><span class="p">])</span>
-</span><span class="linenos">31</span>
+<span class="hll"><span class="linenos">27</span>
+</span><span class="hll"><span class="linenos">28</span><span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;/person/{person_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PatchDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span class="linenos">29</span><span class="k">def</span><span class="w"> </span><span class="nf">update_person</span><span class="p">(</span><span class="n">person_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="n">UUID</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">Person</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
+<span class="hll"><span class="linenos">30</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Partially update a person.&quot;&quot;&quot;</span>
+</span><span class="linenos">31</span>    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">update_instance</span><span class="p">(</span><span class="n">database</span><span class="p">[</span><span class="n">person_id</span><span class="p">])</span>
 <span class="linenos">32</span>
-<span class="linenos">33</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">update_person</span><span class="p">])</span>
+<span class="linenos">33</span>
+<span class="linenos">34</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">update_person</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="admonition">

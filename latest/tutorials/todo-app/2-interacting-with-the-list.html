@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -1728,7 +1732,7 @@ specific item on the list is needed. This could be done using query parameters, 
 there’s an easier, and more semantically coherent way of expressing this: path
 parameters.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{name:str}&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="s2">&quot;Hello, &quot;</span> <span class="o">+</span> <span class="n">name</span>
 </pre></div>
 </div>
@@ -1737,20 +1741,21 @@ constant string which does not change. In fact, the only path used so far is <co
 <p>Path parameters allow you to construct dynamic paths and later refer to the dynamically
 captured parts. This may sound complex at first, but it’s actually quite simple; you can
 think of it as a regular expression that’s being used on the requested path.</p>
-<p>Path parameters consist of two parts: an expression inside the path, describing the
-parameter, and a corresponding function parameter of the same name in the route handler
-function, which will receive the path parameter’s value.</p>
+<p>Path parameters consist of two parts: an expression inside the route’s path describing
+the slot (e.g. <code class="docutils literal notranslate"><span class="pre">{name:str}</span></code>), and a matching function parameter on the route handler
+annotated with <a class="reference internal" href="../../reference/params.html#litestar.params.FromPath" title="litestar.params.FromPath"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromPath</span></code></a> (e.g. <code class="docutils literal notranslate"><span class="pre">name:</span> <span class="pre">FromPath[str]</span></code>), which will
+receive the captured value.</p>
 <p>In the above example, a path parameter <code class="docutils literal notranslate"><span class="pre">name:str</span></code> is declared, which means that now,
 a request to the path <code class="docutils literal notranslate"><span class="pre">/john</span></code> can be made, and the <code class="docutils literal notranslate"><span class="pre">greeter</span></code> function will be called
 as <code class="docutils literal notranslate"><span class="pre">greeter(name=&quot;john&quot;)</span></code>, similar to how query parameters are injected.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Just like query parameters, path parameters can convert and validate their values as
-well. This is configured using the <code class="docutils literal notranslate"><span class="pre">:type</span></code> colon annotation, similar to type
-annotations. For example, <code class="docutils literal notranslate"><span class="pre">value:str</span></code> will receive values as a string, while
-<code class="docutils literal notranslate"><span class="pre">value:int</span></code> will try to convert it into an integer.</p>
+well. This is configured using the <code class="docutils literal notranslate"><span class="pre">:type</span></code> colon annotation in the URL pattern.
+For example, <code class="docutils literal notranslate"><span class="pre">value:str</span></code> will receive values as a string, while <code class="docutils literal notranslate"><span class="pre">value:int</span></code> will
+try to convert it into an integer.</p>
 <p>A full list of supported types can be found here:
-<a class="reference internal" href="../../usage/routing/parameters.html#supported-path-parameter-types"><span class="std std-ref">Supported Path Parameter Types</span></a></p>
+<a class="reference internal" href="../../usage/routing/parameters.html#supported-path-parameter-types"><span class="std std-ref">Supported path parameter types</span></a></p>
 </div>
 <p>By using this pattern and combining it with those from the earlier section about
 receiving data you can now set up a route handler that takes in the title of a
@@ -1765,6 +1770,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">put</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 
 
 <span class="nd">@dataclass</span>
@@ -1780,7 +1786,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="p">]</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">get_todo_by_title</span><span class="p">(</span><span class="n">todo_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoItem</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_todo_by_title</span><span class="p">(</span><span class="n">todo_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoItem</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="n">todo_name</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">item</span>
@@ -1788,7 +1794,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{item_title:str}&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_item</span><span class="p">(</span><span class="n">item_title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_item</span><span class="p">(</span><span class="n">item_title</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
     <span class="n">todo_item</span> <span class="o">=</span> <span class="n">get_todo_by_title</span><span class="p">(</span><span class="n">item_title</span><span class="p">)</span>
     <span class="n">todo_item</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">title</span>
     <span class="n">todo_item</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">done</span>
@@ -1806,6 +1812,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">put</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 
 
 <span class="nd">@dataclass</span>
@@ -1821,7 +1828,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="p">]</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">get_todo_by_title</span><span class="p">(</span><span class="n">todo_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoItem</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_todo_by_title</span><span class="p">(</span><span class="n">todo_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoItem</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="n">todo_name</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">item</span>
@@ -1829,7 +1836,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{item_title:str}&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_item</span><span class="p">(</span><span class="n">item_title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_item</span><span class="p">(</span><span class="n">item_title</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
     <span class="n">todo_item</span> <span class="o">=</span> <span class="n">get_todo_by_title</span><span class="p">(</span><span class="n">item_title</span><span class="p">)</span>
     <span class="n">todo_item</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">title</span>
     <span class="n">todo_item</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">done</span>
@@ -1844,7 +1851,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../usage/routing/parameters.html#path-parameters"><span class="std std-ref">Path Parameters</span></a></p></li>
+<li><p><a class="reference internal" href="../../usage/routing/parameters.html#path-parameters"><span class="std std-ref">Path parameters</span></a></p></li>
 </ul>
 </div>
 </section>

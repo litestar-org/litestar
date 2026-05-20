@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
@@ -2513,10 +2517,10 @@ the request body in a safe manner.</p>
 <p class="admonition-title">Tip</p>
 <p>For requests that define a <code class="docutils literal notranslate"><span class="pre">Content-Length</span></code> header, Litestar will not attempt to
 read the request body should the header value exceed the <code class="docutils literal notranslate"><span class="pre">request_max_body_size</span></code>.</p>
-<p>If the header value is within the allowed bounds, Litestar will verify during the
-streaming of the request body that it does not exceed the size specified in the
-header. Should the request exceed this size, it will abort the request with a
-<code class="docutils literal notranslate"><span class="pre">400</span> <span class="pre">-</span> <span class="pre">Bad</span> <span class="pre">Request</span></code>.</p>
+<p>Validation that the actual request body matches the <code class="docutils literal notranslate"><span class="pre">Content-Length</span></code> header is
+delegated to the ASGI server (e.g. uvicorn). This ensures compatibility with
+request decompression middleware, where the decompressed body may legitimately
+exceed the wire-format <code class="docutils literal notranslate"><span class="pre">Content-Length</span></code>.</p>
 </div>
 </section>
 </section>

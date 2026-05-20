@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -1680,7 +1684,7 @@ your controllers and function based routes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Annotated</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span> <span class="k">as</span> <span class="n">_BaseModel</span>
@@ -1693,7 +1697,7 @@ your controllers and function based routes.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">OffsetPagination</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AsyncSessionConfig</span><span class="p">,</span>
     <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span>
@@ -1774,13 +1778,8 @@ your controllers and function based routes.</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">provide_limit_offset_pagination</span><span class="p">(</span>
-    <span class="n">current_page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s2">&quot;currentPage&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-    <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-        <span class="n">query</span><span class="o">=</span><span class="s2">&quot;pageSize&quot;</span><span class="p">,</span>
-        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="p">),</span>
+    <span class="n">current_page</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;currentPage&quot;</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">page_size</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pageSize&quot;</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add offset/limit pagination.</span>
 
@@ -1835,10 +1834,13 @@ your controllers and function based routes.</p>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to retrieve.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">UUID</span><span class="p">,</span>
+            <span class="n">PathParameter</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to retrieve.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an existing author.&quot;&quot;&quot;</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
@@ -1852,10 +1854,13 @@ your controllers and function based routes.</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
-        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to update.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">UUID</span><span class="p">,</span>
+            <span class="n">PathParameter</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to update.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an author.&quot;&quot;&quot;</span>
         <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1868,10 +1873,13 @@ your controllers and function based routes.</p>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_author</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">UUID</span><span class="p">,</span>
+            <span class="n">PathParameter</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
         <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
@@ -1906,7 +1914,7 @@ your controllers and function based routes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Annotated</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span> <span class="k">as</span> <span class="n">_BaseModel</span>
@@ -1919,7 +1927,7 @@ your controllers and function based routes.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">OffsetPagination</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
     <span class="n">SQLAlchemySyncConfig</span><span class="p">,</span>
@@ -2000,13 +2008,8 @@ your controllers and function based routes.</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">provide_limit_offset_pagination</span><span class="p">(</span>
-    <span class="n">current_page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s2">&quot;currentPage&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-    <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-        <span class="n">query</span><span class="o">=</span><span class="s2">&quot;pageSize&quot;</span><span class="p">,</span>
-        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="p">),</span>
+    <span class="n">current_page</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;currentPage&quot;</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">page_size</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pageSize&quot;</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LimitOffset</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add offset/limit pagination.</span>
 
@@ -2064,10 +2067,13 @@ your controllers and function based routes.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to retrieve.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">UUID</span><span class="p">,</span>
+            <span class="n">PathParameter</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to retrieve.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an existing author.&quot;&quot;&quot;</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
@@ -2081,10 +2087,13 @@ your controllers and function based routes.</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
-        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to update.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">UUID</span><span class="p">,</span>
+            <span class="n">PathParameter</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to update.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an author.&quot;&quot;&quot;</span>
         <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -2097,10 +2106,13 @@ your controllers and function based routes.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">delete_author</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+            <span class="n">UUID</span><span class="p">,</span>
+            <span class="n">PathParameter</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
         <span class="n">_</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>

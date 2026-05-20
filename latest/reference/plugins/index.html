@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pydantic.html">pydantic</a></li>
@@ -1565,7 +1569,7 @@ document.write(`
 <p>This can be used to extend or override existing commands.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli"></span><strong>cli</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli">¶</a> – The root <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.3.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli"></span><strong>cli</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli">¶</a> – The root <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.4.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -1598,7 +1602,7 @@ document.write(`
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.plugins.DIPlugin.get_typed_init">
 <em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_typed_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Signature</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.plugins.DIPlugin.get_typed_init" title="Link to this definition">#</a></dt>
-<dd><p>Return signature and type information about the <code class="docutils literal notranslate"><span class="pre">type_</span></code>s <a class="reference internal" href="../contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.__init__" title="litestar.contrib.jinja.JinjaTemplateEngine.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a>
+<dd><p>Return signature and type information about the <code class="docutils literal notranslate"><span class="pre">type_</span></code>s <a class="reference internal" href="../controller.html#litestar.controller.Controller.__init__" title="litestar.controller.Controller.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a>
 method.</p>
 </dd></dl>
 
@@ -1606,7 +1610,7 @@ method.</p>
 <dt class="sig sig-object py" id="litestar.plugins.DIPlugin.has_typed_init">
 <em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_typed_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.plugins.DIPlugin.has_typed_init" title="Link to this definition">#</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">type_</span></code> has type information available for its
-<a class="reference internal" href="../contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.__init__" title="litestar.contrib.jinja.JinjaTemplateEngine.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method that cannot be extracted from this method’s type
+<a class="reference internal" href="../controller.html#litestar.controller.Controller.__init__" title="litestar.controller.Controller.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method that cannot be extracted from this method’s type
 annotations (e.g. a Pydantic BaseModel subclass), and
 <a class="reference internal" href="#litestar.plugins.DIPlugin.get_typed_init" title="litestar.plugins.DIPlugin.get_typed_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DIPlugin.get_typed_init()</span></code></a> supports extraction of these annotations.</p>
 </dd></dl>

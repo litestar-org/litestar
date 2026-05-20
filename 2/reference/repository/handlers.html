@@ -677,10 +677,6 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
-      <span class="fa-solid fa-outdent"></span>
-    </label>
-  
 </div>
 
     </nav>
@@ -1220,7 +1216,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1359,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/pydantic.html">pydantic</a></li>
@@ -1542,15 +1542,14 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="module-litestar.repository.handlers">
-<span id="handlers"></span><h1>handlers<a class="headerlink" href="#module-litestar.repository.handlers" title="Link to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="litestar.repository.handlers.on_app_init">
-<span class="sig-prename descclassname"><span class="pre">litestar.repository.handlers.</span></span><span class="sig-name descname"><span class="pre">on_app_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></span><a class="headerlink" href="#litestar.repository.handlers.on_app_init" title="Link to this definition">#</a></dt>
-<dd><p>Add custom filters for the application during signature modelling.</p>
-</dd></dl>
-
-</section>
+  <section id="handlers">
+<h1>handlers<a class="headerlink" href="#handlers" title="Link to this heading">#</a></h1>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 2.22.0: </span>No direct replacement. Wire the filter signature namespace yourself, or use
+<a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemyPlugin" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">advanced_alchemy.extensions.litestar.SQLAlchemyPlugin</span></code></a> which registers
+it for you. This module is removed before 3.0.0.</p>
+</div>
+<span class="target" id="module-litestar.repository.handlers"></span></section>
 
 
                 </article>
@@ -1586,21 +1585,6 @@ document.write(`
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.repository.handlers.on_app_init"><code class="docutils literal notranslate"><span class="pre">on_app_init()</span></code></a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

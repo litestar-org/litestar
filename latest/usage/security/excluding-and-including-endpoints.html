@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -1553,22 +1557,24 @@ and <a class="reference internal" href="../../reference/security/jwt.html#litest
 <section id="excluding-routes">
 <h2>Excluding routes<a class="headerlink" href="#excluding-routes" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">exclude</span></code> argument takes a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">strings</span></code></a> that are interpreted
-as regex patterns. For example, the configuration below would apply authentication to all endpoints except those where
-the route starts with <code class="docutils literal notranslate"><span class="pre">/login</span></code>, <code class="docutils literal notranslate"><span class="pre">/signup</span></code>, or <code class="docutils literal notranslate"><span class="pre">/schema</span></code>. Thus, one does not have to exclude <code class="docutils literal notranslate"><span class="pre">/schema/swagger</span></code>
-as well - it is included in the <code class="docutils literal notranslate"><span class="pre">/schema</span></code> pattern.</p>
+as regex patterns matched against the full path. Because the patterns are not implicitly anchored, a pattern like
+<code class="docutils literal notranslate"><span class="pre">/schema</span></code> would match <em>any</em> path containing <code class="docutils literal notranslate"><span class="pre">/schema</span></code>, not just paths that start with it. To match only paths that
+start with a given prefix, anchor the pattern with <code class="docutils literal notranslate"><span class="pre">^</span></code>. For example, the configuration below would apply
+authentication to all endpoints except those where the route starts with <code class="docutils literal notranslate"><span class="pre">/login</span></code>, <code class="docutils literal notranslate"><span class="pre">/signup</span></code>, or <code class="docutils literal notranslate"><span class="pre">/schema</span></code>.
+Thus, one does not have to exclude <code class="docutils literal notranslate"><span class="pre">/schema/swagger</span></code> as well — it is covered by the <code class="docutils literal notranslate"><span class="pre">^/schema</span></code> pattern.</p>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>Passing <code class="docutils literal notranslate"><span class="pre">/</span></code> will disable authentication for all routes, since, as a regex, it
 matches <em>every</em> path.</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">session_auth</span> <span class="o">=</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">ServerSideSessionBackend</span><span class="p">](</span>
-<span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
-<span class="c1"># we must pass a config for a session backend.</span>
-<span class="c1"># all session backends are supported</span>
-<span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
-<span class="c1"># exclude any URLs that should not have authentication.</span>
-<span class="c1"># We exclude the documentation URLs, signup and login.</span>
-<span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/signup&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
+    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
+    <span class="c1"># we must pass a config for a session backend.</span>
+    <span class="c1"># all session backends are supported</span>
+    <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
+    <span class="c1"># exclude any URLs that should not have authentication.</span>
+    <span class="c1"># We exclude the documentation URLs, signup and login.</span>
+    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">&quot;^/login&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;^/signup&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;^/schema&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="o">...</span>
 </pre></div>
@@ -1581,13 +1587,13 @@ path but the one specified in the pattern will be protected by authentication. I
 under the <code class="docutils literal notranslate"><span class="pre">/secured</span></code> route will require authentication - all other routes do not.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
 <span class="n">session_auth</span> <span class="o">=</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">ServerSideSessionBackend</span><span class="p">](</span>
-<span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
-<span class="c1"># we must pass a config for a session backend.</span>
-<span class="c1"># all session backends are supported</span>
-<span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
-<span class="c1"># exclude any URLs that should not have authentication.</span>
-<span class="c1"># We exclude the documentation URLs, signup and login.</span>
-<span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">&quot;^(?!.*\/secured$).*$&quot;</span><span class="p">],</span>
+    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
+    <span class="c1"># we must pass a config for a session backend.</span>
+    <span class="c1"># all session backends are supported</span>
+    <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
+    <span class="c1"># exclude any URLs that should not have authentication.</span>
+    <span class="c1"># We exclude the documentation URLs, signup and login.</span>
+    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">&quot;^(?!.*\/secured$).*$&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="o">...</span>
 </pre></div>
@@ -1620,14 +1626,14 @@ can pass <code class="docutils literal notranslate"><span class="pre">exclude_fr
     <span class="o">...</span>
 
 <span class="n">session_auth</span> <span class="o">=</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">ServerSideSessionBackend</span><span class="p">](</span>
-<span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
-<span class="c1"># we must pass a config for a session backend.</span>
-<span class="c1"># all session backends are supported</span>
-<span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
-<span class="c1"># exclude any URLs that should not have authentication.</span>
-<span class="c1"># We exclude the documentation URLs, signup and login.</span>
-<span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/signup&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
-<span class="n">exclude_opt_key</span><span class="o">=</span><span class="s2">&quot;no_auth&quot;</span>  <span class="c1"># default value is `exclude_from_auth`</span>
+    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
+    <span class="c1"># we must pass a config for a session backend.</span>
+    <span class="c1"># all session backends are supported</span>
+    <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
+    <span class="c1"># exclude any URLs that should not have authentication.</span>
+    <span class="c1"># We exclude the documentation URLs, signup and login.</span>
+    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">&quot;^/login&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;^/signup&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;^/schema&quot;</span><span class="p">],</span>
+    <span class="n">exclude_opt_key</span><span class="o">=</span><span class="s2">&quot;no_auth&quot;</span>  <span class="c1"># default value is `exclude_from_auth`</span>
 <span class="p">)</span>
 <span class="o">...</span>
 </pre></div>

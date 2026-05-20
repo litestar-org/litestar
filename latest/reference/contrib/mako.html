@@ -677,10 +677,6 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
-      <span class="fa-solid fa-outdent"></span>
-    </label>
-  
 </div>
 
     </nav>
@@ -1220,7 +1216,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1359,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/pydantic.html">pydantic</a></li>
@@ -1542,133 +1542,12 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="module-litestar.contrib.mako">
-<span id="mako"></span><h1>mako<a class="headerlink" href="#module-litestar.contrib.mako" title="Link to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplate">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.mako.</span></span><span class="sig-name descname"><span class="pre">MakoTemplate</span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplate" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../template.html#litestar.template.TemplateProtocol" title="litestar.template.base.TemplateProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateProtocol</span></code></a></p>
-<p>Mako template, implementing <code class="docutils literal notranslate"><span class="pre">TemplateProtocol</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplate.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_callables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Concatenate" title="(in Python v3.14)"><span class="pre">Concatenate</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ContextType</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">R</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplate.__init__" title="Link to this definition">#</a></dt>
-<dd><p>Initialize a template.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.contrib.mako.MakoTemplate.params.template"></span><strong>template</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplate.params.template">¶</a> – Base <code class="docutils literal notranslate"><span class="pre">MakoTemplate</span></code> used by the underlying mako-engine</p></li>
-<li><p><span class="target" id="litestar.contrib.mako.MakoTemplate.params.template_callables"></span><strong>template_callables</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplate.params.template_callables">¶</a> – List of callables passed to the template</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplate.render">
-<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplate.render" title="Link to this definition">#</a></dt>
-<dd><p>Render a template.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.contrib.mako.MakoTemplate.render.params.args"></span><strong>args</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplate.render.params.args">¶</a> – Positional arguments passed to the engines <code class="docutils literal notranslate"><span class="pre">render</span></code> function</p></li>
-<li><p><span class="target" id="litestar.contrib.mako.MakoTemplate.render.params.kwargs"></span><strong>kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplate.render.params.kwargs">¶</a> – Keyword arguments passed to the engines <code class="docutils literal notranslate"><span class="pre">render</span></code> function</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Rendered template as a string</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplateEngine">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.mako.</span></span><span class="sig-name descname"><span class="pre">MakoTemplateEngine</span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplateEngine" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../template.html#litestar.template.TemplateEngineProtocol" title="litestar.template.base.TemplateEngineProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateEngineProtocol</span></code></a>[<a class="reference internal" href="#litestar.contrib.mako.MakoTemplate" title="litestar.contrib.mako.MakoTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">MakoTemplate</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]]</p>
-<p>Mako-based TemplateEngine.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplateEngine.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplateEngine.__init__" title="Link to this definition">#</a></dt>
-<dd><p>Initialize template engine.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.contrib.mako.MakoTemplateEngine.params.directory"></span><strong>directory</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplateEngine.params.directory">¶</a> – Direct path or list of directory paths from which to serve templates.</p></li>
-<li><p><span class="target" id="litestar.contrib.mako.MakoTemplateEngine.params.engine_instance"></span><strong>engine_instance</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplateEngine.params.engine_instance">¶</a> – A mako TemplateLookup instance.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplateEngine.get_template">
-<span class="sig-name descname"><span class="pre">get_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.contrib.mako.MakoTemplate" title="litestar.contrib.mako.MakoTemplate"><span class="pre">MakoTemplate</span></a></span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplateEngine.get_template" title="Link to this definition">#</a></dt>
-<dd><p>Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.contrib.mako.MakoTemplateEngine.get_template.params.template_name"></span><strong>template_name</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplateEngine.get_template.params.template_name">¶</a> – A dotted path</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>MakoTemplate instance</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../exceptions.html#litestar.exceptions.TemplateNotFoundException" title="litestar.exceptions.TemplateNotFoundException"><strong>TemplateNotFoundException</strong></a> – if no template is found.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplateEngine.register_template_callable">
-<span class="sig-name descname"><span class="pre">register_template_callable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_callable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Concatenate" title="(in Python v3.14)"><span class="pre">Concatenate</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.14)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplateEngine.register_template_callable" title="Link to this definition">#</a></dt>
-<dd><p>Register a callable on the template engine.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.contrib.mako.MakoTemplateEngine.register_template_callable.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplateEngine.register_template_callable.params.key">¶</a> – The callable key, i.e. the value to use inside the template to call the callable.</p></li>
-<li><p><span class="target" id="litestar.contrib.mako.MakoTemplateEngine.register_template_callable.params.template_callable"></span><strong>template_callable</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplateEngine.register_template_callable.params.template_callable">¶</a> – A callable to register.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplateEngine.render_string">
-<span class="sig-name descname"><span class="pre">render_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.14)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplateEngine.render_string" title="Link to this definition">#</a></dt>
-<dd><p>Render a template from a string with the given context.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.contrib.mako.MakoTemplateEngine.render_string.params.template_string"></span><strong>template_string</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplateEngine.render_string.params.template_string">¶</a> – The template string to render.</p></li>
-<li><p><span class="target" id="litestar.contrib.mako.MakoTemplateEngine.render_string.params.context"></span><strong>context</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplateEngine.render_string.params.context">¶</a> – A dictionary of variables to pass to the template.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The rendered template as a string.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.mako.MakoTemplateEngine.from_template_lookup">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_template_lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_lookup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TemplateLookup</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.contrib.mako.MakoTemplateEngine" title="litestar.contrib.mako.MakoTemplateEngine"><span class="pre">MakoTemplateEngine</span></a></span></span><a class="headerlink" href="#litestar.contrib.mako.MakoTemplateEngine.from_template_lookup" title="Link to this definition">#</a></dt>
-<dd><p>Create a template engine from an existing mako TemplateLookup instance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.contrib.mako.MakoTemplateEngine.from_template_lookup.params.template_lookup"></span><strong>template_lookup</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.mako.MakoTemplateEngine.from_template_lookup.params.template_lookup">¶</a> – A mako TemplateLookup instance.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>MakoTemplateEngine instance</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
+  <section id="mako">
+<h1>mako<a class="headerlink" href="#mako" title="Link to this heading">#</a></h1>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 2.22.0: </span>Import from <a class="reference internal" href="../plugins/mako.html#module-litestar.plugins.mako" title="litestar.plugins.mako"><code class="xref py py-mod docutils literal notranslate"><span class="pre">litestar.plugins.mako</span></code></a> instead. This module will be removed in 3.0.0.</p>
+</div>
+<span class="target" id="module-litestar.contrib.mako"></span></section>
 
 
                 </article>
@@ -1704,33 +1583,6 @@ document.write(`
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.mako.MakoTemplate"><code class="docutils literal notranslate"><span class="pre">MakoTemplate</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.mako.MakoTemplate.__init__"><code class="docutils literal notranslate"><span class="pre">MakoTemplate.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.mako.MakoTemplate.render"><code class="docutils literal notranslate"><span class="pre">MakoTemplate.render()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.mako.MakoTemplateEngine"><code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.mako.MakoTemplateEngine.__init__"><code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.mako.MakoTemplateEngine.get_template"><code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine.get_template()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.mako.MakoTemplateEngine.register_template_callable"><code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine.register_template_callable()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.mako.MakoTemplateEngine.render_string"><code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine.render_string()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.mako.MakoTemplateEngine.from_template_lookup"><code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine.from_template_lookup()</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

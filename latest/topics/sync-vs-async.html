@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
@@ -1641,7 +1645,7 @@ necessary.</p>
 non-blocking way, it does not speed up its execution. Computationally intensive tasks
 that are performed regularly should be offloaded into a different process, to make use
 of multiple CPU cores.</p>
-<p>This can for example be achieve by using <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.to_process.run_sync" title="(in AnyIO v0.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anyio.to_process.run_sync()</span></code></a>.</p>
+<p>This can for example be achieve by using <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.to_process.run_sync" title="(in AnyIO v4.13.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anyio.to_process.run_sync()</span></code></a>.</p>
 </section>
 </section>
 <section id="warnings-about-the-mode-of-execution">

@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/pydantic.html">pydantic</a></li>
@@ -1636,6 +1640,12 @@ document.write(`
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">InvalidAnnotationException</span></span><a class="headerlink" href="#litestar.exceptions.InvalidAnnotationException" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.exceptions.DTOFactoryException" title="litestar.exceptions.dto_exceptions.DTOFactoryException"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOFactoryException</span></code></a></p>
 <p>Unexpected DTO type argument.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.exceptions.LitestarDeprecationWarning">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.exceptions.</span></span><span class="sig-name descname"><span class="pre">LitestarDeprecationWarning</span></span><a class="headerlink" href="#litestar.exceptions.LitestarDeprecationWarning" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#DeprecationWarning" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a></p>
 </dd></dl>
 
 <dl class="py exception">
@@ -2025,6 +2035,7 @@ response status is <code class="docutils literal notranslate"><span class="pre">
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.InvalidAnnotationException"><code class="docutils literal notranslate"><span class="pre">InvalidAnnotationException</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.LitestarDeprecationWarning"><code class="docutils literal notranslate"><span class="pre">LitestarDeprecationWarning</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.LitestarException"><code class="docutils literal notranslate"><span class="pre">LitestarException</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.LitestarException.__init__"><code class="docutils literal notranslate"><span class="pre">LitestarException.__init__()</span></code></a></li>
 </ul>

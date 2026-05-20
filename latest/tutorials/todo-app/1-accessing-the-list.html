@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -1735,11 +1739,11 @@ knows how to turn these dataclasses into JSON and will do so for you automatical
 <p>Currently <code class="docutils literal notranslate"><span class="pre">get_list</span></code> will always return all items on the list, but what if you
 are interested in only those items with a specific status, for example all items that
 are not yet marked as <em>done</em>?</p>
-<p>For this you can employ query parameters; to define a query parameter, all that’s needed
-is to add an otherwise unused parameter to the function. Litestar will recognize this
-and infer that it’s going to be used as a query parameter. When a request is being made,
-the query parameter will be extracted from the URL, and passed to the function parameter
-of the same name.</p>
+<p>For this you can employ query parameters; to define a query parameter, add a parameter
+to the handler function and annotate it with <a class="reference internal" href="../../reference/params.html#litestar.params.FromQuery" title="litestar.params.FromQuery"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromQuery</span></code></a>, parameterised
+by the type you expect the value to have. When a request is being made, the query
+parameter will be extracted from the URL, converted to the declared type, and passed to
+the function parameter of the same name.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-5">
@@ -1750,29 +1754,30 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="linenos"> 5</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="nd">@dataclass</span>
-<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
-<span class="linenos"> 9</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos">10</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos">11</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="nd">@dataclass</span>
+<span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
+<span class="linenos">10</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">11</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="linenos">12</span>
-<span class="linenos">13</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">14</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">17</span><span class="p">]</span>
-<span class="linenos">18</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">17</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">18</span><span class="p">]</span>
 <span class="linenos">19</span>
-<span class="linenos">20</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">21</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">22</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
-<span class="linenos">23</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
-<span class="linenos">24</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
-<span class="linenos">25</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="linenos">22</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">23</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+<span class="linenos">24</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
+<span class="linenos">25</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
 <span class="linenos">26</span>
-<span class="linenos">27</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1785,29 +1790,30 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="linenos"> 4</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 <span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="nd">@dataclass</span>
-<span class="linenos"> 7</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
-<span class="linenos"> 8</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos"> 9</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos">10</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="nd">@dataclass</span>
+<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
+<span class="linenos"> 9</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">10</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="linenos">11</span>
-<span class="linenos">12</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">13</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-<span class="linenos">14</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">16</span><span class="p">]</span>
-<span class="linenos">17</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">14</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">17</span><span class="p">]</span>
 <span class="linenos">18</span>
-<span class="linenos">19</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">20</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">21</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
-<span class="linenos">22</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
-<span class="linenos">23</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
-<span class="linenos">24</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="linenos">21</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">22</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+<span class="linenos">23</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
+<span class="linenos">24</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
 <span class="linenos">25</span>
-<span class="linenos">26</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1843,31 +1849,32 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="linenos"> 6</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 <span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="nd">@dataclass</span>
-<span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
-<span class="linenos">10</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos">11</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos">12</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nd">@dataclass</span>
+<span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
+<span class="linenos">11</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">12</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="linenos">13</span>
-<span class="linenos">14</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">17</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">18</span><span class="p">]</span>
-<span class="linenos">19</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="linenos">17</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">18</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">19</span><span class="p">]</span>
 <span class="linenos">20</span>
-<span class="linenos">21</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">22</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">23</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
-<span class="linenos">24</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
-<span class="linenos">25</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
-<span class="linenos">26</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
-<span class="linenos">27</span>    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid query parameter value: </span><span class="si">{</span><span class="n">done</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
-<span class="linenos">28</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="linenos">23</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">24</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+<span class="linenos">25</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
+<span class="linenos">26</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
+<span class="linenos">27</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
+<span class="linenos">28</span>    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid query parameter value: </span><span class="si">{</span><span class="n">done</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 <span class="linenos">29</span>
-<span class="linenos">30</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
+<span class="linenos">30</span>
+<span class="linenos">31</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1881,31 +1888,32 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="linenos"> 5</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="nd">@dataclass</span>
-<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
-<span class="linenos"> 9</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos">10</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos">11</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="nd">@dataclass</span>
+<span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
+<span class="linenos">10</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">11</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="linenos">12</span>
-<span class="linenos">13</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">14</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">17</span><span class="p">]</span>
-<span class="linenos">18</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">17</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">18</span><span class="p">]</span>
 <span class="linenos">19</span>
-<span class="linenos">20</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">21</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">22</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
-<span class="linenos">23</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
-<span class="linenos">24</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
-<span class="linenos">25</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
-<span class="linenos">26</span>    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid query parameter value: </span><span class="si">{</span><span class="n">done</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
-<span class="linenos">27</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="linenos">22</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">23</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+<span class="linenos">24</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
+<span class="linenos">25</span>    <span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
+<span class="linenos">26</span>        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
+<span class="linenos">27</span>    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid query parameter value: </span><span class="si">{</span><span class="n">done</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 <span class="linenos">28</span>
-<span class="linenos">29</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
+<span class="linenos">29</span>
+<span class="linenos">30</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1914,16 +1922,16 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>If the query parameter equals <code class="docutils literal notranslate"><span class="pre">1</span></code>, return all items that have <code class="docutils literal notranslate"><span class="pre">done=True</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id13">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id13" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">23</span><span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
-<span class="linenos">24</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">24</span><span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+<span class="linenos">25</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <p>If the query parameter equals <code class="docutils literal notranslate"><span class="pre">0</span></code>, return all items that have <code class="docutils literal notranslate"><span class="pre">done=False</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id14">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id14" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">25</span><span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
-<span class="linenos">26</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">26</span><span class="k">if</span> <span class="n">done</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
+<span class="linenos">27</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -1933,7 +1941,7 @@ returning a normal response, it will send a response with the HTTP status code g
 (<code class="docutils literal notranslate"><span class="pre">400</span></code> in this case) and the error message supplied.</p>
 <div class="literal-block-wrapper docutils container" id="id15">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id15" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">27</span><span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid query parameter value: </span><span class="si">{</span><span class="n">done</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">28</span><span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid query parameter value: </span><span class="si">{</span><span class="n">done</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1965,27 +1973,28 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="linenos"> 5</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="nd">@dataclass</span>
-<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
-<span class="linenos"> 9</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos">10</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos">11</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="nd">@dataclass</span>
+<span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
+<span class="linenos">10</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">11</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="linenos">12</span>
-<span class="linenos">13</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">14</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">17</span><span class="p">]</span>
-<span class="linenos">18</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">17</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">18</span><span class="p">]</span>
 <span class="linenos">19</span>
-<span class="linenos">20</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">21</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">22</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
-<span class="linenos">23</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="linenos">22</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">23</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
 <span class="linenos">24</span>
-<span class="linenos">25</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1998,27 +2007,28 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="linenos"> 4</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 <span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="nd">@dataclass</span>
-<span class="linenos"> 7</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
-<span class="linenos"> 8</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos"> 9</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos">10</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="nd">@dataclass</span>
+<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
+<span class="linenos"> 9</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">10</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="linenos">11</span>
-<span class="linenos">12</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">13</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-<span class="linenos">14</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">16</span><span class="p">]</span>
-<span class="linenos">17</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">14</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">17</span><span class="p">]</span>
 <span class="linenos">18</span>
-<span class="linenos">19</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">20</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">21</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
-<span class="linenos">22</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="linenos">21</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">22</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
 <span class="linenos">23</span>
-<span class="linenos">24</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -2032,13 +2042,13 @@ results in this descriptive error message</span><a class="headerlink" href="#id1
 </figcaption>
 </figure>
 <p><strong>What’s happening here?</strong></p>
-<p>Since <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> is being used as the type annotation for the <code class="docutils literal notranslate"><span class="pre">done</span></code> parameter,
-Litestar will try to convert the value into a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> first. Since <code class="docutils literal notranslate"><span class="pre">john</span></code>
-(arguably) is not a representation of a boolean value, it will return an error response
-instead.</p>
+<p>The parameter is now declared as <code class="docutils literal notranslate"><span class="pre">done:</span> <span class="pre">FromQuery[bool]</span></code>. The <code class="docutils literal notranslate"><span class="pre">bool</span></code> inside the
+brackets tells Litestar to convert the incoming string into a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> before
+passing it to the handler. Since <code class="docutils literal notranslate"><span class="pre">john</span></code> (arguably) is not a representation of a
+boolean value, it will return an error response instead.</p>
 <div class="literal-block-wrapper docutils container" id="id20">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id20" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">21</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">22</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
 </pre></div>
 </div>
 </div>
@@ -2051,11 +2061,11 @@ considers all non-empty strings to be truthy.</p>
 world; <code class="docutils literal notranslate"><span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code> are both converted to <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, while <code class="docutils literal notranslate"><span class="pre">false</span></code>
 and <code class="docutils literal notranslate"><span class="pre">0</span></code> are converted to be <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a>.</p>
 </div>
-<p>If the conversion is successful however, <code class="docutils literal notranslate"><span class="pre">done</span></code> is now a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, which can then
-be compared against the <code class="docutils literal notranslate"><span class="pre">TodoItem.done</span></code> attribute:</p>
+<p>If the conversion is successful however, <code class="docutils literal notranslate"><span class="pre">done</span></code> is now a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> (extracted from the <code class="docutils literal notranslate"><span class="pre">FromQuery[bool]</span></code>
+declaration), which can then be compared against the <code class="docutils literal notranslate"><span class="pre">TodoItem.done</span></code> attribute:</p>
 <div class="literal-block-wrapper docutils container" id="id21">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id21" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">22</span><span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">23</span><span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -2076,10 +2086,10 @@ get <strong>all</strong> items, done or not, and omit the query parameter?</p>
 <p><span class="caption-text">Omitting the <code class="docutils literal notranslate"><span class="pre">?done</span></code> query parameter will result in an error</span><a class="headerlink" href="#id22" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p>Because the query parameter has been defined as <code class="docutils literal notranslate"><span class="pre">done:</span> <span class="pre">bool</span></code> without giving it a
-default value, it will be treated as a required parameter - just like a regular function
-parameter. If instead you want this to be optional, a default value needs to be
-supplied.</p>
+<p>Because the query parameter has been defined as <code class="docutils literal notranslate"><span class="pre">done:</span> <span class="pre">FromQuery[bool]</span></code> without giving
+it a default value, it will be treated as a required parameter - just like a regular
+function parameter. If instead you want this to be optional, a default value needs to
+be supplied (e.g. <code class="docutils literal notranslate"><span class="pre">done:</span> <span class="pre">FromQuery[Optional[bool]]</span> <span class="pre">=</span> <span class="pre">None</span></code>).</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-11">
@@ -2090,29 +2100,30 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="linenos"> 5</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="nd">@dataclass</span>
-<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
-<span class="linenos"> 9</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos">10</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos">11</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="nd">@dataclass</span>
+<span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
+<span class="linenos">10</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">11</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="linenos">12</span>
-<span class="linenos">13</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">14</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">17</span><span class="p">]</span>
-<span class="linenos">18</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">17</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">18</span><span class="p">]</span>
 <span class="linenos">19</span>
-<span class="linenos">20</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">21</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">22</span>    <span class="k">if</span> <span class="n">done</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">23</span>        <span class="k">return</span> <span class="n">TODO_LIST</span>
-<span class="linenos">24</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
-<span class="linenos">25</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="linenos">22</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">23</span>    <span class="k">if</span> <span class="n">done</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">24</span>        <span class="k">return</span> <span class="n">TODO_LIST</span>
+<span class="linenos">25</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
 <span class="linenos">26</span>
-<span class="linenos">27</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -2126,6 +2137,43 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="nd">@dataclass</span>
+<span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
+<span class="linenos">10</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">11</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="linenos">16</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">17</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="linenos">18</span><span class="p">]</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="linenos">22</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">23</span>    <span class="k">if</span> <span class="n">done</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="linenos">24</span>        <span class="k">return</span> <span class="n">TODO_LIST</span>
+<span class="linenos">25</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-13">
+Python 3.10+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id25" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 <span class="linenos"> 5</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="nd">@dataclass</span>
@@ -2142,48 +2190,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos">18</span>
 <span class="linenos">19</span>
 <span class="linenos">20</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">21</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">21</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
 <span class="linenos">22</span>    <span class="k">if</span> <span class="n">done</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 <span class="linenos">23</span>        <span class="k">return</span> <span class="n">TODO_LIST</span>
 <span class="linenos">24</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
 <span class="linenos">25</span>
 <span class="linenos">26</span>
 <span class="linenos">27</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-5" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.10" for="sd-tab-item-13">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id25">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id25" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="linenos"> 4</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="nd">@dataclass</span>
-<span class="linenos"> 7</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
-<span class="linenos"> 8</span>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos"> 9</span>    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span>
-<span class="linenos">12</span><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-<span class="linenos">13</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-<span class="linenos">14</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">15</span>    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<span class="linenos">16</span><span class="p">]</span>
-<span class="linenos">17</span>
-<span class="linenos">18</span>
-<span class="linenos">19</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">20</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="n">done</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">21</span>    <span class="k">if</span> <span class="n">done</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">22</span>        <span class="k">return</span> <span class="n">TODO_LIST</span>
-<span class="linenos">23</span>    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">done</span> <span class="o">==</span> <span class="n">done</span><span class="p">]</span>
-<span class="linenos">24</span>
-<span class="linenos">25</span>
-<span class="linenos">26</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>

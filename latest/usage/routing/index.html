@@ -1216,7 +1216,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1359,6 +1359,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -1581,24 +1585,27 @@ layers of your application.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="parameters.html">Parameters</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="parameters.html#path-parameters">Path Parameters</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="parameters.html#supported-path-parameter-types">Supported Path Parameter Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#parameter-declarations">Parameter declarations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parameters.html#optional-required-and-nullable">Optional, required and nullable</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="parameters.html#the-parameter-function">The Parameter function</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="parameters.html#extra-validation-and-documentation-for-path-params">Extra validation and documentation for path params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#id1">Parameter types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parameters.html#path-parameters">Path parameters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="parameters.html#supported-path-parameter-types">Supported path parameter types</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="parameters.html#query-parameters">Query Parameters</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="parameters.html#default-values">Default values</a></li>
-<li class="toctree-l3"><a class="reference internal" href="parameters.html#optional-parameters">Optional <span class="xref std std-term">parameters</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameters.html#query-parameters">Query parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameters.html#header-parameters">Header parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameters.html#cookie-parameters">Cookie parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="parameters.html#type-coercion">Type coercion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parameters.html#alternative-names-and-constraints">Alternative names and constraints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parameters.html#documenting-enum-query-parameters">Documenting enum query parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parameters.html#header-and-cookie-parameters">Header and Cookie Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#aliasing">Aliasing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#validation-constraints">Validation constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#openapi-metadata">OpenAPI metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#customizing-enum-schemas">Customizing enum schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="parameters.html#layered-parameters">Layered Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html#deprecated-declaration-styles">Deprecated declaration styles</a></li>
 </ul>
 </li>
 </ul>

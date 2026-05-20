@@ -3,6 +3,224 @@
 Litestar 2 Changelog
 ====================
 
+.. changelog:: 2.22.0
+    :date: 2026-05-20
+
+    .. change:: Fix HTML injection in template engine through ``csrf_input``
+        :type: bugfix
+
+        Fix a CSRF vulnerability due to an unescaped ``csrf_input`` tag provided by
+        Litestar. When using ``CSRFConfig`` and providing the CSRF token via a cookie,
+        the cookie value was not properly escaped, which could lead to an attacker
+        being able to craft a cookie containing malicious HTML, which would be rendered
+        on the client side.
+
+    .. change:: Deprecate ``litestar.contrib.opentelemetry`` in favour of ``litestar.plugins.opentelemetry``
+        :type: feature
+        :pr: 4759
+
+        Deprecate ``litestar.contrib.opentelemetry`` in favour of
+        :mod:`litestar.plugins.opentelemetry`.
+        The contrib location will be removed in 3.0.0.
+
+    .. change:: Deprecate ``litestar.repository`` in favor of ``advanced_alchemy`` equivalents
+        :type: feature
+        :pr: 4758
+        :issue: 4721
+
+        Deprecate ``litestar.repository`` and its submodules (``filters``,
+        ``exceptions``, ``handlers``, ``abc``, ``testing``) in favor of
+        ``advanced_alchemy``. The module will be removed before 3.0.0.
+
+    .. change:: Deprecate ``litestar.contrib.jinja`` in favor of ``litestar.plugins.jinja``
+        :type: feature
+        :pr: 4773
+
+        Deprecate ``litestar.contrib.jinja`` in favor of :mod:`litestar.plugins.jinja`.
+        The contrib location will be removed in 3.0.0.
+
+
+    .. change:: Deprecate ``litestar.contrib.mako`` in favor of ``litestar.plugins.mako``
+        :type: feature
+        :pr: 4774
+
+        Deprecate ``litestar.contrib.mako`` in favor of  :mod:`litestar.plugins.mako`.
+        The contrib location will be removed in 3.0.0.
+
+    .. change:: Deprecate ``litestar.contrib.minijinja`` in favor of ``litestar.plugins.minijinja``
+        :type: feature
+        :pr: 4775
+
+        Deprecate ``litestar.contrib.minijinja`` in favor of
+        :mod:`litestar.plugins.minijinja`.
+        The contrib location will be removed in 3.0.0.
+
+    .. change:: Add ``oauth2_redirect_url`` parameter to ``SwaggerRenderPlugin``
+        :type: feature
+        :pr: 4676
+
+        Add an ``oauth2_redirect_url`` parameter to
+        :class:`~litestar.openapi.plugins.SwaggerRenderPlugin`. When set, the value
+        is emitted as ``oauth2RedirectUrl`` in the Swagger UI bundle config,
+        overriding the default behavior of computing the URL from the current page
+        location. This allows the OAuth2 redirect to be set explicitly when the API
+        is mounted under a sub-path.
+
+    .. change:: Enhanced request parameter declarations
+        :type: feature
+        :pr: 4750
+
+        Introduce a new way to declare parameters, with improved typing ergonomics.
+        These replaces / enhance the existing parameter declaration mechanics, and
+        deprecate the implicit declaration style for query and path parameters.
+
+        New parameter markers generics:
+
+        - :data:`FromQuery[\<type\>] <litestar.params.FromQuery>`
+        - :data:`FromPath[\<type\>] <litestar.params.FromPath>`
+        - :data:`FromCookie[\<type\>] <litestar.params.FromCookie>`
+        - :data:`FromHeader[\<type\>] <litestar.params.FromHeader>`
+
+        And their explicit ``Annotated`` form:
+
+        - :class:`~litestar.params.QueryParameter`
+        - :class:`~litestar.params.HeaderParameter`
+        - :class:`~litestar.params.CookieParameter`
+        - :class:`~litestar.params.PathParameter`
+
+        **Rationale**
+
+        Given:
+
+        .. code-block:: python
+
+            @get("/")
+            async def handler(one: str, two: str) -> None:
+                pass
+
+            router = Router("/{two:str}", route_handlers=[handler])
+
+        ``one`` is implicitly created as a query parameter, while ``two`` is a path
+        parameter declared on the router. Including ``handler`` in a different
+        context *without* that path parameter would implicitly treat ``two`` as a
+        query parameter as well. Using explicit markers, the source of each
+        parameter is clear and errors can be caught earlier:
+
+        .. code-block:: python
+
+            @get("/")
+            async def handler(one: FromQuery[str], two: FromPath[str]) -> None:
+                pass
+
+            router = Router("/{two:str}", route_handlers=[handler])
+
+        **Migration**
+
+        - Replace unmarked query / path parameters in handler and dependency signatures
+          with ``FromQuery[<type>]``/ ``FromPath[<type]`` markers
+        - Replace ``Parameter(query=...)`` with ``QueryParameter(name=...)``
+        - Replace ``Parameter(header=...)`` with ``HeaderParameter(name=...)``
+        - Replace ``Parameter(cookie=...)`` with ``CookieParameter(name=...)``
+        - Hoist defaults: ``param: int = Parameter(default="x")`` -> ``param: FromQuery[int] = "x"``
+
+        .. seealso::
+
+            :doc:`/usage/routing/parameters`
+
+    .. change:: Validate missing and invalid claims in JWT decoding
+        :type: bugfix
+        :pr: 4636
+
+        Fix :meth:`~litestar.security.jwt.Token.decode` leaking :exc:`KeyError` or
+        :exc:`TypeError` when required claims (``sub``, ``exp``, ``iat``) are
+        missing or malformed and claim verification is disabled. Decoding now
+        raises :exc:`~litestar.exceptions.NotAuthorizedException` consistently in
+        these cases.
+
+    .. change:: Treat empty multipart file fields as ``None`` for ``Optional[UploadFile]``
+        :type: bugfix
+        :pr: 4659
+        :issue: 4204, 4647
+
+        Fix a regression introduced in 2.18.0 (#4271) where an empty file input in
+        a multipart form would arrive as an empty string instead of ``None``,
+        causing a ``400`` validation error for ``Optional[UploadFile]`` fields.
+        Empty file inputs annotated as ``Optional[UploadFile]`` are now converted
+        to ``None`` before reaching the conversion layer, matching the semantics
+        of "no file selected".
+
+    .. change:: Fix ``KeyError`` when ``ClassVar`` exists on a msgspec DTO struct
+        :type: bugfix
+        :pr: 4669
+        :issue: 4665
+
+        Fix a :exc:`KeyError` raised when a msgspec ``Struct`` used as a DTO
+        contains a ``ClassVar`` field.
+
+    .. change:: Fix data race in ``RateLimitMiddleware``
+        :type: bugfix
+        :pr: 4681
+
+        Fix a data race in
+        :class:`~litestar.middleware.rate_limit.RateLimitMiddleware` where
+        ``retrieve_cached_history`` and ``set_cached_history`` could interleave
+        between coroutines. Both calls now execute under the same
+        :class:`anyio.Lock`.
+
+    .. change:: Remove unreachable branch in ``RateLimitMiddleware``
+        :type: bugfix
+        :pr: 4683
+
+        Remove an unreachable branch in
+        :class:`~litestar.middleware.rate_limit.RateLimitMiddleware`. ``reset`` is
+        set to ``now + duration``, and the surrounding ``while`` loop already
+        removes all items where ``reset <= now``, so the removed code path could
+        never trigger.
+
+    .. change:: Fix OpenAPI schema type for ``Decimal`` to match serialization
+        :type: bugfix
+        :pr: 4685
+        :issue: 4682
+
+        Fix OpenAPI schema generation to emit ``string`` for
+        :class:`decimal.Decimal` fields instead of ``number``, matching the
+        default string serialization used by msgspec.
+
+    .. change:: Include ``minItems`` / ``maxItems`` in OpenAPI schema for msgspec ``Meta`` on collections
+        :type: bugfix
+        :pr: 4605
+        :issue: 4514
+
+        Fix OpenAPI schema generation to include ``minItems``/``maxItems`` for
+        ``Annotated[list[T], Meta(min_length=N)]`` and similar collection types
+        on msgspec ``Struct`` fields. Previously, length constraints were
+        extracted only for string and bytes types, leaving collection length
+        metadata absent from the generated schema even though runtime validation
+        worked correctly. The fix covers ``ListType``, ``SetType``,
+        ``FrozenSetType``, and ``VarTupleType``, and adds a branch for
+        ``msgspec.Meta`` (which is not a subclass of ``annotated_types``) in the
+        type extractor.
+
+    .. change:: Fix content-length check incompatible with decompression middleware
+        :type: bugfix
+        :pr: 4690
+        :issue: 4125
+
+        Remove the content-length integrity check in
+        :meth:`~litestar.connection.Request.stream` that raised
+        ``ClientException("Malformed request")`` when streamed bytes exceeded the
+        ``Content-Length`` header. This check broke when request decompression
+        middleware wrapped the ASGI ``receive`` function, since the decompressed
+        body is legitimately larger than the wire-format ``Content-Length``.
+
+        Body size enforcement now relies on ``request_max_body_size``
+        unconditionally, returning a ``413`` for oversized bodies. Content-length
+        validation at the transport layer remains the responsibility of the ASGI
+        server. The previous ``if``/``elif`` structure also meant that
+        ``request_max_body_size`` enforcement was unreachable when
+        ``Content-Length`` was set; this is now corrected.
+
+
 .. changelog:: 2.21.1
     :date: 2026-03-07
 
@@ -41,7 +259,7 @@ Litestar 2 Changelog
         :issue: 4594
 
         Add an ``after_exception`` option to
-        :class:`~litestar.contrib.opentelemetry.OpenTelemetryConfig`, which will
+        :class:`~litestar.plugins.opentelemetry.OpenTelemetryConfig`, which will
         add that hook to the applications ``after_exception`` hooks, allowing the
         middleware to react to exception, without handling them.
 

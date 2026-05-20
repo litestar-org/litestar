@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -1547,8 +1551,8 @@ document.write(`
 <p>Guards are <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.14)"><span class="xref std std-term">callables</span></a> that receive two arguments - <code class="docutils literal notranslate"><span class="pre">connection</span></code>, which is the <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> or <a class="reference internal" href="../../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instance (both sub-classes of <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a>), and <code class="docutils literal notranslate"><span class="pre">route_handler</span></code>, which is a copy of the
 <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRouteHandler</span></code></a>. Their role is to <em>authorize</em> the request by verifying that
 the connection is allowed to reach the endpoint handler in question. If verification fails, the guard should raise an
-<a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPException</span></code></a>, usually a <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.NotAuthorizedException" title="litestar.exceptions.NotAuthorizedException"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotAuthorizedException</span></code></a> with a
-<code class="docutils literal notranslate"><span class="pre">status_code</span></code> of <code class="docutils literal notranslate"><span class="pre">401</span></code>.</p>
+<a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPException</span></code></a>, usually a <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.PermissionDeniedException" title="litestar.exceptions.PermissionDeniedException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionDeniedException</span></code></a> with a
+<code class="docutils literal notranslate"><span class="pre">status_code</span></code> of <code class="docutils literal notranslate"><span class="pre">403</span></code>.</p>
 <p>To illustrate this we will implement a rudimentary role based authorization system in our Litestar app. As we have done
 for <code class="docutils literal notranslate"><span class="pre">authentication</span></code>, we will assume that we added some sort of persistence layer without actually specifying it in
 the example.</p>
@@ -1582,7 +1586,7 @@ handler function:</p>
 <div class="code-block-caption"><span class="caption-text">Defining the guard <code class="docutils literal notranslate"><span class="pre">admin_user_guard</span></code> used to authorize certain route handlers</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">admin_user_guard</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="n">PermissionDeniedException</span><span class="p">()</span>
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/user&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">admin_user_guard</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
@@ -1642,7 +1646,7 @@ the following guard:</p>
         <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;secret&quot;</span><span class="p">)</span>
         <span class="ow">and</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Secret-Header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span>
     <span class="p">):</span>
-        <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="n">PermissionDeniedException</span><span class="p">()</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/secret&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">secret_token_guard</span><span class="p">],</span> <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;secret&quot;</span><span class="p">:</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SECRET&quot;</span><span class="p">)})</span>

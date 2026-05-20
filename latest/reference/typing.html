@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/pydantic.html">pydantic</a></li>
@@ -1677,6 +1681,14 @@ document.write(`
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="litestar.typing.FieldDefinition.is_non_marker_parameter_field">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_non_marker_parameter_field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.typing.FieldDefinition.is_non_marker_parameter_field" title="Link to this definition">#</a></dt>
+<dd><p>Check if the field type is a ParameterKwarg that’s not a marker only.</p>
+<p>A marker is considered an instance of ‘ParameterKwarg’ without any constraints
+applied, usually produced by ‘FromQuery[]’, ‘FromPath[]’, etc.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="litestar.typing.FieldDefinition.is_const">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_const</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.typing.FieldDefinition.is_const" title="Link to this definition">#</a></dt>
 <dd><p>Check if the field is defined as constant value.</p>
@@ -1983,6 +1995,7 @@ a subtype of <code class="docutils literal notranslate"><span class="pre">cl</sp
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.is_generic"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.is_generic</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.is_simple_type"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.is_simple_type</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.is_parameter_field"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.is_parameter_field</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.is_non_marker_parameter_field"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.is_non_marker_parameter_field</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.is_const"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.is_const</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.is_required"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.is_required</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.is_annotated"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.is_annotated</span></code></a></li>

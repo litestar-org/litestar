@@ -1220,7 +1220,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../logging.html">Logging</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../metrics/opentelemetry.html">OpenTelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../metrics/prometheus.html">Prometheus</a></li>
 </ul>
 </li>
@@ -1363,6 +1363,10 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
@@ -1622,12 +1626,12 @@ This <a class="reference external" href="https://docs.python.org/3/glossary.html
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Defining a route handler with a path that has an optional path parameter</span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 
 <span class="nd">@get</span><span class="p">(</span>
    <span class="p">[</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{some_id:int}&quot;</span><span class="p">],</span>
 <span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span><span class="n">some_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span><span class="n">some_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -1638,12 +1642,14 @@ This <a class="reference external" href="https://docs.python.org/3/glossary.html
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">kwargs</span></a> are inspected by Litestar and then injected into the request handler.</p>
 <p>The following sources can be accessed using annotated function <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">kwargs</span></a>:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="parameters.html#the-parameter-function"><span class="std std-ref">path, query, header, and cookie parameters</span></a></p></li>
+<li><p><a class="reference internal" href="parameters.html#parameter-types"><span class="std std-ref">path, query, header, and cookie parameters</span></a>, declared with
+<a class="reference internal" href="../../reference/params.html#litestar.params.FromPath" title="litestar.params.FromPath"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromPath</span></code></a>, <a class="reference internal" href="../../reference/params.html#litestar.params.FromQuery" title="litestar.params.FromQuery"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromQuery</span></code></a>, <a class="reference internal" href="../../reference/params.html#litestar.params.FromHeader" title="litestar.params.FromHeader"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromHeader</span></code></a>,
+and <a class="reference internal" href="../../reference/params.html#litestar.params.FromCookie" title="litestar.params.FromCookie"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromCookie</span></code></a></p></li>
 <li><p><a class="reference internal" href="../requests.html"><span class="doc">requests</span></a></p></li>
 <li><p><a class="reference internal" href="../dependency-injection.html"><span class="doc">injected dependencies</span></a></p></li>
 </ul>
 <p>Additionally, you can specify the following special <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">kwargs</span></a>,
-(known as “reserved keywords”):</p>
+(known as “reserved keywords arguments”):</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cookies</span></code>: injects the request <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.Cookie" title="litestar.datastructures.cookie.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">cookies</span></code></a> as a parsed
 <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
@@ -1655,8 +1661,12 @@ This <a class="reference external" href="https://docs.python.org/3/glossary.html
 <li><p><code class="docutils literal notranslate"><span class="pre">state</span></code> : injects a copy of the application <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">body</span></code> : the raw request body. Available only for <a class="reference internal" href="#http-route-handlers">HTTP route handlers</a></p></li>
 </ul>
-<p>Note that if your parameters collide with any of the reserved <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">keyword arguments</span></a> above, you can
-<a class="reference internal" href="parameters.html#alternative-names-and-constraints"><span class="std std-ref">provide an alternative name</span></a>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Note that if your parameters collide with any of the reserved
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">keyword arguments</span></a> above, you can
+<a class="reference internal" href="parameters.html#aliasing"><span class="std std-ref">provide an alternative name</span></a>.</p>
+</div>
 <p>For example:</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
@@ -1776,6 +1786,7 @@ which correlates with their name:</p>
 <div class="code-block-caption"><span class="caption-text">Predefined <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.14)"><span class="xref std std-term">decorators</span></a> for HTTP route handlers</span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">head</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticDTO</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
@@ -1797,25 +1808,25 @@ which correlates with their name:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="nd">@head</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource_head</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource_head</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="nd">@put</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialResourceDTO</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">partially_update_resource</span><span class="p">(</span>
-   <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">PartialResourceDTO</span><span class="p">],</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span>
+   <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">PartialResourceDTO</span><span class="p">],</span> <span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -1971,6 +1982,7 @@ containing the route handler instance and paths. It can also be used to build a 
 handler instance and paths</span><a class="headerlink" href="#id16" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redirect</span>
 
 
@@ -1985,15 +1997,15 @@ handler instance and paths</span><a class="headerlink" href="#id16" title="Link 
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/def/{param:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;three&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">handler_three</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handler_three</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">pass</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{handler_name:str}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;four&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">handler_four</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
-    <span class="n">handler_index</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">get_handler_index_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handler_four</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
+    <span class="n">handler_index</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">get_handler_index_by_name</span><span class="p">(</span><span class="n">handler_name</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">handler_index</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no handler matching the name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> was found&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no handler matching the name </span><span class="si">{</span><span class="n">handler_name</span><span class="si">}</span><span class="s2"> was found&quot;</span><span class="p">)</span>
 
     <span class="c1"># handler_index == { &quot;paths&quot;: [&quot;/&quot;], &quot;handler&quot;: ..., &quot;qualname&quot;: ... }</span>
     <span class="c1"># do something with the handler index below, e.g. send a redirect response to the handler, or access</span>
@@ -2003,7 +2015,7 @@ handler instance and paths</span><a class="headerlink" href="#id16" title="Link 
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/redirect/{param_value:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;five&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">handler_five</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">param_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handler_five</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">param_value</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;three&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">param_value</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
 
@@ -2039,13 +2051,14 @@ the highest number of the <a class="reference external" href="https://docs.pytho
 <div class="literal-block-wrapper docutils container" id="id18">
 <div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a> method to build a URL path for a route handler</span><a class="headerlink" href="#id18" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 
 
 <span class="nd">@get</span><span class="p">(</span>
    <span class="p">[</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{id:int}&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{id:int}/{val:str}&quot;</span><span class="p">],</span>
    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;handler_name&quot;</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/path-info&quot;</span><span class="p">)</span>
