@@ -1,5 +1,6 @@
 from litestar import Litestar, Request, Response, get
 from litestar.exceptions import HTTPException, ValidationException
+from litestar.params import FromQuery
 
 
 def app_exception_handler(request: Request, exc: HTTPException) -> Response:
@@ -30,7 +31,7 @@ async def index() -> None:
     "/greet",
     exception_handlers={ValidationException: router_handler_exception_handler},
 )
-async def greet(name: str) -> str:
+async def greet(name: FromQuery[str]) -> str:
     return f"hello {name}"
 
 

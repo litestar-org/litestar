@@ -10,7 +10,7 @@ from typing_extensions import Annotated
 from litestar import get
 from litestar._signature import SignatureModel
 from litestar.dto import DataclassDTO
-from litestar.params import Body, Parameter
+from litestar.params import FromQuery, QueryParameter
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from litestar.testing import TestClient, create_test_client
 from litestar.types import Empty
@@ -90,7 +90,7 @@ app = Litestar(route_handlers=[hello_world], openapi_config=None)
 @pytest.mark.parametrize(("query", "exp"), [("?a=1&a=2&a=3", [1, 2, 3]), ("", None)])
 def test_parse_optional_sequence_from_connection_kwargs(query: str, exp: Any) -> None:
     @get("/")
-    def test(a: Optional[List[int]] = Parameter(query="a", default=None, required=False)) -> Optional[List[int]]:
+    def test(a: Annotated[Optional[List[int]], QueryParameter(name="a", required=False)] = None) -> Optional[List[int]]:
         return a
 
     with create_test_client(route_handlers=[test]) as client:
@@ -136,7 +136,7 @@ def test_query_param_bool(query: str, expected: bool) -> None:
     mock = MagicMock()
 
     @get("/")
-    def handler(param: bool) -> None:
+    def handler(param: FromQuery[bool]) -> None:
         mock(param)
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -149,7 +149,7 @@ def test_union_constraint_handling() -> None:
     mock = MagicMock()
 
     @get("/")
-    def handler(param: Annotated[Union[str, List[str]], Body(max_length=3, max_items=3)]) -> None:
+    def handler(param: Annotated[Union[str, List[str]], QueryParameter(max_length=3, max_items=3)]) -> None:
         mock(param)
 
     with create_test_client([handler]) as client:
@@ -175,6 +175,8 @@ def test_collection_union_struct_fields(with_optional: bool) -> None:
 
     if with_optional:
         annotation = Optional[annotation]  # type: ignore[misc]
+
+    annotation = FromQuery[annotation]  # type: ignore[misc]
 
     @get("/", signature_namespace={"annotation": annotation})
     def handler(param: annotation) -> None:  # pyright: ignore

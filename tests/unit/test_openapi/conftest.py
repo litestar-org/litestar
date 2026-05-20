@@ -2,13 +2,14 @@ from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Type, Union
 
 import pytest
+from typing_extensions import Annotated
 
 from litestar import Controller, MediaType, delete, get, patch, post, put
 from litestar.datastructures import ResponseHeader, State
 from litestar.dto import DataclassDTO, DTOConfig, DTOData
 from litestar.openapi.controller import OpenAPIController
 from litestar.openapi.spec.example import Example
-from litestar.params import Parameter
+from litestar.params import CookieParameter, FromPath, FromQuery, HeaderParameter, QueryParameter
 from tests.models import DataclassPerson, DataclassPersonFactory, DataclassPet
 from tests.unit.test_openapi.utils import Gender, LuckyNumber, PetException
 
@@ -31,56 +32,60 @@ def create_person_controller() -> Type[Controller]:
             query: Dict[str, Any],
             cookies: Dict[str, Any],
             # path parameter
-            service_id: int,
+            service_id: FromPath[int],
             # required query parameters below
-            page: int,
-            name: Optional[Union[str, List[str]]],  # intentionally without default
-            page_size: int = Parameter(
-                query="pageSize",
-                description="Page Size Description",
-                title="Page Size Title",
-                examples=[Example(description="example value", value=1)],
-            ),
-            # non-required query parameters below
-            from_date: Optional[Union[int, datetime, date]] = None,
-            to_date: Optional[Union[int, datetime, date]] = None,
-            gender: Optional[Union[Gender, List[Gender]]] = Parameter(
-                examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
-            ),
-            lucky_number: Optional[LuckyNumber] = Parameter(examples=[Example(value=LuckyNumber.SEVEN)]),
+            page: FromQuery[int],
+            name: FromQuery[Optional[Union[str, List[str]]]],  # intentionally without default
+            lucky_number: Annotated[Optional[LuckyNumber], QueryParameter(examples=[Example(value=LuckyNumber.SEVEN)])],
             # header parameter
-            secret_header: str = Parameter(header="secret"),
+            secret_header: Annotated[str, HeaderParameter(name="secret")],
             # cookie parameter
-            cookie_value: int = Parameter(cookie="value"),
+            cookie_value: Annotated[int, CookieParameter(name="value")],
+            gender: Annotated[
+                Optional[Union[Gender, List[Gender]]],
+                QueryParameter(examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]),
+            ],
+            page_size: Annotated[
+                int,
+                QueryParameter(
+                    name="pageSize",
+                    description="Page Size Description",
+                    title="Page Size Title",
+                    examples=[Example(description="example value", value=1)],
+                ),
+            ],
+            # non-required query parameters below
+            from_date: FromQuery[Optional[Union[int, datetime, date]]] = None,
+            to_date: FromQuery[Optional[Union[int, datetime, date]]] = None,
         ) -> List[DataclassPerson]:
             return []
 
         @post(media_type=MediaType.TEXT, sync_to_thread=False)
         def create_person(
-            self, data: DataclassPerson, secret_header: str = Parameter(header="secret")
+            self, data: DataclassPerson, secret_header: Annotated[str, HeaderParameter(name="secret")]
         ) -> DataclassPerson:
             return data
 
         @post(path="/bulk", dto=PartialDataclassPersonDTO, sync_to_thread=False)
         def bulk_create_person(
-            self, data: DTOData[List[DataclassPerson]], secret_header: str = Parameter(header="secret")
+            self, data: DTOData[List[DataclassPerson]], secret_header: Annotated[str, HeaderParameter(name="secret")]
         ) -> List[DataclassPerson]:
             return []
 
         @put(path="/bulk", sync_to_thread=False)
         def bulk_update_person(
-            self, data: List[DataclassPerson], secret_header: str = Parameter(header="secret")
+            self, data: List[DataclassPerson], secret_header: Annotated[str, HeaderParameter(name="secret")]
         ) -> List[DataclassPerson]:
             return []
 
         @patch(path="/bulk", dto=PartialDataclassPersonDTO, sync_to_thread=False)
         def bulk_partial_update_person(
-            self, data: DTOData[List[DataclassPerson]], secret_header: str = Parameter(header="secret")
+            self, data: DTOData[List[DataclassPerson]], secret_header: Annotated[str, HeaderParameter(name="secret")]
         ) -> List[DataclassPerson]:
             return []
 
         @get(path="/{person_id:str}", sync_to_thread=False)
-        def get_person_by_id(self, person_id: str) -> DataclassPerson:
+        def get_person_by_id(self, person_id: FromPath[str]) -> DataclassPerson:
             """Description in docstring."""
             return DataclassPersonFactory.build(id=person_id)
 
@@ -90,12 +95,12 @@ def create_person_controller() -> Type[Controller]:
             dto=PartialDataclassPersonDTO,
             sync_to_thread=False,
         )
-        def partial_update_person(self, person_id: str, data: DTOData[DataclassPerson]) -> DataclassPerson:
+        def partial_update_person(self, person_id: FromPath[str], data: DTOData[DataclassPerson]) -> DataclassPerson:
             """Description in docstring."""
             return DataclassPersonFactory.build(id=person_id)
 
         @put(path="/{person_id:str}", sync_to_thread=False)
-        def update_person(self, person_id: str, data: DataclassPerson) -> DataclassPerson:
+        def update_person(self, person_id: FromPath[str], data: DataclassPerson) -> DataclassPerson:
             """Multiline docstring example.
 
             Line 3.
@@ -103,7 +108,7 @@ def create_person_controller() -> Type[Controller]:
             return data
 
         @delete(path="/{person_id:str}", sync_to_thread=False)
-        def delete_person(self, person_id: str) -> None:
+        def delete_person(self, person_id: FromPath[str]) -> None:
             return None
 
         @get(path="/dataclass", sync_to_thread=False)

@@ -580,4 +580,5 @@ class BaseRouteHandler:
             dependencies=self.resolve_dependencies(),
             path_parameters=set(path_parameters.keys()),
             layered_parameters=self.resolve_layered_parameters(),
+            ctx=self,
         )

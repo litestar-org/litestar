@@ -2,7 +2,13 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ("LitestarException", "LitestarWarning", "MissingDependencyException", "SerializationException")
+__all__ = (
+    "LitestarDeprecationWarning",
+    "LitestarException",
+    "LitestarWarning",
+    "MissingDependencyException",
+    "SerializationException",
+)
 
 
 class LitestarException(Exception):
@@ -55,3 +61,7 @@ class SerializationException(LitestarException):
 
 class LitestarWarning(UserWarning):
     """Base class for Litestar warnings"""
+
+
+class LitestarDeprecationWarning(DeprecationWarning):
+    pass

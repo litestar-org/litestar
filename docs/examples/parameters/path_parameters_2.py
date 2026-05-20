@@ -1,12 +1,13 @@
+import dataclasses
 from datetime import datetime, timezone
 from typing import List
 
-from pydantic import BaseModel
-
 from litestar import Litestar, get
+from litestar.params import FromPath
 
 
-class Order(BaseModel):
+@dataclasses.dataclass
+class Order:
     id: int
     customer_id: int
 
@@ -20,7 +21,7 @@ ORDERS_BY_DATETIME = {
 
 
 @get(path="/orders/{from_date:int}", sync_to_thread=False)
-def get_orders(from_date: datetime) -> List[Order]:
+def get_orders(from_date: FromPath[datetime]) -> List[Order]:
     return ORDERS_BY_DATETIME[from_date]
 
 

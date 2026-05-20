@@ -3,6 +3,7 @@ from typing import List
 
 from litestar import Litestar, put
 from litestar.exceptions import NotFoundException
+from litestar.params import FromPath
 
 
 @dataclass
@@ -18,7 +19,7 @@ TODO_LIST: List[TodoItem] = [
 ]
 
 
-def get_todo_by_title(todo_name) -> TodoItem:
+def get_todo_by_title(todo_name: str) -> TodoItem:
     for item in TODO_LIST:
         if item.title == todo_name:
             return item
@@ -26,7 +27,7 @@ def get_todo_by_title(todo_name) -> TodoItem:
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: str, data: TodoItem) -> List[TodoItem]:
+async def update_item(item_title: FromPath[str], data: TodoItem) -> List[TodoItem]:
     todo_item = get_todo_by_title(item_title)
     todo_item.title = data.title
     todo_item.done = data.done

@@ -4,7 +4,7 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar import get, post
-from litestar.params import Parameter, ParameterKwarg
+from litestar.params import HeaderParameter, ParameterKwarg
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -12,14 +12,14 @@ from litestar.testing import create_test_client
 @pytest.mark.parametrize(
     "t_type,param_dict, param, should_raise",
     [
-        (str, {"special-header": "123"}, Parameter(header="special-header", min_length=1, max_length=3), False),
-        (str, {"special-header": "123"}, Parameter(header="special-header", min_length=1, max_length=2), True),
-        (str, {}, Parameter(header="special-header", min_length=1, max_length=2), True),
-        (Optional[str], {}, Parameter(header="special-header", min_length=1, max_length=2, required=False), False),
-        (int, {"special-header": "123"}, Parameter(header="special-header", ge=100, le=201), False),
-        (int, {"special-header": "123"}, Parameter(header="special-header", ge=100, le=120), True),
-        (int, {}, Parameter(header="special-header", ge=100, le=120), True),
-        (Optional[int], {}, Parameter(header="special-header", ge=100, le=120, required=False), False),
+        (str, {"special-header": "123"}, HeaderParameter(name="special-header", min_length=1, max_length=3), False),
+        (str, {"special-header": "123"}, HeaderParameter(name="special-header", min_length=1, max_length=2), True),
+        (str, {}, HeaderParameter(name="special-header", min_length=1, max_length=2), True),
+        (Optional[str], {}, HeaderParameter(name="special-header", min_length=1, max_length=2, required=False), False),
+        (int, {"special-header": "123"}, HeaderParameter(name="special-header", ge=100, le=201), False),
+        (int, {"special-header": "123"}, HeaderParameter(name="special-header", ge=100, le=120), True),
+        (int, {}, HeaderParameter(name="special-header", ge=100, le=120), True),
+        (Optional[int], {}, HeaderParameter(name="special-header", ge=100, le=120, required=False), False),
     ],
 )
 def test_header_params(
@@ -28,7 +28,7 @@ def test_header_params(
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_header: t_type = param) -> None:  # type: ignore[valid-type]
+    def test_method(special_header: Annotated[t_type, param]) -> None:  # type: ignore[valid-type]
         if special_header:
             assert special_header in (param_dict.get("special-header"), int(param_dict.get("special-header")))  # type: ignore[arg-type]
 
@@ -43,7 +43,7 @@ def test_header_params(
 def test_header_param_with_post() -> None:
     # https://github.com/litestar-org/litestar/issues/3734
     @post()
-    async def handler(data: str, secret: Annotated[str, Parameter(header="x-secret")]) -> None:
+    async def handler(data: str, secret: Annotated[str, HeaderParameter(name="x-secret")]) -> None:
         return None
 
     with create_test_client([handler], raise_server_exceptions=True) as client:

@@ -82,7 +82,7 @@ parameters.
 .. code-block:: python
 
     @get("/{name:str}")
-    async def greeter(name: str) -> str:
+    async def greeter(name: FromPath[str]) -> str:
         return "Hello, " + name
 
 
@@ -93,9 +93,10 @@ Path parameters allow you to construct dynamic paths and later refer to the dyna
 captured parts. This may sound complex at first, but it's actually quite simple; you can
 think of it as a regular expression that's being used on the requested path.
 
-Path parameters consist of two parts: an expression inside the path, describing the
-parameter, and a corresponding function parameter of the same name in the route handler
-function, which will receive the path parameter's value.
+Path parameters consist of two parts: an expression inside the route's path describing
+the slot (e.g. ``{name:str}``), and a matching function parameter on the route handler
+annotated with :data:`~.params.FromPath` (e.g. ``name: FromPath[str]``), which will
+receive the captured value.
 
 In the above example, a path parameter ``name:str`` is declared, which means that now,
 a request to the path ``/john`` can be made, and the ``greeter`` function will be called
@@ -104,9 +105,9 @@ as ``greeter(name="john")``, similar to how query parameters are injected.
 
 .. tip::
     Just like query parameters, path parameters can convert and validate their values as
-    well. This is configured using the ``:type`` colon annotation, similar to type
-    annotations. For example, ``value:str`` will receive values as a string, while
-    ``value:int`` will try to convert it into an integer.
+    well. This is configured using the ``:type`` colon annotation in the URL pattern.
+    For example, ``value:str`` will receive values as a string, while ``value:int`` will
+    try to convert it into an integer.
 
     A full list of supported types can be found here:
     :ref:`usage/routing/parameters:supported path parameter types`
