@@ -653,11 +653,12 @@ otherwise.</p>
 <p>The following handler for instance will default to <code class="docutils literal notranslate"><span class="pre">MediaType.TEXT</span></code> so the exception will be raised as text.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
-</span><span data-line="3">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="7">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="s2">&quot;nope&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@get</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="8">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="s2">&quot;nope&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </section>
@@ -706,56 +707,57 @@ exception handler with a handler that returns plain-text responses you could do 
 <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code>. You could of course be more granular:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">ValidationException</span>
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_500_INTERNAL_SERVER_ERROR</span>
-</span><span data-line="4">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_500_INTERNAL_SERVER_ERROR</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">validation_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">ValidationException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span data-line="7">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-</span><span data-line="8">        <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
-</span><span data-line="9">        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;validation error: </span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="10">        <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
-</span><span data-line="11">    <span class="p">)</span>
-</span><span data-line="12">
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">validation_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">ValidationException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span data-line="8">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="9">        <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
+</span><span data-line="10">        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;validation error: </span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="11">        <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+</span><span data-line="12">    <span class="p">)</span>
 </span><span data-line="13">
-</span><span data-line="14"><span class="k">def</span><span class="w"> </span><span class="nf">internal_server_error_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span data-line="15">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-</span><span data-line="16">        <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
-</span><span data-line="17">        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;server error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="18">        <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
-</span><span data-line="19">    <span class="p">)</span>
-</span><span data-line="20">
+</span><span data-line="14">
+</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">internal_server_error_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span data-line="16">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="17">        <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
+</span><span data-line="18">        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;server error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="19">        <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+</span><span data-line="20">    <span class="p">)</span>
 </span><span data-line="21">
-</span><span data-line="22"><span class="k">def</span><span class="w"> </span><span class="nf">value_error_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span data-line="23">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-</span><span data-line="24">        <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
-</span><span data-line="25">        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;value error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="26">        <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
-</span><span data-line="27">    <span class="p">)</span>
-</span><span data-line="28">
+</span><span data-line="22">
+</span><span data-line="23"><span class="k">def</span><span class="w"> </span><span class="nf">value_error_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span data-line="24">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="25">        <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
+</span><span data-line="26">        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;value error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="27">        <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+</span><span data-line="28">    <span class="p">)</span>
 </span><span data-line="29">
-</span><span data-line="30"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/validation-error&quot;</span><span class="p">)</span>
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">validation_error</span><span class="p">(</span><span class="n">some_query_param</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="32">    <span class="k">return</span> <span class="n">some_query_param</span>
-</span><span data-line="33">
+</span><span data-line="30">
+</span><span data-line="31"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/validation-error&quot;</span><span class="p">)</span>
+</span><span data-line="32"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">validation_error</span><span class="p">(</span><span class="n">some_query_param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="33">    <span class="k">return</span> <span class="n">some_query_param</span>
 </span><span data-line="34">
-</span><span data-line="35"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/server-error&quot;</span><span class="p">)</span>
-</span><span data-line="36"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">server_error</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="37">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">()</span>
-</span><span data-line="38">
+</span><span data-line="35">
+</span><span data-line="36"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/server-error&quot;</span><span class="p">)</span>
+</span><span data-line="37"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">server_error</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="38">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">()</span>
 </span><span data-line="39">
-</span><span data-line="40"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/value-error&quot;</span><span class="p">)</span>
-</span><span data-line="41"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">value_error</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="42">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;this is wrong&quot;</span><span class="p">)</span>
-</span><span data-line="43">
+</span><span data-line="40">
+</span><span data-line="41"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/value-error&quot;</span><span class="p">)</span>
+</span><span data-line="42"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">value_error</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="43">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;this is wrong&quot;</span><span class="p">)</span>
 </span><span data-line="44">
-</span><span data-line="45"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="46">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">validation_error</span><span class="p">,</span> <span class="n">server_error</span><span class="p">,</span> <span class="n">value_error</span><span class="p">],</span>
-</span><span data-line="47">    <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="48">        <span class="n">ValidationException</span><span class="p">:</span> <span class="n">validation_exception_handler</span><span class="p">,</span>
-</span><span data-line="49">        <span class="n">HTTP_500_INTERNAL_SERVER_ERROR</span><span class="p">:</span> <span class="n">internal_server_error_handler</span><span class="p">,</span>
-</span><span data-line="50">        <span class="ne">ValueError</span><span class="p">:</span> <span class="n">value_error_handler</span><span class="p">,</span>
-</span><span data-line="51">    <span class="p">},</span>
-</span><span data-line="52"><span class="p">)</span>
+</span><span data-line="45">
+</span><span data-line="46"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="47">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">validation_error</span><span class="p">,</span> <span class="n">server_error</span><span class="p">,</span> <span class="n">value_error</span><span class="p">],</span>
+</span><span data-line="48">    <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="49">        <span class="n">ValidationException</span><span class="p">:</span> <span class="n">validation_exception_handler</span><span class="p">,</span>
+</span><span data-line="50">        <span class="n">HTTP_500_INTERNAL_SERVER_ERROR</span><span class="p">:</span> <span class="n">internal_server_error_handler</span><span class="p">,</span>
+</span><span data-line="51">        <span class="ne">ValueError</span><span class="p">:</span> <span class="n">value_error_handler</span><span class="p">,</span>
+</span><span data-line="52">    <span class="p">},</span>
+</span><span data-line="53"><span class="p">)</span>
 </span></pre></div>
 </div>
 <div class="admonition">
@@ -793,44 +795,45 @@ them. In the following example, the exception handler for the route handler func
 the <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code> occurring within that route handler:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">ValidationException</span>
-</span><span data-line="3">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">app_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">HTTPException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span data-line="6">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-</span><span data-line="7">        <span class="n">content</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="8">            <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;server error&quot;</span><span class="p">,</span>
-</span><span data-line="9">            <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
-</span><span data-line="10">            <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span>
-</span><span data-line="11">            <span class="s2">&quot;status_code&quot;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
-</span><span data-line="12">        <span class="p">},</span>
-</span><span data-line="13">        <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
-</span><span data-line="14">    <span class="p">)</span>
-</span><span data-line="15">
+</span><span data-line="5">
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">app_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">HTTPException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="8">        <span class="n">content</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="9">            <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;server error&quot;</span><span class="p">,</span>
+</span><span data-line="10">            <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+</span><span data-line="11">            <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span>
+</span><span data-line="12">            <span class="s2">&quot;status_code&quot;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+</span><span data-line="13">        <span class="p">},</span>
+</span><span data-line="14">        <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+</span><span data-line="15">    <span class="p">)</span>
 </span><span data-line="16">
-</span><span data-line="17"><span class="k">def</span><span class="w"> </span><span class="nf">router_handler_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">ValidationException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-</span><span data-line="18">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-</span><span data-line="19">        <span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;validation error&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">},</span>
-</span><span data-line="20">        <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
-</span><span data-line="21">    <span class="p">)</span>
-</span><span data-line="22">
+</span><span data-line="17">
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">router_handler_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">ValidationException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span data-line="19">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="20">        <span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;validation error&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">},</span>
+</span><span data-line="21">        <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+</span><span data-line="22">    <span class="p">)</span>
 </span><span data-line="23">
-</span><span data-line="24"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="25"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="26">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="s2">&quot;something&#39;s gone wrong&quot;</span><span class="p">)</span>
-</span><span data-line="27">
+</span><span data-line="24">
+</span><span data-line="25"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="26"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="27">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="s2">&quot;something&#39;s gone wrong&quot;</span><span class="p">)</span>
 </span><span data-line="28">
-</span><span data-line="29"><span class="nd">@get</span><span class="p">(</span>
-</span><span data-line="30">    <span class="s2">&quot;/greet&quot;</span><span class="p">,</span>
-</span><span data-line="31">    <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span><span class="n">ValidationException</span><span class="p">:</span> <span class="n">router_handler_exception_handler</span><span class="p">},</span>
-</span><span data-line="32"><span class="p">)</span>
-</span><span data-line="33"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">greet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="34">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="35">
+</span><span data-line="29">
+</span><span data-line="30"><span class="nd">@get</span><span class="p">(</span>
+</span><span data-line="31">    <span class="s2">&quot;/greet&quot;</span><span class="p">,</span>
+</span><span data-line="32">    <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span><span class="n">ValidationException</span><span class="p">:</span> <span class="n">router_handler_exception_handler</span><span class="p">},</span>
+</span><span data-line="33"><span class="p">)</span>
+</span><span data-line="34"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">greet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="35">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span data-line="36">
-</span><span data-line="37"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="38">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">greet</span><span class="p">],</span>
-</span><span data-line="39">    <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span><span class="n">HTTPException</span><span class="p">:</span> <span class="n">app_exception_handler</span><span class="p">},</span>
-</span><span data-line="40"><span class="p">)</span>
+</span><span data-line="37">
+</span><span data-line="38"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="39">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">greet</span><span class="p">],</span>
+</span><span data-line="40">    <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span><span class="n">HTTPException</span><span class="p">:</span> <span class="n">app_exception_handler</span><span class="p">},</span>
+</span><span data-line="41"><span class="p">)</span>
 </span></pre></div>
 </div>
 <div class="admonition">

@@ -684,7 +684,7 @@ your controllers and function based routes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Annotated</span>
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -705,7 +705,7 @@ your controllers and function based routes.</p>
 </span><span data-line="22"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 </span><span data-line="23"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="24"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">OffsetPagination</span>
-</span><span data-line="25"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+</span><span data-line="25"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
 </span><span data-line="26">
 </span><span data-line="27"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="28">    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
@@ -778,129 +778,133 @@ your controllers and function based routes.</p>
 </span><span data-line="95">
 </span><span data-line="96">
 </span><span data-line="97"><span class="k">def</span><span class="w"> </span><span class="nf">provide_limit_offset_pagination</span><span class="p">(</span>
-</span><span data-line="98">    <span class="n">current_page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s2">&quot;currentPage&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-</span><span data-line="99">    <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-</span><span data-line="100">        <span class="n">query</span><span class="o">=</span><span class="s2">&quot;pageSize&quot;</span><span class="p">,</span>
-</span><span data-line="101">        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="102">        <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-</span><span data-line="103">        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span data-line="104">    <span class="p">),</span>
-</span><span data-line="105"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">:</span>
-</span><span data-line="106"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add offset/limit pagination.</span>
-</span><span data-line="107">
-</span><span data-line="108"><span class="sd">    Return type consumed by `Repository.apply_limit_offset_pagination()`.</span>
-</span><span data-line="109">
-</span><span data-line="110"><span class="sd">    Parameters</span>
-</span><span data-line="111"><span class="sd">    ----------</span>
-</span><span data-line="112"><span class="sd">    current_page : int</span>
-</span><span data-line="113"><span class="sd">        LIMIT to apply to select.</span>
-</span><span data-line="114"><span class="sd">    page_size : int</span>
-</span><span data-line="115"><span class="sd">        OFFSET to apply to select.</span>
-</span><span data-line="116"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="117">    <span class="k">return</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">page_size</span><span class="p">,</span> <span class="n">page_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-</span><span data-line="118">
+</span><span data-line="98">    <span class="n">current_page</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;currentPage&quot;</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span data-line="99">    <span class="n">page_size</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pageSize&quot;</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+</span><span data-line="100"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">:</span>
+</span><span data-line="101"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add offset/limit pagination.</span>
+</span><span data-line="102">
+</span><span data-line="103"><span class="sd">    Return type consumed by `Repository.apply_limit_offset_pagination()`.</span>
+</span><span data-line="104">
+</span><span data-line="105"><span class="sd">    Parameters</span>
+</span><span data-line="106"><span class="sd">    ----------</span>
+</span><span data-line="107"><span class="sd">    current_page : int</span>
+</span><span data-line="108"><span class="sd">        LIMIT to apply to select.</span>
+</span><span data-line="109"><span class="sd">    page_size : int</span>
+</span><span data-line="110"><span class="sd">        OFFSET to apply to select.</span>
+</span><span data-line="111"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="112">    <span class="k">return</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">page_size</span><span class="p">,</span> <span class="n">page_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span data-line="113">
+</span><span data-line="114">
+</span><span data-line="115"><span class="k">class</span><span class="w"> </span><span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="116"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
+</span><span data-line="117">
+</span><span data-line="118">    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">)}</span>
 </span><span data-line="119">
-</span><span data-line="120"><span class="k">class</span><span class="w"> </span><span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-</span><span data-line="121"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
-</span><span data-line="122">
-</span><span data-line="123">    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">)}</span>
-</span><span data-line="124">
-</span><span data-line="125">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
-</span><span data-line="126">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_authors</span><span class="p">(</span>
-</span><span data-line="127">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="128">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="129">        <span class="n">limit_offset</span><span class="p">:</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">,</span>
-</span><span data-line="130">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
-</span><span data-line="131"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List authors.&quot;&quot;&quot;</span>
-</span><span data-line="132">        <span class="n">results</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">limit_offset</span><span class="p">)</span>
-</span><span data-line="133">        <span class="n">type_adapter</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">])</span>
-</span><span data-line="134">        <span class="k">return</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">](</span>
-</span><span data-line="135">            <span class="n">items</span><span class="o">=</span><span class="n">type_adapter</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
-</span><span data-line="136">            <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
-</span><span data-line="137">            <span class="n">limit</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span>
-</span><span data-line="138">            <span class="n">offset</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
-</span><span data-line="139">        <span class="p">)</span>
-</span><span data-line="140">
-</span><span data-line="141">    <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
-</span><span data-line="142">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">(</span>
-</span><span data-line="143">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="144">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="145">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorCreate</span><span class="p">,</span>
-</span><span data-line="146">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span data-line="147"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
-</span><span data-line="148">        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-</span><span data-line="149">            <span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
-</span><span data-line="150">        <span class="p">)</span>
-</span><span data-line="151">        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span><span data-line="152">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span data-line="153">
-</span><span data-line="154">    <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
-</span><span data-line="155">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)})</span>
-</span><span data-line="156">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
-</span><span data-line="157">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="158">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="159">        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-</span><span data-line="160">            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-</span><span data-line="161">            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to retrieve.&quot;</span><span class="p">,</span>
-</span><span data-line="162">        <span class="p">),</span>
-</span><span data-line="163">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span data-line="164"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an existing author.&quot;&quot;&quot;</span>
-</span><span data-line="165">        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
-</span><span data-line="166">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span data-line="167">
-</span><span data-line="168">    <span class="nd">@patch</span><span class="p">(</span>
-</span><span data-line="169">        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-</span><span data-line="170">        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)},</span>
-</span><span data-line="171">    <span class="p">)</span>
-</span><span data-line="172">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
-</span><span data-line="173">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="174">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="175">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
-</span><span data-line="176">        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-</span><span data-line="177">            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-</span><span data-line="178">            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to update.&quot;</span><span class="p">,</span>
-</span><span data-line="179">        <span class="p">),</span>
-</span><span data-line="180">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span data-line="181"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an author.&quot;&quot;&quot;</span>
-</span><span data-line="182">        <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="183">        <span class="n">raw_obj</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">author_id</span><span class="p">})</span>
-</span><span data-line="184">        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">))</span>
-</span><span data-line="185">        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span><span data-line="186">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span data-line="187">
-</span><span data-line="188">    <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">)</span>
-</span><span data-line="189">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_author</span><span class="p">(</span>
-</span><span data-line="190">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="191">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="192">        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-</span><span data-line="193">            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-</span><span data-line="194">            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
-</span><span data-line="195">        <span class="p">),</span>
-</span><span data-line="196">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="197"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
-</span><span data-line="198">        <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
-</span><span data-line="199">        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span><span data-line="200">
-</span><span data-line="201">
-</span><span data-line="202"><span class="n">session_config</span> <span class="o">=</span> <span class="n">AsyncSessionConfig</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="203"><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-</span><span data-line="204">    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span>
-</span><span data-line="205"><span class="p">)</span>  <span class="c1"># Create &#39;db_session&#39; dependency.</span>
-</span><span data-line="206"><span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
-</span><span data-line="207">
-</span><span data-line="208">
-</span><span data-line="209"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="210"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-</span><span data-line="211">    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-</span><span data-line="212">        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
-</span><span data-line="213">
-</span><span data-line="214">
-</span><span data-line="215"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="216">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">AuthorController</span><span class="p">],</span>
-</span><span data-line="217">    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
-</span><span data-line="218">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
-</span><span data-line="219">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">)},</span>
-</span><span data-line="220"><span class="p">)</span>
+</span><span data-line="120">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
+</span><span data-line="121">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_authors</span><span class="p">(</span>
+</span><span data-line="122">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="123">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="124">        <span class="n">limit_offset</span><span class="p">:</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">,</span>
+</span><span data-line="125">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
+</span><span data-line="126"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List authors.&quot;&quot;&quot;</span>
+</span><span data-line="127">        <span class="n">results</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">limit_offset</span><span class="p">)</span>
+</span><span data-line="128">        <span class="n">type_adapter</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">])</span>
+</span><span data-line="129">        <span class="k">return</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">](</span>
+</span><span data-line="130">            <span class="n">items</span><span class="o">=</span><span class="n">type_adapter</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+</span><span data-line="131">            <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
+</span><span data-line="132">            <span class="n">limit</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span>
+</span><span data-line="133">            <span class="n">offset</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
+</span><span data-line="134">        <span class="p">)</span>
+</span><span data-line="135">
+</span><span data-line="136">    <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
+</span><span data-line="137">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">(</span>
+</span><span data-line="138">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="139">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="140">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorCreate</span><span class="p">,</span>
+</span><span data-line="141">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span data-line="142"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
+</span><span data-line="143">        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+</span><span data-line="144">            <span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+</span><span data-line="145">        <span class="p">)</span>
+</span><span data-line="146">        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span data-line="147">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span data-line="148">
+</span><span data-line="149">    <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
+</span><span data-line="150">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)})</span>
+</span><span data-line="151">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
+</span><span data-line="152">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="153">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="154">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+</span><span data-line="155">            <span class="n">UUID</span><span class="p">,</span>
+</span><span data-line="156">            <span class="n">PathParameter</span><span class="p">(</span>
+</span><span data-line="157">                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+</span><span data-line="158">                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to retrieve.&quot;</span><span class="p">,</span>
+</span><span data-line="159">            <span class="p">),</span>
+</span><span data-line="160">        <span class="p">],</span>
+</span><span data-line="161">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span data-line="162"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an existing author.&quot;&quot;&quot;</span>
+</span><span data-line="163">        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+</span><span data-line="164">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span data-line="165">
+</span><span data-line="166">    <span class="nd">@patch</span><span class="p">(</span>
+</span><span data-line="167">        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
+</span><span data-line="168">        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)},</span>
+</span><span data-line="169">    <span class="p">)</span>
+</span><span data-line="170">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
+</span><span data-line="171">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="172">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="173">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
+</span><span data-line="174">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+</span><span data-line="175">            <span class="n">UUID</span><span class="p">,</span>
+</span><span data-line="176">            <span class="n">PathParameter</span><span class="p">(</span>
+</span><span data-line="177">                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+</span><span data-line="178">                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to update.&quot;</span><span class="p">,</span>
+</span><span data-line="179">            <span class="p">),</span>
+</span><span data-line="180">        <span class="p">],</span>
+</span><span data-line="181">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span data-line="182"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an author.&quot;&quot;&quot;</span>
+</span><span data-line="183">        <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="184">        <span class="n">raw_obj</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">author_id</span><span class="p">})</span>
+</span><span data-line="185">        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">))</span>
+</span><span data-line="186">        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span data-line="187">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span data-line="188">
+</span><span data-line="189">    <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">)</span>
+</span><span data-line="190">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_author</span><span class="p">(</span>
+</span><span data-line="191">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="192">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="193">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+</span><span data-line="194">            <span class="n">UUID</span><span class="p">,</span>
+</span><span data-line="195">            <span class="n">PathParameter</span><span class="p">(</span>
+</span><span data-line="196">                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+</span><span data-line="197">                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
+</span><span data-line="198">            <span class="p">),</span>
+</span><span data-line="199">        <span class="p">],</span>
+</span><span data-line="200">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="201"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
+</span><span data-line="202">        <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+</span><span data-line="203">        <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span data-line="204">
+</span><span data-line="205">
+</span><span data-line="206"><span class="n">session_config</span> <span class="o">=</span> <span class="n">AsyncSessionConfig</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="207"><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
+</span><span data-line="208">    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span>
+</span><span data-line="209"><span class="p">)</span>  <span class="c1"># Create &#39;db_session&#39; dependency.</span>
+</span><span data-line="210"><span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
+</span><span data-line="211">
+</span><span data-line="212">
+</span><span data-line="213"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="214"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
+</span><span data-line="215">    <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="216">        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
+</span><span data-line="217">
+</span><span data-line="218">
+</span><span data-line="219"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="220">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">AuthorController</span><span class="p">],</span>
+</span><span data-line="221">    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
+</span><span data-line="222">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
+</span><span data-line="223">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">)},</span>
+</span><span data-line="224"><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -910,7 +914,7 @@ your controllers and function based routes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Annotated</span>
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -930,7 +934,7 @@ your controllers and function based routes.</p>
 </span><span data-line="21"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
 </span><span data-line="22"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="23"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">OffsetPagination</span>
-</span><span data-line="24"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+</span><span data-line="24"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
 </span><span data-line="25">
 </span><span data-line="26"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="27">    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
@@ -1004,129 +1008,133 @@ your controllers and function based routes.</p>
 </span><span data-line="95">
 </span><span data-line="96">
 </span><span data-line="97"><span class="k">def</span><span class="w"> </span><span class="nf">provide_limit_offset_pagination</span><span class="p">(</span>
-</span><span data-line="98">    <span class="n">current_page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s2">&quot;currentPage&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-</span><span data-line="99">    <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-</span><span data-line="100">        <span class="n">query</span><span class="o">=</span><span class="s2">&quot;pageSize&quot;</span><span class="p">,</span>
-</span><span data-line="101">        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="102">        <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-</span><span data-line="103">        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span data-line="104">    <span class="p">),</span>
-</span><span data-line="105"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LimitOffset</span><span class="p">:</span>
-</span><span data-line="106"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add offset/limit pagination.</span>
-</span><span data-line="107">
-</span><span data-line="108"><span class="sd">    Return type consumed by `Repository.apply_limit_offset_pagination()`.</span>
-</span><span data-line="109">
-</span><span data-line="110"><span class="sd">    Parameters</span>
-</span><span data-line="111"><span class="sd">    ----------</span>
-</span><span data-line="112"><span class="sd">    current_page : int</span>
-</span><span data-line="113"><span class="sd">        LIMIT to apply to select.</span>
-</span><span data-line="114"><span class="sd">    page_size : int</span>
-</span><span data-line="115"><span class="sd">        OFFSET to apply to select.</span>
-</span><span data-line="116"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="117">    <span class="k">return</span> <span class="n">LimitOffset</span><span class="p">(</span><span class="n">page_size</span><span class="p">,</span> <span class="n">page_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-</span><span data-line="118">
+</span><span data-line="98">    <span class="n">current_page</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;currentPage&quot;</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span data-line="99">    <span class="n">page_size</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pageSize&quot;</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+</span><span data-line="100"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LimitOffset</span><span class="p">:</span>
+</span><span data-line="101"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add offset/limit pagination.</span>
+</span><span data-line="102">
+</span><span data-line="103"><span class="sd">    Return type consumed by `Repository.apply_limit_offset_pagination()`.</span>
+</span><span data-line="104">
+</span><span data-line="105"><span class="sd">    Parameters</span>
+</span><span data-line="106"><span class="sd">    ----------</span>
+</span><span data-line="107"><span class="sd">    current_page : int</span>
+</span><span data-line="108"><span class="sd">        LIMIT to apply to select.</span>
+</span><span data-line="109"><span class="sd">    page_size : int</span>
+</span><span data-line="110"><span class="sd">        OFFSET to apply to select.</span>
+</span><span data-line="111"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="112">    <span class="k">return</span> <span class="n">LimitOffset</span><span class="p">(</span><span class="n">page_size</span><span class="p">,</span> <span class="n">page_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span><span data-line="113">
+</span><span data-line="114">
+</span><span data-line="115"><span class="k">class</span><span class="w"> </span><span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="116"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
+</span><span data-line="117">
+</span><span data-line="118">    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span>
 </span><span data-line="119">
-</span><span data-line="120"><span class="k">class</span><span class="w"> </span><span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-</span><span data-line="121"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
-</span><span data-line="122">
-</span><span data-line="123">    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span>
-</span><span data-line="124">
-</span><span data-line="125">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
-</span><span data-line="126">    <span class="k">def</span><span class="w"> </span><span class="nf">list_authors</span><span class="p">(</span>
-</span><span data-line="127">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="128">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="129">        <span class="n">limit_offset</span><span class="p">:</span> <span class="n">LimitOffset</span><span class="p">,</span>
-</span><span data-line="130">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
-</span><span data-line="131"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List authors.&quot;&quot;&quot;</span>
-</span><span data-line="132">        <span class="n">results</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">limit_offset</span><span class="p">)</span>
-</span><span data-line="133">        <span class="n">type_adapter</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">])</span>
-</span><span data-line="134">        <span class="k">return</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">](</span>
-</span><span data-line="135">            <span class="n">items</span><span class="o">=</span><span class="n">type_adapter</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
-</span><span data-line="136">            <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
-</span><span data-line="137">            <span class="n">limit</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span>
-</span><span data-line="138">            <span class="n">offset</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
-</span><span data-line="139">        <span class="p">)</span>
-</span><span data-line="140">
-</span><span data-line="141">    <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
-</span><span data-line="142">    <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">(</span>
-</span><span data-line="143">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="144">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="145">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorCreate</span><span class="p">,</span>
-</span><span data-line="146">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span data-line="147"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
-</span><span data-line="148">        <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-</span><span data-line="149">            <span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
-</span><span data-line="150">        <span class="p">)</span>
-</span><span data-line="151">        <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span><span data-line="152">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span data-line="153">
-</span><span data-line="154">    <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
-</span><span data-line="155">    <span class="nd">@get</span><span class="p">(</span>
-</span><span data-line="156">        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-</span><span data-line="157">        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
-</span><span data-line="158">    <span class="p">)</span>
-</span><span data-line="159">    <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
-</span><span data-line="160">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="161">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="162">        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-</span><span data-line="163">            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-</span><span data-line="164">            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to retrieve.&quot;</span><span class="p">,</span>
-</span><span data-line="165">        <span class="p">),</span>
-</span><span data-line="166">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span data-line="167"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an existing author.&quot;&quot;&quot;</span>
-</span><span data-line="168">        <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
-</span><span data-line="169">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span data-line="170">
-</span><span data-line="171">    <span class="nd">@patch</span><span class="p">(</span>
-</span><span data-line="172">        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-</span><span data-line="173">        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
-</span><span data-line="174">    <span class="p">)</span>
-</span><span data-line="175">    <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
-</span><span data-line="176">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="177">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="178">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
-</span><span data-line="179">        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-</span><span data-line="180">            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-</span><span data-line="181">            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to update.&quot;</span><span class="p">,</span>
-</span><span data-line="182">        <span class="p">),</span>
-</span><span data-line="183">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
-</span><span data-line="184"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an author.&quot;&quot;&quot;</span>
-</span><span data-line="185">        <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="186">        <span class="n">raw_obj</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">author_id</span><span class="p">})</span>
-</span><span data-line="187">        <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">))</span>
-</span><span data-line="188">        <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span><span data-line="189">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span data-line="190">
-</span><span data-line="191">    <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">)</span>
-</span><span data-line="192">    <span class="k">def</span><span class="w"> </span><span class="nf">delete_author</span><span class="p">(</span>
-</span><span data-line="193">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="194">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="195">        <span class="n">author_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-</span><span data-line="196">            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
-</span><span data-line="197">            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
-</span><span data-line="198">        <span class="p">),</span>
-</span><span data-line="199">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="200"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
-</span><span data-line="201">        <span class="n">_</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
-</span><span data-line="202">        <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span><span data-line="203">
-</span><span data-line="204">
-</span><span data-line="205"><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///test.sqlite&quot;</span><span class="p">)</span>  <span class="c1"># Create &#39;db_session&#39; dependency.</span>
-</span><span data-line="206"><span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
+</span><span data-line="120">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
+</span><span data-line="121">    <span class="k">def</span><span class="w"> </span><span class="nf">list_authors</span><span class="p">(</span>
+</span><span data-line="122">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="123">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="124">        <span class="n">limit_offset</span><span class="p">:</span> <span class="n">LimitOffset</span><span class="p">,</span>
+</span><span data-line="125">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
+</span><span data-line="126"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List authors.&quot;&quot;&quot;</span>
+</span><span data-line="127">        <span class="n">results</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">limit_offset</span><span class="p">)</span>
+</span><span data-line="128">        <span class="n">type_adapter</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Author</span><span class="p">])</span>
+</span><span data-line="129">        <span class="k">return</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">](</span>
+</span><span data-line="130">            <span class="n">items</span><span class="o">=</span><span class="n">type_adapter</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">results</span><span class="p">),</span>
+</span><span data-line="131">            <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
+</span><span data-line="132">            <span class="n">limit</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span>
+</span><span data-line="133">            <span class="n">offset</span><span class="o">=</span><span class="n">limit_offset</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
+</span><span data-line="134">        <span class="p">)</span>
+</span><span data-line="135">
+</span><span data-line="136">    <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
+</span><span data-line="137">    <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">(</span>
+</span><span data-line="138">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="139">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="140">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorCreate</span><span class="p">,</span>
+</span><span data-line="141">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span data-line="142"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
+</span><span data-line="143">        <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+</span><span data-line="144">            <span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+</span><span data-line="145">        <span class="p">)</span>
+</span><span data-line="146">        <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span data-line="147">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span data-line="148">
+</span><span data-line="149">    <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
+</span><span data-line="150">    <span class="nd">@get</span><span class="p">(</span>
+</span><span data-line="151">        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
+</span><span data-line="152">        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
+</span><span data-line="153">    <span class="p">)</span>
+</span><span data-line="154">    <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
+</span><span data-line="155">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="156">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="157">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+</span><span data-line="158">            <span class="n">UUID</span><span class="p">,</span>
+</span><span data-line="159">            <span class="n">PathParameter</span><span class="p">(</span>
+</span><span data-line="160">                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+</span><span data-line="161">                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to retrieve.&quot;</span><span class="p">,</span>
+</span><span data-line="162">            <span class="p">),</span>
+</span><span data-line="163">        <span class="p">],</span>
+</span><span data-line="164">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span data-line="165"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an existing author.&quot;&quot;&quot;</span>
+</span><span data-line="166">        <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+</span><span data-line="167">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span data-line="168">
+</span><span data-line="169">    <span class="nd">@patch</span><span class="p">(</span>
+</span><span data-line="170">        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
+</span><span data-line="171">        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
+</span><span data-line="172">    <span class="p">)</span>
+</span><span data-line="173">    <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
+</span><span data-line="174">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="175">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="176">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
+</span><span data-line="177">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+</span><span data-line="178">            <span class="n">UUID</span><span class="p">,</span>
+</span><span data-line="179">            <span class="n">PathParameter</span><span class="p">(</span>
+</span><span data-line="180">                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+</span><span data-line="181">                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to update.&quot;</span><span class="p">,</span>
+</span><span data-line="182">            <span class="p">),</span>
+</span><span data-line="183">        <span class="p">],</span>
+</span><span data-line="184">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
+</span><span data-line="185"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update an author.&quot;&quot;&quot;</span>
+</span><span data-line="186">        <span class="n">raw_obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="187">        <span class="n">raw_obj</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">author_id</span><span class="p">})</span>
+</span><span data-line="188">        <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">))</span>
+</span><span data-line="189">        <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span data-line="190">        <span class="k">return</span> <span class="n">Author</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span data-line="191">
+</span><span data-line="192">    <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">)</span>
+</span><span data-line="193">    <span class="k">def</span><span class="w"> </span><span class="nf">delete_author</span><span class="p">(</span>
+</span><span data-line="194">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="195">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="196">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+</span><span data-line="197">            <span class="n">UUID</span><span class="p">,</span>
+</span><span data-line="198">            <span class="n">PathParameter</span><span class="p">(</span>
+</span><span data-line="199">                <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Author ID&quot;</span><span class="p">,</span>
+</span><span data-line="200">                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The author to delete.&quot;</span><span class="p">,</span>
+</span><span data-line="201">            <span class="p">),</span>
+</span><span data-line="202">        <span class="p">],</span>
+</span><span data-line="203">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="204"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a author from the system.&quot;&quot;&quot;</span>
+</span><span data-line="205">        <span class="n">_</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
+</span><span data-line="206">        <span class="n">authors_repo</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 </span><span data-line="207">
 </span><span data-line="208">
-</span><span data-line="209"><span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="210"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
-</span><span data-line="211">    <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-</span><span data-line="212">        <span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
-</span><span data-line="213">
-</span><span data-line="214">
-</span><span data-line="215"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="216">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">AuthorController</span><span class="p">],</span>
-</span><span data-line="217">    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
-</span><span data-line="218">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
-</span><span data-line="219">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">)},</span>
-</span><span data-line="220"><span class="p">)</span>
+</span><span data-line="209"><span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///test.sqlite&quot;</span><span class="p">)</span>  <span class="c1"># Create &#39;db_session&#39; dependency.</span>
+</span><span data-line="210"><span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
+</span><span data-line="211">
+</span><span data-line="212">
+</span><span data-line="213"><span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="214"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
+</span><span data-line="215">    <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="216">        <span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</span><span data-line="217">
+</span><span data-line="218">
+</span><span data-line="219"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="220">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">AuthorController</span><span class="p">],</span>
+</span><span data-line="221">    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
+</span><span data-line="222">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
+</span><span data-line="223">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">)},</span>
+</span><span data-line="224"><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>

@@ -103,22 +103,24 @@ Path parameters
 
         .. code-block:: python
 
+            import pathlib
+
             from litestar import Litestar, get
-            from pathlib import Path
+            from litestar.params import FromPath
 
 
             @get("/user/{username:str}")
-            def show_user_profile(username: str) -> str:
+            def show_user_profile(username: FromPath[str]) -> str:
                 return f"User {username}"
 
 
             @get("/post/{post_id:int}")
-            def show_post(post_id: int) -> str:
+            def show_post(post_id: FromPath[int]) -> str:
                 return f"Post {post_id}"
 
 
             @get("/path/{subpath:path}")
-            def show_subpath(subpath: Path) -> str:
+            def show_subpath(subpath: FromPath[pathlib.Path]) -> str:
                 return f"Subpath {subpath}"
 
 
@@ -321,12 +323,13 @@ In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_
 
             from litestar import Litestar, get
             from litestar.plugins.jinja import JinjaTemplateEngine
+            from litestar.params import FromPath
             from litestar.response import Template
             from litestar.template.config import TemplateConfig
 
 
             @get("/hello/{name:str}")
-            def hello(name: str) -> Template:
+            def hello(name: FromPath[str]) -> Template:
                 return Template(response_name="hello.html", context={"name": name})
 
 

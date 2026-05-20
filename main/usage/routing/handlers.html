@@ -642,12 +642,12 @@ This <a class="reference external" href="https://docs.python.org/3/glossary.html
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Defining a route handler with a path that has an optional path parameter</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
-</span><span data-line="2">
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="nd">@get</span><span class="p">(</span>
 </span><span data-line="5">   <span class="p">[</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{some_id:int}&quot;</span><span class="p">],</span>
 </span><span data-line="6"><span class="p">)</span>
-</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span><span class="n">some_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span><span class="n">some_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 </div>
@@ -658,12 +658,14 @@ This <a class="reference external" href="https://docs.python.org/3/glossary.html
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">kwargs</span></a> are inspected by Litestar and then injected into the request handler.</p>
 <p>The following sources can be accessed using annotated function <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">kwargs</span></a>:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="parameters.html#the-parameter-function"><span class="std std-ref">path, query, header, and cookie parameters</span></a></p></li>
+<li><p><a class="reference internal" href="parameters.html#parameter-types"><span class="std std-ref">path, query, header, and cookie parameters</span></a>, declared with
+<a class="reference internal" href="../../reference/params.html#litestar.params.FromPath" title="litestar.params.FromPath"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromPath</span></code></a>, <a class="reference internal" href="../../reference/params.html#litestar.params.FromQuery" title="litestar.params.FromQuery"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromQuery</span></code></a>, <a class="reference internal" href="../../reference/params.html#litestar.params.FromHeader" title="litestar.params.FromHeader"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromHeader</span></code></a>,
+and <a class="reference internal" href="../../reference/params.html#litestar.params.FromCookie" title="litestar.params.FromCookie"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromCookie</span></code></a></p></li>
 <li><p><a class="reference internal" href="../requests.html"><span class="doc">requests</span></a></p></li>
 <li><p><a class="reference internal" href="../dependency-injection.html"><span class="doc">injected dependencies</span></a></p></li>
 </ul>
 <p>Additionally, you can specify the following special <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">kwargs</span></a>,
-(known as “reserved keywords”):</p>
+(known as “reserved keywords arguments”):</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cookies</span></code>: injects the request <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.Cookie" title="litestar.datastructures.cookie.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">cookies</span></code></a> as a parsed
 <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
@@ -675,8 +677,12 @@ This <a class="reference external" href="https://docs.python.org/3/glossary.html
 <li><p><code class="docutils literal notranslate"><span class="pre">state</span></code> : injects a copy of the application <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">body</span></code> : the raw request body. Available only for <a class="reference internal" href="#http-route-handlers">HTTP route handlers</a></p></li>
 </ul>
-<p>Note that if your parameters collide with any of the reserved <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">keyword arguments</span></a> above, you can
-<a class="reference internal" href="parameters.html#alternative-names-and-constraints"><span class="std std-ref">provide an alternative name</span></a>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Note that if your parameters collide with any of the reserved
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">keyword arguments</span></a> above, you can
+<a class="reference internal" href="parameters.html#aliasing"><span class="std std-ref">provide an alternative name</span></a>.</p>
+</div>
 <p>For example:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Providing an alternative name for a reserved keyword argument</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
@@ -771,46 +777,47 @@ the <a class="reference internal" href="../../reference/handlers.html#litestar.h
 <div class="code-block-caption"><span class="caption-text">Predefined <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.14)"><span class="xref std std-term">decorators</span></a> for HTTP route handlers</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">head</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticDTO</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
-</span><span data-line="6">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticDTO</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">Resource</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span> <span class="o">...</span>
-</span><span data-line="9">
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">Resource</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span> <span class="o">...</span>
 </span><span data-line="10">
-</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">PartialResourceDTO</span><span class="p">(</span><span class="n">PydanticDTO</span><span class="p">[</span><span class="n">Resource</span><span class="p">]):</span>
-</span><span data-line="12">   <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="13">
+</span><span data-line="11">
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">PartialResourceDTO</span><span class="p">(</span><span class="n">PydanticDTO</span><span class="p">[</span><span class="n">Resource</span><span class="p">]):</span>
+</span><span data-line="13">   <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span data-line="14">
-</span><span data-line="15"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources&quot;</span><span class="p">)</span>
-</span><span data-line="16"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_resources</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Resource</span><span class="p">]:</span> <span class="o">...</span>
-</span><span data-line="17">
+</span><span data-line="15">
+</span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources&quot;</span><span class="p">)</span>
+</span><span data-line="17"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_resources</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Resource</span><span class="p">]:</span> <span class="o">...</span>
 </span><span data-line="18">
-</span><span data-line="19"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources&quot;</span><span class="p">)</span>
-</span><span data-line="20"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="21">
+</span><span data-line="19">
+</span><span data-line="20"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources&quot;</span><span class="p">)</span>
+</span><span data-line="21"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="22">
-</span><span data-line="23"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-</span><span data-line="24"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="25">
+</span><span data-line="23">
+</span><span data-line="24"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
+</span><span data-line="25"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="26">
-</span><span data-line="27"><span class="nd">@head</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-</span><span data-line="28"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource_head</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="29">
+</span><span data-line="27">
+</span><span data-line="28"><span class="nd">@head</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
+</span><span data-line="29"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource_head</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="30">
-</span><span data-line="31"><span class="nd">@put</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-</span><span data-line="32"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="33">
+</span><span data-line="31">
+</span><span data-line="32"><span class="nd">@put</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
+</span><span data-line="33"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="34">
-</span><span data-line="35"><span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialResourceDTO</span><span class="p">)</span>
-</span><span data-line="36"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">partially_update_resource</span><span class="p">(</span>
-</span><span data-line="37">   <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">PartialResourceDTO</span><span class="p">],</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="38"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="39">
+</span><span data-line="35">
+</span><span data-line="36"><span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialResourceDTO</span><span class="p">)</span>
+</span><span data-line="37"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">partially_update_resource</span><span class="p">(</span>
+</span><span data-line="38">   <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">PartialResourceDTO</span><span class="p">],</span> <span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+</span><span data-line="39"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="40">
-</span><span data-line="41"><span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-</span><span data-line="42"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="41">
+</span><span data-line="42"><span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
+</span><span data-line="43"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_resource</span><span class="p">(</span><span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 </div>
@@ -965,44 +972,45 @@ containing the route handler instance and paths. It can also be used to build a 
 handler instance and paths</span><a class="headerlink" href="#id15" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundException</span>
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redirect</span>
-</span><span data-line="4">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redirect</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/abc&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;one&quot;</span><span class="p">)</span>
-</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">handler_one</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="8">    <span class="k">pass</span>
-</span><span data-line="9">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/abc&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;one&quot;</span><span class="p">)</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">handler_one</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="9">    <span class="k">pass</span>
 </span><span data-line="10">
-</span><span data-line="11"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/xyz&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;two&quot;</span><span class="p">)</span>
-</span><span data-line="12"><span class="k">def</span><span class="w"> </span><span class="nf">handler_two</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="13">    <span class="k">pass</span>
-</span><span data-line="14">
+</span><span data-line="11">
+</span><span data-line="12"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/xyz&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;two&quot;</span><span class="p">)</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">handler_two</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="14">    <span class="k">pass</span>
 </span><span data-line="15">
-</span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/def/{param:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;three&quot;</span><span class="p">)</span>
-</span><span data-line="17"><span class="k">def</span><span class="w"> </span><span class="nf">handler_three</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="18">    <span class="k">pass</span>
-</span><span data-line="19">
+</span><span data-line="16">
+</span><span data-line="17"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/def/{param:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;three&quot;</span><span class="p">)</span>
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">handler_three</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="19">    <span class="k">pass</span>
 </span><span data-line="20">
-</span><span data-line="21"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{handler_name:str}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;four&quot;</span><span class="p">)</span>
-</span><span data-line="22"><span class="k">def</span><span class="w"> </span><span class="nf">handler_four</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
-</span><span data-line="23">    <span class="n">handler_index</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">get_handler_index_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-</span><span data-line="24">    <span class="k">if</span> <span class="ow">not</span> <span class="n">handler_index</span><span class="p">:</span>
-</span><span data-line="25">        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no handler matching the name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> was found&quot;</span><span class="p">)</span>
-</span><span data-line="26">
-</span><span data-line="27">    <span class="c1"># handler_index == { &quot;paths&quot;: [&quot;/&quot;], &quot;handler&quot;: ..., &quot;qualname&quot;: ... }</span>
-</span><span data-line="28">    <span class="c1"># do something with the handler index below, e.g. send a redirect response to the handler, or access</span>
-</span><span data-line="29">    <span class="c1"># handler.opt and some values stored there etc.</span>
-</span><span data-line="30">
-</span><span data-line="31">    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">handler_index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</span><span data-line="32">
+</span><span data-line="21">
+</span><span data-line="22"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{handler_name:str}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;four&quot;</span><span class="p">)</span>
+</span><span data-line="23"><span class="k">def</span><span class="w"> </span><span class="nf">handler_four</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
+</span><span data-line="24">    <span class="n">handler_index</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">get_handler_index_by_name</span><span class="p">(</span><span class="n">handler_name</span><span class="p">)</span>
+</span><span data-line="25">    <span class="k">if</span> <span class="ow">not</span> <span class="n">handler_index</span><span class="p">:</span>
+</span><span data-line="26">        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no handler matching the name </span><span class="si">{</span><span class="n">handler_name</span><span class="si">}</span><span class="s2"> was found&quot;</span><span class="p">)</span>
+</span><span data-line="27">
+</span><span data-line="28">    <span class="c1"># handler_index == { &quot;paths&quot;: [&quot;/&quot;], &quot;handler&quot;: ..., &quot;qualname&quot;: ... }</span>
+</span><span data-line="29">    <span class="c1"># do something with the handler index below, e.g. send a redirect response to the handler, or access</span>
+</span><span data-line="30">    <span class="c1"># handler.opt and some values stored there etc.</span>
+</span><span data-line="31">
+</span><span data-line="32">    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">handler_index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </span><span data-line="33">
-</span><span data-line="34"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/redirect/{param_value:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;five&quot;</span><span class="p">)</span>
-</span><span data-line="35"><span class="k">def</span><span class="w"> </span><span class="nf">handler_five</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">param_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
-</span><span data-line="36">    <span class="n">path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;three&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">param_value</span><span class="p">)</span>
-</span><span data-line="37">    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="38">
+</span><span data-line="34">
+</span><span data-line="35"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/redirect/{param_value:int}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;five&quot;</span><span class="p">)</span>
+</span><span data-line="36"><span class="k">def</span><span class="w"> </span><span class="nf">handler_five</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">param_value</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
+</span><span data-line="37">    <span class="n">path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;three&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">param_value</span><span class="p">)</span>
+</span><span data-line="38">    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
 </span><span data-line="39">
-</span><span data-line="40"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler_one</span><span class="p">,</span> <span class="n">handler_two</span><span class="p">,</span> <span class="n">handler_three</span><span class="p">])</span>
+</span><span data-line="40">
+</span><span data-line="41"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler_one</span><span class="p">,</span> <span class="n">handler_two</span><span class="p">,</span> <span class="n">handler_three</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -1033,27 +1041,28 @@ the highest number of the <a class="reference external" href="https://docs.pytho
 <div class="literal-block-wrapper docutils container" id="id17">
 <div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a> method to build a URL path for a route handler</span><a class="headerlink" href="#id17" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Request</span>
-</span><span data-line="2">
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span>
-</span><span data-line="5">   <span class="p">[</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{id:int}&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{id:int}/{val:str}&quot;</span><span class="p">],</span>
-</span><span data-line="6">   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;handler_name&quot;</span><span class="p">,</span>
-</span><span data-line="7"><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="9">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span>
+</span><span data-line="6">   <span class="p">[</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{id:int}&quot;</span><span class="p">,</span> <span class="s2">&quot;/some-path/{id:int}/{val:str}&quot;</span><span class="p">],</span>
+</span><span data-line="7">   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;handler_name&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="p">)</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="10">
-</span><span data-line="11"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/path-info&quot;</span><span class="p">)</span>
-</span><span data-line="12"><span class="k">def</span><span class="w"> </span><span class="nf">path_info</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="13">   <span class="n">path_optional</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;handler_name&quot;</span><span class="p">)</span>
-</span><span data-line="14">   <span class="c1"># /some-path`</span>
-</span><span data-line="15">
-</span><span data-line="16">   <span class="n">path_partial</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;handler_name&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-</span><span data-line="17">   <span class="c1"># /some-path/100</span>
-</span><span data-line="18">
-</span><span data-line="19">   <span class="n">path_full</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;handler_name&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
-</span><span data-line="20">   <span class="c1"># /some-path/100/value`</span>
-</span><span data-line="21">
-</span><span data-line="22">   <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path_optional</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_partial</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_full</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/path-info&quot;</span><span class="p">)</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">path_info</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="14">   <span class="n">path_optional</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;handler_name&quot;</span><span class="p">)</span>
+</span><span data-line="15">   <span class="c1"># /some-path`</span>
+</span><span data-line="16">
+</span><span data-line="17">   <span class="n">path_partial</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;handler_name&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</span><span data-line="18">   <span class="c1"># /some-path/100</span>
+</span><span data-line="19">
+</span><span data-line="20">   <span class="n">path_full</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="s2">&quot;handler_name&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+</span><span data-line="21">   <span class="c1"># /some-path/100/value`</span>
+</span><span data-line="22">
+</span><span data-line="23">   <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path_optional</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_partial</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_full</span><span class="si">}</span><span class="s2">&quot;</span>
 </span></pre></div>
 </div>
 </div>

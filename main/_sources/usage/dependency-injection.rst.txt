@@ -368,15 +368,6 @@ Depending on your application design, it is possible to have a dependency declar
 :class:`Provide <.di.Provide>` function that has a default value. If the dependency isn't provided for the route, the
 default should be used by the function.
 
-.. literalinclude:: /examples/dependency_injection/dependency_with_default.py
-    :caption: Dependency with default value
-    :language: python
-
-
-This doesn't fail, but due to the way the application determines parameter types, it is inferred to be a query
-parameter.
-
-
 By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:
 
 .. literalinclude:: /examples/dependency_injection/dependency_with_dependency_fn_and_default.py
@@ -387,10 +378,15 @@ By declaring the parameter to be a dependency, Litestar knows to exclude it from
 Early detection if a dependency isn't provided
 ***********************************************
 
-The other side of the same coin is when a dependency isn't provided, and no default is specified. Without the dependency
-marker, the parameter is assumed to be a query parameter and the route will most likely fail when accessed.
+The other side of the same coin is when a dependency isn't provided, and no default is
+specified. Without the :class:`~.params.Dependency` marker, the parameter is treated
+like any other unmarked handler kwarg, i.e. it raises a
+:class:`~.exceptions.LitestarDeprecationWarning` about a missing explicit parameter
+marker, and the route will then fail at request time because no matching query parameter
+was supplied.
 
-If the parameter is marked as a dependency, this allows us to fail early instead:
+Adding :class:`~.params.Dependency` makes the contract explicit and lets Litestar fail
+at application boot rather than at request time:
 
 .. literalinclude:: /examples/dependency_injection/dependency_non_optional_not_provided.py
    :caption: Dependency not provided error

@@ -557,23 +557,24 @@ DTO factories can be used to help us build flexible applications. Lets get start
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="6">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 </span><span data-line="7">
-</span><span data-line="8"><span class="nd">@dataclass</span>
-</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
-</span><span data-line="10">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="11">    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="12">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="13">
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@dataclass</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
+</span><span data-line="11">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="12">    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="13">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="14">
-</span><span data-line="15"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/person/{name:str}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="16"><span class="k">def</span><span class="w"> </span><span class="nf">get_person</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
-</span><span data-line="17">    <span class="c1"># Your logic to retrieve the person goes here</span>
-</span><span data-line="18">    <span class="c1"># For demonstration purposes, a placeholder Person instance is returned</span>
-</span><span data-line="19">    <span class="k">return</span> <span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;email_of_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">@example.com&quot;</span><span class="p">)</span>
-</span><span data-line="20">
+</span><span data-line="15">
+</span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/person/{name:str}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="17"><span class="k">def</span><span class="w"> </span><span class="nf">get_person</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
+</span><span data-line="18">    <span class="c1"># Your logic to retrieve the person goes here</span>
+</span><span data-line="19">    <span class="c1"># For demonstration purposes, a placeholder Person instance is returned</span>
+</span><span data-line="20">    <span class="k">return</span> <span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;email_of_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">@example.com&quot;</span><span class="p">)</span>
 </span><span data-line="21">
-</span><span data-line="22"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_person</span><span class="p">])</span>
+</span><span data-line="22">
+</span><span data-line="23"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_person</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>

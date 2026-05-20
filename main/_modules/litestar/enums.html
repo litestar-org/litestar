@@ -590,31 +590,32 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="69">    <span class="n">PATH</span> <span class="o">=</span> <span class="s2">&quot;path&quot;</span>
 </span><span data-line="70">    <span class="n">QUERY</span> <span class="o">=</span> <span class="s2">&quot;query&quot;</span>
 </span><span data-line="71">    <span class="n">COOKIE</span> <span class="o">=</span> <span class="s2">&quot;cookie&quot;</span>
-</span><span data-line="72">    <span class="n">HEADER</span> <span class="o">=</span> <span class="s2">&quot;header&quot;</span></div>
+</span><span data-line="72">    <span class="n">HEADER</span> <span class="o">=</span> <span class="s2">&quot;header&quot;</span>
+</span><span data-line="73">    <span class="n">DEPENDENCY</span> <span class="o">=</span> <span class="s2">&quot;dependency&quot;</span></div>
 
-</span><span data-line="73">
 </span><span data-line="74">
+</span><span data-line="75">
 <div class="viewcode-block" id="CompressionEncoding">
 <a class="viewcode-back" href="../../reference/enums.html#litestar.enums.CompressionEncoding">[docs]</a>
-</span><span data-line="75"><span class="k">class</span><span class="w"> </span><span class="nc">CompressionEncoding</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-</span><span data-line="76"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An Enum for supported compression encodings.&quot;&quot;&quot;</span>
-</span><span data-line="77">
-</span><span data-line="78">    <span class="n">GZIP</span> <span class="o">=</span> <span class="s2">&quot;gzip&quot;</span>
-</span><span data-line="79">    <span class="n">BROTLI</span> <span class="o">=</span> <span class="s2">&quot;br&quot;</span>
-</span><span data-line="80">    <span class="n">ZSTD</span> <span class="o">=</span> <span class="s2">&quot;zstd&quot;</span></div>
+</span><span data-line="76"><span class="k">class</span><span class="w"> </span><span class="nc">CompressionEncoding</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+</span><span data-line="77"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An Enum for supported compression encodings.&quot;&quot;&quot;</span>
+</span><span data-line="78">
+</span><span data-line="79">    <span class="n">GZIP</span> <span class="o">=</span> <span class="s2">&quot;gzip&quot;</span>
+</span><span data-line="80">    <span class="n">BROTLI</span> <span class="o">=</span> <span class="s2">&quot;br&quot;</span>
+</span><span data-line="81">    <span class="n">ZSTD</span> <span class="o">=</span> <span class="s2">&quot;zstd&quot;</span></div>
 
-</span><span data-line="81">
 </span><span data-line="82">
-</span><span data-line="83"><span class="k">class</span><span class="w"> </span><span class="nc">ASGIExtension</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-</span><span data-line="84"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI extension keys: https://asgi.readthedocs.io/en/latest/extensions.html&quot;&quot;&quot;</span>
-</span><span data-line="85">
-</span><span data-line="86">    <span class="n">WS_DENIAL</span> <span class="o">=</span> <span class="s2">&quot;websocket.http.response&quot;</span>
-</span><span data-line="87">    <span class="n">SERVER_PUSH</span> <span class="o">=</span> <span class="s2">&quot;http.response.push&quot;</span>
-</span><span data-line="88">    <span class="n">ZERO_COPY_SEND_EXTENSION</span> <span class="o">=</span> <span class="s2">&quot;http.response.zerocopysend&quot;</span>
-</span><span data-line="89">    <span class="n">PATH_SEND</span> <span class="o">=</span> <span class="s2">&quot;http.response.pathsend&quot;</span>
-</span><span data-line="90">    <span class="n">TLS</span> <span class="o">=</span> <span class="s2">&quot;tls&quot;</span>
-</span><span data-line="91">    <span class="n">EARLY_HINTS</span> <span class="o">=</span> <span class="s2">&quot;http.response.early_hint&quot;</span>
-</span><span data-line="92">    <span class="n">HTTP_TRAILERS</span> <span class="o">=</span> <span class="s2">&quot;http.response.trailers&quot;</span>
+</span><span data-line="83">
+</span><span data-line="84"><span class="k">class</span><span class="w"> </span><span class="nc">ASGIExtension</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+</span><span data-line="85"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI extension keys: https://asgi.readthedocs.io/en/latest/extensions.html&quot;&quot;&quot;</span>
+</span><span data-line="86">
+</span><span data-line="87">    <span class="n">WS_DENIAL</span> <span class="o">=</span> <span class="s2">&quot;websocket.http.response&quot;</span>
+</span><span data-line="88">    <span class="n">SERVER_PUSH</span> <span class="o">=</span> <span class="s2">&quot;http.response.push&quot;</span>
+</span><span data-line="89">    <span class="n">ZERO_COPY_SEND_EXTENSION</span> <span class="o">=</span> <span class="s2">&quot;http.response.zerocopysend&quot;</span>
+</span><span data-line="90">    <span class="n">PATH_SEND</span> <span class="o">=</span> <span class="s2">&quot;http.response.pathsend&quot;</span>
+</span><span data-line="91">    <span class="n">TLS</span> <span class="o">=</span> <span class="s2">&quot;tls&quot;</span>
+</span><span data-line="92">    <span class="n">EARLY_HINTS</span> <span class="o">=</span> <span class="s2">&quot;http.response.early_hint&quot;</span>
+</span><span data-line="93">    <span class="n">HTTP_TRAILERS</span> <span class="o">=</span> <span class="s2">&quot;http.response.trailers&quot;</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

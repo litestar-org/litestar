@@ -656,7 +656,7 @@ specific item on the list is needed. This could be done using query parameters, 
 there’s an easier, and more semantically coherent way of expressing this: path
 parameters.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{name:str}&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="3">    <span class="k">return</span> <span class="s2">&quot;Hello, &quot;</span> <span class="o">+</span> <span class="n">name</span>
 </span></pre></div>
 </div>
@@ -665,20 +665,21 @@ constant string which does not change. In fact, the only path used so far is <co
 <p>Path parameters allow you to construct dynamic paths and later refer to the dynamically
 captured parts. This may sound complex at first, but it’s actually quite simple; you can
 think of it as a regular expression that’s being used on the requested path.</p>
-<p>Path parameters consist of two parts: an expression inside the path, describing the
-parameter, and a corresponding function parameter of the same name in the route handler
-function, which will receive the path parameter’s value.</p>
+<p>Path parameters consist of two parts: an expression inside the route’s path describing
+the slot (e.g. <code class="docutils literal notranslate"><span class="pre">{name:str}</span></code>), and a matching function parameter on the route handler
+annotated with <a class="reference internal" href="../../reference/params.html#litestar.params.FromPath" title="litestar.params.FromPath"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromPath</span></code></a> (e.g. <code class="docutils literal notranslate"><span class="pre">name:</span> <span class="pre">FromPath[str]</span></code>), which will
+receive the captured value.</p>
 <p>In the above example, a path parameter <code class="docutils literal notranslate"><span class="pre">name:str</span></code> is declared, which means that now,
 a request to the path <code class="docutils literal notranslate"><span class="pre">/john</span></code> can be made, and the <code class="docutils literal notranslate"><span class="pre">greeter</span></code> function will be called
 as <code class="docutils literal notranslate"><span class="pre">greeter(name=&quot;john&quot;)</span></code>, similar to how query parameters are injected.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Just like query parameters, path parameters can convert and validate their values as
-well. This is configured using the <code class="docutils literal notranslate"><span class="pre">:type</span></code> colon annotation, similar to type
-annotations. For example, <code class="docutils literal notranslate"><span class="pre">value:str</span></code> will receive values as a string, while
-<code class="docutils literal notranslate"><span class="pre">value:int</span></code> will try to convert it into an integer.</p>
+well. This is configured using the <code class="docutils literal notranslate"><span class="pre">:type</span></code> colon annotation in the URL pattern.
+For example, <code class="docutils literal notranslate"><span class="pre">value:str</span></code> will receive values as a string, while <code class="docutils literal notranslate"><span class="pre">value:int</span></code> will
+try to convert it into an integer.</p>
 <p>A full list of supported types can be found here:
-<a class="reference internal" href="../../usage/routing/parameters.html#supported-path-parameter-types"><span class="std std-ref">Supported Path Parameter Types</span></a></p>
+<a class="reference internal" href="../../usage/routing/parameters.html#supported-path-parameter-types"><span class="std std-ref">Supported path parameter types</span></a></p>
 </div>
 <p>By using this pattern and combining it with those from the earlier section about
 receiving data you can now set up a route handler that takes in the title of a
@@ -688,43 +689,44 @@ list.</p>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">put</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundException</span>
-</span><span data-line="5">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="nd">@dataclass</span>
-</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
-</span><span data-line="9">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="10">    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
-</span><span data-line="11">
+</span><span data-line="7">
+</span><span data-line="8"><span class="nd">@dataclass</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">:</span>
+</span><span data-line="10">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="11">    <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
 </span><span data-line="12">
-</span><span data-line="13"><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-</span><span data-line="14">    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-</span><span data-line="15">    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-</span><span data-line="16">    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-</span><span data-line="17"><span class="p">]</span>
-</span><span data-line="18">
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">TODO_LIST</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="15">    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Start writing TODO list&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+</span><span data-line="16">    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;???&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+</span><span data-line="17">    <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Profit&quot;</span><span class="p">,</span> <span class="n">done</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+</span><span data-line="18"><span class="p">]</span>
 </span><span data-line="19">
-</span><span data-line="20"><span class="k">def</span><span class="w"> </span><span class="nf">get_todo_by_title</span><span class="p">(</span><span class="n">todo_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoItem</span><span class="p">:</span>
-</span><span data-line="21">    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span><span class="p">:</span>
-</span><span data-line="22">        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="n">todo_name</span><span class="p">:</span>
-</span><span data-line="23">            <span class="k">return</span> <span class="n">item</span>
-</span><span data-line="24">    <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;TODO </span><span class="si">{</span><span class="n">todo_name</span><span class="si">!r}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
-</span><span data-line="25">
+</span><span data-line="20">
+</span><span data-line="21"><span class="k">def</span><span class="w"> </span><span class="nf">get_todo_by_title</span><span class="p">(</span><span class="n">todo_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoItem</span><span class="p">:</span>
+</span><span data-line="22">    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">TODO_LIST</span><span class="p">:</span>
+</span><span data-line="23">        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">title</span> <span class="o">==</span> <span class="n">todo_name</span><span class="p">:</span>
+</span><span data-line="24">            <span class="k">return</span> <span class="n">item</span>
+</span><span data-line="25">    <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;TODO </span><span class="si">{</span><span class="n">todo_name</span><span class="si">!r}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
 </span><span data-line="26">
-</span><span data-line="27"><span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{item_title:str}&quot;</span><span class="p">)</span>
-</span><span data-line="28"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_item</span><span class="p">(</span><span class="n">item_title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-</span><span data-line="29">    <span class="n">todo_item</span> <span class="o">=</span> <span class="n">get_todo_by_title</span><span class="p">(</span><span class="n">item_title</span><span class="p">)</span>
-</span><span data-line="30">    <span class="n">todo_item</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">title</span>
-</span><span data-line="31">    <span class="n">todo_item</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">done</span>
-</span><span data-line="32">    <span class="k">return</span> <span class="n">TODO_LIST</span>
-</span><span data-line="33">
+</span><span data-line="27">
+</span><span data-line="28"><span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{item_title:str}&quot;</span><span class="p">)</span>
+</span><span data-line="29"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_item</span><span class="p">(</span><span class="n">item_title</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+</span><span data-line="30">    <span class="n">todo_item</span> <span class="o">=</span> <span class="n">get_todo_by_title</span><span class="p">(</span><span class="n">item_title</span><span class="p">)</span>
+</span><span data-line="31">    <span class="n">todo_item</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">title</span>
+</span><span data-line="32">    <span class="n">todo_item</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">done</span>
+</span><span data-line="33">    <span class="k">return</span> <span class="n">TODO_LIST</span>
 </span><span data-line="34">
-</span><span data-line="35"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">update_item</span><span class="p">])</span>
+</span><span data-line="35">
+</span><span data-line="36"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">update_item</span><span class="p">])</span>
 </span></pre></div>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../usage/routing/parameters.html#path-parameters"><span class="std std-ref">Path Parameters</span></a></p></li>
+<li><p><a class="reference internal" href="../../usage/routing/parameters.html#path-parameters"><span class="std std-ref">Path parameters</span></a></p></li>
 </ul>
 </div>
 </section>

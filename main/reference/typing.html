@@ -469,6 +469,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_generic"><code class="docutils literal notranslate">is_generic</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_simple_type"><code class="docutils literal notranslate">is_simple_type</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_parameter_field"><code class="docutils literal notranslate">is_parameter_field</span></code></a></li>
+<li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_non_marker_parameter_field"><code class="docutils literal notranslate">is_non_marker_parameter_field</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_const"><code class="docutils literal notranslate">is_const</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_required"><code class="docutils literal notranslate">is_required</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_annotated"><code class="docutils literal notranslate">is_annotated</span></code></a></li>
@@ -725,6 +726,14 @@ data-aria-dark="Switch to auto color mode">
 <dt class="sig sig-object py" id="litestar.typing.FieldDefinition.is_parameter_field">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_parameter_field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.typing.FieldDefinition.is_parameter_field" title="Link to this definition">¶</a></dt>
 <dd><p>Check if the field type is a parameter kwarg value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.typing.FieldDefinition.is_non_marker_parameter_field">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_non_marker_parameter_field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#litestar.typing.FieldDefinition.is_non_marker_parameter_field" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the field type is a ParameterKwarg that’s not a marker only.</p>
+<p>A marker is considered an instance of ‘ParameterKwarg’ without any constraints
+applied, usually produced by ‘FromQuery[]’, ‘FromPath[]’, etc.</p>
 </dd></dl>
 
 <dl class="py property">
