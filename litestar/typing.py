@@ -9,9 +9,8 @@ from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass, is_dataclass, replace
 from enum import Enum
 from inspect import Parameter, Signature
+from typing import Annotated as te_Annotated
 from typing import Any, AnyStr, ForwardRef, Literal, TypeVar, cast
-
-from typing_extensions import Annotated as te_Annotated
 
 try:
     from typing import Annotated  # pyright: ignore

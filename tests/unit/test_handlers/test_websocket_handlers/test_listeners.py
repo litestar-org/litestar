@@ -16,8 +16,8 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import WebsocketListenerRouteHandler
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
-from litestar.routes import WebSocketRoute
 from litestar.params import FromPath
+from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import WebSocketMode
 

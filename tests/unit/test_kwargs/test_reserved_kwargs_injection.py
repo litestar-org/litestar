@@ -313,7 +313,7 @@ def test_improper_use_of_state_kwarg_with_annotated_metadata() -> None:
     caused the subclass check to crash with ``TypeError`` before we could raise the
     configuration error.
     """
-    from typing_extensions import Annotated
+    from typing import Annotated
 
     from litestar.params import QueryParameter
 

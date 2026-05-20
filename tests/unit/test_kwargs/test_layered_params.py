@@ -1,5 +1,6 @@
+from typing import Annotated
+
 import pytest
-from typing_extensions import Annotated
 
 from litestar import Controller, Router, get
 from litestar.params import CookieParameter, FromPath, FromQuery, HeaderParameter, Parameter, QueryParameter

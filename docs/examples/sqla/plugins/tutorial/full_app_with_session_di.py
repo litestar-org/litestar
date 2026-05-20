@@ -1,6 +1,6 @@
-from collections.abc import AsyncGenerator, Sequence
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound
@@ -71,7 +71,7 @@ async def get_todo_by_title(todo_name: FromPath[str], session: AsyncSession) -> 
         raise NotFoundException(detail=f"TODO {todo_name!r} not found") from e
 
 
-async def get_todo_list(done: FromQuery[Optional[bool]], session: AsyncSession) -> List[TodoItem]:
+async def get_todo_list(done: FromQuery[bool | None], session: AsyncSession) -> list[TodoItem]:
     query = select(TodoItem)
     if done is not None:
         query = query.where(TodoItem.done.is_(done))
@@ -81,7 +81,7 @@ async def get_todo_list(done: FromQuery[Optional[bool]], session: AsyncSession) 
 
 
 @get("/")
-async def get_list(transaction: AsyncSession, done: FromQuery[Optional[bool]] = None) -> TodoCollectionType:
+async def get_list(transaction: AsyncSession, done: FromQuery[bool | None] = None) -> TodoCollectionType:
     return [serialize_todo(todo) for todo in await get_todo_list(done, transaction)]
 
 

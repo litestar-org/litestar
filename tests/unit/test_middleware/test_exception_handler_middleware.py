@@ -1,5 +1,5 @@
-from collections.abc import Callable, Generator
 import dataclasses
+from collections.abc import Callable, Generator
 from inspect import getinnerframes
 from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock

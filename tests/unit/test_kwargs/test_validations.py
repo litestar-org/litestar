@@ -1,8 +1,7 @@
 from collections.abc import Callable
-from typing import Any
+from typing import Annotated, Any
 
 import pytest
-from typing_extensions import Annotated
 
 from litestar import Litestar, get, post, websocket
 from litestar.constants import RESERVED_KWARGS

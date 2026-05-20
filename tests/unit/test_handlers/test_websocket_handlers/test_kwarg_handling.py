@@ -1,4 +1,4 @@
-from typing_extensions import Annotated
+from typing import Annotated
 
 from litestar import WebSocket, websocket
 from litestar.params import FromPath, FromQuery, HeaderParameter

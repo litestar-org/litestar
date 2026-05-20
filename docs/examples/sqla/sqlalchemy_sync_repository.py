@@ -11,12 +11,8 @@ from advanced_alchemy.extensions.litestar import (
     repository,
 )
 from advanced_alchemy.filters import LimitOffset
-from litestar.plugins.sqlalchemy import (
-    SQLAlchemyInitPlugin,
-    SQLAlchemySyncConfig,
-    base,
-    repository,
-)
+from pydantic import BaseModel as _BaseModel
+from pydantic import TypeAdapter
 from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
@@ -26,9 +22,6 @@ from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import PathParameter, QueryParameter
-from litestar.repository.filters import LimitOffset
-from pydantic import BaseModel as _BaseModel
-from pydantic import TypeAdapter
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session

@@ -5,10 +5,10 @@ from typing import Optional
 import pytest
 
 from litestar import get
+from litestar.params import FromPath
 from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.plugins.mako import MakoTemplateEngine
 from litestar.plugins.minijinja import MiniJinjaTemplateEngine
-from litestar.params import FromPath
 from litestar.response.template import Template
 from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.template.config import TemplateConfig

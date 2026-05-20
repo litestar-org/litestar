@@ -126,12 +126,12 @@ def test_dependency_isolation() -> None:
 
     with (
         create_test_client(
-        [FirstController, SecondController],
-        dependencies={
-            "second": Provide(router_first_dependency, sync_to_thread=False),
-            "third": Provide(router_second_dependency),
-        },
-    ) as client,
+            [FirstController, SecondController],
+            dependencies={
+                "second": Provide(router_first_dependency, sync_to_thread=False),
+                "third": Provide(router_second_dependency),
+            },
+        ) as client,
         pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
         client.websocket_connect("/second/abcdef?query_param=12345") as ws,
     ):

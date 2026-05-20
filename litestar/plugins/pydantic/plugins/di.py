@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import inspect
 from inspect import Signature
-from typing import Any
-
-from typing_extensions import Annotated
+from typing import Annotated, Any
 
 from litestar.plugins import DIPlugin
 from litestar.plugins.pydantic.utils import is_pydantic_model_class

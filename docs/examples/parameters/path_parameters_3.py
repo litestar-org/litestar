@@ -1,18 +1,16 @@
 import dataclasses
-from typing import Annotated
-from typing import Any, Dict
+from typing import Annotated, Any
 
 from litestar import Litestar, get
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.external_documentation import ExternalDocumentation
 from litestar.params import PathParameter
-from pydantic import BaseModel, Json, conint
 
 
 @dataclasses.dataclass
 class Version:
     id: int
-    specs: Dict[str, Any]
+    specs: dict[str, Any]
 
 
 VERSIONS = {1: Version(id=1, specs={"some": "value"})}

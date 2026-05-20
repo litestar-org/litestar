@@ -11,7 +11,6 @@ from litestar import Litestar, get, post, put
 from litestar.datastructures import State
 from litestar.exceptions import ClientException, NotFoundException
 from litestar.params import FromPath, FromQuery
-from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
 from litestar.status_codes import HTTP_409_CONFLICT
 
 
@@ -65,7 +64,7 @@ async def get_todo_by_title(todo_name: FromPath[str], session: AsyncSession) -> 
         raise NotFoundException(detail=f"TODO {todo_name!r} not found") from e
 
 
-async def get_todo_list(done: FromQuery[Optional[bool]], session: AsyncSession) -> List[TodoItem]:
+async def get_todo_list(done: FromQuery[bool | None], session: AsyncSession) -> list[TodoItem]:
     query = select(TodoItem)
     if done is not None:
         query = query.where(TodoItem.done.is_(done))
@@ -75,7 +74,7 @@ async def get_todo_list(done: FromQuery[Optional[bool]], session: AsyncSession) 
 
 
 @get("/")
-async def get_list(transaction: AsyncSession, done: FromQuery[Optional[bool]] = None) -> List[TodoItem]:
+async def get_list(transaction: AsyncSession, done: FromQuery[bool | None] = None) -> list[TodoItem]:
     return await get_todo_list(done, transaction)
 
 

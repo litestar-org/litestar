@@ -13,11 +13,6 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from litestar import Litestar, get, post, put
 from litestar.exceptions import ClientException, NotFoundException
 from litestar.params import FromPath, FromQuery
-from litestar.plugins.sqlalchemy import (
-    SQLAlchemyAsyncConfig,
-    SQLAlchemyInitPlugin,
-    SQLAlchemySerializationPlugin,
-)
 from litestar.status_codes import HTTP_409_CONFLICT
 
 

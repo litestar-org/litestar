@@ -4,7 +4,6 @@ import pytest
 
 from litestar import HttpMethod
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import FromPath
 from litestar.static_files import create_static_files_router
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_405_METHOD_NOT_ALLOWED
 from litestar.testing import create_test_client

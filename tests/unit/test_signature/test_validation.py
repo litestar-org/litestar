@@ -68,7 +68,9 @@ def test_validation_failure_raises_400() -> None:
     dependencies = {"dep": Provide(lambda: 13, sync_to_thread=False)}
 
     @get("/")
-    def test(dep: int, param: FromQuery[int], optional_dep: Annotated[Optional[int], Dependency(default=None)]) -> None: ...
+    def test(
+        dep: int, param: FromQuery[int], optional_dep: Annotated[Optional[int], Dependency(default=None)]
+    ) -> None: ...
 
     with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
         response = client.get("/?param=thirteen")

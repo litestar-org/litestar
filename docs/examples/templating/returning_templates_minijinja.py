@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Literal
 
 from litestar import Litestar, get
-from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.params import FromPath, FromQuery
+from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.response import Template
 from litestar.template.config import TemplateConfig
 

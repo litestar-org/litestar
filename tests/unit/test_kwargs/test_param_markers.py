@@ -1,9 +1,8 @@
 import dataclasses
 import warnings
-from typing import Any, Dict
+from typing import Annotated, Any
 
 import pytest
-from typing_extensions import Annotated
 
 from litestar import Litestar, get
 from litestar.enums import ParamType
@@ -41,7 +40,7 @@ def test_simple_form_handler() -> None:
         query_param: FromQuery[int],
         header_param: FromHeader[int],
         cookie_param: FromCookie[int],
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         return {"query": query_param, "header": header_param, "cookie": cookie_param, "path": path_param}
 
     with create_test_client([handler], raise_server_exceptions=True) as client:
@@ -58,7 +57,7 @@ def test_explicit_form_handler() -> None:
         query_param: Annotated[int, QueryParameter()],
         header_param: Annotated[int, HeaderParameter()],
         cookie_param: Annotated[int, CookieParameter()],
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         return {"query": query_param, "header": header_param, "cookie": cookie_param, "path": path_param}
 
     with create_test_client([handler], raise_server_exceptions=True) as client:
@@ -75,7 +74,7 @@ def test_explicit_form_with_alias_handler() -> None:
         query_p: Annotated[int, QueryParameter(name="query_param")],
         header_p: Annotated[int, HeaderParameter(name="header_param")],
         cookie_p: Annotated[int, CookieParameter(name="cookie_param")],
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         return {"query": query_p, "header": header_p, "cookie": cookie_p, "path": path_p}
 
     app = Litestar([handler])
@@ -101,11 +100,11 @@ def test_simple_form_dependency() -> None:
         query_param: FromQuery[int],
         header_param: FromHeader[int],
         cookie_param: FromCookie[int],
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         return {"query": query_param, "header": header_param, "cookie": cookie_param, "path": path_param}
 
     @get("/{path_param:int}", dependencies={"dep": dependency})
-    def handler(dep: Dict[str, int]) -> Dict[str, int]:
+    def handler(dep: dict[str, int]) -> dict[str, int]:
         return dep
 
     with create_test_client([handler], raise_server_exceptions=True) as client:
@@ -121,11 +120,11 @@ def test_explicit_form_dependency() -> None:
         query_param: Annotated[int, QueryParameter()],
         header_param: Annotated[int, HeaderParameter()],
         cookie_param: Annotated[int, CookieParameter()],
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         return {"query": query_param, "header": header_param, "cookie": cookie_param, "path": path_param}
 
     @get("/{path_param:int}", dependencies={"dep": dependency})
-    def handler(dep: Dict[str, int]) -> Dict[str, int]:
+    def handler(dep: dict[str, int]) -> dict[str, int]:
         return dep
 
     with create_test_client([handler], raise_server_exceptions=True) as client:
@@ -141,11 +140,11 @@ def test_explicit_form_with_alias_dependency() -> None:
         query_p: Annotated[int, QueryParameter(name="query_param")],
         header_p: Annotated[int, HeaderParameter(name="header_param")],
         cookie_p: Annotated[int, CookieParameter(name="cookie_param")],
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         return {"query": query_p, "header": header_p, "cookie": cookie_p, "path": path_p}
 
     @get("/{path_param:int}", dependencies={"dep": dependency})
-    def handler(dep: Dict[str, int]) -> Dict[str, int]:
+    def handler(dep: dict[str, int]) -> dict[str, int]:
         return dep
 
     app = Litestar([handler])

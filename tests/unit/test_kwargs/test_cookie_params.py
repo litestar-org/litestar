@@ -22,7 +22,8 @@ from litestar.testing import create_test_client
         (int, {}, CookieParameter(name="special-cookie", ge=100, le=120), HTTP_400_BAD_REQUEST),
         (
             Optional[int],
-            {}, CookieParameter(name="special-cookie", ge=100, le=120, required=False, default=None),
+            {},
+            CookieParameter(name="special-cookie", ge=100, le=120, required=False, default=None),
             HTTP_200_OK,
         ),
     ],

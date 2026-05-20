@@ -51,7 +51,7 @@ def test_prometheus_exporter_example(
     if "{name:str}" in route_template:
 
         @get(route_template)
-        def home(name: FromPath[str]) -> Dict[str, Any]:
+        def home(name: FromPath[str]) -> dict[str, Any]:
             return {"hello": name}
     else:
 

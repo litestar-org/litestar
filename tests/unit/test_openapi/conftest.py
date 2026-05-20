@@ -1,8 +1,7 @@
 from datetime import date, datetime
-from typing import Any, Optional, Union
+from typing import Annotated, Any, Optional, Union
 
 import pytest
-from typing_extensions import Annotated
 
 from litestar import Controller, MediaType, delete, get, patch, post, put
 from litestar.datastructures import ResponseHeader, State

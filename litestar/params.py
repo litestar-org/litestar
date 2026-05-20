@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Hashable, Sequence
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING, Any, ClassVar, Hashable, Sequence, TypeVar
-from typing_extensions import Annotated, TypeAlias
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, TypeVar
 
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.types import Empty

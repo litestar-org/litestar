@@ -1,12 +1,11 @@
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, Optional
+from typing import Annotated, Any
 from unittest.mock import MagicMock
 from uuid import UUID, uuid1, uuid4
 
 import pytest
-from typing_extensions import Annotated
 
 from litestar import Litestar, MediaType, get, post
 from litestar.exceptions import ImproperlyConfiguredException

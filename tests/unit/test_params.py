@@ -177,7 +177,7 @@ def test_dependency_skip_validation_with_default() -> None:
 
 def test_dependency_default_is_not_treated_as_query_parameter() -> None:
     @get("/")
-    def handler(value: int = Dependency(default=42)) -> Dict[str, int]:
+    def handler(value: int = Dependency(default=42)) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -198,7 +198,7 @@ def test_dependency_default_does_not_collide_with_query_param_of_same_name() -> 
         return value * 10
 
     @get("/", dependencies={"computed": Provide(provide_value, sync_to_thread=False)})
-    def handler(computed: int) -> Dict[str, int]:
+    def handler(computed: int) -> dict[str, int]:
         return {"computed": computed}
 
     with create_test_client(route_handlers=[handler]) as client:

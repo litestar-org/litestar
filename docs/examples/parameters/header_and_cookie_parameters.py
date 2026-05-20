@@ -1,9 +1,5 @@
-from typing import Annotated
-
-from pydantic import BaseModel
 import dataclasses
-
-from typing_extensions import Annotated
+from typing import Annotated
 
 from litestar import Litestar, get
 from litestar.exceptions import NotAuthorizedException

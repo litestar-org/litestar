@@ -1,12 +1,10 @@
 import dataclasses
 
 from polyfactory.factories.dataclass_factory import DataclassFactory
-from polyfactory.factories.pydantic_factory import ModelFactory
 
 from litestar import Litestar, get
 from litestar.pagination import AbstractSyncClassicPaginator, ClassicPagination
 from litestar.params import FromQuery
-from pydantic import BaseModel
 
 
 @dataclasses.dataclass

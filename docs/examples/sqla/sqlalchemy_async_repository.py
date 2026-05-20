@@ -12,14 +12,8 @@ from advanced_alchemy.extensions.litestar import (
     filters,
     repository,
 )
-from litestar.plugins.sqlalchemy import (
-    AsyncSessionConfig,
-    SQLAlchemyAsyncConfig,
-    SQLAlchemyInitPlugin,
-    base,
-    filters,
-    repository,
-)
+from pydantic import BaseModel as _BaseModel
+from pydantic import TypeAdapter
 from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
@@ -29,8 +23,6 @@ from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import PathParameter, QueryParameter
-from pydantic import BaseModel as _BaseModel
-from pydantic import TypeAdapter
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
