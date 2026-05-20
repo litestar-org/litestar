@@ -7,7 +7,7 @@ from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
 from typing import TYPE_CHECKING, Annotated, Any, Self, Union, get_args, get_origin, get_type_hints
 
-from litestar import connection, datastructures, types
+from litestar import connection, datastructures, params, types
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import expand_type_var_in_type_hint, unwrap_annotation
@@ -29,9 +29,13 @@ __all__ = (
 _GLOBAL_NAMES = {
     namespace: export
     for namespace, export in chain(
-        tuple(getmembers(types)), tuple(getmembers(connection)), tuple(getmembers(datastructures))
+        tuple(getmembers(types)),
+        tuple(getmembers(connection)),
+        tuple(getmembers(datastructures)),
+        tuple(getmembers(params)),
     )
-    if namespace[0].isupper() and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)
+    if namespace[0].isupper()
+    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__, params.__all__)
 }
 """A mapping of names used for handler signature forward-ref resolution.
 

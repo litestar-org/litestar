@@ -225,7 +225,9 @@ filterwarnings = [
   "ignore::DeprecationWarning:google.iam",
   "ignore::DeprecationWarning:google",
   "ignore::DeprecationWarning:sphinxcontrib",
-  "ignore::DeprecationWarning:litestar.*",
+  "ignore:.*'copy_scope' not set:DeprecationWarning",
+  "ignore:.*Deprecated in litestar:DeprecationWarning",
+  "ignore:.*Call to deprecated reset:DeprecationWarning", # redis
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
   # this is coming from rich_click itself, nothing we can do about that for now:
   "ignore: 'RichMultiCommand':DeprecationWarning::",

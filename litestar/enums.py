@@ -70,6 +70,7 @@ class ParamType(StrEnum):
     QUERY = "query"
     COOKIE = "cookie"
     HEADER = "header"
+    DEPENDENCY = "dependency"
 
 
 class CompressionEncoding(StrEnum):

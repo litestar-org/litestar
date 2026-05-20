@@ -1,4 +1,4 @@
-from collections.abc import AsyncGenerator, Sequence
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -10,6 +10,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from litestar import Litestar, get, post, put
 from litestar.datastructures import State
 from litestar.exceptions import ClientException, NotFoundException
+from litestar.params import FromPath, FromQuery
 from litestar.status_codes import HTTP_409_CONFLICT
 
 TodoType = dict[str, Any]
@@ -61,7 +62,7 @@ def serialize_todo(todo: TodoItem) -> TodoType:
     return {"title": todo.title, "done": todo.done}
 
 
-async def get_todo_by_title(todo_name, session: AsyncSession) -> TodoItem:
+async def get_todo_by_title(todo_name: FromPath[str], session: AsyncSession) -> TodoItem:
     query = select(TodoItem).where(TodoItem.title == todo_name)
     result = await session.execute(query)
     try:
@@ -70,7 +71,7 @@ async def get_todo_by_title(todo_name, session: AsyncSession) -> TodoItem:
         raise NotFoundException(detail=f"TODO {todo_name!r} not found") from e
 
 
-async def get_todo_list(done: bool | None, session: AsyncSession) -> Sequence[TodoItem]:
+async def get_todo_list(done: FromQuery[bool | None], session: AsyncSession) -> list[TodoItem]:
     query = select(TodoItem)
     if done is not None:
         query = query.where(TodoItem.done.is_(done))
@@ -80,7 +81,7 @@ async def get_todo_list(done: bool | None, session: AsyncSession) -> Sequence[To
 
 
 @get("/")
-async def get_list(transaction: AsyncSession, done: bool | None = None) -> TodoCollectionType:
+async def get_list(transaction: AsyncSession, done: FromQuery[bool | None] = None) -> TodoCollectionType:
     return [serialize_todo(todo) for todo in await get_todo_list(done, transaction)]
 
 
@@ -92,7 +93,7 @@ async def add_item(data: TodoType, transaction: AsyncSession) -> TodoType:
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: str, data: TodoType, transaction: AsyncSession) -> TodoType:
+async def update_item(item_title: FromPath[str], data: TodoType, transaction: AsyncSession) -> TodoType:
     todo_item = await get_todo_by_title(item_title, transaction)
     todo_item.title = data["title"]
     todo_item.done = data["done"]

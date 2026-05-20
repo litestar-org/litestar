@@ -8,6 +8,7 @@ from litestar import Litestar, Request, get
 from litestar.events.emitter import SimpleEventEmitter
 from litestar.events.listener import EventListener, listener
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import FromPath
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from litestar.types import AnyIOBackend
@@ -81,7 +82,7 @@ def test_multiple_event_ids(mock: MagicMock, anyio_backend: AnyIOBackend) -> Non
         mock()
 
     @get("/{event_id:int}")
-    def route_handler(request: Request[Any, Any, Any], event_id: int) -> None:
+    def route_handler(request: Request[Any, Any, Any], event_id: FromPath[int]) -> None:
         request.app.emit(f"test_event_{event_id}")
 
     with create_test_client(route_handlers=[route_handler], listeners=[event_handler], backend=anyio_backend) as client:

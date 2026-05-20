@@ -14,7 +14,6 @@ from typing import (
     Optional,
     TypedDict,
     Union,
-    cast,
 )
 from uuid import UUID
 
@@ -32,7 +31,10 @@ from litestar.datastructures.url import URL
 from litestar.dto import AbstractDTO, DTOData
 from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
-from litestar.params import KwargDefinition, ParameterKwarg
+from litestar.params import (
+    KwargDefinition,
+    ParameterKwarg,
+)
 from litestar.typing import FieldDefinition  # noqa
 from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
@@ -156,13 +158,10 @@ class SignatureModel(Struct):
             elif key in connection.path_params:
                 message["source"] = ParamType.PATH
 
-            elif key in cls._fields and isinstance(cls._fields[key].kwarg_definition, ParameterKwarg):
-                if cast("ParameterKwarg", cls._fields[key].kwarg_definition).cookie:
-                    message["source"] = ParamType.COOKIE
-                elif cast("ParameterKwarg", cls._fields[key].kwarg_definition).header:
-                    message["source"] = ParamType.HEADER
-                else:
-                    message["source"] = ParamType.QUERY
+            elif key in cls._fields and isinstance(
+                kwarg_definition := cls._fields[key].kwarg_definition, ParameterKwarg
+            ):
+                message["source"] = kwarg_definition.param_type
 
         return message
 

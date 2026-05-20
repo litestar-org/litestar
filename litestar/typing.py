@@ -9,7 +9,16 @@ from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass, is_dataclass, replace
 from enum import Enum
 from inspect import Parameter, Signature
+from typing import Annotated as te_Annotated
 from typing import Any, AnyStr, ForwardRef, Literal, TypeVar, cast
+
+try:
+    from typing import Annotated  # pyright: ignore
+
+    _ANNOTATED_TYPE_FORMS = (Annotated, te_Annotated)
+except ImportError:
+    _ANNOTATED_TYPE_FORMS = (te_Annotated,)  # type: ignore[assignment]
+
 
 from litestar.types import Empty
 
@@ -225,6 +234,15 @@ class FieldDefinition:
         return isinstance(self.kwarg_definition, ParameterKwarg)
 
     @property
+    def is_non_marker_parameter_field(self) -> bool:
+        """Check if the field type is a ParameterKwarg that's not a marker only.
+
+        A marker is considered an instance of 'ParameterKwarg' without any constraints
+        applied, usually produced by 'FromQuery[]', 'FromPath[]', etc.
+        """
+        return isinstance(self.kwarg_definition, ParameterKwarg) and not self.kwarg_definition.is_marker
+
+    @property
     def is_const(self) -> bool:
         """Check if the field is defined as constant value."""
         return bool(self.kwarg_definition and getattr(self.kwarg_definition, "const", False))
@@ -246,7 +264,7 @@ class FieldDefinition:
     @property
     def is_annotated(self) -> bool:
         """Check if the field type is Annotated."""
-        return bool(self.metadata)
+        return any(a in self.type_wrappers for a in _ANNOTATED_TYPE_FORMS)  # type: ignore[comparison-overlap]
 
     @property
     def is_literal(self) -> bool:
@@ -555,12 +573,17 @@ class FieldDefinition:
                 f"'{parameter.name}' does not have a type annotation. If it should receive any value, use 'Any'."
             ) from e
 
-        if parameter.name == "state" and not issubclass(annotation, ImmutableState):
-            raise ImproperlyConfiguredException(
-                f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. "
-                "It must be typed to a subclass of `litestar.datastructures.ImmutableState` or "
-                "`litestar.datastructures.State`."
+        if parameter.name == "state":
+            # Unwrap Annotated[...] so we can validate the underlying type
+            bare_annotation = (
+                getattr(annotation, "__origin__", annotation) if hasattr(annotation, "__metadata__") else annotation
             )
+            if not isinstance(bare_annotation, type) or not issubclass(bare_annotation, ImmutableState):
+                raise ImproperlyConfiguredException(
+                    f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. "
+                    "It must be typed to a subclass of `litestar.datastructures.ImmutableState` or "
+                    "`litestar.datastructures.State`."
+                )
 
         return FieldDefinition.from_kwarg(
             annotation=annotation,

@@ -5,6 +5,7 @@ from typing import Optional
 import pytest
 
 from litestar import get
+from litestar.params import FromPath
 from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.plugins.mako import MakoTemplateEngine
 from litestar.plugins.minijinja import MiniJinjaTemplateEngine
@@ -114,7 +115,7 @@ def test_minijinja_url_for(tmp_path: Path) -> None:
     template_config = TemplateConfig(engine=MiniJinjaTemplateEngine, directory=tmp_path)
 
     @get(path="/{path:path}")
-    def tpl_renderer(path: Path) -> Template:
+    def tpl_renderer(path: FromPath[Path]) -> Template:
         return Template(template_name=path.name)
 
     @get(path="/simple", name="simple")

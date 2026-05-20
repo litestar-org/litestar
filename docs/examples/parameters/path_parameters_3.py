@@ -1,28 +1,26 @@
-from typing import Annotated
-
-from pydantic import BaseModel, Json, conint
+import dataclasses
+from typing import Annotated, Any
 
 from litestar import Litestar, get
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.external_documentation import ExternalDocumentation
-from litestar.params import Parameter
+from litestar.params import PathParameter
 
 
-class Version(BaseModel):
-    id: conint(ge=1, le=10)  # type: ignore[valid-type]
-    specs: Json
+@dataclasses.dataclass
+class Version:
+    id: int
+    specs: dict[str, Any]
 
 
-VERSIONS = {1: Version(id=1, specs='{"some": "value"}')}
+VERSIONS = {1: Version(id=1, specs={"some": "value"})}
 
 
 @get(path="/versions/{version:int}", sync_to_thread=False)
 def get_product_version(
     version: Annotated[
         int,
-        Parameter(
-            ge=1,
-            le=10,
+        PathParameter(
             title="Available Product Versions",
             description="Get a specific version spec from the available specs",
             examples=[Example(value=1)],

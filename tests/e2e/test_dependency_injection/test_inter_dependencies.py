@@ -2,18 +2,19 @@ from random import randint
 
 from litestar import Controller, MediaType, get
 from litestar.di import Provide
+from litestar.params import FromPath, FromQuery
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
 
 def test_inter_dependencies() -> None:
-    async def top_dependency(query_param: int) -> int:
+    async def top_dependency(query_param: FromQuery[int]) -> int:
         return query_param
 
     async def mid_level_dependency() -> int:
         return 5
 
-    async def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
+    async def local_dependency(path_param: FromPath[int], mid_level: int, top_level: int) -> int:
         return path_param + mid_level + top_level
 
     class MyController(Controller):

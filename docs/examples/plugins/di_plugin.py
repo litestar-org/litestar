@@ -3,6 +3,7 @@ from typing import Any
 
 from litestar import Litestar, get
 from litestar.di import Provide
+from litestar.params import FromQuery
 from litestar.plugins import DIPlugin
 
 
@@ -17,7 +18,7 @@ class MyDIPlugin(DIPlugin):
 
     def get_typed_init(self, type_: Any) -> tuple[Signature, dict[str, Any]]:
         signature = Signature([Parameter(name="param", kind=Parameter.POSITIONAL_OR_KEYWORD)])
-        annotations = {"param": str}
+        annotations = {"param": FromQuery[str]}
         return signature, annotations
 
 

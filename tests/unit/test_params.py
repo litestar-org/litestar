@@ -6,14 +6,16 @@ import pytest
 from litestar import Controller, Litestar, MediaType, get, post
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import Body, Dependency, Parameter
+from litestar.params import Body, Dependency, FromQuery, Parameter, QueryParameter
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
+
+pytestmark = pytest.mark.filterwarnings("ignore::litestar.exceptions.LitestarDeprecationWarning")
 
 
 def test_parsing_of_parameter_as_annotated() -> None:
     @get(path="/")
-    def handler(param: Annotated[str, Parameter(min_length=1)]) -> str:
+    def handler(param: Annotated[str, QueryParameter(min_length=1)]) -> str:
         return param
 
     with create_test_client(handler) as client:
@@ -173,12 +175,44 @@ def test_dependency_skip_validation_with_default() -> None:
         assert skipped_resp.json() == {"value": 1}
 
 
+def test_dependency_default_is_not_treated_as_query_parameter() -> None:
+    @get("/")
+    def handler(value: int = Dependency(default=42)) -> dict[str, int]:
+        return {"value": value}
+
+    with create_test_client(route_handlers=[handler]) as client:
+        schema_resp = client.get("/schema/openapi.json")
+        assert schema_resp.status_code == HTTP_200_OK
+        operation = schema_resp.json()["paths"]["/"]["get"]
+        # the dependency must not appear as any kind of HTTP parameter
+        assert "parameters" not in operation
+
+
+def test_dependency_default_does_not_collide_with_query_param_of_same_name() -> None:
+    """A query parameter on a handler can share a name with a dependency-with-default
+    declared on a downstream provider, without the dependency's default leaking into
+    the handler's query parameter.
+    """
+
+    def provide_value(value: int = Dependency(default=7)) -> int:
+        return value * 10
+
+    @get("/", dependencies={"computed": Provide(provide_value, sync_to_thread=False)})
+    def handler(computed: int) -> dict[str, int]:
+        return {"computed": computed}
+
+    with create_test_client(route_handlers=[handler]) as client:
+        resp = client.get("/")
+        assert resp.status_code == HTTP_200_OK
+        assert resp.json() == {"computed": 70}
+
+
 def test_dependency_nested_sequence() -> None:
     class Obj:
         def __init__(self, seq: list[str]) -> None:
             self.seq = seq
 
-    async def provides_obj(seq: list[str]) -> Obj:
+    async def provides_obj(seq: FromQuery[list[str]]) -> Obj:
         return Obj(seq)
 
     @get("/obj")
@@ -186,7 +220,7 @@ def test_dependency_nested_sequence() -> None:
         return obj.seq
 
     @get("/seq")
-    def get_seq(seq: list[str]) -> list[str]:
+    def get_seq(seq: FromQuery[list[str]]) -> list[str]:
         return seq
 
     with create_test_client(
@@ -203,7 +237,7 @@ def test_dependency_nested_sequence() -> None:
 def test_regex_validation() -> None:
     # https://github.com/litestar-org/litestar/issues/1860
     @get(path="/val_regex", media_type=MediaType.TEXT)
-    async def regex_val(text: Annotated[str, Parameter(title="a or b", pattern="[a|b]")]) -> str:
+    async def regex_val(text: Annotated[str, QueryParameter(title="a or b", pattern="[a|b]")]) -> str:
         return f"str: {text}"
 
     with create_test_client(route_handlers=[regex_val]) as client:
@@ -219,11 +253,13 @@ def test_regex_validation() -> None:
 @pytest.fixture(name="optional_no_default_client")
 def optional_no_default_client_fixture() -> Generator[TestClient, None, None]:
     @get("/optional-no-default")
-    def handle_optional(key: Optional[str]) -> dict[str, Optional[str]]:
+    def handle_optional(key: FromQuery[Optional[str]]) -> dict[str, Optional[str]]:
         return {"key": key}
 
     @get("/optional-annotated-no-default")
-    def handle_optional_annotated(param: Annotated[Optional[str], Parameter(query="key")]) -> dict[str, Optional[str]]:
+    def handle_optional_annotated(
+        param: Annotated[Optional[str], QueryParameter(name="key")],
+    ) -> dict[str, Optional[str]]:
         return {"key": param}
 
     with create_test_client(route_handlers=[handle_optional, handle_optional_annotated], openapi_config=None) as client:
@@ -262,12 +298,12 @@ def test_optional_query_parameter_consistency_no_default_queried_with_other_para
 @pytest.fixture(name="optional_default_client")
 def optional_default_client_fixture() -> Generator[TestClient, None, None]:
     @get("/optional-default")
-    def handle_default(key: Optional[str] = None) -> dict[str, Optional[str]]:
+    def handle_default(key: FromQuery[Optional[str]] = None) -> dict[str, Optional[str]]:
         return {"key": key}
 
     @get("/optional-annotated-default")
     def handle_default_annotated(
-        param: Annotated[Optional[str], Parameter(query="key")] = None,
+        param: Annotated[Optional[str], QueryParameter(name="key")] = None,
     ) -> dict[str, Optional[str]]:
         return {"key": param}
 
@@ -299,7 +335,7 @@ def test_optional_query_parameter_consistency_with_default_queried_with_other_pa
 
 def test_not_included_in_schema_param_as_annotated() -> None:
     @get(path="/")
-    def handler(param: Annotated[str, Parameter(include_in_schema=True)]) -> str:
+    def handler(param: Annotated[str, QueryParameter(include_in_schema=True)]) -> str:
         return param
 
     with create_test_client(handler) as client:
@@ -313,7 +349,7 @@ def test_not_included_in_schema_param_as_annotated() -> None:
 
 def test_not_included_in_schema_param_as_default() -> None:
     @get(path="/")
-    def handler(param: str = Parameter(include_in_schema=True)) -> str:
+    def handler(param: Annotated[str, QueryParameter(include_in_schema=True)]) -> str:
         return param
 
     with create_test_client(handler) as client:
@@ -327,7 +363,7 @@ def test_not_included_in_schema_param_as_default() -> None:
 
 def test_not_included_in_schema_param_with_default_value() -> None:
     @get(path="/")
-    def handler(param: str = Parameter(default="b", include_in_schema=True)) -> str:
+    def handler(param: Annotated[str, QueryParameter(include_in_schema=True)] = "b") -> str:
         return param
 
     with create_test_client(handler) as client:
