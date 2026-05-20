@@ -7,13 +7,36 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar
 
 from litestar.exceptions.http_exceptions import HTTPException
-from litestar.plugins.base import InitPlugin
+from litestar.openapi.spec.components import Components
+from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
+from litestar.openapi.spec.schema import Schema
+from litestar.plugins.base import InitPlugin, OpenAPISpecPlugin
 from litestar.response.base import Response
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
     from litestar.connection.request import Request
     from litestar.types.callable_types import ExceptionHandler, ExceptionT
+
+
+_PROBLEM_DETAILS_SCHEMA_NAME = "ProblemDetails"
+
+
+def _build_problem_details_schema() -> Schema:
+    return Schema(
+        title="ProblemDetails",
+        description="Problem Details for HTTP APIs as defined by RFC 9457.",
+        type=OpenAPIType.OBJECT,
+        properties={
+            "type": Schema(type=[OpenAPIType.STRING, OpenAPIType.NULL], format=OpenAPIFormat.URI),
+            "title": Schema(type=[OpenAPIType.STRING, OpenAPIType.NULL]),
+            "status": Schema(type=OpenAPIType.INTEGER),
+            "detail": Schema(type=[OpenAPIType.STRING, OpenAPIType.NULL]),
+            "instance": Schema(type=[OpenAPIType.STRING, OpenAPIType.NULL], format=OpenAPIFormat.URI),
+        },
+        additional_properties=True,
+    )
+
 
 ProblemDetailsExceptionT = TypeVar("ProblemDetailsExceptionT", bound="ProblemDetailsException")
 ProblemDetailsExceptionHandlerType: TypeAlias = "Callable[[Request, ProblemDetailsExceptionT], Response]"
@@ -133,8 +156,13 @@ class ProblemDetailsConfig:
     """
 
 
-class ProblemDetailsPlugin(InitPlugin):
-    """A plugin to convert exceptions into problem details as per RFC 9457."""
+class ProblemDetailsPlugin(InitPlugin, OpenAPISpecPlugin):
+    """A plugin to convert exceptions into problem details as per RFC 9457.
+
+    The plugin also contributes the canonical ``ProblemDetails`` schema to the served
+    OpenAPI document via :class:`~litestar.plugins.OpenAPISpecPlugin`, so handlers and
+    other plugins can ``$ref`` the schema from response definitions.
+    """
 
     def __init__(self, config: ProblemDetailsConfig | None = None):
         self.config = config or ProblemDetailsConfig()
@@ -151,3 +179,6 @@ class ProblemDetailsPlugin(InitPlugin):
             app_config.exception_handlers[exc_type] = _create_exception_handler(conversion_fn, exc_type)
 
         return app_config
+
+    def get_openapi_components(self) -> Components:
+        return Components(schemas={_PROBLEM_DETAILS_SCHEMA_NAME: _build_problem_details_schema()})

@@ -80,11 +80,21 @@ class ResponseFactory:
         self.field_definition = route_handler.parsed_fn_signature.return_type
         self.schema_creator = SchemaCreator.from_openapi_context(context, prefer_alias=False)
 
-    def create_responses(self, raises_validation_error: bool) -> Responses | None:
+    def create_responses(
+        self,
+        raises_validation_error: bool,
+        plugin_owned_status_codes: set[str] | None = None,
+    ) -> Responses | None:
         """Create the schema for responses, if any.
 
         Args:
             raises_validation_error: Boolean flag indicating whether the handler raises a ValidationException.
+            plugin_owned_status_codes: Status codes (string keys) that an
+                :class:`~litestar.plugins.OpenAPISpecPlugin` will contribute via
+                :meth:`~litestar.plugins.OpenAPISpecPlugin.get_openapi_operation`. Exceptions whose
+                ``status_code`` falls in this set are skipped during default emission so the
+                merger's collision discipline isn't tripped on every plugin contribution. ``None``
+                preserves today's behavior.
 
         Returns:
             Responses
@@ -96,6 +106,10 @@ class ResponseFactory:
         exceptions = list(self.route_handler.raises or [])
         if raises_validation_error and ValidationException not in exceptions:
             exceptions.append(ValidationException)
+
+        owned = plugin_owned_status_codes or set()
+        if owned:
+            exceptions = [exc for exc in exceptions if str(exc.status_code) not in owned]
 
         for status_code, response in create_error_responses(exceptions=exceptions):
             responses[status_code] = response
@@ -327,7 +341,10 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
 
 
 def create_responses_for_handler(
-    context: OpenAPIContext, route_handler: HTTPRouteHandler, raises_validation_error: bool
+    context: OpenAPIContext,
+    route_handler: HTTPRouteHandler,
+    raises_validation_error: bool,
+    plugin_owned_status_codes: set[str] | None = None,
 ) -> Responses | None:
     """Create the schema for responses, if any.
 
@@ -335,8 +352,16 @@ def create_responses_for_handler(
         context: An OpenAPIContext instance.
         route_handler: An HTTPRouteHandler instance.
         raises_validation_error: Boolean flag indicating whether the handler raises a ValidationException.
+        plugin_owned_status_codes: Status codes (string keys) that an
+            :class:`~litestar.plugins.OpenAPISpecPlugin` will contribute via
+            :meth:`~litestar.plugins.OpenAPISpecPlugin.get_openapi_operation`. Default emission
+            skips matching exceptions so plugin-contributed responses do not collide with default
+            ones at merge time.
 
     Returns:
         Responses
     """
-    return ResponseFactory(context, route_handler).create_responses(raises_validation_error=raises_validation_error)
+    return ResponseFactory(context, route_handler).create_responses(
+        raises_validation_error=raises_validation_error,
+        plugin_owned_status_codes=plugin_owned_status_codes,
+    )

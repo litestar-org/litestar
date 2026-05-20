@@ -5,9 +5,12 @@ from typing import Any
 
 import pytest
 
-from litestar import get
+from litestar import Litestar, get
 from litestar.exceptions.http_exceptions import HTTPException, ValidationException
+from litestar.openapi.config import OpenAPIConfig
+from litestar.plugins import OpenAPISpecPlugin
 from litestar.plugins.problem_details import ProblemDetailsConfig, ProblemDetailsException, ProblemDetailsPlugin
+from litestar.testing import TestClient
 from litestar.testing.helpers import create_test_client
 
 
@@ -119,3 +122,35 @@ def test_exception_to_problem_detail_map() -> None:
             "detail": "Not enough balance",
             "accounts": ["/account/1", "/account/2"],
         }
+
+
+def test_problem_details_plugin_is_openapi_spec_plugin() -> None:
+    """``ProblemDetailsPlugin`` participates in the OpenAPI document via :class:`OpenAPISpecPlugin`."""
+    plugin = ProblemDetailsPlugin()
+
+    assert isinstance(plugin, OpenAPISpecPlugin)
+
+
+def test_problem_details_plugin_contributes_schema_to_openapi_document() -> None:
+    """Registering ``ProblemDetailsPlugin`` surfaces the RFC 9457 ``ProblemDetails`` schema in the served document."""
+    app = Litestar(
+        plugins=[ProblemDetailsPlugin()],
+        openapi_config=OpenAPIConfig(title="t", version="0.0.1"),
+    )
+
+    with TestClient(app=app) as client:
+        response = client.get("/schema/openapi.json")
+
+    assert response.status_code == 200
+    schemas = response.json()["components"]["schemas"]
+    assert "ProblemDetails" in schemas
+
+    schema = schemas["ProblemDetails"]
+    assert schema["type"] == "object"
+    properties = schema["properties"]
+    assert properties["type"] == {"type": ["string", "null"], "format": "uri"}
+    assert properties["title"] == {"type": ["string", "null"]}
+    assert properties["status"] == {"type": "integer"}
+    assert properties["detail"] == {"type": ["string", "null"]}
+    assert properties["instance"] == {"type": ["string", "null"], "format": "uri"}
+    assert schema["additionalProperties"] is True

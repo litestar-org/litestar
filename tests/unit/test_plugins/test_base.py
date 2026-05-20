@@ -11,7 +11,7 @@ from click import Group
 from litestar import Litestar, MediaType, get
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.file_system import FileSystemRegistry
-from litestar.plugins import CLIPlugin, InitPlugin, OpenAPISchemaPlugin, PluginRegistry
+from litestar.plugins import CLIPlugin, InitPlugin, OpenAPISchemaPlugin, OpenAPISpecPlugin, PluginRegistry
 from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.plugins.core import MsgspecDIPlugin
 from litestar.plugins.pydantic import PydanticDIPlugin, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
@@ -113,6 +113,92 @@ def test_openapi_schema_plugin_is_constrained_field() -> None:
 def test_openapi_schema_plugin_is_undefined_sentinel() -> None:
     for value in UNDEFINED_SENTINELS:
         assert OpenAPISchemaPlugin.is_undefined_sentinel(value) is False
+
+
+def test_openapi_spec_plugin_in_public_namespaces() -> None:
+    """``OpenAPISpecPlugin`` is exported from both ``litestar.plugins`` and ``litestar.plugins.base``."""
+    import litestar.plugins as plugins_pkg
+    import litestar.plugins.base as plugins_base
+
+    assert "OpenAPISpecPlugin" in plugins_pkg.__all__
+    assert "OpenAPISpecPlugin" in plugins_base.__all__
+    assert plugins_pkg.OpenAPISpecPlugin is plugins_base.OpenAPISpecPlugin
+
+
+def test_openapi_spec_plugin_slots_are_minimal() -> None:
+    """``__slots__`` is empty — the base class is a marker; subclasses define their own state."""
+    assert OpenAPISpecPlugin.__slots__ == ()
+    # Subclasses without __dict__ or own __slots__ cannot grow ad-hoc attributes.
+    plugin = OpenAPISpecPlugin()
+    with pytest.raises(AttributeError):
+        plugin.foo = 1  # type: ignore[attr-defined]
+
+
+def test_openapi_spec_plugin_default_methods_return_none() -> None:
+    """A bare subclass returns ``None`` from both default contribution methods."""
+
+    class Bare(OpenAPISpecPlugin):
+        pass
+
+    plugin = Bare()
+    assert plugin.get_openapi_components() is None
+    # The default ``get_openapi_operation`` ignores its argument; pass ``None``.
+    assert plugin.get_openapi_operation(None) is None  # type: ignore[arg-type]
+
+
+def test_openapi_spec_plugin_subclass_isinstance() -> None:
+    """Subclasses are detectable via ``isinstance`` so the registry can collect them."""
+
+    class Concrete(OpenAPISpecPlugin):
+        pass
+
+    assert isinstance(Concrete(), OpenAPISpecPlugin)
+
+
+def test_plugin_registry_openapi_spec_collected() -> None:
+    """Registering an ``OpenAPISpecPlugin`` instance exposes it via the registry."""
+
+    class MySpecPlugin(OpenAPISpecPlugin):
+        pass
+
+    spec_plugin = MySpecPlugin()
+    schema_plugin = PydanticSchemaPlugin()
+
+    registry = PluginRegistry([spec_plugin, schema_plugin])
+
+    assert registry.openapi_spec == (spec_plugin,)
+    # Schema plugins remain collected separately and are not aliased into the new collection.
+    assert registry.openapi == (schema_plugin,)
+
+
+def test_plugin_registry_openapi_spec_preserves_registration_order() -> None:
+    """Registration order is preserved across multiple ``OpenAPISpecPlugin`` instances."""
+
+    class A(OpenAPISpecPlugin):
+        pass
+
+    class B(OpenAPISpecPlugin):
+        pass
+
+    class C(OpenAPISpecPlugin):
+        pass
+
+    a, b, c = A(), B(), C()
+    registry = PluginRegistry([a, b, c])
+
+    assert registry.openapi_spec == (a, b, c)
+
+
+def test_plugin_registry_openapi_spec_excludes_non_spec_plugins() -> None:
+    """Non-``OpenAPISpecPlugin`` instances are not collected into ``openapi_spec``."""
+
+    class MyCLIPlugin(CLIPlugin):
+        def on_cli_init(self, cli: Group) -> None:
+            pass
+
+    registry = PluginRegistry([MyCLIPlugin(), PydanticSchemaPlugin(), PydanticInitPlugin()])
+
+    assert registry.openapi_spec == ()
 
 
 @pytest.mark.parametrize(("init_plugin",), [(PydanticInitPlugin(),), (None,)])

@@ -16,7 +16,8 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
-    from litestar.openapi.spec import Reference, Schema
+    from litestar.handlers.http_handlers import HTTPRouteHandler
+    from litestar.openapi.spec import Components, Operation, Reference, Schema
     from litestar.routes import BaseRoute
     from litestar.typing import FieldDefinition
 
@@ -26,6 +27,7 @@ __all__ = (
     "InitPlugin",
     "InitPluginProtocol",
     "OpenAPISchemaPlugin",
+    "OpenAPISpecPlugin",
     "PluginProtocol",
     "PluginRegistry",
     "ReceiveRoutePlugin",
@@ -276,10 +278,61 @@ class OpenAPISchemaPlugin(abc.ABC):
         return False
 
 
+class OpenAPISpecPlugin:
+    """Plugin hook for contributing OpenAPI document and operation fragments.
+
+    Subclasses override one or both of :meth:`get_openapi_components` (document-level)
+    and :meth:`get_openapi_operation` (per-operation) to contribute fragments. Both
+    default to ``None`` so plugins are not forced to implement extension points they
+    do not need.
+
+    Plugins are global. Per-route decisions are made by inspecting the ``route_handler``
+    argument passed to :meth:`get_openapi_operation` (e.g. ``route_handler.tags``,
+    ``route_handler.opt``, ``route_handler.paths``).
+    """
+
+    __slots__ = ()
+
+    def get_openapi_components(self) -> Components | None:
+        """Return OpenAPI components contributed by this plugin.
+
+        Called once per OpenAPI build. Populated fields are merged into the generated
+        document's :class:`~litestar.openapi.spec.Components` via
+        :func:`~litestar._openapi.plugin.merge_openapi_components`. Collisions on any
+        component dict key raise :class:`~litestar.exceptions.ImproperlyConfiguredException`.
+
+        Returns:
+            A partial Components instance, or ``None``.
+        """
+        return None
+
+    def get_openapi_operation(self, route_handler: HTTPRouteHandler) -> Operation | None:
+        """Return an OpenAPI Operation fragment to merge into ``route_handler``'s operation.
+
+        Called once per route handler per OpenAPI build. Populated fields on the returned
+        :class:`~litestar.openapi.spec.Operation` are merged into the operation Litestar
+        builds for ``route_handler`` via
+        :func:`~litestar._openapi.path_item.merge_openapi_operation`.
+
+        Plugins MUST only populate fields the helper merges. Fields owned by the route
+        handler (``operation_id``, ``summary``, ``description``, ``request_body``,
+        ``deprecated``, ``external_docs``) raise
+        :class:`~litestar.exceptions.ImproperlyConfiguredException` at merge time if set.
+
+        Args:
+            route_handler: The resolved HTTP route handler being rendered.
+
+        Returns:
+            A partial Operation instance, or ``None``.
+        """
+        return None
+
+
 PluginProtocol = Union[
     CLIPlugin,
     InitPluginProtocol,
     OpenAPISchemaPlugin,
+    OpenAPISpecPlugin,
     ReceiveRoutePlugin,
     SerializationPlugin,
     DIPlugin,
@@ -292,6 +345,7 @@ class PluginRegistry:
     __slots__ = {  # noqa: RUF023
         "init": "Plugins that implement InitPlugin",
         "openapi": "Plugins that implement OpenAPISchemaPlugin",
+        "openapi_spec": "Plugins that implement OpenAPISpecPlugin",
         "receive_route": "ReceiveRoutePlugin instances",
         "serialization": "Plugins that implement SerializationPlugin",
         "cli": "Plugins that implement CLIPlugin",
@@ -306,6 +360,7 @@ class PluginRegistry:
         self._plugins = frozenset(plugins)
         self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
         self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPlugin))
+        self.openapi_spec = tuple(p for p in plugins if isinstance(p, OpenAPISpecPlugin))
         self.receive_route = tuple(p for p in plugins if isinstance(p, ReceiveRoutePlugin))
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPlugin))
         self.cli = tuple(p for p in plugins if isinstance(p, CLIPlugin))
