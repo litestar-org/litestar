@@ -35,7 +35,10 @@ paginator = PersonCursorPaginator()
 # we now create a regular handler. The handler will receive a single query parameter - 'cursor', which
 # we will pass to the paginator.
 @get("/people", sync_to_thread=False)
-def people_handler(cursor: FromQuery[str | None], results_per_page: FromQuery[int]) -> CursorPagination[str, Person]:
+def people_handler(
+    results_per_page: FromQuery[int],
+    cursor: FromQuery[str | None] = None,
+) -> CursorPagination[str, Person]:
     return paginator(cursor=cursor, results_per_page=results_per_page)
 
 

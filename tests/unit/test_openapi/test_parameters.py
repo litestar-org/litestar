@@ -542,12 +542,12 @@ def test_nullable_query_param_required(annotation: Any, default: Any, expected_r
     if default is ...:
 
         @get("/test")
-        def handler(param: annotation) -> None:  # pyright: ignore[reportInvalidTypeForm]
+        def handler(param: FromQuery[annotation]) -> None:  # pyright: ignore[reportInvalidTypeForm]
             pass
     else:
 
         @get("/test")
-        def handler(param: annotation = default) -> None:  # pyright: ignore[reportInvalidTypeForm]
+        def handler(param: FromQuery[annotation] = default) -> None:  # pyright: ignore[reportInvalidTypeForm]
             pass
 
     with create_test_client(handler) as client:
@@ -592,7 +592,7 @@ def test_explicit_path_param_with_alias_excluded_when_alias_not_in_path() -> Non
     """
 
     @get(path=["/", "/{aliased:str}"], sync_to_thread=False)
-    def handler(local: Annotated[Optional[str], PathParameter(name="aliased")]) -> str:
+    def handler(local: Annotated[Optional[str], PathParameter(name="aliased")] = None) -> str:
         return local or ""
 
     with create_test_client(handler) as client:

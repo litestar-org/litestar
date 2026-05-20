@@ -17,7 +17,7 @@ from litestar.testing import create_test_client
         (
             Optional[str],
             {},
-            HeaderParameter(name="special-header", min_length=1, max_length=2, required=False, default=None),
+            HeaderParameter(name="special-header", min_length=1, max_length=2, required=False),
             False,
         ),
         (int, {"special-header": "123"}, HeaderParameter(name="special-header", ge=100, le=201), False),
@@ -26,7 +26,7 @@ from litestar.testing import create_test_client
         (
             Optional[int],
             {},
-            HeaderParameter(name="special-header", ge=100, le=120, required=False, default=None),
+            HeaderParameter(name="special-header", ge=100, le=120, required=False),
             False,
         ),
     ],
@@ -37,7 +37,7 @@ def test_header_params(
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_header: Annotated[t_type, param]) -> None:  # type: ignore[valid-type]
+    def test_method(special_header: Annotated[t_type, param] = None) -> None:  # type: ignore[valid-type]
         if special_header:
             assert special_header in (param_dict.get("special-header"), int(param_dict.get("special-header")))  # type: ignore[arg-type]
 

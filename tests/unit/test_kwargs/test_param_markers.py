@@ -1,3 +1,4 @@
+# pyright: reportUnnecessaryTypeIgnoreComment = false
 import dataclasses
 import warnings
 from typing import Annotated, Any
@@ -217,7 +218,7 @@ def test_deprecated_default_style_dependency(default: ParameterKwarg, type_: str
 )
 def test_deprecated_annotated_style_handler(annotation: Any, type_: str) -> None:
     @get("/")
-    def handler(some_param: annotation) -> None:
+    def handler(some_param: annotation) -> None:  # pyright: ignore
         pass
 
     with pytest.warns(
@@ -236,7 +237,7 @@ def test_deprecated_annotated_style_handler(annotation: Any, type_: str) -> None
     ],
 )
 def test_deprecated_annotated_style_dependency(annotation: Any, type_: str) -> None:
-    def dependency(some_param: annotation) -> None:
+    def dependency(some_param: annotation) -> None:  # pyright: ignore
         pass
 
     @get("/", dependencies={"some_dependency": dependency})

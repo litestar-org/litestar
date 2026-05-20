@@ -338,7 +338,7 @@ def test_asgi_middleware_exclude_dynamic_handler_by_pattern() -> None:
             await next_app(scope, receive, send)
 
     @get("/foo/{bar:int}")
-    def handler(bar: int) -> None:
+    def handler(bar: FromPath[int]) -> None:
         return None
 
     with create_test_client([handler], middleware=[SubclassMiddleware()]) as client:

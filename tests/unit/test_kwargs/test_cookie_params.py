@@ -14,7 +14,7 @@ from litestar.testing import create_test_client
         (
             Optional[str],
             {},
-            CookieParameter(name="special-cookie", min_length=1, max_length=2, required=False, default=None),
+            CookieParameter(name="special-cookie", min_length=1, max_length=2, required=False),
             HTTP_200_OK,
         ),
         (int, {"special-cookie": "123"}, CookieParameter(name="special-cookie", ge=100, le=201), HTTP_200_OK),
@@ -23,7 +23,7 @@ from litestar.testing import create_test_client
         (
             Optional[int],
             {},
-            CookieParameter(name="special-cookie", ge=100, le=120, required=False, default=None),
+            CookieParameter(name="special-cookie", ge=100, le=120, required=False),
             HTTP_200_OK,
         ),
     ],
@@ -32,7 +32,7 @@ def test_cookie_params(t_type: type, param_dict: dict, param: ParameterKwarg, ex
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_cookie: Annotated[t_type, param]) -> None:  # type: ignore[valid-type]
+    def test_method(special_cookie: Annotated[t_type, param] = None) -> None:  # type: ignore[valid-type]
         if special_cookie:
             assert special_cookie in (param_dict.get("special-cookie"), int(param_dict.get("special-cookie")))  # type: ignore[arg-type]
 

@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from litestar import Request
     from litestar.datastructures import CacheControlHeader
     from litestar.openapi.spec import SecurityRequirement
+    from litestar.params import FromPath
     from litestar.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,
@@ -112,7 +113,7 @@ def create_static_files_router(
         headers = {cache_control.HEADER_NAME: cache_control.to_header()}
 
     @get("{file_path:path}", name=name)
-    async def get_handler(file_path: PurePath, request: Request) -> ASGIFileResponse:
+    async def get_handler(file_path: FromPath[PurePath], request: Request) -> ASGIFileResponse:
         return await _handler(
             path=file_path.as_posix(),
             is_head_response=False,
@@ -126,7 +127,7 @@ def create_static_files_router(
         )
 
     @head("/{file_path:path}", name=f"{name}/head")
-    async def head_handler(file_path: PurePath, request: Request) -> ASGIFileResponse:
+    async def head_handler(file_path: FromPath[PurePath], request: Request) -> ASGIFileResponse:
         return await _handler(
             path=file_path.as_posix(),
             is_head_response=True,

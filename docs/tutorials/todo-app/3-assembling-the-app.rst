@@ -68,8 +68,8 @@ receives data of a ``TodoItem`` the same way as the ``POST`` handler.
 .. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: ``app.py``
-    :lines: 50
-    :lineno-start: 50
+    :lines: 49
+    :lineno-start: 49
 
 
 An instance of ``Litestar`` is created, including the previously defined route handlers.

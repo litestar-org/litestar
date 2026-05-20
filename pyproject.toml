@@ -228,7 +228,6 @@ filterwarnings = [
   "ignore:.*'copy_scope' not set:DeprecationWarning",
   "ignore:.*Deprecated in litestar:DeprecationWarning",
   "ignore:.*Call to deprecated reset:DeprecationWarning", # redis
-  "ignore::pydantic.PydanticDeprecatedSince20::",
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
   # this is coming from rich_click itself, nothing we can do about that for now:
   "ignore: 'RichMultiCommand':DeprecationWarning::",
