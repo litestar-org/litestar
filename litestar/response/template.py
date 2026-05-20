@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 import itertools
 from mimetypes import guess_type
 from pathlib import PurePath
@@ -94,7 +95,7 @@ class Template(Response[bytes]):
         return {
             **self.context,
             "request": request,
-            "csrf_input": f'<input type="hidden" name="_csrf_token" value="{csrf_token}" />',
+            "csrf_input": f'<input type="hidden" name="_csrf_token" value="{html.escape(csrf_token)}" />',
         }
 
     def to_asgi_response(
