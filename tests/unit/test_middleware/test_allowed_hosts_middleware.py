@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 import pytest
 
@@ -77,8 +77,8 @@ def test_allowed_hosts_middleware_redirect_regex() -> None:
     ],
 )
 def test_middleware_allowed_hosts(
-    base_url: str | None,
-    forwarded_host: str | None,
+    base_url: Optional[str],
+    forwarded_host: Optional[str],
     expected_status_code: int,
 ) -> None:
     @get("/")
