@@ -66,17 +66,21 @@ def test_allowed_hosts_middleware_redirect_regex() -> None:
 
 
 @pytest.mark.parametrize(
-    "base_url,expected_status_code",
+    "base_url,forwarded_host,expected_status_code",
     [
-        ("http://x.example.com", HTTP_200_OK),
-        ("http://x.y.example.com", HTTP_200_OK),
-        ("http://moishe.zuchmir.com", HTTP_200_OK),
-        ("http://moisheAzuchmir.com", HTTP_400_BAD_REQUEST),
-        ("http://x.moishe.zuchmir.com", HTTP_400_BAD_REQUEST),
-        ("http://x.example.x.com", HTTP_400_BAD_REQUEST),
+        ("http://x.example.com", None, HTTP_200_OK),
+        ("http://x.y.example.com", None, HTTP_200_OK),
+        ("http://moishe.zuchmir.com", None, HTTP_200_OK),
+        ("http://moisheAzuchmir.com", None, HTTP_400_BAD_REQUEST),
+        ("http://x.moishe.zuchmir.com", None, HTTP_400_BAD_REQUEST),
+        (None, "x.example.com", HTTP_400_BAD_REQUEST),
     ],
 )
-def test_middleware_allowed_hosts(base_url: str, expected_status_code: int) -> None:
+def test_middleware_allowed_hosts(
+    base_url: str | None,
+    forwarded_host: str | None,
+    expected_status_code: int,
+) -> None:
     @get("/")
     def handler() -> dict:
         return {"hello": "world"}
@@ -84,7 +88,12 @@ def test_middleware_allowed_hosts(base_url: str, expected_status_code: int) -> N
     config = AllowedHostsConfig(allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
 
     with create_test_client(handler, allowed_hosts=config) as client:
-        client.base_url = base_url  # type: ignore[assignment]
+        if base_url:
+            client.base_url = base_url  # type: ignore[assignment]
+        if not base_url:
+            client.headers["host"] = ""
+        if forwarded_host:
+            client.headers["x-forwarded-host"] = forwarded_host
         response = client.get("/")
         assert response.status_code == expected_status_code
 
