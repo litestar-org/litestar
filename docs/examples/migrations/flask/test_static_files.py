@@ -7,8 +7,6 @@ app = Litestar(
     ]
 )
 
-import os
-from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -18,20 +16,19 @@ from litestar.testing import TestClient
 
 
 @pytest.fixture
-def assets_cwd(tmp_path: Path) -> Iterator[Path]:
+def static_app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Litestar:
     (tmp_path / "assets").mkdir()
     (tmp_path / "assets" / "hello.txt").write_text("Hello, world!")
-    previous = Path.cwd()
-    os.chdir(tmp_path)
-    try:
-        yield tmp_path
-    finally:
-        os.chdir(previous)
+    monkeypatch.chdir(tmp_path)
+    return Litestar(
+        route_handlers=[
+            create_static_files_router(path="/static", directories=["assets"]),
+        ]
+    )
 
 
-def test_serves_static_file(assets_cwd: Path) -> None:
-    assert (assets_cwd / "assets" / "hello.txt").is_file()
-    with TestClient(app) as client:
+def test_serves_static_file(static_app: Litestar) -> None:
+    with TestClient(static_app) as client:
         response = client.get("/static/hello.txt")
         assert response.status_code == HTTP_200_OK
         assert response.text == "Hello, world!"
