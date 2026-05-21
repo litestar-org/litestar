@@ -4,7 +4,7 @@ import asyncio
 from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Any
 
-from psycopg import AsyncConnection, Error
+from psycopg import AsyncConnection, OperationalError
 from psycopg.sql import SQL, Identifier
 
 from litestar.channels.backends.base import ChannelsBackend
@@ -14,10 +14,9 @@ if TYPE_CHECKING:
 
 
 class PsycoPgChannelsBackend(ChannelsBackend):
-    # notifies(timeout=) is called by the pump task to drive notification reception.
-    # The interval bounds how long the connection lock is held in one call, so it
-    # also bounds the worst-case latency for subscribe/unsubscribe to run.
-    _PUMP_INTERVAL: float = 0.1
+    # Bounds how long notifies() holds the connection lock, so it also bounds
+    # the worst-case latency for subscribe/unsubscribe to acquire it.
+    _NOTIFIES_TIMEOUT: float = 0.1
 
     _listener_conn: AsyncConnection[Any]
     _queue: asyncio.Queue[tuple[str, bytes]]
@@ -35,8 +34,8 @@ class PsycoPgChannelsBackend(ChannelsBackend):
         self._pump_task = asyncio.create_task(self._pump_notifications())
 
     async def on_shutdown(self) -> None:
-        # Closing the connection causes the pump's notifies() to raise
-        # OperationalError, which the pump catches and returns from.
+        # Closing the connection makes the pump's notifies() raise OperationalError,
+        # which the pump catches; awaiting then completes once it returns.
         await self._exit_stack.aclose()
         await self._pump_task
 
@@ -60,25 +59,20 @@ class PsycoPgChannelsBackend(ChannelsBackend):
         self._subscribed_channels = self._subscribed_channels - set(channels)
 
     async def _pump_notifications(self) -> None:
-        # psycopg 3.2+ holds the connection lock for the whole duration of
-        # notifies(); cycling through short-timeout calls lets subscribe and
-        # unsubscribe interleave between iterations. on_shutdown closes the
-        # connection, which makes notifies() raise OperationalError — we
-        # return so the task ends cleanly.
+        # psycopg 3.2+ holds the connection lock across notifies(); cycling on a
+        # short timeout lets subscribe/unsubscribe interleave between iterations.
         try:
             while True:
-                async for notify in self._listener_conn.notifies(timeout=self._PUMP_INTERVAL):
+                async for notify in self._listener_conn.notifies(timeout=self._NOTIFIES_TIMEOUT):
                     self._queue.put_nowait((notify.channel, notify.payload.encode("utf-8")))
-        except Error:
-            return
+        except OperationalError:
+            return  # connection closed during shutdown
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
         while True:
             channel, message = await self._queue.get()
-            # An UNLISTEN may have happened between reception and delivery, and
-            # psycopg 3.2.4+ also delivers backlog notifications after UNLISTEN
-            # (https://github.com/psycopg/psycopg/issues/1128) — filter here, the
-            # same way AsyncPgChannelsBackend does.
+            # Filter messages whose channel was UNLISTENed (in-transit or, on
+            # psycopg 3.2.4+, backlog delivered after UNLISTEN). Same as asyncpg.
             if channel in self._subscribed_channels:
                 yield channel, message
 
