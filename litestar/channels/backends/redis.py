@@ -100,6 +100,11 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
 
     async def on_shutdown(self) -> None:
         await self._pub_sub.reset()
+        # the lazy `_pub_sub` property caches the PubSub object; clearing the
+        # cache here ensures a fresh PubSub is created on the next startup so
+        # the backend can be reused across multiple plugin lifecycles
+        self.__pub_sub = None
+        self._has_subscribed = _LazyEvent()
 
     async def subscribe(self, channels: Iterable[str]) -> None:
         """Subscribe to ``channels``, and enable publishing to them"""
