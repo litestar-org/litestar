@@ -49,22 +49,10 @@ Routing
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. code-block:: python
-
-            from litestar import Litestar, get
-
-
-            @get("/")
-            def index() -> str:
-                return "Index Page"
-
-
-            @get("/hello")
-            def hello() -> str:
-                return "Hello, World"
-
-
-            app = Litestar([index, hello])
+        .. literalinclude:: /examples/migrations/flask/test_routing.py
+            :language: python
+            :lines: 1-14
+            :caption: routing
 
 
 Path parameters
@@ -101,30 +89,10 @@ Path parameters
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. code-block:: python
-
-            import pathlib
-
-            from litestar import Litestar, get
-            from litestar.params import FromPath
-
-
-            @get("/user/{username:str}")
-            def show_user_profile(username: FromPath[str]) -> str:
-                return f"User {username}"
-
-
-            @get("/post/{post_id:int}")
-            def show_post(post_id: FromPath[int]) -> str:
-                return f"Post {post_id}"
-
-
-            @get("/path/{subpath:path}")
-            def show_subpath(subpath: FromPath[pathlib.Path]) -> str:
-                return f"Subpath {subpath}"
-
-
-            app = Litestar([show_user_profile, show_post, show_subpath])
+        .. literalinclude:: /examples/migrations/flask/test_path_parameters.py
+            :language: python
+            :lines: 1-22
+            :caption: path parameters
 
 
 ..  seealso::
@@ -162,14 +130,10 @@ the request can be accessed through an optional parameter in the handler functio
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. code-block:: python
-
-            from litestar import Litestar, get, Request
-
-
-            @get("/")
-            def index(request: Request) -> None:
-                print(request.method)
+        .. literalinclude:: /examples/migrations/flask/test_request_object.py
+            :language: python
+            :lines: 1-9
+            :caption: request object
 
 
 Request methods
@@ -275,14 +239,10 @@ Like Flask, Litestar also has capabilities for serving static files, but while F
 will automatically serve files from a ``static`` folder, this has to be configured explicitly
 in Litestar.
 
-.. code-block:: python
-
-   from litestar import Litestar
-   from litestar.static_files import create_static_files_router
-
-    app = Litestar(route_handlers=[
-        create_static_files_router(path="/static", directories=["assets"]),
-    ])
+.. literalinclude:: /examples/migrations/flask/test_static_files.py
+    :language: python
+    :lines: 1-8
+    :caption: static files
 
 ..  seealso::
 
@@ -319,24 +279,10 @@ In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. code-block:: python
-
-            from litestar import Litestar, get
-            from litestar.plugins.jinja import JinjaTemplateEngine
-            from litestar.params import FromPath
-            from litestar.response import Template
-            from litestar.template.config import TemplateConfig
-
-
-            @get("/hello/{name:str}")
-            def hello(name: FromPath[str]) -> Template:
-                return Template(response_name="hello.html", context={"name": name})
-
-
-            app = Litestar(
-                [hello],
-                template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
-            )
+        .. literalinclude:: /examples/migrations/flask/test_templates.py
+            :language: python
+            :lines: 1-16
+            :caption: templates
 
 
 ..  seealso::
@@ -372,30 +318,10 @@ Setting cookies and headers
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. code-block:: python
-
-            from litestar import Litestar, get, Response
-            from litestar.datastructures import ResponseHeader, Cookie
-
-
-            @get(
-                "/static",
-                response_headers={"my-header": ResponseHeader(value="header-value")},
-                response_cookies=[Cookie("my-cookie", "cookie-value")],
-            )
-            def static() -> str:
-                # you can set headers and cookies when defining handlers
-                ...
-
-
-            @get("/dynamic")
-            def dynamic() -> Response[str]:
-                # or dynamically, by returning an instance of Response
-                return Response(
-                    "hello",
-                    headers={"my-header": "header-value"},
-                    cookies=[Cookie("my-cookie", "cookie-value")],
-                )
+        .. literalinclude:: /examples/migrations/flask/test_cookies_and_headers.py
+            :language: python
+            :lines: 1-26
+            :caption: cookies and headers
 
 
 ..  seealso::
@@ -437,23 +363,10 @@ For redirects, instead of ``redirect`` use ``Redirect``:
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. code-block:: python
-
-            from litestar import Litestar, get
-            from litestar.response import Redirect
-
-
-            @get("/")
-            def index() -> str:
-                return "hello"
-
-
-            @get("/hello")
-            def hello() -> Redirect:
-                return Redirect(path="/")
-
-
-            app = Litestar([index, hello])
+        .. literalinclude:: /examples/migrations/flask/test_redirects.py
+            :language: python
+            :lines: 1-15
+            :caption: redirects
 
 
 Raising HTTP errors
@@ -483,18 +396,10 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. code-block:: python
-
-            from litestar import Litestar, get
-            from litestar.exceptions import HTTPException
-
-
-            @get("/")
-            def index() -> None:
-                raise HTTPException(status_code=400, detail="this did not work")
-
-
-            app = Litestar([index])
+        .. literalinclude:: /examples/migrations/flask/test_http_errors.py
+            :language: python
+            :lines: 1-10
+            :caption: raising HTTP errors
 
 
 ..  seealso::
@@ -527,22 +432,10 @@ Setting status codes
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. code-block:: python
-
-            from litestar import Litestar, get, Response
-
-
-            @get("/static", status_code=404)
-            def static_status() -> str:
-                return "not found"
-
-
-            @get("/dynamic")
-            def dynamic_status() -> Response[str]:
-                return Response("not found", status_code=404)
-
-
-            app = Litestar([static_status, dynamic_status])
+        .. literalinclude:: /examples/migrations/flask/test_status_codes.py
+            :language: python
+            :lines: 1-14
+            :caption: setting status codes
 
 
 Serialization
@@ -584,27 +477,10 @@ the data returned is intended to be serialized into JSON and will do so unless t
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. code-block:: python
-
-            from litestar import Litestar, get, MediaType
-
-
-            @get("/json")
-            def get_json() -> dict[str, str]:
-                return {"hello": "world"}
-
-
-            @get("/text", media_type=MediaType.TEXT)
-            def get_text() -> str:
-                return "hello, world"
-
-
-            @get("/html", media_type=MediaType.HTML)
-            def get_html() -> str:
-                return "<strong>hello, world</strong>"
-
-
-            app = Litestar([get_json, get_text, get_html])
+        .. literalinclude:: /examples/migrations/flask/test_serialization.py
+            :language: python
+            :lines: 1-19
+            :caption: serialization
 
 
 Error handling
@@ -632,16 +508,10 @@ Error handling
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. code-block:: python
-
-            from litestar import Litestar, Request, Response
-            from litestar.exceptions import HTTPException
-
-
-            def handle_exception(request: Request, exception: Exception) -> Response: ...
-
-
-            app = Litestar([], exception_handlers={HTTPException: handle_exception})
+        .. literalinclude:: /examples/migrations/flask/test_error_handling.py
+            :language: python
+            :lines: 1-17
+            :caption: error handling
 
 
 ..  seealso::
