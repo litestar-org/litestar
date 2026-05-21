@@ -71,8 +71,7 @@ class PsycoPgChannelsBackend(ChannelsBackend):
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
         while True:
             channel, message = await self._queue.get()
-            # Filter messages whose channel was UNLISTENed (in-transit or, on
-            # psycopg 3.2.4+, backlog delivered after UNLISTEN). Same as asyncpg.
+            # Drop messages for channels that were unsubscribed in the meantime.
             if channel in self._subscribed_channels:
                 yield channel, message
 
