@@ -2166,7 +2166,7 @@ requires-dist = [
     { name = "pydantic-extra-types", marker = "extra == 'pydantic'" },
     { name = "pyjwt", marker = "extra == 'jwt'", specifier = ">=2.9.0" },
     { name = "pyyaml", marker = "extra == 'yaml'" },
-    { name = "redis", extras = ["hiredis"], marker = "extra == 'redis'", specifier = ">=7" },
+    { name = "redis", extras = ["hiredis"], marker = "extra == 'redis'", specifier = ">=4.4.4,!=5.3.*" },
     { name = "rich", specifier = ">=13.0.0" },
     { name = "rich-click", specifier = "<1.9" },
     { name = "sniffio", specifier = ">=1.3.1" },
