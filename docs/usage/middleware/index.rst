@@ -9,9 +9,9 @@ See :doc:`the documentation regarding these </usage/middleware/builtin-middlewar
 
 .. seealso::
 
-    If you're coming from Starlette / FastAPI, take a look at the migration guide:
+    If you're coming from Starlette / FastAPI, take a look at the onboarding ration guide:
 
-    * :ref:`Migration - FastAPI/Starlette - Middlewares <migration/fastapi:Middleware>`
+    * :ref:`Migration - FastAPI/Starlette - Middlewares <onboarding/fastapi:Middleware>`
 
 
 .. toctree::
