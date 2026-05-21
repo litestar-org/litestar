@@ -163,6 +163,7 @@ async def test_redis_pubsub_backend_reusable_across_plugin_lifecycles(
         async with ChannelsPlugin(backend=redis_pub_sub_backend, channels=["c"]) as plugin:
             subscriber = await plugin.subscribe("c")
             await plugin.wait_published(b"x", "c")
+
             async def _consume() -> list[bytes]:
                 items: list[bytes] = []
                 async for item in subscriber.iter_events():
@@ -170,6 +171,7 @@ async def test_redis_pubsub_backend_reusable_across_plugin_lifecycles(
                     if len(items) == 1:
                         break
                 return items
+
             assert await asyncio.wait_for(_consume(), timeout=2.0) == [b"x"]
 
 
