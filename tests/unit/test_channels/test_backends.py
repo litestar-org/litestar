@@ -14,7 +14,7 @@ from litestar.channels import ChannelsBackend
 from litestar.channels.backends.asyncpg import AsyncPgChannelsBackend
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
-from litestar.channels.backends.redis import RedisChannelsStreamBackend
+from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.exceptions import ImproperlyConfiguredException
 
 
@@ -145,6 +145,34 @@ async def test_redis_streams_backend_flushall(redis_stream_backend: RedisChannel
     result = await redis_stream_backend.flush_all()
 
     assert result == 3
+
+
+@pytest.mark.xdist_group("redis")
+async def test_redis_pubsub_backend_reusable_across_plugin_lifecycles(
+    redis_pub_sub_backend: RedisChannelsPubSubBackend,
+) -> None:
+    """A pubsub backend instance must be reusable across multiple ``ChannelsPlugin`` lifecycles.
+
+    Regression test for a bug where ``on_shutdown`` closed the underlying
+    ``PubSub`` connection but the lazy ``_pub_sub`` cache kept the dead object,
+    breaking the next startup/subscribe cycle.
+    """
+    from litestar.channels import ChannelsPlugin
+
+    for _ in range(2):
+        async with ChannelsPlugin(backend=redis_pub_sub_backend, channels=["c"]) as plugin:
+            subscriber = await plugin.subscribe("c")
+            await plugin.wait_published(b"x", "c")
+
+            async def _consume() -> list[bytes]:
+                items: list[bytes] = []
+                async for item in subscriber.iter_events():
+                    items.append(item)
+                    if len(items) == 1:
+                        break
+                return items
+
+            assert await asyncio.wait_for(_consume(), timeout=2.0) == [b"x"]
 
 
 @pytest.mark.flaky(reruns=5)  # this should not really happen but just in case, we retry
