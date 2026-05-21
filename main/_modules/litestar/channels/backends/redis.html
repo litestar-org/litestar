@@ -619,224 +619,229 @@ data-aria-dark="Switch to auto color mode">
 <div class="viewcode-block" id="RedisChannelsPubSubBackend.on_shutdown">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.on_shutdown">[docs]</a>
 </span><span data-line="101">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="102">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
-
-</span><span data-line="103">
-<div class="viewcode-block" id="RedisChannelsPubSubBackend.subscribe">
-<a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.subscribe">[docs]</a>
-</span><span data-line="104">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="105"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Subscribe to ``channels``, and enable publishing to them&quot;&quot;&quot;</span>
-</span><span data-line="106">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="o">*</span><span class="n">channels</span><span class="p">)</span>
-</span><span data-line="107">        <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+</span><span data-line="102">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</span><span data-line="103">        <span class="c1"># the lazy `_pub_sub` property caches the PubSub object; clearing the</span>
+</span><span data-line="104">        <span class="c1"># cache here ensures a fresh PubSub is created on the next startup so</span>
+</span><span data-line="105">        <span class="c1"># the backend can be reused across multiple plugin lifecycles</span>
+</span><span data-line="106">        <span class="bp">self</span><span class="o">.</span><span class="n">__pub_sub</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="107">        <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed</span> <span class="o">=</span> <span class="n">_LazyEvent</span><span class="p">()</span></div>
 
 </span><span data-line="108">
+<div class="viewcode-block" id="RedisChannelsPubSubBackend.subscribe">
+<a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.subscribe">[docs]</a>
+</span><span data-line="109">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="110"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Subscribe to ``channels``, and enable publishing to them&quot;&quot;&quot;</span>
+</span><span data-line="111">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="o">*</span><span class="n">channels</span><span class="p">)</span>
+</span><span data-line="112">        <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+</span><span data-line="113">
 <div class="viewcode-block" id="RedisChannelsPubSubBackend.unsubscribe">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.unsubscribe">[docs]</a>
-</span><span data-line="109">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="110"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop listening for events on ``channels``&quot;&quot;&quot;</span>
-</span><span data-line="111">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="o">*</span><span class="n">channels</span><span class="p">)</span>
-</span><span data-line="112">        <span class="c1"># if we have no active subscriptions, or only subscriptions which are pending</span>
-</span><span data-line="113">        <span class="c1"># to be unsubscribed we consider the backend to be unsubscribed from all</span>
-</span><span data-line="114">        <span class="c1"># channels, so we reset the event</span>
-</span><span data-line="115">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">pending_unsubscribe_channels</span><span class="p">:</span>
-</span><span data-line="116">            <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+</span><span data-line="114">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="115"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop listening for events on ``channels``&quot;&quot;&quot;</span>
+</span><span data-line="116">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="o">*</span><span class="n">channels</span><span class="p">)</span>
+</span><span data-line="117">        <span class="c1"># if we have no active subscriptions, or only subscriptions which are pending</span>
+</span><span data-line="118">        <span class="c1"># to be unsubscribed we consider the backend to be unsubscribed from all</span>
+</span><span data-line="119">        <span class="c1"># channels, so we reset the event</span>
+</span><span data-line="120">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">pending_unsubscribe_channels</span><span class="p">:</span>
+</span><span data-line="121">            <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
-</span><span data-line="117">
+</span><span data-line="122">
 <div class="viewcode-block" id="RedisChannelsPubSubBackend.publish">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.publish">[docs]</a>
-</span><span data-line="118">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="119"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish ``data`` to ``channels``</span>
-</span><span data-line="120">
-</span><span data-line="121"><span class="sd">        .. note::</span>
-</span><span data-line="122"><span class="sd">            This operation is performed atomically, using a lua script</span>
-</span><span data-line="123"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="124">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publish_script</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">channels</span><span class="p">)),</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">data</span><span class="p">])</span></div>
-
+</span><span data-line="123">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="124"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish ``data`` to ``channels``</span>
 </span><span data-line="125">
+</span><span data-line="126"><span class="sd">        .. note::</span>
+</span><span data-line="127"><span class="sd">            This operation is performed atomically, using a lua script</span>
+</span><span data-line="128"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="129">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publish_script</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">channels</span><span class="p">)),</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">data</span><span class="p">])</span></div>
+
+</span><span data-line="130">
 <div class="viewcode-block" id="RedisChannelsPubSubBackend.stream_events">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.stream_events">[docs]</a>
-</span><span data-line="126">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="127"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a generator, iterating over events of subscribed channels as they become available.</span>
-</span><span data-line="128">
-</span><span data-line="129"><span class="sd">        If no channels have been subscribed to yet via :meth:`subscribe`, sleep for ``stream_sleep_no_subscriptions``</span>
-</span><span data-line="130"><span class="sd">        milliseconds.</span>
-</span><span data-line="131"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="132">
-</span><span data-line="133">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span data-line="134">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-</span><span data-line="135">            <span class="n">message</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
-</span><span data-line="136">                <span class="n">ignore_subscribe_messages</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stream_sleep_no_subscriptions</span>
-</span><span data-line="137">            <span class="p">)</span>
-</span><span data-line="138">            <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="139">                <span class="k">continue</span>
-</span><span data-line="140">
-</span><span data-line="141">            <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-</span><span data-line="142">            <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
-</span><span data-line="143">            <span class="c1"># redis handles the unsubscribing with a queue; Unsubscribing doesn&#39;t mean</span>
-</span><span data-line="144">            <span class="c1"># the unsubscribe will happen immediately after requesting it, so we could</span>
-</span><span data-line="145">            <span class="c1"># receive a message on a channel that, from a client&#39;s perspective, it&#39;s not</span>
-</span><span data-line="146">            <span class="c1"># subscribed to anymore</span>
-</span><span data-line="147">            <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">pending_unsubscribe_channels</span><span class="p">:</span>
-</span><span data-line="148">                <span class="k">yield</span> <span class="n">channel</span><span class="p">,</span> <span class="n">data</span></div>
+</span><span data-line="131">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="132"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a generator, iterating over events of subscribed channels as they become available.</span>
+</span><span data-line="133">
+</span><span data-line="134"><span class="sd">        If no channels have been subscribed to yet via :meth:`subscribe`, sleep for ``stream_sleep_no_subscriptions``</span>
+</span><span data-line="135"><span class="sd">        milliseconds.</span>
+</span><span data-line="136"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="137">
+</span><span data-line="138">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="139">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+</span><span data-line="140">            <span class="n">message</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">get_message</span><span class="p">(</span>
+</span><span data-line="141">                <span class="n">ignore_subscribe_messages</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stream_sleep_no_subscriptions</span>
+</span><span data-line="142">            <span class="p">)</span>
+</span><span data-line="143">            <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="144">                <span class="k">continue</span>
+</span><span data-line="145">
+</span><span data-line="146">            <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+</span><span data-line="147">            <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+</span><span data-line="148">            <span class="c1"># redis handles the unsubscribing with a queue; Unsubscribing doesn&#39;t mean</span>
+</span><span data-line="149">            <span class="c1"># the unsubscribe will happen immediately after requesting it, so we could</span>
+</span><span data-line="150">            <span class="c1"># receive a message on a channel that, from a client&#39;s perspective, it&#39;s not</span>
+</span><span data-line="151">            <span class="c1"># subscribed to anymore</span>
+</span><span data-line="152">            <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pub_sub</span><span class="o">.</span><span class="n">pending_unsubscribe_channels</span><span class="p">:</span>
+</span><span data-line="153">                <span class="k">yield</span> <span class="n">channel</span><span class="p">,</span> <span class="n">data</span></div>
 
-</span><span data-line="149">
+</span><span data-line="154">
 <div class="viewcode-block" id="RedisChannelsPubSubBackend.get_history">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.get_history">[docs]</a>
-</span><span data-line="150">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
-</span><span data-line="151"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Not implemented&quot;&quot;&quot;</span>
-</span><span data-line="152">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+</span><span data-line="155">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+</span><span data-line="156"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Not implemented&quot;&quot;&quot;</span>
+</span><span data-line="157">        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 </div>
 
-</span><span data-line="153">
-</span><span data-line="154">
+</span><span data-line="158">
+</span><span data-line="159">
 <div class="viewcode-block" id="RedisChannelsStreamBackend">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend">[docs]</a>
-</span><span data-line="155"><span class="k">class</span><span class="w"> </span><span class="nc">RedisChannelsStreamBackend</span><span class="p">(</span><span class="n">RedisChannelsBackend</span><span class="p">):</span>
+</span><span data-line="160"><span class="k">class</span><span class="w"> </span><span class="nc">RedisChannelsStreamBackend</span><span class="p">(</span><span class="n">RedisChannelsBackend</span><span class="p">):</span>
 <div class="viewcode-block" id="RedisChannelsStreamBackend.__init__">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.__init__">[docs]</a>
-</span><span data-line="156">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="157">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="158">        <span class="n">history</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-</span><span data-line="159">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="160">        <span class="n">redis</span><span class="p">:</span> <span class="n">Redis</span><span class="p">,</span>
-</span><span data-line="161">        <span class="n">stream_sleep_no_subscriptions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-</span><span data-line="162">        <span class="n">cap_streams_approximate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span data-line="163">        <span class="n">stream_ttl</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
-</span><span data-line="164">        <span class="n">key_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;LITESTAR_CHANNELS&quot;</span><span class="p">,</span>
-</span><span data-line="165">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="166"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Redis channels backend, `streams &lt;https://redis.io/docs/data-types/streams/&gt;`_.</span>
-</span><span data-line="167">
-</span><span data-line="168"><span class="sd">        Args:</span>
-</span><span data-line="169"><span class="sd">            history: Amount of messages to keep. This will set a ``MAXLEN`` to the streams</span>
-</span><span data-line="170"><span class="sd">            redis: A :class:`redis.asyncio.Redis` instance</span>
-</span><span data-line="171"><span class="sd">            key_prefix: Key prefix to use for streams</span>
-</span><span data-line="172"><span class="sd">            stream_sleep_no_subscriptions: Amount of time in milliseconds to pause the</span>
-</span><span data-line="173"><span class="sd">                :meth:`stream_events` generator, should no subscribers exist</span>
-</span><span data-line="174"><span class="sd">            cap_streams_approximate: Set the streams ``MAXLEN`` using the ``~`` approximation</span>
-</span><span data-line="175"><span class="sd">                operator for improved performance</span>
-</span><span data-line="176"><span class="sd">            stream_ttl: TTL of a stream in milliseconds or as a timedelta. A streams TTL will be set on each publishing</span>
-</span><span data-line="177"><span class="sd">                operation using ``PEXPIRE``</span>
-</span><span data-line="178"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="179">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="180">            <span class="n">redis</span><span class="o">=</span><span class="n">redis</span><span class="p">,</span> <span class="n">stream_sleep_no_subscriptions</span><span class="o">=</span><span class="n">stream_sleep_no_subscriptions</span><span class="p">,</span> <span class="n">key_prefix</span><span class="o">=</span><span class="n">key_prefix</span>
-</span><span data-line="181">        <span class="p">)</span>
-</span><span data-line="182">
-</span><span data-line="183">        <span class="bp">self</span><span class="o">.</span><span class="n">_history_limit</span> <span class="o">=</span> <span class="n">history</span>
-</span><span data-line="184">        <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed_channels</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-</span><span data-line="185">        <span class="bp">self</span><span class="o">.</span><span class="n">_cap_streams_approximate</span> <span class="o">=</span> <span class="n">cap_streams_approximate</span>
-</span><span data-line="186">        <span class="bp">self</span><span class="o">.</span><span class="n">_stream_ttl</span> <span class="o">=</span> <span class="n">stream_ttl</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stream_ttl</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">stream_ttl</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
-</span><span data-line="187">        <span class="bp">self</span><span class="o">.</span><span class="n">_flush_all_streams_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">register_script</span><span class="p">(</span><span class="n">_FLUSHALL_STREAMS_SCRIPT</span><span class="p">)</span>
-</span><span data-line="188">        <span class="bp">self</span><span class="o">.</span><span class="n">_publish_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">register_script</span><span class="p">(</span><span class="n">_XADD_EXPIRE_SCRIPT</span><span class="p">)</span>
-</span><span data-line="189">        <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed_channels</span> <span class="o">=</span> <span class="n">_LazyEvent</span><span class="p">()</span></div>
+</span><span data-line="161">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="162">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="163">        <span class="n">history</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="164">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="165">        <span class="n">redis</span><span class="p">:</span> <span class="n">Redis</span><span class="p">,</span>
+</span><span data-line="166">        <span class="n">stream_sleep_no_subscriptions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span data-line="167">        <span class="n">cap_streams_approximate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="168">        <span class="n">stream_ttl</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
+</span><span data-line="169">        <span class="n">key_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;LITESTAR_CHANNELS&quot;</span><span class="p">,</span>
+</span><span data-line="170">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="171"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Redis channels backend, `streams &lt;https://redis.io/docs/data-types/streams/&gt;`_.</span>
+</span><span data-line="172">
+</span><span data-line="173"><span class="sd">        Args:</span>
+</span><span data-line="174"><span class="sd">            history: Amount of messages to keep. This will set a ``MAXLEN`` to the streams</span>
+</span><span data-line="175"><span class="sd">            redis: A :class:`redis.asyncio.Redis` instance</span>
+</span><span data-line="176"><span class="sd">            key_prefix: Key prefix to use for streams</span>
+</span><span data-line="177"><span class="sd">            stream_sleep_no_subscriptions: Amount of time in milliseconds to pause the</span>
+</span><span data-line="178"><span class="sd">                :meth:`stream_events` generator, should no subscribers exist</span>
+</span><span data-line="179"><span class="sd">            cap_streams_approximate: Set the streams ``MAXLEN`` using the ``~`` approximation</span>
+</span><span data-line="180"><span class="sd">                operator for improved performance</span>
+</span><span data-line="181"><span class="sd">            stream_ttl: TTL of a stream in milliseconds or as a timedelta. A streams TTL will be set on each publishing</span>
+</span><span data-line="182"><span class="sd">                operation using ``PEXPIRE``</span>
+</span><span data-line="183"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="184">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="185">            <span class="n">redis</span><span class="o">=</span><span class="n">redis</span><span class="p">,</span> <span class="n">stream_sleep_no_subscriptions</span><span class="o">=</span><span class="n">stream_sleep_no_subscriptions</span><span class="p">,</span> <span class="n">key_prefix</span><span class="o">=</span><span class="n">key_prefix</span>
+</span><span data-line="186">        <span class="p">)</span>
+</span><span data-line="187">
+</span><span data-line="188">        <span class="bp">self</span><span class="o">.</span><span class="n">_history_limit</span> <span class="o">=</span> <span class="n">history</span>
+</span><span data-line="189">        <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed_channels</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span data-line="190">        <span class="bp">self</span><span class="o">.</span><span class="n">_cap_streams_approximate</span> <span class="o">=</span> <span class="n">cap_streams_approximate</span>
+</span><span data-line="191">        <span class="bp">self</span><span class="o">.</span><span class="n">_stream_ttl</span> <span class="o">=</span> <span class="n">stream_ttl</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stream_ttl</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">stream_ttl</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+</span><span data-line="192">        <span class="bp">self</span><span class="o">.</span><span class="n">_flush_all_streams_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">register_script</span><span class="p">(</span><span class="n">_FLUSHALL_STREAMS_SCRIPT</span><span class="p">)</span>
+</span><span data-line="193">        <span class="bp">self</span><span class="o">.</span><span class="n">_publish_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">register_script</span><span class="p">(</span><span class="n">_XADD_EXPIRE_SCRIPT</span><span class="p">)</span>
+</span><span data-line="194">        <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed_channels</span> <span class="o">=</span> <span class="n">_LazyEvent</span><span class="p">()</span></div>
 
-</span><span data-line="190">
+</span><span data-line="195">
 <div class="viewcode-block" id="RedisChannelsStreamBackend.on_startup">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.on_startup">[docs]</a>
-</span><span data-line="191">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="192"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called on application startup&quot;&quot;&quot;</span></div>
+</span><span data-line="196">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="197"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called on application startup&quot;&quot;&quot;</span></div>
 
-</span><span data-line="193">
+</span><span data-line="198">
 <div class="viewcode-block" id="RedisChannelsStreamBackend.on_shutdown">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.on_shutdown">[docs]</a>
-</span><span data-line="194">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="195"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called on application shutdown&quot;&quot;&quot;</span></div>
-
-</span><span data-line="196">
-<div class="viewcode-block" id="RedisChannelsStreamBackend.subscribe">
-<a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.subscribe">[docs]</a>
-</span><span data-line="197">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="198"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Subscribe to ``channels``&quot;&quot;&quot;</span>
-</span><span data-line="199">        <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed_channels</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
-</span><span data-line="200">        <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed_channels</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+</span><span data-line="199">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="200"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called on application shutdown&quot;&quot;&quot;</span></div>
 
 </span><span data-line="201">
+<div class="viewcode-block" id="RedisChannelsStreamBackend.subscribe">
+<a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.subscribe">[docs]</a>
+</span><span data-line="202">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="203"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Subscribe to ``channels``&quot;&quot;&quot;</span>
+</span><span data-line="204">        <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed_channels</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
+</span><span data-line="205">        <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed_channels</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+</span><span data-line="206">
 <div class="viewcode-block" id="RedisChannelsStreamBackend.unsubscribe">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.unsubscribe">[docs]</a>
-</span><span data-line="202">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="203"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Unsubscribe from ``channels``&quot;&quot;&quot;</span>
-</span><span data-line="204">        <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed_channels</span> <span class="o">-=</span> <span class="nb">set</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
-</span><span data-line="205">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_subscribed_channels</span><span class="p">):</span>
-</span><span data-line="206">            <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+</span><span data-line="207">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="208"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Unsubscribe from ``channels``&quot;&quot;&quot;</span>
+</span><span data-line="209">        <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed_channels</span> <span class="o">-=</span> <span class="nb">set</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
+</span><span data-line="210">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_subscribed_channels</span><span class="p">):</span>
+</span><span data-line="211">            <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
-</span><span data-line="207">
+</span><span data-line="212">
 <div class="viewcode-block" id="RedisChannelsStreamBackend.publish">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.publish">[docs]</a>
-</span><span data-line="208">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="209"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish ``data`` to ``channels``.</span>
-</span><span data-line="210">
-</span><span data-line="211"><span class="sd">        .. note::</span>
-</span><span data-line="212"><span class="sd">            This operation is performed atomically, using a Lua script</span>
-</span><span data-line="213"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="214">        <span class="n">channels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
-</span><span data-line="215">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publish_script</span><span class="p">(</span>
-</span><span data-line="216">            <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">],</span>
-</span><span data-line="217">            <span class="n">args</span><span class="o">=</span><span class="p">[</span>
-</span><span data-line="218">                <span class="n">data</span><span class="p">,</span>
-</span><span data-line="219">                <span class="bp">self</span><span class="o">.</span><span class="n">_history_limit</span><span class="p">,</span>
-</span><span data-line="220">                <span class="bp">self</span><span class="o">.</span><span class="n">_stream_ttl</span><span class="p">,</span>
-</span><span data-line="221">                <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cap_streams_approximate</span><span class="p">),</span>
-</span><span data-line="222">                <span class="o">*</span><span class="n">channels</span><span class="p">,</span>
-</span><span data-line="223">            <span class="p">],</span>
-</span><span data-line="224">        <span class="p">)</span></div>
+</span><span data-line="213">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="214"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish ``data`` to ``channels``.</span>
+</span><span data-line="215">
+</span><span data-line="216"><span class="sd">        .. note::</span>
+</span><span data-line="217"><span class="sd">            This operation is performed atomically, using a Lua script</span>
+</span><span data-line="218"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="219">        <span class="n">channels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
+</span><span data-line="220">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publish_script</span><span class="p">(</span>
+</span><span data-line="221">            <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">],</span>
+</span><span data-line="222">            <span class="n">args</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="223">                <span class="n">data</span><span class="p">,</span>
+</span><span data-line="224">                <span class="bp">self</span><span class="o">.</span><span class="n">_history_limit</span><span class="p">,</span>
+</span><span data-line="225">                <span class="bp">self</span><span class="o">.</span><span class="n">_stream_ttl</span><span class="p">,</span>
+</span><span data-line="226">                <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cap_streams_approximate</span><span class="p">),</span>
+</span><span data-line="227">                <span class="o">*</span><span class="n">channels</span><span class="p">,</span>
+</span><span data-line="228">            <span class="p">],</span>
+</span><span data-line="229">        <span class="p">)</span></div>
 
-</span><span data-line="225">
-</span><span data-line="226">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_subscribed_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="227"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get subscribed channels. If no channels are currently subscribed, wait&quot;&quot;&quot;</span>
-</span><span data-line="228">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed_channels</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-</span><span data-line="229">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed_channels</span>
 </span><span data-line="230">
+</span><span data-line="231">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_subscribed_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="232"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get subscribed channels. If no channels are currently subscribed, wait&quot;&quot;&quot;</span>
+</span><span data-line="233">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_subscribed_channels</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+</span><span data-line="234">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subscribed_channels</span>
+</span><span data-line="235">
 <div class="viewcode-block" id="RedisChannelsStreamBackend.stream_events">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.stream_events">[docs]</a>
-</span><span data-line="231">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="232"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a generator, iterating over events of subscribed channels as they become available.</span>
-</span><span data-line="233">
-</span><span data-line="234"><span class="sd">        If no channels have been subscribed to yet via :meth:`subscribe`, sleep for ``stream_sleep_no_subscriptions``</span>
-</span><span data-line="235"><span class="sd">        milliseconds.</span>
-</span><span data-line="236"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="237">        <span class="n">stream_ids</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="238">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span data-line="239">            <span class="c1"># We wait for subscribed channels, because we can&#39;t pass an empty dict to</span>
-</span><span data-line="240">            <span class="c1"># xread and block for subscribers</span>
-</span><span data-line="241">            <span class="n">stream_keys</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subscribed_channels</span><span class="p">()]</span>
-</span><span data-line="242">
-</span><span data-line="243">            <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]]]]</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">xread</span><span class="p">(</span>
-</span><span data-line="244">                <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">stream_ids</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">stream_keys</span><span class="p">},</span> <span class="n">block</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stream_sleep_no_subscriptions</span>
-</span><span data-line="245">            <span class="p">)</span>
-</span><span data-line="246">
-</span><span data-line="247">            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
-</span><span data-line="248">                <span class="k">continue</span>
-</span><span data-line="249">
-</span><span data-line="250">            <span class="k">for</span> <span class="n">stream_key</span><span class="p">,</span> <span class="n">channel_events</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-</span><span data-line="251">                <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">channel_events</span><span class="p">:</span>
-</span><span data-line="252">                    <span class="n">event_data</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
-</span><span data-line="253">                    <span class="n">channel_name</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="sa">b</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-</span><span data-line="254">                    <span class="n">stream_ids</span><span class="p">[</span><span class="n">stream_key</span><span class="o">.</span><span class="n">decode</span><span class="p">()]</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="255">                    <span class="k">yield</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">event_data</span></div>
+</span><span data-line="236">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="237"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a generator, iterating over events of subscribed channels as they become available.</span>
+</span><span data-line="238">
+</span><span data-line="239"><span class="sd">        If no channels have been subscribed to yet via :meth:`subscribe`, sleep for ``stream_sleep_no_subscriptions``</span>
+</span><span data-line="240"><span class="sd">        milliseconds.</span>
+</span><span data-line="241"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="242">        <span class="n">stream_ids</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="243">        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="244">            <span class="c1"># We wait for subscribed channels, because we can&#39;t pass an empty dict to</span>
+</span><span data-line="245">            <span class="c1"># xread and block for subscribers</span>
+</span><span data-line="246">            <span class="n">stream_keys</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subscribed_channels</span><span class="p">()]</span>
+</span><span data-line="247">
+</span><span data-line="248">            <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]]]]</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">xread</span><span class="p">(</span>
+</span><span data-line="249">                <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">stream_ids</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">stream_keys</span><span class="p">},</span> <span class="n">block</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stream_sleep_no_subscriptions</span>
+</span><span data-line="250">            <span class="p">)</span>
+</span><span data-line="251">
+</span><span data-line="252">            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+</span><span data-line="253">                <span class="k">continue</span>
+</span><span data-line="254">
+</span><span data-line="255">            <span class="k">for</span> <span class="n">stream_key</span><span class="p">,</span> <span class="n">channel_events</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+</span><span data-line="256">                <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">channel_events</span><span class="p">:</span>
+</span><span data-line="257">                    <span class="n">event_data</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+</span><span data-line="258">                    <span class="n">channel_name</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="sa">b</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+</span><span data-line="259">                    <span class="n">stream_ids</span><span class="p">[</span><span class="n">stream_key</span><span class="o">.</span><span class="n">decode</span><span class="p">()]</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="260">                    <span class="k">yield</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">event_data</span></div>
 
-</span><span data-line="256">
+</span><span data-line="261">
 <div class="viewcode-block" id="RedisChannelsStreamBackend.get_history">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.get_history">[docs]</a>
-</span><span data-line="257">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
-</span><span data-line="258"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the history of ``channels``, returning at most ``limit`` messages&quot;&quot;&quot;</span>
-</span><span data-line="259">        <span class="n">data</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]]</span>
-</span><span data-line="260">        <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
-</span><span data-line="261">            <span class="n">data</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">xrevrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">channel</span><span class="p">),</span> <span class="n">count</span><span class="o">=</span><span class="n">limit</span><span class="p">))</span>
-</span><span data-line="262">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="263">            <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
-</span><span data-line="264">
-</span><span data-line="265">        <span class="k">return</span> <span class="p">[</span><span class="n">event</span><span class="p">[</span><span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span></div>
+</span><span data-line="262">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+</span><span data-line="263"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the history of ``channels``, returning at most ``limit`` messages&quot;&quot;&quot;</span>
+</span><span data-line="264">        <span class="n">data</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]]</span>
+</span><span data-line="265">        <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
+</span><span data-line="266">            <span class="n">data</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">xrevrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">channel</span><span class="p">),</span> <span class="n">count</span><span class="o">=</span><span class="n">limit</span><span class="p">))</span>
+</span><span data-line="267">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="268">            <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis</span><span class="o">.</span><span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_key</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
+</span><span data-line="269">
+</span><span data-line="270">        <span class="k">return</span> <span class="p">[</span><span class="n">event</span><span class="p">[</span><span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span></div>
 
-</span><span data-line="266">
+</span><span data-line="271">
 <div class="viewcode-block" id="RedisChannelsStreamBackend.flush_all">
 <a class="viewcode-back" href="../../../../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.flush_all">[docs]</a>
-</span><span data-line="267">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">flush_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span data-line="268"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete all stream keys with the ``key_prefix``.</span>
-</span><span data-line="269">
-</span><span data-line="270"><span class="sd">        .. important::</span>
-</span><span data-line="271"><span class="sd">            This method is incompatible with redis clusters</span>
-</span><span data-line="272"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="273">        <span class="n">deleted_streams</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flush_all_streams_script</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_key_prefix</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">])</span>
-</span><span data-line="274">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="n">deleted_streams</span><span class="p">)</span></div>
+</span><span data-line="272">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">flush_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="273"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete all stream keys with the ``key_prefix``.</span>
+</span><span data-line="274">
+</span><span data-line="275"><span class="sd">        .. important::</span>
+</span><span data-line="276"><span class="sd">            This method is incompatible with redis clusters</span>
+</span><span data-line="277"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="278">        <span class="n">deleted_streams</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flush_all_streams_script</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_key_prefix</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">])</span>
+</span><span data-line="279">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="n">deleted_streams</span><span class="p">)</span></div>
 </div>
 
 </span></pre></div>
