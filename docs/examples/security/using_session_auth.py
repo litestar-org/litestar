@@ -1,4 +1,4 @@
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr, SecretStr
@@ -52,7 +52,7 @@ memory_store = MemoryStore()
 # Note: The callable can be either sync or async - both will work.
 async def retrieve_user_handler(
     session: dict[str, Any], connection: "ASGIConnection[Any, Any, Any, Any]"
-) -> Optional[User]:
+) -> User | None:
     return MOCK_DB.get(user_id) if (user_id := session.get("user_id")) else None
 
 

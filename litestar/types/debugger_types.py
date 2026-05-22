@@ -1,13 +1,11 @@
 from types import ModuleType, TracebackType
-from typing import Any, Optional, Protocol, Union
-
-from typing_extensions import TypeAlias
+from typing import Any, Protocol, TypeAlias, Union
 
 
 class PDBProtocol(Protocol):
     @staticmethod
     def post_mortem(
-        traceback: Optional[TracebackType] = None,
+        traceback: TracebackType | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> Any: ...

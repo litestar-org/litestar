@@ -1,9 +1,9 @@
-from enum import Enum
+from enum import StrEnum
 
 __all__ = ("OpenAPIFormat", "OpenAPIType")
 
 
-class OpenAPIFormat(str, Enum):
+class OpenAPIFormat(StrEnum):
     """Formats extracted from: https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-00#page-13"""
 
     DATE = "date"
@@ -23,13 +23,13 @@ class OpenAPIFormat(str, Enum):
     JSON_POINTER = "json-pointer"
     RELATIVE_JSON_POINTER = "relative-json-pointer"
     IRI = "iri-reference"
-    IRI_REFERENCE = "iri-reference"  # noqa: PIE796
+    IRI_REFERENCE = "iri-reference"
     UUID = "uuid"
     REGEX = "regex"
     BINARY = "binary"
 
 
-class OpenAPIType(str, Enum):
+class OpenAPIType(StrEnum):
     """An OopenAPI type."""
 
     ARRAY = "array"

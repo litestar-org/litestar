@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from collections import OrderedDict, defaultdict, deque
@@ -13,12 +15,12 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Literal,
+    Self,
     Union,
     cast,
+    get_args,
 )
 from uuid import UUID
-
-from typing_extensions import Self, get_args
 
 from litestar._openapi.datastructures import SchemaRegistry
 from litestar._openapi.schema_generation.constrained_fields import (
@@ -77,7 +79,7 @@ KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
 }
 
 TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
-    Decimal: Schema(type=OpenAPIType.NUMBER),
+    Decimal: Schema(type=OpenAPIType.STRING),
     defaultdict: Schema(type=OpenAPIType.OBJECT),
     deque: Schema(type=OpenAPIType.ARRAY),
     dict: Schema(type=OpenAPIType.OBJECT),

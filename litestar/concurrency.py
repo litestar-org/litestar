@@ -3,12 +3,13 @@ from __future__ import annotations
 import asyncio
 import contextvars
 from functools import partial
-from typing import TYPE_CHECKING, Callable, TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 import sniffio
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from concurrent.futures import ThreadPoolExecutor
 
     import trio
@@ -35,7 +36,7 @@ class _State:
 async def _run_sync_asyncio(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
     ctx = contextvars.copy_context()
     bound_fn = partial(ctx.run, fn, *args, **kwargs)
-    return await asyncio.get_running_loop().run_in_executor(get_asyncio_executor(), bound_fn)  # pyright: ignore
+    return await asyncio.get_running_loop().run_in_executor(get_asyncio_executor(), bound_fn)
 
 
 async def _run_sync_trio(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:

@@ -1,11 +1,12 @@
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Annotated, Any, Callable, TypedDict
+from typing import Annotated, Any, TypedDict
 from unittest.mock import ANY, MagicMock
 
 import pytest
 from typing_extensions import ReadOnly
 
-from litestar import Controller, Litestar, get, post
+from litestar import Controller, Litestar, post
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.request_body import create_request_body
 from litestar.datastructures.upload_file import UploadFile
@@ -62,9 +63,9 @@ def test_request_body_schema_extra() -> None:
     class RequestBody:
         foo: str
 
-    @get()
+    @post()
     async def handler(
-        body1: Annotated[
+        data: Annotated[
             RequestBody,
             Body(
                 title="Default title",
@@ -74,7 +75,7 @@ def test_request_body_schema_extra() -> None:
             ),
         ],
     ) -> Any:
-        return body1
+        return data
 
     app = Litestar([handler])
     schema = app.openapi_schema.to_schema()
@@ -171,7 +172,7 @@ def test_upload_file_model_schema_generation() -> None:
 def test_request_body_generation_with_dto(create_request: RequestBodyFactory) -> None:
     mock_dto = MagicMock(spec=AbstractDTO)
 
-    @post(path="/form-upload", dto=mock_dto)  # pyright: ignore
+    @post(path="/form-upload", dto=mock_dto)
     async def handler(data: dict[str, Any]) -> None:
         return None
 

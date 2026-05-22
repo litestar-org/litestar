@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -25,7 +25,7 @@ __all__ = (
 DTO_FIELD_META_KEY = "__dto__"
 
 
-class Mark(str, Enum):
+class Mark(StrEnum):
     """For marking field definitions on domain models."""
 
     READ_ONLY = "read-only"

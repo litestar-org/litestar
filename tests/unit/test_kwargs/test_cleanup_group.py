@@ -1,16 +1,11 @@
 from __future__ import annotations
 
-import sys
 from collections.abc import AsyncGenerator, Generator
 from unittest.mock import MagicMock
-
-if sys.version_info < (3, 11):
-    from exceptiongroup import ExceptionGroup  # pyright: ignore
 
 import pytest
 
 from litestar._kwargs.cleanup import DependencyCleanupGroup
-from litestar.utils.compat import async_next
 
 
 @pytest.fixture
@@ -91,7 +86,7 @@ async def test_cleanup_order(
     gen_1 = gen_fn_1()
     gen_2 = gen_fn_2()
     next(gen_1)
-    await async_next(gen_2)
+    await anext(gen_2)
     group = DependencyCleanupGroup([gen_1, gen_2])
 
     await group.close()
@@ -107,7 +102,7 @@ async def test_cleanup_throw_multiple_exceptions(
     async_cleanup_mock: MagicMock,
 ) -> None:
     next(generator)
-    await async_next(async_generator)
+    await anext(async_generator)
 
     group = DependencyCleanupGroup([generator, async_generator])
 
@@ -142,7 +137,7 @@ async def test_exception_during_close(
     gen_1 = gen_fn()
     gen_2 = async_gen_fn()
     next(gen_1)
-    await async_next(gen_2)
+    await anext(gen_2)
     group = DependencyCleanupGroup([gen_1, gen_2])
 
     with pytest.raises(ExceptionGroup) as exc:

@@ -1,7 +1,10 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
+import sys
 import zlib
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from io import BytesIO
-from typing import Callable, Literal, Union
+from typing import Literal, Union
 from unittest.mock import MagicMock
 
 import pytest
@@ -17,6 +20,12 @@ from litestar.response.streaming import Stream
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import ASGIApp, HTTPResponseBodyEvent, HTTPResponseStartEvent, Message, Scope
+
+if sys.version_info >= (3, 14):
+    from compression import zstd
+else:
+    from backports import zstd
+zstd_compression_level_upper_bound = zstd.CompressionParameter.compression_level.bounds()[1]
 
 BrotliMode = Literal["text", "generic", "font"]
 
@@ -51,7 +60,11 @@ def test_compression_disabled_for_unsupported_client(handler: HTTPRouteHandler) 
 def test_regular_compressed_response(
     backend: Literal["gzip", "brotli", "zstd"], compression_encoding: CompressionEncoding, handler: HTTPRouteHandler
 ) -> None:
-    with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend=backend)) as client:
+    with create_test_client(
+        route_handlers=[handler],
+        compression_config=CompressionConfig(backend=backend),
+        raise_server_exceptions=True,
+    ) as client:
         response = client.get("/", headers={"Accept-Encoding": str(compression_encoding.value)})
         assert response.status_code == HTTP_200_OK
         assert response.text == "_litestar_" * 4000
@@ -131,10 +144,13 @@ async def test_skips_for_websocket() -> None:
         await socket.send_json(data)
         await socket.close()
 
-    with create_test_client(
-        route_handlers=[websocket_handler],
-        compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=False),
-    ).websocket_connect("/") as ws:
+    with (
+        create_test_client(
+            route_handlers=[websocket_handler],
+            compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=False),
+        ) as client,
+        client.websocket_connect("/") as ws,
+    ):
         assert b"content-encoding" not in dict(ws.scope["headers"])
 
 
@@ -159,7 +175,14 @@ def test_config_gzip_compress_level_validation(gzip_compress_level: int, should_
 
 
 @pytest.mark.parametrize(
-    "zstd_compress_level, should_raise", ((0, True), (1, False), (22, False), (23, True), (-1, True))
+    "zstd_compress_level, should_raise",
+    (
+        (-1, True),
+        (0, False),
+        (1, False),
+        (zstd_compression_level_upper_bound, False),
+        (zstd_compression_level_upper_bound + 1, True),
+    ),
 )
 def test_config_zstd_compress_level_validation(zstd_compress_level: int, should_raise: bool) -> None:
     if should_raise:

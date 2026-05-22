@@ -38,8 +38,7 @@ def websocket_listener_handler() -> type[WebsocketListener]:
         path = "/ws-listener"
         type_decoders = [handler_decoder]
 
-        def on_receive(self, data: str) -> None:  # pyright: ignore [reportIncompatibleMethodOverride]
-            ...
+        def on_receive(self, data: str) -> None: ...
 
     return WebSocketHandler
 

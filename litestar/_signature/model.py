@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import re
@@ -7,13 +9,11 @@ from typing import (
     TYPE_CHECKING,
     Annotated,
     Any,
-    Callable,
     ClassVar,
     Literal,
     Optional,
     TypedDict,
     Union,
-    cast,
 )
 from uuid import UUID
 
@@ -31,15 +31,17 @@ from litestar.datastructures.url import URL
 from litestar.dto import AbstractDTO, DTOData
 from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
-from litestar.params import KwargDefinition, ParameterKwarg
+from litestar.params import (
+    KwargDefinition,
+    ParameterKwarg,
+)
 from litestar.typing import FieldDefinition  # noqa
 from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    from typing_extensions import NotRequired
+    from collections.abc import Callable, Sequence
+    from typing import NotRequired
 
     from litestar.connection import ASGIConnection
     from litestar.types import AnyCallable, TypeDecodersSequence
@@ -118,7 +120,7 @@ class SignatureModel(Struct):
         Returns:
             An Exception
         """
-        method = connection.method if hasattr(connection, "method") else ScopeType.WEBSOCKET  # pyright: ignore
+        method = connection.method if hasattr(connection, "method") else ScopeType.WEBSOCKET  # pyright: ignore[reportAttributeAccessIssue]
         if client_errors := [
             err_message
             for err_message in messages
@@ -144,7 +146,7 @@ class SignatureModel(Struct):
             An ErrorMessage
         """
 
-        message: ErrorMessage = {"message": exc_msg.split(" - ")[0]}
+        message: ErrorMessage = {"message": exc_msg.split(" - ", maxsplit=1)[0]}
 
         if keys:
             message["key"] = key = ".".join(keys)
@@ -156,13 +158,10 @@ class SignatureModel(Struct):
             elif key in connection.path_params:
                 message["source"] = ParamType.PATH
 
-            elif key in cls._fields and isinstance(cls._fields[key].kwarg_definition, ParameterKwarg):
-                if cast("ParameterKwarg", cls._fields[key].kwarg_definition).cookie:
-                    message["source"] = ParamType.COOKIE
-                elif cast("ParameterKwarg", cls._fields[key].kwarg_definition).header:
-                    message["source"] = ParamType.HEADER
-                else:
-                    message["source"] = ParamType.QUERY
+            elif key in cls._fields and isinstance(
+                kwarg_definition := cls._fields[key].kwarg_definition, ParameterKwarg
+            ):
+                message["source"] = kwarg_definition.param_type
 
         return message
 
@@ -312,13 +311,12 @@ class SignatureModel(Struct):
                 for inner_type in field_definition.inner_types
                 if not inner_type.is_none_type
             ]
-            return Optional[Union[tuple(types)]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore
+            return Optional[Union[tuple(types)]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore # noqa: UP045
 
         if decoder := _get_decoder_for_type(annotation, type_decoders=type_decoders):
             # FIXME: temporary (hopefully) hack, see: https://github.com/jcrist/msgspec/issues/497
             setattr(annotation, "_decoder", decoder)
 
         if meta_data:
-            annotation = Annotated[annotation, meta_data]  # pyright: ignore
-
+            annotation = Annotated[annotation, meta_data]
         return annotation

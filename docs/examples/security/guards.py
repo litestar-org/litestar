@@ -1,15 +1,15 @@
-from enum import Enum
+from enum import StrEnum
 from os import environ
 
 from pydantic import UUID4, BaseModel
 
 from litestar import Controller, Litestar, Router, get, post
 from litestar.connection import ASGIConnection
-from litestar.exceptions import NotAuthorizedException
+from litestar.exceptions import PermissionDeniedException
 from litestar.handlers.base import BaseRouteHandler
 
 
-class UserRole(str, Enum):
+class UserRole(StrEnum):
     CONSUMER = "consumer"
     ADMIN = "admin"
 
@@ -26,7 +26,7 @@ class User(BaseModel):
 
 def admin_user_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     if not connection.user.is_admin:
-        raise NotAuthorizedException()
+        raise PermissionDeniedException()
 
 
 @post(path="/user", guards=[admin_user_guard])
@@ -54,7 +54,7 @@ def secret_token_guard(connection: ASGIConnection, route_handler: BaseRouteHandl
         route_handler.opt.get("secret")
         and not connection.headers.get("Secret-Header", "") == route_handler.opt["secret"]
     ):
-        raise NotAuthorizedException()
+        raise PermissionDeniedException()
 
 
 @get(path="/secret", guards=[secret_token_guard], opt={"secret": environ.get("SECRET")})

@@ -87,8 +87,7 @@ class ASGIResponse:
 
         if headers is not None:
             for k, v in headers.items() if isinstance(headers, dict) else headers:
-                self.headers.add(k, v)  # pyright: ignore
-
+                self.headers.add(k, v)  # pyright: ignore[reportArgumentType]
         media_type = get_enum_string_value(media_type or MediaType.JSON)
 
         status_allows_body = (

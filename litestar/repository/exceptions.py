@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 try:
     from advanced_alchemy.exceptions import IntegrityError as ConflictError
     from advanced_alchemy.exceptions import NotFoundError, RepositoryError

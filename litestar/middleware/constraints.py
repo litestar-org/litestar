@@ -2,9 +2,7 @@ import collections
 import dataclasses
 import functools
 import inspect
-from typing import TYPE_CHECKING, Any, Literal, Optional, Union, cast
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any, Literal, Self, Union, cast
 
 from litestar.exceptions import LitestarException
 from litestar.middleware.base import ASGIMiddleware
@@ -108,7 +106,7 @@ class MiddlewareConstraints:
 
     Mutually exclusive with ``first=True``. Implicitly sets ``unique=True``
     """
-    unique: Optional[bool] = None
+    unique: bool | None = None
     """
     If ``True``, require the middleware to be the only one of its type
     """
@@ -350,7 +348,7 @@ def check_middleware_constraints(middlewares: tuple[Middleware, ...]) -> None:
         else:
             # 'middleware' might be a class or an instance of a class
             middleware_type = type(middleware) if not inspect.isclass(middleware) else middleware
-            for base in middleware_type.mro()[:-1]:  # pyright: ignore
+            for base in middleware_type.mro()[:-1]:  # pyright: ignore[reportFunctionMemberAccess]
                 positions[base].append(i)
 
         if not (isinstance(middleware, ASGIMiddleware) and middleware.constraints):

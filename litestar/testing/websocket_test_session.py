@@ -280,7 +280,7 @@ class AsyncWebSocketTestSession:
         app_done = anyio.Event()
         with cancel_scope:
             async with send_stream, receive_stream:
-                task_status.started(app_done)
+                task_status.started(app_done)  # type: ignore[call-overload]
                 await self.app(self.scope, receive_stream.receive, send_stream.send)
                 app_done.set()
                 await anyio.sleep_forever()

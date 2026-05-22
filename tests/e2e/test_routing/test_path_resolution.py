@@ -1,11 +1,13 @@
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 
 import httpx
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 from litestar import Controller, MediaType, Router, delete, get, post
+from litestar.params import FromPath, FromQuery
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
@@ -54,15 +56,15 @@ def test_path_parsing_and_matching(request_path: str, router_path: str, status_c
 
 def test_path_parsing_with_ambiguous_paths() -> None:
     @get(path="/{path_param:int}", media_type=MediaType.TEXT)
-    def path_param(path_param: int) -> str:
+    def path_param(path_param: FromPath[int]) -> str:
         return str(path_param)
 
     @get(path="/query_param", media_type=MediaType.TEXT)
-    def query_param(value: int) -> str:
+    def query_param(value: FromQuery[int]) -> str:
         return str(value)
 
     @get(path="/mixed/{path_param:int}", media_type=MediaType.TEXT)
-    def mixed_params(path_param: int, value: int) -> str:
+    def mixed_params(path_param: FromPath[int], value: FromQuery[int]) -> str:
         return str(path_param + value)
 
     with create_test_client([path_param, query_param, mixed_params]) as client:
@@ -109,7 +111,7 @@ def test_root_route_handler(test_path: str, decorator_path: str, delete_handler:
 
 def test_handler_multi_paths() -> None:
     @get(path=["/", "/something", "/{some_id:int}", "/something/{some_id:int}"], media_type=MediaType.TEXT)
-    def handler_fn(some_id: int = 1) -> str:
+    def handler_fn(some_id: FromPath[int] = 1) -> str:
         assert some_id
         return str(some_id)
 
@@ -142,7 +144,7 @@ def test_handler_multi_paths() -> None:
 )
 def test_path_validation(handler_path: str, request_path: str, expected_status_code: int) -> None:
     @get(handler_path)
-    def handler_fn(**kwargs: Any) -> None: ...
+    def handler_fn(**kwargs: FromQuery[Any]) -> None: ...
 
     with create_test_client(handler_fn) as client:
         response = client.get(request_path)
@@ -166,7 +168,7 @@ async def test_http_route_raises_for_unsupported_method(anyio_backend: str) -> N
 
 def test_path_order() -> None:
     @get(path=["/something/{some_id:int}", "/"], media_type=MediaType.TEXT)
-    def handler_fn(some_id: int = 1) -> str:
+    def handler_fn(some_id: FromPath[int] = 1) -> str:
         return str(some_id)
 
     with create_test_client(handler_fn) as client:
@@ -190,7 +192,7 @@ def test_special_chars(
     handler_path: str, request_path: str, expected_status_code: int, expected_param: Optional[str]
 ) -> None:
     @get(path=handler_path, media_type=MediaType.TEXT)
-    def handler_fn(name: str) -> str:
+    def handler_fn(name: FromPath[str]) -> str:
         return name
 
     with create_test_client(handler_fn) as client:
@@ -221,11 +223,11 @@ def test_no_404_where_list_route_has_handlers_and_child_route_has_path_param() -
 
 def test_support_of_different_branches() -> None:
     @get("/{foo:int}/foo")
-    def foo_handler(foo: int) -> int:
+    def foo_handler(foo: FromPath[int]) -> int:
         return foo
 
     @get("/{bar:str}/bar")
-    def bar_handler(bar: str) -> str:
+    def bar_handler(bar: FromPath[str]) -> str:
         return bar
 
     with create_test_client([foo_handler, bar_handler]) as client:
@@ -238,11 +240,11 @@ def test_support_of_different_branches() -> None:
 
 def test_support_for_path_type_parameters() -> None:
     @get(path="/{string_param:str}")
-    def lower_handler(string_param: str) -> str:
+    def lower_handler(string_param: FromPath[str]) -> str:
         return string_param
 
     @get(path="/{string_param:str}/{path_param:path}")
-    def upper_handler(string_param: str, path_param: Path) -> str:
+    def upper_handler(string_param: FromPath[str], path_param: FromPath[Path]) -> str:
         return string_param + str(path_param)
 
     with create_test_client([lower_handler, upper_handler]) as client:
@@ -256,7 +258,7 @@ def test_support_for_path_type_parameters() -> None:
 def test_base_path_param_resolution() -> None:
     # https://github.com/litestar-org/litestar/issues/1830
     @get("/{name:str}")
-    async def hello_world(name: str) -> str:
+    async def hello_world(name: FromPath[str]) -> str:
         return f"Hello, {name}!"
 
     with create_test_client(hello_world) as client:
@@ -274,11 +276,11 @@ def test_base_path_param_resolution() -> None:
 def test_base_path_param_resolution_2() -> None:
     # https://github.com/litestar-org/litestar/issues/1830#issuecomment-1642291149
     @get("/{name:str}")
-    async def name_greeting(name: str) -> str:
+    async def name_greeting(name: FromPath[str]) -> str:
         return f"Hello, {name}!"
 
     @get("/{age:int}")
-    async def age_greeting(name: str, age: int) -> str:
+    async def age_greeting(name: FromPath[str], age: FromPath[int]) -> str:
         return f"Hello, {name}! {age} is a great age to be!"
 
     age_router = Router("/{name:str}/age", route_handlers=[age_greeting])

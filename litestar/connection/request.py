@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import math
@@ -62,7 +64,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         "supports_push_promise",
     )
 
-    scope: HTTPScope  # pyright: ignore
+    scope: HTTPScope  # pyright: ignore[reportIncompatibleVariableOverride]
     """The ASGI scope attached to the connection."""
     receive: Receive
     """The ASGI receive function."""
@@ -206,23 +208,12 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
                     if body:
                         total_bytes_streamed += len(body)
 
-                        # if a 'content-length' header was set, check if we have
-                        # received more bytes than specified. in most cases this should
-                        # be caught before it hits the application layer and an ASGI
-                        # server (e.g. uvicorn) will not allow this, but since it's not
-                        # forbidden according to the HTTP or ASGI spec, we err on the
-                        # side of caution and still perform this check.
-                        #
-                        # uvicorn documented behaviour for this case:
-                        # https://github.com/encode/uvicorn/blob/fe3910083e3990695bc19c2ef671dd447262ae18/docs/server-behavior.md?plain=1#L11
-                        if announced_content_length:
-                            if total_bytes_streamed > announced_content_length:
-                                raise ClientException("Malformed request")
-
-                        # we don't have a 'content-length' header, likely a chunked
-                        # transfer. we don't really care and simply check if we have
-                        # received more bytes than allowed
-                        elif total_bytes_streamed > max_content_length:
+                        # enforce the request body size limit on actual bytes
+                        # received. content-length validation is intentionally left to
+                        # the ASGI server (e.g. uvicorn) since middleware such as
+                        # request decompression can legitimately cause the streamed
+                        # body to exceed the wire-format content-length.
+                        if total_bytes_streamed > max_content_length:
                             raise RequestEntityTooLarge
 
                         yield body
@@ -278,8 +269,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
                 else:
                     form_data = {}
 
-                self._connection_state.form = form_data  # pyright: ignore
-
+                self._connection_state.form = form_data  # pyright: ignore[reportAttributeAccessIssue]
             self._form = FormMultiDict.from_form_data(cast("dict[str, Any]", form_data))
 
         return self._form

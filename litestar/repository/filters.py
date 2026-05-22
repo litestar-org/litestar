@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 try:
     from advanced_alchemy.filters import (
         BeforeAfter,

@@ -1,14 +1,16 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
-from collections.abc import Generator, Iterable, Iterator, Mapping, MutableMapping
+from collections.abc import Callable, Generator, Iterable, Iterator, Mapping, MutableMapping
 from copy import deepcopy
 from threading import RLock
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from litestar.utils.scope.state import CONNECTION_STATE_KEY
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
 __all__ = ("ImmutableState", "State")
 
@@ -130,7 +132,7 @@ class ImmutableState(Mapping[str, Any]):
 
         Customizes how the builtin "copy" function will work.
         """
-        return self.__class__(self._state, deep_copy=self._deep_copy)  # pyright: ignore
+        return self.__class__(self._state, deep_copy=self._deep_copy)
 
     def mutable_copy(self) -> State:
         """Return a mutable copy of the state object.
@@ -305,7 +307,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
         Returns:
             A ``State``
         """
-        return self.__class__(self.dict(), deep_copy=self._deep_copy)  # pyright: ignore
+        return self.__class__(self.dict(), deep_copy=self._deep_copy)
 
     def immutable_copy(self) -> ImmutableState:
         """Return a shallow copy of the state object, setting it to be frozen.

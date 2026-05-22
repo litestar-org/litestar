@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Generator
+from collections.abc import Callable, Collection, Generator
 from typing import Any, TypeVar, get_type_hints
 
 import pytest
@@ -17,6 +17,11 @@ from litestar.typing import FieldDefinition
 from . import Model
 
 T = TypeVar("T", bound=Model)
+
+
+@pytest.fixture
+def int_factory() -> Callable[[], int]:
+    return lambda: 2
 
 
 @pytest.fixture

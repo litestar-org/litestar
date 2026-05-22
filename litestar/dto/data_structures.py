@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -6,7 +8,8 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from collections.abc import Callable
+    from typing import Any
 
     from litestar.dto import DTOField
     from litestar.dto._backend import DTOBackend

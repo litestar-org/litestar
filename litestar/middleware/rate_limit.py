@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from time import time
-from typing import TYPE_CHECKING, Any, Callable, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
+
+import anyio
 
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
@@ -20,7 +22,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable
+    from collections.abc import Awaitable, Callable
 
     from litestar import Litestar
     from litestar.connection import Request
@@ -73,6 +75,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         self.max_requests: int = config.rate_limit[1]
         self.unit: DurationUnit = config.rate_limit[0]
         self.get_identifier_for_request = config.identifier_for_request
+        self._lock = anyio.Lock()
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
@@ -95,18 +98,19 @@ class RateLimitMiddleware(AbstractMiddleware):
             if getattr(route_handler, "is_mount", False):
                 key += "::mount"
 
-            cache_object = await self.retrieve_cached_history(key, store)
-            if len(cache_object.history) >= self.max_requests:
-                raise TooManyRequestsException(
-                    headers=self.create_response_headers(cache_object=cache_object)
-                    if self.config.set_rate_limit_headers
-                    else None
-                )
-            await self.set_cached_history(key=key, cache_object=cache_object, store=store)
+            async with self._lock:
+                cache_object = await self.retrieve_cached_history(key, store)
+                if len(cache_object.history) >= self.max_requests:
+                    raise TooManyRequestsException(
+                        headers=self.create_response_headers(cache_object=cache_object)
+                        if self.config.set_rate_limit_headers
+                        else None
+                    )
+                await self.set_cached_history(key=key, cache_object=cache_object, store=store)
             if self.config.set_rate_limit_headers:
                 send = self.create_send_wrapper(send=send, cache_object=cache_object)
 
-        await self.app(scope, receive, send)  # pyright: ignore
+        await self.app(scope, receive, send)
 
     def create_send_wrapper(self, send: Send, cache_object: CacheObject) -> Send:
         """Create a ``send`` function that wraps the original send to inject response headers.
@@ -154,9 +158,6 @@ class RateLimitMiddleware(AbstractMiddleware):
             cache_object = CacheObject(**decode_json(value=cached_string))
             if cache_object.reset <= now:
                 return CacheObject(history=[], reset=now + duration)
-
-            while cache_object.history and cache_object.history[-1] <= now - duration:
-                cache_object.history.pop()
             return cache_object
 
         return CacheObject(history=[], reset=now + duration)

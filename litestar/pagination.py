@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -41,7 +43,7 @@ class ClassicPagination(Generic[T]):
 # AA requires it's own `OffsetPagination` class in versions greater that 0.9.0
 # If we find it, use it.
 try:
-    from advanced_alchemy.service import OffsetPagination  # pyright: ignore
+    from advanced_alchemy.service import OffsetPagination  # pyright: ignore[reportAssignmentType]
 except ImportError:
 
     @dataclass

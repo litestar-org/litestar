@@ -5,11 +5,9 @@ import typing
 from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import TYPE_CHECKING, Annotated, Any, Union, get_type_hints
+from typing import TYPE_CHECKING, Annotated, Any, Self, Union, get_args, get_origin, get_type_hints
 
-from typing_extensions import Self, get_args, get_origin
-
-from litestar import connection, datastructures, types
+from litestar import connection, datastructures, params, types
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import expand_type_var_in_type_hint, unwrap_annotation
@@ -19,12 +17,6 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from litestar.types import AnyCallable
-
-if sys.version_info < (3, 11):
-    from typing import _get_defaults  # type: ignore[attr-defined]
-else:
-
-    def _get_defaults(_: Any) -> Any: ...
 
 
 __all__ = (
@@ -37,9 +29,13 @@ __all__ = (
 _GLOBAL_NAMES = {
     namespace: export
     for namespace, export in chain(
-        tuple(getmembers(types)), tuple(getmembers(connection)), tuple(getmembers(datastructures))
+        tuple(getmembers(types)),
+        tuple(getmembers(connection)),
+        tuple(getmembers(datastructures)),
+        tuple(getmembers(params)),
     )
-    if namespace[0].isupper() and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)  # pyright: ignore
+    if namespace[0].isupper()
+    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__, params.__all__)
 }
 """A mapping of names used for handler signature forward-ref resolution.
 
@@ -154,8 +150,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
 
     # inspect the underlying function for methods
     if hasattr(fn_to_inspect, "__func__"):
-        fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore
-
+        fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore[reportFunctionMemberAccess]
     # Order important. If a litestar name has been overridden in the function module, we want
     # to use that instead of the litestar one.
     namespace = {
@@ -165,11 +160,6 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         **(namespace or {}),
     }
     hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
-
-    if sys.version_info < (3, 11):
-        # see https://github.com/litestar-org/litestar/pull/2516
-        defaults = _get_defaults(fn_to_inspect)
-        hints = _unwrap_implicit_optional_hints(defaults, hints)
 
     return hints
 

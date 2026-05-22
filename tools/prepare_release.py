@@ -323,7 +323,7 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
 def build_changelog_entry(release_info: ReleaseInfo, interactive: bool = False) -> str:
     doc = ChangelogEntryWriter()
     with doc.directive("changelog", release_info.version):
-        doc.add_line(f":date: {datetime.datetime.now(tz=datetime.timezone.utc).date().isoformat()}")
+        doc.add_line(f":date: {datetime.datetime.now(tz=datetime.UTC).date().isoformat()}")
         doc.add_line("")
         change_types = {"fix", "feat"}
         for prs in release_info.pull_requests.values():

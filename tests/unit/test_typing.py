@@ -24,7 +24,7 @@ except ImportError:
 
 from litestar import get
 from litestar.exceptions import LitestarWarning
-from litestar.params import DependencyKwarg, KwargDefinition, Parameter, ParameterKwarg
+from litestar.params import DependencyKwarg, KwargDefinition, ParameterKwarg, QueryParameter
 from litestar.typing import FieldDefinition
 from tests.unit.test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
@@ -212,7 +212,7 @@ def test_field_definition_is_type_var_predicate() -> None:
     """Test FieldDefinition.is_type_var."""
     assert FieldDefinition.from_annotation(int).is_type_var is False
     assert FieldDefinition.from_annotation(T).is_type_var is True
-    assert FieldDefinition.from_annotation(Union[int, T]).is_type_var is False  # pyright: ignore
+    assert FieldDefinition.from_annotation(Union[int, T]).is_type_var is False  # pyright: ignore[reportGeneralTypeIssues]
 
 
 def test_field_definition_is_union_predicate() -> None:
@@ -260,13 +260,11 @@ def test_field_definition_is_typeddict_predicate() -> None:
     assert FieldDefinition.from_annotation(NormalClass).is_typeddict_type is False
     assert FieldDefinition.from_annotation(TypedDictClass).is_typeddict_type is True
 
-    if sys.version_info >= (3, 11):
+    class GenericTypedDictClass(TypedDict, Generic[T]): ...
 
-        class GenericTypedDictClass(TypedDict, Generic[T]): ...
-
-        assert FieldDefinition.from_annotation(GenericTypedDictClass).is_typeddict_type is True
-        assert FieldDefinition.from_annotation(GenericTypedDictClass[int]).is_typeddict_type is True
-        assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True
+    assert FieldDefinition.from_annotation(GenericTypedDictClass).is_typeddict_type is True
+    assert FieldDefinition.from_annotation(GenericTypedDictClass[int]).is_typeddict_type is True
+    assert FieldDefinition.from_annotation(GenericTypedDictClass[T]).is_typeddict_type is True  # type: ignore[valid-type]
 
 
 def test_field_definition_is_subclass_of() -> None:
@@ -316,9 +314,9 @@ def test_is_required() -> None:
         not_required: NotRequired[str]
 
     class Bar(msgspec.Struct):
-        unset: Union[str, msgspec.UnsetType] = msgspec.UNSET  # noqa: UP007
+        unset: Union[str, msgspec.UnsetType] = msgspec.UNSET
         with_default: str = ""
-        with_none_default: Union[str, None] = None  # noqa: UP007
+        with_none_default: Union[str, None] = None
 
     assert FieldDefinition.from_annotation(get_type_hints(Foo, include_extras=True)["required"]).is_required is True
     assert (
@@ -351,13 +349,17 @@ def test_is_required() -> None:
         is True
     )
 
-    assert FieldDefinition.from_annotation(Optional[str]).is_required is False
+    # Nullable type without a default is required (nullability != optionality)
+    nullable_field = FieldDefinition.from_annotation(Optional[str])
+    assert nullable_field.is_required is True
+    assert nullable_field.is_optional is True
     assert FieldDefinition.from_annotation(str).is_required is True
 
-    assert FieldDefinition.from_annotation(Any).is_required is False
+    assert FieldDefinition.from_annotation(Any).is_required is True
 
+    # from_annotation only sees the type, not the default value from the struct definition
     assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_default"]).is_required is True
-    assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_none_default"]).is_required is False
+    assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_none_default"]).is_required is True
 
 
 def test_field_definition_bound_type() -> None:
@@ -454,19 +456,19 @@ def test_field_definition_get_type_hints_dont_resolve_generics(
 
 def test_warn_ambiguous_default_values() -> None:
     with pytest.warns((LitestarWarning, DeprecationWarning)):
-        FieldDefinition.from_annotation(Annotated[int, Parameter(default=1)], default=2)
+        FieldDefinition.from_annotation(Annotated[int, ParameterKwarg(name="something", default=1)], default=2)
 
 
 def test_warn_defaults_inside_parameter_definition() -> None:
     with pytest.warns(DeprecationWarning, match="Deprecated default value specification"):
-        FieldDefinition.from_annotation(Annotated[int, Parameter(default=1)], default=1)
+        FieldDefinition.from_annotation(Annotated[int, ParameterKwarg(name="something", default=1)], default=1)
 
 
 def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
     with pytest.warns() as warnings:
 
         @get(sync_to_thread=False)
-        def handler(foo: Annotated[int, Parameter(default=1)]) -> None:
+        def handler(foo: Annotated[int, QueryParameter(default=1)]) -> None:
             pass
 
         _ = handler.parsed_fn_signature
@@ -479,8 +481,8 @@ def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
 @pytest.mark.parametrize(
     "annotation",
     [
-        pytest.param(TypeAliasType("IntAlias", int), id="typing.TypeAliasType"),  # pyright: ignore
-        pytest.param(TeTypeAliasType("IntAlias", int), id="typing_extensions.TypeAliasType"),  # pyright: ignore
+        pytest.param(TypeAliasType("IntAlias", int), id="typing.TypeAliasType"),  # pyright: ignore[reportGeneralTypeIssues]
+        pytest.param(TeTypeAliasType("IntAlias", int), id="typing_extensions.TypeAliasType"),  # pyright: ignore[reportGeneralTypeIssues]
     ],
 )
 def test_is_type_alias_type(annotation: Any) -> None:

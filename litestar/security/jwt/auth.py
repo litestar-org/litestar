@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Callable, Generic, Literal, cast
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING, Any, Generic, Literal, cast
 
 from typing_extensions import TypeVar
 
@@ -20,7 +20,7 @@ __all__ = ("BaseJWTAuth", "JWTAuth", "JWTCookieAuth", "OAuth2Login", "OAuth2Pass
 
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
 
     from litestar import Response
     from litestar.connection import ASGIConnection
@@ -66,7 +66,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
     """The value to use for the OpenAPI security scheme and security requirements."""
     description: str
     """Description for the OpenAPI security scheme."""
-    authentication_middleware_class: type[JWTAuthenticationMiddleware]  # pyright: ignore
+    authentication_middleware_class: type[JWTAuthenticationMiddleware]  # pyright: ignore[reportIncompatibleVariableOverride]
     """The authentication middleware class to use.
 
     Must inherit from :class:`JWTAuthenticationMiddleware`
@@ -236,7 +236,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         """
         token = self.token_cls(
             sub=identifier,
-            exp=(datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)),
+            exp=(datetime.now(UTC) + (token_expiration or self.default_token_expiration)),
             iss=token_issuer,
             aud=token_audience,
             jti=token_unique_jwt_id,
@@ -423,7 +423,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``. """
     description: str = field(default="JWT cookie-based authentication and authorization.")
     """Description for the OpenAPI security scheme."""
-    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(  # pyright: ignore
+    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(  # pyright: ignore[reportIncompatibleVariableOverride]
         default=JWTCookieAuthenticationMiddleware
     )
     """The authentication middleware class to use. Must inherit from :class:`JWTCookieAuthenticationMiddleware`
@@ -661,7 +661,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``. """
     description: str = field(default="OAUTH2 password bearer authentication and authorization.")
     """Description for the OpenAPI security scheme."""
-    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(  # pyright: ignore
+    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(  # pyright: ignore[reportIncompatibleVariableOverride]
         default=JWTCookieAuthenticationMiddleware
     )
     """The authentication middleware class to use.
@@ -747,7 +747,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
                     scheme="Bearer",
                     name=self.auth_header,
                     security_scheme_in="header",
-                    flows=OAuthFlows(password=self.oauth_flow),  # pyright: ignore[reportGeneralTypeIssues]
+                    flows=OAuthFlows(password=self.oauth_flow),
                     bearer_format="JWT",
                     description=self.description,
                 )

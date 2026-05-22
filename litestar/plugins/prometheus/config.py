@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.base import DefineMiddleware
@@ -19,7 +19,7 @@ except ImportError as e:
 
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Callable, Mapping, Sequence
 
     from litestar.connection.request import Request
     from litestar.types import Method, Scopes

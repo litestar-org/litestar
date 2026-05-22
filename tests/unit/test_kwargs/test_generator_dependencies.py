@@ -1,5 +1,5 @@
-from collections.abc import AsyncGenerator, Generator
-from typing import Any, Callable
+from collections.abc import AsyncGenerator, Callable, Generator
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest

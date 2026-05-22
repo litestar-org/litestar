@@ -78,7 +78,7 @@ def create_data_handler(
         if after_request:
             response = await after_request(response)  # type: ignore[arg-type,misc]
 
-        return response.to_asgi_response(request=request, headers=normalize_headers(headers), cookies=cookies)  # pyright: ignore
+        return response.to_asgi_response(request=request, headers=normalize_headers(headers), cookies=cookies)  # pyright: ignore[reportFunctionMemberAccess]
 
     return handler
 
@@ -175,8 +175,7 @@ def normalize_http_method(http_methods: Method | Sequence[Method]) -> set[HttpMe
     output: set[str] = set()
 
     if isinstance(http_methods, str):
-        http_methods = [http_methods]  # pyright: ignore
-
+        http_methods = [http_methods]
     for method in http_methods:
         method_name = method.value.upper() if isinstance(method, HttpMethod) else method.upper()
         if method_name not in HTTP_METHOD_NAMES:

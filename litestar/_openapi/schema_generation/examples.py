@@ -4,7 +4,7 @@ import typing
 from dataclasses import replace
 from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, get_args
 
 import msgspec
 from polyfactory.exceptions import ParameterException
@@ -12,7 +12,6 @@ from polyfactory.factories import DataclassFactory
 from polyfactory.field_meta import FieldMeta, Null
 from polyfactory.utils.helpers import unwrap_annotation
 from polyfactory.utils.predicates import is_union
-from typing_extensions import get_args
 
 from litestar.openapi.spec import Example
 from litestar.plugins.pydantic.utils import is_pydantic_model_instance
@@ -37,7 +36,7 @@ def _normalize_example_value(value: Any) -> Any:
         args = list(get_args(value))
         try:
             args.remove(msgspec.UnsetType)
-            value = typing.Union[tuple(args)]  # pyright: ignore
+            value = typing.Union[tuple(args)]
         except ValueError:
             # UnsetType not part of the Union
             pass

@@ -78,7 +78,7 @@ def test_env_from_env_autodiscover_from_module(
         file=app_file,
         directory=module_name,
         content=app_file_content,
-        init_content=f"from .{app_file.split('.')[0]} import {app_file_app_name}",
+        init_content=f"from .{app_file.split('.', maxsplit=1)[0]} import {app_file_app_name}",
     )
     env = LitestarEnv.from_env(None)
 
@@ -101,7 +101,7 @@ def test_env_using_app_dir(
     app_file_content: str, app_file_app_name: str, create_app_file: CreateAppFileFixture, use_file_in_app_path: bool
 ) -> None:
     app_file = "main.py"
-    app_file_without_extension = app_file.split(".")[0]
+    app_file_without_extension = app_file.split(".", maxsplit=1)[0]
     tmp_file_path = create_app_file(
         file=app_file,
         directory="src",

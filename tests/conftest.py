@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import importlib.util
@@ -7,11 +9,11 @@ import random
 import shutil
 import string
 import sys
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Callable, Generator
 from datetime import datetime
 from os import urandom
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Union, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -39,7 +41,7 @@ if TYPE_CHECKING:
     from types import ModuleType
 
     from pytest import FixtureRequest, MonkeyPatch
-    from time_machine import Coordinates
+    from time_machine import Traveller
 
     from litestar import Litestar
     from litestar.types import (
@@ -274,7 +276,7 @@ def create_module(tmp_path: Path, monkeypatch: MonkeyPatch) -> Callable[[str], M
 
 
 @pytest.fixture()
-def frozen_datetime() -> Generator[Coordinates, None, None]:
+def frozen_datetime() -> Generator[Traveller, None, None]:
     with travel(datetime.utcnow, tick=False) as frozen:
         yield frozen
 

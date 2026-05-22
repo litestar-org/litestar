@@ -1,6 +1,9 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
+from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
-from typing import Annotated, Any, Callable
+from typing import Annotated, Any
 
 import pytest
 

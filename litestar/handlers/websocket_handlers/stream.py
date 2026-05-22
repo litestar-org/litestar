@@ -3,8 +3,8 @@ from __future__ import annotations
 import dataclasses
 import functools
 import warnings
-from collections.abc import AsyncGenerator, Awaitable, Mapping
-from typing import TYPE_CHECKING, Any, Callable, cast
+from collections.abc import AsyncGenerator, Awaitable, Callable, Mapping
+from typing import TYPE_CHECKING, Any, cast
 
 import anyio
 from msgspec.json import Encoder as JsonEncoder
@@ -259,7 +259,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         self._return_dto = return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
 
         # make sure the closure doesn't capture self._ws_stream / self
-        send_mode: WebSocketMode = self._ws_stream_options.send_mode  # pyright: ignore
+        send_mode: WebSocketMode = self._ws_stream_options.send_mode  # pyright: ignore[reportAssignmentType]
         listen_for_disconnect = self._ws_stream_options.listen_for_disconnect
         warn_on_data_discard = self._ws_stream_options.warn_on_data_discard
 
@@ -292,8 +292,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
                 send_handler=send_handler,
             )
 
-        self.fn = handler_fn  # pyright: ignore
-
+        self.fn = handler_fn  # pyright: ignore[reportGeneralTypeIssues]
         super().on_registration(route, app)
 
 

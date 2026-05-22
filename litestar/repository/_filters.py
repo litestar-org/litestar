@@ -8,7 +8,7 @@ from datetime import datetime  # noqa: TC003
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
 T = TypeVar("T")
 

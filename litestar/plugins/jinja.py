@@ -1,4 +1,4 @@
-from __future__ import annotations
+"""Jinja2 template engine integration for Litestar."""
 
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, TypeVar
@@ -35,8 +35,8 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate", Mapping[str, A
 
     def __init__(
         self,
-        directory: Path | list[Path] | None = None,
-        engine_instance: Environment | None = None,
+        directory: "Path | list[Path] | None" = None,
+        engine_instance: "Environment | None" = None,
     ) -> None:
         """Jinja-based TemplateEngine.
 
@@ -55,7 +55,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate", Mapping[str, A
         self.register_template_callable(key="csrf_token", template_callable=csrf_token)
         self.register_template_callable(key="url_for", template_callable=url_for)
 
-    def get_template(self, template_name: str) -> JinjaTemplate:
+    def get_template(self, template_name: str) -> "JinjaTemplate":
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
 
         Args:
@@ -100,7 +100,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate", Mapping[str, A
         return template.render(context)
 
     @classmethod
-    def from_environment(cls, jinja_environment: Environment) -> JinjaTemplateEngine:
+    def from_environment(cls, jinja_environment: "Environment") -> "JinjaTemplateEngine":
         """Create a JinjaTemplateEngine from an existing jinja Environment instance.
 
         Args:

@@ -64,7 +64,6 @@ intersphinx_mapping = {
     "redis": ("https://redis.readthedocs.io/en/stable/", None),
     "structlog": ("https://www.structlog.org/en/stable/", None),
     "tortoise": ("https://tortoise.github.io/", None),
-    "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest/", None),
     "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
     "advanced-alchemy": ("https://advanced-alchemy.litestar.dev/latest/", None),
     "jinja2": ("https://jinja.palletsprojects.com/en/latest/", None),
@@ -105,6 +104,9 @@ nitpick_ignore = [
     (PY_CLASS, "abc.Collection"),
     (PY_CLASS, "advanced_alchemy.utils.dataclass.Empty"),
     (PY_CLASS, "jinja2.environment.Environment"),
+    (PY_CLASS, "mako.lookup.TemplateLookup"),
+    (PY_CLASS, "mako.template.Template"),
+    (PY_CLASS, "minijinja.Environment"),
     (PY_CLASS, "pydantic.BaseModel"),
     (PY_CLASS, "pydantic.generics.GenericModel"),
     (PY_CLASS, "pydantic.main.BaseModel"),
@@ -118,6 +120,9 @@ nitpick_ignore = [
     (PY_METH, "litestar.typing.ParsedType.is_subclass_of"),
     (PY_METH, "type_engine"),
     # type vars and aliases / intentionally undocumented
+    (PY_CLASS, "ClientRequestHookHandler"),
+    (PY_CLASS, "ClientResponseHookHandler"),
+    (PY_CLASS, "ServerRequestHookHandler"),
     (PY_CLASS, "AnyIOBackend"),
     (PY_CLASS, "BaseSessionBackendT"),
     (PY_CLASS, "C"),
@@ -133,13 +138,14 @@ nitpick_ignore = [
     # investigate
     (PY_CLASS, "Environment"),
     (PY_CLASS, "P"),
-    (PY_CLASS, "pydantic_v1.BaseModel"),
     (PY_CLASS, "pydantic_v2.BaseModel"),
+    (PY_CLASS, "pydantic.BaseModel"),
     (PY_CLASS, "advanced_alchemy.config.types.Empty"),
     (PY_OBJ, "litestar.template.base.TemplateType_co"),
     (PY_OBJ, "litestar.template.base.ContextType_co"),
     (PY_CLASS, "litestar.template.base.TemplateType_co"),
     (PY_CLASS, "litestar.template.base.ContextType_co"),
+    (PY_CLASS, "litestar.template.base.ContextType"),
     (PY_CLASS, "litestar.template.base.R"),
     # intentionally undocumented
     (PY_CLASS, "BacklogStrategy"),
@@ -152,9 +158,9 @@ nitpick_ignore = [
     # types in changelog that no longer exist
     (PY_ATTR, "litestar.dto.factory.DTOConfig.underscore_fields_private"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),
-    (PY_CLASS, "litestar.contrib.msgspec.MsgspecDTO"),
     (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
     (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"),
+    (PY_CLASS, "litestar.contrib.msgspec.MsgspecDTO"),
     (PY_CLASS, "litestar.contrib.repository.filters.NotInCollectionFilter"),
     (PY_CLASS, "litestar.contrib.repository.filters.NotInSearchFilter"),
     (PY_CLASS, "litestar.contrib.repository.filters.OnBeforeAfter"),
@@ -168,7 +174,6 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response.RedirectResponse"),
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response_containers.Template"),
-    (PY_CLASS, "litestar.contrib.htmx.request.HTMXRequest"),
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
     (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
@@ -186,12 +191,12 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.background_tasks.P"),
     (PY_CLASS, "P.args"),
     (PY_CLASS, "P.kwargs"),
-    (PY_CLASS, "litestar.contrib.jinja.P"),
-    (PY_CLASS, "litestar.contrib.mako.P"),
+    (PY_CLASS, "litestar.plugins.jinja.P"),
+    (PY_CLASS, "litestar.plugins.mako.P"),
+    (PY_CLASS, "MiniJinjaTemplate"),
+    (PY_CLASS, "litestar.plugins.minijinja.MiniJinjaTemplate"),
     (PY_CLASS, "JWTDecodeOptions"),
     (PY_CLASS, "litestar.template.base.P"),
-    (PY_CLASS, "litestar.contrib.pydantic.PydanticDTO"),
-    (PY_CLASS, "litestar.contrib.pydantic.PydanticPlugin"),
     (PY_CLASS, "typing.Self"),
     (PY_CLASS, "attr.AttrsInstance"),
     (PY_CLASS, "typing_extensions.TypeGuard"),
@@ -275,8 +280,8 @@ linkcheck_ignore = [
     "http://testserver",
 ]
 
-auto_pytabs_min_version = (3, 8)
-auto_pytabs_max_version = (3, 12)
+auto_pytabs_min_version = (3, 11)
+auto_pytabs_max_version = (3, 14)
 auto_pytabs_compat_mode = True
 
 autosectionlabel_prefix_document = True

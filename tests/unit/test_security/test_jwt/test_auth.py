@@ -1,8 +1,11 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import dataclasses
 import secrets
 import string
-from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Callable, Optional
+from collections.abc import Callable
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING, Any, Optional, TypeAlias
 from uuid import uuid4
 
 import jwt
@@ -10,9 +13,9 @@ import msgspec
 import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_from, text, timedeltas
-from typing_extensions import TypeAlias
 
 from litestar import Litestar, Request, Response, get
+from litestar.params import FromPath
 from litestar.security.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
@@ -148,7 +151,7 @@ async def test_jwt_auth(
             iss=token_issuer,
             aud=token_audience,
             jti=token_unique_jwt_id,
-            exp=(datetime.now(timezone.utc) + token_expiration),
+            exp=(datetime.now(UTC) + token_expiration),
         ).encode(secret=token_secret, algorithm=algorithm)
 
         response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(fake_token)})
@@ -342,7 +345,7 @@ async def test_jwt_cookie_auth(
             iss=token_issuer,
             aud=token_audience,
             jti=token_unique_jwt_id,
-            exp=(datetime.now(timezone.utc) + token_expiration),
+            exp=(datetime.now(UTC) + token_expiration),
         ).encode(secret=token_secret, algorithm=algorithm)
 
         client.cookies.clear()
@@ -383,7 +386,7 @@ async def test_path_exclusion() -> None:
     )
 
     @get("/north/{value:int}")
-    def north_handler(value: int) -> dict[str, int]:
+    def north_handler(value: FromPath[int]) -> dict[str, int]:
         return {"value": value}
 
     @get("/south")
@@ -769,7 +772,7 @@ def create_jwt_app(auth_cls: Any, request: pytest.FixtureRequest) -> CreateJWTAp
         client = create_test_client(route_handlers=[handler]).__enter__()
         request.addfinalizer(client.__exit__)
 
-        return jwt_auth, client  # pyright: ignore
+        return jwt_auth, client  # pyright: ignore[reportReturnType]
 
     return create
 
@@ -837,12 +840,10 @@ async def test_jwt_auth_require_claims(
 @pytest.mark.parametrize(
     "token_expiration, verify_expiry, expected_status_code",
     [
-        pytest.param((datetime.now(tz=timezone.utc) + timedelta(days=1)).timestamp(), True, 200, id="valid-verify"),
-        pytest.param((datetime.now(tz=timezone.utc) + timedelta(days=1)).timestamp(), False, 200, id="valid-no_verify"),
-        pytest.param(
-            (datetime.now(tz=timezone.utc) - timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"
-        ),
-        pytest.param((datetime.now(tz=timezone.utc) - timedelta(days=1)).timestamp(), True, 401, id="invalid-verify"),
+        pytest.param((datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), True, 200, id="valid-verify"),
+        pytest.param((datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), False, 200, id="valid-no_verify"),
+        pytest.param((datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"),
+        pytest.param((datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), True, 401, id="invalid-verify"),
     ],
 )
 async def test_jwt_auth_verify_exp(
@@ -872,12 +873,10 @@ async def test_jwt_auth_verify_exp(
 @pytest.mark.parametrize(
     "token_nbf, verify_not_before, expected_status_code",
     [
-        pytest.param((datetime.now(tz=timezone.utc) - timedelta(days=1)).timestamp(), True, 200, id="valid-verify"),
-        pytest.param((datetime.now(tz=timezone.utc) - timedelta(days=1)).timestamp(), False, 200, id="valid-no_verify"),
-        pytest.param(
-            (datetime.now(tz=timezone.utc) + timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"
-        ),
-        pytest.param((datetime.now(tz=timezone.utc) + timedelta(days=1)).timestamp(), True, 401, id="invalid-verify"),
+        pytest.param((datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), True, 200, id="valid-verify"),
+        pytest.param((datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), False, 200, id="valid-no_verify"),
+        pytest.param((datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"),
+        pytest.param((datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), True, 401, id="invalid-verify"),
     ],
 )
 async def test_jwt_auth_verify_nbf(

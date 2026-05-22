@@ -14,7 +14,7 @@ from ipaddress import (
 )
 from pathlib import Path, PurePath
 from re import Pattern
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, overload
+from typing import TYPE_CHECKING, Any, TypeVar, overload
 from uuid import UUID
 
 import msgspec
@@ -25,7 +25,7 @@ from litestar.types import Empty, EmptyType, Serializer, TypeDecodersSequence
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Callable, Mapping
 
     from litestar.types import TypeEncodersMap
 
@@ -187,7 +187,7 @@ def decode_json(
 
 def decode_json(  # type: ignore[misc]
     value: str | bytes,
-    target_type: type[T] | EmptyType = Empty,  # pyright: ignore
+    target_type: type[T] | EmptyType = Empty,
     type_decoders: TypeDecodersSequence | None = None,
     strict: bool = True,
 ) -> Any:
@@ -263,7 +263,7 @@ def decode_msgpack(
 
 def decode_msgpack(  # type: ignore[misc]
     value: bytes,
-    target_type: type[T] | EmptyType = Empty,  # pyright: ignore[reportInvalidTypeVarUse]
+    target_type: type[T] | EmptyType = Empty,
     type_decoders: TypeDecodersSequence | None = None,
     strict: bool = True,
 ) -> Any:

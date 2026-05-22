@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Generic,
     Literal,
     TypeVar,
@@ -21,7 +20,7 @@ __all__ = ("BaseBackendConfig", "BaseSessionBackend", "SessionMiddleware")
 
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable
+    from collections.abc import Awaitable, Callable
 
     from litestar.types import ASGIApp, Message, Receive, Scope, Scopes, ScopeSession, Send
 
@@ -31,11 +30,10 @@ ConfigT = TypeVar("ConfigT", bound="BaseBackendConfig")
 BaseSessionBackendT = TypeVar("BaseSessionBackendT", bound="BaseSessionBackend")
 
 
-class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):  # pyright: ignore
+class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):
     """Configuration for Session middleware backends."""
 
-    _backend_class: type[BaseSessionBackendT]  # pyright: ignore
-
+    _backend_class: type[BaseSessionBackendT]
     key: str
     """Key to use for the cookie inside the header, e.g. ``session=<data>`` where ``session`` is the cookie key and
     ``<data>`` is the session data.
@@ -252,6 +250,6 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
 
         connection = ASGIConnection[Any, Any, Any, Any](scope, receive=receive, send=send)
         scope["session"] = await self.backend.load_from_connection(connection)
-        connection._connection_state.session_id = self.backend.get_session_id(connection)  # pyright: ignore [reportGeneralTypeIssues]
+        connection._connection_state.session_id = self.backend.get_session_id(connection)
 
         await self.app(scope, receive, self.create_send_wrapper(connection))

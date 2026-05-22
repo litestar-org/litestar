@@ -48,6 +48,8 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
         property_fields = cls.get_property_fields(model_type)
 
         for key, field_definition in cls.get_model_type_hints(model_type).items():
+            if key not in inspect_fields:
+                continue
             kwarg_definition, extra = kwarg_definition_from_field(inspect_fields[key])
             field_definition = dataclasses.replace(field_definition, kwarg_definition=kwarg_definition)
             field_definition.extra.update(extra)

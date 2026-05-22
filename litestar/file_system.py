@@ -6,10 +6,10 @@ import os.path
 import pathlib
 from datetime import datetime
 from stat import S_ISDIR
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Final, Union, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Final, NotRequired, TypeAlias, Union, cast
 
 import anyio
-from typing_extensions import NotRequired, TypeAlias, TypedDict
+from typing_extensions import TypedDict
 
 from litestar.concurrency import sync_to_thread
 from litestar.plugins import InitPlugin
@@ -29,7 +29,7 @@ __all__ = (
 
 if TYPE_CHECKING:
     import io
-    from collections.abc import AsyncGenerator, Awaitable, Mapping
+    from collections.abc import AsyncGenerator, Awaitable, Callable, Mapping
 
     from fsspec import AbstractFileSystem as FsspecFileSystem
     from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
@@ -271,8 +271,8 @@ class FsspecSyncWrapper(BaseFileSystem):
             start: Offset to start reading from
             end: Offset to stop reading at (inclusive)
         """
-        return await sync_to_thread(
-            self.wrapped_fs.cat_file,  # pyright: ignore
+        return await sync_to_thread(  # pyright: ignore[reportReturnType]
+            self.wrapped_fs.cat_file,
             str(path),
             start=start or None,
             end=end if end != -1 else None,
@@ -385,7 +385,7 @@ class FsspecAsyncWrapper(BaseFileSystem):
         # if we want to stream the whole thing we can use '.open_async' if it's
         # implemented
         if start == 0 and end == -1 and self._supports_open_async:
-            async with await self.wrapped_fs.open_async(path, mode="rb") as fh:  # pyright: ignore
+            async with await self.wrapped_fs.open_async(path, mode="rb") as fh:  # pyright: ignore[reportGeneralTypeIssues]
                 while chunk := await fh.read(chunksize):
                     yield chunk
             return
@@ -508,6 +508,12 @@ def get_fsspec_mtime_equivalent(info: dict[str, Any]) -> float | None:
     if isinstance(mtime, datetime):
         return mtime.timestamp()
     if isinstance(mtime, str):
-        return datetime.fromisoformat(mtime.replace("Z", "+00:00")).timestamp()
+        try:
+            return datetime.fromisoformat(mtime.replace("Z", "+00:00")).timestamp()
+        except ValueError:
+            try:
+                return datetime.strptime(mtime, "%a, %d %b %Y %H:%M:%S %Z").timestamp()  # noqa: DTZ007
+            except ValueError:
+                pass
 
-    raise ValueError(f"Unsupported mtime-type value type {type(mtime)!r}")
+    raise ValueError(f"Unsupported mtime-type value type or value {mtime!r}")

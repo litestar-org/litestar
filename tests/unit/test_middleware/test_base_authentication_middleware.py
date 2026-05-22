@@ -12,6 +12,7 @@ from litestar.middleware.authentication import (
     AuthenticationResult,
 )
 from litestar.middleware.base import DefineMiddleware
+from litestar.params import FromPath
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_403_FORBIDDEN,
@@ -58,13 +59,14 @@ def test_authentication_middleware_http_routes() -> None:
         assert isinstance(request.user, User)
         assert isinstance(request.auth, Auth)
 
-    client = create_test_client(route_handlers=[http_route_handler], middleware=[AuthMiddleware])
     token = "abc"
-    error_response = client.get("/", headers={"Authorization": token})
-    assert error_response.status_code == HTTP_403_FORBIDDEN
-    state[token] = AuthenticationResult(user=user, auth=auth)
-    success_response = client.get("/", headers={"Authorization": token})
-    assert success_response.status_code == HTTP_200_OK
+
+    with create_test_client(route_handlers=[http_route_handler], middleware=[AuthMiddleware]) as client:
+        error_response = client.get("/", headers={"Authorization": token})
+        assert error_response.status_code == HTTP_403_FORBIDDEN
+        state[token] = AuthenticationResult(user=user, auth=auth)
+        success_response = client.get("/", headers={"Authorization": token})
+        assert success_response.status_code == HTTP_200_OK
 
 
 def test_authentication_middleware_not_installed_raises_for_user_scope_http() -> None:
@@ -72,8 +74,8 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_http() ->
     def http_route_handler_user_scope(request: Request[User, None, Any]) -> None:
         assert request.user
 
-    client = create_test_client(route_handlers=[http_route_handler_user_scope])
-    error_response = client.get("/", headers={"Authorization": "nope"})
+    with create_test_client(route_handlers=[http_route_handler_user_scope]) as client:
+        error_response = client.get("/", headers={"Authorization": "nope"})
     assert error_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
 
 
@@ -82,8 +84,8 @@ def test_authentication_middleware_not_installed_raises_for_auth_scope_http() ->
     def http_route_handler_auth_scope(request: Request[None, Auth, Any]) -> None:
         assert request.auth
 
-    client = create_test_client(route_handlers=[http_route_handler_auth_scope])
-    error_response = client.get("/", headers={"Authorization": "nope"})
+    with create_test_client(route_handlers=[http_route_handler_auth_scope]) as client:
+        error_response = client.get("/", headers={"Authorization": "nope"})
     assert error_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
 
 
@@ -99,14 +101,18 @@ async def websocket_route_handler(socket: WebSocket[User, Auth, Any]) -> None:
 
 def test_authentication_middleware_websocket_routes() -> None:
     token = "abc"
-    client = create_test_client(route_handlers=websocket_route_handler, middleware=[AuthMiddleware])
     with (
+        create_test_client(route_handlers=websocket_route_handler, middleware=[AuthMiddleware]) as client,
         pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
         client.websocket_connect("/", headers={"Authorization": token}) as ws,
     ):
         assert ws.receive_json()
+
     state[token] = AuthenticationResult(user=user, auth=auth)
-    with client.websocket_connect("/", headers={"Authorization": token}) as ws:
+    with (
+        create_test_client(route_handlers=websocket_route_handler, middleware=[AuthMiddleware]) as client,
+        client.websocket_connect("/", headers={"Authorization": token}) as ws,
+    ):
         assert ws.receive_json()
 
 
@@ -116,8 +122,8 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_websocket
         await socket.accept()
         assert isinstance(socket.user, User)
 
-    client = create_test_client(route_handlers=route_handler)
     with (
+        create_test_client(route_handlers=route_handler) as client,
         pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
         client.websocket_connect("/", headers={"Authorization": "yep"}) as ws,
     ):
@@ -130,8 +136,8 @@ def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket
         await socket.accept()
         assert isinstance(socket.auth, Auth)
 
-    client = create_test_client(route_handlers=route_handler)
     with (
+        create_test_client(route_handlers=route_handler) as client,
         pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
         client.websocket_connect("/", headers={"Authorization": "yep"}) as ws,
     ):
@@ -142,7 +148,7 @@ def test_authentication_middleware_exclude() -> None:
     auth_mw = DefineMiddleware(AuthMiddleware, exclude=["north", "south"])
 
     @get("/north/{value:int}")
-    def north_handler(value: int) -> dict[str, int]:
+    def north_handler(value: FromPath[int]) -> dict[str, int]:
         return {"value": value}
 
     @get("/south")
@@ -171,7 +177,7 @@ def test_authentication_middleware_exclude_from_auth() -> None:
     auth_mw = DefineMiddleware(AuthMiddleware, exclude=["south", "east"])
 
     @get("/north/{value:int}", exclude_from_auth=True)
-    def north_handler(value: int) -> dict[str, int]:
+    def north_handler(value: FromPath[int]) -> dict[str, int]:
         return {"value": value}
 
     @get("/south")
@@ -207,7 +213,7 @@ def test_authentication_middleware_exclude_from_auth_custom_key() -> None:
     auth_mw = DefineMiddleware(AuthMiddleware, exclude=["south", "east"], exclude_from_auth_key="my_exclude_key")
 
     @get("/north/{value:int}", my_exclude_key=True)
-    def north_handler(value: int) -> dict[str, int]:
+    def north_handler(value: FromPath[int]) -> dict[str, int]:
         return {"value": value}
 
     @get("/south")

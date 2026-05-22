@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from functools import wraps
 from inspect import Parameter, Signature
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from msgspec.json import Encoder as JsonEncoder
 
@@ -13,7 +13,7 @@ from litestar.utils import ensure_async_callable
 from litestar.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
-    from collections.abc import Coroutine
+    from collections.abc import Callable, Coroutine
 
     from litestar import WebSocket
     from litestar.handlers.websocket_handlers.listener import WebsocketListenerRouteHandler
@@ -146,10 +146,17 @@ def create_handler_signature(callback_signature: Signature) -> Signature:
     return callback_signature.replace(parameters=new_params)
 
 
-def create_stub_dependency(src: AnyCallable) -> Provide:
+def create_stub_dependency(src: AnyCallable | None) -> Provide:
     """Create a stub dependency, accepting any kwargs defined in ``src``, and
     wrap it in ``Provide``
     """
+    if src is None:
+
+        async def empty_stub() -> None:
+            return None
+
+        return Provide(empty_stub)
+
     src = unwrap_partial(src)
 
     @wraps(src)

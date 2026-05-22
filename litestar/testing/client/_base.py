@@ -98,7 +98,7 @@ async def _set_session_data(client: TestClient | AsyncTestClient, data: dict[str
     )
 
     session_id = client._session_backend.get_session_id(connection)
-    connection._connection_state.session_id = session_id  # pyright: ignore [reportGeneralTypeIssues]
+    connection._connection_state.session_id = session_id
     await client._session_backend.store_in_message(
         scope_session=data, message=fake_http_send_message(mutable_headers), connection=connection
     )

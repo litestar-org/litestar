@@ -1,8 +1,10 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from collections import defaultdict
 from functools import lru_cache, partial
-from typing import TYPE_CHECKING, Any, Callable, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 from litestar._multipart import parse_multipart_form
 from litestar._parsers import (
@@ -21,7 +23,7 @@ from litestar.utils.predicates import is_non_string_sequence, is_optional_union
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
-    from collections.abc import Coroutine, Mapping
+    from collections.abc import Callable, Coroutine, Mapping
 
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.parameter_definition import ParameterDefinition
@@ -371,6 +373,11 @@ async def _extract_multipart(
 
     for name, tp in field_definition.get_type_hints().items():
         value = form_values.get(name)
+        if value == "" and is_optional_union(tp):
+            inner: Any = make_non_optional_union(tp)
+            if isinstance(inner, type) and issubclass(inner, UploadFile):
+                form_values[name] = None  # pyright: ignore[reportArgumentType]
+                continue
         if (
             value is not None
             and not isinstance(value, list)
@@ -379,8 +386,7 @@ async def _extract_multipart(
                 or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
             )
         ):
-            form_values[name] = [value]  # pyright: ignore
-
+            form_values[name] = [value]  # pyright: ignore[reportArgumentType]
     return form_values
 
 

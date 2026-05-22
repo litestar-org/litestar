@@ -1,6 +1,10 @@
 from collections.abc import AsyncGenerator
-from typing import Optional
 
+from advanced_alchemy.extensions.litestar import (
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+    SQLAlchemySerializationPlugin,
+)
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,11 +12,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get, post, put
 from litestar.exceptions import ClientException, NotFoundException
-from litestar.plugins.sqlalchemy import (
-    SQLAlchemyAsyncConfig,
-    SQLAlchemyInitPlugin,
-    SQLAlchemySerializationPlugin,
-)
+from litestar.params import FromPath, FromQuery
 from litestar.status_codes import HTTP_409_CONFLICT
 
 
@@ -37,7 +37,7 @@ async def provide_transaction(db_session: AsyncSession) -> AsyncGenerator[AsyncS
         ) from exc
 
 
-async def get_todo_by_title(todo_name: str, session: AsyncSession) -> TodoItem:
+async def get_todo_by_title(todo_name: FromPath[str], session: AsyncSession) -> TodoItem:
     query = select(TodoItem).where(TodoItem.title == todo_name)
     result = await session.execute(query)
     try:
@@ -46,7 +46,7 @@ async def get_todo_by_title(todo_name: str, session: AsyncSession) -> TodoItem:
         raise NotFoundException(detail=f"TODO {todo_name!r} not found") from e
 
 
-async def get_todo_list(done: Optional[bool], session: AsyncSession) -> list[TodoItem]:
+async def get_todo_list(done: FromQuery[bool | None], session: AsyncSession) -> list[TodoItem]:
     query = select(TodoItem)
     if done is not None:
         query = query.where(TodoItem.done.is_(done))
@@ -56,7 +56,7 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> list[Tod
 
 
 @get("/")
-async def get_list(transaction: AsyncSession, done: Optional[bool] = None) -> list[TodoItem]:
+async def get_list(transaction: AsyncSession, done: FromQuery[bool | None] = None) -> list[TodoItem]:
     return await get_todo_list(done, transaction)
 
 
@@ -67,7 +67,7 @@ async def add_item(data: TodoItem, transaction: AsyncSession) -> TodoItem:
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: str, data: TodoItem, transaction: AsyncSession) -> TodoItem:
+async def update_item(item_title: FromPath[str], data: TodoItem, transaction: AsyncSession) -> TodoItem:
     todo_item = await get_todo_by_title(item_title, transaction)
     todo_item.title = data.title
     todo_item.done = data.done

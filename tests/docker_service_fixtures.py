@@ -6,9 +6,9 @@ import re
 import subprocess
 import sys
 import timeit
-from collections.abc import Awaitable, Generator
+from collections.abc import Awaitable, Callable, Generator
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import asyncpg
 import httpx

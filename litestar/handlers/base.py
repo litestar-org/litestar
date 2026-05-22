@@ -1,8 +1,10 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import functools
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, NoReturn, cast
+from typing import TYPE_CHECKING, Any, NoReturn, cast
 
 from litestar._signature import SignatureModel
 from litestar.di import Provide
@@ -28,9 +30,8 @@ from litestar.utils.helpers import unwrap_partial
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, merge_signature_namespaces
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping, Sequence
-
-    from typing_extensions import Self
+    from collections.abc import Callable, Iterable, Mapping, Sequence
+    from typing import Self
 
     from litestar._kwargs import KwargsModel
     from litestar.app import Litestar
@@ -139,7 +140,7 @@ class BaseRouteHandler:
         self._dto = dto
         self._return_dto = return_dto
         self.exception_handlers = exception_handlers or {}
-        self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()  # pyright: ignore
+        self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()  # pyright: ignore[reportAttributeAccessIssue]
         self.middleware = tuple(middleware) if middleware else ()
         self.name = name
         self.opt = dict(opt or {})
@@ -528,7 +529,7 @@ class BaseRouteHandler:
         Returns:
             A string
         """
-        target: type[AsyncAnyCallable] | AsyncAnyCallable  # pyright: ignore
+        target: type[AsyncAnyCallable] | AsyncAnyCallable  # pyright: ignore[reportInvalidTypeForm]
         target = unwrap_partial(self.fn)
         if not hasattr(target, "__qualname__"):
             target = type(target)
@@ -547,4 +548,5 @@ class BaseRouteHandler:
             dependencies=self.dependencies,
             path_parameters=set(path_parameters),
             layered_parameters=self.parameter_field_definitions,
+            ctx=self,
         )

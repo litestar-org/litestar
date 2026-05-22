@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from os import urandom
 from pathlib import Path
 from typing import Optional

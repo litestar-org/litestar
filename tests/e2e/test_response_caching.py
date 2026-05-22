@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import gzip
 import random
 from datetime import timedelta
@@ -21,7 +23,7 @@ from litestar.testing import TestClient, create_test_client
 from litestar.types import HTTPScope
 
 if TYPE_CHECKING:
-    from time_machine import Coordinates
+    from time_machine import Traveller
 
 T = TypeVar("T")
 
@@ -60,7 +62,7 @@ def test_default_cache_response(sync_to_thread: bool, mock: MagicMock) -> None:
         assert mock.call_count == 1
 
 
-def test_handler_expiration(mock: MagicMock, frozen_datetime: "Coordinates") -> None:
+def test_handler_expiration(mock: MagicMock, frozen_datetime: "Traveller") -> None:
     @get("/cached-local", cache=10)
     async def handler() -> str:
         return mock()  # type: ignore[no-any-return]
@@ -78,7 +80,7 @@ def test_handler_expiration(mock: MagicMock, frozen_datetime: "Coordinates") -> 
         assert mock.call_count == 2
 
 
-def test_default_expiration(mock: MagicMock, frozen_datetime: "Coordinates") -> None:
+def test_default_expiration(mock: MagicMock, frozen_datetime: "Traveller") -> None:
     @get("/cached-default", cache=True)
     async def handler() -> str:
         return mock()  # type: ignore[no-any-return]
@@ -224,7 +226,7 @@ def test_middleware_not_applied_to_non_cached_routes(
     cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cur.app  # pyright: ignore
+        cur = cur.app  # pyright: ignore[reportFunctionMemberAccess]
     unpacked_middleware.append(cur)
 
     assert len([m for m in unpacked_middleware if isinstance(m, ResponseCacheMiddleware)]) == int(expect_applied)

@@ -18,7 +18,7 @@ jobs:
 
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.9"
+          python-version: "3.11"
 
       - name: Install Pre-Commit
         run: python -m pip install pre-commit
@@ -40,10 +40,10 @@ jobs:
 
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.9"
+          python-version: "3.11"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
 
@@ -57,10 +57,10 @@ jobs:
 
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.9"
+          python-version: "3.11"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
 
@@ -74,10 +74,10 @@ jobs:
 
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.9"
+          python-version: "3.11"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
 
@@ -89,10 +89,10 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
     uses: ./.github/workflows/test.yml
     with:
-      coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.9') }}
+      coverage: true
       python-version: ${{ matrix.python-version }}
 
   # add an aggregate step here to check if any of the steps of the matrix 'test' job
@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        typing-extensions: ["4.12.1", "4.13.1", "latest"]
+        typing-extensions: ["4.12.1", "4.13.1", "4.14.0", "latest"]
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -122,10 +122,10 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v6
         with:
-          python-version: 3.13
+          python-version: 3.14
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           version: "0.6.12"
           enable-cache: true
@@ -161,7 +161,7 @@ jobs:
           python-version: 3.11
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
 
@@ -187,28 +187,9 @@ jobs:
         os: ["macos-latest", "windows-latest"]
     uses: ./.github/workflows/test.yml
     with:
-      python-version: "3.13"
+      python-version: "3.14"
       os: ${{ matrix.os }}
       timeout: 30
-
-  codeql:
-    needs:
-      - test
-      - validate
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Initialize CodeQL Without Dependencies
-        uses: github/codeql-action/init@v4
-        with:
-          setup-python-dependencies: false
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
 
   build-docs:
     needs:
@@ -229,7 +210,7 @@ jobs:
           allow-prereleases: true
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
 
@@ -269,7 +250,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
 
@@ -281,53 +262,10 @@ jobs:
           mv tests/examples/test_hello_world.py test_hello_world.py
           uv run pytest test_hello_world.py
 
-  test_pydantic_1_app:
-    name: Test Minimal Pydantic 1 application
-    runs-on: ubuntu-latest
-    env:
-      python_version: "3.12"
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v6
-
-      - name: Install Build Dependencies
-        run: sudo apt-get install build-essential libpq-dev python3-dev -y
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-
-      - name: Install dependencies
-        run: |
-          uv sync
-          uv pip install "pydantic==1.*"
-
-      - name: Set pythonpath
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
-
-      - name: Test
-        run: uv run --no-sync coverage run --branch -m unittest test_apps/pydantic_1_app.py
-
-      - name: Rename coverage file
-        run: mv .coverage* .coverage.pydantic_v1
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: coverage-data-pydantic_v1-${{ inputs.python-version }}
-          path: .coverage.pydantic_v1
-          include-hidden-files: true
-
   upload-test-coverage:
     runs-on: ubuntu-latest
     needs:
       - test
-      - test_pydantic_1_app
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -350,7 +288,7 @@ jobs:
         run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}

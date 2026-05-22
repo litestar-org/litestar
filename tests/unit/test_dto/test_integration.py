@@ -71,7 +71,7 @@ def test_set_dto_none_disables_inherited_dto(ModelDataDTO: type[AbstractDTO]) ->
 
     mock_dto = MagicMock(spec=ModelDataDTO)
 
-    with create_test_client(route_handlers=handler, dto=mock_dto) as client:  # pyright:ignore
+    with create_test_client(route_handlers=handler, dto=mock_dto) as client:
         response = client.post("/", json={"hello": "world"})
         assert response.status_code == 201
         assert response.json() == {"hello": "world"}

@@ -1,5 +1,5 @@
-from collections.abc import Iterable
-from typing import Any, Callable
+from collections.abc import Callable, Iterable
+from typing import Any
 
 from anyio import create_task_group
 from typing_extensions import ParamSpec

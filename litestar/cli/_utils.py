@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import contextlib
@@ -7,13 +9,13 @@ import os
 import re
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from functools import wraps
 from importlib.util import find_spec
 from itertools import chain
 from os import getenv
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from litestar.cli._suggestions import suggest_option
 
@@ -24,6 +26,7 @@ try:
 except ImportError:
     from click import Command, Group, NoSuchOption  # type: ignore[assignment]
 
+from importlib.metadata import entry_points
 from typing import get_type_hints
 
 from click import ClickException, Context, pass_context
@@ -35,14 +38,8 @@ from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
 from litestar.utils import envflag, get_name
 
-if sys.version_info >= (3, 10):
-    from importlib.metadata import entry_points
-else:
-    from importlib_metadata import entry_points
-
-
 if TYPE_CHECKING:
-    from collections.abc import Generator, Iterable, Sequence
+    from collections.abc import Callable, Generator, Iterable, Sequence
     from types import ModuleType
 
     try:
@@ -147,7 +144,7 @@ class LoadedApp:
     is_factory: bool
 
 
-class LitestarGroup(Group):  # pyright: ignore
+class LitestarGroup(Group):  # pyright: ignore[reportGeneralTypeIssues]
     """:class:`click.Group` subclass that automatically injects ``app`` and ``env` kwargs into commands that request it.
 
     Use this as the ``cls`` for :class:`click.Group` if you're extending the internal CLI with a group. For ``command``s
@@ -286,7 +283,7 @@ def _inject_args(func: Callable[P, T]) -> Callable[P, T]:
 def _wrap_commands(commands: Iterable[Command]) -> None:
     for command in commands:
         if hasattr(command, "commands"):
-            _wrap_commands(command.commands.values())  # pyright: ignore
+            _wrap_commands(command.commands.values())  # pyright: ignore[reportAttributeAccessIssue]
         elif command.callback:
             command.callback = _inject_args(command.callback)
 
@@ -324,7 +321,7 @@ def _load_app_from_path(app_path: str) -> LoadedApp:
     if not isinstance(app, Litestar) and callable(app):
         app = app()
         is_factory = True
-    return LoadedApp(app=app, app_path=app_path, is_factory=is_factory)  # pyright: ignore
+    return LoadedApp(app=app, app_path=app_path, is_factory=is_factory)  # pyright: ignore[reportArgumentType]
 
 
 def _path_to_dotted_path(path: Path) -> str:
@@ -390,8 +387,7 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
                 os.environ["LITESTAR_APP"] = app_string
                 if not quiet_console and sys.stdout.isatty():
                     console.print(f"Using {app_name} factory from [bright_blue]{app_string}")
-                return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)  # pyright: ignore
-
+                return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)  # pyright: ignore[reportArgumentType]
     raise LitestarCLIException(f"Could not find {app_name} instance or factory")
 
 
@@ -533,8 +529,8 @@ def _generate_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_n
         .issuer_name(subject)
         .public_key(key.public_key())
         .serial_number(x509.random_serial_number())
-        .not_valid_before(datetime.now(tz=timezone.utc))
-        .not_valid_after(datetime.now(tz=timezone.utc) + timedelta(days=365))
+        .not_valid_before(datetime.now(tz=UTC))
+        .not_valid_after(datetime.now(tz=UTC) + timedelta(days=365))
         .add_extension(x509.SubjectAlternativeName([x509.DNSName(common_name)]), critical=False)
         .add_extension(x509.ExtendedKeyUsage([x509.OID_SERVER_AUTH]), critical=False)
         .sign(key, hashes.SHA256(), default_backend())

@@ -21,7 +21,7 @@ It can be installed via the ``litestar[htmx]`` package extra.
     from litestar.plugins.htmx import HTMXPlugin
     from litestar import Litestar
 
-    from litestar.contrib.jinja import JinjaTemplateEngine
+    from litestar.plugins.jinja import JinjaTemplateEngine
     from litestar.template.config import TemplateConfig
 
     from pathlib import Path
@@ -51,7 +51,7 @@ HTMX client.  You can configure this globally by using the ``HTMXPlugin`` or by 
     from litestar import get, Litestar
     from litestar.response import Template
 
-    from litestar.contrib.jinja import JinjaTemplateEngine
+    from litestar.plugins.jinja import JinjaTemplateEngine
     from litestar.template.config import TemplateConfig
 
     from pathlib import Path

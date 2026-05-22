@@ -338,7 +338,7 @@ class File(Response):
             filename=self.filename,
             background=self.background or background,
             chunk_size=self.chunk_size,
-            content_disposition_type=self.content_disposition_type,  # pyright: ignore
+            content_disposition_type=self.content_disposition_type,  # pyright: ignore[reportArgumentType]
             content_length=0,
             cookies=cookies,
             encoding=self.encoding,

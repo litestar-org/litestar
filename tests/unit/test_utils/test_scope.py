@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from litestar.utils.scope.state import CONNECTION_STATE_KEY, ScopeState

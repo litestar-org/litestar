@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction, ismethod
@@ -75,21 +77,19 @@ class Provide:
                 "Cannot cache generator dependency, consider using Lifespan Context instead."
             )
 
-        has_sync_callable = is_class_dependency or not is_async_callable(dependency)  # pyright: ignore
-
+        has_sync_callable = is_class_dependency or not is_async_callable(dependency)
         if sync_to_thread is not None:
             if has_generator_dependency:
                 warn_sync_to_thread_with_generator(dependency, stacklevel=3)  # type: ignore[arg-type]
             elif not has_sync_callable:
-                warn_sync_to_thread_with_async_callable(dependency, stacklevel=3)  # pyright: ignore
+                warn_sync_to_thread_with_async_callable(dependency, stacklevel=3)
         elif has_sync_callable and not has_generator_dependency:
-            warn_implicit_sync_to_thread(dependency, stacklevel=3)  # pyright: ignore
-
+            warn_implicit_sync_to_thread(dependency, stacklevel=3)
         if sync_to_thread and has_sync_callable:
-            self.dependency = ensure_async_callable(dependency)  # pyright: ignore
+            self.dependency = ensure_async_callable(dependency)
             self.has_sync_callable = False
         else:
-            self.dependency = dependency  # pyright: ignore
+            self.dependency = dependency
             self.has_sync_callable = has_sync_callable
 
         self.sync_to_thread = bool(sync_to_thread)

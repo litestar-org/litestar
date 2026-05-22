@@ -217,7 +217,7 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
 
 
 @dataclass
-class CookieBackendConfig(BaseBackendConfig[ClientSideSessionBackend]):  # pyright: ignore
+class CookieBackendConfig(BaseBackendConfig[ClientSideSessionBackend]):
     """Configuration for [SessionMiddleware] middleware."""
 
     _backend_class = ClientSideSessionBackend

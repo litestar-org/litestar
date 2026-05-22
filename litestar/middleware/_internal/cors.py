@@ -111,7 +111,7 @@ class CORSMiddleware(AbstractMiddleware):
         if pre_flight_requested_headers:
             if self.config.is_allow_all_headers:
                 response_headers["Access-Control-Allow-Headers"] = ", ".join(
-                    sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)  # pyright: ignore
+                    sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)
                 )
             else:
                 all_allowed_headers = set(self.config.allow_headers).union(

@@ -83,11 +83,11 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
                 fn, args, kwargs = item
                 if kwargs:
                     fn = partial(fn, **kwargs)
-                task_group.start_soon(fn, *args)  # pyright: ignore[reportGeneralTypeIssues]
+                task_group.start_soon(fn, *args)
 
     async def __aenter__(self) -> SimpleEventEmitter:
         self._exit_stack = AsyncExitStack()
-        send_stream, receive_stream = anyio.create_memory_object_stream(math.inf)  # type: ignore[var-annotated]
+        send_stream, receive_stream = anyio.create_memory_object_stream(math.inf)
         self._send_stream = send_stream
         task_group = anyio.create_task_group()
 

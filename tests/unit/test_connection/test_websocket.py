@@ -5,8 +5,8 @@ were meant to ensure our compatibility with their API.
 
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator, Awaitable
-from typing import TYPE_CHECKING, Any, Callable, Literal
+from collections.abc import AsyncGenerator, Awaitable, Callable
+from typing import TYPE_CHECKING, Any, Literal
 from unittest.mock import MagicMock
 
 import anyio
@@ -20,7 +20,6 @@ from litestar.handlers.websocket_handlers import websocket
 from litestar.status_codes import WS_1001_GOING_AWAY
 from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
-from litestar.utils.compat import async_next
 
 if TYPE_CHECKING:
     from litestar.types import Receive, Scope, Send
@@ -50,7 +49,7 @@ def test_route_handler_property() -> None:
         value["handler"] = socket.route_handler
         await socket.close()
 
-    with create_test_client(route_handlers=[handler]).websocket_connect("/"):
+    with create_test_client(route_handlers=[handler]) as client, client.websocket_connect("/"):
         assert str(value["handler"]) == str(handler)
 
 
@@ -92,7 +91,10 @@ async def test_custom_websocket_class() -> None:
         await socket.accept()
         await socket.close()
 
-    with create_test_client(route_handlers=[handler], websocket_class=MyWebSocket).websocket_connect("/"):
+    with (
+        create_test_client(route_handlers=[handler], websocket_class=MyWebSocket) as client,
+        client.websocket_connect("/"),
+    ):
         assert value["called"]
 
 
@@ -252,7 +254,7 @@ async def consume_gen(generator: AsyncGenerator[Any, Any], count: int, timeout: 
     async def consumer() -> list[Any]:
         result = []
         for _ in range(count):
-            result.append(await async_next(generator))
+            result.append(await anext(generator))
         return result
 
     with anyio.fail_after(timeout):
@@ -312,7 +314,7 @@ def test_iter_msgpack() -> None:
 
 
 def test_websocket_concurrency_pattern() -> None:
-    stream_send, stream_receive = anyio.create_memory_object_stream()  # type: ignore[var-annotated]
+    stream_send, stream_receive = anyio.create_memory_object_stream()
 
     async def reader(socket: WebSocket[Any, Any, State]) -> None:
         async with stream_send:

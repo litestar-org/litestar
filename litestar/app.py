@@ -16,7 +16,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, TypedDict, cast
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 from uuid import UUID
 
 from litestar._asgi import ASGIRouter
@@ -56,19 +56,18 @@ from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.warnings import warn_pdb_on_exception
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Generator, Iterable, Mapping, Sequence
-
-    from typing_extensions import Self
+    from collections.abc import AsyncGenerator, Callable, Generator, Iterable, Mapping, Sequence
+    from typing import Self
 
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
-    from litestar.contrib.opentelemetry import OpenTelemetryPlugin
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
+    from litestar.plugins.opentelemetry import OpenTelemetryPlugin
     from litestar.response import Response
     from litestar.stores.base import Store
     from litestar.types import (
@@ -181,7 +180,7 @@ class Litestar(Router):
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
         csrf_config: CSRFConfig | None = None,
-        dto: type[AbstractDTO] | None | EmptyType = Empty,
+        dto: type[AbstractDTO] | EmptyType | None = Empty,
         debug: bool | None = None,
         dependencies: Dependencies | None = None,
         etag: ETag | None = None,
@@ -206,7 +205,7 @@ class Litestar(Router):
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
-        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
+        return_dto: type[AbstractDTO] | EmptyType | None = Empty,
         security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         signature_types: Sequence[Any] | None = None,
@@ -387,7 +386,7 @@ class Litestar(Router):
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
             [self._patch_opentelemetry_middleware],
         ):
-            config = handler(config)  # pyright: ignore
+            config = handler(config)
 
         self.plugins = PluginRegistry(config.plugins)
 
@@ -494,7 +493,7 @@ class Litestar(Router):
         # workaround to support otel middleware priority. Should be replaced by regular
         # middleware priorities once available
         try:
-            from litestar.contrib.opentelemetry import OpenTelemetryPlugin
+            from litestar.plugins.opentelemetry import OpenTelemetryPlugin
 
             if not any(isinstance(p, OpenTelemetryPlugin) for p in config.plugins):
                 config.middleware, otel_middleware = OpenTelemetryPlugin._pop_otel_middleware(config.middleware)
@@ -584,7 +583,7 @@ class Litestar(Router):
     async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
         ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore[call-arg]
 
-        if is_async_callable(hook):  # pyright: ignore
+        if is_async_callable(hook):  # pyright: ignore[reportArgumentType]
             await ret
 
     @asynccontextmanager
@@ -658,7 +657,7 @@ class Litestar(Router):
 
         return route_map
 
-    def _build_routes(self, route_handlers: Iterable[BaseRouteHandler]) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:
+    def _build_routes(self, route_handlers: Iterable[BaseRouteHandler]) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:  # noqa: C901
         """Create routes for all the handlers"""
         routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
 
@@ -684,11 +683,19 @@ class Litestar(Router):
                 HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers, root=self))
             )
 
+        registered_route_handlers = set()
+
         for finalized_route in routes:
             route_handlers = get_route_handlers(finalized_route)
 
             for route_handler in route_handlers:
-                route_handler.on_registration(route=finalized_route, app=self)
+                # handlers can be registered multiple times, if they define multiple
+                # paths. in these cases, we don't want to call 'on_registration' more
+                # than once, so we keep track of the handlers we've already called this
+                # hook
+                if route_handler not in registered_route_handlers:
+                    route_handler.on_registration(route=finalized_route, app=self)
+                    registered_route_handlers.add(route_handler)
 
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(finalized_route)
@@ -779,8 +786,7 @@ class Litestar(Router):
 
         # this narrows down to an ABC, but we assume a non-abstract subclass of the ABC superclass
         if is_class_and_subclass(value, WebsocketListener):
-            return value().to_handler()  # pyright: ignore
-
+            return value().to_handler()  # pyright: ignore[reportAbstractUsage]
         if isinstance(value, Router):
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
@@ -998,7 +1004,7 @@ def _maybe_add_options_handler(
 ) -> list[HTTPRouteHandler]:
     handler_methods = {method for handler in http_handlers for method in handler.http_methods}
     if "OPTIONS" not in handler_methods:
-        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore
+        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore[reportArgumentType]
         options_handler = options_handler.merge(root)
         return [*http_handlers, options_handler]
     return http_handlers

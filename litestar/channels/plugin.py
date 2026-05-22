@@ -1,10 +1,12 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import asyncio
 from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
 from functools import partial
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import msgspec.json
 
@@ -17,12 +19,13 @@ from litestar.serialization import default_serializer
 from .subscriber import BacklogStrategy, EventCallback, Subscriber
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Awaitable, Iterable
+    from collections.abc import AsyncGenerator, Awaitable, Callable, Iterable
     from types import TracebackType
 
     from litestar.channels.backends.base import ChannelsBackend
     from litestar.config.app import AppConfig
     from litestar.connection import WebSocket
+    from litestar.params import FromPath
     from litestar.types import LitestarEncodableType, TypeEncodersMap
     from litestar.types.asgi_types import WebSocketMode
 
@@ -279,7 +282,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
             for entry in history:
                 await subscriber.put(entry)
 
-    async def _ws_handler_func(self, channel_name: str, socket: WebSocket) -> None:
+    async def _ws_handler_func(self, channel_name: FromPath[str], socket: WebSocket) -> None:
         await socket.accept()
 
         # the ternary operator triggers a mypy bug: https://github.com/python/mypy/issues/10740

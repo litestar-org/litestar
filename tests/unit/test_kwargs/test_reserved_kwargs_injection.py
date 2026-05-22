@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from typing import Annotated, Any, Optional, cast
 
 import msgspec.json
@@ -18,7 +20,7 @@ from litestar import (
 from litestar.datastructures.state import ImmutableState, State
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import Dependency
+from litestar.params import Dependency, FromPath, FromQuery
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -146,7 +148,7 @@ def test_path_params(decorator: Any, http_method: Any, expected_status_code: Any
         path = test_path
 
         @decorator(path="/{person_id:str}")
-        def test_method(self, person_id: str) -> None:
+        def test_method(self, person_id: FromPath[str]) -> None:
             assert person_id == person_instance.id
 
     with create_test_client(MyController) as client:
@@ -166,7 +168,12 @@ def test_path_params(decorator: Any, http_method: Any, expected_status_code: Any
 )
 def test_query_params(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
     @decorator("/person")
-    def handler(first: str, second: list[str], third: int, fourth: Optional[str] = None) -> None:
+    def handler(
+        first: FromQuery[str],
+        second: FromQuery[list[str]],
+        third: FromQuery[int],
+        fourth: FromQuery[Optional[str]] = None,
+    ) -> None:
         assert first == "foo"
         assert second == ["a", "b"]
         assert third == 2
@@ -298,6 +305,24 @@ def test_improper_use_of_state_kwarg() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[MyController], openapi_config=None)
+
+
+def test_improper_use_of_state_kwarg_with_annotated_metadata() -> None:
+    """``state`` typed as ``Annotated[<bad>, <KwargDefinition>]`` must surface the
+    same configuration error as ``state: <bad>``. Previously the ``Annotated`` wrapper
+    caused the subclass check to crash with ``TypeError`` before we could raise the
+    configuration error.
+    """
+    from typing import Annotated
+
+    from litestar.params import QueryParameter
+
+    @get("/")
+    async def handler(state: Annotated[str, QueryParameter(name="alias")]) -> None:
+        return None
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Litestar(route_handlers=[handler], openapi_config=None)
 
 
 @pytest.mark.parametrize(

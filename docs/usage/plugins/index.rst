@@ -71,28 +71,25 @@ that annotation.
 Example
 +++++++
 
-The following example shows the implementation pattern of a ``SerializationPlugin`` for
-`SQLAlchemy <https://www.sqlalchemy.org/>`_ models. For the actual implementation, see the
-``advanced_alchemy`` library documentation.
+The following example shows a minimal ``SerializationPlugin`` implementation that mirrors the pattern used by
+``advanced-alchemy``'s :class:`~advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin`:
 
-:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type>`
-returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return
-``True`` if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.
+.. literalinclude:: /examples/plugins/serialization_plugin_protocol.py
+   :language: python
+   :caption: ``SerializationPlugin`` implementation example
 
-:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.create_dto_for_type>`
-takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a
-:class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` subclass and includes some logic that may be
-interesting to potential serialization plugin authors.
+``CompanySerializationPlugin.supports_type()`` returns a :class:`bool` indicating whether the plugin should be used for
+a given type. The example unwraps collection annotations (``list[Company]``, ``tuple[Company, ...]``, etc.) so that a
+handler returning either ``Company`` or a collection of ``Company`` instances is recognised as the same underlying model.
 
-The first thing the method does is check if the parsed type is a collection of SQLAlchemy models or a single SQLAlchemy
-model, retrieves the model type in either case and assigns it to the ``annotation`` variable.
+``CompanySerializationPlugin.create_dto_for_type()`` receives the same :class:`FieldDefinition <litestar.typing.FieldDefinition>`
+and must return an :class:`AbstractDTO <litestar.dto.base_dto.AbstractDTO>` subclass. It first unwraps any collection
+wrapper to recover the concrete model type, checks the ``_type_dto_map`` cache, and if no DTO has been built yet,
+parametrises :class:`DataclassDTO <litestar.dto.dataclass_dto.DataclassDTO>` with the annotation, caches it, and returns it. Caching keeps a single
+DTO class per model so handlers that reference the same model type reuse the same serializer.
 
-The method then checks if ``annotation`` is already in the ``_type_dto_map`` dictionary. If it is, it returns the
-corresponding DTO type. This is done to ensure that multiple :class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>`
-subtypes are not created for the same model.
-
-If the annotation is not in the ``_type_dto_map`` dictionary, the method creates a new DTO type for the annotation,
-adds it to the ``_type_dto_map`` dictionary, and returns it.
+For a production-grade implementation using SQLAlchemy models instead of dataclasses, refer to the
+``advanced-alchemy`` library documentation.
 
 
 DIPlugin

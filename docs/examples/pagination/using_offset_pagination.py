@@ -1,18 +1,20 @@
+import dataclasses
 from itertools import islice
 
-from polyfactory.factories.pydantic_factory import ModelFactory
-from pydantic import BaseModel
+from polyfactory.factories.dataclass_factory import DataclassFactory
 
 from litestar import Litestar, get
 from litestar.pagination import AbstractSyncOffsetPaginator, OffsetPagination
+from litestar.params import FromQuery
 
 
-class Person(BaseModel):
+@dataclasses.dataclass
+class Person:
     id: str
     name: str
 
 
-class PersonFactory(ModelFactory[Person]):
+class PersonFactory(DataclassFactory[Person]):
     __model__ = Person
 
 
@@ -37,7 +39,7 @@ paginator = PersonOffsetPaginator()
 # we now create a regular handler. The handler will receive two query parameters - 'limit' and 'offset', which
 # we will pass to the paginator.
 @get("/people", sync_to_thread=False)
-def people_handler(limit: int, offset: int) -> OffsetPagination[Person]:
+def people_handler(limit: FromQuery[int], offset: FromQuery[int]) -> OffsetPagination[Person]:
     return paginator(limit=limit, offset=offset)
 
 

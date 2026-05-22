@@ -4,13 +4,12 @@ back again, to bytes.
 
 from __future__ import annotations
 
-from collections.abc import Collection, Mapping, Set
+from collections.abc import Callable, Collection, Mapping, Set
 from dataclasses import replace
 from typing import (
     TYPE_CHECKING,
     Annotated,
     Any,
-    Callable,
     ClassVar,
     Final,
     Protocol,
@@ -843,7 +842,7 @@ def _create_struct_for_field_definitions(
             field_type = Annotated[field_type, field_definition.kwarg_definition]
 
         struct_fields.append(
-            (  # pyright: ignore
+            (  # pyright: ignore[reportArgumentType]
                 field_definition.name,
                 field_type,
                 _create_msgspec_field(field_definition),

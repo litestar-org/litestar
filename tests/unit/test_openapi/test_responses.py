@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Callable, TypedDict, TypeVar
+from typing import Any, TypeAlias, TypedDict, TypeVar
 from unittest.mock import MagicMock
 
 import pytest
-from typing_extensions import TypeAlias
 
 from litestar import Controller, Litestar, MediaType, Response, delete, get, post
 from litestar._openapi.datastructures import OpenAPIContext
@@ -462,7 +462,7 @@ def test_additional_responses_with_custom_examples(create_factory: CreateFactory
 
     factory = create_factory(handler)
     responses = factory.create_additional_responses()
-    status_code, response = next(responses)
+    _status_code, response = next(responses)
     assert response.content
     assert response.content["application/json"].examples == {
         "dataclassperson-example-1": Example(
@@ -497,7 +497,7 @@ def test_additional_responses_with_custom_example_ids(create_factory: CreateFact
 
     factory = create_factory(handler)
     responses = factory.create_additional_responses()
-    status_code, response = next(responses)
+    _status_code, response = next(responses)
     assert response.content
     assert isinstance(response.content["application/json"], OpenAPIMediaType)
     assert response.content["application/json"].examples is not None
@@ -553,7 +553,7 @@ def test_response_generation_with_dto(create_factory: CreateFactoryFixture) -> N
     mock_dto = MagicMock(spec=AbstractDTO)
     mock_dto.create_openapi_schema.return_value = Schema()
 
-    @post(path="/form-upload", return_dto=mock_dto)  # pyright: ignore
+    @post(path="/form-upload", return_dto=mock_dto)
     async def handler(data: dict[str, Any]) -> dict[str, Any]:
         return data
 

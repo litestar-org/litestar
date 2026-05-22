@@ -1,6 +1,6 @@
 from typing import Optional
 
-import pydantic as pydantic_v2
+import pydantic
 
 from litestar import get
 from litestar.dto import DTOConfig
@@ -8,13 +8,13 @@ from litestar.plugins.pydantic import PydanticDTO
 from litestar.testing import create_test_client
 
 
-class Status(pydantic_v2.BaseModel):
+class Status(pydantic.BaseModel):
     a: str
     b: str
 
 
-class Result(pydantic_v2.BaseModel):
-    @pydantic_v2.computed_field
+class Result(pydantic.BaseModel):
+    @pydantic.computed_field
     def status(self) -> Optional[Status]:
         return None
 

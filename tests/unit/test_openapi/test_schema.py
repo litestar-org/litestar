@@ -1,7 +1,10 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import sys
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
-from enum import Enum, auto
+from datetime import UTC, date, datetime
+from decimal import Decimal
+from enum import Enum, StrEnum, auto
 from typing import (
     TYPE_CHECKING,
     Annotated,
@@ -9,6 +12,7 @@ from typing import (
     Generic,
     Literal,
     Optional,
+    TypeAlias,
     TypedDict,
     TypeVar,
     Union,
@@ -18,7 +22,7 @@ import annotated_types
 import msgspec
 import pytest
 from msgspec import Struct
-from typing_extensions import TypeAlias, TypeAliasType
+from typing_extensions import TypeAliasType
 
 from litestar import Controller, MediaType, get, post
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
@@ -35,7 +39,16 @@ from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
-from litestar.params import KwargDefinition, Parameter, ParameterKwarg
+from litestar.params import (
+    FromPath,
+    FromQuery,
+    HeaderParameter,
+    KwargDefinition,
+    Parameter,
+    ParameterKwarg,
+    PathParameter,
+    QueryParameter,
+)
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
@@ -43,8 +56,8 @@ from tests.helpers import get_schema_for_field_definition
 from tests.models import DataclassPerson, DataclassPet
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from types import ModuleType
-    from typing import Callable
 
 T = TypeVar("T")
 
@@ -149,13 +162,15 @@ def test_override_schema_component_key_raise_if_keys_are_not_unique() -> None:
 
 
 def test_dependency_schema_generation() -> None:
-    async def top_dependency(query_param: int) -> int:
+    async def top_dependency(query_param: FromQuery[int]) -> int:
         return query_param
 
-    async def mid_level_dependency(header_param: str = Parameter(header="header_param", required=False)) -> int:
+    async def mid_level_dependency(
+        header_param: Annotated[str, HeaderParameter(name="header_param", required=False)],
+    ) -> int:
         return 5
 
-    async def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
+    async def local_dependency(path_param: FromPath[int], mid_level: int, top_level: int) -> int:
         return path_param + mid_level + top_level
 
     class MyController(Controller):
@@ -169,7 +184,7 @@ def test_dependency_schema_generation() -> None:
             },
             media_type=MediaType.TEXT,
         )
-        def test_function(self, summed: int, handler_param: int) -> str:
+        def test_function(self, summed: int, handler_param: FromQuery[int]) -> str:
             return str(summed)
 
     with create_test_client(
@@ -192,7 +207,7 @@ def test_dependency_schema_generation() -> None:
 
 
 def test_get_schema_for_annotation_enum() -> None:
-    class Opts(str, Enum):
+    class Opts(StrEnum):
         opt1 = "opt1"
         opt2 = "opt2"
 
@@ -294,6 +309,8 @@ class Foo(TypedDict):
 
 
 def test_create_schema_from_msgspec_annotated_type() -> None:
+    from uuid import UUID
+
     class Lookup(msgspec.Struct):
         int_field: Annotated[int, msgspec.Meta(gt=0)]
         str_field: Annotated[
@@ -301,6 +318,8 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
             msgspec.Meta(max_length=16, examples=["example"], description="description", title="title", pattern=r"\w+"),
         ]
         bytes_field: Annotated[bytes, msgspec.Meta(max_length=2, min_length=1)]
+        list_field: Annotated[list[UUID], msgspec.Meta(min_length=1, max_length=10)]
+        set_field: Annotated[set[int], msgspec.Meta(min_length=2)]
         default_field: Annotated[str, msgspec.Meta(min_length=1)] = "a"
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
@@ -312,13 +331,16 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.properties["str_field"].description == "description"  # type: ignore[index]
     assert schema.properties["str_field"].title == "title"  # type: ignore[index, union-attr]
     assert schema.properties["str_field"].max_length == 16  # type: ignore[index, union-attr]
-    assert sorted(schema.required) == sorted(["int_field", "str_field", "bytes_field"])  # type: ignore[arg-type]
+    assert sorted(schema.required) == sorted(["int_field", "str_field", "bytes_field", "list_field", "set_field"])  # type: ignore[arg-type]
     assert schema.properties["bytes_field"].to_schema() == {  # type: ignore[index]
         "contentEncoding": "utf-8",
         "maxLength": 2,
         "minLength": 1,
         "type": "string",
     }
+    assert schema.properties["list_field"].min_items == 1  # type: ignore[index, union-attr]
+    assert schema.properties["list_field"].max_items == 10  # type: ignore[index, union-attr]
+    assert schema.properties["set_field"].min_items == 2  # type: ignore[index, union-attr]
 
 
 def test_annotated_types() -> None:
@@ -343,12 +365,12 @@ def test_annotated_types() -> None:
     assert schema.properties["constrained_float"].maximum == 10  # type: ignore[index, union-attr]
     assert datetime.fromtimestamp(
         schema.properties["constrained_date"].exclusive_minimum,  # type: ignore[arg-type, index, union-attr]
-        tz=timezone.utc,
-    ) == datetime.fromordinal(historical_date.toordinal()).replace(tzinfo=timezone.utc)
+        tz=UTC,
+    ) == datetime.fromordinal(historical_date.toordinal()).replace(tzinfo=UTC)
     assert datetime.fromtimestamp(
         schema.properties["constrained_date"].exclusive_maximum,  # type: ignore[arg-type, index, union-attr]
-        tz=timezone.utc,
-    ) == datetime.fromordinal(today.toordinal()).replace(tzinfo=timezone.utc)
+        tz=UTC,
+    ) == datetime.fromordinal(today.toordinal()).replace(tzinfo=UTC)
     assert schema.properties["constrained_lower_case"].description == "must be in lower case"  # type: ignore[index]
     assert schema.properties["constrained_upper_case"].description == "must be in upper case"  # type: ignore[index]
     assert schema.properties["constrained_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore[index, union-attr]
@@ -380,15 +402,15 @@ class MsgspecGeneric(Struct, Generic[T]):
 
 annotations: list[type] = [DataclassGeneric[int], MsgspecGeneric[int]]
 
+
 # Generic TypedDict was only supported from 3.11 onwards
-if sys.version_info >= (3, 11):
+class TypedDictGeneric(TypedDict, Generic[T]):
+    foo: T
+    optional_foo: Optional[T]
+    annotated_foo: Annotated[T, object()]
 
-    class TypedDictGeneric(TypedDict, Generic[T]):
-        foo: T
-        optional_foo: Optional[T]
-        annotated_foo: Annotated[T, object()]
 
-    annotations.append(TypedDictGeneric[int])
+annotations.append(TypedDictGeneric[int])
 
 
 @pytest.mark.parametrize("cls", annotations)
@@ -519,7 +541,7 @@ def test_optional_enum() -> None:
 
 
 def test_optional_str_specified_enum() -> None:
-    class StringEnum(str, Enum):
+    class StringEnum(StrEnum):
         A = "a"
         B = "b"
 
@@ -593,6 +615,7 @@ def test_not_generating_examples_property() -> None:
 
 def test_process_schema_result_with_unregistered_object_schema() -> None:
     """This test ensures that if a schema is created for an object and not registered in the schema registry, the
+
     schema is returned as-is, and not referenced.
     """
     schema = Schema(title="has title", type=OpenAPIType.OBJECT)
@@ -605,11 +628,11 @@ def test_type_union(base_type: type) -> None:
     if base_type is dataclass:
 
         @dataclass
-        class ModelA:  # pyright: ignore
+        class ModelA:  # pyright: ignore[reportRedeclaration]
             pass
 
         @dataclass
-        class ModelB:  # pyright: ignore
+        class ModelB:  # pyright: ignore[reportRedeclaration]
             pass
 
     else:
@@ -635,11 +658,11 @@ def test_type_union_with_none(base_type: type) -> None:
     if base_type is dataclass:
 
         @dataclass
-        class ModelA:  # pyright: ignore
+        class ModelA:  # pyright: ignore[reportRedeclaration]
             pass
 
         @dataclass
-        class ModelB:  # pyright: ignore
+        class ModelB:  # pyright: ignore[reportRedeclaration]
             pass
 
     else:
@@ -678,11 +701,11 @@ def test_default_not_provided_for_kwarg_but_for_field() -> None:
 def test_routes_with_different_path_param_types_get_merged() -> None:
     # https://github.com/litestar-org/litestar/issues/2700
     @get("/{param:int}")
-    async def get_handler(param: int) -> None:
+    async def get_handler(param: FromPath[int]) -> None:
         pass
 
     @post("/{param:str}")
-    async def post_handler(param: str) -> None:
+    async def post_handler(param: FromPath[str]) -> None:
         pass
 
     app = Litestar([get_handler, post_handler])
@@ -696,10 +719,10 @@ def test_unconsumed_path_parameters_are_documented() -> None:
     # https://github.com/litestar-org/litestar/issues/3290
     # https://github.com/litestar-org/litestar/issues/3369
 
-    async def dd(param3: Annotated[str, Parameter(description="123")]) -> str:
+    async def dd(param3: Annotated[str, PathParameter(description="123")]) -> str:
         return param3
 
-    async def d(dep_dep: str, param2: Annotated[str, Parameter(description="abc")]) -> str:
+    async def d(dep_dep: str, param2: Annotated[str, PathParameter(description="abc")]) -> str:
         return f"{dep_dep}_{param2}"
 
     @get("/{param1:str}/{param2:str}/{param3:str}", dependencies={"dep": d, "dep_dep": dd})
@@ -710,7 +733,7 @@ def test_unconsumed_path_parameters_are_documented() -> None:
     params = app.openapi_schema.paths["/{param1}/{param2}/{param3}"].get.parameters  # type: ignore[index, union-attr]
     assert params
     assert len(params) == 3
-    for i, param in enumerate(sorted(params, key=lambda p: p.name), 1):  # pyright: ignore
+    for i, param in enumerate(sorted(params, key=lambda p: p.name), 1):  # pyright: ignore[reportAttributeAccessIssue]
         assert isinstance(param, OpenAPIParameter)
         assert param.name == f"param{i}"
         assert param.required is True
@@ -719,7 +742,7 @@ def test_unconsumed_path_parameters_are_documented() -> None:
 
 def test_type_alias_type() -> None:
     @get("/")
-    def handler(query_param: Annotated[TypeAliasType("IntAlias", int), Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
+    def handler(query_param: Annotated[TypeAliasType("IntAlias", int), QueryParameter(description="foo")]) -> None:  # type: ignore[valid-type]
         pass
 
     app = Litestar([handler])
@@ -736,7 +759,7 @@ def test_type_alias_type_keyword() -> None:
     annotation = ctx["IntAlias"]
 
     @get("/")
-    def handler(query_param: Annotated[annotation, Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
+    def handler(query_param: Annotated[annotation, QueryParameter(description="foo")]) -> None:  # type: ignore[valid-type]
         pass
 
     app = Litestar([handler])
@@ -744,3 +767,10 @@ def test_type_alias_type_keyword() -> None:
     assert param.schema.type is OpenAPIType.INTEGER  # type: ignore[union-attr]
     # ensure other attributes than the plain type are carried over correctly
     assert param.description == "foo"
+
+
+def test_decimal_schema_type() -> None:
+    from litestar._openapi.schema_generation.schema import create_schema_for_annotation
+
+    schema = create_schema_for_annotation(Decimal)
+    assert schema.type == OpenAPIType.STRING

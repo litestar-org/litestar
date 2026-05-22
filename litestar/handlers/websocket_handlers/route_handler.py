@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
@@ -11,7 +11,7 @@ from litestar.utils import deprecated
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Callable, Mapping, Sequence
 
     from litestar import Litestar, Router
     from litestar._kwargs import KwargsModel

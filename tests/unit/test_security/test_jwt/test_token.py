@@ -5,7 +5,7 @@ import secrets
 import sys
 from collections.abc import Sequence
 from dataclasses import asdict
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import uuid4
 
@@ -36,7 +36,7 @@ def test_token(
     token_secret = secrets.token_hex()
     token = Token(
         sub=secrets.token_hex(),
-        exp=(datetime.now(timezone.utc) + timedelta(minutes=30)),
+        exp=(datetime.now(UTC) + timedelta(minutes=30)),
         aud=token_audience,
         iss=token_issuer,
         jti=token_unique_jwt_id,
@@ -72,14 +72,14 @@ def test_encode_validation(algorithm: str, secret: str) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         Token(
             sub="123",
-            exp=(datetime.now(timezone.utc) + timedelta(seconds=30)),
+            exp=(datetime.now(UTC) + timedelta(seconds=30)),
         ).encode(algorithm=algorithm, secret=secret)
 
 
 def test_decode_validation() -> None:
     token = Token(
         sub="123",
-        exp=(datetime.now(timezone.utc) + timedelta(seconds=30)),
+        exp=(datetime.now(UTC) + timedelta(seconds=30)),
     )
     algorithm = "HS256"
     secret = uuid4().hex
@@ -137,10 +137,10 @@ def test_sub_validation() -> None:
 def test_extra_fields() -> None:
     raw_token = {
         "sub": secrets.token_hex(),
-        "iat": datetime.now(timezone.utc),
+        "iat": datetime.now(UTC),
         "azp": "extra value",
         "email": "thetest@test.com",
-        "exp": (datetime.now(timezone.utc) + timedelta(seconds=30)),
+        "exp": (datetime.now(UTC) + timedelta(seconds=30)),
     }
     token_secret = secrets.token_hex()
     encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
@@ -150,8 +150,8 @@ def test_extra_fields() -> None:
 
     raw_token = {
         "sub": secrets.token_hex(),
-        "iat": datetime.now(timezone.utc),
-        "exp": (datetime.now(timezone.utc) + timedelta(seconds=30)),
+        "iat": datetime.now(UTC),
+        "exp": (datetime.now(UTC) + timedelta(seconds=30)),
     }
     token_secret = secrets.token_hex()
     encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
@@ -165,21 +165,21 @@ def test_extra_fields() -> None:
         (
             {
                 "sub": "foo",
-                "iat": datetime.now(timezone.utc),
+                "iat": datetime.now(UTC),
             },
             {"verify_exp": False},
         ),
         (
             {
                 "sub": "foo",
-                "exp": datetime.now(timezone.utc) + timedelta(days=1),
+                "exp": datetime.now(UTC) + timedelta(days=1),
             },
             {},
         ),
         (
             {
-                "exp": datetime.now(timezone.utc) + timedelta(days=1),
-                "iat": datetime.now(timezone.utc),
+                "exp": datetime.now(UTC) + timedelta(days=1),
+                "iat": datetime.now(UTC),
             },
             {"verify_exp": False},
         ),
@@ -206,7 +206,7 @@ def test_invalid_datetime_claim_raises_not_authorized() -> None:
         payload={
             "sub": "foo",
             "exp": "not-a-timestamp",
-            "iat": datetime.now(timezone.utc),
+            "iat": datetime.now(UTC),
         },
         key=token_secret,
         algorithm="HS256",

@@ -85,7 +85,7 @@ def test_listener_websocket_class_resolution_of_layers(
         path = "/"
         websocket_class = handler_websocket_class
 
-        def on_receive(self, data: str) -> str:  # pyright: ignore
+        def on_receive(self, data: str) -> str:
             return data
 
     router = Router(path="/", route_handlers=[Handler], websocket_class=router_websocket_class)

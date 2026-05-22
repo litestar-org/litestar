@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Union
@@ -7,9 +9,9 @@ from jinja2 import DictLoader, Environment
 from mako.lookup import TemplateLookup  # type: ignore[import-untyped]
 
 from litestar import get
-from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.contrib.mako import MakoTemplateEngine
-from litestar.contrib.minijinja import MiniJinjaTemplateEngine
+from litestar.plugins.jinja import JinjaTemplateEngine
+from litestar.plugins.mako import MakoTemplateEngine
+from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client

@@ -1,10 +1,9 @@
-from typing import Optional
-
 from litestar import Litestar, get
+from litestar.params import FromQuery
 
 
 @get("/", sync_to_thread=False)
-def index(param: Optional[str] = None) -> dict[str, Optional[str]]:
+def index(param: FromQuery[str | None] = None) -> dict[str, str | None]:
     return {"param": param}
 
 

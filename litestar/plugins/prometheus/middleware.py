@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from litestar.connection.request import Request
 from litestar.enums import ScopeType
@@ -21,6 +21,8 @@ except ImportError as e:
 from prometheus_client import Counter, Gauge, Histogram
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from prometheus_client.metrics import MetricWrapperBase
 
     from litestar.plugins.prometheus import PrometheusConfig

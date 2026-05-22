@@ -1,6 +1,7 @@
 import enum
+from collections.abc import Callable
 from pathlib import Path, PurePath, PureWindowsPath
-from typing import Any, Callable, cast
+from typing import Any, cast
 
 import msgspec
 import pytest

@@ -1,5 +1,7 @@
+from typing import Annotated
+
 from litestar import WebSocket, websocket
-from litestar.params import Parameter
+from litestar.params import FromPath, FromQuery, HeaderParameter
 from litestar.testing import create_test_client
 
 
@@ -10,9 +12,9 @@ def test_handle_websocket_params_parsing() -> None:
         headers: dict,
         query: dict,
         cookies: dict,
-        socket_id: int,
-        qp: int,
-        hp: str = Parameter(header="some-header"),
+        socket_id: FromPath[int],
+        qp: FromQuery[int],
+        hp: Annotated[str, HeaderParameter(name="some-header")],
     ) -> None:
         assert socket_id
         assert headers
@@ -26,12 +28,11 @@ def test_handle_websocket_params_parsing() -> None:
         await socket.send_json({"data": "123"})
         await socket.close()
 
-    client = create_test_client(route_handlers=websocket_handler)
+    with create_test_client(route_handlers=websocket_handler) as client:
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.cookies = {"cookie": "yum"}
 
-    # Set cookies on the client to avoid warnings about per-request cookies.
-    client.cookies = {"cookie": "yum"}
-
-    with client.websocket_connect("/1?qp=1", headers={"some-header": "abc"}) as ws:
-        ws.send_json({"data": "123"})
-        data = ws.receive_json()
-        assert data
+        with client.websocket_connect("/1?qp=1", headers={"some-header": "abc"}) as ws:
+            ws.send_json({"data": "123"})
+            data = ws.receive_json()
+            assert data

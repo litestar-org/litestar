@@ -31,12 +31,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Iterable
+from collections.abc import Awaitable, Callable, Iterable
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Literal,
+    NotRequired,
     TypedDict,
     Union,
 )
@@ -91,7 +91,7 @@ __all__ = (
 )
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     from litestar.app import Litestar
     from litestar.enums import ScopeType
@@ -162,6 +162,8 @@ class LifeSpanScope(TypedDict):
     app: Litestar
     asgi: ASGIVersion
     type: Literal["lifespan"]
+    litestar_app: NotRequired[Litestar]
+    state: NotRequired[dict[str, Any]]
 
 
 class HTTPRequestEvent(TypedDict):

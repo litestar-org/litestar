@@ -16,6 +16,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import WebsocketListenerRouteHandler
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
+from litestar.params import FromPath
 from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import WebSocketMode
@@ -24,7 +25,7 @@ from litestar.types.asgi_types import WebSocketMode
 @pytest.fixture
 def listener_class(mock: MagicMock) -> type[WebsocketListener]:
     class Listener(WebsocketListener):
-        def on_receive(self, data: str) -> str:  # pyright: ignore
+        def on_receive(self, data: str) -> str:
             mock(data)
             return data
 
@@ -60,8 +61,7 @@ def async_listener_callable(mock: MagicMock) -> WebsocketListenerRouteHandler:
 def test_basic_listener(
     mock: MagicMock, listener: Union[WebsocketListenerRouteHandler, type[WebsocketListener]]
 ) -> None:
-    client = create_test_client([listener])
-    with client.websocket_connect("/") as ws:
+    with create_test_client([listener]) as client, client.websocket_connect("/") as ws:
         ws.send_text("foo")
         assert ws.receive_text() == "foo"
         ws.send_text("bar")
@@ -124,8 +124,7 @@ def test_listener_receive_with_dto(receive_mode: WebSocketMode) -> None:
         nonlocal value
         value = data
 
-    client = create_test_client([handler], openapi_config=None)
-    with client.websocket_connect("/") as ws:
+    with create_test_client([handler], openapi_config=None) as client, client.websocket_connect("/") as ws:
         ws.send_json({"name": "litestar user", "hidden": "whoops"}, mode=receive_mode)
 
     assert isinstance(value, User)
@@ -287,8 +286,7 @@ def test_connection_callbacks() -> None:
     def handler(data: bytes) -> None:
         pass
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/"):
+    with create_test_client([handler]) as client, client.websocket_connect("/"):
         pass
 
     on_accept_mock.assert_called_once()
@@ -311,8 +309,7 @@ def test_connection_lifespan() -> None:
     def handler(data: bytes) -> None:
         pass
 
-    client = create_test_client([handler])
-    with client.websocket_connect("/", timeout=1):
+    with create_test_client([handler]) as client, client.websocket_connect("/", timeout=1):
         pass
 
     on_accept.assert_called_once()
@@ -339,7 +336,7 @@ def test_lifespan_dependencies() -> None:
     mock = MagicMock()
 
     @asynccontextmanager
-    async def lifespan(name: str, state: State, query: dict) -> AsyncGenerator[None, None]:
+    async def lifespan(name: FromPath[str], state: State, query: dict) -> AsyncGenerator[None, None]:
         mock(name=name, state=state, query=query)
         yield
 
@@ -362,10 +359,10 @@ def test_hook_dependencies() -> None:
     def some_dependency() -> str:
         return "hello"
 
-    def on_accept(name: str, state: State, query: dict, some: str) -> None:
+    def on_accept(name: FromPath[str], state: State, query: dict, some: str) -> None:
         on_accept_mock(name=name, state=state, query=query, some=some)
 
-    def on_disconnect(name: str, state: State, query: dict, some: str) -> None:
+    def on_disconnect(name: FromPath[str], state: State, query: dict, some: str) -> None:
         on_disconnect_mock(name=name, state=state, query=query, some=some)
 
     @websocket_listener("/{name: str}", on_accept=on_accept, on_disconnect=on_disconnect)
@@ -401,13 +398,13 @@ def test_websocket_listener_class_hook_dependencies() -> None:
     class Listener(WebsocketListener):
         path = "/{name: str}"
 
-        def on_accept(self, name: str, state: State, query: dict, some: str) -> None:  # pyright: ignore
+        def on_accept(self, name: FromPath[str], state: State, query: dict, some: str) -> None:
             on_accept_mock(name=name, state=state, query=query, some=some)
 
-        def on_disconnect(self, name: str, state: State, query: dict, some: str) -> None:  # pyright: ignore
+        def on_disconnect(self, name: FromPath[str], state: State, query: dict, some: str) -> None:
             on_disconnect_mock(name=name, state=state, query=query, some=some)
 
-        def on_receive(self, data: bytes) -> None:  # pyright: ignore
+        def on_receive(self, data: bytes) -> None:
             pass
 
     with (
@@ -439,7 +436,7 @@ def test_listeners_lifespan_hooks_and_manager_raises(hook_name: str) -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
 
-        @websocket_listener("/", **{hook_name: hook_callback}, connection_lifespan=lifespan)  # pyright: ignore
+        @websocket_listener("/", **{hook_name: hook_callback}, connection_lifespan=lifespan)  # pyright: ignore[reportArgumentType, reportCallIssue]
         def handler(data: bytes) -> None:
             pass
 

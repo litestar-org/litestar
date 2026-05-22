@@ -7,6 +7,7 @@ from litestar import Controller, delete, get, post, put
 from litestar.app import Litestar
 from litestar.dto import DataclassDTO
 from litestar.dto.config import DTOConfig
+from litestar.params import FromPath
 
 
 @dataclass
@@ -37,7 +38,7 @@ class UserController(Controller):
         return [User(name="Mr Sunglass", email="mr.sunglass@example.com", age=30)]
 
     @get("/{user_id:uuid}", sync_to_thread=False)
-    def get_user(self, user_id: UUID) -> User:
+    def get_user(self, user_id: FromPath[UUID]) -> User:
         return User(id=user_id, name="Mr Sunglass", email="mr.sunglass@example.com", age=30)
 
     @put("/{user_id:uuid}", sync_to_thread=False)
@@ -45,7 +46,7 @@ class UserController(Controller):
         return data
 
     @delete("/{user_id:uuid}", return_dto=None, sync_to_thread=False)
-    def delete_user(self, user_id: UUID) -> None:
+    def delete_user(self, user_id: FromPath[UUID]) -> None:
         return None
 
 

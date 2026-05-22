@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import Enum, StrEnum
 from pathlib import Path
 
 import pytest
 
 from litestar import Litestar, Request, get, post
-from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.contrib.mako import MakoTemplateEngine
-from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.rate_limit import RateLimitConfig
 from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.plugins.flash import FlashConfig, FlashPlugin, flash
+from litestar.plugins.jinja import JinjaTemplateEngine
+from litestar.plugins.mako import MakoTemplateEngine
+from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.response import Redirect, Template
 from litestar.template import TemplateConfig, TemplateEngineProtocol
 from litestar.testing import create_test_client
@@ -25,13 +25,13 @@ text_html_mako = """<% messages = get_flashes() %>\\
 """
 
 
-class CustomCategory(str, Enum):
+class CustomCategory(StrEnum):
     custom1 = "1"
     custom2 = "2"
     custom3 = "3"
 
 
-class FlashCategory(str, Enum):
+class FlashCategory(StrEnum):
     info = "INFO"
     error = "ERROR"
     warning = "WARNING"

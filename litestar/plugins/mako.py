@@ -1,4 +1,6 @@
-from __future__ import annotations
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
+"""Mako template engine integration for Litestar."""
 
 from collections.abc import Mapping
 from functools import partial
@@ -65,7 +67,7 @@ class MakoTemplate(TemplateProtocol):
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]):
     """Mako-based TemplateEngine."""
 
-    def __init__(self, directory: Path | list[Path] | None = None, engine_instance: Any | None = None) -> None:
+    def __init__(self, directory: "Path | list[Path] | None" = None, engine_instance: "Any | None" = None) -> None:
         """Initialize template engine.
 
         Args:
@@ -118,7 +120,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
         """
         self._template_callables.append((key, template_callable))
 
-    def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:  # pyright: ignore
+    def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:
         """Render a template from a string with the given context.
 
         Args:
@@ -132,7 +134,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
         return template.render(**context)  # type: ignore[no-any-return]
 
     @classmethod
-    def from_template_lookup(cls, template_lookup: TemplateLookup) -> MakoTemplateEngine:
+    def from_template_lookup(cls, template_lookup: "TemplateLookup") -> "MakoTemplateEngine":
         """Create a template engine from an existing mako TemplateLookup instance.
 
         Args:

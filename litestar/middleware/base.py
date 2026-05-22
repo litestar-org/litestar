@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Callable, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 from litestar.enums import ScopeType
 from litestar.middleware._utils import (
@@ -19,6 +19,8 @@ __all__ = (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from litestar.middleware.constraints import MiddlewareConstraints
     from litestar.types import RouteHandlerType, Scopes
     from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send
@@ -144,7 +146,7 @@ class AbstractMiddleware:
             ):
                 await self.app(scope, receive, send)
             else:
-                await original__call__(self, scope, receive, send)  # pyright: ignore
+                await original__call__(self, scope, receive, send)  # pyright: ignore[reportArgumentType]
 
         # https://github.com/python/mypy/issues/2427#issuecomment-384229898
         setattr(cls, "__call__", wrapped_call)

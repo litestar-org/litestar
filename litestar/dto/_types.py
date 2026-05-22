@@ -6,9 +6,7 @@ from typing import TYPE_CHECKING
 from litestar.dto.data_structures import DTOFieldDefinition
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from typing_extensions import Self
+    from typing import Any, Self
 
     from litestar.typing import FieldDefinition
 

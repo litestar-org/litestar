@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import inspect
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import fields
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
 from click import Group
 from pytest import MonkeyPatch
+from pytest_mock import MockerFixture
 
 from litestar import Litestar, MediaType, Request, Response, get
 from litestar.config.app import AppConfig, ExperimentalFeatures
@@ -22,6 +23,8 @@ from litestar.exceptions import (
     LitestarWarning,
     NotFoundException,
 )
+from litestar.handlers import BaseRouteHandler
+from litestar.params import FromPath
 from litestar.plugins import CLIPlugin
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
@@ -197,7 +200,7 @@ def test_before_send() -> None:
     async def before_send_hook_handler(message: Message, scope: Scope) -> None:
         if message["type"] == "http.response.start":
             headers = MutableScopeHeaders(message)
-            headers.add("My Header", Litestar.from_scope(scope).state.message)
+            headers.add("My-Header", Litestar.from_scope(scope).state.message)
 
     def on_startup(app: Litestar) -> None:
         app.state.message = "value injected during send"
@@ -205,12 +208,12 @@ def test_before_send() -> None:
     with create_test_client(handler, on_startup=[on_startup], before_send=[before_send_hook_handler]) as client:
         response = client.get("/test")
         assert response.status_code == HTTP_200_OK
-        assert response.headers.get("My Header") == "value injected during send"
+        assert response.headers.get("My-Header") == "value injected during send"
 
 
 def test_using_custom_http_exception_handler() -> None:
     @get("/{param:int}")
-    def my_route_handler(param: int) -> None: ...
+    def my_route_handler(param: FromPath[int]) -> None: ...
 
     def my_custom_handler(_: Request[Any, Any, State], __: Exception) -> Response[str]:
         return Response(content="custom message", media_type=MediaType.TEXT, status_code=HTTP_400_BAD_REQUEST)
@@ -424,3 +427,24 @@ def test_from_scope() -> None:
         client.get("/")
 
     mock.assert_called_once_with(app)
+
+
+def test_handler_registration_on_registration_called_only_once(mocker: MockerFixture) -> None:
+    mock_on_registration = mocker.spy(BaseRouteHandler, "on_registration")
+
+    @get(["/a", "/b"], name="hello_this_is_a_test")
+    async def handler() -> None:
+        pass
+
+    Litestar([handler], openapi_config=None)
+
+    assert (
+        len(
+            [
+                c
+                for c in mock_on_registration.call_args_list
+                if isinstance(c.args[0], BaseRouteHandler) and c.args[0].name == "hello_this_is_a_test"
+            ]
+        )
+        == 1
+    )

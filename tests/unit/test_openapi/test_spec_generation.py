@@ -1,6 +1,6 @@
-import sys
+from collections.abc import Callable
 from types import ModuleType
-from typing import Any, Callable
+from typing import Any
 
 import pytest
 from msgspec import Struct
@@ -16,7 +16,7 @@ from tests.models import DataclassPerson, MsgSpecStructPerson, TypedDictPerson
 @pytest.mark.parametrize("cls", (DataclassPerson, TypedDictPerson, MsgSpecStructPerson))
 def test_spec_generation(cls: Any) -> None:
     @post("/")
-    def handler(data: cls) -> cls:  # pyright: ignore
+    def handler(data: cls) -> cls:  # pyright: ignore[reportInvalidTypeForm]
         return data
 
     with create_test_client(handler) as client:
@@ -46,7 +46,11 @@ def test_spec_generation(cls: Any) -> None:
                 },
             },
             "type": "object",
-            "required": ["complex", "first_name", "id", "last_name"],
+            "required": sorted(
+                ["complex", "first_name", "id", "last_name"]
+                + (["optional", "pets"] if cls is MsgSpecStructPerson else [])
+                + (["optional"] if cls is DataclassPerson else [])
+            ),
             "title": f"{cls.__name__}",
         }
 
@@ -99,9 +103,7 @@ def test_msgspec_schema() -> None:
         }
 
 
-@pytest.fixture()
-def py_310_module_content() -> str:
-    return """
+MODULE_CONTENT = """
 from __future__ import annotations
 
 from msgspec import Struct
@@ -130,23 +132,8 @@ async def test() -> A:
 """
 
 
-@pytest.mark.parametrize(
-    ("fixture_name",),
-    [
-        pytest.param(
-            "py_310_module_content",
-            marks=pytest.mark.skipif(
-                sys.version_info < (3, 10),
-                reason="requires python 3.10",
-            ),
-        ),
-    ],
-)
-def test_recursive_schema_generation(
-    fixture_name: str, create_module: Callable[[str], ModuleType], request: pytest.FixtureRequest
-) -> None:
-    module_content = request.getfixturevalue(fixture_name)
-    module = create_module(module_content)
+def test_recursive_schema_generation(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(MODULE_CONTENT)
     with create_test_client(module.test, debug=True) as client:
         schema = client.app.openapi_schema
         assert schema

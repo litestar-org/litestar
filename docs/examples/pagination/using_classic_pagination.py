@@ -1,16 +1,19 @@
-from polyfactory.factories.pydantic_factory import ModelFactory
-from pydantic import BaseModel
+import dataclasses
+
+from polyfactory.factories.dataclass_factory import DataclassFactory
 
 from litestar import Litestar, get
 from litestar.pagination import AbstractSyncClassicPaginator, ClassicPagination
+from litestar.params import FromQuery
 
 
-class Person(BaseModel):
+@dataclasses.dataclass
+class Person:
     id: str
     name: str
 
 
-class PersonFactory(ModelFactory[Person]):
+class PersonFactory(DataclassFactory[Person]):
     __model__ = Person
 
 
@@ -35,7 +38,7 @@ paginator = PersonClassicPaginator()
 # we now create a regular handler. The handler will receive two query parameters - 'page_size' and 'current_page', which
 # we will pass to the paginator.
 @get("/people", sync_to_thread=False)
-def people_handler(page_size: int, current_page: int) -> ClassicPagination[Person]:
+def people_handler(page_size: FromQuery[int], current_page: FromQuery[int]) -> ClassicPagination[Person]:
     return paginator(page_size=page_size, current_page=current_page)
 
 

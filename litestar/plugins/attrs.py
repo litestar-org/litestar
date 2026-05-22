@@ -1,14 +1,13 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
-
-from typing_extensions import TypeGuard
+from typing import TYPE_CHECKING, Any, TypeGuard
 
 from litestar.exceptions import MissingDependencyException
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils import is_optional_union
 
 try:
     import attr
@@ -44,9 +43,7 @@ class AttrsSchemaPlugin(OpenAPISchemaPlugin):
         return schema_creator.create_component_schema(
             field_definition,
             required=sorted(
-                field_name
-                for field_name, attribute in attr_fields.items()
-                if attribute.default is attrs.NOTHING and not is_optional_union(type_hints[field_name])
+                field_name for field_name, attribute in attr_fields.items() if attribute.default is attrs.NOTHING
             ),
             property_fields={
                 field_name: FieldDefinition.from_kwarg(type_hints[field_name], field_name) for field_name in attr_fields
@@ -54,7 +51,7 @@ class AttrsSchemaPlugin(OpenAPISchemaPlugin):
         )
 
 
-def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # pyright: ignore
+def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:
     """Given a type annotation determine if the annotation is a class that includes an attrs attribute.
 
     Args:

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from litestar.utils.compat import async_next
-
 __all__ = ("Dependency", "create_dependency_batches", "map_dependencies_recursively", "resolve_dependency")
 
 
@@ -69,7 +67,7 @@ async def resolve_dependency(
         value = next(value)
     elif dependency.provide.has_async_generator_dependency:
         cleanup_group.add(value)
-        value = await async_next(value)
+        value = await anext(value)
 
     kwargs[dependency.key] = value
 

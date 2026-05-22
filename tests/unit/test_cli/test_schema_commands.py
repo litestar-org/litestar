@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from json import dumps as json_dumps
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import pytest
 from yaml import dump as dump_yaml
@@ -49,9 +50,10 @@ def test_schema_export_with_examples(suffix: str, create_module: Callable[[str],
 from datetime import datetime
 from litestar import Litestar, get
 from litestar.openapi import OpenAPIConfig
+from litestar.params import FromQuery
 
 @get()
-async def something(date: datetime) -> None:
+async def something(date: FromQuery[datetime]) -> None:
     return None
 
 app = Litestar([something], openapi_config=OpenAPIConfig('example', '0.0.1', True))

@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import pytest
 from pytest import FixtureRequest
@@ -357,7 +358,6 @@ def test_etag_to_header_weak() -> None:
     (
         ("text/plain", ["text/plain"], "text/plain"),
         ("text/plain", [MediaType.TEXT], MediaType.TEXT),
-        ("text/plain", ["text/plain"], "text/plain"),
         ("text/plain", ["text/html"], None),
         ("text/*", ["text/html"], "text/html"),
         ("*/*", ["text/html"], "text/html"),
@@ -367,6 +367,7 @@ def test_etag_to_header_weak() -> None:
         ("text/plain", ["text/*"], "text/plain"),
         ("text/html", ["*/*"], "text/html"),
         ("text/plain;q=0.8,text/html", ["text/plain", "text/html"], "text/html"),
+        ("text/plain;q=ab,text/html", ["text/plain", "text/html"], "text/plain"),
         ("text/*,text/html", ["text/plain", "text/html"], "text/html"),
     ),
 )
