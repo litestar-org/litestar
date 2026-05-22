@@ -6,8 +6,8 @@ import os
 import re
 import warnings
 from datetime import datetime
-from pathlib import Path
 from functools import partial
+from pathlib import Path
 from typing import Any
 
 from shibuya._pygments import ShibuyaPygmentsBridge
