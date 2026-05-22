@@ -126,7 +126,10 @@ nitpick_ignore = [
     (PY_METH, "type_engine"),
     # type vars and aliases / intentionally undocumented
     (PY_CLASS, "OperationIDCreator"),  # (Kumzy) litestar.types.callable_types alias; xref fails on Sphinx 9
-    (PY_CLASS, "ProblemDetailsExceptionHandlerType"),  # (Kumzy)litestar.plugins.problem_details alias; xref fails on Sphinx 9
+    (
+        PY_CLASS,
+        "ProblemDetailsExceptionHandlerType",
+    ),  # (Kumzy)litestar.plugins.problem_details alias; xref fails on Sphinx 9
     (PY_CLASS, "ClientRequestHookHandler"),
     (PY_CLASS, "ClientResponseHookHandler"),
     (PY_CLASS, "ServerRequestHookHandler"),
