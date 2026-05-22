@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import importlib.metadata
+import json
 import os
 import re
 import warnings
 from datetime import datetime
+from pathlib import Path
 from functools import partial
 from typing import Any
 
@@ -304,8 +306,9 @@ ShibuyaPygmentsBridge.dark_style_name = "one-dark-pro"
 
 html_static_path = ["_static"]
 templates_path = ["_templates"]
-html_js_files = ["versioning.js"]
 html_css_files = ["style.css"]
+
+_versions = json.loads((Path(__file__).parent / "_static" / "versions.json").read_text())
 
 html_show_sourcelink = True  # TODO: this doesn't work :(
 html_copy_source = True
@@ -316,11 +319,9 @@ html_context = {
     "source_repo": "litestar",
     # "source_version": "main",  # TODO: We should set this with an envvar depending on which branch we are building?
     "current_version": release,  # Use the detected version
-    "versions": [  # TODO(provinzkraut): this needs to use versions.json but im not 100% on how to do this yet
+    "versions": [
         ("latest", "/latest"),
-        ("v3 (development)", "/main"),
-        ("v2", "/2"),
-        ("v1", "/1"),
+        *((_versions["labels"][slug], f"/{slug}") for slug in reversed(_versions["versions"])),
     ],
     "version": release,
 }
