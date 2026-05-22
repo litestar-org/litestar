@@ -8,6 +8,7 @@ from datetime import datetime
 from functools import partial
 from typing import Any
 
+from shibuya._pygments import ShibuyaPygmentsBridge
 from sphinx.addnodes import document
 from sphinx.application import Sphinx
 from sqlalchemy.exc import SAWarning
@@ -294,7 +295,12 @@ suppress_warnings = [
 # -- Style configuration -----------------------------------------------------
 html_theme = "litestar_sphinx_theme"
 html_title = "Litestar Framework"
-pygments_style = "lightbulb"
+
+# Pygments theming.
+# Shibuya only reads `pygments_style` from conf.py; the dark companion lives on
+# `ShibuyaPygmentsBridge.dark_style_name` as a class attribute, so we set it here.
+pygments_style = "one-light"
+ShibuyaPygmentsBridge.dark_style_name = "one-dark-pro"
 
 html_static_path = ["_static"]
 templates_path = ["_templates"]
