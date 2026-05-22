@@ -419,10 +419,10 @@ html_theme_options = {
     ],
 }
 
-if environment != "latest":  # TODO(provinzkraut): it'd be awesome to be able to use the builtin announcement banner
+if environment != "latest":
     html_theme_options["announcement"] = (
-        f"You are viewing the <bold>{environment}</bold> version of the documentation. "
-        f"Click here to go to the latest version."
+        f"You are viewing the <strong>{environment}</strong> version of the documentation. "
+        f'<a href="/latest/">Click here to go to the latest version.</a>'
     )
 
 
