@@ -558,7 +558,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="50">
 </span><span data-line="51"><span class="sd">        Args:</span>
 </span><span data-line="52"><span class="sd">            template_name: Path-like name for the template to be rendered, e.g. ``index.html``.</span>
-</span><span data-line="53"><span class="sd">            template_str: A string representing the template, e.g. ``tmpl = &quot;Hello &lt;strong&gt;World&lt;/strong&gt;&quot;``.</span>
+</span><span data-line="53"><span class="sd">            template_str: A string representing the template, e.g. ``template_str = &quot;Hello &lt;strong&gt;World&lt;/strong&gt;&quot;``.</span>
 </span><span data-line="54"><span class="sd">            background: A :class:`BackgroundTask &lt;.background_tasks.BackgroundTask&gt;` instance or</span>
 </span><span data-line="55"><span class="sd">                :class:`BackgroundTasks &lt;.background_tasks.BackgroundTasks&gt;` to execute after the response is finished.</span>
 </span><span data-line="56"><span class="sd">                Defaults to ``None``.</span>
@@ -571,10 +571,10 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="63"><span class="sd">                the media type based on the template name. If this fails, fall back to ``text/plain``.</span>
 </span><span data-line="64"><span class="sd">            status_code: A value for the response HTTP status code.</span>
 </span><span data-line="65"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="66">        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">template_name</span> <span class="ow">or</span> <span class="n">template_str</span><span class="p">):</span>
+</span><span data-line="66">        <span class="k">if</span> <span class="n">template_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">template_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="67">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either template_name or template_str must be provided.&quot;</span><span class="p">)</span>
 </span><span data-line="68">
-</span><span data-line="69">        <span class="k">if</span> <span class="n">template_name</span> <span class="ow">and</span> <span class="n">template_str</span><span class="p">:</span>
+</span><span data-line="69">        <span class="k">if</span> <span class="n">template_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">template_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="70">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either template_name or template_str must be provided, not both.&quot;</span><span class="p">)</span>
 </span><span data-line="71">
 </span><span data-line="72">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
