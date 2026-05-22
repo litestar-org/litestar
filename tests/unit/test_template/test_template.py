@@ -155,6 +155,7 @@ test_cases = [
     {"name": "none", "template_name": None, "template_str": None, "status_code": 500},
     {"name": "name_only", "template_name": "dummy.html", "template_str": None, "status_code": 200},
     {"name": "str_only", "template_name": None, "template_str": "Dummy", "status_code": 200},
+    {"name": "str_empty", "template_name": None, "template_str": "", "status_code": 200},
 ]
 
 
@@ -184,7 +185,7 @@ def test_template_scenarios(tmp_path: Path, engine: TemplateEngineProtocol, test
             assert response.status_code == test_case["status_code"]
 
             if test_case["status_code"] == 200:
-                if test_case["template_str"]:
+                if test_case["template_str"] is not None:
                     assert response.text == test_case["template_str"]
                 else:
                     assert response.text == "Test content for template"
