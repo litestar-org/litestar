@@ -301,8 +301,9 @@ templates_path = ["_templates"]
 html_js_files = ["versioning.js"]
 html_css_files = ["style.css"]
 
-html_show_sourcelink = True  # TODO: this doesn't work :(
+html_show_sourcelink = True
 html_copy_source = True
+html_sourcelink_suffix = ""
 
 html_context = {
     "source_type": "github",
