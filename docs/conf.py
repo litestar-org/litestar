@@ -1,20 +1,20 @@
 from __future__ import annotations
 
 import importlib.metadata
+import json
 import os
 import re
 import warnings
 from datetime import datetime
-from functools import partial
-from typing import Any
+from pathlib import Path
 
-from sphinx.addnodes import document
+from shibuya._pygments import ShibuyaPygmentsBridge
 from sphinx.application import Sphinx
 from sqlalchemy.exc import SAWarning
 
 warnings.filterwarnings("ignore", category=SAWarning)
 
-__all__ = ["setup", "update_html_context"]
+__all__ = ["setup"]
 
 PY_CLASS = "py:class"
 PY_RE = r"py:.*"
@@ -87,6 +87,8 @@ autodoc_default_options = {"special-members": "__init__", "show-inheritance": Tr
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 autodoc_mock_imports = []
+# (Kumzy): drop once https://github.com/sphinx-doc/sphinx/issues/14089
+autodoc_use_legacy_class_based = True
 
 nitpicky = True
 nitpick_ignore = [
@@ -120,6 +122,11 @@ nitpick_ignore = [
     (PY_METH, "litestar.typing.ParsedType.is_subclass_of"),
     (PY_METH, "type_engine"),
     # type vars and aliases / intentionally undocumented
+    (PY_CLASS, "OperationIDCreator"),  # (Kumzy) litestar.types.callable_types alias; xref fails on Sphinx 9
+    (
+        PY_CLASS,
+        "ProblemDetailsExceptionHandlerType",
+    ),  # (Kumzy)litestar.plugins.problem_details alias; xref fails on Sphinx 9
     (PY_CLASS, "ClientRequestHookHandler"),
     (PY_CLASS, "ClientResponseHookHandler"),
     (PY_CLASS, "ServerRequestHookHandler"),
@@ -241,6 +248,11 @@ nitpick_ignore_regex = [
     (PY_OBJ, r"litestar.security.jwt.auth.TokenT"),
     (PY_CLASS, "ExceptionToProblemDetailMapType"),
     (PY_CLASS, "litestar.security.jwt.token.JWTDecodeOptions"),
+    # (Kumzy) Drop the 4 next rows once this done. https://github.com/sphinx-doc/sphinx/issues/14089
+    (PY_RE, r"^Mapping\[(str|int)$"),
+    (PY_RE, r"^dict\[str$"),
+    (PY_RE, r"^Literal\[.*$"),
+    (PY_RE, r"^set\[~?typing\.Literal\[.*$"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
@@ -294,27 +306,32 @@ suppress_warnings = [
 # -- Style configuration -----------------------------------------------------
 html_theme = "litestar_sphinx_theme"
 html_title = "Litestar Framework"
-pygments_style = "lightbulb"
+
+# Pygments theming.
+# Shibuya only reads `pygments_style` from conf.py; the dark companion lives on
+# `ShibuyaPygmentsBridge.dark_style_name` as a class attribute, so we set it here.
+pygments_style = "one-light"
+ShibuyaPygmentsBridge.dark_style_name = "one-dark-pro"
 
 html_static_path = ["_static"]
 templates_path = ["_templates"]
-html_js_files = ["versioning.js"]
 html_css_files = ["style.css"]
 
-html_show_sourcelink = True  # TODO: this doesn't work :(
+_versions = json.loads((Path(__file__).parent / "_static" / "versions.json").read_text())
+
+html_show_sourcelink = True
 html_copy_source = True
+html_sourcelink_suffix = ""
 
 html_context = {
     "source_type": "github",
     "source_user": "litestar-org",
     "source_repo": "litestar",
-    # "source_version": "main",  # TODO: We should set this with an envvar depending on which branch we are building?
+    "source_version": os.getenv("LITESTAR_DOCS_SOURCE_REF", "main"),
     "current_version": release,  # Use the detected version
-    "versions": [  # TODO(provinzkraut): this needs to use versions.json but im not 100% on how to do this yet
+    "versions": [
         ("latest", "/latest"),
-        ("v3 (development)", "/main"),
-        ("v2", "/2"),
-        ("v1", "/1"),
+        *((_versions["labels"][slug], f"/{slug}") for slug in reversed(_versions["versions"])),
     ],
     "version": release,
 }
@@ -412,17 +429,11 @@ html_theme_options = {
     ],
 }
 
-if environment != "latest":  # TODO(provinzkraut): it'd be awesome to be able to use the builtin announcement banner
+if environment != "latest":
     html_theme_options["announcement"] = (
-        f"You are viewing the <bold>{environment}</bold> version of the documentation. "
-        f"Click here to go to the latest version."
+        f"You are viewing the <strong>{environment}</strong> version of the documentation. "
+        f'<a href="/latest/">Click here to go to the latest version.</a>'
     )
-
-
-def update_html_context(
-    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: document
-) -> None:
-    context["generate_toctree_html"] = partial(context["generate_toctree_html"], startdepth=0)
 
 
 def delayed_setup(app: Sphinx) -> None:
@@ -435,10 +446,9 @@ def delayed_setup(app: Sphinx) -> None:
         return
 
     app.setup_extension("shibuya")
-    # app.connect("html-page-context", update_html_context)  # TODO(provinkraut): fix
 
 
 def setup(app: Sphinx) -> dict[str, bool]:
-    app.connect("builder-inited", delayed_setup, priority=0)  # type: ignore
+    app.connect("builder-inited", delayed_setup, priority=0)
     app.setup_extension("litestar_sphinx_theme")
     return {"parallel_read_safe": True, "parallel_write_safe": True}
