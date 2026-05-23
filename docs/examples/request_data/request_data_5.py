@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from typing import Dict
+
 from typing import Annotated
 
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import MultipartBody
 
 
 @dataclass
@@ -15,9 +16,7 @@ class User:
 
 
 @post(path="/")
-async def create_user(
-    data: Annotated[User, Body(media_type=RequestEncodingType.MULTI_PART)],
-) -> dict[str, str]:
+async def create_user(data: MultipartBody[User]) -> dict[str, str]:
     content = await data.form_input_name.read()
     filename = data.form_input_name.filename
     return {"id": data.id, "name": data.name, "filename": filename, "size": len(content)}

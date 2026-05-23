@@ -18,11 +18,11 @@ from litestar.connection.request import Request
 from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
-from litestar.enums import MediaType, RequestEncodingType
+from litestar.enums import MediaType
 from litestar.openapi.spec.response import OpenAPIResponse
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
-from litestar.params import Body
+from litestar.params import MultipartBody, URLEncodedBody
 from litestar.serialization import encode_json
 from litestar.testing import create_test_client
 from tests.helpers import not_none
@@ -44,7 +44,7 @@ def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, signature_types=[User])
-    def handler(data: User = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
+    def handler(data: URLEncodedBody[User]) -> User:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -71,7 +71,7 @@ async def test_multipart_encoded_form_data(use_experimental_dto_backend: bool) -
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=PayloadDTO, return_dto=None, signature_types=[Payload], media_type=MediaType.TEXT)
-    async def handler(data: Payload = Body(media_type=RequestEncodingType.MULTI_PART)) -> bytes:
+    async def handler(data: MultipartBody[Payload]) -> bytes:
         return await data.forbidden.read()
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -272,7 +272,7 @@ def test_dto_data_with_url_encoded_form_data(use_experimental_dto_backend: bool)
     config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=DataclassDTO[Annotated[User, config]])
-    def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
+    def handler(data: URLEncodedBody[DTOData[User]]) -> User:
         return data.create_instance()
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -427,7 +427,7 @@ def test_url_encoded_form_data_patch_request(use_experimental_dto_backend: bool)
     ]
 
     @post(dto=dto, return_dto=None, signature_types=[User])
-    def handler(data: DTOData[User] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict[str, Any]:
+    def handler(data: URLEncodedBody[DTOData[User]]) -> dict[str, Any]:
         return data.as_builtins()  # type:ignore[no-any-return]
 
     with create_test_client(route_handlers=[handler]) as client:

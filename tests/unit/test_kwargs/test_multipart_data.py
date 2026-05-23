@@ -15,7 +15,7 @@ import pytest
 from litestar import Request, post
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import Body, MultipartBody
 from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -104,7 +104,7 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
         tags: list[int]
 
     @post(path="/form", signature_types=[MultiPartFormWithMixedFields])
-    async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+    async def test_method(data: MultipartBody[MultiPartFormWithMixedFields]) -> None:
         file_data = await data.image.read()
         assert file_data == b"data"
         assert data.tags == [1, 2, 3]
@@ -387,7 +387,7 @@ def test_postman_multipart_form_data() -> None:
 
 def test_image_upload() -> None:
     @post("/", signature_types=[UploadFile])
-    async def hello_world(data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+    async def hello_world(data: MultipartBody[UploadFile]) -> None:
         await data.read()
 
     with (
@@ -407,7 +407,7 @@ def test_upload_multiple_files(file_count: int, optional: bool) -> None:
         annotation = Optional[annotation]  # type: ignore[misc, assignment]
 
     @post("/", signature_namespace={"annotation": annotation})
-    async def handler(data: annotation = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # pyright: ignore[reportInvalidTypeForm]
+    async def handler(data: MultipartBody[annotation]) -> None:  # pyright: ignore[reportInvalidTypeForm]
         assert len(data) == file_count
 
         for file in data:
@@ -435,7 +435,7 @@ class OptionalFiles:
 @pytest.mark.parametrize("file_count", (1, 2))
 def test_upload_multiple_files_in_model(file_count: int, file_model: type[Files | OptionalFiles]) -> None:
     @post("/", signature_namespace={"file_model": file_model})
-    async def handler(data: file_model = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # type: ignore[valid-type]
+    async def handler(data: MultipartBody[file_model]) -> None:  # type: ignore[valid-type]
         assert len(data.file_list) == file_count  # type: ignore[attr-defined]
 
         for file in data.file_list:  # type: ignore[attr-defined]
@@ -450,7 +450,7 @@ def test_upload_multiple_files_in_model(file_count: int, file_model: type[Files 
 
 def test_optional_formdata() -> None:
     @post("/", signature_types=[UploadFile])
-    async def hello_world(data: Optional[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+    async def hello_world(data: MultipartBody[Optional[UploadFile]]) -> None:
         if data is not None:
             await data.read()
 
@@ -462,7 +462,7 @@ def test_optional_formdata() -> None:
 @pytest.mark.parametrize("limit", (1000, 100, 10))
 def test_multipart_form_part_limit(limit: int) -> None:
     @post("/", signature_types=[UploadFile])
-    async def hello_world(data: list[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> dict:
+    async def hello_world(data: MultipartBody[List[UploadFile]]) -> dict:
         return {"limit": len(data)}
 
     with create_test_client(route_handlers=[hello_world], multipart_form_part_limit=limit) as client:
@@ -483,7 +483,9 @@ def test_multipart_form_part_limit_body_param_precedence() -> None:
 
     @post("/", signature_types=[UploadFile])
     async def hello_world(
-        data: list[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART, multipart_form_part_limit=route_limit),
+        data: Annotated[
+            List[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART, multipart_form_part_limit=route_limit)
+        ],
     ) -> None:
         assert len(data) == route_limit
 

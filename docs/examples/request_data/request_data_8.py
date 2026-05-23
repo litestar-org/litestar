@@ -1,22 +1,22 @@
+import dataclasses
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict
 
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import MultipartBody
 
 
-class FormData(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+@dataclasses.dataclass()
+class FormData:
     cv: UploadFile
     diploma: UploadFile
 
 
 @post(path="/")
 async def handle_file_upload(
-    data: Annotated[FormData, Body(media_type=RequestEncodingType.MULTI_PART)],
+    data: MultipartBody[FormData],
 ) -> dict[str, str]:
     cv_content = await data.cv.read()
     diploma_content = await data.diploma.read()

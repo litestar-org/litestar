@@ -3,7 +3,6 @@ from dataclasses import asdict
 from msgspec import Struct
 
 from litestar import post
-from litestar.params import Body
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import create_test_client
 
@@ -12,7 +11,7 @@ from . import Form
 
 def test_request_body_json() -> None:
     @post(path="/test")
-    def test_method(data: Form = Body()) -> None:
+    def test_method(data: Form) -> None:
         assert isinstance(data, Form)
 
     with create_test_client(test_method) as client:

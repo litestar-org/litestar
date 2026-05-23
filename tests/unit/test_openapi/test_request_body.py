@@ -11,11 +11,10 @@ from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.request_body import create_request_body
 from litestar.datastructures.upload_file import UploadFile
 from litestar.dto import AbstractDTO
-from litestar.enums import RequestEncodingType
 from litestar.handlers import BaseRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import RequestBody
-from litestar.params import Body
+from litestar.params import Body, MultipartBody
 from litestar.typing import FieldDefinition
 
 
@@ -85,9 +84,7 @@ def test_request_body_schema_extra() -> None:
 
 def test_upload_single_file_schema_generation() -> None:
     @post(path="/file-upload")
-    async def handle_file_upload(
-        data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART),
-    ) -> None:
+    async def handle_file_upload(data: MultipartBody[UploadFile]) -> None:
         return None
 
     app = Litestar([handle_file_upload])
@@ -101,9 +98,7 @@ def test_upload_single_file_schema_generation() -> None:
 
 def test_upload_list_of_files_schema_generation() -> None:
     @post(path="/file-list-upload")
-    async def handle_file_list_upload(
-        data: list[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART),
-    ) -> None:
+    async def handle_file_list_upload(data: MultipartBody[List[UploadFile]]) -> None:
         return None
 
     app = Litestar([handle_file_list_upload])
@@ -123,7 +118,7 @@ def test_upload_list_of_files_schema_generation() -> None:
 def test_upload_file_dict_schema_generation() -> None:
     @post(path="/file-dict-upload")
     async def handle_file_list_upload(
-        data: dict[str, UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART),
+        data: MultipartBody[Dict[str, UploadFile]],
     ) -> None:
         return None
 
@@ -143,9 +138,7 @@ def test_upload_file_dict_schema_generation() -> None:
 
 def test_upload_file_model_schema_generation() -> None:
     @post(path="/form-upload")
-    async def handle_form_upload(
-        data: FormData = Body(media_type=RequestEncodingType.MULTI_PART),
-    ) -> None:
+    async def handle_form_upload(data: MultipartBody[FormData]) -> None:
         return None
 
     app = Litestar([handle_form_upload])

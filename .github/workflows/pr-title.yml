@@ -16,31 +16,30 @@ jobs:
         with:
           script: |
             const title = context.payload.pull_request.title;
-            
+
             const types = [
                 "build",
                 "chore",
-                "ci", 
-                "docs", 
-                "feat", 
-                "fix", 
-                "perf", 
-                "refactor", 
-                "revert", 
-                "style", 
+                "ci",
+                "docs",
+                "feat",
+                "fix",
+                "perf",
+                "refactor",
+                "revert",
+                "style",
                 "test",
             ];
-            
+
             const pattern = new RegExp(`^(${types.join("|")})(\\([^)]+\\))?!?: .+`);
-            
+
             if (!pattern.test(title)) {
                 core.setFailed(
                     `PR title ${JSON.stringify(title)} is not a valid Conventional Commit.\n\n` +
                     `Expected format: <type>(<optional scope>): <subject>\n` +
-                    `Allowed types: ${types.join(", ")}\n\n` +
+                    `Allowed types: ${types.join(", ")}\n\n`
                 );
                 return;
             }
-            
-            console.log(`PR title ${JSON.stringify(title)} is valid.`);
 
+            console.log(`PR title ${JSON.stringify(title)} is valid.`);
