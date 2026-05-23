@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Hashable, Sequence
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, TypeVar
@@ -177,12 +176,6 @@ class ParameterKwarg(KwargDefinition):
     """
     annotation: Any = field(default=Empty)
     """The field value - `Empty` by default."""
-    header: str | None = field(default=None)
-    """The header name - required for header parameters."""
-    cookie: str | None = field(default=None)
-    """The cookie name - required for cookie parameters."""
-    query: str | None = field(default=None)
-    """The query parameter name - required for query parameters"""
     required: bool | None = field(default=None)
     """A boolean flag dictating whether this parameter is required.
 
@@ -200,32 +193,6 @@ class ParameterKwarg(KwargDefinition):
             A hash
         """
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
-
-    def __post_init__(self) -> None:
-        if (header := self.header) is not None:
-            warnings.warn(
-                f"Deprecated 'header' parameter: Parameter(header={header!r}). Use 'HeaderParameter(name={header!r})' instead",
-                stacklevel=2,
-                category=DeprecationWarning,
-            )
-            object.__setattr__(self, "name", header)
-            object.__setattr__(self, "param_type", ParamType.HEADER)
-        if (cookie := self.cookie) is not None:
-            warnings.warn(
-                f"Deprecated 'cookie' parameter: Parameter(cookie={cookie!r}). Use 'CookieParameter(name={cookie!r})' instead",
-                stacklevel=2,
-                category=DeprecationWarning,
-            )
-            object.__setattr__(self, "name", cookie)
-            object.__setattr__(self, "param_type", ParamType.COOKIE)
-        if (query := self.query) is not None:
-            warnings.warn(
-                f"Deprecated 'query' parameter: Parameter(query={query!r}). Use 'QueryParameter(name={query!r})' instead",
-                stacklevel=2,
-                category=DeprecationWarning,
-            )
-            object.__setattr__(self, "name", query)
-            object.__setattr__(self, "param_type", ParamType.QUERY)
 
 
 class QueryParameter(ParameterKwarg):

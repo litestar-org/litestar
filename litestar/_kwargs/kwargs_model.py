@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import dataclasses
-import warnings
 from typing import TYPE_CHECKING, Any
 
 from anyio import create_task_group
@@ -34,7 +33,6 @@ from litestar._kwargs.parameter_definition import (
 from litestar.constants import RESERVED_KWARGS
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.exceptions.base_exceptions import LitestarDeprecationWarning
 from litestar.params import BodyKwarg, ParameterKwarg
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_exception_group
@@ -343,22 +341,6 @@ class KwargsModel:
         expected_query_parameters = {p for p in param_definitions if p.param_type == ParamType.QUERY}
         sequence_query_parameter_names = {p.field_alias for p in expected_query_parameters if p.is_sequence}
 
-        for param in param_definitions:
-            # legacy quirk: when using implicit style, dependencies with no providers
-            # but a default value are actually treated as query parameters by the
-            # injection mechanism, so we add them back as such
-            if param.param_type == ParamType.DEPENDENCY:
-                expected_query_parameters.add(param)
-
-            if legacy_style := param.legacy_style:
-                _warn_deprecated_param_style(
-                    style=legacy_style,
-                    param_type=param.param_type,
-                    field_name=param.field_name,
-                    stacklevel=3,
-                    ctx=ctx,
-                )
-
         expected_form_data: tuple[RequestEncodingType | str, FieldDefinition] | None = None
         expected_msgpack_data: FieldDefinition | None = None
         expected_data_dto: type[AbstractDTO] | None = None
@@ -579,55 +561,3 @@ class KwargsModel:
                 f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter arguments. "
                 f"The following kwargs have been used: {', '.join(used_reserved_kwargs)}"
             )
-
-
-def _warn_deprecated_param_style(
-    *,
-    style: str,
-    param_type: ParamType,
-    field_name: str,
-    stacklevel: int = 2,
-    ctx: HandlerContext | None,
-) -> None:
-    if param_type == ParamType.DEPENDENCY:
-        if style == "default":
-            msg = (
-                f"Dependency parameter {field_name!r} declared using deprecated default "
-                "'param: <type> = Dependency(...)' style. Use "
-                "'Annotated[<type>, Dependency(...)]' instead"
-            )
-        else:
-            msg = (
-                f"Dependency parameter {field_name!r} declared using deprecated "
-                "'param: Annotated[<type>, Dependency(...)]' style. Use "
-                "'NamedDependency[<type>]' instead"
-            )
-    else:
-        alternatives = {
-            ParamType.QUERY: "FromQuery",
-            ParamType.HEADER: "FromHeader",
-            ParamType.COOKIE: "FromCookie",
-            ParamType.PATH: "FromPath",
-        }
-        short_alternative = alternatives[param_type]
-        param_type_name = param_type.name.lower()
-        if style == "inferred":
-            msg = (
-                f"{param_type_name} parameter {field_name!r} declared using deprecated inferred "
-                f"style. Use '{short_alternative}[<type>]' or "
-                f"'Annotated[<type>, {param_type.title()}Parameter(...)]' instead"
-            )
-        elif style == "annotated":
-            msg = (
-                f"{param_type_name} parameter {field_name!r} declared using deprecated annotated "
-                f"'param: Annotated[<type>, Parameter(...)]' style. Use "
-                f"'{short_alternative}[<type>]' or "
-                f"'Annotated[<type>, {param_type_name.title()}Parameter(...)]' instead"
-            )
-        else:
-            raise ValueError(f"Unknown style {style!r}")
-
-    if ctx is not None:
-        msg = ctx.format(msg)
-
-    warnings.warn(msg, category=LitestarDeprecationWarning, stacklevel=stacklevel)
