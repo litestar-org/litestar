@@ -329,7 +329,7 @@ html_context = {
     "source_type": "github",
     "source_user": "litestar-org",
     "source_repo": "litestar",
-    "source_version": os.getenv("_LITESTAR_DOCS_SOURCE_REF", "main"),
+    "source_version": os.getenv("LITESTAR_DOCS_SOURCE_REF", "main"),
     "current_version": release,  # Use the detected version
     "versions": [
         ("latest", "/latest"),

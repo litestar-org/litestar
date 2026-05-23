@@ -49,19 +49,19 @@ jobs:
 
       - name: Build release docs
         env:
-          _LITESTAR_DOCS_SOURCE_REF: ${{ github.event.release.tag_name }}
+          LITESTAR_DOCS_SOURCE_REF: ${{ github.event.release.tag_name }}
         run: uv run python tools/build_docs.py docs-build
         if: github.event_name == 'release'
 
       - name: Build docs (main branch)
         env:
-          _LITESTAR_DOCS_SOURCE_REF: main
+          LITESTAR_DOCS_SOURCE_REF: main
         run: uv run python tools/build_docs.py docs-build --version main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
       - name: Build docs (v2 branch)
         env:
-          _LITESTAR_DOCS_SOURCE_REF: v2
+          LITESTAR_DOCS_SOURCE_REF: v2
         run: uv run python tools/build_docs.py docs-build --version 2
         if: github.event_name == 'push' && github.ref == 'refs/heads/v2'
 
@@ -71,9 +71,9 @@ jobs:
             uv run python tools/build_docs.py docs-build
           else
             if [ "${{ inputs.version }}" == "main" ]; then
-              export _LITESTAR_DOCS_SOURCE_REF="main"
+              export LITESTAR_DOCS_SOURCE_REF="main"
             else
-              export _LITESTAR_DOCS_SOURCE_REF="v${{ inputs.version }}"
+              export LITESTAR_DOCS_SOURCE_REF="v${{ inputs.version }}"
             fi
             uv run python tools/build_docs.py docs-build --version ${{ inputs.version }}
           fi
