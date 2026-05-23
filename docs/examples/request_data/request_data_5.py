@@ -14,7 +14,7 @@ class User:
 
 
 @post(path="/")
-async def create_user(data: MultipartBody[User]) -> Dict[str, str | int]:
+async def create_user(data: MultipartBody[User]) -> Dict[str, str]:
     content = await data.form_input_name.read()
     filename = data.form_input_name.filename
     return {"id": data.id, "name": data.name, "filename": filename, "size": len(content)}
