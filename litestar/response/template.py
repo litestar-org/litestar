@@ -50,7 +50,7 @@ class Template(Response[bytes]):
 
         Args:
             template_name: Path-like name for the template to be rendered, e.g. ``index.html``.
-            template_str: A string representing the template, e.g. ``tmpl = "Hello <strong>World</strong>"``.
+            template_str: A string representing the template, e.g. ``template_str = "Hello <strong>World</strong>"``.
             background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
                 :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to ``None``.
@@ -63,10 +63,10 @@ class Template(Response[bytes]):
                 the media type based on the template name. If this fails, fall back to ``text/plain``.
             status_code: A value for the response HTTP status code.
         """
-        if not (template_name or template_str):
+        if template_name is None and template_str is None:
             raise ValueError("Either template_name or template_str must be provided.")
 
-        if template_name and template_str:
+        if template_name is not None and template_str is not None:
             raise ValueError("Either template_name or template_str must be provided, not both.")
 
         super().__init__(
