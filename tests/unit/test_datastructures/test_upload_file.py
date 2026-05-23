@@ -4,8 +4,7 @@ from typing import Optional
 
 from litestar import post
 from litestar.datastructures import UploadFile
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import MultipartBody
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import create_test_client
 
@@ -45,7 +44,7 @@ def test_cleanup_is_being_performed(tmpdir: Path) -> None:
     upload_file: Optional[UploadFile] = None
 
     @post("/form", sync_to_thread=False)
-    def handler(data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+    def handler(data: MultipartBody[UploadFile]) -> None:
         nonlocal upload_file
         upload_file = data
         assert not upload_file.file.closed

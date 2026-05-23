@@ -378,7 +378,6 @@ def test_client_request_hook_receives_three_params(
     that reads the request body to trigger it.
     """
     from litestar import post
-    from litestar.params import Body
 
     hook_calls: list[tuple] = []
 
@@ -395,7 +394,7 @@ def test_client_request_hook_receives_three_params(
     )
 
     @post("/")
-    async def handler(data: dict = Body()) -> dict:
+    async def handler(data: dict) -> dict:
         return data
 
     with create_test_client(handler, plugins=[OpenTelemetryPlugin(config)]) as client:
