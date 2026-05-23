@@ -1,112 +1,96 @@
 :root {
---syntax-light-background: #1d2331;
---syntax-light-highlight: #6e7681;
---syntax-light-: #D4D2C8;
---syntax-light-comment: #7E8AA1;
---syntax-light-comment-hashbang: #F88F7F;
---syntax-light-comment-preproc: #FFAD66;
---syntax-light-comment-special: #7E8AA1;
---syntax-light-error: #F88F7F;
---syntax-light-generic: #D4D2C8;
---syntax-light-generic-deleted: #F88F7F;
---syntax-light-generic-emph: #D4D2C8;
---syntax-light-generic-error: #F88F7F;
---syntax-light-generic-inserted: #6AD4AF;
---syntax-light-generic-output: #7E8AA1;
---syntax-light-generic-strong: #D4D2C8;
---syntax-light-generic-traceback: #F88F7F;
---syntax-light-keyword: #FFAD66;
---syntax-light-keyword-constant: #FFAD66;
---syntax-light-keyword-declaration: #FFAD66;
---syntax-light-keyword-namespace: #FFAD66;
---syntax-light-keyword-reserved: #FFAD66;
---syntax-light-keyword-type: #73D0FF;
---syntax-light-literal: #D5FF80;
---syntax-light-name: #D4D2C8;
---syntax-light-name-attribute: #FFD173;
---syntax-light-name-builtin: #FFD173;
---syntax-light-name-builtin-pseudo: #5CCFE6;
---syntax-light-name-class: #73D0FF;
---syntax-light-name-constant: #FFD173;
---syntax-light-name-decorator: #7E8AA1;
---syntax-light-name-entity: #95E6CB;
---syntax-light-name-exception: #73D0FF;
---syntax-light-name-function: #FFD173;
---syntax-light-name-function-magic: #FFD173;
---syntax-light-name-other: #D4D2C8;
---syntax-light-name-property: #FFD173;
---syntax-light-name-tag: #5CCFE6;
---syntax-light-name-variable: #D4D2C8;
---syntax-light-literal-number: #DFBFFF;
---syntax-light-operator: #FFAD66;
---syntax-light-operator-word: #FFAD66;
---syntax-light-punctuation: #D4D2C8;
---syntax-light-literal-string: #D5FF80;
---syntax-light-literal-string-affix: #F29E74;
---syntax-light-literal-string-doc: #7E8AA1;
---syntax-light-literal-string-escape: #95E6CB;
---syntax-light-literal-string-interpol: #95E6CB;
---syntax-light-literal-string-other: #95E6CB;
---syntax-light-literal-string-regex: #95E6CB;
---syntax-light-literal-string-symbol: #DFBFFF;
---syntax-light-text: #D4D2C8;
---syntax-light-text-whitespace: #D4D2C8;
---syntax-light-escape: #D4D2C8;
---syntax-light-other: #D4D2C8;
---syntax-light-keyword-pseudo: #FFAD66;
---syntax-light-name-label: #D4D2C8;
---syntax-light-name-namespace: #D4D2C8;
---syntax-light-name-variable-class: #D4D2C8;
---syntax-light-name-variable-global: #D4D2C8;
---syntax-light-name-variable-instance: #D4D2C8;
---syntax-light-name-variable-magic: #D4D2C8;
---syntax-light-literal-date: #D5FF80;
---syntax-light-literal-string-backtick: #D5FF80;
---syntax-light-literal-string-char: #D5FF80;
---syntax-light-literal-string-delimiter: #D5FF80;
---syntax-light-literal-string-double: #D5FF80;
---syntax-light-literal-string-heredoc: #D5FF80;
---syntax-light-literal-string-single: #D5FF80;
---syntax-light-literal-number-bin: #DFBFFF;
---syntax-light-literal-number-float: #DFBFFF;
---syntax-light-literal-number-hex: #DFBFFF;
---syntax-light-literal-number-integer: #DFBFFF;
---syntax-light-literal-number-integer-long: #DFBFFF;
---syntax-light-literal-number-oct: #DFBFFF;
---syntax-light-punctuation-marker: #D4D2C8;
---syntax-light-comment-multiline: #7E8AA1;
---syntax-light-comment-preprocfile: #7E8AA1;
---syntax-light-comment-single: #7E8AA1;
---syntax-light-generic-heading: #D4D2C8;
---syntax-light-generic-prompt: #D4D2C8;
---syntax-light-generic-subheading: #D4D2C8;
---syntax-light-generic-emphstrong: #D4D2C8;
+--syntax-light-background: #FAFAFA;
+--syntax-light-highlight: #E5E5E6;
+--syntax-light-text: #383A42;
+--syntax-light-escape: #0184BC;
+--syntax-light-error: #CA1243;
+--syntax-light-keyword: #A626A4;
+--syntax-light-keyword-constant: #986801;
+--syntax-light-keyword-pseudo: #4078F2;
+--syntax-light-keyword-type: #986801;
+--syntax-light-name-attribute: #986801;
+--syntax-light-name-builtin: #0184BC;
+--syntax-light-name-builtin-pseudo: #C18401;
+--syntax-light-name-class: #C18401;
+--syntax-light-name-constant: #C18401;
+--syntax-light-name-decorator: #0184BC;
+--syntax-light-name-exception: #0184BC;
+--syntax-light-name-function: #4078F2;
+--syntax-light-name-label: #4078F2;
+--syntax-light-name-tag: #E45649;
+--syntax-light-name-variable: #E45649;
+--syntax-light-literal: #50A14F;
+--syntax-light-literal-string: #50A14F;
+--syntax-light-literal-string-affix: #A626A4;
+--syntax-light-literal-string-backtick: #50A14F;
+--syntax-light-literal-string-escape: #0184BC;
+--syntax-light-literal-string-interpol: #986801;
+--syntax-light-literal-string-regex: #E45649;
+--syntax-light-literal-string-symbol: #0184BC;
+--syntax-light-literal-number: #986801;
+--syntax-light-operator: #0184BC;
+--syntax-light-comment: #A0A1A7;
+--syntax-light-comment-multiline: #A0A1A7;
+--syntax-light-comment-preproc: #A626A4;
+--syntax-light-comment-preprocfile: #50A14F;
+--syntax-light-comment-single: #A0A1A7;
+--syntax-light-generic-deleted: #E45649;
+--syntax-light-generic-emph: #A626A4;
+--syntax-light-generic-error: #CA1243;
+--syntax-light-generic-heading: #E45649;
+--syntax-light-generic-inserted: #50A14F;
+--syntax-light-generic-output: #50A14F;
+--syntax-light-generic-prompt: #9D9D9F;
+--syntax-light-generic-strong: #986801;
+--syntax-light-generic-subheading: #E45649;
+--syntax-light-generic-traceback: #CA1243;
+--syntax-light-text-whitespace: #383A42;
+--syntax-light-keyword-declaration: #A626A4;
+--syntax-light-keyword-namespace: #A626A4;
+--syntax-light-keyword-reserved: #A626A4;
+--syntax-light-name-function-magic: #4078F2;
+--syntax-light-name-variable-class: #E45649;
+--syntax-light-name-variable-global: #E45649;
+--syntax-light-name-variable-instance: #E45649;
+--syntax-light-name-variable-magic: #E45649;
+--syntax-light-literal-date: #50A14F;
+--syntax-light-literal-string-char: #50A14F;
+--syntax-light-literal-string-delimiter: #50A14F;
+--syntax-light-literal-string-doc: #50A14F;
+--syntax-light-literal-string-double: #50A14F;
+--syntax-light-literal-string-heredoc: #50A14F;
+--syntax-light-literal-string-other: #50A14F;
+--syntax-light-literal-string-single: #50A14F;
+--syntax-light-literal-number-bin: #986801;
+--syntax-light-literal-number-float: #986801;
+--syntax-light-literal-number-hex: #986801;
+--syntax-light-literal-number-integer: #986801;
+--syntax-light-literal-number-integer-long: #986801;
+--syntax-light-literal-number-oct: #986801;
+--syntax-light-operator-word: #0184BC;
+--syntax-light-comment-hashbang: #A0A1A7;
+--syntax-light-comment-special: #A0A1A7;
 }
 html.light .highlight .c { color: var(--syntax-light-comment) }
 html.light .highlight .err { color: var(--syntax-light-error) }
 html.light .highlight .esc { color: var(--syntax-light-escape) }
-html.light .highlight .g { color: var(--syntax-light-generic) }
 html.light .highlight .k { color: var(--syntax-light-keyword) }
 html.light .highlight .l { color: var(--syntax-light-literal) }
-html.light .highlight .n { color: var(--syntax-light-name) }
 html.light .highlight .o { color: var(--syntax-light-operator) }
-html.light .highlight .x { color: var(--syntax-light-other) }
-html.light .highlight .p { color: var(--syntax-light-punctuation) }
-html.light .highlight .ch { color: var(--syntax-light-comment-hashbang); font-style: italic }
-html.light .highlight .cm { color: var(--syntax-light-comment-multiline) }
-html.light .highlight .cp { color: var(--syntax-light-comment-preproc); font-weight: bold }
+html.light .highlight .ch { color: var(--syntax-light-comment-hashbang) }
+html.light .highlight .cm { color: var(--syntax-light-comment-multiline); font-style: italic }
+html.light .highlight .cp { color: var(--syntax-light-comment-preproc) }
 html.light .highlight .cpf { color: var(--syntax-light-comment-preprocfile) }
-html.light .highlight .c1 { color: var(--syntax-light-comment-single) }
-html.light .highlight .cs { color: var(--syntax-light-comment-special); font-style: italic }
-html.light .highlight .gd { color: var(--syntax-light-generic-deleted); background-color: #3D1E20 }
+html.light .highlight .c1 { color: var(--syntax-light-comment-single); font-style: italic }
+html.light .highlight .cs { color: var(--syntax-light-comment-special) }
+html.light .highlight .gd { color: var(--syntax-light-generic-deleted) }
 html.light .highlight .ge { color: var(--syntax-light-generic-emph); font-style: italic }
-html.light .highlight .ges { color: var(--syntax-light-generic-emphstrong) }
 html.light .highlight .gr { color: var(--syntax-light-generic-error) }
 html.light .highlight .gh { color: var(--syntax-light-generic-heading) }
-html.light .highlight .gi { color: var(--syntax-light-generic-inserted); background-color: #19362C }
+html.light .highlight .gi { color: var(--syntax-light-generic-inserted) }
 html.light .highlight .go { color: var(--syntax-light-generic-output) }
 html.light .highlight .gp { color: var(--syntax-light-generic-prompt) }
-html.light .highlight .gs { color: var(--syntax-light-generic-strong); font-weight: bold }
+html.light .highlight .gs { color: var(--syntax-light-generic-strong) }
 html.light .highlight .gu { color: var(--syntax-light-generic-subheading) }
 html.light .highlight .gt { color: var(--syntax-light-generic-traceback) }
 html.light .highlight .kc { color: var(--syntax-light-keyword-constant) }
@@ -122,18 +106,13 @@ html.light .highlight .na { color: var(--syntax-light-name-attribute) }
 html.light .highlight .nb { color: var(--syntax-light-name-builtin) }
 html.light .highlight .nc { color: var(--syntax-light-name-class) }
 html.light .highlight .no { color: var(--syntax-light-name-constant) }
-html.light .highlight .nd { color: var(--syntax-light-name-decorator); font-weight: bold; font-style: italic }
-html.light .highlight .ni { color: var(--syntax-light-name-entity) }
+html.light .highlight .nd { color: var(--syntax-light-name-decorator) }
 html.light .highlight .ne { color: var(--syntax-light-name-exception) }
 html.light .highlight .nf { color: var(--syntax-light-name-function) }
 html.light .highlight .nl { color: var(--syntax-light-name-label) }
-html.light .highlight .nn { color: var(--syntax-light-name-namespace) }
-html.light .highlight .nx { color: var(--syntax-light-name-other) }
-html.light .highlight .py { color: var(--syntax-light-name-property) }
 html.light .highlight .nt { color: var(--syntax-light-name-tag) }
 html.light .highlight .nv { color: var(--syntax-light-name-variable) }
 html.light .highlight .ow { color: var(--syntax-light-operator-word) }
-html.light .highlight .pm { color: var(--syntax-light-punctuation-marker) }
 html.light .highlight .w { color: var(--syntax-light-text-whitespace) }
 html.light .highlight .mb { color: var(--syntax-light-literal-number-bin) }
 html.light .highlight .mf { color: var(--syntax-light-literal-number-float) }
@@ -161,76 +140,77 @@ html.light .highlight .vi { color: var(--syntax-light-name-variable-instance) }
 html.light .highlight .vm { color: var(--syntax-light-name-variable-magic) }
 html.light .highlight .il { color: var(--syntax-light-literal-number-integer-long) }
 :root {
---syntax-dark-background: #0d1117;
---syntax-dark-highlight: #3fb95040;
---syntax-dark-text: #E6EDF3;
---syntax-dark-escape: #A5D6FF;
---syntax-dark-error: #FFA198;
---syntax-dark-keyword: #FF7B72;
---syntax-dark-keyword-constant: #79C0FF;
---syntax-dark-keyword-type: #FFA657;
---syntax-dark-name-attribute: #79C0FF;
---syntax-dark-name-builtin: #79C0FF;
---syntax-dark-name-class: #FFA657;
---syntax-dark-name-constant: #79C0FF;
---syntax-dark-name-decorator: #79C0FF;
---syntax-dark-name-entity: #79C0FF;
---syntax-dark-name-exception: #79C0FF;
---syntax-dark-name-function: #D2A8FF;
---syntax-dark-name-function-magic: #79C0FF;
---syntax-dark-name-property: #79C0FF;
---syntax-dark-name-label: #A5D6FF;
---syntax-dark-name-tag: #7EE787;
---syntax-dark-name-variable-class: #FFA657;
---syntax-dark-literal: #A5D6FF;
---syntax-dark-literal-string: #A5D6FF;
---syntax-dark-literal-string-affix: #FF7B72;
---syntax-dark-literal-string-backtick: #79C0FF;
---syntax-dark-literal-string-interpol: #FF7B72;
---syntax-dark-literal-string-regex: #A5D6FF;
---syntax-dark-literal-string-symbol: #79C0FF;
---syntax-dark-literal-number: #79C0FF;
---syntax-dark-operator: #FF7B72;
---syntax-dark-operator-word: #79C0FF;
---syntax-dark-comment: #8B949E;
---syntax-dark-comment-preproc: #FF7B72;
---syntax-dark-comment-preprocfile: #A5D6FF;
---syntax-dark-generic-deleted: #FFA198;
---syntax-dark-generic-emph: #E6EDF3;
---syntax-dark-generic-error: #FFA198;
---syntax-dark-generic-heading: #79C0FF;
---syntax-dark-generic-inserted: #7EE787;
---syntax-dark-generic-output: #A5D6FF;
---syntax-dark-generic-prompt: #FF7B72;
---syntax-dark-generic-strong: #E6EDF3;
---syntax-dark-generic-subheading: #79C0FF;
---syntax-dark-generic-emphstrong: #E6EDF3;
---syntax-dark-generic-traceback: #FFA198;
---syntax-dark-text-whitespace: #E6EDF3;
---syntax-dark-keyword-declaration: #FF7B72;
---syntax-dark-keyword-namespace: #FF7B72;
---syntax-dark-keyword-pseudo: #FF7B72;
---syntax-dark-keyword-reserved: #FF7B72;
---syntax-dark-name-builtin-pseudo: #79C0FF;
---syntax-dark-literal-date: #A5D6FF;
---syntax-dark-literal-string-char: #A5D6FF;
---syntax-dark-literal-string-delimiter: #A5D6FF;
---syntax-dark-literal-string-doc: #A5D6FF;
---syntax-dark-literal-string-double: #A5D6FF;
---syntax-dark-literal-string-escape: #A5D6FF;
---syntax-dark-literal-string-heredoc: #A5D6FF;
---syntax-dark-literal-string-other: #A5D6FF;
---syntax-dark-literal-string-single: #A5D6FF;
---syntax-dark-literal-number-bin: #79C0FF;
---syntax-dark-literal-number-float: #79C0FF;
---syntax-dark-literal-number-hex: #79C0FF;
---syntax-dark-literal-number-integer: #79C0FF;
---syntax-dark-literal-number-integer-long: #79C0FF;
---syntax-dark-literal-number-oct: #79C0FF;
---syntax-dark-comment-hashbang: #8B949E;
---syntax-dark-comment-multiline: #8B949E;
---syntax-dark-comment-single: #8B949E;
---syntax-dark-comment-special: #8B949E;
+--syntax-dark-background: #282c34;
+--syntax-dark-highlight: #67769660;
+--syntax-dark-text: #ABB2BF;
+--syntax-dark-escape: #56B6C2;
+--syntax-dark-error: #E06C75;
+--syntax-dark-keyword: #C678DD;
+--syntax-dark-keyword-constant: #D19A66;
+--syntax-dark-keyword-pseudo: #61AFEF;
+--syntax-dark-keyword-type: #D19A66;
+--syntax-dark-name-attribute: #D19A66;
+--syntax-dark-name-builtin: #56B6C2;
+--syntax-dark-name-builtin-pseudo: #E5C07B;
+--syntax-dark-name-class: #E5C07B;
+--syntax-dark-name-constant: #E5C07B;
+--syntax-dark-name-decorator: #56B6C2;
+--syntax-dark-name-exception: #56B6C2;
+--syntax-dark-name-function: #61AFEF;
+--syntax-dark-name-label: #61AFEF;
+--syntax-dark-name-tag: #E06C75;
+--syntax-dark-name-variable: #E06C75;
+--syntax-dark-literal: #98C379;
+--syntax-dark-literal-string: #98C379;
+--syntax-dark-literal-string-affix: #C678DD;
+--syntax-dark-literal-string-backtick: #98C379;
+--syntax-dark-literal-string-escape: #56B6C2;
+--syntax-dark-literal-string-interpol: #D19A66;
+--syntax-dark-literal-string-regex: #E06C75;
+--syntax-dark-literal-string-symbol: #56B6C2;
+--syntax-dark-literal-number: #D19A66;
+--syntax-dark-operator: #56B6C2;
+--syntax-dark-comment: #7F848E;
+--syntax-dark-comment-multiline: #7F848E;
+--syntax-dark-comment-preproc: #C678DD;
+--syntax-dark-comment-preprocfile: #98C379;
+--syntax-dark-comment-single: #7F848E;
+--syntax-dark-generic-deleted: #E06C75;
+--syntax-dark-generic-emph: #C678DD;
+--syntax-dark-generic-error: #E06C75;
+--syntax-dark-generic-heading: #E06C75;
+--syntax-dark-generic-inserted: #98C379;
+--syntax-dark-generic-output: #98C379;
+--syntax-dark-generic-prompt: #5C6370;
+--syntax-dark-generic-strong: #D19A66;
+--syntax-dark-generic-subheading: #E06C75;
+--syntax-dark-generic-traceback: #E06C75;
+--syntax-dark-text-whitespace: #ABB2BF;
+--syntax-dark-keyword-declaration: #C678DD;
+--syntax-dark-keyword-namespace: #C678DD;
+--syntax-dark-keyword-reserved: #C678DD;
+--syntax-dark-name-function-magic: #61AFEF;
+--syntax-dark-name-variable-class: #E06C75;
+--syntax-dark-name-variable-global: #E06C75;
+--syntax-dark-name-variable-instance: #E06C75;
+--syntax-dark-name-variable-magic: #E06C75;
+--syntax-dark-literal-date: #98C379;
+--syntax-dark-literal-string-char: #98C379;
+--syntax-dark-literal-string-delimiter: #98C379;
+--syntax-dark-literal-string-doc: #98C379;
+--syntax-dark-literal-string-double: #98C379;
+--syntax-dark-literal-string-heredoc: #98C379;
+--syntax-dark-literal-string-other: #98C379;
+--syntax-dark-literal-string-single: #98C379;
+--syntax-dark-literal-number-bin: #D19A66;
+--syntax-dark-literal-number-float: #D19A66;
+--syntax-dark-literal-number-hex: #D19A66;
+--syntax-dark-literal-number-integer: #D19A66;
+--syntax-dark-literal-number-integer-long: #D19A66;
+--syntax-dark-literal-number-oct: #D19A66;
+--syntax-dark-operator-word: #56B6C2;
+--syntax-dark-comment-hashbang: #7F848E;
+--syntax-dark-comment-special: #7F848E;
 }
 html.dark .highlight .c, html.light .dark-code .highlight .c { color: var(--syntax-dark-comment) }
 html.dark .highlight .err, html.light .dark-code .highlight .err { color: var(--syntax-dark-error) }
@@ -239,20 +219,19 @@ html.dark .highlight .k, html.light .dark-code .highlight .k { color: var(--synt
 html.dark .highlight .l, html.light .dark-code .highlight .l { color: var(--syntax-dark-literal) }
 html.dark .highlight .o, html.light .dark-code .highlight .o { color: var(--syntax-dark-operator) }
 html.dark .highlight .ch, html.light .dark-code .highlight .ch { color: var(--syntax-dark-comment-hashbang) }
-html.dark .highlight .cm, html.light .dark-code .highlight .cm { color: var(--syntax-dark-comment-multiline) }
+html.dark .highlight .cm, html.light .dark-code .highlight .cm { color: var(--syntax-dark-comment-multiline); font-style: italic }
 html.dark .highlight .cp, html.light .dark-code .highlight .cp { color: var(--syntax-dark-comment-preproc) }
 html.dark .highlight .cpf, html.light .dark-code .highlight .cpf { color: var(--syntax-dark-comment-preprocfile) }
-html.dark .highlight .c1, html.light .dark-code .highlight .c1 { color: var(--syntax-dark-comment-single) }
+html.dark .highlight .c1, html.light .dark-code .highlight .c1 { color: var(--syntax-dark-comment-single); font-style: italic }
 html.dark .highlight .cs, html.light .dark-code .highlight .cs { color: var(--syntax-dark-comment-special) }
 html.dark .highlight .gd, html.light .dark-code .highlight .gd { color: var(--syntax-dark-generic-deleted) }
 html.dark .highlight .ge, html.light .dark-code .highlight .ge { color: var(--syntax-dark-generic-emph); font-style: italic }
-html.dark .highlight .ges, html.light .dark-code .highlight .ges { color: var(--syntax-dark-generic-emphstrong); font-weight: bold; font-style: italic }
 html.dark .highlight .gr, html.light .dark-code .highlight .gr { color: var(--syntax-dark-generic-error) }
-html.dark .highlight .gh, html.light .dark-code .highlight .gh { color: var(--syntax-dark-generic-heading); font-weight: bold }
+html.dark .highlight .gh, html.light .dark-code .highlight .gh { color: var(--syntax-dark-generic-heading) }
 html.dark .highlight .gi, html.light .dark-code .highlight .gi { color: var(--syntax-dark-generic-inserted) }
 html.dark .highlight .go, html.light .dark-code .highlight .go { color: var(--syntax-dark-generic-output) }
 html.dark .highlight .gp, html.light .dark-code .highlight .gp { color: var(--syntax-dark-generic-prompt) }
-html.dark .highlight .gs, html.light .dark-code .highlight .gs { color: var(--syntax-dark-generic-strong); font-weight: bold }
+html.dark .highlight .gs, html.light .dark-code .highlight .gs { color: var(--syntax-dark-generic-strong) }
 html.dark .highlight .gu, html.light .dark-code .highlight .gu { color: var(--syntax-dark-generic-subheading) }
 html.dark .highlight .gt, html.light .dark-code .highlight .gt { color: var(--syntax-dark-generic-traceback) }
 html.dark .highlight .kc, html.light .dark-code .highlight .kc { color: var(--syntax-dark-keyword-constant) }
@@ -269,12 +248,11 @@ html.dark .highlight .nb, html.light .dark-code .highlight .nb { color: var(--sy
 html.dark .highlight .nc, html.light .dark-code .highlight .nc { color: var(--syntax-dark-name-class) }
 html.dark .highlight .no, html.light .dark-code .highlight .no { color: var(--syntax-dark-name-constant) }
 html.dark .highlight .nd, html.light .dark-code .highlight .nd { color: var(--syntax-dark-name-decorator) }
-html.dark .highlight .ni, html.light .dark-code .highlight .ni { color: var(--syntax-dark-name-entity) }
 html.dark .highlight .ne, html.light .dark-code .highlight .ne { color: var(--syntax-dark-name-exception) }
 html.dark .highlight .nf, html.light .dark-code .highlight .nf { color: var(--syntax-dark-name-function) }
 html.dark .highlight .nl, html.light .dark-code .highlight .nl { color: var(--syntax-dark-name-label) }
-html.dark .highlight .py, html.light .dark-code .highlight .py { color: var(--syntax-dark-name-property) }
 html.dark .highlight .nt, html.light .dark-code .highlight .nt { color: var(--syntax-dark-name-tag) }
+html.dark .highlight .nv, html.light .dark-code .highlight .nv { color: var(--syntax-dark-name-variable) }
 html.dark .highlight .ow, html.light .dark-code .highlight .ow { color: var(--syntax-dark-operator-word) }
 html.dark .highlight .w, html.light .dark-code .highlight .w { color: var(--syntax-dark-text-whitespace) }
 html.dark .highlight .mb, html.light .dark-code .highlight .mb { color: var(--syntax-dark-literal-number-bin) }
@@ -298,4 +276,7 @@ html.dark .highlight .ss, html.light .dark-code .highlight .ss { color: var(--sy
 html.dark .highlight .bp, html.light .dark-code .highlight .bp { color: var(--syntax-dark-name-builtin-pseudo) }
 html.dark .highlight .fm, html.light .dark-code .highlight .fm { color: var(--syntax-dark-name-function-magic) }
 html.dark .highlight .vc, html.light .dark-code .highlight .vc { color: var(--syntax-dark-name-variable-class) }
+html.dark .highlight .vg, html.light .dark-code .highlight .vg { color: var(--syntax-dark-name-variable-global) }
+html.dark .highlight .vi, html.light .dark-code .highlight .vi { color: var(--syntax-dark-name-variable-instance) }
+html.dark .highlight .vm, html.light .dark-code .highlight .vm { color: var(--syntax-dark-name-variable-magic) }
 html.dark .highlight .il, html.light .dark-code .highlight .il { color: var(--syntax-dark-literal-number-integer-long) }
