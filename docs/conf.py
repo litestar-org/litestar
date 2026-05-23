@@ -319,8 +319,9 @@ html_css_files = ["style.css"]
 
 _versions = json.loads((Path(__file__).parent / "_static" / "versions.json").read_text())
 
-html_show_sourcelink = True  # TODO: this doesn't work :(
+html_show_sourcelink = True
 html_copy_source = True
+html_sourcelink_suffix = ""
 
 html_context = {
     "source_type": "github",
