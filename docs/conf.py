@@ -6,18 +6,15 @@ import os
 import re
 import warnings
 from datetime import datetime
-from functools import partial
 from pathlib import Path
-from typing import Any
 
 from shibuya._pygments import ShibuyaPygmentsBridge
-from sphinx.addnodes import document
 from sphinx.application import Sphinx
 from sqlalchemy.exc import SAWarning
 
 warnings.filterwarnings("ignore", category=SAWarning)
 
-__all__ = ["setup", "update_html_context"]
+__all__ = ["setup"]
 
 PY_CLASS = "py:class"
 PY_RE = r"py:.*"
@@ -330,7 +327,7 @@ html_context = {
     "source_type": "github",
     "source_user": "litestar-org",
     "source_repo": "litestar",
-    # "source_version": "main",  # TODO: We should set this with an envvar depending on which branch we are building?
+    "source_version": os.getenv("LITESTAR_DOCS_SOURCE_REF", "main"),
     "current_version": release,  # Use the detected version
     "versions": [
         ("latest", "/latest"),
@@ -439,12 +436,6 @@ if environment != "latest":
     )
 
 
-def update_html_context(
-    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: document
-) -> None:
-    context["generate_toctree_html"] = partial(context["generate_toctree_html"], startdepth=0)
-
-
 def delayed_setup(app: Sphinx) -> None:
     """
     When running linkcheck Shibuya causes a build failure, and checking
@@ -455,10 +446,9 @@ def delayed_setup(app: Sphinx) -> None:
         return
 
     app.setup_extension("shibuya")
-    # app.connect("html-page-context", update_html_context)  # TODO(provinkraut): fix
 
 
 def setup(app: Sphinx) -> dict[str, bool]:
-    app.connect("builder-inited", delayed_setup, priority=0)  # type: ignore
+    app.connect("builder-inited", delayed_setup, priority=0)
     app.setup_extension("litestar_sphinx_theme")
     return {"parallel_read_safe": True, "parallel_write_safe": True}
