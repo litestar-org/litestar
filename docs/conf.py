@@ -90,6 +90,8 @@ autodoc_default_options = {"special-members": "__init__", "show-inheritance": Tr
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 autodoc_mock_imports = []
+# (Kumzy): drop once https://github.com/sphinx-doc/sphinx/issues/14089
+autodoc_use_legacy_class_based = True
 
 nitpicky = True
 nitpick_ignore = [
@@ -123,6 +125,11 @@ nitpick_ignore = [
     (PY_METH, "litestar.typing.ParsedType.is_subclass_of"),
     (PY_METH, "type_engine"),
     # type vars and aliases / intentionally undocumented
+    (PY_CLASS, "OperationIDCreator"),  # (Kumzy) litestar.types.callable_types alias; xref fails on Sphinx 9
+    (
+        PY_CLASS,
+        "ProblemDetailsExceptionHandlerType",
+    ),  # (Kumzy)litestar.plugins.problem_details alias; xref fails on Sphinx 9
     (PY_CLASS, "ClientRequestHookHandler"),
     (PY_CLASS, "ClientResponseHookHandler"),
     (PY_CLASS, "ServerRequestHookHandler"),
@@ -244,6 +251,11 @@ nitpick_ignore_regex = [
     (PY_OBJ, r"litestar.security.jwt.auth.TokenT"),
     (PY_CLASS, "ExceptionToProblemDetailMapType"),
     (PY_CLASS, "litestar.security.jwt.token.JWTDecodeOptions"),
+    # (Kumzy) Drop the 4 next rows once this done. https://github.com/sphinx-doc/sphinx/issues/14089
+    (PY_RE, r"^Mapping\[(str|int)$"),
+    (PY_RE, r"^dict\[str$"),
+    (PY_RE, r"^Literal\[.*$"),
+    (PY_RE, r"^set\[~?typing\.Literal\[.*$"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
