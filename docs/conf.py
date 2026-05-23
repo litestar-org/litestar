@@ -6,13 +6,9 @@ import os
 import re
 import warnings
 from datetime import datetime
-
-from functools import partial
 from pathlib import Path
-from typing import Any
 
 from shibuya._pygments import ShibuyaPygmentsBridge
-from sphinx.addnodes import document
 from sphinx.application import Sphinx
 from sqlalchemy.exc import SAWarning
 
