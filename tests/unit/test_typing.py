@@ -25,7 +25,7 @@ except ImportError:
     TypeAliasType = TeTypeAliasType
 
 from litestar import get
-from litestar.exceptions import LitestarWarning, ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import KwargDefinition, ParameterKwarg, QueryParameter
 from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.typing import FieldDefinition

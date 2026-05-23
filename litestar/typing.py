@@ -45,6 +45,8 @@ try:
 except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
+from litestar.exceptions import LitestarDeprecationWarning
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types.builtin_types import NoneType, UnionTypes
