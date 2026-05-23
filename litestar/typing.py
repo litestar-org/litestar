@@ -11,6 +11,8 @@ from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mappi
 
 from typing_extensions import Annotated as te_Annotated
 
+from litestar.enums import RequestEncodingType
+
 try:
     from typing import Annotated  # pyright: ignore
 
@@ -48,7 +50,7 @@ try:
 except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
-from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
+from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning, LitestarWarning
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
@@ -431,7 +433,7 @@ class FieldDefinition:
         return get_type_hints(self.annotation, include_extras=include_extras)
 
     @classmethod
-    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
+    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:  # noqa: C901
         """Initialize FieldDefinition.
 
         Args:
@@ -451,7 +453,27 @@ class FieldDefinition:
 
         if not kwargs.get("kwarg_definition"):
             if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
-                kwargs["kwarg_definition"] = kwargs.pop("default")
+                kwarg_definition = kwargs["kwarg_definition"] = kwargs.pop("default")
+                if isinstance(kwarg_definition, BodyKwarg):
+                    can_use_marker = (
+                        not kwarg_definition.is_constrained and kwarg_definition.multipart_form_part_limit is None
+                    )
+                    if can_use_marker:
+                        alternative = {
+                            RequestEncodingType.JSON: "JSONBody[<type>]",
+                            RequestEncodingType.MESSAGEPACK: "MsgPackBody[<type>]",
+                            RequestEncodingType.MULTI_PART: "MultiPartBody[<type>]",
+                            RequestEncodingType.URL_ENCODED: "URLEncodedBBody[<type>]",
+                        }[RequestEncodingType(kwarg_definition.media_type)]
+                    else:
+                        alternative = "Annotated[<type>, Body(...)]"
+                    warnings.warn(
+                        "Deprecated use of 'Body()' as a default value. This will be removed"
+                        f"in Litestar 3.0. Use 'data: {alternative}' instead of "
+                        "'data: <type> = Body(...)'",
+                        stacklevel=2,
+                        category=LitestarDeprecationWarning,
+                    )
             elif kwarg_definition := next(
                 (v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))), None
             ):

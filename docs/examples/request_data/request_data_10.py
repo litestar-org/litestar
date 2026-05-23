@@ -1,16 +1,13 @@
 from typing import Any, Dict, List, Tuple
 
-from typing_extensions import Annotated
-
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import MultipartBody
 
 
 @post(path="/")
 async def handle_file_upload(
-    data: Annotated[List[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)],
+    data: MultipartBody[List[UploadFile]],
 ) -> Dict[str, Tuple[str, str, Any]]:
     result = {}
 
