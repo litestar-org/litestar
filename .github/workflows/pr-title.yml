@@ -1,20 +1,46 @@
 name: "Lint PR Title"
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - edited
       - synchronize
-
-permissions:
-  pull-requests: read
 
 jobs:
   main:
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
-      - uses: amannn/action-semantic-pull-request@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            
+            const types = [
+                "build",
+                "chore",
+                "ci", 
+                "docs", 
+                "feat", 
+                "fix", 
+                "perf", 
+                "refactor", 
+                "revert", 
+                "style", 
+                "test",
+            ];
+            
+            const pattern = new RegExp(`^(${types.join("|")})(\\([^)]+\\))?!?: .+`);
+            
+            if (!pattern.test(title)) {
+                core.setFailed(
+                    `PR title ${JSON.stringify(title)} is not a valid Conventional Commit.\n\n` +
+                    `Expected format: <type>(<optional scope>): <subject>\n` +
+                    `Allowed types: ${types.join(", ")}\n\n` +
+                );
+                return;
+            }
+            
+            console.log(`PR title ${JSON.stringify(title)} is valid.`);
+
