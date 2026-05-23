@@ -122,7 +122,7 @@ class Controller:
     have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
     """
     parameters: ParametersMap | None
-    """A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application paths."""
+    """A mapping of :class:`Parameter <.params.ParameterKwarg>` definitions available to all application paths."""
     path: str
     """A path fragment for the controller.
 
