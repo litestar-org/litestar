@@ -19,11 +19,15 @@ __all__ = (
     "FromPath",
     "FromQuery",
     "HeaderParameter",
+    "JSONBody",
     "KwargDefinition",
+    "MsgPackBody",
+    "MultipartBody",
     "Parameter",
     "ParameterKwarg",
     "PathParameter",
     "QueryParameter",
+    "URLEncodedBody",
 )
 
 if TYPE_CHECKING:
@@ -400,6 +404,19 @@ class BodyKwarg(KwargDefinition):
             A hash
         """
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
+
+
+JSONBody: TypeAlias = Annotated[T, BodyKwarg(media_type=RequestEncodingType.JSON)]
+"""Declare a 'application/json request body"""
+
+MsgPackBody: TypeAlias = Annotated[T, BodyKwarg(media_type=RequestEncodingType.MESSAGEPACK)]
+"""Declare a 'application/x-msgpack' request body"""
+
+MultipartBody: TypeAlias = Annotated[T, BodyKwarg(media_type=RequestEncodingType.MULTI_PART)]
+"""Declare a 'multipart/form-data' request body"""
+
+URLEncodedBody: TypeAlias = Annotated[T, BodyKwarg(media_type=RequestEncodingType.URL_ENCODED)]
+"""Declare a 'application/x-www-form-urlencoded' request body"""
 
 
 def Body(
