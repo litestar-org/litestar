@@ -666,34 +666,30 @@ help to generate the correct media-type in the OpenAPI schema.</p>
 <section id="url-encoded-form-data">
 <h3>URL Encoded Form Data<a class="headerlink" href="#url-encoded-form-data" title="Link to this heading">¶</a></h3>
 <p>To access data sent as <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST">url-encoded form data</a>,
-i.e. <code class="docutils literal notranslate"><span class="pre">application/x-www-form-urlencoded</span></code> Content-Type header, use <a class="reference internal" href="../reference/params.html#litestar.params.Body" title="litestar.params.Body"><code class="xref py py-class docutils literal notranslate"><span class="pre">Body</span></code></a> and specify
-<a class="reference internal" href="../reference/enums.html#litestar.enums.RequestEncodingType" title="litestar.enums.RequestEncodingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestEncodingType.URL_ENCODED</span></code></a> as the <code class="docutils literal notranslate"><span class="pre">media_type</span></code>:</p>
+i.e. <code class="docutils literal notranslate"><span class="pre">application/x-www-form-urlencoded</span></code> Content-Type header, wrap the <code class="docutils literal notranslate"><span class="pre">data</span></code>
+annotation with <a class="reference internal" href="../reference/params.html#litestar.params.URLEncodedBody" title="litestar.params.URLEncodedBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">URLEncodedBody</span></code></a>:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-2">
 example</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEncodingType</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
-</span><span data-line="7">
-</span><span data-line="8">
-</span><span data-line="9"><span class="nd">@dataclass</span>
-</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
-</span><span data-line="11">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="12">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="13">
-</span><span data-line="14">
-</span><span data-line="15"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="16"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
-</span><span data-line="17">    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">URL_ENCODED</span><span class="p">)],</span>
-</span><span data-line="18"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-</span><span data-line="19">    <span class="k">return</span> <span class="n">data</span>
-</span><span data-line="20">
-</span><span data-line="21">
-</span><span data-line="22"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">URLEncodedBody</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@dataclass</span>
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="9">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="10">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="11">
+</span><span data-line="12">
+</span><span data-line="13"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="14"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">URLEncodedBody</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="15">    <span class="k">return</span> <span class="n">data</span>
+</span><span data-line="16">
+</span><span data-line="17">
+</span><span data-line="18"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -714,42 +710,45 @@ how to test</label><div class="sd-tab-content docutils">
 <p>URL encoded data is inherently less versatile than JSON data - for example, it cannot handle complex
 dictionaries and deeply nested data. It should only be used for simple data structures.</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code class="docutils literal notranslate"><span class="pre">URLEncodedBody[&lt;type&gt;]</span></code> is a shorthand for
+<code class="docutils literal notranslate"><span class="pre">Annotated[&lt;type&gt;,</span> <span class="pre">Body(media_type=RequestEncodingType.URL_ENCODED)]</span></code>. If you want
+to pass additional OpenAPI metadata or constraints, use the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code> form</p>
+</div>
 </section>
 <section id="multipart-form-data">
 <h3>MultiPart Form Data<a class="headerlink" href="#multipart-form-data" title="Link to this heading">¶</a></h3>
 <p>You can access data uploaded using a request with a
 <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST">multipart/form-data</a>
-Content-Type header by specifying it in the <a class="reference internal" href="../reference/params.html#litestar.params.Body" title="litestar.params.Body"><code class="xref py py-class docutils literal notranslate"><span class="pre">Body</span></code></a> function:</p>
+Content-Type header by specifying the data with <a class="reference internal" href="../reference/params.html#litestar.params.MultipartBody" title="litestar.params.MultipartBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">MultipartBody</span></code></a>:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-4">
 example</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEncodingType</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
-</span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="nd">@dataclass</span>
-</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
-</span><span data-line="12">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="13">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="14">    <span class="n">form_input_name</span><span class="p">:</span> <span class="n">UploadFile</span>
-</span><span data-line="15">
-</span><span data-line="16">
-</span><span data-line="17"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="18"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
-</span><span data-line="19">    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-</span><span data-line="20"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="21">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span data-line="22">    <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">filename</span>
-</span><span data-line="23">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
-</span><span data-line="24">
-</span><span data-line="25">
-</span><span data-line="26"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="nd">@dataclass</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="10">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="11">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="12">    <span class="n">form_input_name</span><span class="p">:</span> <span class="n">UploadFile</span>
+</span><span data-line="13">
+</span><span data-line="14">
+</span><span data-line="15"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="16"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="17">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="18">    <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">filename</span>
+</span><span data-line="19">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
+</span><span data-line="20">
+</span><span data-line="21">
+</span><span data-line="22"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -774,6 +773,13 @@ how to test</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code class="docutils literal notranslate"><span class="pre">MultipartBody[&lt;type&gt;]</span></code> is a shorthand for
+<code class="docutils literal notranslate"><span class="pre">Annotated[&lt;type&gt;,</span> <span class="pre">Body(media_type=RequestEncodingType.MULTI_PART)]</span></code>. If you want
+to pass additional OpenAPI metadata or constraints, use the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code> form</p>
+</div>
 </section>
 </section>
 <section id="file-uploads">
@@ -790,24 +796,19 @@ Async</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-8">
 example</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEncodingType</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
-</span><span data-line="7">
-</span><span data-line="8">
-</span><span data-line="9"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
-</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
-</span><span data-line="11">    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-</span><span data-line="12"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="13">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span data-line="14">    <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
-</span><span data-line="15">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="16">
-</span><span data-line="17">
-</span><span data-line="18"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
+</span><span data-line="4">
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="8">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="9">    <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
+</span><span data-line="10">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="11">
+</span><span data-line="12">
+</span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -831,24 +832,19 @@ Sync</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-10">
 example</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEncodingType</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
-</span><span data-line="7">
-</span><span data-line="8">
-</span><span data-line="9"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
-</span><span data-line="11">    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-</span><span data-line="12"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="13">    <span class="n">content</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span data-line="14">    <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
-</span><span data-line="15">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="16">
-</span><span data-line="17">
-</span><span data-line="18"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
+</span><span data-line="4">
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="8">    <span class="n">content</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="9">    <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
+</span><span data-line="10">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="11">
+</span><span data-line="12">
+</span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -874,38 +870,35 @@ function we don’t need this wrapper, so we can use its <a class="reference ext
 </div>
 <section id="multiple-files">
 <h3>Multiple files<a class="headerlink" href="#multiple-files" title="Link to this heading">¶</a></h3>
-<p>To access multiple files with known filenames, you can use a pydantic model:</p>
+<p>To access multiple files with known filenames, you can use any structured type:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-12">
 example</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEncodingType</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
-</span><span data-line="9">
-</span><span data-line="10">
-</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">FormData</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="12">    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="13">    <span class="n">cv</span><span class="p">:</span> <span class="n">UploadFile</span>
-</span><span data-line="14">    <span class="n">diploma</span><span class="p">:</span> <span class="n">UploadFile</span>
-</span><span data-line="15">
-</span><span data-line="16">
-</span><span data-line="17"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="18"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
-</span><span data-line="19">    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">FormData</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-</span><span data-line="20"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="21">    <span class="n">cv_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span data-line="22">    <span class="n">diploma_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">diploma</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">()</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">FormData</span><span class="p">:</span>
+</span><span data-line="10">    <span class="n">cv</span><span class="p">:</span> <span class="n">UploadFile</span>
+</span><span data-line="11">    <span class="n">diploma</span><span class="p">:</span> <span class="n">UploadFile</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="15"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
+</span><span data-line="16">    <span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">FormData</span><span class="p">],</span>
+</span><span data-line="17"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="18">    <span class="n">cv_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="19">    <span class="n">diploma_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">diploma</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="n">cv_content</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="s2">&quot;diploma&quot;</span><span class="p">:</span> <span class="n">diploma_content</span><span class="o">.</span><span class="n">decode</span><span class="p">()}</span>
+</span><span data-line="22">
 </span><span data-line="23">
-</span><span data-line="24">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="n">cv_content</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="s2">&quot;diploma&quot;</span><span class="p">:</span> <span class="n">diploma_content</span><span class="o">.</span><span class="n">decode</span><span class="p">()}</span>
-</span><span data-line="25">
-</span><span data-line="26">
-</span><span data-line="27"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
+</span><span data-line="24"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -931,27 +924,24 @@ how to test</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-14">
 example</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEncodingType</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
-</span><span data-line="7">
-</span><span data-line="8">
-</span><span data-line="9"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
-</span><span data-line="11">    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-</span><span data-line="12"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="13">    <span class="n">file_contents</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="14">    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="15">        <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span data-line="16">        <span class="n">file_contents</span><span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
+</span><span data-line="4">
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
+</span><span data-line="8">    <span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">]],</span>
+</span><span data-line="9"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="10">    <span class="n">file_contents</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="11">    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="12">        <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="13">        <span class="n">file_contents</span><span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</span><span data-line="14">
+</span><span data-line="15">    <span class="k">return</span> <span class="n">file_contents</span>
+</span><span data-line="16">
 </span><span data-line="17">
-</span><span data-line="18">    <span class="k">return</span> <span class="n">file_contents</span>
-</span><span data-line="19">
-</span><span data-line="20">
-</span><span data-line="21"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
+</span><span data-line="18"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -978,27 +968,26 @@ how to test</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-16">
 example</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEncodingType</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
+</span><span data-line="6">
 </span><span data-line="7">
-</span><span data-line="8">
-</span><span data-line="9"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
-</span><span data-line="11">    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
-</span><span data-line="12"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-</span><span data-line="13">    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="14">    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-</span><span data-line="15">        <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span data-line="16">        <span class="n">result</span><span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">),</span> <span class="n">file</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
-</span><span data-line="17">
-</span><span data-line="18">    <span class="k">return</span> <span class="n">result</span>
+</span><span data-line="8"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
+</span><span data-line="10">    <span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">]],</span>
+</span><span data-line="11"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+</span><span data-line="12">    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="13">    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+</span><span data-line="14">        <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="15">        <span class="n">result</span><span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">),</span> <span class="n">file</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+</span><span data-line="16">
+</span><span data-line="17">    <span class="k">return</span> <span class="n">result</span>
+</span><span data-line="18">
 </span><span data-line="19">
-</span><span data-line="20">
-</span><span data-line="21"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
+</span><span data-line="20"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -1047,29 +1036,28 @@ how to test</label><div class="sd-tab-content docutils">
 </section>
 <section id="messagepack-data">
 <h2>MessagePack data<a class="headerlink" href="#messagepack-data" title="Link to this heading">¶</a></h2>
-<p>To receive <a class="reference external" href="https://msgpack.org/">MessagePack</a> data, specify the appropriate <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code>
-for <code class="docutils literal notranslate"><span class="pre">Body</span></code>, by using <a class="reference internal" href="../reference/enums.html#litestar.enums.RequestEncodingType" title="litestar.enums.RequestEncodingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestEncodingType.MESSAGEPACK</span></code></a>:</p>
+<p>To receive <a class="reference external" href="https://msgpack.org/">MessagePack</a> data, annotate <code class="docutils literal notranslate"><span class="pre">data</span></code> with
+<a class="reference internal" href="../reference/params.html#litestar.params.MsgPackBody" title="litestar.params.MsgPackBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">MsgPackBody</span></code></a>:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-18">
 example</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEncodingType</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsgPackBody</span>
+</span><span data-line="5">
 </span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">msgpack_handler</span><span class="p">(</span>
-</span><span data-line="10">    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MESSAGEPACK</span><span class="p">)],</span>
-</span><span data-line="11"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="12">    <span class="c1"># This will try to parse the request body as `MessagePack` regardless of the</span>
-</span><span data-line="13">    <span class="c1"># `Content-Type`</span>
-</span><span data-line="14">    <span class="k">return</span> <span class="n">data</span>
+</span><span data-line="7"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">msgpack_handler</span><span class="p">(</span>
+</span><span data-line="9">    <span class="n">data</span><span class="p">:</span> <span class="n">MsgPackBody</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+</span><span data-line="10"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="11">    <span class="c1"># This will try to parse the request body as `MessagePack` regardless of the</span>
+</span><span data-line="12">    <span class="c1"># `Content-Type`</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="n">data</span>
+</span><span data-line="14">
 </span><span data-line="15">
-</span><span data-line="16">
-</span><span data-line="17"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">msgpack_handler</span><span class="p">])</span>
+</span><span data-line="16"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">msgpack_handler</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -1085,6 +1073,13 @@ how to test</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code class="docutils literal notranslate"><span class="pre">MsgPackBody[&lt;type&gt;]</span></code> is a shorthand for
+<code class="docutils literal notranslate"><span class="pre">Annotated[&lt;type&gt;,</span> <span class="pre">Body(media_type=RequestEncodingType.MESSAGEPACK)]</span></code>. If you want
+to pass additional OpenAPI metadata or constraints, use the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code> form</p>
 </div>
 </section>
 <section id="custom-request">
@@ -1122,8 +1117,8 @@ example</label><div class="sd-tab-content docutils">
 </span><span data-line="19">        <span class="bp">self</span><span class="o">.</span><span class="n">kitten_name</span> <span class="o">=</span> <span class="n">KITTEN_NAMES_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span> <span class="s2">&quot;Mittens&quot;</span><span class="p">)</span>
 </span><span data-line="20">
 </span><span data-line="21">
-</span><span data-line="22"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/kitten-name&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="23"><span class="k">def</span><span class="w"> </span><span class="nf">get_kitten_name</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">CustomRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="22"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/kitten-name&quot;</span><span class="p">)</span>
+</span><span data-line="23"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_kitten_name</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">CustomRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="24"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get kitten name based on the HTTP method.&quot;&quot;&quot;</span>
 </span><span data-line="25">    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">kitten_name</span>
 </span><span data-line="26">

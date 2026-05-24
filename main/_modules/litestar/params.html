@@ -523,548 +523,565 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="19">    <span class="s2">&quot;FromPath&quot;</span><span class="p">,</span>
 </span><span data-line="20">    <span class="s2">&quot;FromQuery&quot;</span><span class="p">,</span>
 </span><span data-line="21">    <span class="s2">&quot;HeaderParameter&quot;</span><span class="p">,</span>
-</span><span data-line="22">    <span class="s2">&quot;KwargDefinition&quot;</span><span class="p">,</span>
-</span><span data-line="23">    <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span>
-</span><span data-line="24">    <span class="s2">&quot;ParameterKwarg&quot;</span><span class="p">,</span>
-</span><span data-line="25">    <span class="s2">&quot;PathParameter&quot;</span><span class="p">,</span>
-</span><span data-line="26">    <span class="s2">&quot;QueryParameter&quot;</span><span class="p">,</span>
-</span><span data-line="27"><span class="p">)</span>
-</span><span data-line="28">
-</span><span data-line="29"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="30">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec.example</span><span class="w"> </span><span class="kn">import</span> <span class="n">Example</span>
-</span><span data-line="31">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec.external_documentation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-</span><span data-line="32">        <span class="n">ExternalDocumentation</span><span class="p">,</span>
-</span><span data-line="33">    <span class="p">)</span>
-</span><span data-line="34">
-</span><span data-line="35">
-</span><span data-line="36"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
-</span><span data-line="37">
+</span><span data-line="22">    <span class="s2">&quot;JSONBody&quot;</span><span class="p">,</span>
+</span><span data-line="23">    <span class="s2">&quot;KwargDefinition&quot;</span><span class="p">,</span>
+</span><span data-line="24">    <span class="s2">&quot;MsgPackBody&quot;</span><span class="p">,</span>
+</span><span data-line="25">    <span class="s2">&quot;MultipartBody&quot;</span><span class="p">,</span>
+</span><span data-line="26">    <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span>
+</span><span data-line="27">    <span class="s2">&quot;ParameterKwarg&quot;</span><span class="p">,</span>
+</span><span data-line="28">    <span class="s2">&quot;PathParameter&quot;</span><span class="p">,</span>
+</span><span data-line="29">    <span class="s2">&quot;QueryParameter&quot;</span><span class="p">,</span>
+</span><span data-line="30">    <span class="s2">&quot;URLEncodedBody&quot;</span><span class="p">,</span>
+</span><span data-line="31"><span class="p">)</span>
+</span><span data-line="32">
+</span><span data-line="33"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="34">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec.example</span><span class="w"> </span><span class="kn">import</span> <span class="n">Example</span>
+</span><span data-line="35">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec.external_documentation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="36">        <span class="n">ExternalDocumentation</span><span class="p">,</span>
+</span><span data-line="37">    <span class="p">)</span>
 </span><span data-line="38">
+</span><span data-line="39">
+</span><span data-line="40"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="41">
+</span><span data-line="42">
 <div class="viewcode-block" id="KwargDefinition">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.KwargDefinition">[docs]</a>
-</span><span data-line="39"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="40"><span class="k">class</span><span class="w"> </span><span class="nc">KwargDefinition</span><span class="p">:</span>
-</span><span data-line="41"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Data container representing a constrained kwarg.&quot;&quot;&quot;</span>
-</span><span data-line="42">
-</span><span data-line="43">    <span class="n">examples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="44"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A list of Example models.&quot;&quot;&quot;</span>
-</span><span data-line="45">    <span class="n">external_docs</span><span class="p">:</span> <span class="n">ExternalDocumentation</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="46"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A url pointing at external documentation for the given parameter.&quot;&quot;&quot;</span>
-</span><span data-line="47">    <span class="n">content_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="48"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The content encoding of the value.</span>
-</span><span data-line="49">
-</span><span data-line="50"><span class="sd">    Applicable on to string values. See OpenAPI 3.1 for details.</span>
-</span><span data-line="51"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="52">    <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">Empty</span><span class="p">)</span>
-</span><span data-line="53"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A default value.</span>
-</span><span data-line="54">
-</span><span data-line="55"><span class="sd">    If const is true, this value is required.</span>
-</span><span data-line="56"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="57">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="58"><span class="w">    </span><span class="sd">&quot;&quot;&quot;String value used in the title section of the OpenAPI schema for the given parameter.&quot;&quot;&quot;</span>
-</span><span data-line="59">    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="60"><span class="w">    </span><span class="sd">&quot;&quot;&quot;String value used in the description section of the OpenAPI schema for the given parameter.&quot;&quot;&quot;</span>
-</span><span data-line="61">    <span class="n">const</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="62"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A boolean flag dictating whether this parameter is a constant.</span>
-</span><span data-line="63">
-</span><span data-line="64"><span class="sd">    If True, the value passed to the parameter must equal its default value. This also causes the OpenAPI const field to</span>
-</span><span data-line="65"><span class="sd">    be populated with the default value.</span>
-</span><span data-line="66"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="67">    <span class="n">gt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="68"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict value to be greater than a given float or int.</span>
-</span><span data-line="69">
-</span><span data-line="70"><span class="sd">    Equivalent to exclusiveMinimum in the OpenAPI specification.</span>
-</span><span data-line="71"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="72">    <span class="n">ge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="73"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict value to be greater or equal to a given float or int.</span>
-</span><span data-line="74">
-</span><span data-line="75"><span class="sd">    Equivalent to minimum in the OpenAPI specification.</span>
-</span><span data-line="76"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="77">    <span class="n">lt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="78"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict value to be less than a given float or int.</span>
-</span><span data-line="79">
-</span><span data-line="80"><span class="sd">    Equivalent to exclusiveMaximum in the OpenAPI specification.</span>
-</span><span data-line="81"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="82">    <span class="n">le</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="83"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict value to be less or equal to a given float or int.</span>
-</span><span data-line="84">
-</span><span data-line="85"><span class="sd">    Equivalent to maximum in the OpenAPI specification.</span>
-</span><span data-line="86"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="87">    <span class="n">multiple_of</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="88"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict value to a multiple of a given float or int.</span>
-</span><span data-line="89">
-</span><span data-line="90"><span class="sd">    Equivalent to multipleOf in the OpenAPI specification.</span>
-</span><span data-line="91"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="92">    <span class="n">min_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="93"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a set or a list to have a minimum number of items.</span>
-</span><span data-line="94">
-</span><span data-line="95"><span class="sd">    Equivalent to minItems in the OpenAPI specification.</span>
-</span><span data-line="96"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="97">    <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="98"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a set or a list to have a maximum number of items.</span>
-</span><span data-line="99">
-</span><span data-line="100"><span class="sd">    Equivalent to maxItems in the OpenAPI specification.</span>
-</span><span data-line="101"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="102">    <span class="n">min_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="103"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a string or bytes value to have a minimum length.</span>
-</span><span data-line="104">
-</span><span data-line="105"><span class="sd">    Equivalent to minLength in the OpenAPI specification.</span>
-</span><span data-line="106"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="107">    <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="108"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a string or bytes value to have a maximum length.</span>
-</span><span data-line="109">
-</span><span data-line="110"><span class="sd">    Equivalent to maxLength in the OpenAPI specification.</span>
-</span><span data-line="111"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="112">    <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="113"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A string representing a regex against which the given string will be matched.</span>
-</span><span data-line="114">
-</span><span data-line="115"><span class="sd">    Equivalent to pattern in the OpenAPI specification.</span>
-</span><span data-line="116"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="117">    <span class="n">lower_case</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="118"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a string value to be lower case.&quot;&quot;&quot;</span>
-</span><span data-line="119">    <span class="n">upper_case</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="120"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a string value to be upper case.&quot;&quot;&quot;</span>
-</span><span data-line="121">    <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="122"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Specify the format to which a string value should be converted.&quot;&quot;&quot;</span>
-</span><span data-line="123">    <span class="n">enum</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="124"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A sequence of valid values.&quot;&quot;&quot;</span>
-</span><span data-line="125">    <span class="n">read_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="126"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A boolean flag dictating whether this parameter is read only.&quot;&quot;&quot;</span>
-</span><span data-line="127">    <span class="n">schema_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="128"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extensions to the generated schema.</span>
-</span><span data-line="129">
-</span><span data-line="130"><span class="sd">    If set, will overwrite the matching fields in the generated schema.</span>
-</span><span data-line="131">
-</span><span data-line="132"><span class="sd">    .. versionadded:: 2.8.0</span>
-</span><span data-line="133"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="134">    <span class="n">schema_component_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="135"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="136"><span class="sd">    Use as the key for the reference when creating a component for this type</span>
-</span><span data-line="137"><span class="sd">    .. versionadded:: 2.12.0</span>
-</span><span data-line="138"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="139">    <span class="n">include_in_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="140"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="141"><span class="sd">    A boolean flag dictating whether this parameter should be included in the schema.</span>
-</span><span data-line="142"><span class="sd">    .. versionadded:: 2.17.0</span>
-</span><span data-line="143"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="144">
-</span><span data-line="145">    <span class="nd">@property</span>
-</span><span data-line="146">    <span class="k">def</span><span class="w"> </span><span class="nf">is_constrained</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="147"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if any of the constraints are set.&quot;&quot;&quot;</span>
-</span><span data-line="148">        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
-</span><span data-line="149">            <span class="n">attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="150">            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span>
-</span><span data-line="151">                <span class="bp">self</span><span class="o">.</span><span class="n">gt</span><span class="p">,</span>
-</span><span data-line="152">                <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span>
-</span><span data-line="153">                <span class="bp">self</span><span class="o">.</span><span class="n">lt</span><span class="p">,</span>
-</span><span data-line="154">                <span class="bp">self</span><span class="o">.</span><span class="n">le</span><span class="p">,</span>
-</span><span data-line="155">                <span class="bp">self</span><span class="o">.</span><span class="n">multiple_of</span><span class="p">,</span>
-</span><span data-line="156">                <span class="bp">self</span><span class="o">.</span><span class="n">min_items</span><span class="p">,</span>
-</span><span data-line="157">                <span class="bp">self</span><span class="o">.</span><span class="n">max_items</span><span class="p">,</span>
-</span><span data-line="158">                <span class="bp">self</span><span class="o">.</span><span class="n">min_length</span><span class="p">,</span>
-</span><span data-line="159">                <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="p">,</span>
-</span><span data-line="160">                <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
-</span><span data-line="161">                <span class="bp">self</span><span class="o">.</span><span class="n">const</span><span class="p">,</span>
-</span><span data-line="162">                <span class="bp">self</span><span class="o">.</span><span class="n">lower_case</span><span class="p">,</span>
-</span><span data-line="163">                <span class="bp">self</span><span class="o">.</span><span class="n">upper_case</span><span class="p">,</span>
-</span><span data-line="164">            <span class="p">)</span>
-</span><span data-line="165">        <span class="p">)</span></div>
+</span><span data-line="43"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="44"><span class="k">class</span><span class="w"> </span><span class="nc">KwargDefinition</span><span class="p">:</span>
+</span><span data-line="45"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Data container representing a constrained kwarg.&quot;&quot;&quot;</span>
+</span><span data-line="46">
+</span><span data-line="47">    <span class="n">examples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="48"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A list of Example models.&quot;&quot;&quot;</span>
+</span><span data-line="49">    <span class="n">external_docs</span><span class="p">:</span> <span class="n">ExternalDocumentation</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="50"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A url pointing at external documentation for the given parameter.&quot;&quot;&quot;</span>
+</span><span data-line="51">    <span class="n">content_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="52"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The content encoding of the value.</span>
+</span><span data-line="53">
+</span><span data-line="54"><span class="sd">    Applicable on to string values. See OpenAPI 3.1 for details.</span>
+</span><span data-line="55"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="56">    <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">Empty</span><span class="p">)</span>
+</span><span data-line="57"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A default value.</span>
+</span><span data-line="58">
+</span><span data-line="59"><span class="sd">    If const is true, this value is required.</span>
+</span><span data-line="60"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="61">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="62"><span class="w">    </span><span class="sd">&quot;&quot;&quot;String value used in the title section of the OpenAPI schema for the given parameter.&quot;&quot;&quot;</span>
+</span><span data-line="63">    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="64"><span class="w">    </span><span class="sd">&quot;&quot;&quot;String value used in the description section of the OpenAPI schema for the given parameter.&quot;&quot;&quot;</span>
+</span><span data-line="65">    <span class="n">const</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="66"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A boolean flag dictating whether this parameter is a constant.</span>
+</span><span data-line="67">
+</span><span data-line="68"><span class="sd">    If True, the value passed to the parameter must equal its default value. This also causes the OpenAPI const field to</span>
+</span><span data-line="69"><span class="sd">    be populated with the default value.</span>
+</span><span data-line="70"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="71">    <span class="n">gt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="72"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict value to be greater than a given float or int.</span>
+</span><span data-line="73">
+</span><span data-line="74"><span class="sd">    Equivalent to exclusiveMinimum in the OpenAPI specification.</span>
+</span><span data-line="75"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="76">    <span class="n">ge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="77"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict value to be greater or equal to a given float or int.</span>
+</span><span data-line="78">
+</span><span data-line="79"><span class="sd">    Equivalent to minimum in the OpenAPI specification.</span>
+</span><span data-line="80"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="81">    <span class="n">lt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="82"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict value to be less than a given float or int.</span>
+</span><span data-line="83">
+</span><span data-line="84"><span class="sd">    Equivalent to exclusiveMaximum in the OpenAPI specification.</span>
+</span><span data-line="85"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="86">    <span class="n">le</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="87"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict value to be less or equal to a given float or int.</span>
+</span><span data-line="88">
+</span><span data-line="89"><span class="sd">    Equivalent to maximum in the OpenAPI specification.</span>
+</span><span data-line="90"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="91">    <span class="n">multiple_of</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="92"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict value to a multiple of a given float or int.</span>
+</span><span data-line="93">
+</span><span data-line="94"><span class="sd">    Equivalent to multipleOf in the OpenAPI specification.</span>
+</span><span data-line="95"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="96">    <span class="n">min_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="97"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a set or a list to have a minimum number of items.</span>
+</span><span data-line="98">
+</span><span data-line="99"><span class="sd">    Equivalent to minItems in the OpenAPI specification.</span>
+</span><span data-line="100"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="101">    <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="102"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a set or a list to have a maximum number of items.</span>
+</span><span data-line="103">
+</span><span data-line="104"><span class="sd">    Equivalent to maxItems in the OpenAPI specification.</span>
+</span><span data-line="105"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="106">    <span class="n">min_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="107"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a string or bytes value to have a minimum length.</span>
+</span><span data-line="108">
+</span><span data-line="109"><span class="sd">    Equivalent to minLength in the OpenAPI specification.</span>
+</span><span data-line="110"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="111">    <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="112"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a string or bytes value to have a maximum length.</span>
+</span><span data-line="113">
+</span><span data-line="114"><span class="sd">    Equivalent to maxLength in the OpenAPI specification.</span>
+</span><span data-line="115"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="116">    <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="117"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A string representing a regex against which the given string will be matched.</span>
+</span><span data-line="118">
+</span><span data-line="119"><span class="sd">    Equivalent to pattern in the OpenAPI specification.</span>
+</span><span data-line="120"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="121">    <span class="n">lower_case</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="122"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a string value to be lower case.&quot;&quot;&quot;</span>
+</span><span data-line="123">    <span class="n">upper_case</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="124"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrict a string value to be upper case.&quot;&quot;&quot;</span>
+</span><span data-line="125">    <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="126"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Specify the format to which a string value should be converted.&quot;&quot;&quot;</span>
+</span><span data-line="127">    <span class="n">enum</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="128"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A sequence of valid values.&quot;&quot;&quot;</span>
+</span><span data-line="129">    <span class="n">read_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="130"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A boolean flag dictating whether this parameter is read only.&quot;&quot;&quot;</span>
+</span><span data-line="131">    <span class="n">schema_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="132"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extensions to the generated schema.</span>
+</span><span data-line="133">
+</span><span data-line="134"><span class="sd">    If set, will overwrite the matching fields in the generated schema.</span>
+</span><span data-line="135">
+</span><span data-line="136"><span class="sd">    .. versionadded:: 2.8.0</span>
+</span><span data-line="137"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="138">    <span class="n">schema_component_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="139"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="140"><span class="sd">    Use as the key for the reference when creating a component for this type</span>
+</span><span data-line="141"><span class="sd">    .. versionadded:: 2.12.0</span>
+</span><span data-line="142"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="143">    <span class="n">include_in_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="144"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="145"><span class="sd">    A boolean flag dictating whether this parameter should be included in the schema.</span>
+</span><span data-line="146"><span class="sd">    .. versionadded:: 2.17.0</span>
+</span><span data-line="147"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="148">
+</span><span data-line="149">    <span class="nd">@property</span>
+</span><span data-line="150">    <span class="k">def</span><span class="w"> </span><span class="nf">is_constrained</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="151"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if any of the constraints are set.&quot;&quot;&quot;</span>
+</span><span data-line="152">        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+</span><span data-line="153">            <span class="n">attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="154">            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span>
+</span><span data-line="155">                <span class="bp">self</span><span class="o">.</span><span class="n">gt</span><span class="p">,</span>
+</span><span data-line="156">                <span class="bp">self</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span>
+</span><span data-line="157">                <span class="bp">self</span><span class="o">.</span><span class="n">lt</span><span class="p">,</span>
+</span><span data-line="158">                <span class="bp">self</span><span class="o">.</span><span class="n">le</span><span class="p">,</span>
+</span><span data-line="159">                <span class="bp">self</span><span class="o">.</span><span class="n">multiple_of</span><span class="p">,</span>
+</span><span data-line="160">                <span class="bp">self</span><span class="o">.</span><span class="n">min_items</span><span class="p">,</span>
+</span><span data-line="161">                <span class="bp">self</span><span class="o">.</span><span class="n">max_items</span><span class="p">,</span>
+</span><span data-line="162">                <span class="bp">self</span><span class="o">.</span><span class="n">min_length</span><span class="p">,</span>
+</span><span data-line="163">                <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="p">,</span>
+</span><span data-line="164">                <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
+</span><span data-line="165">                <span class="bp">self</span><span class="o">.</span><span class="n">const</span><span class="p">,</span>
+</span><span data-line="166">                <span class="bp">self</span><span class="o">.</span><span class="n">lower_case</span><span class="p">,</span>
+</span><span data-line="167">                <span class="bp">self</span><span class="o">.</span><span class="n">upper_case</span><span class="p">,</span>
+</span><span data-line="168">            <span class="p">)</span>
+</span><span data-line="169">        <span class="p">)</span></div>
 
-</span><span data-line="166">
-</span><span data-line="167">
+</span><span data-line="170">
+</span><span data-line="171">
 <div class="viewcode-block" id="ParameterKwarg">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.ParameterKwarg">[docs]</a>
-</span><span data-line="168"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="169"><span class="k">class</span><span class="w"> </span><span class="nc">ParameterKwarg</span><span class="p">(</span><span class="n">KwargDefinition</span><span class="p">):</span>
-</span><span data-line="170"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Data container representing a parameter.&quot;&quot;&quot;</span>
-</span><span data-line="171">
-</span><span data-line="172">    <span class="n">param_type</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">ParamType</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">QUERY</span>
-</span><span data-line="173"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Type of the parameter&quot;&quot;&quot;</span>
-</span><span data-line="174">
-</span><span data-line="175">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="176"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="177"><span class="sd">    Name of the parameter. If &#39;None&#39;, and used in a function annotation, the name</span>
-</span><span data-line="178"><span class="sd">    will be inferred from the annotated parameter&#39;s name.</span>
-</span><span data-line="179"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="180">    <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">Empty</span><span class="p">)</span>
-</span><span data-line="181"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The field value - `Empty` by default.&quot;&quot;&quot;</span>
-</span><span data-line="182">    <span class="n">header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="183"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The header name - required for header parameters.&quot;&quot;&quot;</span>
-</span><span data-line="184">    <span class="n">cookie</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="185"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The cookie name - required for cookie parameters.&quot;&quot;&quot;</span>
-</span><span data-line="186">    <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="187"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The query parameter name - required for query parameters&quot;&quot;&quot;</span>
-</span><span data-line="188">    <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="189"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A boolean flag dictating whether this parameter is required.</span>
-</span><span data-line="190">
-</span><span data-line="191"><span class="sd">    If set to False, None values will be allowed. Defaults to True.</span>
-</span><span data-line="192"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="193">
-</span><span data-line="194">    <span class="nd">@property</span>
-</span><span data-line="195">    <span class="k">def</span><span class="w"> </span><span class="nf">is_marker</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="196">        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_constrained</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">required</span> <span class="ow">is</span> <span class="kc">None</span>
+</span><span data-line="172"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="173"><span class="k">class</span><span class="w"> </span><span class="nc">ParameterKwarg</span><span class="p">(</span><span class="n">KwargDefinition</span><span class="p">):</span>
+</span><span data-line="174"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Data container representing a parameter.&quot;&quot;&quot;</span>
+</span><span data-line="175">
+</span><span data-line="176">    <span class="n">param_type</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">ParamType</span><span class="p">]</span> <span class="o">=</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">QUERY</span>
+</span><span data-line="177"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Type of the parameter&quot;&quot;&quot;</span>
+</span><span data-line="178">
+</span><span data-line="179">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="180"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="181"><span class="sd">    Name of the parameter. If &#39;None&#39;, and used in a function annotation, the name</span>
+</span><span data-line="182"><span class="sd">    will be inferred from the annotated parameter&#39;s name.</span>
+</span><span data-line="183"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="184">    <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">Empty</span><span class="p">)</span>
+</span><span data-line="185"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The field value - `Empty` by default.&quot;&quot;&quot;</span>
+</span><span data-line="186">    <span class="n">header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="187"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The header name - required for header parameters.&quot;&quot;&quot;</span>
+</span><span data-line="188">    <span class="n">cookie</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="189"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The cookie name - required for cookie parameters.&quot;&quot;&quot;</span>
+</span><span data-line="190">    <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="191"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The query parameter name - required for query parameters&quot;&quot;&quot;</span>
+</span><span data-line="192">    <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="193"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A boolean flag dictating whether this parameter is required.</span>
+</span><span data-line="194">
+</span><span data-line="195"><span class="sd">    If set to False, None values will be allowed. Defaults to True.</span>
+</span><span data-line="196"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="197">
+</span><span data-line="198">    <span class="nd">@property</span>
+</span><span data-line="199">    <span class="k">def</span><span class="w"> </span><span class="nf">is_marker</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="200">        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_constrained</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">required</span> <span class="ow">is</span> <span class="kc">None</span>
+</span><span data-line="201">
 <div class="viewcode-block" id="ParameterKwarg.__hash__">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.ParameterKwarg.__hash__">[docs]</a>
-</span><span data-line="198">    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="199"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Hash the dataclass in a safe way.</span>
-</span><span data-line="200">
-</span><span data-line="201"><span class="sd">        Returns:</span>
-</span><span data-line="202"><span class="sd">            A hash</span>
-</span><span data-line="203"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="204">        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">))</span></div>
+</span><span data-line="202">    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="203"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Hash the dataclass in a safe way.</span>
+</span><span data-line="204">
+</span><span data-line="205"><span class="sd">        Returns:</span>
+</span><span data-line="206"><span class="sd">            A hash</span>
+</span><span data-line="207"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="208">        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">))</span></div>
 
-</span><span data-line="205">
-</span><span data-line="206">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="207">        <span class="k">if</span> <span class="p">(</span><span class="n">header</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="208">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-</span><span data-line="209">                <span class="sa">f</span><span class="s2">&quot;Deprecated &#39;header&#39; parameter: Parameter(header=</span><span class="si">{</span><span class="n">header</span><span class="si">!r}</span><span class="s2">). Use &#39;HeaderParameter(name=</span><span class="si">{</span><span class="n">header</span><span class="si">!r}</span><span class="s2">)&#39; instead&quot;</span><span class="p">,</span>
-</span><span data-line="210">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span data-line="211">                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-</span><span data-line="212">            <span class="p">)</span>
-</span><span data-line="213">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
-</span><span data-line="214">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;param_type&quot;</span><span class="p">,</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">HEADER</span><span class="p">)</span>
-</span><span data-line="215">        <span class="k">if</span> <span class="p">(</span><span class="n">cookie</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookie</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="216">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-</span><span data-line="217">                <span class="sa">f</span><span class="s2">&quot;Deprecated &#39;cookie&#39; parameter: Parameter(cookie=</span><span class="si">{</span><span class="n">cookie</span><span class="si">!r}</span><span class="s2">). Use &#39;CookieParameter(name=</span><span class="si">{</span><span class="n">cookie</span><span class="si">!r}</span><span class="s2">)&#39; instead&quot;</span><span class="p">,</span>
-</span><span data-line="218">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span data-line="219">                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-</span><span data-line="220">            <span class="p">)</span>
-</span><span data-line="221">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">cookie</span><span class="p">)</span>
-</span><span data-line="222">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;param_type&quot;</span><span class="p">,</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">COOKIE</span><span class="p">)</span>
-</span><span data-line="223">        <span class="k">if</span> <span class="p">(</span><span class="n">query</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="224">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-</span><span data-line="225">                <span class="sa">f</span><span class="s2">&quot;Deprecated &#39;query&#39; parameter: Parameter(query=</span><span class="si">{</span><span class="n">query</span><span class="si">!r}</span><span class="s2">). Use &#39;QueryParameter(name=</span><span class="si">{</span><span class="n">query</span><span class="si">!r}</span><span class="s2">)&#39; instead&quot;</span><span class="p">,</span>
-</span><span data-line="226">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span data-line="227">                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-</span><span data-line="228">            <span class="p">)</span>
-</span><span data-line="229">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
-</span><span data-line="230">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;param_type&quot;</span><span class="p">,</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">QUERY</span><span class="p">)</span></div>
+</span><span data-line="209">
+</span><span data-line="210">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="211">        <span class="k">if</span> <span class="p">(</span><span class="n">header</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="212">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+</span><span data-line="213">                <span class="sa">f</span><span class="s2">&quot;Deprecated &#39;header&#39; parameter: Parameter(header=</span><span class="si">{</span><span class="n">header</span><span class="si">!r}</span><span class="s2">). Use &#39;HeaderParameter(name=</span><span class="si">{</span><span class="n">header</span><span class="si">!r}</span><span class="s2">)&#39; instead&quot;</span><span class="p">,</span>
+</span><span data-line="214">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="215">                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+</span><span data-line="216">            <span class="p">)</span>
+</span><span data-line="217">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+</span><span data-line="218">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;param_type&quot;</span><span class="p">,</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">HEADER</span><span class="p">)</span>
+</span><span data-line="219">        <span class="k">if</span> <span class="p">(</span><span class="n">cookie</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookie</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="220">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+</span><span data-line="221">                <span class="sa">f</span><span class="s2">&quot;Deprecated &#39;cookie&#39; parameter: Parameter(cookie=</span><span class="si">{</span><span class="n">cookie</span><span class="si">!r}</span><span class="s2">). Use &#39;CookieParameter(name=</span><span class="si">{</span><span class="n">cookie</span><span class="si">!r}</span><span class="s2">)&#39; instead&quot;</span><span class="p">,</span>
+</span><span data-line="222">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="223">                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+</span><span data-line="224">            <span class="p">)</span>
+</span><span data-line="225">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">cookie</span><span class="p">)</span>
+</span><span data-line="226">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;param_type&quot;</span><span class="p">,</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">COOKIE</span><span class="p">)</span>
+</span><span data-line="227">        <span class="k">if</span> <span class="p">(</span><span class="n">query</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="228">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+</span><span data-line="229">                <span class="sa">f</span><span class="s2">&quot;Deprecated &#39;query&#39; parameter: Parameter(query=</span><span class="si">{</span><span class="n">query</span><span class="si">!r}</span><span class="s2">). Use &#39;QueryParameter(name=</span><span class="si">{</span><span class="n">query</span><span class="si">!r}</span><span class="s2">)&#39; instead&quot;</span><span class="p">,</span>
+</span><span data-line="230">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="231">                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+</span><span data-line="232">            <span class="p">)</span>
+</span><span data-line="233">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+</span><span data-line="234">            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;param_type&quot;</span><span class="p">,</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">QUERY</span><span class="p">)</span></div>
 
-</span><span data-line="231">
-</span><span data-line="232">
+</span><span data-line="235">
+</span><span data-line="236">
 <div class="viewcode-block" id="QueryParameter">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.QueryParameter">[docs]</a>
-</span><span data-line="233"><span class="k">class</span><span class="w"> </span><span class="nc">QueryParameter</span><span class="p">(</span><span class="n">ParameterKwarg</span><span class="p">):</span>
-</span><span data-line="234"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Describes a query parameter.</span>
-</span><span data-line="235">
-</span><span data-line="236"><span class="sd">    In the OpenAPI, this maps to a parameter ``in: query``.</span>
-</span><span data-line="237"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="238">
-</span><span data-line="239">    <span class="n">param_type</span> <span class="o">=</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">QUERY</span></div>
+</span><span data-line="237"><span class="k">class</span><span class="w"> </span><span class="nc">QueryParameter</span><span class="p">(</span><span class="n">ParameterKwarg</span><span class="p">):</span>
+</span><span data-line="238"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Describes a query parameter.</span>
+</span><span data-line="239">
+</span><span data-line="240"><span class="sd">    In the OpenAPI, this maps to a parameter ``in: query``.</span>
+</span><span data-line="241"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="242">
+</span><span data-line="243">    <span class="n">param_type</span> <span class="o">=</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">QUERY</span></div>
 
-</span><span data-line="240">
-</span><span data-line="241">
+</span><span data-line="244">
+</span><span data-line="245">
 <div class="viewcode-block" id="HeaderParameter">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.HeaderParameter">[docs]</a>
-</span><span data-line="242"><span class="k">class</span><span class="w"> </span><span class="nc">HeaderParameter</span><span class="p">(</span><span class="n">ParameterKwarg</span><span class="p">):</span>
-</span><span data-line="243"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Describes a header parameter.</span>
-</span><span data-line="244">
-</span><span data-line="245"><span class="sd">    In the OpenAPI, this maps to a parameter ``in: header``.</span>
-</span><span data-line="246"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="247">
-</span><span data-line="248">    <span class="n">param_type</span> <span class="o">=</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">HEADER</span></div>
+</span><span data-line="246"><span class="k">class</span><span class="w"> </span><span class="nc">HeaderParameter</span><span class="p">(</span><span class="n">ParameterKwarg</span><span class="p">):</span>
+</span><span data-line="247"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Describes a header parameter.</span>
+</span><span data-line="248">
+</span><span data-line="249"><span class="sd">    In the OpenAPI, this maps to a parameter ``in: header``.</span>
+</span><span data-line="250"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="251">
+</span><span data-line="252">    <span class="n">param_type</span> <span class="o">=</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">HEADER</span></div>
 
-</span><span data-line="249">
-</span><span data-line="250">
+</span><span data-line="253">
+</span><span data-line="254">
 <div class="viewcode-block" id="CookieParameter">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.CookieParameter">[docs]</a>
-</span><span data-line="251"><span class="k">class</span><span class="w"> </span><span class="nc">CookieParameter</span><span class="p">(</span><span class="n">ParameterKwarg</span><span class="p">):</span>
-</span><span data-line="252"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Describes a cookie parameter.</span>
-</span><span data-line="253">
-</span><span data-line="254"><span class="sd">    In the OpenAPI, this maps to a parameter ``in: cookie``.</span>
-</span><span data-line="255"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="256">
-</span><span data-line="257">    <span class="n">param_type</span> <span class="o">=</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">COOKIE</span></div>
+</span><span data-line="255"><span class="k">class</span><span class="w"> </span><span class="nc">CookieParameter</span><span class="p">(</span><span class="n">ParameterKwarg</span><span class="p">):</span>
+</span><span data-line="256"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Describes a cookie parameter.</span>
+</span><span data-line="257">
+</span><span data-line="258"><span class="sd">    In the OpenAPI, this maps to a parameter ``in: cookie``.</span>
+</span><span data-line="259"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="260">
+</span><span data-line="261">    <span class="n">param_type</span> <span class="o">=</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">COOKIE</span></div>
 
-</span><span data-line="258">
-</span><span data-line="259">
+</span><span data-line="262">
+</span><span data-line="263">
 <div class="viewcode-block" id="PathParameter">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.PathParameter">[docs]</a>
-</span><span data-line="260"><span class="k">class</span><span class="w"> </span><span class="nc">PathParameter</span><span class="p">(</span><span class="n">ParameterKwarg</span><span class="p">):</span>
-</span><span data-line="261"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Describes a path parameter.</span>
-</span><span data-line="262">
-</span><span data-line="263"><span class="sd">    In the OpenAPI, this maps to a parameter ``in: path``.</span>
-</span><span data-line="264"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="265">
-</span><span data-line="266">    <span class="n">param_type</span> <span class="o">=</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">PATH</span></div>
+</span><span data-line="264"><span class="k">class</span><span class="w"> </span><span class="nc">PathParameter</span><span class="p">(</span><span class="n">ParameterKwarg</span><span class="p">):</span>
+</span><span data-line="265"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Describes a path parameter.</span>
+</span><span data-line="266">
+</span><span data-line="267"><span class="sd">    In the OpenAPI, this maps to a parameter ``in: path``.</span>
+</span><span data-line="268"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="269">
+</span><span data-line="270">    <span class="n">param_type</span> <span class="o">=</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">PATH</span></div>
 
-</span><span data-line="267">
-</span><span data-line="268">
-</span><span data-line="269"><span class="n">FromQuery</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">()]</span>
-</span><span data-line="270"><span class="sd">&quot;&quot;&quot;Declare a query parameter&quot;&quot;&quot;</span>
 </span><span data-line="271">
-</span><span data-line="272"><span class="n">FromHeader</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">()]</span>
-</span><span data-line="273"><span class="sd">&quot;&quot;&quot;Declare a header parameter&quot;&quot;&quot;</span>
-</span><span data-line="274">
-</span><span data-line="275"><span class="n">FromCookie</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">()]</span>
-</span><span data-line="276"><span class="sd">&quot;&quot;&quot;Declare a cookie parameter&quot;&quot;&quot;</span>
-</span><span data-line="277">
-</span><span data-line="278"><span class="n">FromPath</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">PathParameter</span><span class="p">()]</span>
-</span><span data-line="279"><span class="sd">&quot;&quot;&quot;Declare a path parameter&quot;&quot;&quot;</span>
-</span><span data-line="280">
+</span><span data-line="272">
+</span><span data-line="273"><span class="n">FromQuery</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">()]</span>
+</span><span data-line="274"><span class="sd">&quot;&quot;&quot;Declare a query parameter&quot;&quot;&quot;</span>
+</span><span data-line="275">
+</span><span data-line="276"><span class="n">FromHeader</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">()]</span>
+</span><span data-line="277"><span class="sd">&quot;&quot;&quot;Declare a header parameter&quot;&quot;&quot;</span>
+</span><span data-line="278">
+</span><span data-line="279"><span class="n">FromCookie</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">()]</span>
+</span><span data-line="280"><span class="sd">&quot;&quot;&quot;Declare a cookie parameter&quot;&quot;&quot;</span>
 </span><span data-line="281">
+</span><span data-line="282"><span class="n">FromPath</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">PathParameter</span><span class="p">()]</span>
+</span><span data-line="283"><span class="sd">&quot;&quot;&quot;Declare a path parameter&quot;&quot;&quot;</span>
+</span><span data-line="284">
+</span><span data-line="285">
 <div class="viewcode-block" id="Parameter">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.Parameter">[docs]</a>
-</span><span data-line="282"><span class="k">def</span><span class="w"> </span><span class="nf">Parameter</span><span class="p">(</span>
-</span><span data-line="283">    <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
-</span><span data-line="284">    <span class="o">*</span><span class="p">,</span>
-</span><span data-line="285">    <span class="n">const</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="286">    <span class="n">content_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="287">    <span class="n">cookie</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="288">    <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
-</span><span data-line="289">    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="290">    <span class="n">examples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="291">    <span class="n">external_docs</span><span class="p">:</span> <span class="n">ExternalDocumentation</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="292">    <span class="n">ge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="293">    <span class="n">gt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="294">    <span class="n">header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="295">    <span class="n">le</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="296">    <span class="n">lt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="297">    <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="298">    <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="299">    <span class="n">min_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="300">    <span class="n">min_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="301">    <span class="n">multiple_of</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="302">    <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="303">    <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="304">    <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="305">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="306">    <span class="n">schema_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="307">    <span class="n">schema_component_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="308">    <span class="n">include_in_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span data-line="309"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="310"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an extended parameter kwarg definition.</span>
-</span><span data-line="311">
-</span><span data-line="312"><span class="sd">    Args:</span>
-</span><span data-line="313"><span class="sd">        annotation: `Empty` by default.</span>
-</span><span data-line="314"><span class="sd">        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter</span>
-</span><span data-line="315"><span class="sd">            must equal its default value. This also causes the OpenAPI const field</span>
-</span><span data-line="316"><span class="sd">            to be populated with the default value.</span>
-</span><span data-line="317"><span class="sd">        content_encoding: The content encoding of the value.</span>
-</span><span data-line="318"><span class="sd">            Applicable on to string values. See OpenAPI 3.1 for details.</span>
-</span><span data-line="319"><span class="sd">        cookie: The cookie parameter key - required for cookie parameters.</span>
-</span><span data-line="320"><span class="sd">        default: A default value. If const is true, this value is required.</span>
-</span><span data-line="321"><span class="sd">        description: String value used in the description section of the OpenAPI schema for the given parameter.</span>
-</span><span data-line="322"><span class="sd">        examples: A list of Example models.</span>
-</span><span data-line="323"><span class="sd">        external_docs: A url pointing at external documentation for the given parameter.</span>
-</span><span data-line="324"><span class="sd">        ge: Constrict value to be greater or equal to a given float or int.</span>
-</span><span data-line="325"><span class="sd">            Equivalent to minimum in the OpenAPI specification.</span>
-</span><span data-line="326"><span class="sd">        gt: Constrict value to be greater than a given float or int.</span>
-</span><span data-line="327"><span class="sd">            Equivalent to exclusiveMinimum in the OpenAPI specification.</span>
-</span><span data-line="328"><span class="sd">        header: The header parameter key - required for header parameters.</span>
-</span><span data-line="329"><span class="sd">        le: Constrict value to be less or equal to a given float or int.</span>
-</span><span data-line="330"><span class="sd">            Equivalent to maximum in the OpenAPI specification.</span>
-</span><span data-line="331"><span class="sd">        lt: Constrict value to be less than a given float or int.</span>
-</span><span data-line="332"><span class="sd">            Equivalent to exclusiveMaximum in the OpenAPI specification.</span>
-</span><span data-line="333"><span class="sd">        max_items: Constrict a set or a list to have a maximum number of items.</span>
-</span><span data-line="334"><span class="sd">            Equivalent to maxItems in the OpenAPI specification.</span>
-</span><span data-line="335"><span class="sd">        max_length: Constrict a string or bytes value to have a maximum length.</span>
-</span><span data-line="336"><span class="sd">            Equivalent to maxLength in the OpenAPI specification.</span>
-</span><span data-line="337"><span class="sd">        min_items: Constrict a set or a list to have a minimum number of items. ֿ</span>
-</span><span data-line="338"><span class="sd">            Equivalent to minItems in the OpenAPI specification.</span>
-</span><span data-line="339"><span class="sd">        min_length: Constrict a string or bytes value to have a minimum length.</span>
-</span><span data-line="340"><span class="sd">            Equivalent to minLength in the OpenAPI specification.</span>
-</span><span data-line="341"><span class="sd">        multiple_of: Constrict value to a multiple of a given float or int.</span>
-</span><span data-line="342"><span class="sd">            Equivalent to multipleOf in the OpenAPI specification.</span>
-</span><span data-line="343"><span class="sd">        pattern: A string representing a regex against which the given string will be matched.</span>
-</span><span data-line="344"><span class="sd">            Equivalent to pattern in the OpenAPI specification.</span>
-</span><span data-line="345"><span class="sd">        query: The query parameter key for this parameter.</span>
-</span><span data-line="346"><span class="sd">        required: A boolean flag dictating whether this parameter is required.</span>
-</span><span data-line="347"><span class="sd">            If set to False, None values will be allowed. Defaults to True.</span>
-</span><span data-line="348"><span class="sd">        title: String value used in the title section of the OpenAPI schema for the given parameter.</span>
-</span><span data-line="349"><span class="sd">        schema_extra: Extensions to the generated schema. If set, will overwrite the matching fields in the generated</span>
-</span><span data-line="350"><span class="sd">            schema.</span>
-</span><span data-line="351">
-</span><span data-line="352"><span class="sd">            .. versionadded:: 2.8.0</span>
-</span><span data-line="353"><span class="sd">        schema_component_key: Use this as the key for the reference when creating a component for this type</span>
-</span><span data-line="354"><span class="sd">            .. versionadded:: 2.12.0</span>
-</span><span data-line="355"><span class="sd">        include_in_schema: A boolean flag dictating whether this parameter should be included in the schema.</span>
-</span><span data-line="356"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="357">    <span class="k">return</span> <span class="n">ParameterKwarg</span><span class="p">(</span>
-</span><span data-line="358">        <span class="n">annotation</span><span class="o">=</span><span class="n">annotation</span><span class="p">,</span>
-</span><span data-line="359">        <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
-</span><span data-line="360">        <span class="n">cookie</span><span class="o">=</span><span class="n">cookie</span><span class="p">,</span>
-</span><span data-line="361">        <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
-</span><span data-line="362">        <span class="n">examples</span><span class="o">=</span><span class="n">examples</span><span class="p">,</span>
-</span><span data-line="363">        <span class="n">external_docs</span><span class="o">=</span><span class="n">external_docs</span><span class="p">,</span>
-</span><span data-line="364">        <span class="n">content_encoding</span><span class="o">=</span><span class="n">content_encoding</span><span class="p">,</span>
-</span><span data-line="365">        <span class="n">required</span><span class="o">=</span><span class="n">required</span><span class="p">,</span>
-</span><span data-line="366">        <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
-</span><span data-line="367">        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
-</span><span data-line="368">        <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
-</span><span data-line="369">        <span class="n">const</span><span class="o">=</span><span class="n">const</span><span class="p">,</span>
-</span><span data-line="370">        <span class="n">gt</span><span class="o">=</span><span class="n">gt</span><span class="p">,</span>
-</span><span data-line="371">        <span class="n">ge</span><span class="o">=</span><span class="n">ge</span><span class="p">,</span>
-</span><span data-line="372">        <span class="n">lt</span><span class="o">=</span><span class="n">lt</span><span class="p">,</span>
-</span><span data-line="373">        <span class="n">le</span><span class="o">=</span><span class="n">le</span><span class="p">,</span>
-</span><span data-line="374">        <span class="n">multiple_of</span><span class="o">=</span><span class="n">multiple_of</span><span class="p">,</span>
-</span><span data-line="375">        <span class="n">min_items</span><span class="o">=</span><span class="n">min_items</span><span class="p">,</span>
-</span><span data-line="376">        <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
-</span><span data-line="377">        <span class="n">min_length</span><span class="o">=</span><span class="n">min_length</span><span class="p">,</span>
-</span><span data-line="378">        <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span>
-</span><span data-line="379">        <span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">,</span>
-</span><span data-line="380">        <span class="n">schema_extra</span><span class="o">=</span><span class="n">schema_extra</span><span class="p">,</span>
-</span><span data-line="381">        <span class="n">schema_component_key</span><span class="o">=</span><span class="n">schema_component_key</span><span class="p">,</span>
-</span><span data-line="382">        <span class="n">include_in_schema</span><span class="o">=</span><span class="n">include_in_schema</span><span class="p">,</span>
-</span><span data-line="383">    <span class="p">)</span></div>
+</span><span data-line="286"><span class="k">def</span><span class="w"> </span><span class="nf">Parameter</span><span class="p">(</span>
+</span><span data-line="287">    <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="288">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="289">    <span class="n">const</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="290">    <span class="n">content_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="291">    <span class="n">cookie</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="292">    <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="293">    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="294">    <span class="n">examples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="295">    <span class="n">external_docs</span><span class="p">:</span> <span class="n">ExternalDocumentation</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="296">    <span class="n">ge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="297">    <span class="n">gt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="298">    <span class="n">header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="299">    <span class="n">le</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="300">    <span class="n">lt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="301">    <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="302">    <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="303">    <span class="n">min_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="304">    <span class="n">min_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="305">    <span class="n">multiple_of</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="306">    <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="307">    <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="308">    <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="309">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="310">    <span class="n">schema_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="311">    <span class="n">schema_component_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="312">    <span class="n">include_in_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="313"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="314"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an extended parameter kwarg definition.</span>
+</span><span data-line="315">
+</span><span data-line="316"><span class="sd">    Args:</span>
+</span><span data-line="317"><span class="sd">        annotation: `Empty` by default.</span>
+</span><span data-line="318"><span class="sd">        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter</span>
+</span><span data-line="319"><span class="sd">            must equal its default value. This also causes the OpenAPI const field</span>
+</span><span data-line="320"><span class="sd">            to be populated with the default value.</span>
+</span><span data-line="321"><span class="sd">        content_encoding: The content encoding of the value.</span>
+</span><span data-line="322"><span class="sd">            Applicable on to string values. See OpenAPI 3.1 for details.</span>
+</span><span data-line="323"><span class="sd">        cookie: The cookie parameter key - required for cookie parameters.</span>
+</span><span data-line="324"><span class="sd">        default: A default value. If const is true, this value is required.</span>
+</span><span data-line="325"><span class="sd">        description: String value used in the description section of the OpenAPI schema for the given parameter.</span>
+</span><span data-line="326"><span class="sd">        examples: A list of Example models.</span>
+</span><span data-line="327"><span class="sd">        external_docs: A url pointing at external documentation for the given parameter.</span>
+</span><span data-line="328"><span class="sd">        ge: Constrict value to be greater or equal to a given float or int.</span>
+</span><span data-line="329"><span class="sd">            Equivalent to minimum in the OpenAPI specification.</span>
+</span><span data-line="330"><span class="sd">        gt: Constrict value to be greater than a given float or int.</span>
+</span><span data-line="331"><span class="sd">            Equivalent to exclusiveMinimum in the OpenAPI specification.</span>
+</span><span data-line="332"><span class="sd">        header: The header parameter key - required for header parameters.</span>
+</span><span data-line="333"><span class="sd">        le: Constrict value to be less or equal to a given float or int.</span>
+</span><span data-line="334"><span class="sd">            Equivalent to maximum in the OpenAPI specification.</span>
+</span><span data-line="335"><span class="sd">        lt: Constrict value to be less than a given float or int.</span>
+</span><span data-line="336"><span class="sd">            Equivalent to exclusiveMaximum in the OpenAPI specification.</span>
+</span><span data-line="337"><span class="sd">        max_items: Constrict a set or a list to have a maximum number of items.</span>
+</span><span data-line="338"><span class="sd">            Equivalent to maxItems in the OpenAPI specification.</span>
+</span><span data-line="339"><span class="sd">        max_length: Constrict a string or bytes value to have a maximum length.</span>
+</span><span data-line="340"><span class="sd">            Equivalent to maxLength in the OpenAPI specification.</span>
+</span><span data-line="341"><span class="sd">        min_items: Constrict a set or a list to have a minimum number of items. ֿ</span>
+</span><span data-line="342"><span class="sd">            Equivalent to minItems in the OpenAPI specification.</span>
+</span><span data-line="343"><span class="sd">        min_length: Constrict a string or bytes value to have a minimum length.</span>
+</span><span data-line="344"><span class="sd">            Equivalent to minLength in the OpenAPI specification.</span>
+</span><span data-line="345"><span class="sd">        multiple_of: Constrict value to a multiple of a given float or int.</span>
+</span><span data-line="346"><span class="sd">            Equivalent to multipleOf in the OpenAPI specification.</span>
+</span><span data-line="347"><span class="sd">        pattern: A string representing a regex against which the given string will be matched.</span>
+</span><span data-line="348"><span class="sd">            Equivalent to pattern in the OpenAPI specification.</span>
+</span><span data-line="349"><span class="sd">        query: The query parameter key for this parameter.</span>
+</span><span data-line="350"><span class="sd">        required: A boolean flag dictating whether this parameter is required.</span>
+</span><span data-line="351"><span class="sd">            If set to False, None values will be allowed. Defaults to True.</span>
+</span><span data-line="352"><span class="sd">        title: String value used in the title section of the OpenAPI schema for the given parameter.</span>
+</span><span data-line="353"><span class="sd">        schema_extra: Extensions to the generated schema. If set, will overwrite the matching fields in the generated</span>
+</span><span data-line="354"><span class="sd">            schema.</span>
+</span><span data-line="355">
+</span><span data-line="356"><span class="sd">            .. versionadded:: 2.8.0</span>
+</span><span data-line="357"><span class="sd">        schema_component_key: Use this as the key for the reference when creating a component for this type</span>
+</span><span data-line="358"><span class="sd">            .. versionadded:: 2.12.0</span>
+</span><span data-line="359"><span class="sd">        include_in_schema: A boolean flag dictating whether this parameter should be included in the schema.</span>
+</span><span data-line="360"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="361">    <span class="k">return</span> <span class="n">ParameterKwarg</span><span class="p">(</span>
+</span><span data-line="362">        <span class="n">annotation</span><span class="o">=</span><span class="n">annotation</span><span class="p">,</span>
+</span><span data-line="363">        <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+</span><span data-line="364">        <span class="n">cookie</span><span class="o">=</span><span class="n">cookie</span><span class="p">,</span>
+</span><span data-line="365">        <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
+</span><span data-line="366">        <span class="n">examples</span><span class="o">=</span><span class="n">examples</span><span class="p">,</span>
+</span><span data-line="367">        <span class="n">external_docs</span><span class="o">=</span><span class="n">external_docs</span><span class="p">,</span>
+</span><span data-line="368">        <span class="n">content_encoding</span><span class="o">=</span><span class="n">content_encoding</span><span class="p">,</span>
+</span><span data-line="369">        <span class="n">required</span><span class="o">=</span><span class="n">required</span><span class="p">,</span>
+</span><span data-line="370">        <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
+</span><span data-line="371">        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+</span><span data-line="372">        <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+</span><span data-line="373">        <span class="n">const</span><span class="o">=</span><span class="n">const</span><span class="p">,</span>
+</span><span data-line="374">        <span class="n">gt</span><span class="o">=</span><span class="n">gt</span><span class="p">,</span>
+</span><span data-line="375">        <span class="n">ge</span><span class="o">=</span><span class="n">ge</span><span class="p">,</span>
+</span><span data-line="376">        <span class="n">lt</span><span class="o">=</span><span class="n">lt</span><span class="p">,</span>
+</span><span data-line="377">        <span class="n">le</span><span class="o">=</span><span class="n">le</span><span class="p">,</span>
+</span><span data-line="378">        <span class="n">multiple_of</span><span class="o">=</span><span class="n">multiple_of</span><span class="p">,</span>
+</span><span data-line="379">        <span class="n">min_items</span><span class="o">=</span><span class="n">min_items</span><span class="p">,</span>
+</span><span data-line="380">        <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+</span><span data-line="381">        <span class="n">min_length</span><span class="o">=</span><span class="n">min_length</span><span class="p">,</span>
+</span><span data-line="382">        <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span>
+</span><span data-line="383">        <span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">,</span>
+</span><span data-line="384">        <span class="n">schema_extra</span><span class="o">=</span><span class="n">schema_extra</span><span class="p">,</span>
+</span><span data-line="385">        <span class="n">schema_component_key</span><span class="o">=</span><span class="n">schema_component_key</span><span class="p">,</span>
+</span><span data-line="386">        <span class="n">include_in_schema</span><span class="o">=</span><span class="n">include_in_schema</span><span class="p">,</span>
+</span><span data-line="387">    <span class="p">)</span></div>
 
-</span><span data-line="384">
-</span><span data-line="385">
+</span><span data-line="388">
+</span><span data-line="389">
 <div class="viewcode-block" id="BodyKwarg">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.BodyKwarg">[docs]</a>
-</span><span data-line="386"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="387"><span class="k">class</span><span class="w"> </span><span class="nc">BodyKwarg</span><span class="p">(</span><span class="n">KwargDefinition</span><span class="p">):</span>
-</span><span data-line="388"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Data container representing a request body.&quot;&quot;&quot;</span>
-</span><span data-line="389">
-</span><span data-line="390">    <span class="n">media_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">RequestEncodingType</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">JSON</span><span class="p">)</span>
-</span><span data-line="391"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Media-Type of the body.&quot;&quot;&quot;</span>
-</span><span data-line="392">
-</span><span data-line="393">    <span class="n">multipart_form_part_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="394"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from DoS attacks.&quot;&quot;&quot;</span>
-</span><span data-line="395">
+</span><span data-line="390"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="391"><span class="k">class</span><span class="w"> </span><span class="nc">BodyKwarg</span><span class="p">(</span><span class="n">KwargDefinition</span><span class="p">):</span>
+</span><span data-line="392"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Data container representing a request body.&quot;&quot;&quot;</span>
+</span><span data-line="393">
+</span><span data-line="394">    <span class="n">media_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">RequestEncodingType</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">JSON</span><span class="p">)</span>
+</span><span data-line="395"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Media-Type of the body.&quot;&quot;&quot;</span>
+</span><span data-line="396">
+</span><span data-line="397">    <span class="n">multipart_form_part_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="398"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from DoS attacks.&quot;&quot;&quot;</span>
+</span><span data-line="399">
 <div class="viewcode-block" id="BodyKwarg.__hash__">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.BodyKwarg.__hash__">[docs]</a>
-</span><span data-line="396">    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span data-line="397"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Hash the dataclass in a safe way.</span>
-</span><span data-line="398">
-</span><span data-line="399"><span class="sd">        Returns:</span>
-</span><span data-line="400"><span class="sd">            A hash</span>
-</span><span data-line="401"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="402">        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">))</span></div>
+</span><span data-line="400">    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="401"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Hash the dataclass in a safe way.</span>
+</span><span data-line="402">
+</span><span data-line="403"><span class="sd">        Returns:</span>
+</span><span data-line="404"><span class="sd">            A hash</span>
+</span><span data-line="405"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="406">        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">))</span></div>
 </div>
 
-</span><span data-line="403">
-</span><span data-line="404">
+</span><span data-line="407">
+</span><span data-line="408">
+</span><span data-line="409"><span class="n">JSONBody</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">BodyKwarg</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">JSON</span><span class="p">)]</span>
+</span><span data-line="410"><span class="sd">&quot;&quot;&quot;Declare a &#39;application/json request body&quot;&quot;&quot;</span>
+</span><span data-line="411">
+</span><span data-line="412"><span class="n">MsgPackBody</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">BodyKwarg</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MESSAGEPACK</span><span class="p">)]</span>
+</span><span data-line="413"><span class="sd">&quot;&quot;&quot;Declare a &#39;application/x-msgpack&#39; request body&quot;&quot;&quot;</span>
+</span><span data-line="414">
+</span><span data-line="415"><span class="n">MultipartBody</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">BodyKwarg</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)]</span>
+</span><span data-line="416"><span class="sd">&quot;&quot;&quot;Declare a &#39;multipart/form-data&#39; request body&quot;&quot;&quot;</span>
+</span><span data-line="417">
+</span><span data-line="418"><span class="n">URLEncodedBody</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">BodyKwarg</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">URL_ENCODED</span><span class="p">)]</span>
+</span><span data-line="419"><span class="sd">&quot;&quot;&quot;Declare a &#39;application/x-www-form-urlencoded&#39; request body&quot;&quot;&quot;</span>
+</span><span data-line="420">
+</span><span data-line="421">
 <div class="viewcode-block" id="Body">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.Body">[docs]</a>
-</span><span data-line="405"><span class="k">def</span><span class="w"> </span><span class="nf">Body</span><span class="p">(</span>
-</span><span data-line="406">    <span class="o">*</span><span class="p">,</span>
-</span><span data-line="407">    <span class="n">const</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="408">    <span class="n">content_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="409">    <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
-</span><span data-line="410">    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="411">    <span class="n">examples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="412">    <span class="n">external_docs</span><span class="p">:</span> <span class="n">ExternalDocumentation</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="413">    <span class="n">ge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="414">    <span class="n">gt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="415">    <span class="n">le</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="416">    <span class="n">lt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="417">    <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="418">    <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="419">    <span class="n">media_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">RequestEncodingType</span> <span class="o">=</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
-</span><span data-line="420">    <span class="n">min_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="421">    <span class="n">min_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="422">    <span class="n">multipart_form_part_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="423">    <span class="n">multiple_of</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="424">    <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="425">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="426">    <span class="n">schema_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="427">    <span class="n">schema_component_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="428"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="429"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an extended request body kwarg definition.</span>
-</span><span data-line="430">
-</span><span data-line="431"><span class="sd">    Args:</span>
-</span><span data-line="432"><span class="sd">        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter</span>
-</span><span data-line="433"><span class="sd">            must equal its default value. This also causes the OpenAPI const field to be</span>
-</span><span data-line="434"><span class="sd">            populated with the default value.</span>
-</span><span data-line="435"><span class="sd">        content_encoding: The content encoding of the value. Applicable on to string values.</span>
-</span><span data-line="436"><span class="sd">            See OpenAPI 3.1 for details.</span>
-</span><span data-line="437"><span class="sd">        default: A default value. If const is true, this value is required.</span>
-</span><span data-line="438"><span class="sd">        description: String value used in the description section of the OpenAPI schema for the given parameter.</span>
-</span><span data-line="439"><span class="sd">        examples: A list of Example models.</span>
-</span><span data-line="440"><span class="sd">        external_docs: A url pointing at external documentation for the given parameter.</span>
-</span><span data-line="441"><span class="sd">        ge: Constrict value to be greater or equal to a given float or int.</span>
-</span><span data-line="442"><span class="sd">            Equivalent to minimum in the OpenAPI specification.</span>
-</span><span data-line="443"><span class="sd">        gt: Constrict value to be greater than a given float or int.</span>
-</span><span data-line="444"><span class="sd">            Equivalent to exclusiveMinimum in the OpenAPI specification.</span>
-</span><span data-line="445"><span class="sd">        le: Constrict value to be less or equal to a given float or int.</span>
-</span><span data-line="446"><span class="sd">            Equivalent to maximum in the OpenAPI specification.</span>
-</span><span data-line="447"><span class="sd">        lt: Constrict value to be less than a given float or int.</span>
-</span><span data-line="448"><span class="sd">            Equivalent to exclusiveMaximum in the OpenAPI specification.</span>
-</span><span data-line="449"><span class="sd">        max_items: Constrict a set or a list to have a maximum number of items.</span>
-</span><span data-line="450"><span class="sd">            Equivalent to maxItems in the OpenAPI specification.</span>
-</span><span data-line="451"><span class="sd">        max_length: Constrict a string or bytes value to have a maximum length.</span>
-</span><span data-line="452"><span class="sd">            Equivalent to maxLength in the OpenAPI specification.</span>
-</span><span data-line="453"><span class="sd">        media_type: Defaults to RequestEncodingType.JSON.</span>
-</span><span data-line="454"><span class="sd">        min_items: Constrict a set or a list to have a minimum number of items.</span>
-</span><span data-line="455"><span class="sd">            Equivalent to minItems in the OpenAPI specification.</span>
-</span><span data-line="456"><span class="sd">        min_length: Constrict a string or bytes value to have a minimum length.</span>
-</span><span data-line="457"><span class="sd">            Equivalent to minLength in the OpenAPI specification.</span>
-</span><span data-line="458"><span class="sd">        multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request.</span>
-</span><span data-line="459"><span class="sd">            This limit is intended to protect from DoS attacks.</span>
-</span><span data-line="460"><span class="sd">        multiple_of: Constrict value to a multiple of a given float or int.</span>
-</span><span data-line="461"><span class="sd">            Equivalent to multipleOf in the OpenAPI specification.</span>
-</span><span data-line="462"><span class="sd">        pattern: A string representing a regex against which the given string will be matched.</span>
-</span><span data-line="463"><span class="sd">            Equivalent to pattern in the OpenAPI specification.</span>
-</span><span data-line="464"><span class="sd">        title: String value used in the title section of the OpenAPI schema for the given parameter.</span>
-</span><span data-line="465"><span class="sd">        schema_extra: Extensions to the generated schema. If set, will overwrite the matching fields in the generated</span>
-</span><span data-line="466"><span class="sd">            schema.</span>
-</span><span data-line="467">
-</span><span data-line="468"><span class="sd">            .. versionadded:: 2.8.0</span>
-</span><span data-line="469"><span class="sd">        schema_component_key: Use this as the key for the reference when creating a component for this type</span>
-</span><span data-line="470"><span class="sd">            .. versionadded:: 2.12.0</span>
-</span><span data-line="471"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="472">    <span class="k">return</span> <span class="n">BodyKwarg</span><span class="p">(</span>
-</span><span data-line="473">        <span class="n">media_type</span><span class="o">=</span><span class="n">media_type</span><span class="p">,</span>
-</span><span data-line="474">        <span class="n">examples</span><span class="o">=</span><span class="n">examples</span><span class="p">,</span>
-</span><span data-line="475">        <span class="n">external_docs</span><span class="o">=</span><span class="n">external_docs</span><span class="p">,</span>
-</span><span data-line="476">        <span class="n">content_encoding</span><span class="o">=</span><span class="n">content_encoding</span><span class="p">,</span>
-</span><span data-line="477">        <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
-</span><span data-line="478">        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
-</span><span data-line="479">        <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
-</span><span data-line="480">        <span class="n">const</span><span class="o">=</span><span class="n">const</span><span class="p">,</span>
-</span><span data-line="481">        <span class="n">gt</span><span class="o">=</span><span class="n">gt</span><span class="p">,</span>
-</span><span data-line="482">        <span class="n">ge</span><span class="o">=</span><span class="n">ge</span><span class="p">,</span>
-</span><span data-line="483">        <span class="n">lt</span><span class="o">=</span><span class="n">lt</span><span class="p">,</span>
-</span><span data-line="484">        <span class="n">le</span><span class="o">=</span><span class="n">le</span><span class="p">,</span>
-</span><span data-line="485">        <span class="n">multiple_of</span><span class="o">=</span><span class="n">multiple_of</span><span class="p">,</span>
-</span><span data-line="486">        <span class="n">min_items</span><span class="o">=</span><span class="n">min_items</span><span class="p">,</span>
-</span><span data-line="487">        <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
-</span><span data-line="488">        <span class="n">min_length</span><span class="o">=</span><span class="n">min_length</span><span class="p">,</span>
-</span><span data-line="489">        <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span>
-</span><span data-line="490">        <span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">,</span>
-</span><span data-line="491">        <span class="n">multipart_form_part_limit</span><span class="o">=</span><span class="n">multipart_form_part_limit</span><span class="p">,</span>
-</span><span data-line="492">        <span class="n">schema_extra</span><span class="o">=</span><span class="n">schema_extra</span><span class="p">,</span>
-</span><span data-line="493">        <span class="n">schema_component_key</span><span class="o">=</span><span class="n">schema_component_key</span><span class="p">,</span>
-</span><span data-line="494">    <span class="p">)</span></div>
+</span><span data-line="422"><span class="k">def</span><span class="w"> </span><span class="nf">Body</span><span class="p">(</span>
+</span><span data-line="423">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="424">    <span class="n">const</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="425">    <span class="n">content_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="426">    <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="427">    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="428">    <span class="n">examples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="429">    <span class="n">external_docs</span><span class="p">:</span> <span class="n">ExternalDocumentation</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="430">    <span class="n">ge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="431">    <span class="n">gt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="432">    <span class="n">le</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="433">    <span class="n">lt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="434">    <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="435">    <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="436">    <span class="n">media_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">RequestEncodingType</span> <span class="o">=</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
+</span><span data-line="437">    <span class="n">min_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="438">    <span class="n">min_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="439">    <span class="n">multipart_form_part_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="440">    <span class="n">multiple_of</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="441">    <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="442">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="443">    <span class="n">schema_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="444">    <span class="n">schema_component_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="445"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="446"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an extended request body kwarg definition.</span>
+</span><span data-line="447">
+</span><span data-line="448"><span class="sd">    Args:</span>
+</span><span data-line="449"><span class="sd">        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter</span>
+</span><span data-line="450"><span class="sd">            must equal its default value. This also causes the OpenAPI const field to be</span>
+</span><span data-line="451"><span class="sd">            populated with the default value.</span>
+</span><span data-line="452"><span class="sd">        content_encoding: The content encoding of the value. Applicable on to string values.</span>
+</span><span data-line="453"><span class="sd">            See OpenAPI 3.1 for details.</span>
+</span><span data-line="454"><span class="sd">        default: A default value. If const is true, this value is required.</span>
+</span><span data-line="455"><span class="sd">        description: String value used in the description section of the OpenAPI schema for the given parameter.</span>
+</span><span data-line="456"><span class="sd">        examples: A list of Example models.</span>
+</span><span data-line="457"><span class="sd">        external_docs: A url pointing at external documentation for the given parameter.</span>
+</span><span data-line="458"><span class="sd">        ge: Constrict value to be greater or equal to a given float or int.</span>
+</span><span data-line="459"><span class="sd">            Equivalent to minimum in the OpenAPI specification.</span>
+</span><span data-line="460"><span class="sd">        gt: Constrict value to be greater than a given float or int.</span>
+</span><span data-line="461"><span class="sd">            Equivalent to exclusiveMinimum in the OpenAPI specification.</span>
+</span><span data-line="462"><span class="sd">        le: Constrict value to be less or equal to a given float or int.</span>
+</span><span data-line="463"><span class="sd">            Equivalent to maximum in the OpenAPI specification.</span>
+</span><span data-line="464"><span class="sd">        lt: Constrict value to be less than a given float or int.</span>
+</span><span data-line="465"><span class="sd">            Equivalent to exclusiveMaximum in the OpenAPI specification.</span>
+</span><span data-line="466"><span class="sd">        max_items: Constrict a set or a list to have a maximum number of items.</span>
+</span><span data-line="467"><span class="sd">            Equivalent to maxItems in the OpenAPI specification.</span>
+</span><span data-line="468"><span class="sd">        max_length: Constrict a string or bytes value to have a maximum length.</span>
+</span><span data-line="469"><span class="sd">            Equivalent to maxLength in the OpenAPI specification.</span>
+</span><span data-line="470"><span class="sd">        media_type: Defaults to RequestEncodingType.JSON.</span>
+</span><span data-line="471"><span class="sd">        min_items: Constrict a set or a list to have a minimum number of items.</span>
+</span><span data-line="472"><span class="sd">            Equivalent to minItems in the OpenAPI specification.</span>
+</span><span data-line="473"><span class="sd">        min_length: Constrict a string or bytes value to have a minimum length.</span>
+</span><span data-line="474"><span class="sd">            Equivalent to minLength in the OpenAPI specification.</span>
+</span><span data-line="475"><span class="sd">        multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request.</span>
+</span><span data-line="476"><span class="sd">            This limit is intended to protect from DoS attacks.</span>
+</span><span data-line="477"><span class="sd">        multiple_of: Constrict value to a multiple of a given float or int.</span>
+</span><span data-line="478"><span class="sd">            Equivalent to multipleOf in the OpenAPI specification.</span>
+</span><span data-line="479"><span class="sd">        pattern: A string representing a regex against which the given string will be matched.</span>
+</span><span data-line="480"><span class="sd">            Equivalent to pattern in the OpenAPI specification.</span>
+</span><span data-line="481"><span class="sd">        title: String value used in the title section of the OpenAPI schema for the given parameter.</span>
+</span><span data-line="482"><span class="sd">        schema_extra: Extensions to the generated schema. If set, will overwrite the matching fields in the generated</span>
+</span><span data-line="483"><span class="sd">            schema.</span>
+</span><span data-line="484">
+</span><span data-line="485"><span class="sd">            .. versionadded:: 2.8.0</span>
+</span><span data-line="486"><span class="sd">        schema_component_key: Use this as the key for the reference when creating a component for this type</span>
+</span><span data-line="487"><span class="sd">            .. versionadded:: 2.12.0</span>
+</span><span data-line="488"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="489">    <span class="k">return</span> <span class="n">BodyKwarg</span><span class="p">(</span>
+</span><span data-line="490">        <span class="n">media_type</span><span class="o">=</span><span class="n">media_type</span><span class="p">,</span>
+</span><span data-line="491">        <span class="n">examples</span><span class="o">=</span><span class="n">examples</span><span class="p">,</span>
+</span><span data-line="492">        <span class="n">external_docs</span><span class="o">=</span><span class="n">external_docs</span><span class="p">,</span>
+</span><span data-line="493">        <span class="n">content_encoding</span><span class="o">=</span><span class="n">content_encoding</span><span class="p">,</span>
+</span><span data-line="494">        <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
+</span><span data-line="495">        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+</span><span data-line="496">        <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+</span><span data-line="497">        <span class="n">const</span><span class="o">=</span><span class="n">const</span><span class="p">,</span>
+</span><span data-line="498">        <span class="n">gt</span><span class="o">=</span><span class="n">gt</span><span class="p">,</span>
+</span><span data-line="499">        <span class="n">ge</span><span class="o">=</span><span class="n">ge</span><span class="p">,</span>
+</span><span data-line="500">        <span class="n">lt</span><span class="o">=</span><span class="n">lt</span><span class="p">,</span>
+</span><span data-line="501">        <span class="n">le</span><span class="o">=</span><span class="n">le</span><span class="p">,</span>
+</span><span data-line="502">        <span class="n">multiple_of</span><span class="o">=</span><span class="n">multiple_of</span><span class="p">,</span>
+</span><span data-line="503">        <span class="n">min_items</span><span class="o">=</span><span class="n">min_items</span><span class="p">,</span>
+</span><span data-line="504">        <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+</span><span data-line="505">        <span class="n">min_length</span><span class="o">=</span><span class="n">min_length</span><span class="p">,</span>
+</span><span data-line="506">        <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span>
+</span><span data-line="507">        <span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">,</span>
+</span><span data-line="508">        <span class="n">multipart_form_part_limit</span><span class="o">=</span><span class="n">multipart_form_part_limit</span><span class="p">,</span>
+</span><span data-line="509">        <span class="n">schema_extra</span><span class="o">=</span><span class="n">schema_extra</span><span class="p">,</span>
+</span><span data-line="510">        <span class="n">schema_component_key</span><span class="o">=</span><span class="n">schema_component_key</span><span class="p">,</span>
+</span><span data-line="511">    <span class="p">)</span></div>
 
-</span><span data-line="495">
-</span><span data-line="496">
+</span><span data-line="512">
+</span><span data-line="513">
 <div class="viewcode-block" id="DependencyKwarg">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.DependencyKwarg">[docs]</a>
-</span><span data-line="497"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="498"><span class="k">class</span><span class="w"> </span><span class="nc">DependencyKwarg</span><span class="p">:</span>
-</span><span data-line="499"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Data container representing a dependency.&quot;&quot;&quot;</span>
-</span><span data-line="500">
-</span><span data-line="501">    <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">Empty</span><span class="p">)</span>
-</span><span data-line="502"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A default value.&quot;&quot;&quot;</span>
-</span><span data-line="503">    <span class="n">skip_validation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="504"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Flag dictating whether to skip validation.&quot;&quot;&quot;</span>
-</span><span data-line="505">
+</span><span data-line="514"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="515"><span class="k">class</span><span class="w"> </span><span class="nc">DependencyKwarg</span><span class="p">:</span>
+</span><span data-line="516"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Data container representing a dependency.&quot;&quot;&quot;</span>
+</span><span data-line="517">
+</span><span data-line="518">    <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">Empty</span><span class="p">)</span>
+</span><span data-line="519"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A default value.&quot;&quot;&quot;</span>
+</span><span data-line="520">    <span class="n">skip_validation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="521"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Flag dictating whether to skip validation.&quot;&quot;&quot;</span>
+</span><span data-line="522">
 <div class="viewcode-block" id="DependencyKwarg.__hash__">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.DependencyKwarg.__hash__">[docs]</a>
-</span><span data-line="506">    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span data-line="507"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Hash the dataclass in a safe way.</span>
-</span><span data-line="508">
-</span><span data-line="509"><span class="sd">        Returns:</span>
-</span><span data-line="510"><span class="sd">            A hash</span>
-</span><span data-line="511"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="512">        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">))</span></div>
+</span><span data-line="523">    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="524"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Hash the dataclass in a safe way.</span>
+</span><span data-line="525">
+</span><span data-line="526"><span class="sd">        Returns:</span>
+</span><span data-line="527"><span class="sd">            A hash</span>
+</span><span data-line="528"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="529">        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">))</span></div>
 </div>
 
-</span><span data-line="513">
-</span><span data-line="514">
+</span><span data-line="530">
+</span><span data-line="531">
 <div class="viewcode-block" id="Dependency">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.Dependency">[docs]</a>
-</span><span data-line="515"><span class="k">def</span><span class="w"> </span><span class="nf">Dependency</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">skip_validation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="516"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a dependency kwarg definition.</span>
-</span><span data-line="517">
-</span><span data-line="518"><span class="sd">    Args:</span>
-</span><span data-line="519"><span class="sd">        default: A default value to use in case a dependency is not provided.</span>
-</span><span data-line="520"><span class="sd">        skip_validation: If `True` provided dependency values are not validated by signature model.</span>
-</span><span data-line="521"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="522">    <span class="k">return</span> <span class="n">DependencyKwarg</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="n">skip_validation</span><span class="o">=</span><span class="n">skip_validation</span><span class="p">)</span></div>
+</span><span data-line="532"><span class="k">def</span><span class="w"> </span><span class="nf">Dependency</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">skip_validation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="533"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a dependency kwarg definition.</span>
+</span><span data-line="534">
+</span><span data-line="535"><span class="sd">    Args:</span>
+</span><span data-line="536"><span class="sd">        default: A default value to use in case a dependency is not provided.</span>
+</span><span data-line="537"><span class="sd">        skip_validation: If `True` provided dependency values are not validated by signature model.</span>
+</span><span data-line="538"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="539">    <span class="k">return</span> <span class="n">DependencyKwarg</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="n">skip_validation</span><span class="o">=</span><span class="n">skip_validation</span><span class="p">)</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">
