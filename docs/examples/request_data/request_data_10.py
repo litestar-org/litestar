@@ -1,6 +1,4 @@
-from typing import Any, Dict, List, Tuple
-
-from typing import Annotated, Any
+from typing import Any
 
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile

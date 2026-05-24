@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from msgspec import Struct
 
 from litestar import post

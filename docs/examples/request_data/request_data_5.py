@@ -1,7 +1,4 @@
 from dataclasses import dataclass
-from typing import Dict
-
-from typing import Annotated
 
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile

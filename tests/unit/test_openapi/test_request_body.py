@@ -98,7 +98,7 @@ def test_upload_single_file_schema_generation() -> None:
 
 def test_upload_list_of_files_schema_generation() -> None:
     @post(path="/file-list-upload")
-    async def handle_file_list_upload(data: MultipartBody[List[UploadFile]]) -> None:
+    async def handle_file_list_upload(data: MultipartBody[list[UploadFile]]) -> None:
         return None
 
     app = Litestar([handle_file_list_upload])
@@ -118,7 +118,7 @@ def test_upload_list_of_files_schema_generation() -> None:
 def test_upload_file_dict_schema_generation() -> None:
     @post(path="/file-dict-upload")
     async def handle_file_list_upload(
-        data: MultipartBody[Dict[str, UploadFile]],
+        data: MultipartBody[dict[str, UploadFile]],
     ) -> None:
         return None
 

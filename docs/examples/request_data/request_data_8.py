@@ -1,7 +1,4 @@
 import dataclasses
-from typing import Annotated
-
-from pydantic import BaseModel, ConfigDict
 
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile

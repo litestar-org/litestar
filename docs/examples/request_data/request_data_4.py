@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from typing import Annotated
-
 
 from litestar import Litestar, post
 from litestar.params import URLEncodedBody

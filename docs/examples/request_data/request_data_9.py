@@ -1,7 +1,3 @@
-from typing import Annotated
-
-from typing import Dict
-
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile
 from litestar.params import MultipartBody

@@ -1,7 +1,5 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
-
 from collections import defaultdict
 from dataclasses import asdict, dataclass
 from os import path
@@ -462,7 +460,7 @@ def test_optional_formdata() -> None:
 @pytest.mark.parametrize("limit", (1000, 100, 10))
 def test_multipart_form_part_limit(limit: int) -> None:
     @post("/", signature_types=[UploadFile])
-    async def hello_world(data: MultipartBody[List[UploadFile]]) -> dict:
+    async def hello_world(data: MultipartBody[list[UploadFile]]) -> dict:
         return {"limit": len(data)}
 
     with create_test_client(route_handlers=[hello_world], multipart_form_part_limit=limit) as client:
@@ -484,7 +482,7 @@ def test_multipart_form_part_limit_body_param_precedence() -> None:
     @post("/", signature_types=[UploadFile])
     async def hello_world(
         data: Annotated[
-            List[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART, multipart_form_part_limit=route_limit)
+            list[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART, multipart_form_part_limit=route_limit)
         ],
     ) -> None:
         assert len(data) == route_limit

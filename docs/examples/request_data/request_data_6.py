@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from litestar import Litestar, MediaType, post
 from litestar.datastructures import UploadFile
 from litestar.params import MultipartBody
