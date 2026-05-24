@@ -37,7 +37,7 @@ jobs:
                 core.setFailed(
                     `PR title ${JSON.stringify(title)} is not a valid Conventional Commit.\n\n` +
                     `Expected format: <type>(<optional scope>): <subject>\n` +
-                    `Allowed types: ${types.join(", ")}\n\n` +
+                    `Allowed types: ${types.join(", ")}\n\n`
                 );
                 return;
             }

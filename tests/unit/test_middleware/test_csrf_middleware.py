@@ -8,9 +8,8 @@ from bs4 import BeautifulSoup
 
 from litestar import MediaType, WebSocket, delete, get, patch, post, put, websocket
 from litestar.config.csrf import CSRFConfig
-from litestar.enums import RequestEncodingType
 from litestar.handlers import HTTPRouteHandler
-from litestar.params import Body
+from litestar.params import URLEncodedBody
 from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.plugins.mako import MakoTemplateEngine
 from litestar.response.template import Template
@@ -182,7 +181,7 @@ def test_csrf_form_parsing(engine: Any, template: str, tmp_path: Path) -> None:
         return Template(template_name="abc.html")
 
     @post("/")
-    def form_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def form_handler(data: URLEncodedBody[dict]) -> dict:
         return data
 
     with create_test_client(
@@ -208,7 +207,7 @@ def test_csrf_form_parsing(engine: Any, template: str, tmp_path: Path) -> None:
 
 def test_csrf_middleware_exclude_from_check_via_opts() -> None:
     @post("/", exclude_from_csrf=True)
-    def post_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def post_handler(data: URLEncodedBody[dict]) -> dict:
         return data
 
     with create_test_client(
@@ -223,11 +222,11 @@ def test_csrf_middleware_exclude_from_check_via_opts() -> None:
 
 def test_csrf_middleware_exclude_from_check() -> None:
     @post("/protected-handler")
-    def post_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def post_handler(data: URLEncodedBody[dict]) -> dict:
         return data
 
     @post("/unprotected-handler")
-    def post_handler2(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def post_handler2(data: URLEncodedBody[dict]) -> dict:
         return data
 
     with create_test_client(
@@ -270,11 +269,11 @@ def test_csrf_middleware_exclude_from_set_cookies() -> None:
 
 def test_csrf_middleware_configure_name_for_exclude_from_check_via_opts() -> None:
     @post("/handler", exclude_from_csrf=True)
-    def post_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def post_handler(data: URLEncodedBody[dict]) -> dict:
         return data
 
     @post("/handler2", custom_exclude_from_csrf=True)
-    def post_handler2(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def post_handler2(data: URLEncodedBody[dict]) -> dict:
         return data
 
     with create_test_client(
