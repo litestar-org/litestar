@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import warnings
 from collections import abc
 from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass, is_dataclass
@@ -48,6 +49,7 @@ except ImportError:
 from litestar.exceptions import LitestarDeprecationWarning
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
 from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
