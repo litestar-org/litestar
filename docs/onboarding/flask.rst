@@ -1,5 +1,5 @@
-For Flask users
-===============
+Flask
+=====
 
 Layered configuration
 ---------------------
@@ -11,6 +11,7 @@ OpenAPI configuration and many more can be defined on any layer, and will be mer
 registration.
 
 The layers in hierarchical order are
+
 1. Application (``Litestar``)
 2. ``Router`` / ``Controller`` (these are on the same level and can be arbitrarily nested)
 3. Handler (``BaseRouteHandler``)
@@ -125,9 +126,9 @@ Litestar can also handle synchronous endpoints without blocking, by running them
 thread pool. To enable this, set ``sync_to_thread=True`` on the handler decorator.
 
 .. important::
-    A sync handler ``sync_to_thread`` set emits a runtime warning, since the framework
-    cannot tell whether the function blocks. Pass ``sync_to_thread=False`` to suppress
-    the warning when the body genuinely does not block.
+    A sync handler without ``sync_to_thread`` set emits a runtime warning, since
+    Litestar cannot tell whether the function blocks. Pass ``sync_to_thread=False`` to
+    suppress the warning when the body genuinely does not block.
 
 .. tab-set::
 
@@ -225,7 +226,7 @@ The table maps each ``flask.Request`` attribute to its Litestar counterpart
 +---------------------------------+------------------------------------------------------------------------------------------------------------+
 | ``request.date``                | ``request.headers.get("date")``                                                                            |
 +---------------------------------+------------------------------------------------------------------------------------------------------------+
-| ``request.endpoint``            | ``request.route_handler``                                                                                  |
+| ``request.endpoint``            | ``request.route_handler.name``                                                                             |
 +---------------------------------+------------------------------------------------------------------------------------------------------------+
 | ``request.environ``             | ``request.scope``                                                                                          |
 +---------------------------------+------------------------------------------------------------------------------------------------------------+
@@ -257,7 +258,7 @@ The table maps each ``flask.Request`` attribute to its Litestar counterpart
 +---------------------------------+------------------------------------------------------------------------------------------------------------+
 | ``request.range``               | ``request.headers.get("range")``                                                                           |
 +---------------------------------+------------------------------------------------------------------------------------------------------------+
-| ``request.referrer``            | ``request.headers.get("referrer")``                                                                        |
+| ``request.referer``             | ``request.headers.get("referer")``                                                                         |
 +---------------------------------+------------------------------------------------------------------------------------------------------------+
 | ``request.remote_addr``         | ``request.client.host``  / ``request.client.port``                                                         |
 +---------------------------------+------------------------------------------------------------------------------------------------------------+
@@ -719,7 +720,7 @@ Static files
 ------------
 
 Flask serves files from a folder named ``static`` automatically. Litestar offers an
-equivalent in func:`~litestar.static_files.create_static_files_router`, which can be
+equivalent in :func:`~litestar.static_files.create_static_files_router`, which can be
 registered to serve files from a configured directory:
 
 .. literalinclude:: /examples/migration/flask/static_files.py

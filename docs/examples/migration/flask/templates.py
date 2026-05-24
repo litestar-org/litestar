@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from litestar import Litestar, get
-from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.params import FromPath
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.response import Template
 from litestar.template.config import TemplateConfig
 

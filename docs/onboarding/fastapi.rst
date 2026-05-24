@@ -1,5 +1,5 @@
-For FastAPI and Starlette users
-===============================
+FastAPI
+=======
 
 
 Layered configuration
@@ -12,6 +12,7 @@ lifecycle hooks, OpenAPI configuration and many more can be defined on any layer
 will be merged upon registration.
 
 The layers in hierarchical order are
+
 1. Application (``Litestar``)
 2. ``Router`` / ``Controller`` (these are on the same level and can be arbitrarily nested)
 3. Handler (``BaseRouteHandler``)
@@ -497,10 +498,6 @@ Litestar declares dependencies as a mapping from parameter name to provider, att
 the ``dependencies`` keyword on any layer. Async callables can be used as dependency
 providers natively, sync callables must be wrapped in :class:`~litestar.di.Provide`.
 
-As most configuration in Litestar, dependencies are layered. Inner layers override outer
-ones, so a router-scoped dependency replaces an application-scoped one of the same
-name, and a handler-scoped one replaces both.
-
 .. tab-set::
 
     .. tab-item:: FastAPI
@@ -532,6 +529,13 @@ name, and a handler-scoped one replaces both.
 
         .. literalinclude:: /examples/migration/fastapi/dependency_injection.py
             :language: python
+
+.. note::
+
+    As most configuration in Litestar, dependencies are layered. Inner layers override
+    outer ones, so a router-scoped dependency replaces an application-scoped one of the
+    same name, and a handler-scoped one replaces both.
+
 
 .. seealso::
 
@@ -684,7 +688,7 @@ of ``call_next``).
 
             class ProcessTimeMiddleware(BaseHTTPMiddleware):
                 async def dispatch(self, request, call_next):
-                    start = time.monotonic(
+                    start = time.monotonic()
                     response = await call_next(request)
                     response.headers["x-process-time"] = f"{time.monotonic() - start:.4f}"
                     return response
