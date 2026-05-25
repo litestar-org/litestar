@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Hashable, Sequence, TypeVar
 from typing_extensions import Annotated, TypeAlias
 
 from litestar.enums import ParamType, RequestEncodingType
+from litestar.exceptions import LitestarDeprecationWarning
 from litestar.types import Empty
 
 __all__ = (
@@ -28,8 +29,12 @@ __all__ = (
     "ParameterKwarg",
     "PathParameter",
     "QueryParameter",
+    "SkipValidation",
+    "SkipValidationMarker",
     "URLEncodedBody",
 )
+
+from litestar.utils import deprecated
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.example import Example
@@ -529,7 +534,29 @@ class DependencyKwarg:
         """
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
 
+    def __post_init__(self) -> None:
+        if self.skip_validation:
+            warnings.warn(
+                "Deprecated parameter 'skip_validation'. This will be removed in "
+                "Litestar 3.0. To skip validation of a dependency parameter, annotate "
+                "it as 'SkipValidation[<type>]' instead",
+                category=LitestarDeprecationWarning,
+                stacklevel=2,
+            )
+        else:
+            object.__setattr__(self, "skip_validation", False)
 
+        if self.default is not Empty:
+            warnings.warn(
+                "Deprecated default in 'Dependency' annotation. This will be removed "
+                "in Litestar 3.0. To set a default for a dependency, specify it as a "
+                "function parameter default.",
+                category=LitestarDeprecationWarning,
+                stacklevel=2,
+            )
+
+
+@deprecated("2.23.0", removal_in="3.0", alternative="di.NamedDependency")
 def Dependency(*, default: Any = Empty, skip_validation: bool = False) -> Any:
     """Create a dependency kwarg definition.
 
@@ -538,3 +565,11 @@ def Dependency(*, default: Any = Empty, skip_validation: bool = False) -> Any:
         skip_validation: If `True` provided dependency values are not validated by signature model.
     """
     return DependencyKwarg(default=default, skip_validation=skip_validation)
+
+
+class SkipValidationMarker:
+    pass
+
+
+SkipValidation: TypeAlias = Annotated[T, SkipValidationMarker]
+"""Exclude a dependency from signature validation"""

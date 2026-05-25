@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import DependencyKwarg
+from litestar.params import DependencyKwarg, SkipValidationMarker
 from litestar.types import Empty, TypeDecodersSequence
 
 if TYPE_CHECKING:
@@ -46,6 +46,9 @@ def _normalize_annotation(field_definition: FieldDefinition) -> Any:
         isinstance(field_definition.kwarg_definition, DependencyKwarg)
         and field_definition.kwarg_definition.skip_validation
     ):
+        return Any
+
+    if any(m is SkipValidationMarker for m in field_definition.metadata):
         return Any
 
     return field_definition.annotation

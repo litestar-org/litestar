@@ -1,13 +1,11 @@
 from typing import Any, Dict
 
-from typing_extensions import Annotated
-
 from litestar import Litestar, get
-from litestar.params import Dependency
+from litestar.di import NamedDependency
 
 
-@get("/", sync_to_thread=False)
-def hello_world(optional_dependency: Annotated[int, Dependency()] = 3) -> Dict[str, Any]:
+@get("/")
+async def hello_world(optional_dependency: NamedDependency[int] = 3) -> Dict[str, Any]:
     """Notice we haven't provided the dependency to the route.
 
     This is OK, because of the default value, and now the parameter is excluded from the docs.
