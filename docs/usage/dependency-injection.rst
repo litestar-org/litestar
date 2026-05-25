@@ -372,3 +372,21 @@ Litestar fail at application boot rather than at request time:
    :caption: Dependency not provided error
    :language: python
 
+
+
+Bypassing validation
+~~~~~~~~~~~~~~~~~~~~
+
+By default, injected dependency values are validated by Litestar, for example, this
+application will raise an internal server error:
+
+.. literalinclude:: /examples/dependency_injection/dependency_validation_error.py
+    :caption: Dependency validation error
+    :language: python
+
+
+This validation can be bypassed using the :data:`~litestar.params.SkipValidation` marker:
+
+.. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
+    :caption: Dependency validation error
+    :language: python
