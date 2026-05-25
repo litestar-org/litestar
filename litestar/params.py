@@ -568,8 +568,10 @@ def Dependency(*, default: Any = Empty, skip_validation: bool = False) -> Any:
 
 
 class SkipValidationMarker:
-    pass
+    """Singleton indicating that a type annotated with this as metadata should be
+    treated as 'Any'
+    """
 
 
 SkipValidation: TypeAlias = Annotated[T, SkipValidationMarker]
-"""Exclude a dependency from signature validation"""
+"""Exclude 'T' from validation, effectively treating it as 'Any'"""

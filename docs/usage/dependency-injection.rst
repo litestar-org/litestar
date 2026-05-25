@@ -359,7 +359,7 @@ Early detection if a dependency isn't provided
 ***********************************************
 
 The other side of the same coin is when a dependency isn't provided, and no default is
-specified. Without the :data:`~litestar.di.NamedDependency`marker, the parameter is
+specified. Without the :data:`~litestar.di.NamedDependency` marker, the parameter is
 treated like any other unmarked handler kwarg, i.e. it raises a
 :class:`~.exceptions.LitestarDeprecationWarning` about a missing explicit parameter
 marker, and the route will then fail at request time because no matching query parameter
