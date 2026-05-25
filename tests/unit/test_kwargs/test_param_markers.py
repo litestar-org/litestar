@@ -2,6 +2,7 @@ import dataclasses
 import warnings
 from typing import Any, Dict
 
+import annotated_types
 import pytest
 from typing_extensions import Annotated
 
@@ -295,3 +296,47 @@ def test_deprecated_implicit_style_dependency() -> None:
         LitestarDeprecationWarning, match="path parameter 'path_param' declared using deprecated inferred"
     ):
         Litestar([path_handler])
+
+
+def test_annotated_metadata_does_not_shadow_dependency() -> None:
+    # https://github.com/litestar-org/litestar/issues/4804
+    async def provide_foo() -> str:
+        return "from-dependency"
+
+    @get("/", dependencies={"foo": provide_foo})
+    async def handler(foo: Annotated[str, "arbitrary metadata"]) -> str:
+        return foo
+
+    with create_test_client([handler]) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+        assert res.text == "from-dependency"
+
+
+def test_constraint_metadata_does_not_shadow_dependency() -> None:
+    # https://github.com/litestar-org/litestar/issues/4804
+
+    async def provide_foo() -> int:
+        return 42
+
+    @get("/", dependencies={"foo": provide_foo})
+    async def handler(foo: Annotated[int, annotated_types.Gt(5)]) -> int:
+        return foo
+
+    with create_test_client([handler]) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+        assert res.json() == 42
+
+
+def test_annotated_metadata_does_not_shadow_path_param() -> None:
+    # https://github.com/litestar-org/litestar/issues/4804
+
+    @get("/{foo:int}")
+    async def handler(foo: Annotated[int, "arbitrary metadata"]) -> int:
+        return foo
+
+    with create_test_client([handler]) as client:
+        res = client.get("/7")
+        assert res.status_code == 200
+        assert res.json() == 7
