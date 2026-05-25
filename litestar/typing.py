@@ -519,7 +519,7 @@ class FieldDefinition:
             # if not, create a new KwargDefinition
             else:
                 if (name := kwargs.get("name")) == "data":
-                    model = BodyKwarg
+                    model: type[KwargDefinition] = BodyKwarg
                 elif name is None:
                     model = KwargDefinition
                 else:
