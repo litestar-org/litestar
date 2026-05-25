@@ -494,7 +494,10 @@ class KwargsModel:
                 k
                 for k, f in field_definitions.items()
                 if isinstance(f.kwarg_definition, ParameterKwarg)
-                and (f.kwarg_definition.param_type in (ParamType.HEADER, ParamType.QUERY, ParamType.COOKIE))
+                and (
+                    f.kwarg_definition.param_type in (ParamType.HEADER, ParamType.QUERY, ParamType.COOKIE)
+                    and f.kwarg_definition.name is not None
+                )
             ),
             *list(layered_parameters.keys()),
         }

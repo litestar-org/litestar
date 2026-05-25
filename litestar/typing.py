@@ -518,7 +518,12 @@ class FieldDefinition:
                 )
             # if not, create a new KwargDefinition
             else:
-                model = BodyKwarg if kwargs.get("name") == "data" else ParameterKwarg
+                if (name := kwargs.get("name")) == "data":
+                    model = BodyKwarg
+                elif name is None:
+                    model = KwargDefinition
+                else:
+                    model = ParameterKwarg
                 kwargs["kwarg_definition"] = model(**kwarg_definition_merge_args)
 
         kwargs.setdefault("annotation", unwrapped)
