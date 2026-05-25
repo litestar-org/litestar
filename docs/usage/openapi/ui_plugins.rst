@@ -151,6 +151,56 @@ In the following example, we configure the OpenAPI root path to be ``/docs``:
 This will result in any of the OpenAPI endpoints being served at ``/docs`` instead of ``/schema``, e.g.,
 ``/docs/openapi.json``.
 
+Serving the OpenAPI schema as a downloadable file
+-------------------------------------------------
+
+In addition to the UI rendered at the OpenAPI root path, Litestar can also serve the raw OpenAPI schema document at
+predictable URLs underneath that root path. These endpoints are what tools like Scalar API Client, Postman, Insomnia,
+and CI validators consume when they import or validate an API contract.
+
+Default endpoints
+~~~~~~~~~~~~~~~~~
+
+With the default ``OpenAPIConfig`` (no custom ``render_plugins``), Litestar serves:
+
+- ``/<openapi_path>/`` — the configured UI (Scalar by default)
+- ``/<openapi_path>/openapi.json`` — the schema as JSON, always available
+
+The JSON endpoint is registered automatically even when ``render_plugins`` does not include
+:class:`JsonRenderPlugin <litestar.openapi.plugins.JsonRenderPlugin>`, because UI plugins need a JSON document to point
+at. With the default ``path``, the JSON file lives at ``/schema/openapi.json``.
+
+Enabling YAML output
+~~~~~~~~~~~~~~~~~~~~
+
+YAML is not served by default. To expose ``/schema/openapi.yaml`` and ``/schema/openapi.yml``, add
+:class:`YamlRenderPlugin <litestar.openapi.plugins.YamlRenderPlugin>` to ``render_plugins``:
+
+.. code-block:: python
+
+   from litestar import Litestar
+   from litestar.openapi import OpenAPIConfig
+   from litestar.openapi.plugins import ScalarRenderPlugin, YamlRenderPlugin
+
+   app = Litestar(
+       route_handlers=[...],
+       openapi_config=OpenAPIConfig(
+           title="My API",
+           version="1.0.0",
+           render_plugins=[ScalarRenderPlugin(), YamlRenderPlugin()],
+       ),
+   )
+
+The YAML plugin requires the ``PyYAML`` library, which can be installed via the ``litestar[yaml]`` package extra.
+
+Importing the schema into other tools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For tools that consume an OpenAPI document by URL (Scalar API Client's collection import, Postman, Insomnia, Bruno,
+``openapi-typescript``, ``oasdiff``, and similar), point them at the JSON or YAML endpoint described above. With the
+default configuration this is ``/schema/openapi.json``. If you customized the root path to ``/docs``, the file is at
+``/docs/openapi.json``.
+
 Building your own OpenAPI UI Plugin
 -----------------------------------
 
