@@ -15,4 +15,4 @@ async def hello_world(injected: SkipValidation[int]) -> Dict[str, Any]:
     return {"hello": injected}
 
 
-app = Litestar(route_handlers=[hello_world])
+app = Litestar(route_handlers=[hello_world], debug=True)

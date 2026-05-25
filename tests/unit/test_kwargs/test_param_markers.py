@@ -7,6 +7,7 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar import Litestar, get
+from litestar.di import NamedDependency
 from litestar.enums import ParamType
 from litestar.exceptions.base_exceptions import LitestarDeprecationWarning
 from litestar.openapi.spec import Parameter as OpenAPIParameter
@@ -351,3 +352,18 @@ def test_deprecated_dependency_marker() -> None:
             pass
 
         Litestar([handler])
+
+
+def test_named_dependency_explicit_marker() -> None:
+
+    @get("/")
+    async def handler(foo: NamedDependency[int] = 1) -> int:
+        return foo
+
+    with create_test_client([handler]) as client:
+        # uses parameter default
+        assert client.get("/").json() == 1
+
+        # isn't implicitly treated as a query parameter
+        schema = client.get("/schema/openapi.json").json()
+        assert schema["paths"]["/"]["get"].get("parameters") is None

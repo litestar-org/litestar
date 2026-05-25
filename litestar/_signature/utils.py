@@ -31,7 +31,7 @@ def _validate_signature_dependencies(
     dependency_names: set[str] = set(dependency_name_set)
 
     for parameter in parsed_signature.parameters.values():
-        if isinstance(parameter.kwarg_definition, DependencyKwarg) and parameter.name not in dependency_name_set:
+        if parameter.is_di_field and parameter.name not in dependency_name_set:
             if not parameter.is_optional and parameter.default is Empty:
                 raise ImproperlyConfiguredException(
                     f"Explicit dependency '{parameter.name}' for '{fn_name}' has no default value, "
