@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from litestar import Litestar, get
 from litestar.dto import DataclassDTO, DTOConfig
+from litestar.params import FromPath
 
 
 @dataclass
@@ -26,7 +27,7 @@ class ReadDTO(DataclassDTO[Person]):
 
 
 @get("/person/{name:str}", return_dto=ReadDTO, sync_to_thread=False)
-def get_person(name: str) -> Person:
+def get_person(name: FromPath[str]) -> Person:
     # Your logic to retrieve the person goes here
     # For demonstration purposes, a placeholder Person instance is returned
     address = Address(street="123 Main St", city="Cityville", country="Countryland")

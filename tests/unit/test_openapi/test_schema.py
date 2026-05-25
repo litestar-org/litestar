@@ -39,7 +39,16 @@ from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
-from litestar.params import KwargDefinition, Parameter, ParameterKwarg
+from litestar.params import (
+    FromPath,
+    FromQuery,
+    HeaderParameter,
+    KwargDefinition,
+    Parameter,
+    ParameterKwarg,
+    PathParameter,
+    QueryParameter,
+)
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
@@ -153,13 +162,15 @@ def test_override_schema_component_key_raise_if_keys_are_not_unique() -> None:
 
 
 def test_dependency_schema_generation() -> None:
-    async def top_dependency(query_param: int) -> int:
+    async def top_dependency(query_param: FromQuery[int]) -> int:
         return query_param
 
-    async def mid_level_dependency(header_param: str = Parameter(header="header_param", required=False)) -> int:
+    async def mid_level_dependency(
+        header_param: Annotated[str, HeaderParameter(name="header_param", required=False)],
+    ) -> int:
         return 5
 
-    async def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
+    async def local_dependency(path_param: FromPath[int], mid_level: int, top_level: int) -> int:
         return path_param + mid_level + top_level
 
     class MyController(Controller):
@@ -173,7 +184,7 @@ def test_dependency_schema_generation() -> None:
             },
             media_type=MediaType.TEXT,
         )
-        def test_function(self, summed: int, handler_param: int) -> str:
+        def test_function(self, summed: int, handler_param: FromQuery[int]) -> str:
             return str(summed)
 
     with create_test_client(
@@ -690,11 +701,11 @@ def test_default_not_provided_for_kwarg_but_for_field() -> None:
 def test_routes_with_different_path_param_types_get_merged() -> None:
     # https://github.com/litestar-org/litestar/issues/2700
     @get("/{param:int}")
-    async def get_handler(param: int) -> None:
+    async def get_handler(param: FromPath[int]) -> None:
         pass
 
     @post("/{param:str}")
-    async def post_handler(param: str) -> None:
+    async def post_handler(param: FromPath[str]) -> None:
         pass
 
     app = Litestar([get_handler, post_handler])
@@ -708,10 +719,10 @@ def test_unconsumed_path_parameters_are_documented() -> None:
     # https://github.com/litestar-org/litestar/issues/3290
     # https://github.com/litestar-org/litestar/issues/3369
 
-    async def dd(param3: Annotated[str, Parameter(description="123")]) -> str:
+    async def dd(param3: Annotated[str, PathParameter(description="123")]) -> str:
         return param3
 
-    async def d(dep_dep: str, param2: Annotated[str, Parameter(description="abc")]) -> str:
+    async def d(dep_dep: str, param2: Annotated[str, PathParameter(description="abc")]) -> str:
         return f"{dep_dep}_{param2}"
 
     @get("/{param1:str}/{param2:str}/{param3:str}", dependencies={"dep": d, "dep_dep": dd})
@@ -731,7 +742,7 @@ def test_unconsumed_path_parameters_are_documented() -> None:
 
 def test_type_alias_type() -> None:
     @get("/")
-    def handler(query_param: Annotated[TypeAliasType("IntAlias", int), Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
+    def handler(query_param: Annotated[TypeAliasType("IntAlias", int), QueryParameter(description="foo")]) -> None:  # type: ignore[valid-type]
         pass
 
     app = Litestar([handler])
@@ -748,7 +759,7 @@ def test_type_alias_type_keyword() -> None:
     annotation = ctx["IntAlias"]
 
     @get("/")
-    def handler(query_param: Annotated[annotation, Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
+    def handler(query_param: Annotated[annotation, QueryParameter(description="foo")]) -> None:  # type: ignore[valid-type]
         pass
 
     app = Litestar([handler])

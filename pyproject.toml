@@ -17,11 +17,10 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Natural Language :: English",
   "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python",
   "Topic :: Internet :: WWW/HTTP",
   "Topic :: Software Development :: Libraries",
@@ -90,7 +89,7 @@ piccolo = ["piccolo", "litestar-piccolo"]
 polyfactory = ["polyfactory>=2.6.3"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic>=2", "email-validator", "pydantic-extra-types"]
-redis = ["redis[hiredis]>=4.4.4,<5.3"]  # 5.3.0 introduced some issues with the channels plugin; need to investigate
+redis = ["redis[hiredis]>=4.4.4,!=5.3.*"]  # 5.3.0 introduced some issues with the channels plugin; need to investigate
 sqlalchemy = ["advanced-alchemy>=1.1.0"]
 standard = [
   "jinja2",
@@ -153,7 +152,7 @@ dev = [
 ]
 
 docs = [
-  "sphinx>=7.1.2,<9",  # docs need some fixing for 9
+  "sphinx>=7.1.2,<10",  # 9.x signature parser regression filtered via nitpick_ignore_regex in docs/conf.py; see https://github.com/sphinx-doc/sphinx/issues/14089
   "sphinx-autobuild>=2021.3.14",
   "sphinx-copybutton>=0.5.2",
   "sphinx-toolbox>=3.5.0",
@@ -226,7 +225,9 @@ filterwarnings = [
   "ignore::DeprecationWarning:google.iam",
   "ignore::DeprecationWarning:google",
   "ignore::DeprecationWarning:sphinxcontrib",
-  "ignore::DeprecationWarning:litestar.*",
+  "ignore:.*'copy_scope' not set:DeprecationWarning",
+  "ignore:.*Deprecated in litestar:DeprecationWarning",
+  "ignore:.*Call to deprecated reset:DeprecationWarning", # redis
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
   # this is coming from rich_click itself, nothing we can do about that for now:
   "ignore: 'RichMultiCommand':DeprecationWarning::",

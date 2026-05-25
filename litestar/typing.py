@@ -9,7 +9,18 @@ from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass, is_dataclass, replace
 from enum import Enum
 from inspect import Parameter, Signature
+from typing import Annotated as te_Annotated
 from typing import Any, AnyStr, ForwardRef, Literal, TypeVar, cast
+
+from litestar.enums import RequestEncodingType
+
+try:
+    from typing import Annotated  # pyright: ignore
+
+    _ANNOTATED_TYPE_FORMS = (Annotated, te_Annotated)
+except ImportError:
+    _ANNOTATED_TYPE_FORMS = (te_Annotated,)  # type: ignore[assignment]
+
 
 from litestar.types import Empty
 
@@ -35,7 +46,7 @@ try:
 except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
-from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
+from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning, LitestarWarning
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
@@ -225,6 +236,15 @@ class FieldDefinition:
         return isinstance(self.kwarg_definition, ParameterKwarg)
 
     @property
+    def is_non_marker_parameter_field(self) -> bool:
+        """Check if the field type is a ParameterKwarg that's not a marker only.
+
+        A marker is considered an instance of 'ParameterKwarg' without any constraints
+        applied, usually produced by 'FromQuery[]', 'FromPath[]', etc.
+        """
+        return isinstance(self.kwarg_definition, ParameterKwarg) and not self.kwarg_definition.is_marker
+
+    @property
     def is_const(self) -> bool:
         """Check if the field is defined as constant value."""
         return bool(self.kwarg_definition and getattr(self.kwarg_definition, "const", False))
@@ -246,7 +266,7 @@ class FieldDefinition:
     @property
     def is_annotated(self) -> bool:
         """Check if the field type is Annotated."""
-        return bool(self.metadata)
+        return any(a in self.type_wrappers for a in _ANNOTATED_TYPE_FORMS)  # type: ignore[comparison-overlap]
 
     @property
     def is_literal(self) -> bool:
@@ -406,7 +426,7 @@ class FieldDefinition:
         return get_type_hints(self.annotation, include_extras=include_extras)
 
     @classmethod
-    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
+    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:  # noqa: C901
         """Initialize FieldDefinition.
 
         Args:
@@ -426,7 +446,27 @@ class FieldDefinition:
 
         if not kwargs.get("kwarg_definition"):
             if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
-                kwargs["kwarg_definition"] = kwargs.pop("default")
+                kwarg_definition = kwargs["kwarg_definition"] = kwargs.pop("default")
+                if isinstance(kwarg_definition, BodyKwarg):
+                    can_use_marker = (
+                        not kwarg_definition.is_constrained and kwarg_definition.multipart_form_part_limit is None
+                    )
+                    if can_use_marker:
+                        alternative = {
+                            RequestEncodingType.JSON: "JSONBody[<type>]",
+                            RequestEncodingType.MESSAGEPACK: "MsgPackBody[<type>]",
+                            RequestEncodingType.MULTI_PART: "MultiPartBody[<type>]",
+                            RequestEncodingType.URL_ENCODED: "URLEncodedBBody[<type>]",
+                        }[RequestEncodingType(kwarg_definition.media_type)]
+                    else:
+                        alternative = "Annotated[<type>, Body(...)]"
+                    warnings.warn(
+                        "Deprecated use of 'Body()' as a default value. This will be removed"
+                        f"in Litestar 3.0. Use 'data: {alternative}' instead of "
+                        "'data: <type> = Body(...)'",
+                        stacklevel=2,
+                        category=LitestarDeprecationWarning,
+                    )
             elif kwarg_definition := next(
                 (v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))), None
             ):
@@ -471,7 +511,12 @@ class FieldDefinition:
                 )
             # if not, create a new KwargDefinition
             else:
-                model = BodyKwarg if kwargs.get("name") == "data" else ParameterKwarg
+                if (name := kwargs.get("name")) == "data":
+                    model: type[KwargDefinition] = BodyKwarg
+                elif name is None:
+                    model = KwargDefinition
+                else:
+                    model = ParameterKwarg
                 kwargs["kwarg_definition"] = model(**kwarg_definition_merge_args)
 
         kwargs.setdefault("annotation", unwrapped)
@@ -555,12 +600,17 @@ class FieldDefinition:
                 f"'{parameter.name}' does not have a type annotation. If it should receive any value, use 'Any'."
             ) from e
 
-        if parameter.name == "state" and not issubclass(annotation, ImmutableState):
-            raise ImproperlyConfiguredException(
-                f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. "
-                "It must be typed to a subclass of `litestar.datastructures.ImmutableState` or "
-                "`litestar.datastructures.State`."
+        if parameter.name == "state":
+            # Unwrap Annotated[...] so we can validate the underlying type
+            bare_annotation = (
+                getattr(annotation, "__origin__", annotation) if hasattr(annotation, "__metadata__") else annotation
             )
+            if not isinstance(bare_annotation, type) or not issubclass(bare_annotation, ImmutableState):
+                raise ImproperlyConfiguredException(
+                    f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. "
+                    "It must be typed to a subclass of `litestar.datastructures.ImmutableState` or "
+                    "`litestar.datastructures.State`."
+                )
 
         return FieldDefinition.from_kwarg(
             annotation=annotation,

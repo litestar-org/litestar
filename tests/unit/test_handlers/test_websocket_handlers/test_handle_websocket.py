@@ -4,6 +4,7 @@ import pytest
 
 from litestar import Controller, Router, WebSocket, websocket
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import FromQuery
 from litestar.testing import create_test_client
 
 
@@ -31,10 +32,10 @@ def test_websocket_signature_namespace() -> None:
         async def simple_websocket_handler(
             self,
             socket: WebSocket,
-            a: "a",  # type:ignore[name-defined]  # noqa: F821
-            b: "b",  # type:ignore[name-defined]  # noqa: F821
-            c: "c",  # type:ignore[name-defined]  # noqa: F821
-            d: "d",  # type:ignore[name-defined]  # noqa: F821
+            a: "FromQuery[a]",  # type:ignore[name-defined]  # noqa: F821
+            b: "FromQuery[b]",  # type:ignore[name-defined]  # noqa: F821
+            c: "FromQuery[c]",  # type:ignore[name-defined]  # noqa: F821
+            d: "FromQuery[d]",  # type:ignore[name-defined]  # noqa: F821
         ) -> None:
             await socket.accept()
             data = await socket.receive_json()

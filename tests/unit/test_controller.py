@@ -17,6 +17,7 @@ from litestar import (
 )
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import FromPath
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.testing import create_test_client
 from litestar.types import HTTPHandlerDecorator
@@ -107,7 +108,7 @@ def test_controller_validation() -> None:
 def test_controller_subclassing() -> None:
     class BaseController(Controller):
         @get("/{id:int}")
-        async def test_get(self, id: int) -> str:
+        async def test_get(self, id: FromPath[int]) -> str:
             return f"{self.__class__.__name__} {id}"
 
     class FooController(BaseController):

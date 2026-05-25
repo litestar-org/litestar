@@ -9,7 +9,7 @@ import pytest
 from litestar import get, post
 from litestar.enums import RequestEncodingType
 from litestar.openapi.spec import Schema
-from litestar.params import Body, Parameter
+from litestar.params import Body, CookieParameter, FromPath, FromQuery, HeaderParameter, QueryParameter
 from litestar.plugins.pydantic import PydanticDTO, PydanticInitPlugin, PydanticPlugin
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -58,7 +58,7 @@ def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
 
 def test_default_error_handling() -> None:
     @post("/{param:int}")
-    def my_route_handler(param: int, data: PydanticPerson) -> None: ...
+    def my_route_handler(param: FromPath[int], data: PydanticPerson) -> None: ...
 
     with create_test_client(my_route_handler) as client:
         response = client.post("/123", json={"first_name": "moishe"})
@@ -111,10 +111,10 @@ def test_signature_model_invalid_input(base_model: BaseModelType, pydantic_versi
     @post("/")
     def test(
         data: Parent,
-        int_param: int,
-        length_param: str = Parameter(min_length=2),
-        int_header: int = Parameter(header="X-SOME-INT"),
-        int_cookie: int = Parameter(cookie="int-cookie"),
+        int_param: FromQuery[int],
+        length_param: Annotated[str, QueryParameter(min_length=2)],
+        int_header: Annotated[int, HeaderParameter(name="X-SOME-INT")],
+        int_cookie: Annotated[int, CookieParameter(name="int-cookie")],
     ) -> None: ...
 
     with create_test_client(route_handlers=[test], signature_types=[Parent]) as client:

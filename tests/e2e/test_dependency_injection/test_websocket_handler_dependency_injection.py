@@ -8,6 +8,7 @@ from litestar.connection import WebSocket
 from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.exceptions import WebSocketDisconnect
+from litestar.params import FromPath, FromQuery
 from litestar.testing import create_test_client
 
 
@@ -31,12 +32,12 @@ async def controller_second_dependency(socket: WebSocket[Any, Any, Any]) -> dict
     return {}
 
 
-def local_method_first_dependency(query_param: int) -> int:
+def local_method_first_dependency(query_param: FromQuery[int]) -> int:
     assert isinstance(query_param, int)
     return query_param
 
 
-def local_method_second_dependency(path_param: str) -> str:
+def local_method_second_dependency(path_param: FromPath[str]) -> str:
     assert isinstance(path_param, str)
     return path_param
 
@@ -120,11 +121,17 @@ def test_dependency_isolation() -> None:
         path = "/second"
 
         @websocket()
-        async def test_method(self, socket: WebSocket[Any, Any, Any], _: dict[Any, Any]) -> None:
+        async def test_method(self, socket: WebSocket[Any, Any, Any], _: FromQuery[dict[Any, Any]]) -> None:
             await socket.accept()
 
     with (
-        create_test_client([FirstController, SecondController]) as client,
+        create_test_client(
+            [FirstController, SecondController],
+            dependencies={
+                "second": Provide(router_first_dependency, sync_to_thread=False),
+                "third": Provide(router_second_dependency),
+            },
+        ) as client,
         pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)),
         client.websocket_connect("/second/abcdef?query_param=12345") as ws,
     ):

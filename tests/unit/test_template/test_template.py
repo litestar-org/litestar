@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING
 import pytest
 
 from litestar import Litestar, MediaType, get
-from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.contrib.mako import MakoTemplateEngine
-from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.plugins.jinja import JinjaTemplateEngine
+from litestar.plugins.mako import MakoTemplateEngine
+from litestar.plugins.minijinja import MiniJinjaTemplateEngine
 from litestar.response.template import Template
 from litestar.template import TemplateEngineProtocol
 from litestar.template.config import TemplateConfig
@@ -155,6 +155,7 @@ test_cases = [
     {"name": "none", "template_name": None, "template_str": None, "status_code": 500},
     {"name": "name_only", "template_name": "dummy.html", "template_str": None, "status_code": 200},
     {"name": "str_only", "template_name": None, "template_str": "Dummy", "status_code": 200},
+    {"name": "str_empty", "template_name": None, "template_str": "", "status_code": 200},
 ]
 
 
@@ -184,7 +185,7 @@ def test_template_scenarios(tmp_path: Path, engine: TemplateEngineProtocol, test
             assert response.status_code == test_case["status_code"]
 
             if test_case["status_code"] == 200:
-                if test_case["template_str"]:
+                if test_case["template_str"] is not None:
                     assert response.text == test_case["template_str"]
                 else:
                     assert response.text == "Test content for template"

@@ -1,28 +1,43 @@
 from __future__ import annotations
 
+import warnings
 from collections.abc import Hashable, Sequence
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, TypeVar
 
-from litestar.enums import RequestEncodingType
+from litestar.enums import ParamType, RequestEncodingType
 from litestar.types import Empty
 
 __all__ = (
     "Body",
     "BodyKwarg",
+    "CookieParameter",
     "Dependency",
     "DependencyKwarg",
+    "FromCookie",
+    "FromHeader",
+    "FromPath",
+    "FromQuery",
+    "HeaderParameter",
+    "JSONBody",
     "KwargDefinition",
+    "MsgPackBody",
+    "MultipartBody",
     "Parameter",
     "ParameterKwarg",
+    "PathParameter",
+    "QueryParameter",
+    "URLEncodedBody",
 )
-
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.example import Example
     from litestar.openapi.spec.external_documentation import (
         ExternalDocumentation,
     )
+
+
+T = TypeVar("T")
 
 
 @dataclass(frozen=True)
@@ -158,19 +173,31 @@ class KwargDefinition:
 class ParameterKwarg(KwargDefinition):
     """Data container representing a parameter."""
 
+    param_type: ClassVar[ParamType] = ParamType.QUERY
+    """Type of the parameter"""
+
+    name: str | None = None
+    """
+    Name of the parameter. If 'None', and used in a function annotation, the name
+    will be inferred from the annotated parameter's name.
+    """
     annotation: Any = field(default=Empty)
     """The field value - `Empty` by default."""
     header: str | None = field(default=None)
-    """The header parameter key - required for header parameters."""
+    """The header name - required for header parameters."""
     cookie: str | None = field(default=None)
-    """The cookie parameter key - required for cookie parameters."""
+    """The cookie name - required for cookie parameters."""
     query: str | None = field(default=None)
-    """The query parameter key for this parameter."""
+    """The query parameter name - required for query parameters"""
     required: bool | None = field(default=None)
     """A boolean flag dictating whether this parameter is required.
 
     If set to False, None values will be allowed. Defaults to True.
     """
+
+    @property
+    def is_marker(self) -> bool:
+        return not self.is_constrained and not self.name and self.required is None
 
     def __hash__(self) -> int:  # pragma: no cover
         """Hash the dataclass in a safe way.
@@ -179,6 +206,81 @@ class ParameterKwarg(KwargDefinition):
             A hash
         """
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
+
+    def __post_init__(self) -> None:
+        if (header := self.header) is not None:
+            warnings.warn(
+                f"Deprecated 'header' parameter: Parameter(header={header!r}). Use 'HeaderParameter(name={header!r})' instead",
+                stacklevel=2,
+                category=DeprecationWarning,
+            )
+            object.__setattr__(self, "name", header)
+            object.__setattr__(self, "param_type", ParamType.HEADER)
+        if (cookie := self.cookie) is not None:
+            warnings.warn(
+                f"Deprecated 'cookie' parameter: Parameter(cookie={cookie!r}). Use 'CookieParameter(name={cookie!r})' instead",
+                stacklevel=2,
+                category=DeprecationWarning,
+            )
+            object.__setattr__(self, "name", cookie)
+            object.__setattr__(self, "param_type", ParamType.COOKIE)
+        if (query := self.query) is not None:
+            warnings.warn(
+                f"Deprecated 'query' parameter: Parameter(query={query!r}). Use 'QueryParameter(name={query!r})' instead",
+                stacklevel=2,
+                category=DeprecationWarning,
+            )
+            object.__setattr__(self, "name", query)
+            object.__setattr__(self, "param_type", ParamType.QUERY)
+
+
+class QueryParameter(ParameterKwarg):
+    """Describes a query parameter.
+
+    In the OpenAPI, this maps to a parameter ``in: query``.
+    """
+
+    param_type = ParamType.QUERY
+
+
+class HeaderParameter(ParameterKwarg):
+    """Describes a header parameter.
+
+    In the OpenAPI, this maps to a parameter ``in: header``.
+    """
+
+    param_type = ParamType.HEADER
+
+
+class CookieParameter(ParameterKwarg):
+    """Describes a cookie parameter.
+
+    In the OpenAPI, this maps to a parameter ``in: cookie``.
+    """
+
+    param_type = ParamType.COOKIE
+
+
+class PathParameter(ParameterKwarg):
+    """Describes a path parameter.
+
+    In the OpenAPI, this maps to a parameter ``in: path``.
+    """
+
+    param_type = ParamType.PATH
+
+
+FromQuery: TypeAlias = Annotated[T, QueryParameter()]
+"""Declare a query parameter"""
+
+FromHeader: TypeAlias = Annotated[T, HeaderParameter()]
+"""Declare a header parameter"""
+
+FromCookie: TypeAlias = Annotated[T, CookieParameter()]
+"""Declare a cookie parameter"""
+
+FromPath: TypeAlias = Annotated[T, PathParameter()]
+"""Declare a path parameter"""
 
 
 def Parameter(
@@ -302,6 +404,19 @@ class BodyKwarg(KwargDefinition):
             A hash
         """
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
+
+
+JSONBody: TypeAlias = Annotated[T, BodyKwarg(media_type=RequestEncodingType.JSON)]
+"""Declare a 'application/json request body"""
+
+MsgPackBody: TypeAlias = Annotated[T, BodyKwarg(media_type=RequestEncodingType.MESSAGEPACK)]
+"""Declare a 'application/x-msgpack' request body"""
+
+MultipartBody: TypeAlias = Annotated[T, BodyKwarg(media_type=RequestEncodingType.MULTI_PART)]
+"""Declare a 'multipart/form-data' request body"""
+
+URLEncodedBody: TypeAlias = Annotated[T, BodyKwarg(media_type=RequestEncodingType.URL_ENCODED)]
+"""Declare a 'application/x-www-form-urlencoded' request body"""
 
 
 def Body(
