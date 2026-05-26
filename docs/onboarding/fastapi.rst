@@ -73,7 +73,7 @@ decorators, or a method on a :class:`Controller`) and then registered on a
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/routing.py
+        .. literalinclude:: /examples/onboarding/fastapi/routing.py
             :language: python
 
 .. seealso::
@@ -126,7 +126,7 @@ Litestar uses the async context manager pattern as Starlette/FastAPI:
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/lifespan.py
+        .. literalinclude:: /examples/onboarding/fastapi/lifespan.py
             :language: python
 
 
@@ -153,7 +153,7 @@ Per-request data lives on ``request.state`` instead, and is wiped between reques
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/state.py
+        .. literalinclude:: /examples/onboarding/fastapi/state.py
             :language: python
 
 
@@ -183,7 +183,7 @@ must be marked with :data:`~litestar.params.FromPath` and
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/parameters.py
+        .. literalinclude:: /examples/onboarding/fastapi/parameters.py
             :language: python
 
 
@@ -208,7 +208,7 @@ To define constraints or extend the OpenAPI schema for parameters, use their
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/parameters_constrained.py
+        .. literalinclude:: /examples/onboarding/fastapi/parameters_constrained.py
             :language: python
 
 See :doc:`/usage/routing/parameters` for more details.
@@ -243,7 +243,7 @@ the function parameter name.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/header_cookie_params.py
+        .. literalinclude:: /examples/onboarding/fastapi/header_cookie_params.py
             :language: python
 
 
@@ -274,7 +274,7 @@ Litestar natively supports builtin types, dataclasses, Pydantic models, msgspec
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/post_json.py
+        .. literalinclude:: /examples/onboarding/fastapi/post_json.py
             :language: python
 
 
@@ -307,7 +307,7 @@ One ``data`` declaration replaces FastAPI's per-field ``Form()`` calls.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/form_data.py
+        .. literalinclude:: /examples/onboarding/fastapi/form_data.py
             :language: python
 
 
@@ -337,7 +337,7 @@ model type with ``UploadData``.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/uploads.py
+        .. literalinclude:: /examples/onboarding/fastapi/uploads.py
             :language: python
 
 
@@ -365,7 +365,7 @@ inside a thread pool, set ``sync_to_thread=False``.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/sync_handler.py
+        .. literalinclude:: /examples/onboarding/fastapi/sync_handler.py
             :language: python
 
 
@@ -406,7 +406,7 @@ and ``headers=`` when the values depend on the request.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/cookies.py
+        .. literalinclude:: /examples/onboarding/fastapi/cookies.py
             :language: python
 
 .. seealso::
@@ -451,7 +451,7 @@ through :class:`~litestar.template.config.TemplateConfig`, and each handler retu
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/templates.py
+        .. literalinclude:: /examples/onboarding/fastapi/templates.py
             :language: python
 
 .. seealso::
@@ -485,7 +485,7 @@ Both wrap a sync or async iterator.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/streaming.py
+        .. literalinclude:: /examples/onboarding/fastapi/streaming.py
             :language: python
 
 
@@ -527,7 +527,7 @@ providers natively, sync callables must be wrapped in :class:`~litestar.di.Provi
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/dependency_injection.py
+        .. literalinclude:: /examples/onboarding/fastapi/dependency_injection.py
             :language: python
 
 .. note::
@@ -587,7 +587,7 @@ appended to ``detail``, which is rendered in the JSON response.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/exceptions.py
+        .. literalinclude:: /examples/onboarding/fastapi/exceptions.py
             :language: python
 
 
@@ -617,7 +617,7 @@ accepts a mapping from exception class or status code to a handler callable.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/custom_exception_handler.py
+        .. literalinclude:: /examples/onboarding/fastapi/custom_exception_handler.py
             :language: python
 
 .. seealso::
@@ -659,7 +659,7 @@ work in Litestar, but the more idiomatic choice is a guard or a custom
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/authentication.py
+        .. literalinclude:: /examples/onboarding/fastapi/authentication.py
             :language: python
 
 .. seealso::
@@ -698,7 +698,7 @@ of ``call_next``).
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/middleware.py
+        .. literalinclude:: /examples/onboarding/fastapi/middleware.py
             :language: python
 
 .. seealso::
@@ -731,7 +731,7 @@ the response. These tasks run after the response body has been sent.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/background_tasks.py
+        .. literalinclude:: /examples/onboarding/fastapi/background_tasks.py
             :language: python
 
 
@@ -770,7 +770,7 @@ Litestar offers three handler styles for the three patterns that recur in WebSoc
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/websockets.py
+        .. literalinclude:: /examples/onboarding/fastapi/websockets.py
             :language: python
 
 For broadcast and pub/sub patterns, pair these handlers with the
@@ -809,7 +809,7 @@ arguments as :class:`Litestar` and return a configured client.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/test_handler.py
+        .. literalinclude:: /examples/onboarding/fastapi/test_handler.py
             :language: python
 
 .. seealso::
@@ -845,7 +845,7 @@ etc.) sits on the handler decorator in both frameworks. Application-wide options
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/fastapi/openapi.py
+        .. literalinclude:: /examples/onboarding/fastapi/openapi.py
             :language: python
 
 .. seealso::

@@ -49,7 +49,7 @@ an application, router or controller:
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/routing.py
+        .. literalinclude:: /examples/onboarding/flask/routing.py
             :language: python
 
 :class:`Routers <litestar.router.Router>` and
@@ -102,7 +102,7 @@ parameter matching the function parameter name, but you can also specify an alia
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/path_parameters.py
+        .. literalinclude:: /examples/onboarding/flask/path_parameters.py
             :language: python
 
 .. seealso::
@@ -165,7 +165,7 @@ Litestar accepts one or more async context managers through
 :paramref:`~litestar.app.Litestar.lifespan`; setup goes before the ``yield``, teardown
 after.
 
-.. literalinclude:: /examples/migration/flask/lifespan.py
+.. literalinclude:: /examples/onboarding/flask/lifespan.py
     :language: python
 
 
@@ -194,7 +194,7 @@ as :class:`~litestar.connection.Request`.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/request_object.py
+        .. literalinclude:: /examples/onboarding/flask/request_object.py
             :language: python
 
 
@@ -305,7 +305,7 @@ Litestar uses ``request.state``, a mutable mapping attached to the request.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/request_state.py
+        .. literalinclude:: /examples/onboarding/flask/request_state.py
             :language: python
 
 
@@ -344,7 +344,7 @@ them), with ``media_type`` set to
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/file_uploads.py
+        .. literalinclude:: /examples/onboarding/flask/file_uploads.py
             :language: python
 
 
@@ -380,7 +380,7 @@ Litestar picks the status code from the HTTP method by default: ``POST`` default
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/status_codes.py
+        .. literalinclude:: /examples/onboarding/flask/status_codes.py
             :language: python
 
 
@@ -413,7 +413,7 @@ and ``headers=`` when the values depend on the request.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/cookies_and_headers.py
+        .. literalinclude:: /examples/onboarding/flask/cookies_and_headers.py
             :language: python
 
 .. seealso::
@@ -458,7 +458,7 @@ defaults.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/serialization.py
+        .. literalinclude:: /examples/onboarding/flask/serialization.py
             :language: python
 
 
@@ -489,7 +489,7 @@ handler decorator, the equivalent of Flask's view-function name.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/url_for.py
+        .. literalinclude:: /examples/onboarding/flask/url_for.py
             :language: python
 
 
@@ -521,7 +521,7 @@ value.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/templates.py
+        .. literalinclude:: /examples/onboarding/flask/templates.py
             :language: python
 
 .. seealso::
@@ -557,7 +557,7 @@ can return a :class:`~litestar.response.Stream` built from a sync or async itera
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/streaming.py
+        .. literalinclude:: /examples/onboarding/flask/streaming.py
             :language: python
 
 
@@ -585,7 +585,7 @@ Flask aborts with ``abort(code, description)``. Litestar raises an
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/http_errors.py
+        .. literalinclude:: /examples/onboarding/flask/http_errors.py
             :language: python
 
 .. seealso::
@@ -622,7 +622,7 @@ an exception class or status code to a handler callable.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/exception_handlers.py
+        .. literalinclude:: /examples/onboarding/flask/exception_handlers.py
             :language: python
 
 .. seealso::
@@ -665,7 +665,7 @@ layer.
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/before_after_hooks.py
+        .. literalinclude:: /examples/onboarding/flask/before_after_hooks.py
             :language: python
 
 .. seealso::
@@ -708,7 +708,7 @@ stores encrypted data in the cookie itself (closest to Flask's default).
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/sessions.py
+        .. literalinclude:: /examples/onboarding/flask/sessions.py
             :language: python
 
 .. seealso::
@@ -723,7 +723,7 @@ Flask serves files from a folder named ``static`` automatically. Litestar offers
 equivalent in :func:`~litestar.static_files.create_static_files_router`, which can be
 registered to serve files from a configured directory:
 
-.. literalinclude:: /examples/migration/flask/static_files.py
+.. literalinclude:: /examples/onboarding/flask/static_files.py
     :language: python
 
 .. seealso::
@@ -746,7 +746,7 @@ native WebSocket support, coming in three different shapes:
   are pushed to the WebSocket;  the framework handles accept, the receive loop, and
   serialisation.
 
-.. literalinclude:: /examples/migration/flask/websockets.py
+.. literalinclude:: /examples/onboarding/flask/websockets.py
     :language: python
 
 For broadcast and pub/sub patterns, pair these handlers with the
@@ -783,7 +783,7 @@ options as :class:`~litestar.app.Litestar`).
     .. tab-item:: Litestar
         :sync: litestar
 
-        .. literalinclude:: /examples/migration/flask/test_handler.py
+        .. literalinclude:: /examples/onboarding/flask/test_handler.py
             :language: python
 
 .. seealso::
