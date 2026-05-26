@@ -57,6 +57,16 @@
         - Replace ``foo: Annotated[int, Dependency(skip_validation=True)`` with
           ``foo: NamedDependency[SkipValidation[int]]``
 
+    .. change:: Remove deprecated ``litestar.contrib`` namespace
+        :type: feature
+        :breaking:
+        :issue: 4301
+
+        Remove the deprecated ``litestar.contrib`` namespace after its submodules
+        were moved or removed. Code still using imports from this namespace
+        should switch to the corresponding ``litestar.plugins`` modules or the
+        documented replacement packages.
+
     .. change:: Fix OpenAPI schema incorrectly marking nullable required fields as not required
         :type: bugfix
         :pr: 4687
