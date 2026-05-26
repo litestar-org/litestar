@@ -443,7 +443,7 @@ class FieldDefinition:
         return get_type_hints(self.annotation, include_extras=include_extras)
 
     @classmethod
-    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
+    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:  # noqa: C901
         """Initialize FieldDefinition.
 
         Args:

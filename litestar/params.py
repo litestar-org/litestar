@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from collections.abc import Hashable, Sequence
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, TypeVar
