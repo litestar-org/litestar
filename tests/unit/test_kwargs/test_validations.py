@@ -1,4 +1,5 @@
 from typing import Any, Callable, Dict
+from unittest.mock import MagicMock
 
 import pytest
 from typing_extensions import Annotated
@@ -10,11 +11,14 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import (
     BodyKwarg,
     CookieParameter,
+    FromQuery,
     HeaderParameter,
     MultipartBody,
     QueryParameter,
+    SkipValidation,
     URLEncodedBody,
 )
+from litestar.testing import create_test_client
 
 _PARAM_TYPES = {"query": QueryParameter, "header": HeaderParameter, "cookie": CookieParameter}
 
@@ -126,3 +130,34 @@ def test_dependency_data_kwarg_validation_failure_scenarios(body_annotation: Bod
 
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[handler])
+
+
+def test_skip_validation() -> None:
+    mock = MagicMock()
+
+    @get("/")
+    def handler(foo: SkipValidation[FromQuery[int]]) -> None:
+        mock(foo)
+        return
+
+    with create_test_client([handler]) as client:
+        client.get("/?foo=1")
+
+    mock.assert_called_once_with("1")
+
+
+def test_skip_validation_dependency() -> None:
+    mock = MagicMock()
+
+    async def provide_foo() -> str:
+        return "1"
+
+    @get("/", dependencies={"foo": provide_foo})
+    def handler(foo: SkipValidation[int]) -> None:
+        mock(foo)
+        return
+
+    with create_test_client([handler]) as client:
+        client.get("/")
+
+    mock.assert_called_once_with("1")

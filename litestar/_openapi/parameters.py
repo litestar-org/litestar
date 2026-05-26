@@ -9,7 +9,7 @@ from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.parameter import Parameter
 from litestar.openapi.spec.schema import Schema
-from litestar.params import DependencyKwarg, ParameterKwarg
+from litestar.params import ParameterKwarg
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
@@ -188,7 +188,7 @@ class ParameterFactory:
 
         for field_name, field_definition in unique_handler_fields:
             kwarg_definition = field_definition.kwarg_definition
-            if isinstance(kwarg_definition, DependencyKwarg) and field_name not in self.dependency_providers:
+            if field_definition.is_di_field and field_name not in self.dependency_providers:
                 # never document explicit dependencies
                 continue
 

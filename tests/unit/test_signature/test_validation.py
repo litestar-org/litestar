@@ -7,7 +7,7 @@ from typing_extensions import Annotated, TypedDict
 
 from litestar import get, post
 from litestar._signature import SignatureModel
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.params import CookieParameter, Dependency, FromQuery, HeaderParameter, PathParameter, QueryParameter
@@ -99,7 +99,7 @@ def test_client_backend_error_precedence_over_server_error() -> None:
     }
 
     @get("/")
-    def test(dep: int, param: FromQuery[int], optional_dep: Optional[int] = Dependency()) -> None: ...
+    def test(dep: int, param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]) -> None: ...
 
     with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
         response = client.get("/?param=thirteen")

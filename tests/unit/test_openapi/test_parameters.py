@@ -10,7 +10,7 @@ from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.parameters import ParameterFactory
 from litestar._openapi.schema_generation.examples import ExampleFactory
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
@@ -206,12 +206,26 @@ def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> Non
         app.openapi_schema
 
 
-def test_dependency_params_in_docs_if_dependency_provided() -> None:
+def test_dependency_params_in_docs_if_dependency_provided_deprecated() -> None:
     async def produce_dep(param: FromQuery[str]) -> int:
         return 13
 
     @get(dependencies={"dep": Provide(produce_dep)})
     def handler(dep: Optional[int] = Dependency()) -> None:
+        return None
+
+    app = Litestar(route_handlers=[handler])
+    param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore[index, redundant-cast, union-attr]
+    assert "dep" not in param_name_set
+    assert "param" in param_name_set
+
+
+def test_dependency_params_in_docs_if_dependency_provided() -> None:
+    async def produce_dep(param: FromQuery[str]) -> int:
+        return 13
+
+    @get(dependencies={"dep": Provide(produce_dep)})
+    def handler(dep: NamedDependency[Optional[int]]) -> None:
         return None
 
     app = Litestar(route_handlers=[handler])

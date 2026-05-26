@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import DependencyKwarg
+from litestar.params import DependencyKwarg, SkipValidationMarker
 from litestar.types import Empty, TypeDecodersSequence
 
 if TYPE_CHECKING:
@@ -31,7 +31,7 @@ def _validate_signature_dependencies(
     dependency_names: set[str] = set(dependency_name_set)
 
     for parameter in parsed_signature.parameters.values():
-        if isinstance(parameter.kwarg_definition, DependencyKwarg) and parameter.name not in dependency_name_set:
+        if parameter.is_di_field and parameter.name not in dependency_name_set:
             if not parameter.is_optional and parameter.default is Empty:
                 raise ImproperlyConfiguredException(
                     f"Explicit dependency '{parameter.name}' for '{fn_name}' has no default value, "
@@ -46,6 +46,9 @@ def _normalize_annotation(field_definition: FieldDefinition) -> Any:
         isinstance(field_definition.kwarg_definition, DependencyKwarg)
         and field_definition.kwarg_definition.skip_validation
     ):
+        return Any
+
+    if field_definition.has_metadata(SkipValidationMarker):
         return Any
 
     return field_definition.annotation

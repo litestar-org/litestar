@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, NamedTuple
 
 from litestar.enums import ParamType
-from litestar.params import DependencyKwarg, ParameterKwarg
+from litestar.params import ParameterKwarg
 
 if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
@@ -59,7 +59,7 @@ def create_parameter_definition(
         field_alias = (kwarg_definition.name or field_name) if kwarg_definition is not None else field_name
         param_type = ParamType.PATH
 
-    if isinstance(field_definition.kwarg_definition, DependencyKwarg):
+    if field_definition.is_di_field:
         param_type = ParamType.DEPENDENCY
         if field_definition.is_annotated:
             legacy_style = None

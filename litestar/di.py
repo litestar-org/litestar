@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction, ismethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, TypeVar
+
+from typing_extensions import Annotated
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
@@ -18,7 +20,28 @@ if TYPE_CHECKING:
     from litestar.types import AnyCallable
     from litestar.utils.signature import ParsedSignature
 
-__all__ = ("Provide",)
+__all__ = (
+    "NamedDependency",
+    "Provide",
+)
+
+
+T = TypeVar("T")
+
+
+class Dependency:
+    def __init__(self, kind: Literal["named"] = "named") -> None:
+        # currently only 'named' kind is supported, and this value isn't used. 3.0 will
+        # introduce the 'type' kind
+        self.kind = kind
+
+
+NamedDependency = Annotated[T, Dependency(kind="named")]
+"""
+Mark a parameter for name-based dependency injection.
+
+The name of the function parameter will be used as the name for the dependency to inject.
+"""
 
 
 class Provide:
