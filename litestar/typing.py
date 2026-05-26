@@ -12,6 +12,7 @@ from inspect import Parameter, Signature
 from typing import Annotated as te_Annotated
 from typing import Any, AnyStr, ForwardRef, Literal, TypeVar, cast
 
+from litestar import di
 from litestar.enums import RequestEncodingType
 
 try:
@@ -172,6 +173,18 @@ class FieldDefinition:
 
     def __hash__(self) -> int:
         return hash((self.name, self.raw, self.annotation, self.origin, self.inner_types))
+
+    def get_from_metadata(self, type_: type[T]) -> T | None:
+        """Return the next instance of ``type_`` in the field's metadata"""
+        return next((m for m in self.metadata if isinstance(m, type_)), None)
+
+    def has_metadata(self, type_: Any) -> bool:
+        """Whether the field has any ``type_`` in its metadata"""
+        return self.get_from_metadata(type_) is not None
+
+    @property
+    def is_di_field(self) -> bool:
+        return self.has_metadata(di.Dependency) or isinstance(self.kwarg_definition, DependencyKwarg)
 
     @property
     def has_default(self) -> bool:

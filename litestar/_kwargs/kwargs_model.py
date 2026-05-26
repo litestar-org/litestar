@@ -8,7 +8,7 @@ from anyio import create_task_group
 
 from litestar._kwargs.cleanup import DependencyCleanupGroup
 from litestar._kwargs.dependencies import (
-    Dependency,
+    DependencyContainer,
     create_dependency_batches,
     resolve_dependency,
 )
@@ -89,7 +89,7 @@ class KwargsModel:
         *,
         expected_cookie_params: set[ParameterDefinition],
         expected_data_dto: type[AbstractDTO] | None,
-        expected_dependencies: set[Dependency],
+        expected_dependencies: set[DependencyContainer],
         expected_form_data: tuple[RequestEncodingType | str, FieldDefinition] | None,
         expected_header_params: set[ParameterDefinition],
         expected_msgpack_data: FieldDefinition | None,
@@ -203,7 +203,7 @@ class KwargsModel:
         layered_parameters: dict[str, FieldDefinition],
         dependencies: dict[str, Provide],
         field_definitions: dict[str, FieldDefinition],
-    ) -> tuple[set[ParameterDefinition], set[Dependency]]:
+    ) -> tuple[set[ParameterDefinition], set[DependencyContainer]]:
         """Get parameter_definitions for the construction of KwargsModel instance.
 
         Args:
@@ -445,13 +445,13 @@ class KwargsModel:
         return cleanup_group
 
     @classmethod
-    def _create_dependency_graph(cls, key: str, dependencies: dict[str, Provide]) -> Dependency:
+    def _create_dependency_graph(cls, key: str, dependencies: dict[str, Provide]) -> DependencyContainer:
         """Create a graph like structure of dependencies, with each dependency including its own dependencies as a
         list.
         """
         provide = dependencies[key]
         sub_dependency_keys = [k for k in provide.signature_model._fields if k in dependencies]
-        return Dependency(
+        return DependencyContainer(
             key=key,
             provide=provide,
             dependencies=[cls._create_dependency_graph(key=k, dependencies=dependencies) for k in sub_dependency_keys],

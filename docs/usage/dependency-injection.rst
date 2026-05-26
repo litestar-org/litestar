@@ -297,7 +297,8 @@ it in ``Provide``:
 Dependencies within dependencies
 --------------------------------
 
-You can inject dependencies into other dependencies - exactly like you would into regular functions.
+You can inject dependencies into other dependencies, exactly like you would into handler
+functions:
 
 .. code-block:: python
 
@@ -306,24 +307,24 @@ You can inject dependencies into other dependencies - exactly like you would int
    from random import randint
 
 
-   def first_dependency() -> int:
+   async def first_dependency() -> int:
        return randint(1, 10)
 
 
-   def second_dependency(injected_integer: int) -> bool:
+   async def second_dependency(injected_integer: int) -> bool:
        return injected_integer % 2 == 0
 
 
    @get("/true-or-false")
    def true_or_false_handler(injected_bool: bool) -> str:
-       return "its true!" if injected_bool else "nope, its false..."
+       return "it's true!" if injected_bool else "nope, it's false..."
 
 
    app = Litestar(
        route_handlers=[true_or_false_handler],
        dependencies={
-           "injected_integer": Provide(first_dependency),
-           "injected_bool": Provide(second_dependency),
+           "injected_integer": first_dependency,
+           "injected_bool": second_dependency,
        },
    )
 
@@ -332,37 +333,16 @@ You can inject dependencies into other dependencies - exactly like you would int
    The rules for `dependency overrides`_ apply here as well.
 
 
-The ``Dependency`` function
-----------------------------
+Explicitly marking dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Dependency validation
-~~~~~~~~~~~~~~~~~~~~~
+Normally, dependencies are inferred. That means, Litestar will try to match a dependency
+provider to a function parameter. However, this process can also be made explicit by
+using the :data:`~litestar.di.NamedDependency` generic.
 
-By default, injected dependency values are validated by Litestar, for example, this application will raise an
-internal server error:
-
-.. literalinclude:: /examples/dependency_injection/dependency_validation_error.py
-    :caption: Dependency validation error
-    :language: python
-
-
-Dependency validation can be toggled using the :class:`Dependency <litestar.params.Dependency>` function.
-
-.. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
-    :caption: Dependency validation error
-    :language: python
-
-
-This may be useful for reasons of efficiency, or if pydantic cannot validate a certain type, but use with caution!
-
-Dependency function as a marker
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The :class:`Dependency <litestar.params.Dependency>` function can also be used as a marker that gives us a bit more detail
-about your application.
 
 Exclude dependencies with default values from OpenAPI docs
-***********************************************************
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Depending on your application design, it is possible to have a dependency declared in a handler or
 :class:`Provide <.di.Provide>` function that has a default value. If the dependency isn't provided for the route, the
@@ -376,18 +356,37 @@ By declaring the parameter to be a dependency, Litestar knows to exclude it from
 
 
 Early detection if a dependency isn't provided
-***********************************************
+++++++++++++++++++++++++++++++++++++++++++++++
 
 The other side of the same coin is when a dependency isn't provided, and no default is
-specified. Without the :class:`~.params.Dependency` marker, the parameter is treated
-like any other unmarked handler kwarg, i.e. it raises a
+specified. Without the :data:`~litestar.di.NamedDependency` marker, the parameter is
+treated like any other unmarked handler kwarg, i.e. it raises a
 :class:`~.exceptions.LitestarDeprecationWarning` about a missing explicit parameter
 marker, and the route will then fail at request time because no matching query parameter
 was supplied.
 
-Adding :class:`~.params.Dependency` makes the contract explicit and lets Litestar fail
-at application boot rather than at request time:
+Adding :data:`~litestar.di.NamedDependency` makes the contract explicit and lets
+Litestar fail at application boot rather than at request time:
 
 .. literalinclude:: /examples/dependency_injection/dependency_non_optional_not_provided.py
    :caption: Dependency not provided error
    :language: python
+
+
+
+Bypassing validation
+--------------------
+
+By default, injected dependency values are validated by Litestar, for example, this
+application will raise an internal server error:
+
+.. literalinclude:: /examples/dependency_injection/dependency_validation_error.py
+    :caption: Dependency validation error
+    :language: python
+
+
+This validation can be bypassed using the :data:`~litestar.params.SkipValidation` marker:
+
+.. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
+    :caption: Bypassing dependency validation
+    :language: python
