@@ -334,7 +334,7 @@ functions:
 
 
 Explicitly marking dependencies
--------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Normally, dependencies are inferred. That means, Litestar will try to match a dependency
 provider to a function parameter. However, this process can also be made explicit by
@@ -342,7 +342,7 @@ using the :data:`~litestar.di.NamedDependency` generic.
 
 
 Exclude dependencies with default values from OpenAPI docs
-***********************************************************
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Depending on your application design, it is possible to have a dependency declared in a handler or
 :class:`Provide <.di.Provide>` function that has a default value. If the dependency isn't provided for the route, the
@@ -356,7 +356,7 @@ By declaring the parameter to be a dependency, Litestar knows to exclude it from
 
 
 Early detection if a dependency isn't provided
-***********************************************
+++++++++++++++++++++++++++++++++++++++++++++++
 
 The other side of the same coin is when a dependency isn't provided, and no default is
 specified. Without the :data:`~litestar.di.NamedDependency` marker, the parameter is
@@ -375,7 +375,7 @@ Litestar fail at application boot rather than at request time:
 
 
 Bypassing validation
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 By default, injected dependency values are validated by Litestar, for example, this
 application will raise an internal server error:
