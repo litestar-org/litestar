@@ -1,8 +1,7 @@
-from typing import Annotated, Any
+from typing import Any
 
 from litestar import Litestar, get
-from litestar.di import Provide
-from litestar.params import Dependency
+from litestar.params import SkipValidation
 
 
 async def provide_str() -> str:
@@ -10,8 +9,8 @@ async def provide_str() -> str:
     return "whoops"
 
 
-@get("/", dependencies={"injected": Provide(provide_str)}, sync_to_thread=False)
-def hello_world(injected: Annotated[int, Dependency(skip_validation=True)]) -> dict[str, Any]:
+@get("/", dependencies={"injected": provide_str})
+async def hello_world(injected: SkipValidation[int]) -> dict[str, Any]:
     """Handler expects an `int`, but we've provided a `str`."""
     return {"hello": injected}
 

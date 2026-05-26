@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-__all__ = ("Dependency", "create_dependency_batches", "map_dependencies_recursively", "resolve_dependency")
+__all__ = ("DependencyContainer", "create_dependency_batches", "map_dependencies_recursively", "resolve_dependency")
 
 
 if TYPE_CHECKING:
@@ -11,12 +11,12 @@ if TYPE_CHECKING:
     from litestar.di import Provide
 
 
-class Dependency:
+class DependencyContainer:
     """Dependency graph of a given combination of ``Route`` + ``RouteHandler``"""
 
     __slots__ = ("dependencies", "key", "provide")
 
-    def __init__(self, key: str, provide: Provide, dependencies: list[Dependency]) -> None:
+    def __init__(self, key: str, provide: Provide, dependencies: list[DependencyContainer]) -> None:
         """Initialize a dependency.
 
         Args:
@@ -37,7 +37,7 @@ class Dependency:
 
 
 async def resolve_dependency(
-    dependency: Dependency,
+    dependency: DependencyContainer,
     connection: ASGIConnection,
     kwargs: dict[str, Any],
     cleanup_group: DependencyCleanupGroup,
@@ -72,7 +72,7 @@ async def resolve_dependency(
     kwargs[dependency.key] = value
 
 
-def create_dependency_batches(expected_dependencies: set[Dependency]) -> list[set[Dependency]]:
+def create_dependency_batches(expected_dependencies: set[DependencyContainer]) -> list[set[DependencyContainer]]:
     """Calculate batches for all dependencies, recursively.
 
     Args:
@@ -81,7 +81,7 @@ def create_dependency_batches(expected_dependencies: set[Dependency]) -> list[se
     Returns:
         A list of batches.
     """
-    dependencies_to: dict[Dependency, set[Dependency]] = {}
+    dependencies_to: dict[DependencyContainer, set[DependencyContainer]] = {}
     for dependency in expected_dependencies:
         if dependency not in dependencies_to:
             map_dependencies_recursively(dependency, dependencies_to)
@@ -104,7 +104,9 @@ def create_dependency_batches(expected_dependencies: set[Dependency]) -> list[se
     return batches
 
 
-def map_dependencies_recursively(dependency: Dependency, dependencies_to: dict[Dependency, set[Dependency]]) -> None:
+def map_dependencies_recursively(
+    dependency: DependencyContainer, dependencies_to: dict[DependencyContainer, set[DependencyContainer]]
+) -> None:
     """Recursively map dependencies to their sub dependencies.
 
     Args:

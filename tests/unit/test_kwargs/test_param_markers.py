@@ -7,11 +7,13 @@ import annotated_types
 import pytest
 
 from litestar import Litestar, get
+from litestar.di import NamedDependency
 from litestar.enums import ParamType
 from litestar.exceptions.base_exceptions import LitestarDeprecationWarning
 from litestar.openapi.spec import Parameter as OpenAPIParameter
 from litestar.params import (
     CookieParameter,
+    Dependency,
     FromCookie,
     FromHeader,
     FromPath,
@@ -340,3 +342,28 @@ def test_annotated_metadata_does_not_shadow_path_param() -> None:
         res = client.get("/7")
         assert res.status_code == 200
         assert res.json() == 7
+
+
+def test_deprecated_dependency_marker() -> None:
+    with pytest.warns(LitestarDeprecationWarning, match="Call to deprecated function 'Dependency'"):
+
+        @get("/")
+        async def handler(foo: Annotated[int, Dependency()] = 1) -> None:
+            pass
+
+        Litestar([handler])
+
+
+def test_named_dependency_explicit_marker() -> None:
+
+    @get("/")
+    async def handler(foo: NamedDependency[int] = 1) -> int:
+        return foo
+
+    with create_test_client([handler]) as client:
+        # uses parameter default
+        assert client.get("/").json() == 1
+
+        # isn't implicitly treated as a query parameter
+        schema = client.get("/schema/openapi.json").json()
+        assert schema["paths"]["/"]["get"].get("parameters") is None
