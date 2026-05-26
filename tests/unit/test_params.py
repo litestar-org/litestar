@@ -95,50 +95,34 @@ def test_parsing_of_dependency_as_default() -> None:
         assert response.text == "null"
 
 
-@pytest.mark.parametrize(
-    "dependency_default, expected",
-    [
-        (..., None),
-        (None, None),
-        (13, 13),
-    ],
-)
-def test_dependency_defaults_deprecated(dependency_default: Any, expected: Optional[int]) -> None:
+@pytest.mark.parametrize("dependency_default", [None, 13])
+def test_dependency_defaults_deprecated(dependency_default: Any) -> None:
     with pytest.warns(LitestarDeprecationWarning):
         dependency = Dependency(default=dependency_default) if dependency_default is not ... else Dependency()
 
     @get("/")
-    def handler(
-        value_1: Optional[int] = Dependency(default=default), value_2: Annotated[Optional[int], Dependency()] = default
-    ) -> dict[str, Optional[int]]:
-        return {"value_1": value_1, "value_2": value_2}
-
-    with create_test_client(route_handlers=[handler]) as client:
-        resp = client.get("/")
-        assert resp.json() == {"value_1": default, "value_2": default}
-
-
-@pytest.mark.parametrize(
-    "dependency_default, expected",
-    [
-        (..., None),
-        (None, None),
-        (13, 13),
-    ],
-)
-def test_dependency_defaults(dependency_default: Any, expected: Optional[int]) -> None:
-    @get("/")
-    def handler(value: Optional[int] = dependency_default) -> Dict[str, Optional[int]]:
+    def handler(value: Optional[int] = dependency) -> dict[str, Optional[int]]:
         return {"value": value}
 
     with create_test_client(route_handlers=[handler]) as client:
         resp = client.get("/")
-        assert resp.json() == {"value": expected}
+        assert resp.json() == {"value": dependency_default}
+
+
+@pytest.mark.parametrize("dependency_default", [None, 13])
+def test_dependency_defaults(dependency_default: Any) -> None:
+    @get("/")
+    def handler(value: Optional[int] = dependency_default) -> dict[str, Optional[int]]:
+        return {"value": value}
+
+    with create_test_client(route_handlers=[handler]) as client:
+        resp = client.get("/")
+        assert resp.json() == {"value": dependency_default}
 
 
 def test_dependency_non_optional_with_default_deprecated() -> None:
     @get("/")
-    def handler(value: int = Dependency(default=13)) -> Dict[str, int]:
+    def handler(value: int = Dependency(default=13)) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -168,7 +152,7 @@ def test_dependency_no_default_deprecated() -> None:
 
 def test_dependency_no_default() -> None:
     @get(dependencies={"value": Provide(lambda: 13, sync_to_thread=False)})
-    def test(value: int) -> Dict[str, int]:
+    def test(value: int) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(route_handlers=[test]) as client:
@@ -205,11 +189,11 @@ def test_dependency_provided_on_controller() -> None:
 
 def test_dependency_skip_validation_deprecated() -> None:
     @get("/validated")
-    def validated(value: NamedDependency[int]) -> Dict[str, int]:
+    def validated(value: NamedDependency[int]) -> dict[str, int]:
         return {"value": value}
 
     @get("/skipped")
-    def skipped(value: Annotated[int, Dependency(skip_validation=True)]) -> Dict[str, int]:
+    def skipped(value: Annotated[int, Dependency(skip_validation=True)]) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(

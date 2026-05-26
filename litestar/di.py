@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction, ismethod
-from typing import TYPE_CHECKING, Any, Literal, TypeVar
-
-from typing_extensions import Annotated
+from typing import TYPE_CHECKING, Annotated, Any, Literal, TypeVar
 
 from litestar._signature import SignatureModel
 from litestar.exceptions import ImproperlyConfiguredException

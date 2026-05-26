@@ -12,7 +12,6 @@ from inspect import Parameter, Signature
 from typing import Annotated as te_Annotated
 from typing import Any, AnyStr, ForwardRef, Literal, TypeVar, cast
 
-from litestar import di
 from litestar.enums import RequestEncodingType
 
 try:
@@ -184,7 +183,9 @@ class FieldDefinition:
 
     @property
     def is_di_field(self) -> bool:
-        return self.has_metadata(di.Dependency) or isinstance(self.kwarg_definition, DependencyKwarg)
+        from litestar.di import Dependency
+
+        return self.has_metadata(Dependency) or isinstance(self.kwarg_definition, DependencyKwarg)
 
     @property
     def has_default(self) -> bool:

@@ -2,7 +2,6 @@
 
 from collections.abc import Callable
 from typing import Annotated, Any
-from typing import Any, Callable, Dict
 from unittest.mock import MagicMock
 
 import pytest

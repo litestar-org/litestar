@@ -1,5 +1,3 @@
-from typing import Annotated, Any
-
 from typing import Any
 
 from litestar import Litestar, get
