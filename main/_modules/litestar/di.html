@@ -507,7 +507,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">isasyncgenfunction</span><span class="p">,</span> <span class="n">isclass</span><span class="p">,</span> <span class="n">isfunction</span><span class="p">,</span> <span class="n">isgeneratorfunction</span><span class="p">,</span> <span class="n">ismethod</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">TypeVar</span>
 </span><span data-line="7">
 </span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar._signature</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignatureModel</span>
 </span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfiguredException</span>
@@ -527,155 +527,176 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="23">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDTO</span>
 </span><span data-line="24">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyCallable</span>
 </span><span data-line="25">
-</span><span data-line="26"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Provide&quot;</span><span class="p">,)</span>
-</span><span data-line="27">
-</span><span data-line="28">
+</span><span data-line="26"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="27">    <span class="s2">&quot;NamedDependency&quot;</span><span class="p">,</span>
+</span><span data-line="28">    <span class="s2">&quot;Provide&quot;</span><span class="p">,</span>
+</span><span data-line="29"><span class="p">)</span>
+</span><span data-line="30">
+</span><span data-line="31">
+</span><span data-line="32"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="33">
+</span><span data-line="34">
+</span><span data-line="35"><span class="k">class</span><span class="w"> </span><span class="nc">Dependency</span><span class="p">:</span>
+</span><span data-line="36">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;named&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;named&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="37">        <span class="c1"># currently only &#39;named&#39; kind is supported, and this value isn&#39;t used. 3.0 will</span>
+</span><span data-line="38">        <span class="c1"># introduce the &#39;type&#39; kind</span>
+</span><span data-line="39">        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
+</span><span data-line="40">
+</span><span data-line="41">
+</span><span data-line="42"><span class="n">NamedDependency</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;named&quot;</span><span class="p">)]</span>
+</span><span data-line="43"><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="44"><span class="sd">Mark a parameter for name-based dependency injection.</span>
+</span><span data-line="45">
+</span><span data-line="46"><span class="sd">The name of the function parameter will be used as the name for the dependency to inject.</span>
+</span><span data-line="47"><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="48">
+</span><span data-line="49">
 <div class="viewcode-block" id="Provide">
 <a class="viewcode-back" href="../../reference/di.html#litestar.di.Provide">[docs]</a>
-</span><span data-line="29"><span class="k">class</span><span class="w"> </span><span class="nc">Provide</span><span class="p">:</span>
-</span><span data-line="30"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper class for dependency injection&quot;&quot;&quot;</span>
-</span><span data-line="31">
-</span><span data-line="32">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="33">        <span class="s2">&quot;_parsed_fn_signature&quot;</span><span class="p">,</span>
-</span><span data-line="34">        <span class="s2">&quot;_signature_model&quot;</span><span class="p">,</span>
-</span><span data-line="35">        <span class="s2">&quot;dependency&quot;</span><span class="p">,</span>
-</span><span data-line="36">        <span class="s2">&quot;has_async_generator_dependency&quot;</span><span class="p">,</span>
-</span><span data-line="37">        <span class="s2">&quot;has_sync_callable&quot;</span><span class="p">,</span>
-</span><span data-line="38">        <span class="s2">&quot;has_sync_generator_dependency&quot;</span><span class="p">,</span>
-</span><span data-line="39">        <span class="s2">&quot;sync_to_thread&quot;</span><span class="p">,</span>
-</span><span data-line="40">        <span class="s2">&quot;use_cache&quot;</span><span class="p">,</span>
-</span><span data-line="41">        <span class="s2">&quot;value&quot;</span><span class="p">,</span>
-</span><span data-line="42">    <span class="p">)</span>
-</span><span data-line="43">
-</span><span data-line="44">    <span class="n">dependency</span><span class="p">:</span> <span class="n">AnyCallable</span>
-</span><span data-line="45">
+</span><span data-line="50"><span class="k">class</span><span class="w"> </span><span class="nc">Provide</span><span class="p">:</span>
+</span><span data-line="51"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper class for dependency injection&quot;&quot;&quot;</span>
+</span><span data-line="52">
+</span><span data-line="53">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="54">        <span class="s2">&quot;_parsed_fn_signature&quot;</span><span class="p">,</span>
+</span><span data-line="55">        <span class="s2">&quot;_signature_model&quot;</span><span class="p">,</span>
+</span><span data-line="56">        <span class="s2">&quot;dependency&quot;</span><span class="p">,</span>
+</span><span data-line="57">        <span class="s2">&quot;has_async_generator_dependency&quot;</span><span class="p">,</span>
+</span><span data-line="58">        <span class="s2">&quot;has_sync_callable&quot;</span><span class="p">,</span>
+</span><span data-line="59">        <span class="s2">&quot;has_sync_generator_dependency&quot;</span><span class="p">,</span>
+</span><span data-line="60">        <span class="s2">&quot;sync_to_thread&quot;</span><span class="p">,</span>
+</span><span data-line="61">        <span class="s2">&quot;use_cache&quot;</span><span class="p">,</span>
+</span><span data-line="62">        <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+</span><span data-line="63">    <span class="p">)</span>
+</span><span data-line="64">
+</span><span data-line="65">    <span class="n">dependency</span><span class="p">:</span> <span class="n">AnyCallable</span>
+</span><span data-line="66">
 <div class="viewcode-block" id="Provide.__init__">
 <a class="viewcode-back" href="../../reference/di.html#litestar.di.Provide.__init__">[docs]</a>
-</span><span data-line="46">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="47">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="48">        <span class="n">dependency</span><span class="p">:</span> <span class="n">AnyCallable</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-</span><span data-line="49">        <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="50">        <span class="n">sync_to_thread</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="51">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="52"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``Provide``</span>
-</span><span data-line="53">
-</span><span data-line="54"><span class="sd">        Args:</span>
-</span><span data-line="55"><span class="sd">            dependency: Callable to call or class to instantiate. The result is then injected as a dependency.</span>
-</span><span data-line="56"><span class="sd">            use_cache: Cache the dependency return value. Defaults to False.</span>
-</span><span data-line="57"><span class="sd">            sync_to_thread: Run sync code in an async thread. Defaults to False.</span>
-</span><span data-line="58"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="59">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">dependency</span><span class="p">):</span>
-</span><span data-line="60">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Provider dependency must be a callable value&quot;</span><span class="p">)</span>
-</span><span data-line="61">
-</span><span data-line="62">        <span class="n">is_class_dependency</span> <span class="o">=</span> <span class="n">isclass</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
-</span><span data-line="63">        <span class="n">is_function</span> <span class="o">=</span> <span class="n">isfunction</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
-</span><span data-line="64">        <span class="n">is_method</span> <span class="o">=</span> <span class="n">ismethod</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
-</span><span data-line="65">        <span class="n">is_callable_instance</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">is_class_dependency</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_function</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_method</span>
-</span><span data-line="66">        <span class="k">if</span> <span class="n">is_class_dependency</span> <span class="ow">or</span> <span class="n">is_callable_instance</span><span class="p">:</span>
-</span><span data-line="67">            <span class="n">check_target</span> <span class="o">=</span> <span class="n">dependency</span><span class="o">.</span><span class="fm">__call__</span>  <span class="c1"># type: ignore[operator]</span>
-</span><span data-line="68">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="69">            <span class="n">check_target</span> <span class="o">=</span> <span class="n">dependency</span>
-</span><span data-line="70">        <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_generator_dependency</span> <span class="o">=</span> <span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">check_target</span><span class="p">)</span>
-</span><span data-line="71">        <span class="bp">self</span><span class="o">.</span><span class="n">has_async_generator_dependency</span> <span class="o">=</span> <span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">check_target</span><span class="p">)</span>
-</span><span data-line="72">
-</span><span data-line="73">        <span class="n">has_generator_dependency</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_generator_dependency</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_async_generator_dependency</span>
+</span><span data-line="67">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="68">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="69">        <span class="n">dependency</span><span class="p">:</span> <span class="n">AnyCallable</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+</span><span data-line="70">        <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="71">        <span class="n">sync_to_thread</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="72">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="73"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``Provide``</span>
 </span><span data-line="74">
-</span><span data-line="75">        <span class="k">if</span> <span class="n">has_generator_dependency</span> <span class="ow">and</span> <span class="n">use_cache</span><span class="p">:</span>
-</span><span data-line="76">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="77">                <span class="s2">&quot;Cannot cache generator dependency, consider using Lifespan Context instead.&quot;</span>
-</span><span data-line="78">            <span class="p">)</span>
-</span><span data-line="79">
-</span><span data-line="80">        <span class="n">has_sync_callable</span> <span class="o">=</span> <span class="n">is_class_dependency</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">is_async_callable</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
-</span><span data-line="81">        <span class="k">if</span> <span class="n">sync_to_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="82">            <span class="k">if</span> <span class="n">has_generator_dependency</span><span class="p">:</span>
-</span><span data-line="83">                <span class="n">warn_sync_to_thread_with_generator</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
-</span><span data-line="84">            <span class="k">elif</span> <span class="ow">not</span> <span class="n">has_sync_callable</span><span class="p">:</span>
-</span><span data-line="85">                <span class="n">warn_sync_to_thread_with_async_callable</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-</span><span data-line="86">        <span class="k">elif</span> <span class="n">has_sync_callable</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_generator_dependency</span><span class="p">:</span>
-</span><span data-line="87">            <span class="n">warn_implicit_sync_to_thread</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-</span><span data-line="88">        <span class="k">if</span> <span class="n">sync_to_thread</span> <span class="ow">and</span> <span class="n">has_sync_callable</span><span class="p">:</span>
-</span><span data-line="89">            <span class="bp">self</span><span class="o">.</span><span class="n">dependency</span> <span class="o">=</span> <span class="n">ensure_async_callable</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
-</span><span data-line="90">            <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_callable</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="91">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="92">            <span class="bp">self</span><span class="o">.</span><span class="n">dependency</span> <span class="o">=</span> <span class="n">dependency</span>
-</span><span data-line="93">            <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_callable</span> <span class="o">=</span> <span class="n">has_sync_callable</span>
-</span><span data-line="94">
-</span><span data-line="95">        <span class="bp">self</span><span class="o">.</span><span class="n">sync_to_thread</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="p">)</span>
-</span><span data-line="96">        <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">=</span> <span class="n">use_cache</span>
-</span><span data-line="97">        <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="98">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span><span class="p">:</span> <span class="n">ParsedSignature</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="99">        <span class="bp">self</span><span class="o">.</span><span class="n">_signature_model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">SignatureModel</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
-
+</span><span data-line="75"><span class="sd">        Args:</span>
+</span><span data-line="76"><span class="sd">            dependency: Callable to call or class to instantiate. The result is then injected as a dependency.</span>
+</span><span data-line="77"><span class="sd">            use_cache: Cache the dependency return value. Defaults to False.</span>
+</span><span data-line="78"><span class="sd">            sync_to_thread: Run sync code in an async thread. Defaults to False.</span>
+</span><span data-line="79"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="80">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">dependency</span><span class="p">):</span>
+</span><span data-line="81">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Provider dependency must be a callable value&quot;</span><span class="p">)</span>
+</span><span data-line="82">
+</span><span data-line="83">        <span class="n">is_class_dependency</span> <span class="o">=</span> <span class="n">isclass</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
+</span><span data-line="84">        <span class="n">is_function</span> <span class="o">=</span> <span class="n">isfunction</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
+</span><span data-line="85">        <span class="n">is_method</span> <span class="o">=</span> <span class="n">ismethod</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
+</span><span data-line="86">        <span class="n">is_callable_instance</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">is_class_dependency</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_function</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_method</span>
+</span><span data-line="87">        <span class="k">if</span> <span class="n">is_class_dependency</span> <span class="ow">or</span> <span class="n">is_callable_instance</span><span class="p">:</span>
+</span><span data-line="88">            <span class="n">check_target</span> <span class="o">=</span> <span class="n">dependency</span><span class="o">.</span><span class="fm">__call__</span>  <span class="c1"># type: ignore[operator]</span>
+</span><span data-line="89">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="90">            <span class="n">check_target</span> <span class="o">=</span> <span class="n">dependency</span>
+</span><span data-line="91">        <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_generator_dependency</span> <span class="o">=</span> <span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">check_target</span><span class="p">)</span>
+</span><span data-line="92">        <span class="bp">self</span><span class="o">.</span><span class="n">has_async_generator_dependency</span> <span class="o">=</span> <span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">check_target</span><span class="p">)</span>
+</span><span data-line="93">
+</span><span data-line="94">        <span class="n">has_generator_dependency</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_generator_dependency</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_async_generator_dependency</span>
+</span><span data-line="95">
+</span><span data-line="96">        <span class="k">if</span> <span class="n">has_generator_dependency</span> <span class="ow">and</span> <span class="n">use_cache</span><span class="p">:</span>
+</span><span data-line="97">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="98">                <span class="s2">&quot;Cannot cache generator dependency, consider using Lifespan Context instead.&quot;</span>
+</span><span data-line="99">            <span class="p">)</span>
 </span><span data-line="100">
-</span><span data-line="101">    <span class="nd">@property</span>
-</span><span data-line="102">    <span class="k">def</span><span class="w"> </span><span class="nf">signature_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">SignatureModel</span><span class="p">]:</span>
-</span><span data-line="103">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signature_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="104">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot access signature model of Provider </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> because it is not finalized&quot;</span><span class="p">)</span>
-</span><span data-line="105">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signature_model</span>
-</span><span data-line="106">
-</span><span data-line="107">    <span class="nd">@property</span>
-</span><span data-line="108">    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_fn_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParsedSignature</span><span class="p">:</span>
-</span><span data-line="109">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="110">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot access parsed signature of Provider </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> because it is not finalized&quot;</span><span class="p">)</span>
-</span><span data-line="111">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span>
-</span><span data-line="112">
-</span><span data-line="113">    <span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span>
-</span><span data-line="114">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="115">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="116">        <span class="n">plugins</span><span class="p">:</span> <span class="n">PluginRegistry</span><span class="p">,</span>
-</span><span data-line="117">        <span class="n">signature_namespace</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-</span><span data-line="118">        <span class="n">dependency_keys</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-</span><span data-line="119">        <span class="n">data_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="120">        <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span><span class="p">,</span>
-</span><span data-line="121">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="122">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="123">            <span class="n">dependency</span> <span class="o">=</span> <span class="n">unwrap_partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dependency</span><span class="p">)</span>
-</span><span data-line="124">            <span class="n">plugin</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-</span><span data-line="125">                <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span><span class="o">.</span><span class="n">di</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">DIPlugin</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">has_typed_init</span><span class="p">(</span><span class="n">dependency</span><span class="p">)),</span>
-</span><span data-line="126">                <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="127">            <span class="p">)</span>
-</span><span data-line="128">            <span class="k">if</span> <span class="n">plugin</span><span class="p">:</span>
-</span><span data-line="129">                <span class="n">signature</span><span class="p">,</span> <span class="n">init_type_hints</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_typed_init</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
-</span><span data-line="130">                <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="o">=</span> <span class="n">ParsedSignature</span><span class="o">.</span><span class="n">from_signature</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">init_type_hints</span><span class="p">)</span>
-</span><span data-line="131">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="132">                <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="o">=</span> <span class="n">ParsedSignature</span><span class="o">.</span><span class="n">from_fn</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="n">signature_namespace</span><span class="p">)</span>
+</span><span data-line="101">        <span class="n">has_sync_callable</span> <span class="o">=</span> <span class="n">is_class_dependency</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">is_async_callable</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
+</span><span data-line="102">        <span class="k">if</span> <span class="n">sync_to_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="103">            <span class="k">if</span> <span class="n">has_generator_dependency</span><span class="p">:</span>
+</span><span data-line="104">                <span class="n">warn_sync_to_thread_with_generator</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
+</span><span data-line="105">            <span class="k">elif</span> <span class="ow">not</span> <span class="n">has_sync_callable</span><span class="p">:</span>
+</span><span data-line="106">                <span class="n">warn_sync_to_thread_with_async_callable</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span data-line="107">        <span class="k">elif</span> <span class="n">has_sync_callable</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_generator_dependency</span><span class="p">:</span>
+</span><span data-line="108">            <span class="n">warn_implicit_sync_to_thread</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span data-line="109">        <span class="k">if</span> <span class="n">sync_to_thread</span> <span class="ow">and</span> <span class="n">has_sync_callable</span><span class="p">:</span>
+</span><span data-line="110">            <span class="bp">self</span><span class="o">.</span><span class="n">dependency</span> <span class="o">=</span> <span class="n">ensure_async_callable</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
+</span><span data-line="111">            <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_callable</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="112">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="113">            <span class="bp">self</span><span class="o">.</span><span class="n">dependency</span> <span class="o">=</span> <span class="n">dependency</span>
+</span><span data-line="114">            <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_callable</span> <span class="o">=</span> <span class="n">has_sync_callable</span>
+</span><span data-line="115">
+</span><span data-line="116">        <span class="bp">self</span><span class="o">.</span><span class="n">sync_to_thread</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="p">)</span>
+</span><span data-line="117">        <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">=</span> <span class="n">use_cache</span>
+</span><span data-line="118">        <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="119">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span><span class="p">:</span> <span class="n">ParsedSignature</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="120">        <span class="bp">self</span><span class="o">.</span><span class="n">_signature_model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">SignatureModel</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+</span><span data-line="121">
+</span><span data-line="122">    <span class="nd">@property</span>
+</span><span data-line="123">    <span class="k">def</span><span class="w"> </span><span class="nf">signature_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">SignatureModel</span><span class="p">]:</span>
+</span><span data-line="124">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signature_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="125">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot access signature model of Provider </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> because it is not finalized&quot;</span><span class="p">)</span>
+</span><span data-line="126">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signature_model</span>
+</span><span data-line="127">
+</span><span data-line="128">    <span class="nd">@property</span>
+</span><span data-line="129">    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_fn_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParsedSignature</span><span class="p">:</span>
+</span><span data-line="130">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="131">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot access parsed signature of Provider </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> because it is not finalized&quot;</span><span class="p">)</span>
+</span><span data-line="132">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span>
 </span><span data-line="133">
-</span><span data-line="134">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signature_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="135">            <span class="bp">self</span><span class="o">.</span><span class="n">_signature_model</span> <span class="o">=</span> <span class="n">SignatureModel</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-</span><span data-line="136">                <span class="n">dependency_name_set</span><span class="o">=</span><span class="n">dependency_keys</span><span class="p">,</span>
-</span><span data-line="137">                <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dependency</span><span class="p">,</span>
-</span><span data-line="138">                <span class="n">parsed_signature</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="p">,</span>
-</span><span data-line="139">                <span class="n">data_dto</span><span class="o">=</span><span class="n">data_dto</span><span class="p">,</span>
-</span><span data-line="140">                <span class="n">type_decoders</span><span class="o">=</span><span class="n">type_decoders</span><span class="p">,</span>
-</span><span data-line="141">            <span class="p">)</span>
-</span><span data-line="142">
+</span><span data-line="134">    <span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span>
+</span><span data-line="135">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="136">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="137">        <span class="n">plugins</span><span class="p">:</span> <span class="n">PluginRegistry</span><span class="p">,</span>
+</span><span data-line="138">        <span class="n">signature_namespace</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+</span><span data-line="139">        <span class="n">dependency_keys</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+</span><span data-line="140">        <span class="n">data_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="141">        <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span><span class="p">,</span>
+</span><span data-line="142">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="143">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="144">            <span class="n">dependency</span> <span class="o">=</span> <span class="n">unwrap_partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dependency</span><span class="p">)</span>
+</span><span data-line="145">            <span class="n">plugin</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+</span><span data-line="146">                <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">plugins</span><span class="o">.</span><span class="n">di</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">DIPlugin</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">has_typed_init</span><span class="p">(</span><span class="n">dependency</span><span class="p">)),</span>
+</span><span data-line="147">                <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="148">            <span class="p">)</span>
+</span><span data-line="149">            <span class="k">if</span> <span class="n">plugin</span><span class="p">:</span>
+</span><span data-line="150">                <span class="n">signature</span><span class="p">,</span> <span class="n">init_type_hints</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_typed_init</span><span class="p">(</span><span class="n">dependency</span><span class="p">)</span>
+</span><span data-line="151">                <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="o">=</span> <span class="n">ParsedSignature</span><span class="o">.</span><span class="n">from_signature</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">init_type_hints</span><span class="p">)</span>
+</span><span data-line="152">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="153">                <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="o">=</span> <span class="n">ParsedSignature</span><span class="o">.</span><span class="n">from_fn</span><span class="p">(</span><span class="n">dependency</span><span class="p">,</span> <span class="n">signature_namespace</span><span class="p">)</span>
+</span><span data-line="154">
+</span><span data-line="155">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signature_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="156">            <span class="bp">self</span><span class="o">.</span><span class="n">_signature_model</span> <span class="o">=</span> <span class="n">SignatureModel</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span><span data-line="157">                <span class="n">dependency_name_set</span><span class="o">=</span><span class="n">dependency_keys</span><span class="p">,</span>
+</span><span data-line="158">                <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dependency</span><span class="p">,</span>
+</span><span data-line="159">                <span class="n">parsed_signature</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="p">,</span>
+</span><span data-line="160">                <span class="n">data_dto</span><span class="o">=</span><span class="n">data_dto</span><span class="p">,</span>
+</span><span data-line="161">                <span class="n">type_decoders</span><span class="o">=</span><span class="n">type_decoders</span><span class="p">,</span>
+</span><span data-line="162">            <span class="p">)</span>
+</span><span data-line="163">
 <div class="viewcode-block" id="Provide.__call__">
 <a class="viewcode-back" href="../../reference/di.html#litestar.di.Provide.__call__">[docs]</a>
-</span><span data-line="143">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="144"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the provider&#39;s dependency.&quot;&quot;&quot;</span>
-</span><span data-line="145">
-</span><span data-line="146">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="147">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
-</span><span data-line="148">
-</span><span data-line="149">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_callable</span><span class="p">:</span>
-</span><span data-line="150">            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependency</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span data-line="151">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="152">            <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependency</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span data-line="153">
-</span><span data-line="154">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span><span class="p">:</span>
-</span><span data-line="155">            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-</span><span data-line="156">
-</span><span data-line="157">        <span class="k">return</span> <span class="n">value</span></div>
+</span><span data-line="164">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="165"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the provider&#39;s dependency.&quot;&quot;&quot;</span>
+</span><span data-line="166">
+</span><span data-line="167">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="168">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+</span><span data-line="169">
+</span><span data-line="170">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sync_callable</span><span class="p">:</span>
+</span><span data-line="171">            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependency</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span data-line="172">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="173">            <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependency</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span data-line="174">
+</span><span data-line="175">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span><span class="p">:</span>
+</span><span data-line="176">            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+</span><span data-line="177">
+</span><span data-line="178">        <span class="k">return</span> <span class="n">value</span></div>
 
-</span><span data-line="158">
-</span><span data-line="159">    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="160">        <span class="c1"># check if memory address is identical, otherwise compare attributes</span>
-</span><span data-line="161">        <span class="k">return</span> <span class="n">other</span> <span class="ow">is</span> <span class="bp">self</span> <span class="ow">or</span> <span class="p">(</span>
-</span><span data-line="162">            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
-</span><span data-line="163">            <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dependency</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependency</span>
-</span><span data-line="164">            <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span>
-</span><span data-line="165">            <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
-</span><span data-line="166">        <span class="p">)</span></div>
+</span><span data-line="179">
+</span><span data-line="180">    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="181">        <span class="c1"># check if memory address is identical, otherwise compare attributes</span>
+</span><span data-line="182">        <span class="k">return</span> <span class="n">other</span> <span class="ow">is</span> <span class="bp">self</span> <span class="ow">or</span> <span class="p">(</span>
+</span><span data-line="183">            <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+</span><span data-line="184">            <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">dependency</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependency</span>
+</span><span data-line="185">            <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span>
+</span><span data-line="186">            <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+</span><span data-line="187">        <span class="p">)</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

@@ -457,16 +457,15 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#dependency-keyword-arguments">Dependency keyword arguments</a></li>
 <li><a class="reference internal" href="#dependency-overrides">Dependency overrides</a></li>
 <li><a class="reference internal" href="#the-provide-class">The <code class="docutils literal notranslate"><span class="pre">Provide</span></code> class</a></li>
-<li><a class="reference internal" href="#dependencies-within-dependencies">Dependencies within dependencies</a></li>
-<li><a class="reference internal" href="#the-dependency-function">The <code class="docutils literal notranslate"><span class="pre">Dependency</span></code> function</a><ul>
-<li><a class="reference internal" href="#dependency-validation">Dependency validation</a></li>
-<li><a class="reference internal" href="#dependency-function-as-a-marker">Dependency function as a marker</a><ul>
+<li><a class="reference internal" href="#dependencies-within-dependencies">Dependencies within dependencies</a><ul>
+<li><a class="reference internal" href="#explicitly-marking-dependencies">Explicitly marking dependencies</a><ul>
 <li><a class="reference internal" href="#exclude-dependencies-with-default-values-from-openapi-docs">Exclude dependencies with default values from OpenAPI docs</a></li>
 <li><a class="reference internal" href="#early-detection-if-a-dependency-isn-t-provided">Early detection if a dependency isn&#8217;t provided</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#bypassing-validation">Bypassing validation</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -970,47 +969,114 @@ request, even with <code class="docutils literal notranslate"><span class="pre">
 </section>
 <section id="dependencies-within-dependencies">
 <h2>Dependencies within dependencies<a class="headerlink" href="#dependencies-within-dependencies" title="Link to this heading">¶</a></h2>
-<p>You can inject dependencies into other dependencies - exactly like you would into regular functions.</p>
+<p>You can inject dependencies into other dependencies, exactly like you would into handler
+functions:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
+</span><span data-line="3">
 </span><span data-line="4">
-</span><span data-line="5">
-</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">first_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span data-line="7">    <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">first_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="6">    <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">second_dependency</span><span class="p">(</span><span class="n">injected_integer</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="11">    <span class="k">return</span> <span class="n">injected_integer</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">second_dependency</span><span class="p">(</span><span class="n">injected_integer</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="10">    <span class="k">return</span> <span class="n">injected_integer</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span data-line="11">
 </span><span data-line="12">
-</span><span data-line="13">
-</span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/true-or-false&quot;</span><span class="p">)</span>
-</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">true_or_false_handler</span><span class="p">(</span><span class="n">injected_bool</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="16">    <span class="k">return</span> <span class="s2">&quot;its true!&quot;</span> <span class="k">if</span> <span class="n">injected_bool</span> <span class="k">else</span> <span class="s2">&quot;nope, its false...&quot;</span>
+</span><span data-line="13"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/true-or-false&quot;</span><span class="p">)</span>
+</span><span data-line="14"><span class="k">def</span><span class="w"> </span><span class="nf">true_or_false_handler</span><span class="p">(</span><span class="n">injected_bool</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="15">    <span class="k">return</span> <span class="s2">&quot;it&#39;s true!&quot;</span> <span class="k">if</span> <span class="n">injected_bool</span> <span class="k">else</span> <span class="s2">&quot;nope, it&#39;s false...&quot;</span>
+</span><span data-line="16">
 </span><span data-line="17">
-</span><span data-line="18">
-</span><span data-line="19"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="20">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">true_or_false_handler</span><span class="p">],</span>
-</span><span data-line="21">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="22">        <span class="s2">&quot;injected_integer&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">first_dependency</span><span class="p">),</span>
-</span><span data-line="23">        <span class="s2">&quot;injected_bool&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">second_dependency</span><span class="p">),</span>
-</span><span data-line="24">    <span class="p">},</span>
-</span><span data-line="25"><span class="p">)</span>
+</span><span data-line="18"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="19">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">true_or_false_handler</span><span class="p">],</span>
+</span><span data-line="20">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="21">        <span class="s2">&quot;injected_integer&quot;</span><span class="p">:</span> <span class="n">first_dependency</span><span class="p">,</span>
+</span><span data-line="22">        <span class="s2">&quot;injected_bool&quot;</span><span class="p">:</span> <span class="n">second_dependency</span><span class="p">,</span>
+</span><span data-line="23">    <span class="p">},</span>
+</span><span data-line="24"><span class="p">)</span>
 </span></pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The rules for <a class="reference internal" href="#dependency-overrides">dependency overrides</a> apply here as well.</p>
 </div>
-</section>
-<section id="the-dependency-function">
-<h2>The <code class="docutils literal notranslate"><span class="pre">Dependency</span></code> function<a class="headerlink" href="#the-dependency-function" title="Link to this heading">¶</a></h2>
-<section id="dependency-validation">
-<h3>Dependency validation<a class="headerlink" href="#dependency-validation" title="Link to this heading">¶</a></h3>
-<p>By default, injected dependency values are validated by Litestar, for example, this application will raise an
-internal server error:</p>
+<section id="explicitly-marking-dependencies">
+<h3>Explicitly marking dependencies<a class="headerlink" href="#explicitly-marking-dependencies" title="Link to this heading">¶</a></h3>
+<p>Normally, dependencies are inferred. That means, Litestar will try to match a dependency
+provider to a function parameter. However, this process can also be made explicit by
+using the <a class="reference internal" href="../reference/di.html#litestar.di.NamedDependency" title="litestar.di.NamedDependency"><code class="xref py py-data docutils literal notranslate"><span class="pre">NamedDependency</span></code></a> generic.</p>
+<section id="exclude-dependencies-with-default-values-from-openapi-docs">
+<h4>Exclude dependencies with default values from OpenAPI docs<a class="headerlink" href="#exclude-dependencies-with-default-values-from-openapi-docs" title="Link to this heading">¶</a></h4>
+<p>Depending on your application design, it is possible to have a dependency declared in a handler or
+<a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> function that has a default value. If the dependency isn’t provided for the route, the
+default should be used by the function.</p>
+<p>By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:</p>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">optional_dependency</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="sd">    This is OK, because of the default value, and now the parameter is excluded from the docs.</span>
+</span><span data-line="12"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">optional_dependency</span><span class="p">}</span>
+</span><span data-line="14">
+</span><span data-line="15">
+</span><span data-line="16"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</section>
+<section id="early-detection-if-a-dependency-isn-t-provided">
+<h4>Early detection if a dependency isn’t provided<a class="headerlink" href="#early-detection-if-a-dependency-isn-t-provided" title="Link to this heading">¶</a></h4>
+<p>The other side of the same coin is when a dependency isn’t provided, and no default is
+specified. Without the <a class="reference internal" href="../reference/di.html#litestar.di.NamedDependency" title="litestar.di.NamedDependency"><code class="xref py py-data docutils literal notranslate"><span class="pre">NamedDependency</span></code></a> marker, the parameter is
+treated like any other unmarked handler kwarg, i.e. it raises a
+<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.LitestarDeprecationWarning" title="litestar.exceptions.LitestarDeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarDeprecationWarning</span></code></a> about a missing explicit parameter
+marker, and the route will then fail at request time because no matching query parameter
+was supplied.</p>
+<p>Adding <a class="reference internal" href="../reference/di.html#litestar.di.NamedDependency" title="litestar.di.NamedDependency"><code class="xref py py-data docutils literal notranslate"><span class="pre">NamedDependency</span></code></a> makes the contract explicit and lets
+Litestar fail at application boot rather than at request time:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Dependency not provided error</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">non_optional_dependency</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="sd">    This is not great, however by explicitly marking dependencies, Litestar won&#39;t let the app start.</span>
+</span><span data-line="12"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">non_optional_dependency</span><span class="p">}</span>
+</span><span data-line="14">
+</span><span data-line="15">
+</span><span data-line="16"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="c1"># ImproperlyConfiguredException: 500: Explicit dependency &#39;non_optional_dependency&#39; for &#39;hello_world&#39; has no default</span>
+</span><span data-line="19"><span class="c1"># value, or provided dependency.</span>
+</span></pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="bypassing-validation">
+<h2>Bypassing validation<a class="headerlink" href="#bypassing-validation" title="Link to this heading">¶</a></h2>
+<p>By default, injected dependency values are validated by Litestar, for example, this
+application will raise an internal server error:</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1032,101 +1098,30 @@ internal server error:</p>
 </span></pre></div>
 </div>
 </div>
-<p>Dependency validation can be toggled using the <a class="reference internal" href="../reference/params.html#litestar.params.Dependency" title="litestar.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> function.</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dependency</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string.&quot;&quot;&quot;</span>
-</span><span data-line="10">    <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
-</span><span data-line="11">
-</span><span data-line="12">
-</span><span data-line="13"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)},</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="14"><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">skip_validation</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="15"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects an `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
-</span><span data-line="16">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
-</span><span data-line="17">
-</span><span data-line="18">
-</span><span data-line="19"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
-</span></pre></div>
-</div>
-</div>
-<p>This may be useful for reasons of efficiency, or if pydantic cannot validate a certain type, but use with caution!</p>
-</section>
-<section id="dependency-function-as-a-marker">
-<h3>Dependency function as a marker<a class="headerlink" href="#dependency-function-as-a-marker" title="Link to this heading">¶</a></h3>
-<p>The <a class="reference internal" href="../reference/params.html#litestar.params.Dependency" title="litestar.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> function can also be used as a marker that gives us a bit more detail
-about your application.</p>
-<section id="exclude-dependencies-with-default-values-from-openapi-docs">
-<h4>Exclude dependencies with default values from OpenAPI docs<a class="headerlink" href="#exclude-dependencies-with-default-values-from-openapi-docs" title="Link to this heading">¶</a></h4>
-<p>Depending on your application design, it is possible to have a dependency declared in a handler or
-<a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> function that has a default value. If the dependency isn’t provided for the route, the
-default should be used by the function.</p>
-<p>By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dependency</span>
-</span><span data-line="5">
-</span><span data-line="6">
-</span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">optional_dependency</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">()]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
-</span><span data-line="10">
-</span><span data-line="11"><span class="sd">    This is OK, because of the default value, and now the parameter is excluded from the docs.</span>
-</span><span data-line="12"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="13">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">optional_dependency</span><span class="p">}</span>
-</span><span data-line="14">
-</span><span data-line="15">
-</span><span data-line="16"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
-</span></pre></div>
-</div>
-</div>
-</section>
-<section id="early-detection-if-a-dependency-isn-t-provided">
-<h4>Early detection if a dependency isn’t provided<a class="headerlink" href="#early-detection-if-a-dependency-isn-t-provided" title="Link to this heading">¶</a></h4>
-<p>The other side of the same coin is when a dependency isn’t provided, and no default is
-specified. Without the <a class="reference internal" href="../reference/params.html#litestar.params.Dependency" title="litestar.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> marker, the parameter is treated
-like any other unmarked handler kwarg, i.e. it raises a
-<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.LitestarDeprecationWarning" title="litestar.exceptions.LitestarDeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarDeprecationWarning</span></code></a> about a missing explicit parameter
-marker, and the route will then fail at request time because no matching query parameter
-was supplied.</p>
-<p>Adding <a class="reference internal" href="../reference/params.html#litestar.params.Dependency" title="litestar.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> makes the contract explicit and lets Litestar fail
-at application boot rather than at request time:</p>
+<p>This validation can be bypassed using the <a class="reference internal" href="../reference/params.html#litestar.params.SkipValidation" title="litestar.params.SkipValidation"><code class="xref py py-data docutils literal notranslate"><span class="pre">SkipValidation</span></code></a> marker:</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Dependency not provided error</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Any</span>
+<div class="code-block-caption"><span class="caption-text">Bypassing dependency validation</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dependency</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">SkipValidation</span>
 </span><span data-line="5">
 </span><span data-line="6">
-</span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">non_optional_dependency</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">()])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="8"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string.&quot;&quot;&quot;</span>
+</span><span data-line="9">    <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
 </span><span data-line="10">
-</span><span data-line="11"><span class="sd">    This is not great, however by explicitly marking dependencies, Litestar won&#39;t let the app start.</span>
-</span><span data-line="12"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="13">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">non_optional_dependency</span><span class="p">}</span>
-</span><span data-line="14">
-</span><span data-line="15">
-</span><span data-line="16"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">provide_str</span><span class="p">})</span>
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">SkipValidation</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="14"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects an `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
+</span><span data-line="15">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
+</span><span data-line="16">
 </span><span data-line="17">
-</span><span data-line="18"><span class="c1"># ImproperlyConfiguredException: 500: Explicit dependency &#39;non_optional_dependency&#39; for &#39;hello_world&#39; has no default</span>
-</span><span data-line="19"><span class="c1"># value, or provided dependency.</span>
+</span><span data-line="18"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
-</section>
-</section>
 </section>
 </section>
 

@@ -462,6 +462,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.extra"><code class="docutils literal notranslate">extra</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.kwarg_definition"><code class="docutils literal notranslate">kwarg_definition</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.typing.FieldDefinition.get_from_metadata"><code class="docutils literal notranslate">get_from_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.typing.FieldDefinition.has_metadata"><code class="docutils literal notranslate">has_metadata()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.has_default"><code class="docutils literal notranslate">has_default</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_non_string_iterable"><code class="docutils literal notranslate">is_non_string_iterable</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_non_string_sequence"><code class="docutils literal notranslate">is_non_string_sequence</span></code></a></li>
@@ -675,6 +677,18 @@ data-aria-dark="Switch to auto color mode">
 <dt class="sig sig-object py" id="litestar.typing.FieldDefinition.name">
 <span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#litestar.typing.FieldDefinition.name" title="Link to this definition">¶</a></dt>
 <dd><p>Field name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.typing.FieldDefinition.get_from_metadata">
+<span class="sig-name descname"><span class="pre">get_from_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="file_system.html#litestar.file_system.FileInfo.type" title="litestar.file_system.FileInfo.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/typing.html#FieldDefinition.get_from_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.typing.FieldDefinition.get_from_metadata" title="Link to this definition">¶</a></dt>
+<dd><p>Return the next instance of <code class="docutils literal notranslate"><span class="pre">type_</span></code> in the field’s metadata</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.typing.FieldDefinition.has_metadata">
+<span class="sig-name descname"><span class="pre">has_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/litestar/typing.html#FieldDefinition.has_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.typing.FieldDefinition.has_metadata" title="Link to this definition">¶</a></dt>
+<dd><p>Whether the field has any <code class="docutils literal notranslate"><span class="pre">type_</span></code> in its metadata</p>
 </dd></dl>
 
 <dl class="py property">
