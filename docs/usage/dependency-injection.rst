@@ -388,5 +388,5 @@ application will raise an internal server error:
 This validation can be bypassed using the :data:`~litestar.params.SkipValidation` marker:
 
 .. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
-    :caption: Dependency validation error
+    :caption: Bypassing dependency validation
     :language: python

@@ -48,7 +48,7 @@ def _normalize_annotation(field_definition: FieldDefinition) -> Any:
     ):
         return Any
 
-    if any(m is SkipValidationMarker for m in field_definition.metadata):
+    if field_definition.has_metadata(SkipValidationMarker):
         return Any
 
     return field_definition.annotation

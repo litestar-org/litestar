@@ -34,7 +34,7 @@ __all__ = (
     "URLEncodedBody",
 )
 
-from litestar.utils import deprecated
+from litestar.utils import deprecated, warn_deprecation
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.example import Example
@@ -518,7 +518,6 @@ def Body(
 
 
 @dataclass(frozen=True)
-@deprecated("2.23.0", removal_in="3.0", alternative="di.NamedDependency")
 class DependencyKwarg:
     """Data container representing a dependency."""
 
@@ -536,6 +535,14 @@ class DependencyKwarg:
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
 
     def __post_init__(self) -> None:
+        warn_deprecation(
+            "2.23.0",
+            removal_in="3.0",
+            alternative="di.NamedDependency",
+            kind="class",
+            deprecated_name="DependencyKwarg",
+        )
+
         if self.skip_validation:
             warnings.warn(
                 "Deprecated parameter 'skip_validation'. This will be removed in "
@@ -558,10 +565,10 @@ def Dependency(*, default: Any = Empty, skip_validation: bool = False) -> Any:
 
 
 class SkipValidationMarker:
-    """Singleton indicating that a type annotated with this as metadata should be
+    """Indicate that a type annotated with this as metadata should be
     treated as 'Any'
     """
 
 
-SkipValidation: TypeAlias = Annotated[T, SkipValidationMarker]
+SkipValidation: TypeAlias = Annotated[T, SkipValidationMarker()]
 """Exclude 'T' from validation, effectively treating it as 'Any'"""

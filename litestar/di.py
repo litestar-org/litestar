@@ -30,15 +30,17 @@ T = TypeVar("T")
 
 
 class Dependency:
-    def __init__(self, kind: Literal["param"] = "param") -> None:
+    def __init__(self, kind: Literal["named"] = "named") -> None:
+        # currently only 'named' kind is supported, and this value isn't used. 3.0 will
+        # introduce the 'type' kind
         self.kind = kind
 
 
-NamedDependency = Annotated[T, Dependency(kind="param")]
+NamedDependency = Annotated[T, Dependency(kind="named")]
 """
 Mark a parameter for name-based dependency injection.
 
-The name of the function parameter name will be used as the name for the dependency to inject.
+The name of the function parameter will be used as the name for the dependency to inject.
 """
 
 
