@@ -518,6 +518,7 @@ def Body(
 
 
 @dataclass(frozen=True)
+@deprecated("2.23.0", removal_in="3.0", alternative="di.NamedDependency")
 class DependencyKwarg:
     """Data container representing a dependency."""
 
@@ -540,17 +541,6 @@ class DependencyKwarg:
                 "Deprecated parameter 'skip_validation'. This will be removed in "
                 "Litestar 3.0. To skip validation of a dependency parameter, annotate "
                 "it as 'SkipValidation[<type>]' instead",
-                category=LitestarDeprecationWarning,
-                stacklevel=2,
-            )
-        else:
-            object.__setattr__(self, "skip_validation", False)
-
-        if self.default is not Empty:
-            warnings.warn(
-                "Deprecated default in 'Dependency' annotation. This will be removed "
-                "in Litestar 3.0. To set a default for a dependency, specify it as a "
-                "function parameter default.",
                 category=LitestarDeprecationWarning,
                 stacklevel=2,
             )
