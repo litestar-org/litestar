@@ -54,12 +54,30 @@ if TYPE_CHECKING:
 
 _ExceptionGroup = get_exception_group()
 
+_DEPRECATED_RESERVED_KWARGS = {
+    "state",
+    "scope",
+    "headers",
+    "cookies",
+    "query",
+}
+
 
 @dataclasses.dataclass
 class HandlerContext:
     handler: str
     paths: list[str]
     dependencies: list[str] = dataclasses.field(default_factory=list)
+
+    def format(self, msg: str | None = None) -> str:
+        paths = ",".join(sorted(self.paths))
+        out = f"[paths={paths!r}, handler={self.handler!r}"
+        if self.dependencies:
+            out += f", dependencies={' -> '.join(self.dependencies[::-1])!r}"
+        out += "]"
+        if msg:
+            out = f"{out} {msg}"
+        return out
 
 
 class KwargsModel:
@@ -390,6 +408,19 @@ class KwargsModel:
             else False
         )
 
+        for reserved_kwarg in expected_reserved_kwargs.intersection(_DEPRECATED_RESERVED_KWARGS):
+            msg = (
+                f"Usage of deprecated reserved kwarg {reserved_kwarg!r}. It will be removed in "
+                f"Litestar 3.0. Use 'request.{reserved_kwarg}' instead"
+            )
+            if ctx is not None:
+                msg = ctx.format(msg)
+            warnings.warn(
+                msg,
+                stacklevel=2,
+                category=LitestarDeprecationWarning,
+            )
+
         return KwargsModel(
             expected_cookie_params=expected_cookie_parameters,
             expected_dependencies=expected_dependencies,
@@ -570,11 +601,6 @@ def _warn_deprecated_param_style(
             raise ValueError(f"Unknown style {style!r}")
 
     if ctx is not None:
-        paths = ",".join(sorted(ctx.paths))
-        out = f"[paths={paths!r}, handler={ctx.handler!r}"
-        if ctx.dependencies:
-            out += f", dependencies={' -> '.join(ctx.dependencies[::-1])!r}"
-        out += f"] {msg}"
-        msg = out
+        msg = ctx.format(msg)
 
     warnings.warn(msg, category=LitestarDeprecationWarning, stacklevel=stacklevel)
