@@ -11,8 +11,8 @@ from litestar._asgi.routing_trie import validate_node
 from litestar._asgi.routing_trie.mapping import add_route_to_trie
 from litestar._asgi.routing_trie.traversal import parse_path_to_route
 from litestar._asgi.routing_trie.types import create_node
-from litestar._asgi.utils import get_route_handlers
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar._asgi.utils import get_route_handlers, is_valid_host
+from litestar.exceptions import ClientException, ImproperlyConfiguredException
 from litestar.utils import normalize_path
 from litestar.utils.scope.state import ScopeState
 
@@ -90,6 +90,13 @@ class ASGIRouter:
         normalized_path = normalize_path(path)
 
         try:
+            try:
+                host = next((value for name, value in scope["headers"] if name == b"host"), None)
+                if host is not None and not is_valid_host(host):
+                    raise ClientException("Invalid host header")
+            except KeyError:
+                pass
+
             asgi_app, route_handler, scope["path"], scope["path_params"], path_template = self.handle_routing(
                 path=normalized_path, method=scope.get("method")
             )
