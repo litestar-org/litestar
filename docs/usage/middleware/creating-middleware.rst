@@ -25,7 +25,7 @@ Extending ``ASGIMiddleware``
 ----------------------------
 
 While using functions is a perfectly viable approach, the recommended way to handle this
-is by using the :class:`~litestar.middleware.ASGIMiddleware` abstract base class, which
+is by using the :class:`~litestar.middleware.base.ASGIMiddleware` abstract base class, which
 also includes functionality to dynamically skip the middleware based on ASGI
 ``scope["type"]``, handler ``opt`` keys or path patterns and a simple way to pass
 configuration to middlewares; It does not implement an ``__init__`` method, so
@@ -64,7 +64,7 @@ keep track of all these implicit couplings and dependencies, or downright imposs
 the middleware is implemented in a separate package and has no knowledge about how it is
 being applied.
 
-To help with this, :class:`~litestar.middleware.ASGIMiddleware` allows to specify a set
+To help with this, :class:`~litestar.middleware.base.ASGIMiddleware` allows to specify a set
 of :class:`~litestar.middleware.constraints.MiddlewareConstraints` - Once configured,
 these will be validated on application startup.
 
@@ -149,7 +149,7 @@ Now suppose that ``MyCustomMiddleware`` has the constraint ``first=True`` then t
 Migrating from ``MiddlewareProtocol`` / ``AbstractMiddleware``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-:class:`~litestar.middleware.ASGIMiddleware` was introduced in Litestar 2.15. If you've
+:class:`~litestar.middleware.base.ASGIMiddleware` was introduced in Litestar 2.15. If you've
 been using ``MiddlewareProtocol`` / ``AbstractMiddleware`` to implement your middlewares
 before, there's a simple migration path to using ``ASGIMiddleware``.
 

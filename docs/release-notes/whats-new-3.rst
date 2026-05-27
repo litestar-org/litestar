@@ -337,7 +337,7 @@ parameter.
 Middleware configuration constraints
 -------------------------------------
 
-:class:`~litestar.middleware.ASGIMiddleware`\ s can now express constraints for how
+:class:`~litestar.middleware.base.ASGIMiddleware`\ s can now express constraints for how
 they are applied in the middleware stack, which are then validated on application
 startup.
 

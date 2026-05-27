@@ -1,8 +1,8 @@
 middleware
 ==========
 
-.. automodule:: litestar.middleware
-
+.. automodule:: litestar.middleware.base
+    :members:
 
 .. toctree::
     :maxdepth: 1
