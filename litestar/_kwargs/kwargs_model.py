@@ -411,7 +411,7 @@ class KwargsModel:
         for reserved_kwarg in expected_reserved_kwargs.intersection(_DEPRECATED_RESERVED_KWARGS):
             msg = (
                 f"Usage of deprecated reserved kwarg {reserved_kwarg!r}. It will be removed in "
-                f"Litestar 3.0. Use 'request.{reserved_kwarg}' instead"
+                f"Litestar 3.0. Use 'connection|request|socket.{reserved_kwarg}' instead"
             )
             if ctx is not None:
                 msg = ctx.format(msg)
