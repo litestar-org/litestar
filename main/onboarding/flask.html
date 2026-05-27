@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Flask - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Topics" href="../topics/index.html" /><link rel="prev" title="FastAPI" href="fastapi.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=470ca8b0" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=326d68a3" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=f8f74789" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Flask"/>
+  <meta property="og:image" content="_static/logo-light.png"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="announcement">
+    <div class="announcement-inner">
+      <p>You are viewing the <strong>local</strong> version of the documentation. <a href="/latest/">Click here to go to the latest version.</a></p>
+      <button class="announcement-close" aria-label="Close announcement">
+        <i class="i-lucide close"></i>
+      </button>
+    </div>
+  </div><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
+      <strong>Litestar</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../contribution-guide.html">
+                <span>Contributing</span>
+                <small>Learn how to contribute to the Litestar project</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
+                <span>Code of Conduct</span>
+                <small>Review the etiquette for interacting with the Litestar community</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file">
+                <span>Security</span>
+                <small>Overview of Litestar's security protocols</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
+            <span>About</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about/organization">
+                <span>Litestar Organization</span>
+                <small>Details about the Litestar organization</small>
+              </a></li><li><a href="https://litestar.dev/about/litestar-releases">
+                <span>Releases</span>
+                <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
+            <span>Release notes</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../release-notes/whats-new-3.html">
+                <span>What's new in 3.0</span>
+                <small>Explore the new features in Litestar 3.0</small>
+              </a></li><li><a href="../release-notes/changelog.html">
+                <span>3.x Changelog</span>
+                <small>All changes in the 3.x series</small>
+              </a></li><li><a href="https://docs.litestar.dev/2/release-notes/changelog.html">
+                <span>2.x Changelog</span>
+                <small>All changes in the 2.x series</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
+            <span>Help</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
+                <span>Discord Help Forum</span>
+                <small>Dedicated Discord help forum</small>
+              </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
+                <span>GitHub Discussions</span>
+                <small>GitHub Discussions</small>
+              </a></li><li><a href="https://stackoverflow.com/questions/tagged/litestar">
+                <span>Stack Overflow</span>
+                <small>We monitor the <code><b>litestar</b></code> tag on Stack Overflow</small>
+              </a></li></ul>
+      </li><li class="link">
+          <a href="https://github.com/sponsors/Litestar-Org">
+            <span>Sponsor</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="nav-versions">
+    <button type="button" aria-label="Versions">
+      <span class="md:hidden">Versions</span>
+      <span class="hidden md:inline">main</span>
+      <i class="i-lucide chevron-down"></i>
+    </button>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">v3 (development)</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/routing/index.html">Routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/requests.html">Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/channels.html">Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/databases/index.html">Databases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/databases/piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/dto/index.html">Data Transfer Object (DTO)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/file_systems.html">File Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/htmx.html">HTMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Request logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/metrics/index.html">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/metrics/prometheus.html">Prometheus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/middleware/index.html">Middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/openapi/index.html">OpenAPI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html">Configuring schema generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html#configuring-schema-generation-on-a-route-handler">Configuring schema generation on a route handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html#generating-examples">Generating examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#configuring-the-openapi-root-path">Configuring the OpenAPI Root Path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#building-your-own-openapi-ui-plugin">Building your own OpenAPI UI Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#interacting-with-the-router">Interacting with the <code class="docutils literal notranslate"><span class="pre">Router</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#cdn-and-offline-file-support">CDN and offline file support</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/problem_details.html">Problem Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/security/index.html">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/secret-datastructures.html">Handling Secrets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/custom-types.html">Custom types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/websockets.html">WebSockets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/index.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/channels/index.html">channels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/channels/backends/index.html">backends</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/asyncpg.html">asyncpg</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/contrib/index.html">contrib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/concurrency.html">concurrency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/datastructures/index.html">datastructures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/secret_values.html">secret_values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/dto/index.html">dto</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/file_system.html">file_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/constraints.html">constraints</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/openapi/plugins.html">plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/attrs.html">attrs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/repository/index.html">repository</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/repository/abc.html">abc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/repository/filters.html">filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/repository/testing.html">testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/response/index.html">response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/sse.html">SSE (Server Sent Events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/routes.html">routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/security/index.html">security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/security/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/stores/index.html">stores</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/valkey.html">valkey</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/typing.html">typing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Onboarding from other frameworks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fastapi.html">FastAPI</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Flask</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../topics/index.html">Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/todo-app/index.html">Developing a basic TODO application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/03-repository-controller.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/04-repository-other.html#slug-fields">Slug Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/04-repository-other.html#full-code">Full Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribution-guide.html">Contribution Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#layered-configuration">Layered configuration</a></li>
+<li><a class="reference internal" href="#route-handlers">Route handlers</a><ul>
+<li><a class="reference internal" href="#path-parameters">Path parameters</a></li>
+<li><a class="reference internal" href="#sync-and-async-handlers">Sync and async handlers</a></li>
+<li><a class="reference internal" href="#lifespan">Lifespan</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#accessing-the-request">Accessing the request</a><ul>
+<li><a class="reference internal" href="#request-attribute-reference">Request attribute reference</a></li>
+<li><a class="reference internal" href="#per-request-state">Per-request state</a></li>
+<li><a class="reference internal" href="#the-current-application">The current application</a></li>
+<li><a class="reference internal" href="#file-uploads">File uploads</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#producing-responses">Producing responses</a><ul>
+<li><a class="reference internal" href="#status-codes">Status codes</a></li>
+<li><a class="reference internal" href="#cookies-and-headers">Cookies and headers</a></li>
+<li><a class="reference internal" href="#serialization">Serialization</a></li>
+<li><a class="reference internal" href="#url-lookup">URL lookup</a></li>
+<li><a class="reference internal" href="#templates">Templates</a></li>
+<li><a class="reference internal" href="#streaming-responses">Streaming responses</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exceptions-and-error-responses">Exceptions and error responses</a><ul>
+<li><a class="reference internal" href="#custom-exception-handlers">Custom exception handlers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#before-and-after-request-hooks">Before and after request hooks</a></li>
+<li><a class="reference internal" href="#sessions">Sessions</a></li>
+<li><a class="reference internal" href="#static-files">Static files</a></li>
+<li><a class="reference internal" href="#websockets">WebSockets</a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
+<li><a class="reference internal" href="#further-reading">Further reading</a></li>
+<li><a class="reference internal" href="#quick-reference">Quick reference</a></li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+  data-type="github" data-user="litestar-org" data-repo="litestar">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>litestar</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/onboarding/flask.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">Litestar</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">Onboarding from other frameworks</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Flask</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <div class="copy-page-wrapper relative pb-4 lg:absolute lg:top-8 lg:right-6 xl:right-12">
+  <div id="copy-page-trigger">
+    <button
+      type="button"
+      class="js-copy px-3 py-1 inline-flex items-center gap-1"
+      data-url="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/onboarding/flask.rst"
+    >
+      <i class="i-lucide" data-icon="copy"></i>
+      <span>Copy page</span>
+    </button>
+    <button class="js-menu px-2 py-1" type="button" aria-label="More actions"
+      aria-haspopup="menu" aria-expanded="false" aria-controls="copy-page-content">
+      <i class="i-lucide chevron-down"></i>
+    </button>
+  </div>
+  <div id="copy-page-content" role="menu" aria-orientation="vertical" aria-hidden="true">
+    <div role="presentation">
+      <div class="flex flex-col" role="group">
+        <button class="js-copy" type="button" role="menuitem"
+          data-url="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/onboarding/flask.rst">
+          <span class="iconify-icon">
+            <i class="i-lucide" data-icon="copy"></i>
+          </span>
+          <span>Copy page</span>
+        </button>
+        <a role="menuitem" href="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/onboarding/flask.rst" target="_blank" rel="nofollow"><iconify-icon icon="bi:code-slash"></iconify-icon>
+            <span>View Source</span></a><a role="menuitem" href="https://chatgpt.com/?hints=search&q=Read%20https%3A//raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/onboarding/flask.rst%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+          <iconify-icon icon="bi:openai"></iconify-icon>
+          <span>Open in ChatGPT</span>
+        </a><a role="menuitem" href="https://claude.ai/new?q=Read%20https%3A//raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/onboarding/flask.rst%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+          <iconify-icon icon="bi:claude"></iconify-icon>
+          <span>Open in Claude</span>
+        </a></div>
+    </div>
+  </div>
+</div><article class="yue" role="main">
+          <section id="flask">
+<h1>Flask<a class="headerlink" href="#flask" title="Link to this heading">¶</a></h1>
+<section id="layered-configuration">
+<h2>Layered configuration<a class="headerlink" href="#layered-configuration" title="Link to this heading">¶</a></h2>
+<p>Litestar uses a layered architecture. The parts used to group routes can also be used
+to hierarchically organize an application. Settings and configuration like dependencies,
+exception handlers, guards, middleware, response cookies and headers, lifecycle hooks,
+OpenAPI configuration and many more can be defined on any layer, and will be merged upon
+registration.</p>
+<p>The layers in hierarchical order are</p>
+<ol class="arabic simple">
+<li><p>Application (<code class="docutils literal notranslate"><span class="pre">Litestar</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Router</span></code> / <code class="docutils literal notranslate"><span class="pre">Controller</span></code> (these are on the same level and can be arbitrarily nested)</p></li>
+<li><p>Handler (<code class="docutils literal notranslate"><span class="pre">BaseRouteHandler</span></code>)</p></li>
+</ol>
+<p>When the same configuration is set on multiple layers, the value set closest to the
+handler takes precedence.</p>
+</section>
+<section id="route-handlers">
+<h2>Route handlers<a class="headerlink" href="#route-handlers" title="Link to this heading">¶</a></h2>
+<p>Routes are declared with method-specific decorators
+(<a class="reference internal" href="../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code></a>, <a class="reference internal" href="../reference/handlers.html#litestar.handlers.post" title="litestar.handlers.post"><code class="xref py py-func docutils literal notranslate"><span class="pre">post()</span></code></a>, …) and registered on
+an application, router or controller:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-0">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="s2">&quot;Index Page&quot;</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/hello&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">():</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="s2">&quot;Hello, World&quot;</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-1">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="6">    <span class="k">return</span> <span class="s2">&quot;Index Page&quot;</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/hello&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="s2">&quot;Hello, World&quot;</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">hello</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<p><a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Routers</span></code></a> and
+<a class="reference internal" href="../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">controllers</span></code></a> group handlers and bind them with
+a shared set of configuration. They are part of Litestar’s <em>layered architecture</em>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/routing/overview.html#registering-routes"><span class="std std-ref">Routing - Registering Routes</span></a></p></li>
+</ul>
+</div>
+<section id="path-parameters">
+<h3>Path parameters<a class="headerlink" href="#path-parameters" title="Link to this heading">¶</a></h3>
+<p>Flask declares converters inline: <code class="docutils literal notranslate"><span class="pre">&lt;int:post_id&gt;</span></code>. Litestar calls these
+“path parameters”, which are declared like <code class="docutils literal notranslate"><span class="pre">/post/{post_id:int}</span></code>. The handler can
+request a path parameter by annotating a function parameter with
+<a class="reference internal" href="../reference/params.html#litestar.params.FromPath" title="litestar.params.FromPath"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromPath</span></code></a>. By default, Litestar will try to inject a path
+parameter matching the function parameter name, but you can also specify an alias
+(see <a class="reference internal" href="../usage/routing/parameters.html#aliasing"><span class="std std-ref">Aliasing</span></a>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The type defined in the path parameter does not have to match the function
+parameter. The path parameter is what defines the inout type, and what’s reflected
+in the OpenAPI schema. The function parameter is what will be validated against.</p>
+</div>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-2">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/user/&lt;username&gt;&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">show_user_profile</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;User </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/post/&lt;int:post_id&gt;&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">show_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">):</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Post </span><span class="si">{</span><span class="n">post_id</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/path/&lt;path:subpath&gt;&quot;</span><span class="p">)</span>
+</span><span data-line="14"><span class="k">def</span><span class="w"> </span><span class="nf">show_subpath</span><span class="p">(</span><span class="n">subpath</span><span class="p">):</span>
+</span><span data-line="15">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Subpath </span><span class="si">{</span><span class="n">subpath</span><span class="si">}</span><span class="s2">&quot;</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-3">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/user/{username:str}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">show_user_profile</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="9">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;User </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="10">
+</span><span data-line="11">
+</span><span data-line="12"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/post/{post_id:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">show_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="14">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Post </span><span class="si">{</span><span class="n">post_id</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="15">
+</span><span data-line="16">
+</span><span data-line="17"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/path/{subpath:path}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="18"><span class="k">def</span><span class="w"> </span><span class="nf">show_subpath</span><span class="p">(</span><span class="n">subpath</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="19">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Subpath </span><span class="si">{</span><span class="n">subpath</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="20">
+</span><span data-line="21">
+</span><span data-line="22"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">show_user_profile</span><span class="p">,</span> <span class="n">show_post</span><span class="p">,</span> <span class="n">show_subpath</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/routing/parameters.html"><span class="doc">Parameters</span></a></p></li>
+</ul>
+</div>
+</section>
+<section id="sync-and-async-handlers">
+<h3>Sync and async handlers<a class="headerlink" href="#sync-and-async-handlers" title="Link to this heading">¶</a></h3>
+<p>Both Flask and Litestar support synchronous and asynchronous functions, but they are
+handled differently. Flask implements the <a class="reference external" href="https://peps.python.org/pep-3333/">WSGI</a>
+protocol, which is synchronous by nature, while Litestar implements
+<a class="reference external" href="https://asgi.readthedocs.io">ASGI</a>, an asynchronous protocol.</p>
+<p>When Flask runs asynchronous endpoints, they run isolated from another. The handling of
+requests is still synchronous. Litestar is asynchronous throughout, meaning one worker
+can handle many asynchronous requests concurrently.</p>
+<p>Litestar can also handle synchronous endpoints without blocking, by running them in a
+thread pool. To enable this, set <code class="docutils literal notranslate"><span class="pre">sync_to_thread=True</span></code> on the handler decorator.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>A sync handler without <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> set emits a runtime warning, since
+Litestar cannot tell whether the function blocks. Pass <code class="docutils literal notranslate"><span class="pre">sync_to_thread=False</span></code> to
+suppress the warning when the body genuinely does not block.</p>
+</div>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-4">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">slow_handler</span><span class="p">():</span>
+</span><span data-line="3">    <span class="c1"># blocking I/O on the worker</span>
+</span><span data-line="4">    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="5">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-5">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="4"><span class="k">def</span><span class="w"> </span><span class="nf">slow_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="5">    <span class="c1"># blocking on a thread, event loop remains free</span>
+</span><span data-line="6">    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="lifespan">
+<h3>Lifespan<a class="headerlink" href="#lifespan" title="Link to this heading">¶</a></h3>
+<p>Flask has <code class="docutils literal notranslate"><span class="pre">&#64;before_first_request</span></code> for startup work and no matching hook for shutdown.
+Litestar accepts one or more async context managers through
+<a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.lifespan" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">lifespan</span></code></a>; setup goes before the <code class="docutils literal notranslate"><span class="pre">yield</span></code>, teardown
+after.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@asynccontextmanager</span>
+</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="9">    <span class="c1"># Setup: open database pool, warm caches, etc.</span>
+</span><span data-line="10">    <span class="k">yield</span>
+</span><span data-line="11">    <span class="c1"># Teardown: close resources.</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="15"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="16">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+</span><span data-line="17">
+</span><span data-line="18">
+</span><span data-line="19"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">lifespan</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="accessing-the-request">
+<h2>Accessing the request<a class="headerlink" href="#accessing-the-request" title="Link to this heading">¶</a></h2>
+<p>Flask exposes the current request through <code class="docutils literal notranslate"><span class="pre">flask.request</span></code>, a thread-local proxy. In
+Litestar a handler that needs the request asks for it by name; the parameter is typed
+as <a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-6">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">}</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-7">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="6">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">}</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<section id="request-attribute-reference">
+<h3>Request attribute reference<a class="headerlink" href="#request-attribute-reference" title="Link to this heading">¶</a></h3>
+<p>The table maps each <code class="docutils literal notranslate"><span class="pre">flask.Request</span></code> attribute to its Litestar counterpart</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Flask</p></th>
+<th class="head"><p>Litestar</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.args</span></code></p></td>
+<td><p>Injected via function parameters marked with <code class="docutils literal notranslate"><span class="pre">FromQuery</span></code>. Direct access through <code class="docutils literal notranslate"><span class="pre">request.query_params</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.base_url</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.base_url</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.authorization</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.auth</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.cache_control</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;cache-control&quot;)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.content_encoding</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;content-encoding&quot;)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.content_length</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;content-length&quot;)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.content_type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.content_type</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.cookies</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.cookies</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.data</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">request.body()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;date&quot;)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.endpoint</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.route_handler.name</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.environ</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.scope</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.files</span></code></p></td>
+<td><p>Injected via <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.UploadFile" title="litestar.datastructures.UploadFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">UploadFile</span></code></a>; see <a class="reference internal" href="../usage/requests.html#content-type"><span class="std std-ref">Content-type</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.form</span></code></p></td>
+<td><p>Injected via the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter, marked with <code class="docutils literal notranslate"><span class="pre">Body</span></code>, see <a class="reference internal" href="../usage/requests.html#content-type"><span class="std std-ref">Content-type</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.get_json</span></code></p></td>
+<td><p>Injected via the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.headers</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.host</span></code></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-dash" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10a.75.75 0 0 1 0 1.5h-10A.75.75 0 0 1 2 7.75Z"></path></svg></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.if_match</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;if-match&quot;)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.if_modified_since</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;if-modified-since&quot;)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.if_none_match</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;if-none-match&quot;)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.if_range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;if-range&quot;)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.if_unmodified_since</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;if-unmodified-since&quot;)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.method</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.method</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.path</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.scope[&quot;path&quot;]</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.query_string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.scope[&quot;query_string&quot;]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;range&quot;)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.referer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;referer&quot;)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.remote_addr</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.client.host</span></code>  / <code class="docutils literal notranslate"><span class="pre">request.client.port</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.root_path</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.scope[&quot;root_path&quot;]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.server</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.scope[&quot;server&quot;]</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">request.url</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.url</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request.user_agent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.headers.get(&quot;user-agent&quot;)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/requests.html"><span class="doc">Requests</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/connection.html"><span class="doc">connection</span></a></p></li>
+</ul>
+</div>
+</section>
+<section id="per-request-state">
+<h3>Per-request state<a class="headerlink" href="#per-request-state" title="Link to this heading">¶</a></h3>
+<p>Flask uses <code class="docutils literal notranslate"><span class="pre">flask.g</span></code> for values that should live for the duration of a single request.
+Litestar uses <code class="docutils literal notranslate"><span class="pre">request.state</span></code>, a mutable mapping attached to the request.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-8">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">request</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">set_user</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7">    <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;x-user&quot;</span><span class="p">,</span> <span class="s2">&quot;anonymous&quot;</span><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="p">}</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-9">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">def</span><span class="w"> </span><span class="nf">set_user_on_request</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5">    <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;x-user&quot;</span><span class="p">,</span> <span class="s2">&quot;anonymous&quot;</span><span class="p">)</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="10">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]}</span>
+</span><span data-line="11">
+</span><span data-line="12">
+</span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">before_request</span><span class="o">=</span><span class="n">set_user_on_request</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-current-application">
+<h3>The current application<a class="headerlink" href="#the-current-application" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">flask.current_app</span></code> is a thread-local proxy. Litestar exposes the application as
+<code class="docutils literal notranslate"><span class="pre">request.app</span></code>, or as an <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter on lifecycle hooks and middleware factories.</p>
+</section>
+<section id="file-uploads">
+<h3>File uploads<a class="headerlink" href="#file-uploads" title="Link to this heading">¶</a></h3>
+<p>Flask exposes uploaded files through <code class="docutils literal notranslate"><span class="pre">request.files</span></code>. Litestar binds them to a
+<code class="docutils literal notranslate"><span class="pre">data</span></code> parameter typed as <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.UploadFile" title="litestar.datastructures.UploadFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">UploadFile</span></code></a> (or a list of
+them), with <code class="docutils literal notranslate"><span class="pre">media_type</span></code> set to
+<a class="reference internal" href="../reference/enums.html#litestar.enums.RequestEncodingType" title="litestar.enums.RequestEncodingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestEncodingType.URL_ENCODED</span></code></a> or
+<a class="reference internal" href="../reference/enums.html#litestar.enums.RequestEncodingType" title="litestar.enums.RequestEncodingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestEncodingType.MULTI_PART</span></code></a></p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-10">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/upload&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">():</span>
+</span><span data-line="7">    <span class="n">f</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+</span><span data-line="8">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">filename</span><span class="p">}</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-11">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEncodingType</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span>
+</span><span data-line="11">    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
+</span><span data-line="12"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span><span class="p">}</span>
+</span><span data-line="14">
+</span><span data-line="15">
+</span><span data-line="16"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">upload</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="producing-responses">
+<h2>Producing responses<a class="headerlink" href="#producing-responses" title="Link to this heading">¶</a></h2>
+<section id="status-codes">
+<h3>Status codes<a class="headerlink" href="#status-codes" title="Link to this heading">¶</a></h3>
+<p>Flask overrides the default <code class="docutils literal notranslate"><span class="pre">200</span></code> by returning a <code class="docutils literal notranslate"><span class="pre">(body,</span> <span class="pre">status)</span></code> tuple. Litestar
+declares the status code on the decorator with <code class="docutils literal notranslate"><span class="pre">status_code=</span></code> when it is fixed for the
+handler, and on the <a class="reference internal" href="../reference/response/index.html#litestar.response.Response" title="litestar.response.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> instance when it depends on the
+request.</p>
+<p>Litestar picks the status code from the HTTP method by default: <code class="docutils literal notranslate"><span class="pre">POST</span></code> defaults to
+<code class="docutils literal notranslate"><span class="pre">201</span> <span class="pre">Created</span></code>, <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> to <code class="docutils literal notranslate"><span class="pre">204</span> <span class="pre">No</span> <span class="pre">Content</span></code>, everything else to <code class="docutils literal notranslate"><span class="pre">200</span> <span class="pre">OK</span></code>.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-12">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="s2">&quot;not found&quot;</span><span class="p">,</span> <span class="mi">404</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-13">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">static_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="6">    <span class="k">return</span> <span class="s2">&quot;not found&quot;</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/dynamic&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">dynamic_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s2">&quot;not found&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">static_status</span><span class="p">,</span> <span class="n">dynamic_status</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="cookies-and-headers">
+<h3>Cookies and headers<a class="headerlink" href="#cookies-and-headers" title="Link to this heading">¶</a></h3>
+<p>Flask builds a response with <code class="docutils literal notranslate"><span class="pre">make_response</span></code> and mutates it. Litestar offers two
+paths: declare static values on the decorator with <code class="docutils literal notranslate"><span class="pre">response_cookies</span></code> and
+<code class="docutils literal notranslate"><span class="pre">response_headers</span></code>, or return a <a class="reference internal" href="../reference/response/index.html#litestar.response.Response" title="litestar.response.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> with <code class="docutils literal notranslate"><span class="pre">cookies=</span></code>
+and <code class="docutils literal notranslate"><span class="pre">headers=</span></code> when the values depend on the request.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-14">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">make_response</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+</span><span data-line="7">    <span class="n">response</span> <span class="o">=</span> <span class="n">make_response</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
+</span><span data-line="8">    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">,</span> <span class="s2">&quot;cookie-value&quot;</span><span class="p">)</span>
+</span><span data-line="9">    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;my-header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;header-value&quot;</span>
+</span><span data-line="10">    <span class="k">return</span> <span class="n">response</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-15">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cookie</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span>
+</span><span data-line="6">    <span class="s2">&quot;/static&quot;</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">response_headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-header&quot;</span><span class="p">:</span> <span class="s2">&quot;header-value&quot;</span><span class="p">},</span>
+</span><span data-line="8">    <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;cookie-value&quot;</span><span class="p">)],</span>
+</span><span data-line="9">    <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span data-line="10"><span class="p">)</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">static</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="12">    <span class="k">return</span> <span class="s2">&quot;hello&quot;</span>
+</span><span data-line="13">
+</span><span data-line="14">
+</span><span data-line="15"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/dynamic&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="16"><span class="k">def</span><span class="w"> </span><span class="nf">dynamic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="17">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="18">        <span class="s2">&quot;hello&quot;</span><span class="p">,</span>
+</span><span data-line="19">        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-header&quot;</span><span class="p">:</span> <span class="s2">&quot;header-value&quot;</span><span class="p">},</span>
+</span><span data-line="20">        <span class="n">cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;cookie-value&quot;</span><span class="p">)],</span>
+</span><span data-line="21">    <span class="p">)</span>
+</span><span data-line="22">
+</span><span data-line="23">
+</span><span data-line="24"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">static</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/responses.html#setting-response-headers"><span class="std std-ref">Responses - Setting Response Headers</span></a></p></li>
+<li><p><a class="reference internal" href="../usage/responses.html#setting-response-cookies"><span class="std std-ref">Responses - Setting Response Cookies</span></a></p></li>
+</ul>
+</div>
+</section>
+<section id="serialization">
+<h3>Serialization<a class="headerlink" href="#serialization" title="Link to this heading">¶</a></h3>
+<p>Flask mixes explicit <code class="docutils literal notranslate"><span class="pre">jsonify</span></code> calls with inference from the return value.
+Litestar infers content encoding type from a handler’s return annotation. Structured
+types (<code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>, dataclasses, Pydantic models, msgspec <code class="docutils literal notranslate"><span class="pre">Struct</span></code>s, attrs
+classes, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.TypedDict</span></code></a>, etc.) default to JSON, <code class="docutils literal notranslate"><span class="pre">str</span></code> returns
+<code class="docutils literal notranslate"><span class="pre">text/plain</span></code>. You can set a <code class="docutils literal notranslate"><span class="pre">media_type=</span></code> on the handler decorator to override these
+defaults.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-16">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">Response</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/json&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">get_json</span><span class="p">():</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/text&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">get_text</span><span class="p">():</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="s2">&quot;hello, world&quot;</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/html&quot;</span><span class="p">)</span>
+</span><span data-line="14"><span class="k">def</span><span class="w"> </span><span class="nf">get_html</span><span class="p">():</span>
+</span><span data-line="15">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s2">&quot;&lt;strong&gt;hello, world&lt;/strong&gt;&quot;</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s2">&quot;text/html&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-17">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/json&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">get_json</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="6">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/text&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">get_text</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="s2">&quot;hello, world&quot;</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/html&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">HTML</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">get_html</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="16">    <span class="k">return</span> <span class="s2">&quot;&lt;strong&gt;hello, world&lt;/strong&gt;&quot;</span>
+</span><span data-line="17">
+</span><span data-line="18">
+</span><span data-line="19"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_json</span><span class="p">,</span> <span class="n">get_text</span><span class="p">,</span> <span class="n">get_html</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/responses.html#media-type"><span class="std std-ref">Media Type</span></a></p>
+</div>
+</section>
+<section id="url-lookup">
+<h3>URL lookup<a class="headerlink" href="#url-lookup" title="Link to this heading">¶</a></h3>
+<p>Flask exposes <code class="docutils literal notranslate"><span class="pre">url_for(endpoint,</span> <span class="pre">**params)</span></code> as a module-level function.
+Litestar exposes <a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection.url_for" title="litestar.connection.ASGIConnection.url_for"><code class="xref py py-meth docutils literal notranslate"><span class="pre">request.url_for</span></code></a> on
+the request instead. The endpoint name comes from an explicit <code class="docutils literal notranslate"><span class="pre">name=</span></code> keyword on the
+handler decorator, the equivalent of Flask’s view-function name.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-18">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">url_for</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-19">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redirect</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="s2">&quot;hello&quot;</span>
+</span><span data-line="8">
+</span><span data-line="9">
+</span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/hello&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
+</span><span data-line="12">    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">))</span>
+</span><span data-line="13">
+</span><span data-line="14">
+</span><span data-line="15"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">hello</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="templates">
+<h3>Templates<a class="headerlink" href="#templates" title="Link to this heading">¶</a></h3>
+<p>Flask ships Jinja2 and renders templates with <code class="docutils literal notranslate"><span class="pre">render_template</span></code>. Litestar treats
+templating as opt-in: Jinja2 is available through the <code class="docutils literal notranslate"><span class="pre">litestar[jinja]</span></code> extra, Mako
+through <code class="docutils literal notranslate"><span class="pre">litestar[mako]</span></code>. The engine is configured on the application through
+<a class="reference internal" href="../reference/template.html#litestar.template.TemplateConfig" title="litestar.template.config.TemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateConfig</span></code></a>, and each handler returns a
+<a class="reference internal" href="../reference/response/index.html#litestar.response.Template" title="litestar.response.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> — the equivalent of <code class="docutils literal notranslate"><span class="pre">render_template</span></code>’s return
+value.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-20">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">render_template</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/hello/&lt;name&gt;&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;hello.html&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-21">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.jinja</span><span class="w"> </span><span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.template.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateConfig</span>
+</span><span data-line="8">
+</span><span data-line="9">
+</span><span data-line="10"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/hello/{name:str}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
+</span><span data-line="12">    <span class="k">return</span> <span class="n">Template</span><span class="p">(</span>
+</span><span data-line="13">        <span class="n">template_str</span><span class="o">=</span><span class="s2">&quot;&lt;p&gt;Hello, {{ name }}!&lt;/p&gt;&quot;</span><span class="p">,</span>
+</span><span data-line="14">        <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span>
+</span><span data-line="15">    <span class="p">)</span>
+</span><span data-line="16">
+</span><span data-line="17">
+</span><span data-line="18"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="19">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello</span><span class="p">],</span>
+</span><span data-line="20">    <span class="n">template_config</span><span class="o">=</span><span class="n">TemplateConfig</span><span class="p">(</span>
+</span><span data-line="21">        <span class="n">directory</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span>
+</span><span data-line="22">        <span class="n">engine</span><span class="o">=</span><span class="n">JinjaTemplateEngine</span><span class="p">,</span>
+</span><span data-line="23">    <span class="p">),</span>
+</span><span data-line="24"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/templating.html"><span class="doc">Templating</span></a></p></li>
+</ul>
+</div>
+</section>
+<section id="streaming-responses">
+<h3>Streaming responses<a class="headerlink" href="#streaming-responses" title="Link to this heading">¶</a></h3>
+<p>Flask streams by returning a generator wrapped in <code class="docutils literal notranslate"><span class="pre">flask.Response</span></code>. In Litestar, you
+can return a <a class="reference internal" href="../reference/response/index.html#litestar.response.Stream" title="litestar.response.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> built from a sync or async iterator.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-22">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">Response</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/stream&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">stream</span><span class="p">():</span>
+</span><span data-line="7">    <span class="k">def</span><span class="w"> </span><span class="nf">gen</span><span class="p">():</span>
+</span><span data-line="8">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+</span><span data-line="9">            <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;data: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+</span><span data-line="10">
+</span><span data-line="11">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">gen</span><span class="p">(),</span> <span class="n">mimetype</span><span class="o">=</span><span class="s2">&quot;text/event-stream&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-23" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-23">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">event_source</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+</span><span data-line="8">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+</span><span data-line="9">        <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;data: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+</span><span data-line="10">
+</span><span data-line="11">
+</span><span data-line="12"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/stream&quot;</span><span class="p">)</span>
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">:</span>
+</span><span data-line="14">    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="n">event_source</span><span class="p">(),</span> <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;text/event-stream&quot;</span><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16">
+</span><span data-line="17"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">stream</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="exceptions-and-error-responses">
+<h2>Exceptions and error responses<a class="headerlink" href="#exceptions-and-error-responses" title="Link to this heading">¶</a></h2>
+<p>Flask aborts with <code class="docutils literal notranslate"><span class="pre">abort(code,</span> <span class="pre">description)</span></code>. Litestar raises an
+<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPException</span></code></a> (or a subclass) directly.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-24" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-24">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">abort</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
+</span><span data-line="7">    <span class="n">abort</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="s2">&quot;this did not work&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-25" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-25">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;this did not work&quot;</span><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9">
+</span><span data-line="10"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/exceptions.html"><span class="doc">Exceptions and exception handling</span></a></p></li>
+</ul>
+</div>
+<section id="custom-exception-handlers">
+<h3>Custom exception handlers<a class="headerlink" href="#custom-exception-handlers" title="Link to this heading">¶</a></h3>
+<p>Flask registers handlers through <code class="docutils literal notranslate"><span class="pre">&#64;app.errorhandler</span></code>. Litestar accepts a mapping from
+an exception class or status code to a handler callable.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Exception handling is part of Litestar’s layered architecture, so these
+can be declared on applications, routers, controllers or route handlers.</p>
+</div>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-26" name="sd-tab-set-13" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-26">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">handle_exception</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+</span><span data-line="8">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">description</span><span class="p">},</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-27" name="sd-tab-set-13" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-27">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">handle_http_exception</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="n">HTTPException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+</span><span data-line="6">    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="7">        <span class="p">{</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="n">exception</span><span class="o">.</span><span class="n">detail</span><span class="p">},</span>
+</span><span data-line="8">        <span class="n">status_code</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+</span><span data-line="9">    <span class="p">)</span>
+</span><span data-line="10">
+</span><span data-line="11">
+</span><span data-line="12"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="14">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;this did not work&quot;</span><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16">
+</span><span data-line="17"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="18">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+</span><span data-line="19">    <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span><span class="n">HTTPException</span><span class="p">:</span> <span class="n">handle_http_exception</span><span class="p">},</span>
+</span><span data-line="20"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/exceptions.html#exception-handling"><span class="std std-ref">Exception handling</span></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+<section id="before-and-after-request-hooks">
+<h2>Before and after request hooks<a class="headerlink" href="#before-and-after-request-hooks" title="Link to this heading">¶</a></h2>
+<p>Flask uses <code class="docutils literal notranslate"><span class="pre">&#64;app.before_request</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;app.after_request</span></code>. Litestar accepts the same
+callables through the <code class="docutils literal notranslate"><span class="pre">before_request</span></code> and <code class="docutils literal notranslate"><span class="pre">after_request</span></code> keyword arguments on any
+layer.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Lifecycle hooks are part of Litestar’s layered architecture, so these
+can be declared on applications, routers, controllers or route handlers</p>
+</div>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-28" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-28">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">g</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
+</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">attach_user</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7">    <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="s2">&quot;alice&quot;</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@app</span><span class="o">.</span><span class="n">after_request</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">wrap_text</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+</span><span data-line="11">    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">mimetype</span> <span class="o">==</span> <span class="s2">&quot;text/plain&quot;</span><span class="p">:</span>
+</span><span data-line="12">        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">as_text</span><span class="o">=</span><span class="kc">True</span><span class="p">)}</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="n">response</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-29" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-29">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">def</span><span class="w"> </span><span class="nf">attach_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5">    <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;alice&quot;</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">wrap_text_responses</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+</span><span data-line="9">    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">media_type</span> <span class="o">==</span> <span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">:</span>
+</span><span data-line="10">        <span class="k">return</span> <span class="n">Response</span><span class="p">({</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">})</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="n">response</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/hello&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="16">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;hello, </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="17">
+</span><span data-line="18">
+</span><span data-line="19"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="20">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello</span><span class="p">],</span>
+</span><span data-line="21">    <span class="n">before_request</span><span class="o">=</span><span class="n">attach_user</span><span class="p">,</span>
+</span><span data-line="22">    <span class="n">after_request</span><span class="o">=</span><span class="n">wrap_text_responses</span><span class="p">,</span>
+</span><span data-line="23"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/lifecycle-hooks.html"><span class="doc">Life Cycle Hooks</span></a></p></li>
+</ul>
+</div>
+</section>
+<section id="sessions">
+<h2>Sessions<a class="headerlink" href="#sessions" title="Link to this heading">¶</a></h2>
+<p>Flask exposes <code class="docutils literal notranslate"><span class="pre">flask.session</span></code> as a thread-local dictionary backed by a signed cookie.
+Litestar provides sessions via a session middleware, and exposes <code class="docutils literal notranslate"><span class="pre">request.session</span></code> as
+a mutable mapping. Two backends are available:
+<a class="reference internal" href="../reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig" title="litestar.middleware.session.server_side.ServerSideSessionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSideSessionConfig</span></code></a> keeps the data
+on the server and a session id in the cookie;
+<a class="reference internal" href="../reference/middleware/session/client_side.html#litestar.middleware.session.client_side.CookieBackendConfig" title="litestar.middleware.session.client_side.CookieBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code></a>
+stores encrypted data in the cookie itself (closest to Flask’s default).</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-30" name="sd-tab-set-15" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-30">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">session</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="4"><span class="n">app</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">():</span>
+</span><span data-line="8">    <span class="n">session</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;alice&quot;</span>
+</span><span data-line="9">    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/whoami&quot;</span><span class="p">)</span>
+</span><span data-line="12"><span class="k">def</span><span class="w"> </span><span class="nf">whoami</span><span class="p">():</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">)}</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-31" name="sd-tab-set-15" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-31">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="11">    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;alice&quot;</span><span class="p">})</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/whoami&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="15"><span class="k">def</span><span class="w"> </span><span class="nf">whoami</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="16">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">)}</span>
+</span><span data-line="17">
+</span><span data-line="18">
+</span><span data-line="19"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="20">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">login</span><span class="p">,</span> <span class="n">whoami</span><span class="p">],</span>
+</span><span data-line="21">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
+</span><span data-line="22"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/middleware/builtin-middleware.html"><span class="doc">Built-in middleware</span></a></p></li>
+</ul>
+</div>
+</section>
+<section id="static-files">
+<h2>Static files<a class="headerlink" href="#static-files" title="Link to this heading">¶</a></h2>
+<p>Flask serves files from a folder named <code class="docutils literal notranslate"><span class="pre">static</span></code> automatically. Litestar offers an
+equivalent in <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a>, which can be
+registered to serve files from a configured directory:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.static_files</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_static_files_router</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">ASSETS_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;assets&quot;</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">ensure_assets</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="10">    <span class="n">ASSETS_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="11">    <span class="n">ASSETS_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="15">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="16">        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="n">ASSETS_DIR</span><span class="p">]),</span>
+</span><span data-line="17">    <span class="p">],</span>
+</span><span data-line="18">    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">ensure_assets</span><span class="p">],</span>
+</span><span data-line="19"><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/static-files.html"><span class="doc">Static files</span></a></p></li>
+</ul>
+</div>
+</section>
+<section id="websockets">
+<h2>WebSockets<a class="headerlink" href="#websockets" title="Link to this heading">¶</a></h2>
+<p>Flask does not include WebSocket support natively, but <cite>flask-sock`</cite> and
+<code class="docutils literal notranslate"><span class="pre">flask-socketio</span></code> are popular extensions from the ecosystem. Litestar does include
+native WebSocket support, coming in three different shapes:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket" title="litestar.handlers.websocket"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket()</span></code></a>: direct connection handling via raw <a class="reference external" href="https://asgi.readthedocs.io/en/latest/specs/www.html#websocket">ASGI WebSockets</a></p></li>
+<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_listener()</span></code></a>: Per-message callback style that takes
+and returns typed values; the framework handles accept, the receive loop, and
+serialisation.</p></li>
+<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_stream" title="litestar.handlers.websocket_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_stream()</span></code></a>: Async generator to produce messages that
+are pushed to the WebSocket;  the framework handles accept, the receive loop, and
+serialisation.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">chat</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="6">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;you said: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">chat</span><span class="p">])</span>
+</span></pre></div>
+</div>
+<p>For broadcast and pub/sub patterns, pair these handlers with the
+<a class="reference internal" href="../usage/channels.html"><span class="doc">channels</span></a> plugin. Channels handles per-channel subscriptions,
+history, and inter-process fan-out through a pluggable broker, and can generate
+WebSocket route handlers that publish incoming events to subscribed clients.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/websockets.html"><span class="doc">WebSockets</span></a></p></li>
+</ul>
+</div>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
+<p>Flask exposes <code class="docutils literal notranslate"><span class="pre">app.test_client()</span></code>. Litestar offers
+<a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> (which wraps an existing app) and
+<a class="reference internal" href="../reference/testing.html#litestar.testing.create_test_client" title="litestar.testing.create_test_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_test_client()</span></code></a> (which builds a fresh app from the same
+options as <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>).</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-32" name="sd-tab-set-16" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="flask" for="sd-tab-item-32">
+Flask</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span><span class="w"> </span><span class="nf">test_index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="2">    <span class="n">client</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span>
+</span><span data-line="3">    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="4">    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+</span><span data-line="5">    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;Index Page&quot;</span>
+</span></pre></div>
+</div>
+</div>
+<input id="sd-tab-item-33" name="sd-tab-set-16" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-33">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_client</span>
+</span><span data-line="4">
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="8">    <span class="k">return</span> <span class="s2">&quot;Index Page&quot;</span>
+</span><span data-line="9">
+</span><span data-line="10">
+</span><span data-line="11"><span class="k">def</span><span class="w"> </span><span class="nf">test_index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="12">    <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+</span><span data-line="13">        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="14">    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
+</span><span data-line="15">    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;Index Page&quot;</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/testing.html"><span class="doc">Testing</span></a></p></li>
+</ul>
+</div>
+</section>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Link to this heading">¶</a></h2>
+<p>These are not the only differences between Flask and Litestar, so if you want to keep
+reading about features, here’s a select list:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../usage/openapi/index.html"><span class="doc">OpenAPI</span></a></p></li>
+<li><p><a class="reference internal" href="../usage/dependency-injection.html"><span class="doc">Dependency Injection</span></a></p></li>
+<li><p><a class="reference internal" href="../usage/plugins/index.html"><span class="doc">Plugins</span></a></p></li>
+<li><p><a class="reference internal" href="../usage/middleware/index.html"><span class="doc">Middleware</span></a></p></li>
+</ul>
+</section>
+<section id="quick-reference">
+<span id="flask-migration-quick-reference"></span><h2>Quick reference<a class="headerlink" href="#quick-reference" title="Link to this heading">¶</a></h2>
+<p>A lookup table for the most common translations.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Flask</p></th>
+<th class="head"><p>Litestar</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Route declaration</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&#64;app.route(&quot;/&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&#64;get(&quot;/&quot;)</span></code> + <code class="docutils literal notranslate"><span class="pre">Litestar([handler])</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Path parameter</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/items/&lt;int:id&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/items/{id:int}</span></code> + <code class="docutils literal notranslate"><span class="pre">FromPath[int]</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Request access</p></td>
+<td><p>global <code class="docutils literal notranslate"><span class="pre">request</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request:</span> <span class="pre">Request</span></code> parameter</p></td>
+</tr>
+<tr class="row-odd"><td><p>Request-scoped state</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">flask.g</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.state</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Current application</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">flask.current_app</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.app</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Static files</p></td>
+<td><p>automatic <code class="docutils literal notranslate"><span class="pre">static/</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Templates</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">render_template</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Template()</span></code> + <code class="docutils literal notranslate"><span class="pre">TemplateConfig</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Cookies / headers</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">make_response</span></code> + <code class="docutils literal notranslate"><span class="pre">.set_cookie</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">response_cookies=</span></code> / <code class="docutils literal notranslate"><span class="pre">Response(...)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Redirect</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">redirect</span></code> + <code class="docutils literal notranslate"><span class="pre">url_for</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Redirect</span></code> + <code class="docutils literal notranslate"><span class="pre">request.url_for</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>URL generation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">url_for</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.url_for(handler_name)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>HTTPException</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">abort(400,</span> <span class="pre">...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HTTPException(status_code=400,</span> <span class="pre">...)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Status code</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">body,</span> <span class="pre">status</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">status_code=</span></code> / <code class="docutils literal notranslate"><span class="pre">Response(...)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Serialization</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">jsonify</span></code> / inference</p></td>
+<td><p>return type annotation</p></td>
+</tr>
+<tr class="row-odd"><td><p>Exception handler</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&#64;app.errorhandler</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exception_handlers={Exc:</span> <span class="pre">handler}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Before/after request</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&#64;before_request</span></code> / <code class="docutils literal notranslate"><span class="pre">&#64;after_*</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">before_request=</span></code> / <code class="docutils literal notranslate"><span class="pre">after_request=</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Sessions</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">flask.session</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ServerSideSessionConfig</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>File upload</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request.files</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">UploadFile</span></code> + <code class="docutils literal notranslate"><span class="pre">Body(MULTI_PART)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Streaming response</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Response(generator,</span> <span class="pre">...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Stream(iterator)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>WebSocket</p></td>
+<td><p>not built-in</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&#64;websocket(&quot;/ws&quot;)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Lifespan</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&#64;before_first_request</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lifespan=[ctx_mgr]</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Test client</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app.test_client()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TestClient</span></code> / <code class="docutils literal notranslate"><span class="pre">create_test_client</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="fastapi.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">FastAPI</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="../topics/index.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Topics</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2026, Litestar Organization</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+<a href="https://discord.gg/litestar" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit">
+  <iconify-icon icon="simple-icons:reddit"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=639af1cb"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../_static/shibuya.js?v=cac61aee"></script></body>
+</html>

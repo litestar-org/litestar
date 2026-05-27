@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>From Starlette / FastAPI - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Topics" href="../topics/index.html" /><link rel="prev" title="From Flask" href="flask.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>For FastAPI and Starlette users - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=470ca8b0" />
@@ -23,7 +23,7 @@
   --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
 }
 </style>
-    <meta property="og:type" content="website"/><meta property="og:title" content="From Starlette / FastAPI"/>
+    <meta property="og:type" content="website"/><meta property="og:title" content="For FastAPI and Starlette users"/>
   <meta property="og:image" content="_static/logo-light.png"/>
     <meta name="twitter:card" content="summary"/>
   </head>
@@ -369,10 +369,10 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
 </ul>
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Migrating to Litestar</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="flask.html">From Flask</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">From Starlette / FastAPI</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../onboarding/index.html">Onboarding from other frameworks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding/fastapi.html">FastAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding/flask.html">Flask</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../topics/index.html">Topics</a><ul>
@@ -447,24 +447,7 @@ data-aria-dark="Switch to auto color mode">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
       <i class="i-lucide close"></i>
     </button>
-    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#routing-decorators">Routing Decorators</a></li>
-<li><a class="reference internal" href="#routers-and-routes">Routers and Routes</a></li>
-<li><a class="reference internal" href="#host-based-routing">Host based routing</a></li>
-<li><a class="reference internal" href="#dependency-injection">Dependency Injection</a></li>
-<li><a class="reference internal" href="#lifespan">Lifespan</a></li>
-<li><a class="reference internal" href="#cookies">Cookies</a></li>
-<li><a class="reference internal" href="#dependencies-parameters">Dependencies parameters</a></li>
-<li><a class="reference internal" href="#post-json">Post json</a></li>
-<li><a class="reference internal" href="#default-status-codes">Default status codes</a></li>
-<li><a class="reference internal" href="#templates">Templates</a></li>
-<li><a class="reference internal" href="#uploads">Uploads</a></li>
-<li><a class="reference internal" href="#exceptions-signature">Exceptions signature</a></li>
-<li><a class="reference internal" href="#authentication">Authentication</a></li>
-<li><a class="reference internal" href="#dependency-overrides">Dependency overrides</a></li>
-<li><a class="reference internal" href="#middleware">Middleware</a></li>
-</ul>
-</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
     <iconify-icon icon="simple-icons:github"></iconify-icon>
@@ -503,12 +486,8 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="1" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <a itemprop="item" href="index.html"><span itemprop="name">Migrating to Litestar</span></a>
-        <span>/</span>
+        <strong itemprop="name">For FastAPI and Starlette users</strong>
         <meta itemprop="position" content="2" />
-      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">From Starlette / FastAPI</strong>
-        <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
@@ -555,464 +534,9 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </div><article class="yue" role="main">
-          <section id="from-starlette-fastapi">
-<h1>From Starlette / FastAPI<a class="headerlink" href="#from-starlette-fastapi" title="Link to this heading">¶</a></h1>
-<section id="routing-decorators">
-<h2>Routing Decorators<a class="headerlink" href="#routing-decorators" title="Link to this heading">¶</a></h2>
-<p>Litestar does not include any decorator as part of the <code class="docutils literal notranslate"><span class="pre">Router</span></code> or <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instances.
-Instead, all routes are declared using <a class="reference internal" href="../usage/routing/handlers.html"><span class="doc">route handlers</span></a>, either as standalone functions or
-controller methods. The handler can then be registered on an application or router instance.</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-0">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
-</span><span data-line="2">
-</span><span data-line="3">
-</span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
-</span><span data-line="5">
-</span><span data-line="6">
-</span><span data-line="7"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="starlette" for="sd-tab-item-1">
-Starlette</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">starlette.applications</span><span class="w"> </span><span class="kn">import</span> <span class="n">Starlette</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">starlette.routing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Route</span>
-</span><span data-line="3">
-</span><span data-line="4">
-</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span> <span class="o">...</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="n">routes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">index</span><span class="p">)]</span>
-</span><span data-line="9">
-</span><span data-line="10"><span class="n">app</span> <span class="o">=</span> <span class="n">Starlette</span><span class="p">(</span><span class="n">routes</span><span class="o">=</span><span class="n">routes</span><span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-2">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2">
-</span><span data-line="3">
-</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">index</span><span class="p">])</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>To learn more about registering routes, check out this chapter
-in the documentation:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="../usage/routing/overview.html#registering-routes"><span class="std std-ref">Routing - Registering Routes</span></a></p></li>
-</ul>
-</div>
-</section>
-<section id="routers-and-routes">
-<h2>Routers and Routes<a class="headerlink" href="#routers-and-routes" title="Link to this heading">¶</a></h2>
-<p>There are a few key differences between Litestar’s and Starlette’s <code class="docutils literal notranslate"><span class="pre">Router</span></code> class:</p>
-<ol class="arabic simple">
-<li><p>The Litestar version is not an ASGI app</p></li>
-<li><p>The Litestar version does not include decorators: Use <a class="reference internal" href="../usage/routing/handlers.html"><span class="doc">route handlers</span></a>.</p></li>
-<li><p>The Litestar version does not support lifecycle hooks: Those have to be handled on the application layer. See <a class="reference internal" href="../usage/lifecycle-hooks.html"><span class="doc">lifecycle hooks</span></a></p></li>
-</ol>
-<p>If you are using Starlette’s <code class="docutils literal notranslate"><span class="pre">Route</span></code>s, you will need to replace these with <a class="reference internal" href="../usage/routing/handlers.html"><span class="doc">route handlers</span></a>.</p>
-</section>
-<section id="host-based-routing">
-<h2>Host based routing<a class="headerlink" href="#host-based-routing" title="Link to this heading">¶</a></h2>
-<p>Host based routing class is intentionally unsupported. If your application relies on <code class="docutils literal notranslate"><span class="pre">Host</span></code> you will have to separate
-the logic into different services and handle this part of request dispatching with a proxy server like <a class="reference external" href="https://www.nginx.com/">nginx</a>
-or <a class="reference external" href="https://traefik.io/">traefik</a>.</p>
-</section>
-<section id="dependency-injection">
-<h2>Dependency Injection<a class="headerlink" href="#dependency-injection" title="Link to this heading">¶</a></h2>
-<p>The Litestar dependency injection system is different from the one used by FastAPI. You can read about it in
-the <a class="reference internal" href="../usage/dependency-injection.html"><span class="doc">dependency injection</span></a> section of the documentation.</p>
-<p>In FastAPI you declare dependencies either as a list of functions passed to the <code class="docutils literal notranslate"><span class="pre">Router</span></code> or <code class="docutils literal notranslate"><span class="pre">FastAPI</span></code> instances, or as a
-default function argument value wrapped in an instance of the <code class="docutils literal notranslate"><span class="pre">Depends</span></code> class.</p>
-<p>In Litestar <strong>dependencies are always declared using a dictionary</strong> with a string key and the value wrapped in an
-instance of the <code class="docutils literal notranslate"><span class="pre">Provide</span></code> class. This also allows to transparently override dependencies on every level of the application,
-and to easily access dependencies from higher levels.</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-3">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">APIRouter</span>
-</span><span data-line="2">
-</span><span data-line="3">
-</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">route_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="5">
-</span><span data-line="6">
-</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">nested_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">router_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="11">
-</span><span data-line="12">
-</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">app_dependency</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">nested_dependency</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="14">
-</span><span data-line="15">
-</span><span data-line="16"><span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">router_dependency</span><span class="p">)])</span>
-</span><span data-line="17"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">nested_dependency</span><span class="p">)])</span>
-</span><span data-line="18"><span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">router</span><span class="p">)</span>
-</span><span data-line="19">
-</span><span data-line="20">
-</span><span data-line="21"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="22"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
-</span><span data-line="23">    <span class="n">val_route</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">route_dependency</span><span class="p">),</span>
-</span><span data-line="24">    <span class="n">val_router</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">router_dependency</span><span class="p">),</span>
-</span><span data-line="25">    <span class="n">val_nested</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">nested_dependency</span><span class="p">),</span>
-</span><span data-line="26">    <span class="n">val_app</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">app_dependency</span><span class="p">),</span>
-</span><span data-line="27"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-4">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Router</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="3">
-</span><span data-line="4">
-</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">route_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">nested_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="9">
-</span><span data-line="10">
-</span><span data-line="11"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">router_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="12">
-</span><span data-line="13">
-</span><span data-line="14"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">app_dependency</span><span class="p">(</span><span class="n">nested</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="15">
-</span><span data-line="16">
-</span><span data-line="17"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;val_route&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">route_dependency</span><span class="p">)})</span>
-</span><span data-line="18"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
-</span><span data-line="19">    <span class="n">val_route</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">val_router</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">val_nested</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val_app</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="20"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="21">
-</span><span data-line="22">
-</span><span data-line="23"><span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;val_router&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">router_dependency</span><span class="p">)})</span>
-</span><span data-line="24"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="25">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span>
-</span><span data-line="26">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="27">        <span class="s2">&quot;val_app&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">app_dependency</span><span class="p">),</span>
-</span><span data-line="28">        <span class="s2">&quot;val_nested&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">nested_dependency</span><span class="p">),</span>
-</span><span data-line="29">    <span class="p">},</span>
-</span><span data-line="30"><span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>To learn more about dependency injection, check out this chapter
-in the documentation:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="../usage/dependency-injection.html"><span class="doc">Dependency Injection</span></a></p></li>
-</ul>
-</div>
-</section>
-<section id="lifespan">
-<h2>Lifespan<a class="headerlink" href="#lifespan" title="Link to this heading">¶</a></h2>
-<p>Litestar uses the same async context manager style as FastAPI, so the code does not need to be changed:</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-5">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@asynccontextmanager</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span>
-</span><span data-line="3">    <span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span>
-</span><span data-line="4"><span class="p">):</span>
-</span><span data-line="5">    <span class="c1"># Setup code here</span>
-</span><span data-line="6">    <span class="k">yield</span>
-</span><span data-line="7">    <span class="c1"># Teardown code here</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-6" name="sd-tab-set-2" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-6">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@asynccontextmanager</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span>
-</span><span data-line="3">    <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span>
-</span><span data-line="4"><span class="p">):</span>
-</span><span data-line="5">    <span class="c1"># Setup code here</span>
-</span><span data-line="6">    <span class="k">yield</span>
-</span><span data-line="7">    <span class="c1"># Teardown code here</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="cookies">
-<h2>Cookies<a class="headerlink" href="#cookies" title="Link to this heading">¶</a></h2>
-<p>While with FastAPI you usually set cookies on the response <code class="docutils literal notranslate"><span class="pre">Response</span></code> object, in Litestar there are two options: At the decorator level, using the <code class="docutils literal notranslate"><span class="pre">response_cookies</span></code> keyword argument, or dynamically at the response level (see: <a class="reference internal" href="../usage/responses.html#setting-cookies-dynamically"><span class="std std-ref">Setting Cookies dynamically</span></a>)</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-7">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="3">    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;my_cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;cookie_value&quot;</span><span class="p">)</span>
-</span><span data-line="4">    <span class="o">...</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-8" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-8">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="n">response_cookies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;cookie-value&quot;</span><span class="p">})</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="3">    <span class="o">...</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="dependencies-parameters">
-<h2>Dependencies parameters<a class="headerlink" href="#dependencies-parameters" title="Link to this heading">¶</a></h2>
-<p>The way dependencies parameters are passed differs between FastAPI and Litestar, note the <cite>state: State</cite> parameter in the Litestar example.
-You can get the state either with the state kwarg in the handler or <code class="docutils literal notranslate"><span class="pre">request.state</span></code> (which point to the same object, a request local state, inherited from the application’s state), or via <cite>request.app.state</cite>, the application’s state.</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-9">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_arqredis</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArqRedis</span><span class="p">:</span>
-</span><span data-line="4">    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">arqredis</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-10" name="sd-tab-set-4" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-10">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_arqredis</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArqRedis</span><span class="p">:</span>
-</span><span data-line="4">    <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">arqredis</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="post-json">
-<h2>Post json<a class="headerlink" href="#post-json" title="Link to this heading">¶</a></h2>
-<p>In FastAPI, you pass the JSON object directly as a parameter to the endpoint, which will then be validated by Pydantic. In Litestar, you use the <cite>data</cite> keyword argument. The data will be parsed and validated by the associated modelling library.</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-11">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">ObjectType</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="2">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/items/&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="n">object_name</span><span class="p">:</span> <span class="n">ObjectType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="6">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">object_name</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-12" name="sd-tab-set-5" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-12">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">post</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">ObjectType</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="5">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/items/&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">ObjectType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="9">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="default-status-codes">
-<h2>Default status codes<a class="headerlink" href="#default-status-codes" title="Link to this heading">¶</a></h2>
-<p>Post defaults to 200 in FastApi and 201 in Litestar.</p>
-</section>
-<section id="templates">
-<h2>Templates<a class="headerlink" href="#templates" title="Link to this heading">¶</a></h2>
-<p>In FastAPI, you use <cite>TemplateResponse</cite> to render templates. In Litestar, you use the <cite>Template</cite> class.
-Also FastAPI let you pass a dictionary while in Litestar you need to explicitly pass the context kwarg.</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-13">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/uploads&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_uploads</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-</span><span data-line="3">    <span class="k">return</span> <span class="n">templates</span><span class="o">.</span><span class="n">TemplateResponse</span><span class="p">(</span>
-</span><span data-line="4">        <span class="s2">&quot;uploads.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="n">request</span><span class="p">,</span> <span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">debug</span><span class="p">}</span>
-</span><span data-line="5">    <span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-14" name="sd-tab-set-6" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-14">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/uploads&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_uploads</span><span class="p">(</span><span class="n">app_settings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
-</span><span data-line="3">    <span class="k">return</span> <span class="n">Template</span><span class="p">(</span>
-</span><span data-line="4">        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;uploads.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="n">app_settings</span><span class="o">.</span><span class="n">debug</span><span class="p">}</span>
-</span><span data-line="5">    <span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="uploads">
-<h2>Uploads<a class="headerlink" href="#uploads" title="Link to this heading">¶</a></h2>
-<p>In FastAPI, you use the <cite>File</cite> class to handle file uploads. In Litestar, you use the <cite>data</cite> keyword argument with <cite>Body</cite> and specify the <cite>media_type</cite> as <cite>RequestEncodingType.MULTI_PART</cite>.
-While this is more verbose, it’s also more explicit and communicates the intent more clearly.</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-15">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/upload/&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">]</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="3">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;file_names&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]}</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-16" name="sd-tab-set-7" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-16">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload/&quot;</span><span class="p">)</span>
-</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="3">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;file_names&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]}</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">upload_file</span><span class="p">])</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="exceptions-signature">
-<h2>Exceptions signature<a class="headerlink" href="#exceptions-signature" title="Link to this heading">¶</a></h2>
-<p>In FastAPI, status code and exception details can be passed to <cite>HTTPException</cite> as positional arguments, while in Litestar they are set with keywords arguments, e.g. <cite>status_code</cite>. Positional arguments to <cite>HTTPException</cite> in Litestar will be added to the exception detail.
-If migrating you just change your HTTPException import this will break.</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-17">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="7">    <span class="n">response_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">}</span>
-</span><span data-line="8">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
-</span><span data-line="9">        <span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;can&#39;t get that field: </span><span class="si">{</span><span class="n">response_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;array&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="10">    <span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-18" name="sd-tab-set-8" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-18">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="6">    <span class="n">response_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">}</span>
-</span><span data-line="7">    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
-</span><span data-line="8">        <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;can&#39;t get that field: </span><span class="si">{</span><span class="n">response_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;array&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="9">    <span class="p">)</span>
-</span><span data-line="10">
-</span><span data-line="11"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">index</span><span class="p">])</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</section>
-<section id="authentication">
-<h2>Authentication<a class="headerlink" href="#authentication" title="Link to this heading">¶</a></h2>
-<p>FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Litestar, but the
-preferred way of handling this is extending <a class="reference internal" href="../usage/security/abstract-authentication-middleware.html"><span class="doc">Implementing Custom Authentication</span></a>.</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-19">
-FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">Request</span>
-</span><span data-line="2">
-</span><span data-line="3">
-</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="5">
-</span><span data-line="6">
-</span><span data-line="7"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
-</span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">authenticate</span><span class="p">)])</span>
-</span><span data-line="11"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
-</span></pre></div>
-</div>
-</div>
-<input id="sd-tab-item-20" name="sd-tab-set-9" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-20">
-Litestar</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">BaseRouteHandler</span>
-</span><span data-line="2">
-</span><span data-line="3">
-</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate</span><span class="p">(</span>
-</span><span data-line="5">    <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">BaseRouteHandler</span>
-</span><span data-line="6"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-</span><span data-line="7">
-</span><span data-line="8">
-</span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">authenticate</span><span class="p">])</span>
-</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>To learn more about security and authentication, check out this chapter in the
-documentation:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="../usage/security/index.html"><span class="doc">Security</span></a></p></li>
-</ul>
-</div>
-</section>
-<section id="dependency-overrides">
-<h2>Dependency overrides<a class="headerlink" href="#dependency-overrides" title="Link to this heading">¶</a></h2>
-<p>While FastAPI includes a mechanism to override dependencies on an existing application object,
-Litestar promotes architectural solutions to the issue this is aimed to solve. Therefore, overriding
-dependencies in Litestar is strictly supported at definition time, i.e. when you’re defining
-handlers, controllers, routers, and applications. Dependency overrides are fundamentally
-the same idea as mocking and should be approached with the same caution and used sparingly
-instead of being the default.</p>
-<p>To achieve the same effect there are three general approaches:</p>
-<ol class="arabic simple">
-<li><p>Structuring the application with different environments in mind. This could mean for example
-connecting to a different database depending on the environment, which in turn is set via
-and env-variable. This is sufficient and most cases and designing your application around this
-principle is a general good practice since it facilitates configurability and integration-testing
-capabilities</p></li>
-<li><p>Isolating tests for unit testing and using <code class="docutils literal notranslate"><span class="pre">create_test_client</span></code></p></li>
-<li><p>Resort to mocking if none of the above approaches can be made to work</p></li>
-</ol>
-</section>
-<section id="middleware">
-<h2>Middleware<a class="headerlink" href="#middleware" title="Link to this heading">¶</a></h2>
-<p>Pure ASGI middleware is fully compatible, and can be used with any ASGI framework. Middlewares
-that make use of FastAPI/Starlette specific middleware features such as
-Starlette’s <a class="reference external" href="https://www.starlette.io/middleware/#basehttpmiddleware">BaseHTTPMiddleware</a> are not compatible,
-but can be easily replaced by <a class="reference internal" href="../usage/middleware/creating-middleware.html"><span class="doc">Creating Middlewares</span></a>.</p>
-</section>
+          <section id="for-fastapi-and-starlette-users">
+<h1>For FastAPI and Starlette users<a class="headerlink" href="#for-fastapi-and-starlette-users" title="Link to this heading">¶</a></h1>
+<p>This content has moved to <a class="reference internal" href="../onboarding/fastapi.html"><span class="doc">FastAPI</span></a></p>
 </section>
 
         </article><button class="back-to-top" type="button">
@@ -1020,21 +544,7 @@ but can be easily replaced by <a class="reference internal" href="../usage/middl
     <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
   </svg>
   <span>Back to top</span>
-</button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="flask.html">
-      <i class="i-lucide chevron-left"></i>
-      <div class="page-info">
-        <span>Previous</span><div class="title">From Flask</div></div>
-    </a>
-  </div><div class="navigation-next">
-    <a href="../topics/index.html">
-      <div class="page-info">
-        <span>Next</span>
-        <div class="title">Topics</div>
-      </div>
-      <i class="i-lucide chevron-right"></i>
-    </a>
-  </div></div></div>
+</button><div class="navigation flex print:hidden"></div></div>
     </div>
   </main>
 </div>
