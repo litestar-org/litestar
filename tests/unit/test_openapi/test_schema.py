@@ -353,17 +353,16 @@ def test_msgspec_optional_annotated_meta_propagates() -> None:
         optional_str: Optional[Annotated[str, msgspec.Meta(min_length=2, max_length=8, pattern="^[a-z]+$")]] = None
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Body", annotation=Body))
-    props = schema.properties  # type: ignore[union-attr]
 
-    assert props["required_field"].description == "d"
-    assert props["required_field"].examples == ["ex"]
-    assert props["optional_field"].description == "d2"
-    assert props["optional_field"].examples == ["ex2"]
-    assert props["optional_int"].exclusive_minimum == 1
-    assert props["optional_int"].maximum == 100
-    assert props["optional_str"].min_length == 2
-    assert props["optional_str"].max_length == 8
-    assert props["optional_str"].pattern == "^[a-z]+$"
+    assert schema.properties["required_field"].description == "d"  # type: ignore[index, union-attr]
+    assert schema.properties["required_field"].examples == ["ex"]  # type: ignore[index, union-attr]
+    assert schema.properties["optional_field"].description == "d2"  # type: ignore[index, union-attr]
+    assert schema.properties["optional_field"].examples == ["ex2"]  # type: ignore[index, union-attr]
+    assert schema.properties["optional_int"].exclusive_minimum == 1  # type: ignore[index, union-attr]
+    assert schema.properties["optional_int"].maximum == 100  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].min_length == 2  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].max_length == 8  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].pattern == "^[a-z]+$"  # type: ignore[index, union-attr]
 
 
 def test_msgspec_union_with_metadata_arm_is_not_unwrapped() -> None:
@@ -373,10 +372,9 @@ def test_msgspec_union_with_metadata_arm_is_not_unwrapped() -> None:
         mixed: Union[Annotated[str, msgspec.Meta(description="only-str", min_length=5)], int] = ""
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Body", annotation=Body))
-    mixed = schema.properties["mixed"]  # type: ignore[index, union-attr]
 
-    assert mixed.description is None
-    assert mixed.min_length is None
+    assert schema.properties["mixed"].description is None  # type: ignore[index, union-attr]
+    assert schema.properties["mixed"].min_length is None  # type: ignore[index, union-attr]
 
 
 def test_annotated_types() -> None:
