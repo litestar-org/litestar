@@ -325,8 +325,8 @@ def test_lifespan_dependencies() -> None:
     mock = MagicMock()
 
     @asynccontextmanager
-    async def lifespan(name: FromPath[str], state: State, query: dict) -> AsyncGenerator[None, None]:
-        mock(name=name, state=state, query=query)
+    async def lifespan(name: FromPath[str], state: State, request: Request) -> AsyncGenerator[None, None]:
+        mock(name=name, state=state, query=request.query)
         yield
 
     @websocket_listener("/{name:str}", connection_lifespan=lifespan)
@@ -348,11 +348,11 @@ def test_hook_dependencies() -> None:
     def some_dependency() -> str:
         return "hello"
 
-    def on_accept(name: FromPath[str], state: State, query: dict, some: str) -> None:
-        on_accept_mock(name=name, state=state, query=query, some=some)
+    def on_accept(name: FromPath[str], state: State, request: Request, some: str) -> None:  # pyright: ignore
+        on_accept_mock(name=name, state=state, query=request.query, some=some)
 
-    def on_disconnect(name: FromPath[str], state: State, query: dict, some: str) -> None:
-        on_disconnect_mock(name=name, state=state, query=query, some=some)
+    def on_disconnect(name: FromPath[str], state: State, request: Request, some: str) -> None:  # pyright: ignore
+        on_disconnect_mock(name=name, state=state, query=request.query, some=some)
 
     @websocket_listener("/{name: str}", on_accept=on_accept, on_disconnect=on_disconnect)
     def handler(data: bytes) -> None:
@@ -386,11 +386,11 @@ def test_websocket_listener_class_hook_dependencies() -> None:
     class Listener(WebsocketListener):
         path = "/{name: str}"
 
-        def on_accept(self, name: FromPath[str], state: State, query: dict, some: str) -> None:  # pyright: ignore
-            on_accept_mock(name=name, state=state, query=query, some=some)
+        def on_accept(self, name: FromPath[str], state: State, request: Request, some: str) -> None:  # pyright: ignore
+            on_accept_mock(name=name, state=state, query=request.query, some=some)
 
-        def on_disconnect(self, name: FromPath[str], state: State, query: dict, some: str) -> None:  # pyright: ignore
-            on_disconnect_mock(name=name, state=state, query=query, some=some)
+        def on_disconnect(self, name: FromPath[str], state: State, request: Request, some: str) -> None:  # pyright: ignore
+            on_disconnect_mock(name=name, state=state, query=request.query, some=some)
 
         def on_receive(self, data: bytes) -> None:  # pyright: ignore
             pass

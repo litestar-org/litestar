@@ -15,6 +15,7 @@ from typing_extensions import Annotated
 from litestar import MediaType, Request, get, post
 from litestar.datastructures import MultiDict
 from litestar.di import Provide
+from litestar.exceptions import LitestarDeprecationWarning
 from litestar.params import FromQuery, QueryParameter
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -174,9 +175,10 @@ def test_query_kwarg() -> None:
         assert a == ["foo", "bar"]
         assert b == ["qux"]
 
-    with create_test_client(handler) as client:
-        response = client.get(f"{test_path}?{params}")
-        assert response.status_code == HTTP_200_OK, response.json()
+    with pytest.warns(LitestarDeprecationWarning, match=".*Usage of deprecated reserved kwarg 'query'"):
+        with create_test_client(handler) as client:
+            response = client.get(f"{test_path}?{params}")
+            assert response.status_code == HTTP_200_OK, response.json()
 
 
 @pytest.mark.parametrize(
@@ -197,7 +199,7 @@ def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[st
     def handler(request: Request, first: FromQuery[str], second: FromQuery[str]) -> None:
         request_values["first"] = first
         request_values["second"] = second
-        request_values["query"] = request.query_params
+        request_values["query"] = request.query
 
     params = dict(values)
 

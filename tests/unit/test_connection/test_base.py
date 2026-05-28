@@ -35,7 +35,7 @@ def test_connection_base_properties() -> None:
     assert connection.headers is not None
     assert connection_state.headers is not Empty
     assert connection_state.parsed_query is Empty
-    assert connection.query_params is not None
+    assert connection.query is not None
     assert connection_state.parsed_query is not Empty
     assert connection_state.cookies is Empty
     assert connection.cookies is not None

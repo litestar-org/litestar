@@ -1,6 +1,8 @@
+import pytest
 from typing_extensions import Annotated
 
 from litestar import WebSocket, websocket
+from litestar.exceptions import LitestarDeprecationWarning
 from litestar.params import FromPath, FromQuery, HeaderParameter
 from litestar.testing import create_test_client
 

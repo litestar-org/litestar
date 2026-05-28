@@ -123,7 +123,7 @@ def test_websocket_binary_json() -> None:
 def test_websocket_query_params() -> None:
     @websocket("/")
     async def handler(socket: WebSocket[Any, Any, State]) -> None:
-        query_params = dict(socket.query_params)
+        query_params = dict(socket.query)
         await socket.accept()
         await socket.send_json({"params": query_params})
         await socket.close()

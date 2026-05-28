@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from litestar import MediaType, get
+from litestar import MediaType, Request, get
 from litestar.config.csrf import CSRFConfig
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
@@ -13,7 +13,6 @@ from litestar.middleware.csrf import generate_csrf_token
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
-from litestar.types import Scope
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
@@ -60,8 +59,8 @@ def test_csrf_input(engine: Any, template: str, tmp_path: Path) -> None:
     token = {"value": ""}
 
     @get(path="/", media_type=MediaType.HTML)
-    def handler(scope: Scope) -> Template:
-        connection_state = ScopeState.from_scope(scope)
+    def handler(request: Request) -> Template:
+        connection_state = ScopeState.from_scope(request.scope)
         token["value"] = value_or_default(connection_state.csrf_token, "")
         return Template(template_name="abc.html")
 
