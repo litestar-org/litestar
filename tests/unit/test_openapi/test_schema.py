@@ -354,9 +354,9 @@ def test_msgspec_optional_annotated_meta_propagates() -> None:
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Body", annotation=Body))
 
-    assert schema.properties["required_field"].description == "d"  # type: ignore[index, union-attr]
+    assert schema.properties["required_field"].description == "d"  # type: ignore[index]
     assert schema.properties["required_field"].examples == ["ex"]  # type: ignore[index, union-attr]
-    assert schema.properties["optional_field"].description == "d2"  # type: ignore[index, union-attr]
+    assert schema.properties["optional_field"].description == "d2"  # type: ignore[index]
     assert schema.properties["optional_field"].examples == ["ex2"]  # type: ignore[index, union-attr]
     assert schema.properties["optional_int"].exclusive_minimum == 1  # type: ignore[index, union-attr]
     assert schema.properties["optional_int"].maximum == 100  # type: ignore[index, union-attr]
@@ -373,7 +373,7 @@ def test_msgspec_union_with_metadata_arm_is_not_unwrapped() -> None:
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Body", annotation=Body))
 
-    assert schema.properties["mixed"].description is None  # type: ignore[index, union-attr]
+    assert schema.properties["mixed"].description is None  # type: ignore[index]
     assert schema.properties["mixed"].min_length is None  # type: ignore[index, union-attr]
 
 
