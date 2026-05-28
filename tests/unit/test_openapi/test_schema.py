@@ -377,6 +377,24 @@ def test_msgspec_union_with_metadata_arm_is_not_unwrapped() -> None:
     assert schema.properties["mixed"].min_length is None  # type: ignore[index, union-attr]
 
 
+def test_unwrap_optional_branches() -> None:
+    """Direct branch coverage for the ``_unwrap_optional`` helper."""
+    from litestar.plugins.core._msgspec import _unwrap_optional
+
+    # Not a UnionType: returned as-is.
+    int_type = msgspec.inspect.IntType(gt=None, ge=None, lt=None, le=None, multiple_of=None)
+    assert _unwrap_optional(int_type) is int_type
+
+    # Optional[X]: single non-None arm is returned.
+    optional_int = msgspec.inspect.UnionType(types=(int_type, msgspec.inspect.NoneType()))
+    assert _unwrap_optional(optional_int) is int_type
+
+    # Heterogeneous union: returned as-is.
+    str_type = msgspec.inspect.StrType(min_length=None, max_length=None, pattern=None)
+    hetero = msgspec.inspect.UnionType(types=(int_type, str_type))
+    assert _unwrap_optional(hetero) is hetero
+
+
 def test_annotated_types() -> None:
     historical_date = date(year=1980, day=1, month=1)
     today = date.today()
