@@ -603,6 +603,21 @@ def test_optional_literal() -> None:
     assert schema.enum == [1, None]
 
 
+@pytest.mark.parametrize(
+    "annotation",
+    [
+        Optional[Annotated[Literal["a", "b"], msgspec.Meta(description="legacy")]],
+        Optional[Annotated[Literal["a", "b"], annotated_types.MaxLen(8)]],
+    ],
+)
+def test_optional_annotated_literal_strips_metadata(annotation: Any) -> None:
+    """Regression: ``Annotated`` metadata around a ``Literal`` inside ``Optional`` must not leak into enum values."""
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(annotation))
+    assert schema.type is not None
+    assert set(schema.type) == {OpenAPIType.STRING, OpenAPIType.NULL}
+    assert schema.enum == ["a", "b", None]
+
+
 def test_not_generating_examples_property() -> None:
     with_examples = SchemaCreator(generate_examples=True)
     without_examples = with_examples.not_generating_examples

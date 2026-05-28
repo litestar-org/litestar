@@ -59,6 +59,7 @@ from litestar.utils.predicates import (
 from litestar.utils.typing import (
     get_origin_or_inner_type,
     make_non_optional_union,
+    unwrap_annotation,
     unwrap_new_type,
 )
 
@@ -189,6 +190,11 @@ def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
     Yields:
         The flattened arguments of the Literal.
     """
+    # Strip ``Annotated[...]`` (and similar wrappers) so we never iterate over
+    # PEP 593 metadata as if it were a literal value. Reachable e.g. via
+    # ``Optional[Annotated[Literal[...], Meta(...)]]`` because
+    # ``make_non_optional_union`` preserves the ``Annotated`` wrapper.
+    annotation, _, _ = unwrap_annotation(annotation)
     for arg in get_args(annotation):
         if get_origin_or_inner_type(arg) is Literal:
             yield from _iter_flat_literal_args(arg)
