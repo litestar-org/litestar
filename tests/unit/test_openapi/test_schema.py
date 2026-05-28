@@ -343,6 +343,42 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.properties["set_field"].min_items == 2  # type: ignore[index, union-attr]
 
 
+def test_msgspec_optional_annotated_meta_propagates() -> None:
+    """Regression: ``Optional[Annotated[T, msgspec.Meta(...)]]`` must propagate description, examples, and constraints."""
+
+    class Body(msgspec.Struct):
+        required_field: Annotated[str, msgspec.Meta(description="d", examples=["ex"])]
+        optional_field: Optional[Annotated[str, msgspec.Meta(description="d2", examples=["ex2"])]] = None
+        optional_int: Optional[Annotated[int, msgspec.Meta(gt=1, le=100)]] = None
+        optional_str: Optional[Annotated[str, msgspec.Meta(min_length=2, max_length=8, pattern="^[a-z]+$")]] = None
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Body", annotation=Body))
+    props = schema.properties  # type: ignore[union-attr]
+
+    assert props["required_field"].description == "d"
+    assert props["required_field"].examples == ["ex"]
+    assert props["optional_field"].description == "d2"
+    assert props["optional_field"].examples == ["ex2"]
+    assert props["optional_int"].exclusive_minimum == 1
+    assert props["optional_int"].maximum == 100
+    assert props["optional_str"].min_length == 2
+    assert props["optional_str"].max_length == 8
+    assert props["optional_str"].pattern == "^[a-z]+$"
+
+
+def test_msgspec_union_with_metadata_arm_is_not_unwrapped() -> None:
+    """Heterogeneous unions must not have a single arm's ``Meta`` lifted onto the whole field."""
+
+    class Body(msgspec.Struct):
+        mixed: Union[Annotated[str, msgspec.Meta(description="only-str", min_length=5)], int] = ""
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Body", annotation=Body))
+    mixed = schema.properties["mixed"]  # type: ignore[index, union-attr]
+
+    assert mixed.description is None
+    assert mixed.min_length is None
+
+
 def test_annotated_types() -> None:
     historical_date = date(year=1980, day=1, month=1)
     today = date.today()
