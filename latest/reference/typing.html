@@ -1420,9 +1420,9 @@ document.write(`
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../onboarding/index.html">Onboarding from other frameworks</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding/fastapi.html">FastAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding/flask.html">Flask</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -1627,6 +1627,18 @@ document.write(`
 <dt class="sig sig-object py" id="litestar.typing.FieldDefinition.name">
 <span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.typing.FieldDefinition.name" title="Link to this definition">#</a></dt>
 <dd><p>Field name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.typing.FieldDefinition.get_from_metadata">
+<span class="sig-name descname"><span class="pre">get_from_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.typing.FieldDefinition.get_from_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Return the next instance of <code class="docutils literal notranslate"><span class="pre">type_</span></code> in the field’s metadata</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.typing.FieldDefinition.has_metadata">
+<span class="sig-name descname"><span class="pre">has_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.typing.FieldDefinition.has_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Whether the field has any <code class="docutils literal notranslate"><span class="pre">type_</span></code> in its metadata</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1988,6 +2000,8 @@ a subtype of <code class="docutils literal notranslate"><span class="pre">cl</sp
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.extra"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.extra</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.kwarg_definition"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.kwarg_definition</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.name"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.get_from_metadata"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.get_from_metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.has_metadata"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.has_metadata()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.has_default"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.has_default</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.is_non_string_iterable"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.is_non_string_iterable</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.typing.FieldDefinition.is_non_string_sequence"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.is_non_string_sequence</span></code></a></li>

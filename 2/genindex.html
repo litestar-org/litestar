@@ -1849,9 +1849,9 @@ document.write(`
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="migration/flask.html">From Flask</a></li>
-<li class="toctree-l2"><a class="reference internal" href="migration/fastapi.html">From Starlette / FastAPI</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="onboarding/index.html">Onboarding from other frameworks</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="onboarding/fastapi.html">FastAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onboarding/flask.html">Flask</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -6072,6 +6072,8 @@ document.write(`
 </li>
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type">get_dto_config_from_annotated_type() (litestar.dto.base_dto.AbstractDTO static method)</a>
 </li>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.get_from_metadata">get_from_metadata() (litestar.typing.FieldDefinition method)</a>
+</li>
       <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.get_fs_info">get_fs_info() (litestar.static_files.StaticFiles method)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.get_handler_index_by_name">get_handler_index_by_name() (litestar.app.Litestar method)</a>
@@ -6325,6 +6327,8 @@ document.write(`
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.has_default">has_default (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.has_inner_subclass_of">has_inner_subclass_of() (litestar.typing.FieldDefinition method)</a>
+</li>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.has_metadata">has_metadata() (litestar.typing.FieldDefinition method)</a>
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.has_path">has_path() (litestar.openapi.plugins.OpenAPIRenderPlugin method)</a>
 </li>
@@ -7023,6 +7027,8 @@ document.write(`
       <li><a href="reference/connection.html#litestar.connection.Request.json">json() (litestar.connection.Request method)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.json_schema_dialect">json_schema_dialect (litestar.openapi.spec.OpenAPI attribute)</a>
+</li>
+      <li><a href="reference/params.html#litestar.params.JSONBody">JSONBody (in module litestar.params)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.jti">jti (litestar.security.jwt.Token attribute)</a>
 </li>
@@ -8488,10 +8494,10 @@ document.write(`
 </li>
       <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplate">MiniJinjaTemplate (class in litestar.plugins.minijinja)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/plugins/minijinja.html#litestar.plugins.minijinja.MiniJinjaTemplateEngine">MiniJinjaTemplateEngine (class in litestar.plugins.minijinja)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.minimum">minimum (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.minimum_size">minimum_size (litestar.config.compression.CompressionConfig attribute)</a>
@@ -8747,6 +8753,8 @@ document.write(`
       </ul></li>
       <li><a href="reference/connection.html#litestar.connection.Request.msgpack">msgpack() (litestar.connection.Request method)</a>
 </li>
+      <li><a href="reference/params.html#litestar.params.MsgPackBody">MsgPackBody (in module litestar.params)</a>
+</li>
       <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO">MsgspecDTO (class in litestar.dto.msgspec_dto)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileInfo.mtime">mtime (litestar.types.FileInfo attribute)</a>
@@ -8771,6 +8779,8 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.multipart_form_part_limit">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/params.html#litestar.params.MultipartBody">MultipartBody (in module litestar.params)</a>
+</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.multiple_of">multiple_of (litestar.openapi.spec.Schema attribute)</a>
 
       <ul>
@@ -8871,6 +8881,8 @@ document.write(`
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/di.html#litestar.di.NamedDependency">NamedDependency (in module litestar.di)</a>
+</li>
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_model_type_hints.params.namespace">namespace (litestar.dto.base_dto.AbstractDTO.get_model_type_hints parameter)</a>
 
       <ul>
@@ -11481,6 +11493,10 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.DependencyKwarg.skip_validation">(litestar.params.DependencyKwarg attribute)</a>
 </li>
       </ul></li>
+      <li><a href="reference/params.html#litestar.params.SkipValidation">SkipValidation (in module litestar.params)</a>
+</li>
+      <li><a href="reference/params.html#litestar.params.SkipValidationMarker">SkipValidationMarker (class in litestar.params)</a>
+</li>
       <li><a href="reference/handlers.html#litestar.handlers.send_websocket_stream.params.socket">socket (litestar.handlers.send_websocket_stream parameter)</a>
 
       <ul>
@@ -12495,6 +12511,8 @@ document.write(`
         <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url_for_static_asset">(litestar.connection.ASGIConnection method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/params.html#litestar.params.URLEncodedBody">URLEncodedBody (in module litestar.params)</a>
+</li>
       <li><a href="reference/di.html#litestar.di.Provide.params.use_cache">use_cache (litestar.di.Provide parameter)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.use_handler_docstrings">use_handler_docstrings (litestar.openapi.OpenAPIConfig attribute)</a>

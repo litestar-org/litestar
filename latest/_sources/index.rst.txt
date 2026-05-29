@@ -344,7 +344,7 @@ Example Applications
     :caption: Guides
     :hidden:
 
-    migration/index
+    onboarding/index
     topics/index
     tutorials/index
 

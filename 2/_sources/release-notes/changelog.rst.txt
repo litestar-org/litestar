@@ -3,6 +3,118 @@
 Litestar 2 Changelog
 ====================
 
+.. changelog:: 2.23.0
+    :date: 2026-05-29
+
+    .. change:: Introduce generic request body markers
+        :type: feature
+        :pr: 4801
+
+        Introduce generic request body markers, following the pattern established
+        by the enhanced request parameter declarations.
+
+        New body marker generics:
+
+        - :data:`JSONBody[\<type\>] <litestar.params.JSONBody>`
+        - :data:`MsgPackBody[\<type\>] <litestar.params.MsgPackBody>`
+        - :data:`MultipartBody[\<type\>] <litestar.params.MultipartBody>`
+        - :data:`URLEncodedBody[\<type\>] <litestar.params.URLEncodedBody>`
+
+        They can be used just like the request parameter markers, and replace the
+        more verbose forms of e.g.
+        ``Annotated[T, Body(media_type=RequestEncodingType.MULTI_PART)]`` form:
+
+        .. code-block:: python
+
+            @post("/")
+            async def handler(data: Annotated[dict, Body(media_type=RequestEncodingType.MULTI_PART)]) -> None:
+                pass
+
+        can be replaced with
+
+        .. code-block:: python
+
+            @post("/")
+            async def handler(data: MultipartBody[dict]) -> None:
+                pass
+
+        **Migrating**
+
+        - Replace ``Annotated[T, Body(media_type=RequestEncodingType.JSON)]`` with ``JSONBody[T]``
+        - Replace ``Annotated[T, Body(media_type=RequestEncodingType.MESSAGEPACK)]`` with ``MsgPackBody[T]``
+        - Replace ``Annotated[T, Body(media_type=RequestEncodingType.MULTI_PART)]`` with ``MultipartBody[T]``
+        - Replace ``Annotated[T, Body(media_type=RequestEncodingType.URL_ENCODED)]`` with ``URLEncodedBody[T]``
+
+    .. change:: Deprecate ``params.Dependency``, introduce ``di.NamedDependency`` and ``params.SkipValidation``
+        :type: feature
+        :pr: 4808
+
+        Add a new ``NamedDependency`` marker, completing the move to generic parameter
+        markers to indicate the value source.
+
+        ``NamedDependency`` is also a preparation for the overhauled DI that will be
+        introduced in version 3, which supports type-based DI alongside the current
+        name-based DI, and will feature its counterpart ``TypeDependency``.
+
+        - Add :data:`di.NamedDependency <litestar.di.NamedDependency>` generic,
+          replacing ``Annotated[<type>, Dependency()]`` as a marker
+        - Deprecate ``params.Dependency``
+        - Introduce :data:`params.SkipValidation <litestar.params.SkipValidation>`
+          generic. ``Dependency(skip_validation=True)`` can be cleanly migrated to
+          this. In addition, ``SkipValidation`` works on all parameters, not just
+          dependencies.
+
+        **Migration**
+
+        - Replace ``foo: int = Dependency()`` with ``foo: NamedDependency[int]``
+        - Replace ``foo: Annotated[int, Dependency(default=1)]`` by hoisting the
+          default into the parameter default: ``foo: NamedDependency[int] = 1``
+        - Replace ``foo: Annotated[int, Dependency(skip_validation=True)`` with
+          ``foo: NamedDependency[SkipValidation[int]]``
+
+    .. change:: Reject invalid host headers
+        :type: feature
+        :pr: 4813
+
+        Abort requests with a ``400 - Bad Request`` if a malformed ``Host`` header is
+        sent.
+
+        .. important::
+            This change was prompted by https://github.com/Kludex/starlette/security/advisories/GHSA-86qp-5c8j-p5mr
+            However, Litestar does *not* share this vulnerability,  as the ``Host``
+            header was not used to reconstruct the URL
+
+    .. change:: Fix ``Annotated`` parameters implicitly treated as query parameters
+        :type: bugfix
+        :pr: 4805
+        :issue: 4804
+
+        Fix a regression introduced in ``2.22.0`` that would cause bare handler
+        parameters wrapped in ``Annotated`` and not explicitly marked with the new
+        parameter markers (:data:`~litestar.params.FromQuery` etc.) to be treated as a
+        query parameter, causing validation issues.
+
+    .. change:: Handle ``Annotated`` metadata in ``Optional[Literal[...]]`` schemas
+        :type: bugfix
+        :pr: 4814
+
+        ``Optional[Annotated[Literal[...], Meta(...)]]`` raised a ``KeyError`` during
+        schema generation because ``make_non_optional_union`` preserves the
+        ``Annotated`` wrapper, and ``_iter_flat_literal_args`` then iterated the PEP
+        593 metadata as if it were a literal value. Wrapper annotations are now
+        stripped at the top of ``_iter_flat_literal_args`` so the function is robust
+        regardless of where it is entered from.
+
+    .. change:: Propagate ``msgspec.Meta`` on ``Optional[Annotated[...]]`` struct fields
+        :type: bugfix
+        :pr: 4815
+        :issue: 4650
+
+        Fix a bug that would cause metadata from a ``msgspec.Meta`` placed inside an
+        ``Optional`` on a ``Struct`` field - ``Optional[Annotated[T, Meta(...)]]`` - to
+        be silently dropped from the generated OpenAPI schema.
+
+
 .. changelog:: 2.22.0
     :date: 2026-05-20
 
