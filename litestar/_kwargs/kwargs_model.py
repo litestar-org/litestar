@@ -417,11 +417,6 @@ class KwargsModel:
                     alternative = f"request.{reserved_kwarg}"
                 elif handler_kind == "websocket":
                     alternative = f"socket.{reserved_kwarg}"
-                elif handler_kind == "asgi":
-                    if reserved_kwarg == "scope":
-                        alternative = "scope"
-                    else:
-                        alternative = f'scope["{reserved_kwarg}"]'
                 if alternative:
                     msg = msg + f" Use '{alternative}' instead"
                 msg = ctx.format(msg)
