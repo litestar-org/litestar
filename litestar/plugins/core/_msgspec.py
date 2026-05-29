@@ -34,11 +34,27 @@ class MsgspecDIPlugin(DIPlugin):
         return inspect.Signature(parameters), type_hints
 
 
+def _unwrap_optional(field_type: Any) -> Any:
+    """Return the inner arm of ``Optional[X]`` so downstream isinstance checks see ``X`` directly.
+
+    msgspec wraps it as ``UnionType((<inner>, NoneType))`` where ``<inner>`` is either a
+    ``Metadata`` wrapper (for description/examples) or the bare constraint-bearing type
+    (e.g. ``IntType(gt=1, ...)``) - Meta-derived constraints are hoisted onto the type.
+    Heterogeneous unions are left alone.
+    """
+    if isinstance(field_type, msgspec.inspect.UnionType):
+        non_none = [t for t in field_type.types if not isinstance(t, msgspec.inspect.NoneType)]
+        if len(non_none) == 1:
+            return non_none[0]
+    return field_type
+
+
 def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[ParameterKwarg | None, dict[str, Any]]:
     extra: dict[str, Any] = {}
     kwargs: dict[str, Any] = {}
-    if isinstance(field.type, msgspec.inspect.Metadata):
-        meta = field.type
+    field_type = _unwrap_optional(field.type)
+    if isinstance(field_type, msgspec.inspect.Metadata):
+        meta = field_type
         field_type = meta.type
         if extra_json_schema := meta.extra_json_schema:
             kwargs["title"] = extra_json_schema.get("title")
@@ -47,8 +63,6 @@ def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[Parameter
                 kwargs["examples"] = [Example(value=e) for e in examples]
             kwargs["schema_extra"] = extra_json_schema.get("extra")
         extra = meta.extra or {}
-    else:
-        field_type = field.type
 
     if isinstance(
         field_type,
