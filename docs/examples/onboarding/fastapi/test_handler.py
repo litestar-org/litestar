@@ -1,10 +1,12 @@
+from typing import Dict
+
 from litestar import get
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
 
 @get("/", sync_to_thread=False)
-def hello() -> dict[str, str]:
+def hello() -> Dict[str, str]:
     return {"hello": "world"}
 
 
