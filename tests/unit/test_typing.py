@@ -24,7 +24,7 @@ except ImportError:
 
 from litestar import get
 from litestar.exceptions import LitestarWarning
-from litestar.params import DependencyKwarg, KwargDefinition, ParameterKwarg, QueryParameter
+from litestar.params import KwargDefinition, ParameterKwarg, QueryParameter
 from litestar.typing import FieldDefinition
 from tests.unit.test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
@@ -167,8 +167,8 @@ def test_field_definition_kwarg_definition_from_extras() -> None:
     )
 
 
-@pytest.mark.parametrize("kwarg_definition", [KwargDefinition(), DependencyKwarg()])
-def test_field_definition_kwarg_definition_from_kwargs(kwarg_definition: KwargDefinition | DependencyKwarg) -> None:
+def test_field_definition_kwarg_definition_from_kwargs() -> None:
+    kwarg_definition = KwargDefinition()
     assert FieldDefinition.from_annotation(int, kwarg_definition=kwarg_definition).kwarg_definition is kwarg_definition
 
 

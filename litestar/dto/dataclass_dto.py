@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTOField, extract_dto_field
-from litestar.params import DependencyKwarg, KwargDefinition
+from litestar.params import KwargDefinition
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -51,7 +51,7 @@ class DataclassDTO(AbstractDTO[T], Generic[T]):
 
             yield (
                 replace(field_definition, default=Empty, kwarg_definition=default)
-                if isinstance(default, (KwargDefinition, DependencyKwarg))
+                if isinstance(default, KwargDefinition)
                 else field_definition
             )
 
