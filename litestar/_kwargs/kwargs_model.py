@@ -66,6 +66,7 @@ _DEPRECATED_RESERVED_KWARGS = {
 class HandlerContext:
     handler: str
     paths: list[str]
+    kind: str = "base"
     dependencies: list[str] = dataclasses.field(default_factory=list)
 
     def format(self, msg: str | None = None) -> str:
@@ -310,7 +311,7 @@ class KwargsModel:
         """
 
         if ctx is not None and not isinstance(ctx, HandlerContext):
-            ctx = HandlerContext(handler=ctx.name or ctx.handler_name, paths=sorted(ctx.paths))
+            ctx = HandlerContext(handler=ctx.name or ctx.handler_name, paths=sorted(ctx.paths), kind=ctx._kind)
 
         field_definitions = signature_model._fields
 
@@ -408,11 +409,21 @@ class KwargsModel:
         )
 
         for reserved_kwarg in expected_reserved_kwargs.intersection(_DEPRECATED_RESERVED_KWARGS):
-            msg = (
-                f"Usage of deprecated reserved kwarg {reserved_kwarg!r}. It will be removed in "
-                f"Litestar 3.0. Use 'connection|request|socket.{reserved_kwarg}' instead"
-            )
+            msg = f"Usage of deprecated reserved kwarg {reserved_kwarg!r}. It will be removed in Litestar 3.0."
             if ctx is not None:
+                handler_kind = ctx.kind
+                alternative = ""
+                if handler_kind == "http":
+                    alternative = f"request.{reserved_kwarg}"
+                elif handler_kind == "websocket":
+                    alternative = f"socket.{reserved_kwarg}"
+                elif handler_kind == "asgi":
+                    if reserved_kwarg == "scope":
+                        alternative = "scope"
+                    else:
+                        alternative = f'scope["{reserved_kwarg}"]'
+                if alternative:
+                    msg = msg + f" Use '{alternative}' instead"
                 msg = ctx.format(msg)
             warnings.warn(
                 msg,

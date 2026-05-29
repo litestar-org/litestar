@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Any, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, ClassVar, Mapping, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
@@ -27,6 +27,8 @@ class ASGIRouteHandler(BaseRouteHandler):
     """
 
     __slots__ = ("copy_scope", "is_mount", "is_static")
+
+    _kind: ClassVar[str] = "asgi"
 
     def __init__(
         self,

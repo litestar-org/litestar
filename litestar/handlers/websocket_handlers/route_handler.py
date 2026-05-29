@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Mapping
+from typing import TYPE_CHECKING, Any, ClassVar, Mapping
 
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
@@ -19,6 +19,8 @@ class WebsocketRouteHandler(BaseRouteHandler):
     """
 
     __slots__ = ("websocket_class",)
+
+    _kind: ClassVar[str] = "websocket"
 
     def __init__(
         self,

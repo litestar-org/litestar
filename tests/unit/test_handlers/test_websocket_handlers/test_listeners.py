@@ -8,7 +8,7 @@ from pytest_lazy_fixtures import lf
 
 from litestar import Controller, Litestar, Request, WebSocket
 from litestar.connection import ASGIConnection
-from litestar.datastructures import State
+from litestar.datastructures import MultiDict, State
 from litestar.di import Provide
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
@@ -338,7 +338,7 @@ def test_lifespan_dependencies() -> None:
 
     assert mock.call_args_list[0].kwargs["name"] == "foo"
     assert isinstance(mock.call_args_list[0].kwargs["state"], State)
-    assert isinstance(mock.call_args_list[0].kwargs["query"], dict)
+    assert isinstance(mock.call_args_list[0].kwargs["query"], MultiDict)
 
 
 def test_hook_dependencies() -> None:
@@ -367,13 +367,13 @@ def test_hook_dependencies() -> None:
     assert on_accept_kwargs["name"] == "foo"
     assert on_accept_kwargs["some"] == "hello"
     assert isinstance(on_accept_kwargs["state"], State)
-    assert isinstance(on_accept_kwargs["query"], dict)
+    assert isinstance(on_accept_kwargs["query"], MultiDict)
 
     on_disconnect_kwargs = on_disconnect_mock.call_args_list[0].kwargs
     assert on_disconnect_kwargs["name"] == "foo"
     assert on_disconnect_kwargs["some"] == "hello"
     assert isinstance(on_disconnect_kwargs["state"], State)
-    assert isinstance(on_disconnect_kwargs["query"], dict)
+    assert isinstance(on_disconnect_kwargs["query"], MultiDict)
 
 
 def test_websocket_listener_class_hook_dependencies() -> None:
@@ -404,13 +404,13 @@ def test_websocket_listener_class_hook_dependencies() -> None:
     assert on_accept_kwargs["name"] == "foo"
     assert on_accept_kwargs["some"] == "hello"
     assert isinstance(on_accept_kwargs["state"], State)
-    assert isinstance(on_accept_kwargs["query"], dict)
+    assert isinstance(on_accept_kwargs["query"], MultiDict)
 
     on_disconnect_kwargs = on_disconnect_mock.call_args_list[0].kwargs
     assert on_disconnect_kwargs["name"] == "foo"
     assert on_disconnect_kwargs["some"] == "hello"
     assert isinstance(on_disconnect_kwargs["state"], State)
-    assert isinstance(on_disconnect_kwargs["query"], dict)
+    assert isinstance(on_disconnect_kwargs["query"], MultiDict)
 
 
 @pytest.mark.parametrize("hook_name", ["on_accept", "on_disconnect", "connection_accept_handler"])
