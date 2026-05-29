@@ -1,8 +1,9 @@
 from logging import INFO
-from typing import TYPE_CHECKING, Annotated, Any, Dict, Generator
+from typing import TYPE_CHECKING, Any, Dict, Generator
 
 import pytest
 from structlog.testing import capture_logs
+from typing_extensions import Annotated
 
 from litestar import Response, get, post
 from litestar.config.compression import CompressionConfig
