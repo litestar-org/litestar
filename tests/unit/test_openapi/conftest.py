@@ -26,11 +26,7 @@ def create_person_controller() -> Type[Controller]:
         def get_persons(
             self,
             # expected to be ignored
-            # headers: Any,
-            # request: Any,
             state: State,
-            # query: Dict[str, Any],
-            # cookies: Dict[str, Any],
             # path parameter
             service_id: FromPath[int],
             # required query parameters below
