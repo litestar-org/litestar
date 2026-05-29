@@ -34,22 +34,9 @@ class MsgspecDIPlugin(DIPlugin):
         return inspect.Signature(parameters), type_hints
 
 
-def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[ParameterKwarg | None, dict[str, Any]]:
-    extra: dict[str, Any] = {}
-    kwargs: dict[str, Any] = {}
-    if isinstance(field.type, msgspec.inspect.Metadata):
-        meta = field.type
-        field_type = meta.type
-        if extra_json_schema := meta.extra_json_schema:
-            kwargs["title"] = extra_json_schema.get("title")
-            kwargs["description"] = extra_json_schema.get("description")
-            if examples := extra_json_schema.get("examples"):
-                kwargs["examples"] = [Example(value=e) for e in examples]
-            kwargs["schema_extra"] = extra_json_schema.get("extra")
-        extra = meta.extra or {}
-    else:
-        field_type = field.type
-
+def _extract_type_constraints(field_type: msgspec.inspect.Type) -> dict[str, Any]:
+    """Extract type-specific constraints from a field type."""
+    constraints: dict[str, Any] = {}
     if isinstance(
         field_type,
         (
@@ -57,11 +44,11 @@ def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[Parameter
             msgspec.inspect.FloatType,
         ),
     ):
-        kwargs["gt"] = field_type.gt
-        kwargs["ge"] = field_type.ge
-        kwargs["lt"] = field_type.lt
-        kwargs["le"] = field_type.le
-        kwargs["multiple_of"] = field_type.multiple_of
+        constraints["gt"] = field_type.gt
+        constraints["ge"] = field_type.ge
+        constraints["lt"] = field_type.lt
+        constraints["le"] = field_type.le
+        constraints["multiple_of"] = field_type.multiple_of
     elif isinstance(
         field_type,
         (
@@ -71,10 +58,10 @@ def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[Parameter
             msgspec.inspect.MemoryViewType,
         ),
     ):
-        kwargs["min_length"] = field_type.min_length
-        kwargs["max_length"] = field_type.max_length
+        constraints["min_length"] = field_type.min_length
+        constraints["max_length"] = field_type.max_length
         if isinstance(field_type, msgspec.inspect.StrType):
-            kwargs["pattern"] = field_type.pattern
+            constraints["pattern"] = field_type.pattern
     elif isinstance(
         field_type,
         (
@@ -84,8 +71,37 @@ def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[Parameter
             msgspec.inspect.VarTupleType,
         ),
     ):
-        kwargs["min_items"] = field_type.min_length
-        kwargs["max_items"] = field_type.max_length
+        constraints["min_items"] = field_type.min_length
+        constraints["max_items"] = field_type.max_length
+    return constraints
+
+
+def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[ParameterKwarg | None, dict[str, Any]]:
+    extra: dict[str, Any] = {}
+    kwargs: dict[str, Any] = {}
+
+    # Collect all Metadata from the field type. A UnionType may contain multiple
+    # Metadata members (e.g. Annotated[int, Meta()] | Annotated[str, Meta()] | None).
+    metas: list[msgspec.inspect.Metadata] = []
+    if isinstance(field.type, msgspec.inspect.Metadata):
+        metas = [field.type]
+    elif isinstance(field.type, msgspec.inspect.UnionType):
+        metas = [m for m in field.type.types if isinstance(m, msgspec.inspect.Metadata)]
+
+    if metas:
+        for meta in metas:
+            if extra_json_schema := meta.extra_json_schema:
+                kwargs.setdefault("title", extra_json_schema.get("title"))
+                kwargs.setdefault("description", extra_json_schema.get("description"))
+                if examples := extra_json_schema.get("examples"):
+                    existing = kwargs.get("examples", [])
+                    kwargs["examples"] = existing + [Example(value=e) for e in examples]
+                kwargs.setdefault("schema_extra", extra_json_schema.get("extra"))
+            if meta.extra:
+                extra.update(meta.extra)
+            kwargs.update(_extract_type_constraints(meta.type))
+    else:
+        kwargs.update(_extract_type_constraints(field.type))
 
     parameter_defaults = {
         f.name: default for f in dataclasses.fields(ParameterKwarg) if (default := f.default) is not dataclasses.MISSING

@@ -789,3 +789,72 @@ def test_decimal_schema_type() -> None:
 
     schema = create_schema_for_annotation(Decimal)
     assert schema.type == OpenAPIType.STRING
+
+
+def test_optional_field_preserves_meta_constraints() -> None:
+    """Regression test for https://github.com/litestar-org/litestar/issues/4650.
+
+    ``kwarg_definition_from_field`` must extract ``Meta()`` constraints from
+    optional fields (where the inspected type is a ``UnionType`` wrapping
+    ``Metadata``), so that constraints like ``ge``, ``le``, and ``examples``
+    are not silently dropped from the generated OpenAPI schema.
+    """
+
+    class Model(Struct, kw_only=True):
+        required_field: Annotated[int, msgspec.Meta(ge=1, examples=[42])]
+        optional_field: Annotated[int, msgspec.Meta(ge=1, examples=[42])] | None = None
+
+    properties = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Model", annotation=Model)).properties
+    assert properties is not None
+
+    # required_field should have constraints
+    required_field = properties["required_field"]
+    assert isinstance(required_field, Schema)
+    assert required_field.minimum == 1.0
+    assert required_field.examples == [42]
+
+    # optional_field should be oneOf with constraints preserved on the schema
+    optional_field = properties["optional_field"]
+    assert isinstance(optional_field, Schema)
+    assert optional_field.one_of is not None
+    assert optional_field.minimum == 1
+    assert optional_field.examples == [42]
+
+
+def test_union_preserves_all_metadata() -> None:
+    """kwarg_definition_from_field must collect Metadata from all union members.
+
+    When a UnionType contains multiple Metadata members (e.g. from
+    ``Annotated[int, Meta()] | Annotated[str, Meta()] | None``), all their
+    ``extra_json_schema`` and type constraints should be preserved.
+    """
+    import msgspec.inspect as mi
+
+    from litestar.plugins.core._msgspec import kwarg_definition_from_field
+
+    union_type = mi.UnionType(
+        types=(
+            mi.Metadata(
+                type=mi.IntType(gt=None, ge=1, lt=None, le=None, multiple_of=None),
+                extra_json_schema={"examples": [10]},
+                extra=None,
+            ),
+            mi.Metadata(
+                type=mi.StrType(min_length=2, max_length=None, pattern=None),
+                extra_json_schema={"examples": ["ab"]},
+                extra=None,
+            ),
+            mi.NoneType(),
+        )
+    )
+    field = mi.Field(name="test", type=union_type, required=False, default=None, encode_name="test")
+
+    param_kwarg, _ = kwarg_definition_from_field(field)
+
+    assert param_kwarg is not None
+    # examples from both Metadata should be accumulated
+    assert len(param_kwarg.examples) == 2  # type: ignore[arg-type]
+    # numeric constraints from IntType
+    assert param_kwarg.ge == 1
+    # string constraints from StrType
+    assert param_kwarg.min_length == 2
