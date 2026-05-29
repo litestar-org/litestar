@@ -2,23 +2,35 @@ from __future__ import annotations
 
 import importlib
 import sys
+import warnings
 
 import pytest
 from _pytest.fixtures import FixtureRequest
 from _pytest.monkeypatch import MonkeyPatch
-from docs.examples.contrib.sqlalchemy.plugins.tutorial import (
-    full_app_no_plugins,
-    full_app_with_init_plugin,
-    full_app_with_plugin,
-    full_app_with_serialization_plugin,
-    full_app_with_session_di,
-)
+
+from litestar.exceptions import LitestarDeprecationWarning
+
+with warnings.catch_warnings(category=LitestarDeprecationWarning):
+    warnings.simplefilter("ignore", LitestarDeprecationWarning)
+
+    from docs.examples.contrib.sqlalchemy.plugins.tutorial import (
+        full_app_no_plugins,
+        full_app_with_init_plugin,
+        full_app_with_plugin,
+        full_app_with_serialization_plugin,
+        full_app_with_session_di,
+    )
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from litestar import Litestar
 from litestar.testing import TestClient
 
-pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
+pytestmark = [
+    pytest.mark.xdist_group("sqlalchemy_examples"),
+    pytest.mark.filterwarnings(
+        "ignore:.*Usage of deprecated reserved kwarg:litestar.exceptions.LitestarDeprecationWarning"
+    ),
+]
 
 
 @pytest.fixture(

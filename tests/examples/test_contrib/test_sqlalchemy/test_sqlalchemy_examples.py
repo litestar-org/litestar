@@ -8,7 +8,12 @@ from sqlalchemy.pool import NullPool
 from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfig
 from litestar.testing import TestClient
 
-pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
+pytestmark = [
+    pytest.mark.xdist_group("sqlalchemy_examples"),
+    pytest.mark.filterwarnings(
+        "ignore:.*Usage of deprecated reserved kwarg:litestar.exceptions.LitestarDeprecationWarning"
+    ),
+]
 
 
 async def test_sqlalchemy_declarative_models(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
