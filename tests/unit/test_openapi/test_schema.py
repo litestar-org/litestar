@@ -339,6 +339,58 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.properties["set_field"].min_items == 2  # type: ignore[index, union-attr]
 
 
+def test_msgspec_optional_annotated_meta_propagates() -> None:
+    """Regression: ``Optional[Annotated[T, msgspec.Meta(...)]]`` must propagate description, examples, and constraints."""
+
+    class Body(msgspec.Struct):
+        required_field: Annotated[str, msgspec.Meta(description="d", examples=["ex"])]
+        optional_field: Optional[Annotated[str, msgspec.Meta(description="d2", examples=["ex2"])]] = None
+        optional_int: Optional[Annotated[int, msgspec.Meta(gt=1, le=100)]] = None
+        optional_str: Optional[Annotated[str, msgspec.Meta(min_length=2, max_length=8, pattern="^[a-z]+$")]] = None
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Body", annotation=Body))
+
+    assert schema.properties["required_field"].description == "d"  # type: ignore[index]
+    assert schema.properties["required_field"].examples == ["ex"]  # type: ignore[index, union-attr]
+    assert schema.properties["optional_field"].description == "d2"  # type: ignore[index]
+    assert schema.properties["optional_field"].examples == ["ex2"]  # type: ignore[index, union-attr]
+    assert schema.properties["optional_int"].exclusive_minimum == 1  # type: ignore[index, union-attr]
+    assert schema.properties["optional_int"].maximum == 100  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].min_length == 2  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].max_length == 8  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].pattern == "^[a-z]+$"  # type: ignore[index, union-attr]
+
+
+def test_msgspec_union_with_metadata_arm_is_not_unwrapped() -> None:
+    """Heterogeneous unions must not have a single arm's ``Meta`` lifted onto the whole field."""
+
+    class Body(msgspec.Struct):
+        mixed: Union[Annotated[str, msgspec.Meta(description="only-str", min_length=5)], int] = ""
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Body", annotation=Body))
+
+    assert schema.properties["mixed"].description is None  # type: ignore[index]
+    assert schema.properties["mixed"].min_length is None  # type: ignore[index, union-attr]
+
+
+def test_unwrap_optional_branches() -> None:
+    """Direct branch coverage for the ``_unwrap_optional`` helper."""
+    from litestar.plugins.core._msgspec import _unwrap_optional
+
+    # Not a UnionType: returned as-is.
+    int_type = msgspec.inspect.IntType(gt=None, ge=None, lt=None, le=None, multiple_of=None)
+    assert _unwrap_optional(int_type) is int_type
+
+    # Optional[X]: single non-None arm is returned.
+    optional_int = msgspec.inspect.UnionType(types=(int_type, msgspec.inspect.NoneType()))
+    assert _unwrap_optional(optional_int) is int_type
+
+    # Heterogeneous union: returned as-is.
+    str_type = msgspec.inspect.StrType(min_length=None, max_length=None, pattern=None)
+    hetero = msgspec.inspect.UnionType(types=(int_type, str_type))
+    assert _unwrap_optional(hetero) is hetero
+
+
 def test_annotated_types() -> None:
     historical_date = date(year=1980, day=1, month=1)
     today = date.today()
