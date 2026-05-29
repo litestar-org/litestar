@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, AnyStr, ClassVar, Mapping, Sequence, TypedDict, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.connection import Request
@@ -116,6 +116,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         "tags",
         "template_name",
     )
+
+    _kind: ClassVar[str] = "http"
 
     has_sync_callable: bool
 

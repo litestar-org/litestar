@@ -10,7 +10,12 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from litestar.plugins.sqlalchemy import EngineConfig
 from litestar.testing import TestClient
 
-pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
+pytestmark = [
+    pytest.mark.xdist_group("sqlalchemy_examples"),
+    pytest.mark.filterwarnings(
+        "ignore:.*Usage of deprecated reserved kwarg:litestar.exceptions.LitestarDeprecationWarning"
+    ),
+]
 
 
 @pytest.fixture

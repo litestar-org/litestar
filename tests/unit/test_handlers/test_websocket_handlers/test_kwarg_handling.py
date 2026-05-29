@@ -1,6 +1,8 @@
+import pytest
 from typing_extensions import Annotated
 
 from litestar import WebSocket, websocket
+from litestar.exceptions import LitestarDeprecationWarning
 from litestar.params import FromPath, FromQuery, HeaderParameter
 from litestar.testing import create_test_client
 
@@ -28,12 +30,13 @@ def test_handle_websocket_params_parsing() -> None:
         await socket.send_json({"data": "123"})
         await socket.close()
 
-    client = create_test_client(route_handlers=websocket_handler)
+    with pytest.warns(LitestarDeprecationWarning, match=".*Usage of deprecated reserved kwarg"), create_test_client(
+        route_handlers=websocket_handler
+    ) as client:
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.cookies = {"cookie": "yum"}  # type: ignore[assignment]
 
-    # Set cookies on the client to avoid warnings about per-request cookies.
-    client.cookies = {"cookie": "yum"}  # type: ignore[assignment]
-
-    with client.websocket_connect("/1?qp=1", headers={"some-header": "abc"}) as ws:
-        ws.send_json({"data": "123"})
-        data = ws.receive_json()
-        assert data
+        with client.websocket_connect("/1?qp=1", headers={"some-header": "abc"}) as ws:
+            ws.send_json({"data": "123"})
+            data = ws.receive_json()
+            assert data

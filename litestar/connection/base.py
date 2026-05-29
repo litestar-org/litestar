@@ -9,6 +9,7 @@ from litestar.datastructures.state import State
 from litestar.datastructures.url import URL, Address, make_absolute_url
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
+from litestar.utils import warn_deprecation
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
@@ -171,11 +172,13 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         return Headers.from_scope(self.scope)
 
     @property
-    def query_params(self) -> MultiDict[Any]:
+    def query(self) -> MultiDict[Any]:
         """Return the query parameters of this connection's ``Scope``.
 
         Returns:
             A normalized dict of query parameters. Multiple values for the same key are returned as a list.
+
+        .. versionadded:: 2.23.0
         """
         if self._parsed_query is Empty:
             if (parsed_query := self._connection_state.parsed_query) is not Empty:
@@ -185,6 +188,24 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
                     self.scope.get("query_string", b"")
                 )
         return MultiDict(self._parsed_query)
+
+    @property
+    def query_params(self) -> MultiDict[Any]:
+        """Return the query parameters of this connection's ``Scope``.
+
+        Returns:
+            A normalized dict of query parameters. Multiple values for the same key are returned as a list.
+
+        .. deprecated:: 2.23.0
+        """
+        warn_deprecation(
+            "2.23.0",
+            removal_in="3.0",
+            alternative=".query",
+            kind="property",
+            deprecated_name="query_params",
+        )
+        return self.query
 
     @property
     def path_params(self) -> dict[str, Any]:

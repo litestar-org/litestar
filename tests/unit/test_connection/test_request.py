@@ -185,7 +185,7 @@ def test_request_url() -> None:
 def test_request_query_params() -> None:
     async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, State](scope, receive)
-        params = dict(request.query_params)
+        params = dict(request.query)
         response = ASGIResponse(body=encode_json({"params": params}))
         await response(scope, receive, send)
 

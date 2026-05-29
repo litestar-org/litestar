@@ -473,8 +473,8 @@ def test_from_scope() -> None:
     mock = MagicMock()
 
     @get()
-    def handler(scope: Scope) -> None:
-        mock(Litestar.from_scope(scope))
+    def handler(request: Request) -> None:
+        mock(Litestar.from_scope(request.scope))
         return
 
     app = Litestar(route_handlers=[handler])

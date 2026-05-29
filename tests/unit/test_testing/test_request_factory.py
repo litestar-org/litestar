@@ -120,7 +120,7 @@ def test_request_factory_create_with_default_params() -> None:
     assert request.url == request.base_url == _DEFAULT_REQUEST_FACTORY_URL
     assert request.method == HttpMethod.GET
     assert request.state.keys() == {"_ls_connection_state"}
-    assert not request.query_params
+    assert not request.query
     assert not request.path_params
     assert request.route_handler
     assert request.scope["http_version"] == "1.1"
@@ -165,7 +165,7 @@ def test_request_factory_create_with_params() -> None:
     assert request.base_url == f"{scheme}://{server}:{port}{root_path}/"
     assert request.url == f"{scheme}://{server}:{port}{root_path}{path}"
     assert request.method == HttpMethod.GET
-    assert request.query_params == MultiDict()
+    assert request.query == MultiDict()
     assert request.user == user
     assert request.auth == auth
     assert request.session == session

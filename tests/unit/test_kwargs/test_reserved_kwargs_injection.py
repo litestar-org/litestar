@@ -18,7 +18,7 @@ from litestar import (
 )
 from litestar.datastructures.state import ImmutableState, State
 from litestar.di import Provide
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
 from litestar.params import Dependency, FromPath, FromQuery
 from litestar.status_codes import (
     HTTP_200_OK,
@@ -211,7 +211,9 @@ def test_header_params(decorator: Any, http_method: Any, expected_status_code: A
             for key, value in request_headers.items():
                 assert headers[key] == value
 
-    with create_test_client(MyController) as client:
+    with pytest.warns(
+        LitestarDeprecationWarning, match=".*Usage of deprecated reserved kwarg 'headers'"
+    ), create_test_client(MyController) as client:
         response = client.request(http_method, test_path, headers=request_headers)
         assert response.status_code == expected_status_code
 
@@ -261,7 +263,9 @@ def test_scope(decorator: Any, http_method: Any, expected_status_code: Any) -> N
         def test_method(self, scope: Scope) -> None:
             assert isinstance(scope, dict)
 
-    with create_test_client(MyController) as client:
+    with pytest.warns(
+        LitestarDeprecationWarning, match=".*Usage of deprecated reserved kwarg 'scope'"
+    ), create_test_client(MyController) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
 

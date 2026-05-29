@@ -221,11 +221,8 @@ class HTTPRoute(BaseRoute):
             An HTTP route handler for OPTIONS requests.
         """
 
-        def options_handler(scope: Scope) -> Response:
+        def options_handler() -> Response:
             """Handler function for OPTIONS requests.
-
-            Args:
-                scope: The ASGI Scope.
 
             Returns:
                 Response

@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import List, Optional, Type, Union
 
 import pytest
 from typing_extensions import Annotated
@@ -26,11 +26,7 @@ def create_person_controller() -> Type[Controller]:
         def get_persons(
             self,
             # expected to be ignored
-            headers: Any,
-            request: Any,
             state: State,
-            query: Dict[str, Any],
-            cookies: Dict[str, Any],
             # path parameter
             service_id: FromPath[int],
             # required query parameters below

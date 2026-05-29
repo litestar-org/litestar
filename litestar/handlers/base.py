@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import copy
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Mapping, Sequence, cast
 
 from litestar._signature import SignatureModel
 from litestar.di import Provide
@@ -75,6 +75,8 @@ class BaseRouteHandler:
         "type_decoders",
         "type_encoders",
     )
+
+    _kind: ClassVar[str] = "base"
 
     def __init__(
         self,

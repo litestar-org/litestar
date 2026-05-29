@@ -5,7 +5,12 @@ from _pytest.monkeypatch import MonkeyPatch
 
 from litestar.testing import TestClient
 
-pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
+pytestmark = [
+    pytest.mark.xdist_group("sqlalchemy_examples"),
+    pytest.mark.filterwarnings(
+        "ignore:.*Usage of deprecated reserved kwarg:litestar.exceptions.LitestarDeprecationWarning"
+    ),
+]
 
 
 def test_sync_app(monkeypatch: MonkeyPatch) -> None:

@@ -54,12 +54,30 @@ if TYPE_CHECKING:
 
 _ExceptionGroup = get_exception_group()
 
+_DEPRECATED_RESERVED_KWARGS = {
+    "scope",
+    "headers",
+    "cookies",
+    "query",
+}
+
 
 @dataclasses.dataclass
 class HandlerContext:
     handler: str
     paths: list[str]
+    kind: str = "base"
     dependencies: list[str] = dataclasses.field(default_factory=list)
+
+    def format(self, msg: str | None = None) -> str:
+        paths = ",".join(sorted(self.paths))
+        out = f"[paths={paths!r}, handler={self.handler!r}"
+        if self.dependencies:
+            out += f", dependencies={' -> '.join(self.dependencies[::-1])!r}"
+        out += "]"
+        if msg:
+            out = f"{out} {msg}"
+        return out
 
 
 class KwargsModel:
@@ -268,7 +286,7 @@ class KwargsModel:
         return param_definitions, expected_dependencies
 
     @classmethod
-    def create_for_signature_model(
+    def create_for_signature_model(  # noqa: C901
         cls,
         signature_model: type[SignatureModel],
         parsed_signature: ParsedSignature,
@@ -293,7 +311,7 @@ class KwargsModel:
         """
 
         if ctx is not None and not isinstance(ctx, HandlerContext):
-            ctx = HandlerContext(handler=ctx.name or ctx.handler_name, paths=sorted(ctx.paths))
+            ctx = HandlerContext(handler=ctx.name or ctx.handler_name, paths=sorted(ctx.paths), kind=ctx._kind)
 
         field_definitions = signature_model._fields
 
@@ -389,6 +407,24 @@ class KwargsModel:
             if "data" in expected_reserved_kwargs and "data" in field_definitions
             else False
         )
+
+        for reserved_kwarg in expected_reserved_kwargs.intersection(_DEPRECATED_RESERVED_KWARGS):
+            msg = f"Usage of deprecated reserved kwarg {reserved_kwarg!r}. It will be removed in Litestar 3.0."
+            if ctx is not None:
+                handler_kind = ctx.kind
+                alternative = ""
+                if handler_kind == "http":
+                    alternative = f"request.{reserved_kwarg}"
+                elif handler_kind == "websocket":
+                    alternative = f"socket.{reserved_kwarg}"
+                if alternative:
+                    msg = msg + f" Use '{alternative}' instead"
+                msg = ctx.format(msg)
+            warnings.warn(
+                msg,
+                stacklevel=2,
+                category=LitestarDeprecationWarning,
+            )
 
         return KwargsModel(
             expected_cookie_params=expected_cookie_parameters,
@@ -570,11 +606,6 @@ def _warn_deprecated_param_style(
             raise ValueError(f"Unknown style {style!r}")
 
     if ctx is not None:
-        paths = ",".join(sorted(ctx.paths))
-        out = f"[paths={paths!r}, handler={ctx.handler!r}"
-        if ctx.dependencies:
-            out += f", dependencies={' -> '.join(ctx.dependencies[::-1])!r}"
-        out += f"] {msg}"
-        msg = out
+        msg = ctx.format(msg)
 
     warnings.warn(msg, category=LitestarDeprecationWarning, stacklevel=stacklevel)
