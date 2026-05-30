@@ -10,7 +10,7 @@ from _pytest.monkeypatch import MonkeyPatch
 
 from litestar.exceptions import LitestarDeprecationWarning
 
-with warnings.catch_warnings(category=LitestarDeprecationWarning):
+with warnings.catch_warnings():
     warnings.simplefilter("ignore", category=LitestarDeprecationWarning)
     from docs.examples.contrib.sqlalchemy.plugins.tutorial import (
         full_app_no_plugins,
