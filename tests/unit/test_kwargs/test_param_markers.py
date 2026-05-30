@@ -3,12 +3,10 @@ import dataclasses
 from typing import Annotated
 
 import annotated_types
-import pytest
 
 from litestar import Litestar, get
 from litestar.di import NamedDependency
 from litestar.enums import ParamType
-from litestar.exceptions import LitestarDeprecationWarning
 from litestar.openapi.spec import Parameter as OpenAPIParameter
 from litestar.params import (
     CookieParameter,
