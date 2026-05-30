@@ -11,7 +11,7 @@ from inspect import Parameter, Signature
 from typing import Annotated as te_Annotated
 from typing import Any, AnyStr, ForwardRef, Literal, TypeVar, cast
 
-from litestar.enums import ParamType
+from litestar.utils.errors import raise_for_kwarg_as_default
 
 try:
     from typing import Annotated  # pyright: ignore
@@ -459,16 +459,8 @@ class FieldDefinition:
 
         if not kwargs.get("kwarg_definition"):
             if isinstance(default := kwargs.get("default"), KwargDefinition):
-                alternative = f"Annotated[<type>, {type(default).__name__}(...)]"
-                if isinstance(default, ParameterKwarg) and not default.is_constrained:
-                    alternative = {
-                        ParamType.QUERY: "FromQuery",
-                        ParamType.HEADER: "FromHeader",
-                        ParamType.COOKIE: "FromCookie",
-                        ParamType.PATH: "FromPath",
-                    }[default.param_type]
-                msg = f"Usage of parameter defaults to declare metadata is no longer supported. Use '{alternative}' instead"
-                raise ImproperlyConfiguredException(msg)
+                # TODO: Remove in 4.0
+                raise_for_kwarg_as_default(default)
             if kwarg_definition := next((v for v in metadata if isinstance(v, KwargDefinition)), None):
                 kwargs["kwarg_definition"] = kwarg_definition
 
