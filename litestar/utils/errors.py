@@ -2,17 +2,20 @@ from typing import NoReturn
 
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import KwargDefinition, ParameterKwarg
+from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
 
 
 def raise_for_kwarg_as_default(default: KwargDefinition) -> NoReturn:
-    alternative = f"Annotated[<type>, {type(default).__name__}(...)]"
-    if isinstance(default, ParameterKwarg) and not default.is_constrained:
+    if isinstance(default, BodyKwarg):
+        alternative = "Annotated[<type>, Body(...)]"
+    elif isinstance(default, ParameterKwarg) and not default.is_constrained:
         alternative = {
             ParamType.QUERY: "FromQuery",
             ParamType.HEADER: "FromHeader",
             ParamType.COOKIE: "FromCookie",
             ParamType.PATH: "FromPath",
         }[default.param_type]
+    else:
+        alternative = f"Annotated[<type>, {type(default).__name__}(...)]"
     msg = f"Usage of parameter defaults to declare metadata is no longer supported. Use '{alternative}' instead"
     raise ImproperlyConfiguredException(msg)
