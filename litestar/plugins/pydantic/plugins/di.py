@@ -38,7 +38,7 @@ def _resolve_field_annotation(type_: Any, field_name: str) -> Any:
 def _maybe_wrap_in_named_dependency(ann: Any) -> Any:
     metadata = unwrap_annotation(ann)[1]
     if not any(isinstance(m, ParameterKwarg) for m in metadata):
-        return NamedDependency[ann]
+        return NamedDependency[ann]  # type: ignore[misc]
     return ann
 
 

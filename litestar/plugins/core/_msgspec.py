@@ -28,7 +28,7 @@ class MsgspecDIPlugin(DIPlugin):
             metadata = unwrap_annotation(field_info.type)[1]
             type_ = field_info.type
             if not any(isinstance(m, ParameterKwarg) for m in metadata):
-                type_ = NamedDependency[type_]
+                type_ = NamedDependency[type_]  # type: ignore[misc]
 
             type_hints[field_info.name] = type_
             parameters.append(

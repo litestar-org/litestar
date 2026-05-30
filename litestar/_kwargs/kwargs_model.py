@@ -323,11 +323,13 @@ class KwargsModel:
             if dep_field_def is None:
                 continue
             if not dep_field_def.is_annotated:
-                msg = ctx.format(
+                msg = (
                     f"Inferred dependency field {dep_field_name!r}. Mark the field explicitly "
                     f"with 'NamedDependency[{dep_field_def.raw}]'. Inferred dependencies will "
                     "stop working in Litestar 3.0"
                 )
+                if ctx is not None:
+                    msg = ctx.format(msg)
                 warnings.warn(
                     msg,
                     category=LitestarDeprecationWarning,
