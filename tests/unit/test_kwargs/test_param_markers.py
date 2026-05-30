@@ -3,10 +3,12 @@ import dataclasses
 from typing import Annotated
 
 import annotated_types
+import pytest
 
 from litestar import Litestar, get
 from litestar.di import NamedDependency
 from litestar.enums import ParamType
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Parameter as OpenAPIParameter
 from litestar.params import (
     CookieParameter,
@@ -187,10 +189,10 @@ def test_annotated_metadata_does_not_shadow_path_param() -> None:
     # https://github.com/litestar-org/litestar/issues/4804
 
     @get("/{foo:int}")
-    async def handler(foo: Annotated[int, "arbitrary metadata"]) -> int:
+    async def handler(foo: FromPath[Annotated[int, "arbitrary metadata"]]) -> int:
         return foo
 
-    with create_test_client([handler]) as client:
+    with create_test_client([handler], raise_server_exceptions=True) as client:
         res = client.get("/7")
         assert res.status_code == 200
         assert res.json() == 7
@@ -209,3 +211,13 @@ def test_named_dependency_explicit_marker() -> None:
         # isn't implicitly treated as a query parameter
         schema = client.get("/schema/openapi.json").json()
         assert schema["paths"]["/"]["get"].get("parameters") is None
+
+
+def test_unmarked_raises() -> None:
+
+    @get("/{foo:int}")
+    async def handler(foo: int) -> int:
+        return foo
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Litestar([handler])

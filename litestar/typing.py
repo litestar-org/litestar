@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import dataclasses
-import warnings
 from collections import abc
 from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass, is_dataclass
@@ -46,10 +45,7 @@ try:
 except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
-from litestar.exceptions import LitestarDeprecationWarning
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
 from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
@@ -443,7 +439,7 @@ class FieldDefinition:
         return get_type_hints(self.annotation, include_extras=include_extras)
 
     @classmethod
-    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:  # noqa: C901
+    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
         """Initialize FieldDefinition.
 
         Args:

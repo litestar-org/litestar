@@ -166,7 +166,7 @@ class KwargDefinition:
 class ParameterKwarg(KwargDefinition):
     """Data container representing a parameter."""
 
-    param_type: ClassVar[ParamType] = ParamType.QUERY
+    param_type: ClassVar[ParamType]
     """Type of the parameter"""
 
     name: str | None = None

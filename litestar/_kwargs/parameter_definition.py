@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, NamedTuple
 
-from litestar.enums import ParamType
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import ParameterKwarg
 
 if TYPE_CHECKING:
+    from litestar.enums import ParamType
     from litestar.typing import FieldDefinition
+
 
 __all__ = ("ParameterDefinition", "create_parameter_definition", "merge_parameter_sets")
 
@@ -26,7 +28,7 @@ def create_parameter_definition(
     field_definition: FieldDefinition,
     field_name: str,
     path_parameters: set[str],
-) -> ParameterDefinition:
+) -> ParameterDefinition | None:
     """Create a ParameterDefinition for the given FieldDefinition.
 
     Args:
@@ -41,14 +43,11 @@ def create_parameter_definition(
         field_definition.kwarg_definition if isinstance(field_definition.kwarg_definition, ParameterKwarg) else None
     )
 
-    if kwarg_definition is not None:
-        param_type = kwarg_definition.param_type
-        field_alias = kwarg_definition.name or field_name
-    else:
-        # this can only be reached for dependency params now.
-        # TODO: remove when marking with 'Inject' has been made mandatory
-        param_type = ParamType.QUERY
-        field_alias = field_name
+    if kwarg_definition is None:
+        raise ImproperlyConfiguredException()
+
+    param_type = kwarg_definition.param_type
+    field_alias = kwarg_definition.name or field_name
 
     return ParameterDefinition(
         param_type=param_type,

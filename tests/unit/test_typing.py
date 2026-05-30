@@ -24,9 +24,6 @@ try:
 except ImportError:
     TypeAliasType = TeTypeAliasType
 
-from litestar import get
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import KwargDefinition, ParameterKwarg, QueryParameter
 from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.typing import FieldDefinition
 from tests.unit.test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
