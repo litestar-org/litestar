@@ -60,7 +60,7 @@ it up to the caller how to provide them.
 
 This though still holds true with explicit declarations: The callee simply declares
 additional information, i.e. the kind of parameter it requires, which in most cases is
-not a purely cosmetic difference, but carries meaning: A ``x-api-key`` header is not
+not a purely cosmetic difference, but carries meaning: An ``x-api-key`` header is not
 equivalent to a query parameter of the same name.
 
 
