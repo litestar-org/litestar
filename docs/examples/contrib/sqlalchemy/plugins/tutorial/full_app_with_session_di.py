@@ -8,6 +8,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get, post, put
 from litestar.datastructures import State
+from litestar.di import NamedDependency
 from litestar.exceptions import ClientException, NotFoundException
 from litestar.params import FromPath, FromQuery
 from litestar.status_codes import HTTP_409_CONFLICT
@@ -80,19 +81,19 @@ async def get_todo_list(done: FromQuery[Optional[bool]], session: AsyncSession) 
 
 
 @get("/")
-async def get_list(transaction: AsyncSession, done: FromQuery[Optional[bool]] = None) -> TodoCollectionType:
+async def get_list(transaction: NamedDependency[AsyncSession], done: FromQuery[Optional[bool]] = None) -> TodoCollectionType:
     return [serialize_todo(todo) for todo in await get_todo_list(done, transaction)]
 
 
 @post("/")
-async def add_item(data: TodoType, transaction: AsyncSession) -> TodoType:
+async def add_item(data: TodoType, transaction: NamedDependency[AsyncSession]) -> TodoType:
     new_todo = TodoItem(title=data["title"], done=data["done"])
     transaction.add(new_todo)
     return serialize_todo(new_todo)
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: FromPath[str], data: TodoType, transaction: AsyncSession) -> TodoType:
+async def update_item(item_title: FromPath[str], data: TodoType, transaction: NamedDependency[AsyncSession]) -> TodoType:
     todo_item = await get_todo_by_title(item_title, transaction)
     todo_item.title = data["title"]
     todo_item.done = data["done"]
