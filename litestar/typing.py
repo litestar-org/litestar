@@ -11,6 +11,8 @@ from inspect import Parameter, Signature
 from typing import Annotated as te_Annotated
 from typing import Any, AnyStr, ForwardRef, Literal, TypeVar, cast
 
+from litestar.enums import ParamType
+
 try:
     from typing import Annotated  # pyright: ignore
 
@@ -456,10 +458,17 @@ class FieldDefinition:
         annotation_args = () if origin is abc.Callable else get_args(unwrapped)
 
         if not kwargs.get("kwarg_definition"):
-            if isinstance(kwargs.get("default"), KwargDefinition):
-                raise ImproperlyConfiguredException(
-                    "Usage of parameter defaults to declare metadata is no longer supported"
-                )
+            if isinstance(default := kwargs.get("default"), KwargDefinition):
+                alternative = f"Annotated[<type>, {default!r}]"
+                if isinstance(default, ParameterKwarg) and not default.is_constrained:
+                    alternative = {
+                        ParamType.QUERY: "FromQuery",
+                        ParamType.HEADER: "FromHeader",
+                        ParamType.COOKIE: "FromCookie",
+                        ParamType.PATH: "FromPath",
+                    }[default.param_type]
+                msg = f"Usage of parameter defaults to declare metadata is no longer supported. Use '{alternative}' instead"
+                raise ImproperlyConfiguredException(msg)
             if kwarg_definition := next((v for v in metadata if isinstance(v, KwargDefinition)), None):
                 kwargs["kwarg_definition"] = kwarg_definition
 
@@ -505,9 +514,7 @@ class FieldDefinition:
         kwargs.setdefault("safe_generic_origin", get_safe_generic_origin(origin, unwrapped))
         kwargs.setdefault("type_wrappers", wrappers)
 
-        instance = FieldDefinition(**kwargs)
-
-        return instance
+        return FieldDefinition(**kwargs)
 
     @classmethod
     def from_kwarg(

@@ -17,6 +17,8 @@ from typing_extensions import (
     TypeAliasType as TeTypeAliasType,
 )
 
+from litestar.exceptions import ImproperlyConfiguredException
+
 try:
     from typing import TypeAliasType  # type: ignore[attr-defined]
 except ImportError:
@@ -474,3 +476,10 @@ def test_unwrap_type_alias_type_keyword() -> None:
     annotation = ctx["IntAlias"]
     field_definition = FieldDefinition.from_annotation(annotation)
     assert field_definition.is_type_alias_type
+
+
+def test_kwarg_definition_as_default_raises() -> None:
+    with pytest.raises(
+        ImproperlyConfiguredException, match="Usage of parameter defaults to declare metadata is no longer supported."
+    ):
+        FieldDefinition.from_annotation(int, default=ParameterKwarg())
