@@ -6,8 +6,11 @@ from typing import Any
 
 from typing_extensions import Annotated
 
+from litestar.di import NamedDependency
+from litestar.params import ParameterKwarg
 from litestar.plugins import DIPlugin
 from litestar.plugins.pydantic.utils import is_pydantic_model_class
+from litestar.utils.typing import unwrap_annotation
 
 
 def _resolve_field_annotation(type_: Any, field_name: str) -> Any:
@@ -32,6 +35,13 @@ def _resolve_field_annotation(type_: Any, field_name: str) -> Any:
     return Any
 
 
+def _maybe_wrap_in_named_dependency(ann: Any) -> Any:
+    metadata = unwrap_annotation(ann)[1]
+    if not any(isinstance(m, ParameterKwarg) for m in metadata):
+        return NamedDependency[ann]
+    return ann
+
+
 class PydanticDIPlugin(DIPlugin):
     def has_typed_init(self, type_: Any) -> bool:
         return is_pydantic_model_class(type_)
@@ -44,7 +54,11 @@ class PydanticDIPlugin(DIPlugin):
 
         type_hints = {field_name: _resolve_field_annotation(type_, field_name) for field_name in model_fields}
         parameters = [
-            inspect.Parameter(name=field_name, kind=inspect.Parameter.KEYWORD_ONLY, annotation=type_hints[field_name])
+            inspect.Parameter(
+                name=field_name,
+                kind=inspect.Parameter.KEYWORD_ONLY,
+                annotation=_maybe_wrap_in_named_dependency(type_hints[field_name]),
+            )
             for field_name in model_fields
         ]
         return Signature(parameters), type_hints

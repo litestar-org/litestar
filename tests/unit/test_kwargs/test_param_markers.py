@@ -344,6 +344,9 @@ def test_annotated_metadata_does_not_shadow_path_param() -> None:
         assert res.json() == 7
 
 
+@pytest.mark.filterwarnings(
+    "ignore:.*Dependency parameter 'foo' declared using deprecated:litestar.exceptions.LitestarDeprecationWarning"
+)
 def test_deprecated_dependency_marker() -> None:
     with pytest.warns(LitestarDeprecationWarning, match="Call to deprecated function 'Dependency'"):
 

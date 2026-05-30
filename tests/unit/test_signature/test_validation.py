@@ -10,7 +10,7 @@ from litestar._signature import SignatureModel
 from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
-from litestar.params import CookieParameter, Dependency, FromQuery, HeaderParameter, PathParameter, QueryParameter
+from litestar.params import CookieParameter, FromQuery, HeaderParameter, PathParameter, QueryParameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, create_test_client
 from litestar.utils.signature import ParsedSignature
@@ -50,7 +50,7 @@ def test_dependency_validation_failure_raises_500() -> None:
     dependencies = {"dep": Provide(lambda: "thirteen", sync_to_thread=False)}
 
     @get("/")
-    def test(dep: int, param: FromQuery[int], optional_dep: Annotated[Optional[int], Dependency()]) -> None: ...
+    def test(dep: int, param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]) -> None: ...
 
     with create_test_client(
         route_handlers=[test],
@@ -66,7 +66,7 @@ def test_validation_failure_raises_400() -> None:
     dependencies = {"dep": Provide(lambda: 13, sync_to_thread=False)}
 
     @get("/")
-    def test(dep: int, param: FromQuery[int], optional_dep: Annotated[Optional[int], Dependency()]) -> None: ...
+    def test(dep: int, param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]) -> None: ...
 
     with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
         response = client.get("/?param=thirteen")
