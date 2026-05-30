@@ -512,74 +512,75 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto.field</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOField</span><span class="p">,</span> <span class="n">extract_dto_field</span>
 </span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">KwargDefinition</span>
 </span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.empty</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span>
-</span><span data-line="11">
-</span><span data-line="12"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="13">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Generator</span>
-</span><span data-line="14">
-</span><span data-line="15">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassProtocol</span>
-</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDefinition</span>
-</span><span data-line="17">
+</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">raise_for_kwarg_as_default</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="14">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Generator</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassProtocol</span>
+</span><span data-line="17">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDefinition</span>
 </span><span data-line="18">
-</span><span data-line="19"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DataclassDTO&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">)</span>
-</span><span data-line="20">
-</span><span data-line="21"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;DataclassProtocol | Collection[DataclassProtocol]&quot;</span><span class="p">)</span>
-</span><span data-line="22"><span class="n">AnyDataclass</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AnyDataclass&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;DataclassProtocol&quot;</span><span class="p">)</span>
-</span><span data-line="23">
+</span><span data-line="19">
+</span><span data-line="20"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DataclassDTO&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;DataclassProtocol | Collection[DataclassProtocol]&quot;</span><span class="p">)</span>
+</span><span data-line="23"><span class="n">AnyDataclass</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AnyDataclass&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;DataclassProtocol&quot;</span><span class="p">)</span>
 </span><span data-line="24">
+</span><span data-line="25">
 <div class="viewcode-block" id="DataclassDTO">
 <a class="viewcode-back" href="../../../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO">[docs]</a>
-</span><span data-line="25"><span class="k">class</span><span class="w"> </span><span class="nc">DataclassDTO</span><span class="p">(</span><span class="n">AbstractDTO</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-</span><span data-line="26"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Support for domain modelling with dataclasses.&quot;&quot;&quot;</span>
-</span><span data-line="27">
+</span><span data-line="26"><span class="k">class</span><span class="w"> </span><span class="nc">DataclassDTO</span><span class="p">(</span><span class="n">AbstractDTO</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+</span><span data-line="27"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Support for domain modelling with dataclasses.&quot;&quot;&quot;</span>
+</span><span data-line="28">
 <div class="viewcode-block" id="DataclassDTO.generate_field_definitions">
 <a class="viewcode-back" href="../../../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO.generate_field_definitions">[docs]</a>
-</span><span data-line="28">    <span class="nd">@classmethod</span>
-</span><span data-line="29">    <span class="k">def</span><span class="w"> </span><span class="nf">generate_field_definitions</span><span class="p">(</span>
-</span><span data-line="30">        <span class="bp">cls</span><span class="p">,</span> <span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">DataclassProtocol</span><span class="p">]</span>
-</span><span data-line="31">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">DTOFieldDefinition</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="32">        <span class="n">dc_fields</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="n">model_type</span><span class="p">)}</span>
-</span><span data-line="33">        <span class="n">properties</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_property_fields</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span>
-</span><span data-line="34">
-</span><span data-line="35">        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">field_definition</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_model_type_hints</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="36">            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dc_field</span> <span class="o">:=</span> <span class="n">dc_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)):</span>
-</span><span data-line="37">                <span class="k">continue</span>
-</span><span data-line="38">
-</span><span data-line="39">            <span class="n">default</span> <span class="o">=</span> <span class="n">dc_field</span><span class="o">.</span><span class="n">default</span> <span class="k">if</span> <span class="n">dc_field</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MISSING</span> <span class="k">else</span> <span class="n">Empty</span>
-</span><span data-line="40">            <span class="n">default_factory</span> <span class="o">=</span> <span class="n">dc_field</span><span class="o">.</span><span class="n">default_factory</span> <span class="k">if</span> <span class="n">dc_field</span><span class="o">.</span><span class="n">default_factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MISSING</span> <span class="k">else</span> <span class="kc">None</span>
-</span><span data-line="41">            <span class="n">field_definition</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span>
-</span><span data-line="42">                <span class="n">DTOFieldDefinition</span><span class="o">.</span><span class="n">from_field_definition</span><span class="p">(</span>
-</span><span data-line="43">                    <span class="n">field_definition</span><span class="o">=</span><span class="n">field_definition</span><span class="p">,</span>
-</span><span data-line="44">                    <span class="n">default_factory</span><span class="o">=</span><span class="n">default_factory</span><span class="p">,</span>
-</span><span data-line="45">                    <span class="n">dto_field</span><span class="o">=</span><span class="n">extract_dto_field</span><span class="p">(</span><span class="n">field_definition</span><span class="p">,</span> <span class="n">dc_field</span><span class="o">.</span><span class="n">metadata</span><span class="p">),</span>
-</span><span data-line="46">                    <span class="n">model_name</span><span class="o">=</span><span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-</span><span data-line="47">                <span class="p">),</span>
-</span><span data-line="48">                <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
-</span><span data-line="49">                <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
-</span><span data-line="50">            <span class="p">)</span>
-</span><span data-line="51">
-</span><span data-line="52">            <span class="k">yield</span> <span class="p">(</span>
-</span><span data-line="53">                <span class="n">replace</span><span class="p">(</span><span class="n">field_definition</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">Empty</span><span class="p">,</span> <span class="n">kwarg_definition</span><span class="o">=</span><span class="n">default</span><span class="p">)</span>
-</span><span data-line="54">                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">KwargDefinition</span><span class="p">)</span>
-</span><span data-line="55">                <span class="k">else</span> <span class="n">field_definition</span>
-</span><span data-line="56">            <span class="p">)</span>
-</span><span data-line="57">
-</span><span data-line="58">        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">property_field</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="59">            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
-</span><span data-line="60">                <span class="k">continue</span>
-</span><span data-line="61">
-</span><span data-line="62">            <span class="k">yield</span> <span class="n">DTOFieldDefinition</span><span class="o">.</span><span class="n">from_field_definition</span><span class="p">(</span>
-</span><span data-line="63">                <span class="n">property_field</span><span class="p">,</span>
-</span><span data-line="64">                <span class="n">model_name</span><span class="o">=</span><span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-</span><span data-line="65">                <span class="n">default_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span data-line="66">                <span class="n">dto_field</span><span class="o">=</span><span class="n">DTOField</span><span class="p">(</span><span class="n">mark</span><span class="o">=</span><span class="s2">&quot;read-only&quot;</span><span class="p">),</span>
-</span><span data-line="67">            <span class="p">)</span></div>
+</span><span data-line="29">    <span class="nd">@classmethod</span>
+</span><span data-line="30">    <span class="k">def</span><span class="w"> </span><span class="nf">generate_field_definitions</span><span class="p">(</span>
+</span><span data-line="31">        <span class="bp">cls</span><span class="p">,</span> <span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">DataclassProtocol</span><span class="p">]</span>
+</span><span data-line="32">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">DTOFieldDefinition</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="33">        <span class="n">dc_fields</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="n">model_type</span><span class="p">)}</span>
+</span><span data-line="34">        <span class="n">properties</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_property_fields</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span>
+</span><span data-line="35">
+</span><span data-line="36">        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">field_definition</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_model_type_hints</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="37">            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dc_field</span> <span class="o">:=</span> <span class="n">dc_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)):</span>
+</span><span data-line="38">                <span class="k">continue</span>
+</span><span data-line="39">
+</span><span data-line="40">            <span class="n">default</span> <span class="o">=</span> <span class="n">dc_field</span><span class="o">.</span><span class="n">default</span> <span class="k">if</span> <span class="n">dc_field</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MISSING</span> <span class="k">else</span> <span class="n">Empty</span>
+</span><span data-line="41">            <span class="n">default_factory</span> <span class="o">=</span> <span class="n">dc_field</span><span class="o">.</span><span class="n">default_factory</span> <span class="k">if</span> <span class="n">dc_field</span><span class="o">.</span><span class="n">default_factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">MISSING</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="42">            <span class="n">field_definition</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span>
+</span><span data-line="43">                <span class="n">DTOFieldDefinition</span><span class="o">.</span><span class="n">from_field_definition</span><span class="p">(</span>
+</span><span data-line="44">                    <span class="n">field_definition</span><span class="o">=</span><span class="n">field_definition</span><span class="p">,</span>
+</span><span data-line="45">                    <span class="n">default_factory</span><span class="o">=</span><span class="n">default_factory</span><span class="p">,</span>
+</span><span data-line="46">                    <span class="n">dto_field</span><span class="o">=</span><span class="n">extract_dto_field</span><span class="p">(</span><span class="n">field_definition</span><span class="p">,</span> <span class="n">dc_field</span><span class="o">.</span><span class="n">metadata</span><span class="p">),</span>
+</span><span data-line="47">                    <span class="n">model_name</span><span class="o">=</span><span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+</span><span data-line="48">                <span class="p">),</span>
+</span><span data-line="49">                <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="50">                <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
+</span><span data-line="51">            <span class="p">)</span>
+</span><span data-line="52">
+</span><span data-line="53">            <span class="c1"># TODO: Remove in 4.0</span>
+</span><span data-line="54">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">KwargDefinition</span><span class="p">):</span>
+</span><span data-line="55">                <span class="n">raise_for_kwarg_as_default</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+</span><span data-line="56">
+</span><span data-line="57">            <span class="k">yield</span> <span class="n">field_definition</span>
+</span><span data-line="58">
+</span><span data-line="59">        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">property_field</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="60">            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+</span><span data-line="61">                <span class="k">continue</span>
+</span><span data-line="62">
+</span><span data-line="63">            <span class="k">yield</span> <span class="n">DTOFieldDefinition</span><span class="o">.</span><span class="n">from_field_definition</span><span class="p">(</span>
+</span><span data-line="64">                <span class="n">property_field</span><span class="p">,</span>
+</span><span data-line="65">                <span class="n">model_name</span><span class="o">=</span><span class="n">model_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+</span><span data-line="66">                <span class="n">default_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span data-line="67">                <span class="n">dto_field</span><span class="o">=</span><span class="n">DTOField</span><span class="p">(</span><span class="n">mark</span><span class="o">=</span><span class="s2">&quot;read-only&quot;</span><span class="p">),</span>
+</span><span data-line="68">            <span class="p">)</span></div>
 
-</span><span data-line="68">
+</span><span data-line="69">
 <div class="viewcode-block" id="DataclassDTO.detect_nested_field">
 <a class="viewcode-back" href="../../../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO.detect_nested_field">[docs]</a>
-</span><span data-line="69">    <span class="nd">@classmethod</span>
-</span><span data-line="70">    <span class="k">def</span><span class="w"> </span><span class="nf">detect_nested_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="71">        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span> <span class="s2">&quot;__dataclass_fields__&quot;</span><span class="p">)</span></div>
+</span><span data-line="70">    <span class="nd">@classmethod</span>
+</span><span data-line="71">    <span class="k">def</span><span class="w"> </span><span class="nf">detect_nested_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="72">        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span> <span class="s2">&quot;__dataclass_fields__&quot;</span><span class="p">)</span></div>
 </div>
 
 </span></pre></div>

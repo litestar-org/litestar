@@ -548,6 +548,41 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Remove deprecated declaration of metadata through default values<a class="headerlink reference internal" href="#3.0.0-remove deprecated declaration of metadata through default values" id="3.0.0-remove deprecated declaration of metadata through default values">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Remove declaring parameter and body metadata through default values and setting
+defaults inside markers.</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">default</span></code> keyword has been removed from <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> and <code class="docutils literal notranslate"><span class="pre">Body</span></code>, along
+with the underlying <code class="docutils literal notranslate"><span class="pre">KwargDefinition.default</span></code> field. Passing it now raises a
+<code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.</p></li>
+<li><p>Using a <code class="docutils literal notranslate"><span class="pre">QueryParameter</span></code> / <code class="docutils literal notranslate"><span class="pre">HeaderParameter</span></code> / <code class="docutils literal notranslate"><span class="pre">PathParameter</span></code> /
+<code class="docutils literal notranslate"><span class="pre">CookieParameter</span></code> or <code class="docutils literal notranslate"><span class="pre">Body</span></code> marker as a parameter <em>default value</em> (for
+example <code class="docutils literal notranslate"><span class="pre">data:</span> <span class="pre">Foo</span> <span class="pre">=</span> <span class="pre">Body(...)</span></code> or <code class="docutils literal notranslate"><span class="pre">param:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">QueryParameter(...)</span></code>)
+now raises an exception</p></li>
+</ul>
+<p><strong>Migration</strong></p>
+<ul>
+<li><p>If metadata is declared on the marker, move the marker into <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">data:</span> <span class="pre">Foo</span> <span class="pre">=</span> <span class="pre">Body(min_items=2)</span></code> becomes <code class="docutils literal notranslate"><span class="pre">data:</span> <span class="pre">Annotated[Foo,</span> <span class="pre">Body(min_items=2)]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">param:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">QueryParameter(gt=1)</span></code> becomes <code class="docutils literal notranslate"><span class="pre">param:</span> <span class="pre">Annotated[int,</span> <span class="pre">QueryParameter(gt=1)]</span></code></p></li>
+</ul>
+<p>For the unconstrained case the dedicated markers can be used as a shorthand,
+e.g. <code class="docutils literal notranslate"><span class="pre">JSONBody[Foo]</span></code>, <code class="docutils literal notranslate"><span class="pre">MsgPackBody[Foo]</span></code>, <code class="docutils literal notranslate"><span class="pre">MultipartBody[Foo]</span></code> or
+<code class="docutils literal notranslate"><span class="pre">URLEncodedBody[Foo]</span></code> for bodies, and <code class="docutils literal notranslate"><span class="pre">FromQuery[int]</span></code>, <code class="docutils literal notranslate"><span class="pre">FromHeader[int]</span></code>,
+<code class="docutils literal notranslate"><span class="pre">FromCookie[int]</span></code> or <code class="docutils literal notranslate"><span class="pre">FromPath[int]</span></code> for parameters.</p>
+</li>
+<li><p>Hoist defaults set inside <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> into the parameter default:
+<code class="docutils literal notranslate"><span class="pre">param:</span> <span class="pre">Annotated[int,</span> <span class="pre">QueryParameter(default=5)]</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">param:</span> <span class="pre">Annotated[int,</span> <span class="pre">QueryParameter(...)]</span> <span class="pre">=</span> <span class="pre">5</span></code>.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/routing/parameters.html"><span class="doc">Parameters</span></a></p>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4819">https://github.com/litestar-org/litestar/pull/4819</a></span></p>
+</div>
+</dd>
 <dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">params.Dependency</span></code> and <code class="docutils literal notranslate"><span class="pre">params.DependencyKwarg</span></code><a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Remove <code class="docutils literal notranslate"><span class="pre">params.Dependency</span></code> and <code class="docutils literal notranslate"><span class="pre">params.DependencyKwarg</span></code> that were deprecated
 in <code class="docutils literal notranslate"><span class="pre">2.23.0</span></code>.</p>
