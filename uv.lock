@@ -10,7 +10,7 @@ resolution-markers = [
 [[package]]
 name = "advanced-alchemy"
 version = "1.10.0"
-source = { git = "https://github.com/litestar-org/advanced-alchemy.git?rev=cadc841d7c38d65081a311b56980c2cd1731d8bd#cadc841d7c38d65081a311b56980c2cd1731d8bd" }
+source = { git = "https://github.com/litestar-org/advanced-alchemy.git?rev=main#bbe68ddd3a8dd32618c5117a98cf74d269b480fc" }
 dependencies = [
     { name = "alembic" },
     { name = "greenlet" },
@@ -2134,7 +2134,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'", git = "https://github.com/litestar-org/advanced-alchemy.git?rev=cadc841d7c38d65081a311b56980c2cd1731d8bd" },
+    { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'", git = "https://github.com/litestar-org/advanced-alchemy.git?rev=main" },
     { name = "annotated-types", marker = "extra == 'annotated-types'" },
     { name = "anyio", specifier = ">=3" },
     { name = "attrs", marker = "extra == 'attrs'" },
