@@ -548,6 +548,20 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">params.Dependency</span></code> and <code class="docutils literal notranslate"><span class="pre">params.DependencyKwarg</span></code><a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Remove <code class="docutils literal notranslate"><span class="pre">params.Dependency</span></code> and <code class="docutils literal notranslate"><span class="pre">params.DependencyKwarg</span></code> that were deprecated
+in <code class="docutils literal notranslate"><span class="pre">2.23.0</span></code>.</p>
+<p><strong>Migration</strong></p>
+<ul class="simple">
+<li><p>Replace <code class="docutils literal notranslate"><span class="pre">foo:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">Dependency()</span></code> with <code class="docutils literal notranslate"><span class="pre">foo:</span> <span class="pre">NamedDependency[int]</span></code></p></li>
+<li><p>Replace <code class="docutils literal notranslate"><span class="pre">foo:</span> <span class="pre">Annotated[int,</span> <span class="pre">Dependency(default=1)]</span></code> by hoisting the
+default into the parameter default: <code class="docutils literal notranslate"><span class="pre">foo:</span> <span class="pre">NamedDependency[int]</span> <span class="pre">=</span> <span class="pre">1</span></code></p></li>
+<li><p>Replace <code class="docutils literal notranslate"><span class="pre">foo:</span> <span class="pre">Annotated[int,</span> <span class="pre">Dependency(skip_validation=True)</span></code> with
+<code class="docutils literal notranslate"><span class="pre">foo:</span> <span class="pre">NamedDependency[SkipValidation[int]]</span></code></p></li>
+</ul>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4818">https://github.com/litestar-org/litestar/pull/4818</a></span></p>
+</div>
+</dd>
 <dt>Drop support for Pydantic 1<a class="headerlink reference internal" href="#3.0.0-drop support for pydantic 1" id="3.0.0-drop support for pydantic 1">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Drop support for Pydantic 1.</p>
 <p>Pydantic 1 is no longer supported or tested against. No changes required for

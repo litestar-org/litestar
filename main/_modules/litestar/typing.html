@@ -551,7 +551,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="47">    <span class="n">TypeAliasTypes</span> <span class="o">=</span> <span class="p">(</span><span class="n">TeTypeAliasType</span><span class="p">,)</span>  <span class="c1"># type: ignore[assignment]</span>
 </span><span data-line="48">
 </span><span data-line="49"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfiguredException</span><span class="p">,</span> <span class="n">LitestarDeprecationWarning</span><span class="p">,</span> <span class="n">LitestarWarning</span>
-</span><span data-line="50"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">BodyKwarg</span><span class="p">,</span> <span class="n">DependencyKwarg</span><span class="p">,</span> <span class="n">KwargDefinition</span><span class="p">,</span> <span class="n">ParameterKwarg</span>
+</span><span data-line="50"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">BodyKwarg</span><span class="p">,</span> <span class="n">KwargDefinition</span><span class="p">,</span> <span class="n">ParameterKwarg</span>
 </span><span data-line="51"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.builtin_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">UnionTypes</span>
 </span><span data-line="52"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.predicates</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 </span><span data-line="53">    <span class="n">is_any</span><span class="p">,</span>
@@ -662,7 +662,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="156"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Default value of the field.&quot;&quot;&quot;</span>
 </span><span data-line="157">    <span class="n">extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </span><span data-line="158"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A mapping of extra values.&quot;&quot;&quot;</span>
-</span><span data-line="159">    <span class="n">kwarg_definition</span><span class="p">:</span> <span class="n">KwargDefinition</span> <span class="o">|</span> <span class="n">DependencyKwarg</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="159">    <span class="n">kwarg_definition</span><span class="p">:</span> <span class="n">KwargDefinition</span> <span class="o">|</span> <span class="kc">None</span>
 </span><span data-line="160"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Kwarg Parameter.&quot;&quot;&quot;</span>
 </span><span data-line="161">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="162"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Field name.&quot;&quot;&quot;</span>
@@ -697,7 +697,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="185">    <span class="k">def</span><span class="w"> </span><span class="nf">is_di_field</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 </span><span data-line="186">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dependency</span>
 </span><span data-line="187">
-</span><span data-line="188">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_metadata</span><span class="p">(</span><span class="n">Dependency</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwarg_definition</span><span class="p">,</span> <span class="n">DependencyKwarg</span><span class="p">)</span>
+</span><span data-line="188">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_metadata</span><span class="p">(</span><span class="n">Dependency</span><span class="p">)</span>
 </span><span data-line="189">
 </span><span data-line="190">    <span class="nd">@property</span>
 </span><span data-line="191">    <span class="k">def</span><span class="w"> </span><span class="nf">has_default</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -982,7 +982,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="459">        <span class="n">annotation_args</span> <span class="o">=</span> <span class="p">()</span> <span class="k">if</span> <span class="n">origin</span> <span class="ow">is</span> <span class="n">abc</span><span class="o">.</span><span class="n">Callable</span> <span class="k">else</span> <span class="n">get_args</span><span class="p">(</span><span class="n">unwrapped</span><span class="p">)</span>
 </span><span data-line="460">
 </span><span data-line="461">        <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">):</span>
-</span><span data-line="462">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">),</span> <span class="p">(</span><span class="n">KwargDefinition</span><span class="p">,</span> <span class="n">DependencyKwarg</span><span class="p">)):</span>
+</span><span data-line="462">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">),</span> <span class="n">KwargDefinition</span><span class="p">):</span>
 </span><span data-line="463">                <span class="n">kwarg_definition</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
 </span><span data-line="464">                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwarg_definition</span><span class="p">,</span> <span class="n">BodyKwarg</span><span class="p">):</span>
 </span><span data-line="465">                    <span class="n">can_use_marker</span> <span class="o">=</span> <span class="p">(</span>
@@ -1004,176 +1004,174 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="481">                        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
 </span><span data-line="482">                        <span class="n">category</span><span class="o">=</span><span class="n">LitestarDeprecationWarning</span><span class="p">,</span>
 </span><span data-line="483">                    <span class="p">)</span>
-</span><span data-line="484">            <span class="k">elif</span> <span class="n">kwarg_definition</span> <span class="o">:=</span> <span class="nb">next</span><span class="p">(</span>
-</span><span data-line="485">                <span class="p">(</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">KwargDefinition</span><span class="p">,</span> <span class="n">DependencyKwarg</span><span class="p">))),</span> <span class="kc">None</span>
-</span><span data-line="486">            <span class="p">):</span>
-</span><span data-line="487">                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwarg_definition</span>
-</span><span data-line="488">
-</span><span data-line="489">                <span class="k">if</span> <span class="n">kwarg_definition</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="490">                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-</span><span data-line="491">                        <span class="sa">f</span><span class="s2">&quot;Deprecated default value specification for annotation &#39;</span><span class="si">{</span><span class="n">annotation</span><span class="si">}</span><span class="s2">&#39;. Setting defaults &quot;</span>
-</span><span data-line="492">                        <span class="sa">f</span><span class="s2">&quot;inside &#39;typing.Annotated&#39; is discouraged and support for this will be removed in a future &quot;</span>
-</span><span data-line="493">                        <span class="sa">f</span><span class="s2">&quot;version. Defaults should be set with regular parameter default values. Use &quot;</span>
-</span><span data-line="494">                        <span class="s2">&quot;&#39;param: Annotated[&lt;type&gt;, Parameter(...)] = &lt;default&gt;&#39; instead of &quot;</span>
-</span><span data-line="495">                        <span class="s2">&quot;&#39;param: Annotated[&lt;type&gt;, Parameter(..., default=&lt;default&gt;)].&quot;</span><span class="p">,</span>
-</span><span data-line="496">                        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-</span><span data-line="497">                        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span data-line="498">                    <span class="p">)</span>
-</span><span data-line="499">                    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span> <span class="ow">and</span> <span class="n">kwarg_definition</span><span class="o">.</span><span class="n">default</span> <span class="o">!=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]:</span>
-</span><span data-line="500">                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-</span><span data-line="501">                            <span class="sa">f</span><span class="s2">&quot;Ambiguous default values for annotation &#39;</span><span class="si">{</span><span class="n">annotation</span><span class="si">}</span><span class="s2">&#39;. The default value &quot;</span>
-</span><span data-line="502">                            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">kwarg_definition</span><span class="o">.</span><span class="n">default</span><span class="si">!r}</span><span class="s2">&#39; set inside the parameter annotation differs from the &quot;</span>
-</span><span data-line="503">                            <span class="sa">f</span><span class="s2">&quot;parameter default value &#39;</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span><span class="si">!r}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
-</span><span data-line="504">                            <span class="n">category</span><span class="o">=</span><span class="n">LitestarWarning</span><span class="p">,</span>
-</span><span data-line="505">                            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span data-line="506">                        <span class="p">)</span>
-</span><span data-line="507">
-</span><span data-line="508">                <span class="n">metadata</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">KwargDefinition</span><span class="p">,</span> <span class="n">DependencyKwarg</span><span class="p">)))</span>
-</span><span data-line="509">            <span class="k">elif</span> <span class="p">(</span><span class="n">extra</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;extra&quot;</span><span class="p">,</span> <span class="p">{}))</span> <span class="ow">and</span> <span class="s2">&quot;kwarg_definition&quot;</span> <span class="ow">in</span> <span class="n">extra</span><span class="p">:</span>
-</span><span data-line="510">                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extra</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">)</span>
-</span><span data-line="511">
-</span><span data-line="512">        <span class="c1"># there might be additional metadata</span>
-</span><span data-line="513">        <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
-</span><span data-line="514">            <span class="n">kwarg_definition_merge_args</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="515">            <span class="n">is_sequence_container</span> <span class="o">=</span> <span class="n">is_non_string_sequence</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span>
-</span><span data-line="516">            <span class="c1"># extract metadata into KwargDefinition attributes</span>
-</span><span data-line="517">            <span class="k">for</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
-</span><span data-line="518">                <span class="n">kwarg_definition_merge_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-</span><span data-line="519">                    <span class="n">_annotated_types_extractor</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">is_sequence_container</span><span class="o">=</span><span class="n">is_sequence_container</span><span class="p">)</span>
-</span><span data-line="520">                <span class="p">)</span>
-</span><span data-line="521">            <span class="c1"># if we already have a KwargDefinition, merge it with the additional metadata</span>
-</span><span data-line="522">            <span class="k">if</span> <span class="n">existing_kwargs_definition</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">):</span>
-</span><span data-line="523">                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-</span><span data-line="524">                    <span class="n">existing_kwargs_definition</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg_definition_merge_args</span>
-</span><span data-line="525">                <span class="p">)</span>
-</span><span data-line="526">            <span class="c1"># if not, create a new KwargDefinition</span>
-</span><span data-line="527">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="528">                <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span>
-</span><span data-line="529">                    <span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">KwargDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="n">BodyKwarg</span>
-</span><span data-line="530">                <span class="k">elif</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="531">                    <span class="n">model</span> <span class="o">=</span> <span class="n">KwargDefinition</span>
-</span><span data-line="532">                <span class="k">else</span><span class="p">:</span>
-</span><span data-line="533">                    <span class="n">model</span> <span class="o">=</span> <span class="n">ParameterKwarg</span>
-</span><span data-line="534">                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">kwarg_definition_merge_args</span><span class="p">)</span>
-</span><span data-line="535">
-</span><span data-line="536">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;annotation&quot;</span><span class="p">,</span> <span class="n">unwrapped</span><span class="p">)</span>
-</span><span data-line="537">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;args&quot;</span><span class="p">,</span> <span class="n">annotation_args</span><span class="p">)</span>
-</span><span data-line="538">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
-</span><span data-line="539">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;extra&quot;</span><span class="p">,</span> <span class="p">{})</span>
-</span><span data-line="540">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;inner_types&quot;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_annotation</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">annotation_args</span><span class="p">))</span>
-</span><span data-line="541">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;instantiable_origin&quot;</span><span class="p">,</span> <span class="n">get_instantiable_origin</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">unwrapped</span><span class="p">))</span>
-</span><span data-line="542">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-</span><span data-line="543">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
-</span><span data-line="544">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-</span><span data-line="545">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;origin&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
-</span><span data-line="546">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="n">annotation</span><span class="p">)</span>
-</span><span data-line="547">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;safe_generic_origin&quot;</span><span class="p">,</span> <span class="n">get_safe_generic_origin</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">unwrapped</span><span class="p">))</span>
-</span><span data-line="548">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;type_wrappers&quot;</span><span class="p">,</span> <span class="n">wrappers</span><span class="p">)</span>
-</span><span data-line="549">
-</span><span data-line="550">        <span class="n">instance</span> <span class="o">=</span> <span class="n">FieldDefinition</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span data-line="551">        <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">has_default</span> <span class="ow">and</span> <span class="n">instance</span><span class="o">.</span><span class="n">kwarg_definition</span><span class="p">:</span>
-</span><span data-line="552">            <span class="k">return</span> <span class="n">replace</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">kwarg_definition</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
-</span><span data-line="553">
-</span><span data-line="554">        <span class="k">return</span> <span class="n">instance</span></div>
+</span><span data-line="484">            <span class="k">elif</span> <span class="n">kwarg_definition</span> <span class="o">:=</span> <span class="nb">next</span><span class="p">((</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">KwargDefinition</span><span class="p">)),</span> <span class="kc">None</span><span class="p">):</span>
+</span><span data-line="485">                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwarg_definition</span>
+</span><span data-line="486">
+</span><span data-line="487">                <span class="k">if</span> <span class="n">kwarg_definition</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="488">                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+</span><span data-line="489">                        <span class="sa">f</span><span class="s2">&quot;Deprecated default value specification for annotation &#39;</span><span class="si">{</span><span class="n">annotation</span><span class="si">}</span><span class="s2">&#39;. Setting defaults &quot;</span>
+</span><span data-line="490">                        <span class="sa">f</span><span class="s2">&quot;inside &#39;typing.Annotated&#39; is discouraged and support for this will be removed in a future &quot;</span>
+</span><span data-line="491">                        <span class="sa">f</span><span class="s2">&quot;version. Defaults should be set with regular parameter default values. Use &quot;</span>
+</span><span data-line="492">                        <span class="s2">&quot;&#39;param: Annotated[&lt;type&gt;, Parameter(...)] = &lt;default&gt;&#39; instead of &quot;</span>
+</span><span data-line="493">                        <span class="s2">&quot;&#39;param: Annotated[&lt;type&gt;, Parameter(..., default=&lt;default&gt;)].&quot;</span><span class="p">,</span>
+</span><span data-line="494">                        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+</span><span data-line="495">                        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="496">                    <span class="p">)</span>
+</span><span data-line="497">                    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span> <span class="ow">and</span> <span class="n">kwarg_definition</span><span class="o">.</span><span class="n">default</span> <span class="o">!=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]:</span>
+</span><span data-line="498">                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+</span><span data-line="499">                            <span class="sa">f</span><span class="s2">&quot;Ambiguous default values for annotation &#39;</span><span class="si">{</span><span class="n">annotation</span><span class="si">}</span><span class="s2">&#39;. The default value &quot;</span>
+</span><span data-line="500">                            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">kwarg_definition</span><span class="o">.</span><span class="n">default</span><span class="si">!r}</span><span class="s2">&#39; set inside the parameter annotation differs from the &quot;</span>
+</span><span data-line="501">                            <span class="sa">f</span><span class="s2">&quot;parameter default value &#39;</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span><span class="si">!r}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+</span><span data-line="502">                            <span class="n">category</span><span class="o">=</span><span class="n">LitestarWarning</span><span class="p">,</span>
+</span><span data-line="503">                            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="504">                        <span class="p">)</span>
+</span><span data-line="505">
+</span><span data-line="506">                <span class="n">metadata</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">KwargDefinition</span><span class="p">))</span>
+</span><span data-line="507">            <span class="k">elif</span> <span class="p">(</span><span class="n">extra</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;extra&quot;</span><span class="p">,</span> <span class="p">{}))</span> <span class="ow">and</span> <span class="s2">&quot;kwarg_definition&quot;</span> <span class="ow">in</span> <span class="n">extra</span><span class="p">:</span>
+</span><span data-line="508">                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extra</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">)</span>
+</span><span data-line="509">
+</span><span data-line="510">        <span class="c1"># there might be additional metadata</span>
+</span><span data-line="511">        <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
+</span><span data-line="512">            <span class="n">kwarg_definition_merge_args</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="513">            <span class="n">is_sequence_container</span> <span class="o">=</span> <span class="n">is_non_string_sequence</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span>
+</span><span data-line="514">            <span class="c1"># extract metadata into KwargDefinition attributes</span>
+</span><span data-line="515">            <span class="k">for</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+</span><span data-line="516">                <span class="n">kwarg_definition_merge_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+</span><span data-line="517">                    <span class="n">_annotated_types_extractor</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">is_sequence_container</span><span class="o">=</span><span class="n">is_sequence_container</span><span class="p">)</span>
+</span><span data-line="518">                <span class="p">)</span>
+</span><span data-line="519">            <span class="c1"># if we already have a KwargDefinition, merge it with the additional metadata</span>
+</span><span data-line="520">            <span class="k">if</span> <span class="n">existing_kwargs_definition</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">):</span>
+</span><span data-line="521">                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+</span><span data-line="522">                    <span class="n">existing_kwargs_definition</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg_definition_merge_args</span>
+</span><span data-line="523">                <span class="p">)</span>
+</span><span data-line="524">            <span class="c1"># if not, create a new KwargDefinition</span>
+</span><span data-line="525">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="526">                <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="o">:=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span>
+</span><span data-line="527">                    <span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">KwargDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="n">BodyKwarg</span>
+</span><span data-line="528">                <span class="k">elif</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="529">                    <span class="n">model</span> <span class="o">=</span> <span class="n">KwargDefinition</span>
+</span><span data-line="530">                <span class="k">else</span><span class="p">:</span>
+</span><span data-line="531">                    <span class="n">model</span> <span class="o">=</span> <span class="n">ParameterKwarg</span>
+</span><span data-line="532">                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">kwarg_definition_merge_args</span><span class="p">)</span>
+</span><span data-line="533">
+</span><span data-line="534">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;annotation&quot;</span><span class="p">,</span> <span class="n">unwrapped</span><span class="p">)</span>
+</span><span data-line="535">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;args&quot;</span><span class="p">,</span> <span class="n">annotation_args</span><span class="p">)</span>
+</span><span data-line="536">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+</span><span data-line="537">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;extra&quot;</span><span class="p">,</span> <span class="p">{})</span>
+</span><span data-line="538">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;inner_types&quot;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_annotation</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">annotation_args</span><span class="p">))</span>
+</span><span data-line="539">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;instantiable_origin&quot;</span><span class="p">,</span> <span class="n">get_instantiable_origin</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">unwrapped</span><span class="p">))</span>
+</span><span data-line="540">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;kwarg_definition&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="541">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+</span><span data-line="542">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</span><span data-line="543">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;origin&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
+</span><span data-line="544">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="n">annotation</span><span class="p">)</span>
+</span><span data-line="545">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;safe_generic_origin&quot;</span><span class="p">,</span> <span class="n">get_safe_generic_origin</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">unwrapped</span><span class="p">))</span>
+</span><span data-line="546">        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;type_wrappers&quot;</span><span class="p">,</span> <span class="n">wrappers</span><span class="p">)</span>
+</span><span data-line="547">
+</span><span data-line="548">        <span class="n">instance</span> <span class="o">=</span> <span class="n">FieldDefinition</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span data-line="549">        <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="o">.</span><span class="n">has_default</span> <span class="ow">and</span> <span class="n">instance</span><span class="o">.</span><span class="n">kwarg_definition</span><span class="p">:</span>
+</span><span data-line="550">            <span class="k">return</span> <span class="n">replace</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">kwarg_definition</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
+</span><span data-line="551">
+</span><span data-line="552">        <span class="k">return</span> <span class="n">instance</span></div>
 
-</span><span data-line="555">
+</span><span data-line="553">
 <div class="viewcode-block" id="FieldDefinition.from_kwarg">
 <a class="viewcode-back" href="../../reference/typing.html#litestar.typing.FieldDefinition.from_kwarg">[docs]</a>
-</span><span data-line="556">    <span class="nd">@classmethod</span>
-</span><span data-line="557">    <span class="k">def</span><span class="w"> </span><span class="nf">from_kwarg</span><span class="p">(</span>
-</span><span data-line="558">        <span class="bp">cls</span><span class="p">,</span>
-</span><span data-line="559">        <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-</span><span data-line="560">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="561">        <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
-</span><span data-line="562">        <span class="n">inner_types</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FieldDefinition</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="563">        <span class="n">kwarg_definition</span><span class="p">:</span> <span class="n">KwargDefinition</span> <span class="o">|</span> <span class="n">DependencyKwarg</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="564">        <span class="n">extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="565">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
-</span><span data-line="566"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new FieldDefinition instance.</span>
-</span><span data-line="567">
-</span><span data-line="568"><span class="sd">        Args:</span>
-</span><span data-line="569"><span class="sd">            annotation: The type of the kwarg.</span>
-</span><span data-line="570"><span class="sd">            name: Field name.</span>
-</span><span data-line="571"><span class="sd">            default: A default value.</span>
-</span><span data-line="572"><span class="sd">            inner_types: A tuple of FieldDefinition instances representing the inner types, if any.</span>
-</span><span data-line="573"><span class="sd">            kwarg_definition: Kwarg Parameter.</span>
-</span><span data-line="574"><span class="sd">            extra: A mapping of extra values.</span>
-</span><span data-line="575">
-</span><span data-line="576"><span class="sd">        Returns:</span>
-</span><span data-line="577"><span class="sd">            FieldDefinition instance.</span>
-</span><span data-line="578"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="579">
-</span><span data-line="580">        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_annotation</span><span class="p">(</span>
-</span><span data-line="581">            <span class="n">annotation</span><span class="p">,</span>
-</span><span data-line="582">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-</span><span data-line="583">            <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
-</span><span data-line="584">            <span class="o">**</span><span class="p">{</span>
-</span><span data-line="585">                <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
-</span><span data-line="586">                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">{</span>
-</span><span data-line="587">                    <span class="s2">&quot;inner_types&quot;</span><span class="p">:</span> <span class="n">inner_types</span><span class="p">,</span>
-</span><span data-line="588">                    <span class="s2">&quot;kwarg_definition&quot;</span><span class="p">:</span> <span class="n">kwarg_definition</span><span class="p">,</span>
-</span><span data-line="589">                    <span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="n">extra</span><span class="p">,</span>
-</span><span data-line="590">                <span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-</span><span data-line="591">                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="592">            <span class="p">},</span>
-</span><span data-line="593">        <span class="p">)</span></div>
+</span><span data-line="554">    <span class="nd">@classmethod</span>
+</span><span data-line="555">    <span class="k">def</span><span class="w"> </span><span class="nf">from_kwarg</span><span class="p">(</span>
+</span><span data-line="556">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="557">        <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+</span><span data-line="558">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="559">        <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="560">        <span class="n">inner_types</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FieldDefinition</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="561">        <span class="n">kwarg_definition</span><span class="p">:</span> <span class="n">KwargDefinition</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="562">        <span class="n">extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="563">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
+</span><span data-line="564"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new FieldDefinition instance.</span>
+</span><span data-line="565">
+</span><span data-line="566"><span class="sd">        Args:</span>
+</span><span data-line="567"><span class="sd">            annotation: The type of the kwarg.</span>
+</span><span data-line="568"><span class="sd">            name: Field name.</span>
+</span><span data-line="569"><span class="sd">            default: A default value.</span>
+</span><span data-line="570"><span class="sd">            inner_types: A tuple of FieldDefinition instances representing the inner types, if any.</span>
+</span><span data-line="571"><span class="sd">            kwarg_definition: Kwarg Parameter.</span>
+</span><span data-line="572"><span class="sd">            extra: A mapping of extra values.</span>
+</span><span data-line="573">
+</span><span data-line="574"><span class="sd">        Returns:</span>
+</span><span data-line="575"><span class="sd">            FieldDefinition instance.</span>
+</span><span data-line="576"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="577">
+</span><span data-line="578">        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_annotation</span><span class="p">(</span>
+</span><span data-line="579">            <span class="n">annotation</span><span class="p">,</span>
+</span><span data-line="580">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="581">            <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
+</span><span data-line="582">            <span class="o">**</span><span class="p">{</span>
+</span><span data-line="583">                <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
+</span><span data-line="584">                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">{</span>
+</span><span data-line="585">                    <span class="s2">&quot;inner_types&quot;</span><span class="p">:</span> <span class="n">inner_types</span><span class="p">,</span>
+</span><span data-line="586">                    <span class="s2">&quot;kwarg_definition&quot;</span><span class="p">:</span> <span class="n">kwarg_definition</span><span class="p">,</span>
+</span><span data-line="587">                    <span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="n">extra</span><span class="p">,</span>
+</span><span data-line="588">                <span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span data-line="589">                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="590">            <span class="p">},</span>
+</span><span data-line="591">        <span class="p">)</span></div>
 
-</span><span data-line="594">
+</span><span data-line="592">
 <div class="viewcode-block" id="FieldDefinition.from_parameter">
 <a class="viewcode-back" href="../../reference/typing.html#litestar.typing.FieldDefinition.from_parameter">[docs]</a>
-</span><span data-line="595">    <span class="nd">@classmethod</span>
-</span><span data-line="596">    <span class="k">def</span><span class="w"> </span><span class="nf">from_parameter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">fn_type_hints</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
-</span><span data-line="597"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ParsedSignatureParameter.</span>
-</span><span data-line="598">
-</span><span data-line="599"><span class="sd">        Args:</span>
-</span><span data-line="600"><span class="sd">            parameter: inspect.Parameter</span>
-</span><span data-line="601"><span class="sd">            fn_type_hints: mapping of names to types. Should be result of ``get_type_hints()``, preferably via the</span>
-</span><span data-line="602"><span class="sd">                :attr:``get_fn_type_hints() &lt;.utils.signature_parsing.get_fn_type_hints&gt;`` helper.</span>
-</span><span data-line="603">
-</span><span data-line="604"><span class="sd">        Returns:</span>
-</span><span data-line="605"><span class="sd">            ParsedSignatureParameter.</span>
-</span><span data-line="606">
-</span><span data-line="607"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="608">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImmutableState</span>
-</span><span data-line="609">
-</span><span data-line="610">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="611">            <span class="n">annotation</span> <span class="o">=</span> <span class="n">fn_type_hints</span><span class="p">[</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-</span><span data-line="612">        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span data-line="613">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="614">                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; does not have a type annotation. If it should receive any value, use &#39;Any&#39;.&quot;</span>
-</span><span data-line="615">            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-</span><span data-line="616">
-</span><span data-line="617">        <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;state&quot;</span><span class="p">:</span>
-</span><span data-line="618">            <span class="c1"># Unwrap Annotated[...] so we can validate the underlying type</span>
-</span><span data-line="619">            <span class="n">bare_annotation</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="620">                <span class="nb">getattr</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="s2">&quot;__origin__&quot;</span><span class="p">,</span> <span class="n">annotation</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="s2">&quot;__metadata__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">annotation</span>
-</span><span data-line="621">            <span class="p">)</span>
-</span><span data-line="622">            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bare_annotation</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">bare_annotation</span><span class="p">,</span> <span class="n">ImmutableState</span><span class="p">):</span>
-</span><span data-line="623">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="624">                    <span class="sa">f</span><span class="s2">&quot;The type annotation `</span><span class="si">{</span><span class="n">annotation</span><span class="si">}</span><span class="s2">` is an invalid type for the &#39;state&#39; reserved kwarg. &quot;</span>
-</span><span data-line="625">                    <span class="s2">&quot;It must be typed to a subclass of `litestar.datastructures.ImmutableState` or &quot;</span>
-</span><span data-line="626">                    <span class="s2">&quot;`litestar.datastructures.State`.&quot;</span>
-</span><span data-line="627">                <span class="p">)</span>
-</span><span data-line="628">
-</span><span data-line="629">        <span class="k">return</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_kwarg</span><span class="p">(</span>
-</span><span data-line="630">            <span class="n">annotation</span><span class="o">=</span><span class="n">annotation</span><span class="p">,</span>
-</span><span data-line="631">            <span class="n">name</span><span class="o">=</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-</span><span data-line="632">            <span class="n">default</span><span class="o">=</span><span class="n">Empty</span> <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="n">Signature</span><span class="o">.</span><span class="n">empty</span> <span class="k">else</span> <span class="n">parameter</span><span class="o">.</span><span class="n">default</span><span class="p">,</span>
-</span><span data-line="633">        <span class="p">)</span></div>
+</span><span data-line="593">    <span class="nd">@classmethod</span>
+</span><span data-line="594">    <span class="k">def</span><span class="w"> </span><span class="nf">from_parameter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">fn_type_hints</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
+</span><span data-line="595"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ParsedSignatureParameter.</span>
+</span><span data-line="596">
+</span><span data-line="597"><span class="sd">        Args:</span>
+</span><span data-line="598"><span class="sd">            parameter: inspect.Parameter</span>
+</span><span data-line="599"><span class="sd">            fn_type_hints: mapping of names to types. Should be result of ``get_type_hints()``, preferably via the</span>
+</span><span data-line="600"><span class="sd">                :attr:``get_fn_type_hints() &lt;.utils.signature_parsing.get_fn_type_hints&gt;`` helper.</span>
+</span><span data-line="601">
+</span><span data-line="602"><span class="sd">        Returns:</span>
+</span><span data-line="603"><span class="sd">            ParsedSignatureParameter.</span>
+</span><span data-line="604">
+</span><span data-line="605"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="606">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImmutableState</span>
+</span><span data-line="607">
+</span><span data-line="608">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="609">            <span class="n">annotation</span> <span class="o">=</span> <span class="n">fn_type_hints</span><span class="p">[</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+</span><span data-line="610">        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="611">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="612">                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; does not have a type annotation. If it should receive any value, use &#39;Any&#39;.&quot;</span>
+</span><span data-line="613">            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="614">
+</span><span data-line="615">        <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;state&quot;</span><span class="p">:</span>
+</span><span data-line="616">            <span class="c1"># Unwrap Annotated[...] so we can validate the underlying type</span>
+</span><span data-line="617">            <span class="n">bare_annotation</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="618">                <span class="nb">getattr</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="s2">&quot;__origin__&quot;</span><span class="p">,</span> <span class="n">annotation</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="s2">&quot;__metadata__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">annotation</span>
+</span><span data-line="619">            <span class="p">)</span>
+</span><span data-line="620">            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bare_annotation</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">bare_annotation</span><span class="p">,</span> <span class="n">ImmutableState</span><span class="p">):</span>
+</span><span data-line="621">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="622">                    <span class="sa">f</span><span class="s2">&quot;The type annotation `</span><span class="si">{</span><span class="n">annotation</span><span class="si">}</span><span class="s2">` is an invalid type for the &#39;state&#39; reserved kwarg. &quot;</span>
+</span><span data-line="623">                    <span class="s2">&quot;It must be typed to a subclass of `litestar.datastructures.ImmutableState` or &quot;</span>
+</span><span data-line="624">                    <span class="s2">&quot;`litestar.datastructures.State`.&quot;</span>
+</span><span data-line="625">                <span class="p">)</span>
+</span><span data-line="626">
+</span><span data-line="627">        <span class="k">return</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_kwarg</span><span class="p">(</span>
+</span><span data-line="628">            <span class="n">annotation</span><span class="o">=</span><span class="n">annotation</span><span class="p">,</span>
+</span><span data-line="629">            <span class="n">name</span><span class="o">=</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="630">            <span class="n">default</span><span class="o">=</span><span class="n">Empty</span> <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="n">Signature</span><span class="o">.</span><span class="n">empty</span> <span class="k">else</span> <span class="n">parameter</span><span class="o">.</span><span class="n">default</span><span class="p">,</span>
+</span><span data-line="631">        <span class="p">)</span></div>
 
-</span><span data-line="634">
+</span><span data-line="632">
 <div class="viewcode-block" id="FieldDefinition.match_predicate_recursively">
 <a class="viewcode-back" href="../../reference/typing.html#litestar.typing.FieldDefinition.match_predicate_recursively">[docs]</a>
-</span><span data-line="635">    <span class="k">def</span><span class="w"> </span><span class="nf">match_predicate_recursively</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">FieldDefinition</span><span class="p">],</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="636"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Recursively test the passed in predicate against the field and any of its inner fields.</span>
-</span><span data-line="637">
-</span><span data-line="638"><span class="sd">        Args:</span>
-</span><span data-line="639"><span class="sd">            predicate: A callable that receives a field definition instance as an arg and returns a boolean.</span>
-</span><span data-line="640">
-</span><span data-line="641"><span class="sd">        Returns:</span>
-</span><span data-line="642"><span class="sd">            A boolean.</span>
-</span><span data-line="643"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="644">        <span class="k">return</span> <span class="n">predicate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">match_predicate_recursively</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inner_types</span><span class="p">)</span></div>
+</span><span data-line="633">    <span class="k">def</span><span class="w"> </span><span class="nf">match_predicate_recursively</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">FieldDefinition</span><span class="p">],</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="634"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Recursively test the passed in predicate against the field and any of its inner fields.</span>
+</span><span data-line="635">
+</span><span data-line="636"><span class="sd">        Args:</span>
+</span><span data-line="637"><span class="sd">            predicate: A callable that receives a field definition instance as an arg and returns a boolean.</span>
+</span><span data-line="638">
+</span><span data-line="639"><span class="sd">        Returns:</span>
+</span><span data-line="640"><span class="sd">            A boolean.</span>
+</span><span data-line="641"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="642">        <span class="k">return</span> <span class="n">predicate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">match_predicate_recursively</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inner_types</span><span class="p">)</span></div>
 </div>
 
 </span></pre></div>

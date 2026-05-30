@@ -510,7 +510,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto.base_dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDTO</span>
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOFieldDefinition</span>
 </span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto.field</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOField</span><span class="p">,</span> <span class="n">extract_dto_field</span>
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">DependencyKwarg</span><span class="p">,</span> <span class="n">KwargDefinition</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">KwargDefinition</span>
 </span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.empty</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span>
 </span><span data-line="11">
 </span><span data-line="12"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -559,7 +559,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="51">
 </span><span data-line="52">            <span class="k">yield</span> <span class="p">(</span>
 </span><span data-line="53">                <span class="n">replace</span><span class="p">(</span><span class="n">field_definition</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">Empty</span><span class="p">,</span> <span class="n">kwarg_definition</span><span class="o">=</span><span class="n">default</span><span class="p">)</span>
-</span><span data-line="54">                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="p">(</span><span class="n">KwargDefinition</span><span class="p">,</span> <span class="n">DependencyKwarg</span><span class="p">))</span>
+</span><span data-line="54">                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">KwargDefinition</span><span class="p">)</span>
 </span><span data-line="55">                <span class="k">else</span> <span class="n">field_definition</span>
 </span><span data-line="56">            <span class="p">)</span>
 </span><span data-line="57">
