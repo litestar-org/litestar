@@ -16,7 +16,7 @@ from typing import (
 
 from litestar._signature import SignatureModel
 from litestar.connection import WebSocket
-from litestar.di import NamedDependency  # noqa: TC001
+from litestar.di import NamedDependency
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
 from litestar.types import (
     AnyCallable,

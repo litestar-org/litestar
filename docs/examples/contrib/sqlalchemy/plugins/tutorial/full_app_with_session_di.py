@@ -81,7 +81,9 @@ async def get_todo_list(done: FromQuery[Optional[bool]], session: AsyncSession) 
 
 
 @get("/")
-async def get_list(transaction: NamedDependency[AsyncSession], done: FromQuery[Optional[bool]] = None) -> TodoCollectionType:
+async def get_list(
+    transaction: NamedDependency[AsyncSession], done: FromQuery[Optional[bool]] = None
+) -> TodoCollectionType:
     return [serialize_todo(todo) for todo in await get_todo_list(done, transaction)]
 
 
@@ -93,7 +95,9 @@ async def add_item(data: TodoType, transaction: NamedDependency[AsyncSession]) -
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: FromPath[str], data: TodoType, transaction: NamedDependency[AsyncSession]) -> TodoType:
+async def update_item(
+    item_title: FromPath[str], data: TodoType, transaction: NamedDependency[AsyncSession]
+) -> TodoType:
     todo_item = await get_todo_by_title(item_title, transaction)
     todo_item.title = data["title"]
     todo_item.done = data["done"]
