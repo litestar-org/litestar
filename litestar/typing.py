@@ -3,16 +3,13 @@
 from __future__ import annotations
 
 import dataclasses
-import warnings
 from collections import abc
 from collections.abc import Callable, Collection, Mapping
-from dataclasses import dataclass, is_dataclass, replace
+from dataclasses import dataclass, is_dataclass
 from enum import Enum
 from inspect import Parameter, Signature
 from typing import Annotated as te_Annotated
 from typing import Any, AnyStr, ForwardRef, Literal, TypeVar, cast
-
-from litestar.enums import RequestEncodingType
 
 try:
     from typing import Annotated  # pyright: ignore
@@ -46,7 +43,7 @@ try:
 except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
-from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning, LitestarWarning
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
@@ -440,7 +437,7 @@ class FieldDefinition:
         return get_type_hints(self.annotation, include_extras=include_extras)
 
     @classmethod
-    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:  # noqa: C901
+    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
         """Initialize FieldDefinition.
 
         Args:
@@ -460,48 +457,11 @@ class FieldDefinition:
 
         if not kwargs.get("kwarg_definition"):
             if isinstance(kwargs.get("default"), KwargDefinition):
-                kwarg_definition = kwargs["kwarg_definition"] = kwargs.pop("default")
-                if isinstance(kwarg_definition, BodyKwarg):
-                    can_use_marker = (
-                        not kwarg_definition.is_constrained and kwarg_definition.multipart_form_part_limit is None
-                    )
-                    if can_use_marker:
-                        alternative = {
-                            RequestEncodingType.JSON: "JSONBody[<type>]",
-                            RequestEncodingType.MESSAGEPACK: "MsgPackBody[<type>]",
-                            RequestEncodingType.MULTI_PART: "MultiPartBody[<type>]",
-                            RequestEncodingType.URL_ENCODED: "URLEncodedBBody[<type>]",
-                        }[RequestEncodingType(kwarg_definition.media_type)]
-                    else:
-                        alternative = "Annotated[<type>, Body(...)]"
-                    warnings.warn(
-                        "Deprecated use of 'Body()' as a default value. This will be removed"
-                        f"in Litestar 3.0. Use 'data: {alternative}' instead of "
-                        "'data: <type> = Body(...)'",
-                        stacklevel=2,
-                        category=LitestarDeprecationWarning,
-                    )
-            elif kwarg_definition := next((v for v in metadata if isinstance(v, KwargDefinition)), None):
+                raise ImproperlyConfiguredException(
+                    "Usage of parameter defaults to declare metadata is no longer supported"
+                )
+            if kwarg_definition := next((v for v in metadata if isinstance(v, KwargDefinition)), None):
                 kwargs["kwarg_definition"] = kwarg_definition
-
-                if kwarg_definition.default is not Empty:
-                    warnings.warn(
-                        f"Deprecated default value specification for annotation '{annotation}'. Setting defaults "
-                        f"inside 'typing.Annotated' is discouraged and support for this will be removed in a future "
-                        f"version. Defaults should be set with regular parameter default values. Use "
-                        "'param: Annotated[<type>, Parameter(...)] = <default>' instead of "
-                        "'param: Annotated[<type>, Parameter(..., default=<default>)].",
-                        category=DeprecationWarning,
-                        stacklevel=2,
-                    )
-                    if kwargs.get("default", Empty) is not Empty and kwarg_definition.default != kwargs["default"]:
-                        warnings.warn(
-                            f"Ambiguous default values for annotation '{annotation}'. The default value "
-                            f"'{kwarg_definition.default!r}' set inside the parameter annotation differs from the "
-                            f"parameter default value '{kwargs['default']!r}'",
-                            category=LitestarWarning,
-                            stacklevel=2,
-                        )
 
                 metadata = tuple(v for v in metadata if not isinstance(v, KwargDefinition))
             elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
@@ -546,8 +506,6 @@ class FieldDefinition:
         kwargs.setdefault("type_wrappers", wrappers)
 
         instance = FieldDefinition(**kwargs)
-        if not instance.has_default and instance.kwarg_definition:
-            return replace(instance, default=instance.kwarg_definition.default)
 
         return instance
 

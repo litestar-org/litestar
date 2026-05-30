@@ -6,7 +6,7 @@ import pytest
 from litestar import Controller, Litestar, MediaType, get, post
 from litestar.di import NamedDependency, Provide
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import Body, FromQuery, Parameter, QueryParameter, SkipValidation
+from litestar.params import Body, FromQuery, QueryParameter, SkipValidation
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 
@@ -26,35 +26,9 @@ def test_parsing_of_parameter_as_annotated() -> None:
         assert response.status_code == HTTP_200_OK
 
 
-def test_parsing_of_parameter_as_default() -> None:
-    @get(path="/")
-    def handler(param: str = Parameter(min_length=1)) -> str:
-        return param
-
-    with create_test_client(handler) as client:
-        response = client.get("/?param=")
-        assert response.status_code == HTTP_400_BAD_REQUEST
-
-        response = client.get("/?param=a")
-        assert response.status_code == HTTP_200_OK
-
-
 def test_parsing_of_body_as_annotated() -> None:
     @post(path="/")
     def handler(data: Annotated[list[str], Body(min_items=1)]) -> list[str]:
-        return data
-
-    with create_test_client(handler) as client:
-        response = client.post("/", json=[])
-        assert response.status_code == HTTP_400_BAD_REQUEST
-
-        response = client.post("/", json=["a"])
-        assert response.status_code == HTTP_201_CREATED
-
-
-def test_parsing_of_body_as_default() -> None:
-    @post(path="/")
-    def handler(data: list[str] = Body(min_items=1)) -> list[str]:
         return data
 
     with create_test_client(handler) as client:
