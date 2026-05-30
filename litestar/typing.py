@@ -47,7 +47,7 @@ except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning, LitestarWarning
-from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
+from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
     is_any,
@@ -156,7 +156,7 @@ class FieldDefinition:
     """Default value of the field."""
     extra: dict[str, Any]
     """A mapping of extra values."""
-    kwarg_definition: KwargDefinition | DependencyKwarg | None
+    kwarg_definition: KwargDefinition | None
     """Kwarg Parameter."""
     name: str
     """Field name."""
@@ -185,7 +185,7 @@ class FieldDefinition:
     def is_di_field(self) -> bool:
         from litestar.di import Dependency
 
-        return self.has_metadata(Dependency) or isinstance(self.kwarg_definition, DependencyKwarg)
+        return self.has_metadata(Dependency)
 
     @property
     def has_default(self) -> bool:
@@ -459,7 +459,7 @@ class FieldDefinition:
         annotation_args = () if origin is abc.Callable else get_args(unwrapped)
 
         if not kwargs.get("kwarg_definition"):
-            if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
+            if isinstance(kwargs.get("default"), KwargDefinition):
                 kwarg_definition = kwargs["kwarg_definition"] = kwargs.pop("default")
                 if isinstance(kwarg_definition, BodyKwarg):
                     can_use_marker = (
@@ -481,9 +481,7 @@ class FieldDefinition:
                         stacklevel=2,
                         category=LitestarDeprecationWarning,
                     )
-            elif kwarg_definition := next(
-                (v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))), None
-            ):
+            elif kwarg_definition := next((v for v in metadata if isinstance(v, KwargDefinition)), None):
                 kwargs["kwarg_definition"] = kwarg_definition
 
                 if kwarg_definition.default is not Empty:
@@ -505,7 +503,7 @@ class FieldDefinition:
                             stacklevel=2,
                         )
 
-                metadata = tuple(v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg)))
+                metadata = tuple(v for v in metadata if not isinstance(v, KwargDefinition))
             elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
                 kwargs["kwarg_definition"] = extra.pop("kwarg_definition")
 
@@ -560,7 +558,7 @@ class FieldDefinition:
         name: str,
         default: Any = Empty,
         inner_types: tuple[FieldDefinition, ...] | None = None,
-        kwarg_definition: KwargDefinition | DependencyKwarg | None = None,
+        kwarg_definition: KwargDefinition | None = None,
         extra: dict[str, Any] | None = None,
     ) -> FieldDefinition:
         """Create a new FieldDefinition instance.

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import DependencyKwarg, SkipValidationMarker
+from litestar.params import SkipValidationMarker
 from litestar.types import Empty, TypeDecodersSequence
 
 if TYPE_CHECKING:
@@ -44,10 +44,7 @@ def _validate_signature_dependencies(
 
 
 def _normalize_annotation(field_definition: FieldDefinition) -> Any:
-    if field_definition.name in SKIP_VALIDATION_NAMES or (
-        isinstance(field_definition.kwarg_definition, DependencyKwarg)
-        and field_definition.kwarg_definition.skip_validation
-    ):
+    if field_definition.name in SKIP_VALIDATION_NAMES:
         return Any
 
     if field_definition.has_metadata(SkipValidationMarker):

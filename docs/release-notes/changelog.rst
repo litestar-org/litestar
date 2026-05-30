@@ -6,6 +6,22 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Remove deprecated ``params.Dependency`` and ``params.DependencyKwarg``
+        :type: feature
+        :pr: 4818
+        :breaking:
+
+        Remove ``params.Dependency`` and ``params.DependencyKwarg`` that were deprecated
+        in ``2.23.0``.
+
+        **Migration**
+
+        - Replace ``foo: int = Dependency()`` with ``foo: NamedDependency[int]``
+        - Replace ``foo: Annotated[int, Dependency(default=1)]`` by hoisting the
+          default into the parameter default: ``foo: NamedDependency[int] = 1``
+        - Replace ``foo: Annotated[int, Dependency(skip_validation=True)`` with
+          ``foo: NamedDependency[SkipValidation[int]]``
+
     .. change:: Fix OpenAPI schema incorrectly marking nullable required fields as not required
         :type: bugfix
         :pr: 4687

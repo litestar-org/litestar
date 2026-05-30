@@ -6,15 +6,12 @@ from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, TypeVar
 
 from litestar.enums import ParamType, RequestEncodingType
-from litestar.exceptions import LitestarDeprecationWarning
 from litestar.types import Empty
 
 __all__ = (
     "Body",
     "BodyKwarg",
     "CookieParameter",
-    "Dependency",
-    "DependencyKwarg",
     "FromCookie",
     "FromHeader",
     "FromPath",
@@ -32,8 +29,6 @@ __all__ = (
     "SkipValidationMarker",
     "URLEncodedBody",
 )
-
-from litestar.utils import deprecated, warn_deprecation
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.example import Example
@@ -514,53 +509,6 @@ def Body(
         schema_extra=schema_extra,
         schema_component_key=schema_component_key,
     )
-
-
-@dataclass(frozen=True)
-class DependencyKwarg:
-    """Data container representing a dependency."""
-
-    default: Any = field(default=Empty)
-    """A default value."""
-    skip_validation: bool = field(default=False)
-    """Flag dictating whether to skip validation."""
-
-    def __hash__(self) -> int:
-        """Hash the dataclass in a safe way.
-
-        Returns:
-            A hash
-        """
-        return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
-
-    def __post_init__(self) -> None:
-        warn_deprecation(
-            "2.23.0",
-            removal_in="3.0",
-            alternative="di.NamedDependency",
-            kind="class",
-            deprecated_name="DependencyKwarg",
-        )
-
-        if self.skip_validation:
-            warnings.warn(
-                "Deprecated parameter 'skip_validation'. This will be removed in "
-                "Litestar 3.0. To skip validation of a dependency parameter, annotate "
-                "it as 'SkipValidation[<type>]' instead",
-                category=LitestarDeprecationWarning,
-                stacklevel=2,
-            )
-
-
-@deprecated("2.23.0", removal_in="3.0", alternative="di.NamedDependency")
-def Dependency(*, default: Any = Empty, skip_validation: bool = False) -> Any:
-    """Create a dependency kwarg definition.
-
-    Args:
-        default: A default value to use in case a dependency is not provided.
-        skip_validation: If `True` provided dependency values are not validated by signature model.
-    """
-    return DependencyKwarg(default=default, skip_validation=skip_validation)
 
 
 class SkipValidationMarker:
