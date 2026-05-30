@@ -151,6 +151,20 @@ marked as required.
 Calling ``/a`` would work as expected, but calling ``/b`` would result in a
 ``400 - Bad Request`` with the info ``missing required query parameter 'db_session'``.
 
+.. code-block:: python
+
+    @get("/")
+    async def get_page(db_session: NamedDependency[AsyncSession]) -> None:
+        ...
+
+    router_a = Router("/a", [get_page], dependencies={"db_session": provide_session})
+    router_b = Router("/b", [get_page])
+
+With explicit declarations, these can either be detected at startup time, or a specific
+and *correct* error can be raised; In this case it would be a
+``500 - Internal Server Error``, including a more helpful error message in stderr:
+``Explicit dependency 'db_session' for 'get_page' has no default value, or provided dependency.``
+
 
 Documenting intent
 ++++++++++++++++++
