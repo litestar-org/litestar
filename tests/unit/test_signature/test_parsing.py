@@ -66,7 +66,7 @@ from __future__ import annotations
 
 from msgspec import Struct
 from litestar import Litestar, get
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 
 class Test(Struct):
     hello: str
@@ -75,7 +75,7 @@ async def get_dep() -> Test:
     return Test(hello="world")
 
 @get("/", dependencies={"test": Provide(get_dep)})
-def hello_world(test: Test) -> Test:
+def hello_world(test: NamedDependency[Test]) -> Test:
     return test
 
 app = Litestar(route_handlers=[hello_world], openapi_config=None)

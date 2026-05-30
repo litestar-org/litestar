@@ -46,9 +46,11 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar import Router
+    from litestar.di import NamedDependency
     from litestar.dto import AbstractDTO
     from litestar.types.asgi_types import WebSocketMode
     from litestar.types.composite_types import TypeDecodersSequence
+
 
 __all__ = ("WebsocketListener", "WebsocketListenerRouteHandler", "websocket_listener")
 
@@ -278,8 +280,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     async def default_connection_lifespan(
         self,
         socket: WebSocket,
-        on_accept_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP006, UP045
-        on_disconnect_dependencies: Optional[Dict[str, Any]] = None,  # noqa: UP006, UP045
+        on_accept_dependencies: NamedDependency[Optional[Dict[str, Any]]] = None,  # noqa: UP006, UP045
+        on_disconnect_dependencies: NamedDependency[Optional[Dict[str, Any]]] = None,  # noqa: UP006, UP045
     ) -> AsyncGenerator[None, None]:
         """Handle the connection lifespan of a :class:`WebSocket <.connection.WebSocket>`.
 

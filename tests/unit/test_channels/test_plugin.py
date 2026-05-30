@@ -16,6 +16,7 @@ from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
 from litestar.channels.subscriber import BacklogStrategy
+from litestar.di import NamedDependency
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
@@ -60,7 +61,7 @@ def test_broadcast_not_initialized_raises(memory_backend: MemoryChannelsBackend)
 
 def test_plugin_dependency(mock: MagicMock, memory_backend: MemoryChannelsBackend) -> None:
     @get()
-    def handler(channels: ChannelsPlugin) -> None:
+    def handler(channels: NamedDependency[ChannelsPlugin]) -> None:
         mock(channels)
 
     channels_plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)

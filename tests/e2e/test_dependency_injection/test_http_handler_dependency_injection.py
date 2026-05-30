@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, Type
 import pytest
 
 from litestar import Controller, get
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.params import FromPath, FromQuery
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -62,7 +62,12 @@ def first_controller() -> Type[Controller]:
                 "first": Provide(local_method_first_dependency, sync_to_thread=False),
             },
         )
-        def test_method(self, first: int, second: Dict[Any, Any], third: bool) -> None:
+        def test_method(
+            self,
+            first: NamedDependency[int],
+            second: NamedDependency[Dict[Any, Any]],
+            third: NamedDependency[bool],
+        ) -> None:
             assert isinstance(first, int)
             assert isinstance(second, dict)
             assert not third
@@ -90,7 +95,7 @@ def test_function_dependency_injection() -> None:
             "third": Provide(local_method_second_dependency, sync_to_thread=False),
         },
     )
-    def test_function(first: int, second: bool, third: str) -> None:
+    def test_function(first: NamedDependency[int], second: NamedDependency[bool], third: NamedDependency[str]) -> None:
         assert isinstance(first, int)
         assert second is False
         assert isinstance(third, str)

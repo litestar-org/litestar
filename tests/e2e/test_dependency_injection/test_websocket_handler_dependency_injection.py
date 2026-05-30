@@ -6,7 +6,7 @@ import pytest
 from litestar import Controller, websocket
 from litestar.connection import WebSocket
 from litestar.datastructures import State
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.exceptions import WebSocketDisconnect
 from litestar.params import FromPath, FromQuery
 from litestar.testing import create_test_client
@@ -59,7 +59,11 @@ class FirstController(Controller):
         },
     )
     async def test_method(
-        self, socket: WebSocket[Any, Any, Any], first: int, second: Dict[Any, Any], third: bool
+        self,
+        socket: WebSocket[Any, Any, Any],
+        first: NamedDependency[int],
+        second: NamedDependency[Dict[Any, Any]],
+        third: NamedDependency[bool],
     ) -> None:
         await socket.accept()
         msg = await socket.receive_json()
@@ -91,7 +95,12 @@ def test_function_dependency_injection() -> None:
             "third": Provide(local_method_second_dependency, sync_to_thread=False),
         },
     )
-    async def test_function(socket: WebSocket[Any, Any, State], first: int, second: bool, third: str) -> None:
+    async def test_function(
+        socket: WebSocket[Any, Any, State],
+        first: NamedDependency[int],
+        second: NamedDependency[bool],
+        third: NamedDependency[str],
+    ) -> None:
         await socket.accept()
         assert socket
         msg = await socket.receive_json()

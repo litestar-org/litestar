@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable, Coroutine, Dict
 
 from msgspec.json import Encoder as JsonEncoder
 
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.serialization import decode_json
 from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
@@ -96,7 +96,7 @@ class ListenerHandler:
         self,
         *args: Any,
         socket: WebSocket,
-        connection_lifespan_dependencies: Dict[str, Any],  # noqa: UP006
+        connection_lifespan_dependencies: NamedDependency[Dict[str, Any]],  # noqa: UP006
         **kwargs: Any,
     ) -> None:
         lifespan_manager = self._listener._connection_lifespan or self._listener.default_connection_lifespan
@@ -135,7 +135,11 @@ def create_handler_signature(callback_signature: Signature) -> Signature:
         new_params.append(Parameter(name="socket", kind=Parameter.KEYWORD_ONLY, annotation="WebSocket"))
 
     new_params.append(
-        Parameter(name="connection_lifespan_dependencies", kind=Parameter.KEYWORD_ONLY, annotation="Dict[str, Any]")
+        Parameter(
+            name="connection_lifespan_dependencies",
+            kind=Parameter.KEYWORD_ONLY,
+            annotation="NamedDependency[Dict[str, Any]]",
+        )
     )
 
     return callback_signature.replace(parameters=new_params)

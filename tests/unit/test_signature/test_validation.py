@@ -50,7 +50,9 @@ def test_dependency_validation_failure_raises_500() -> None:
     dependencies = {"dep": Provide(lambda: "thirteen", sync_to_thread=False)}
 
     @get("/")
-    def test(dep: int, param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]) -> None: ...
+    def test(
+        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]
+    ) -> None: ...
 
     with create_test_client(
         route_handlers=[test],
@@ -66,7 +68,9 @@ def test_validation_failure_raises_400() -> None:
     dependencies = {"dep": Provide(lambda: 13, sync_to_thread=False)}
 
     @get("/")
-    def test(dep: int, param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]) -> None: ...
+    def test(
+        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]
+    ) -> None: ...
 
     with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
         response = client.get("/?param=thirteen")
@@ -99,7 +103,9 @@ def test_client_backend_error_precedence_over_server_error() -> None:
     }
 
     @get("/")
-    def test(dep: int, param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]) -> None: ...
+    def test(
+        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]
+    ) -> None: ...
 
     with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
         response = client.get("/?param=thirteen")
@@ -326,14 +332,14 @@ def test_separate_model_namespace() -> None:
         return "connection"
 
     @get("/connection", dependencies={"connection": provide_connection})
-    async def get_connection(connection: str) -> str:
+    async def get_connection(connection: NamedDependency[str]) -> str:
         return connection
 
     async def provide_deserializer() -> str:
         return "deserializer"
 
     @get("/deserializer", dependencies={"deserializer": provide_deserializer})
-    async def get_deserializer(deserializer: int) -> str:
+    async def get_deserializer(deserializer: NamedDependency[int]) -> str:
         return deserializer  # type: ignore[return-value]
 
     with create_test_client([get_connection, get_deserializer], raise_server_exceptions=True, debug=True) as client:

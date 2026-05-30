@@ -31,7 +31,7 @@ from litestar._openapi.schema_generation.schema import (
     SchemaCreator,
 )
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
@@ -170,7 +170,9 @@ def test_dependency_schema_generation() -> None:
     ) -> int:
         return 5
 
-    async def local_dependency(path_param: FromPath[int], mid_level: int, top_level: int) -> int:
+    async def local_dependency(
+        path_param: FromPath[int], mid_level: NamedDependency[int], top_level: NamedDependency[int]
+    ) -> int:
         return path_param + mid_level + top_level
 
     class MyController(Controller):
@@ -184,7 +186,7 @@ def test_dependency_schema_generation() -> None:
             },
             media_type=MediaType.TEXT,
         )
-        def test_function(self, summed: int, handler_param: FromQuery[int]) -> str:
+        def test_function(self, summed: NamedDependency[int], handler_param: FromQuery[int]) -> str:
             return str(summed)
 
     with create_test_client(
@@ -784,11 +786,11 @@ def test_unconsumed_path_parameters_are_documented() -> None:
     async def dd(param3: Annotated[str, PathParameter(description="123")]) -> str:
         return param3
 
-    async def d(dep_dep: str, param2: Annotated[str, PathParameter(description="abc")]) -> str:
+    async def d(dep_dep: NamedDependency[str], param2: Annotated[str, PathParameter(description="abc")]) -> str:
         return f"{dep_dep}_{param2}"
 
     @get("/{param1:str}/{param2:str}/{param3:str}", dependencies={"dep": d, "dep_dep": dd})
-    async def handler(dep: str) -> None:
+    async def handler(dep: NamedDependency[str]) -> None:
         pass
 
     app = Litestar([handler])
