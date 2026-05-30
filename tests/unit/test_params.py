@@ -5,8 +5,8 @@ import pytest
 
 from litestar import Controller, Litestar, MediaType, get, post
 from litestar.di import NamedDependency, Provide
-from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
-from litestar.params import Body, Dependency, FromQuery, Parameter, QueryParameter, SkipValidation
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import Body, FromQuery, QueryParameter, SkipValidation
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 
@@ -26,19 +26,6 @@ def test_parsing_of_parameter_as_annotated() -> None:
         assert response.status_code == HTTP_200_OK
 
 
-def test_parsing_of_parameter_as_default() -> None:
-    @get(path="/")
-    def handler(param: str = Parameter(min_length=1)) -> str:
-        return param
-
-    with create_test_client(handler) as client:
-        response = client.get("/?param=")
-        assert response.status_code == HTTP_400_BAD_REQUEST
-
-        response = client.get("/?param=a")
-        assert response.status_code == HTTP_200_OK
-
-
 def test_parsing_of_body_as_annotated() -> None:
     @post(path="/")
     def handler(data: Annotated[list[str], Body(min_items=1)]) -> list[str]:
@@ -52,29 +39,6 @@ def test_parsing_of_body_as_annotated() -> None:
         assert response.status_code == HTTP_201_CREATED
 
 
-def test_parsing_of_body_as_default() -> None:
-    @post(path="/")
-    def handler(data: list[str] = Body(min_items=1)) -> list[str]:
-        return data
-
-    with create_test_client(handler) as client:
-        response = client.post("/", json=[])
-        assert response.status_code == HTTP_400_BAD_REQUEST
-
-        response = client.post("/", json=["a"])
-        assert response.status_code == HTTP_201_CREATED
-
-
-def test_parsing_of_dependency_as_annotated_deprecated() -> None:
-    @get(path="/", dependencies={"dep": Provide(lambda: None, sync_to_thread=False)})
-    def handler(dep: Annotated[None, Dependency()]) -> None:
-        return dep
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.text == "null"
-
-
 def test_parsing_of_dependency_as_annotated() -> None:
     @get(path="/", dependencies={"dep": Provide(lambda: None, sync_to_thread=False)})
     def handler(dep: NamedDependency[None]) -> None:
@@ -83,30 +47,6 @@ def test_parsing_of_dependency_as_annotated() -> None:
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.text == "null"
-
-
-def test_parsing_of_dependency_as_default() -> None:
-    @get(path="/", dependencies={"dep": Provide(lambda: None, sync_to_thread=False)})
-    def handler(dep: None = Dependency()) -> None:
-        return dep
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.text == "null"
-
-
-@pytest.mark.parametrize("dependency_default", [None, 13])
-def test_dependency_defaults_deprecated(dependency_default: Any) -> None:
-    with pytest.warns(LitestarDeprecationWarning):
-        dependency = Dependency(default=dependency_default) if dependency_default is not ... else Dependency()
-
-    @get("/")
-    def handler(value: Optional[int] = dependency) -> dict[str, Optional[int]]:
-        return {"value": value}
-
-    with create_test_client(route_handlers=[handler]) as client:
-        resp = client.get("/")
-        assert resp.json() == {"value": dependency_default}
 
 
 @pytest.mark.parametrize("dependency_default", [None, 13])
@@ -120,16 +60,6 @@ def test_dependency_defaults(dependency_default: Any) -> None:
         assert resp.json() == {"value": dependency_default}
 
 
-def test_dependency_non_optional_with_default_deprecated() -> None:
-    @get("/")
-    def handler(value: int = Dependency(default=13)) -> dict[str, int]:
-        return {"value": value}
-
-    with create_test_client(route_handlers=[handler]) as client:
-        resp = client.get("/")
-        assert resp.json() == {"value": 13}
-
-
 def test_dependency_non_optional_with_default() -> None:
     @get("/")
     def handler(value: int = 13) -> dict[str, int]:
@@ -138,16 +68,6 @@ def test_dependency_non_optional_with_default() -> None:
     with create_test_client(route_handlers=[handler]) as client:
         resp = client.get("/")
         assert resp.json() == {"value": 13}
-
-
-def test_dependency_no_default_deprecated() -> None:
-    @get(dependencies={"value": Provide(lambda: 13, sync_to_thread=False)})
-    def test(value: int = Dependency()) -> dict[str, int]:
-        return {"value": value}
-
-    with create_test_client(route_handlers=[test]) as client:
-        resp = client.get("/")
-    assert resp.json() == {"value": 13}
 
 
 def test_dependency_no_default() -> None:
@@ -187,32 +107,13 @@ def test_dependency_provided_on_controller() -> None:
     assert resp.json() == {"value": 13}
 
 
-def test_dependency_skip_validation_deprecated() -> None:
-    @get("/validated")
-    def validated(value: NamedDependency[int]) -> dict[str, int]:
-        return {"value": value}
-
-    @get("/skipped")
-    def skipped(value: Annotated[int, Dependency(skip_validation=True)]) -> dict[str, int]:
-        return {"value": value}
-
-    with create_test_client(
-        route_handlers=[validated, skipped], dependencies={"value": Provide(lambda: "str", sync_to_thread=False)}
-    ) as client:
-        validated_resp = client.get("/validated")
-        assert validated_resp.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        skipped_resp = client.get("/skipped")
-        assert skipped_resp.status_code == HTTP_200_OK
-        assert skipped_resp.json() == {"value": "str"}
-
-
 def test_dependency_skip_validation() -> None:
     @get("/validated")
     def validated(value: NamedDependency[int]) -> dict[str, int]:
         return {"value": value}
 
     @get("/skipped")
-    def skipped(value: SkipValidation[int]) -> dict[str, int]:
+    def skipped(value: NamedDependency[SkipValidation[int]]) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(
@@ -227,7 +128,7 @@ def test_dependency_skip_validation() -> None:
 
 def test_dependency_skip_validation_with_default() -> None:
     @get("/skipped")
-    def skipped(value: SkipValidation[int] = 1) -> dict[str, int]:
+    def skipped(value: NamedDependency[SkipValidation[int]] = 1) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(route_handlers=[skipped]) as client:
@@ -238,7 +139,7 @@ def test_dependency_skip_validation_with_default() -> None:
 
 def test_dependency_default_is_not_treated_as_query_parameter() -> None:
     @get("/")
-    def handler(value: int = Dependency(default=42)) -> dict[str, int]:
+    def handler(value: NamedDependency[int] = 42) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -255,7 +156,7 @@ def test_dependency_default_does_not_collide_with_query_param_of_same_name() -> 
     the handler's query parameter.
     """
 
-    def provide_value(value: int = Dependency(default=7)) -> int:
+    def provide_value(value: NamedDependency[int] = 7) -> int:
         return value * 10
 
     @get("/", dependencies={"computed": Provide(provide_value, sync_to_thread=False)})

@@ -6,6 +6,57 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Remove deprecated declaration of metadata through default values
+        :type: feature
+        :pr: 4819
+        :breaking:
+
+        Remove declaring parameter and body metadata through default values and setting
+        defaults inside markers.
+
+        - The ``default`` keyword has been removed from ``Parameter`` and ``Body``, along
+          with the underlying ``KwargDefinition.default`` field. Passing it now raises a
+          ``TypeError``.
+        - Using a ``QueryParameter`` / ``HeaderParameter`` / ``PathParameter`` /
+          ``CookieParameter`` or ``Body`` marker as a parameter *default value* (for
+          example ``data: Foo = Body(...)`` or ``param: int = QueryParameter(...)``)
+          now raises an exception
+
+        **Migration**
+
+        - If metadata is declared on the marker, move the marker into ``Annotated``:
+
+          - ``data: Foo = Body(min_items=2)`` becomes ``data: Annotated[Foo, Body(min_items=2)]``
+          - ``param: int = QueryParameter(gt=1)`` becomes ``param: Annotated[int, QueryParameter(gt=1)]``
+
+          For the unconstrained case the dedicated markers can be used as a shorthand,
+          e.g. ``JSONBody[Foo]``, ``MsgPackBody[Foo]``, ``MultipartBody[Foo]`` or
+          ``URLEncodedBody[Foo]`` for bodies, and ``FromQuery[int]``, ``FromHeader[int]``,
+          ``FromCookie[int]`` or ``FromPath[int]`` for parameters.
+
+        - Hoist defaults set inside ``Annotated`` into the parameter default:
+          ``param: Annotated[int, QueryParameter(default=5)]`` becomes
+          ``param: Annotated[int, QueryParameter(...)] = 5``.
+
+        .. seealso::
+            :doc:`/usage/routing/parameters`
+
+    .. change:: Remove deprecated ``params.Dependency`` and ``params.DependencyKwarg``
+        :type: feature
+        :pr: 4818
+        :breaking:
+
+        Remove ``params.Dependency`` and ``params.DependencyKwarg`` that were deprecated
+        in ``2.23.0``.
+
+        **Migration**
+
+        - Replace ``foo: int = Dependency()`` with ``foo: NamedDependency[int]``
+        - Replace ``foo: Annotated[int, Dependency(default=1)]`` by hoisting the
+          default into the parameter default: ``foo: NamedDependency[int] = 1``
+        - Replace ``foo: Annotated[int, Dependency(skip_validation=True)`` with
+          ``foo: NamedDependency[SkipValidation[int]]``
+
     .. change:: Fix OpenAPI schema incorrectly marking nullable required fields as not required
         :type: bugfix
         :pr: 4687

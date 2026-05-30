@@ -18,9 +18,9 @@ from litestar import (
     put,
 )
 from litestar.datastructures.state import ImmutableState, State
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import Dependency, FromPath, FromQuery
+from litestar.params import FromPath, FromQuery
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -313,7 +313,6 @@ def test_improper_use_of_state_kwarg_with_annotated_metadata() -> None:
     caused the subclass check to crash with ``TypeError`` before we could raise the
     configuration error.
     """
-    from typing import Annotated
 
     from litestar.params import QueryParameter
 
@@ -350,7 +349,7 @@ def test_data_kwarg_in_dependency(decorator: Any, http_method: Any, expected_sta
         path = test_path
 
         @decorator(dependencies={"person_name": Provide(dependency_with_data)})
-        async def test_method(self, data: DataclassPerson, person_name: Annotated[str, Dependency()]) -> None:
+        async def test_method(self, data: DataclassPerson, person_name: NamedDependency[str]) -> None:
             assert data == person_instance
             assert person_name == f"{person_instance.first_name} {person_instance.last_name}"
 

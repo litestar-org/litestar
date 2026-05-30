@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTOField, extract_dto_field
-from litestar.params import DependencyKwarg, KwargDefinition
+from litestar.params import KwargDefinition
 from litestar.types.empty import Empty
+from litestar.utils.errors import raise_for_kwarg_as_default
 
 if TYPE_CHECKING:
     from collections.abc import Collection, Generator
@@ -49,11 +50,11 @@ class DataclassDTO(AbstractDTO[T], Generic[T]):
                 default=default,
             )
 
-            yield (
-                replace(field_definition, default=Empty, kwarg_definition=default)
-                if isinstance(default, (KwargDefinition, DependencyKwarg))
-                else field_definition
-            )
+            # TODO: Remove in 4.0
+            if isinstance(default, KwargDefinition):
+                raise_for_kwarg_as_default(default)
+
+            yield field_definition
 
         for key, property_field in properties.items():
             if key.startswith("_"):

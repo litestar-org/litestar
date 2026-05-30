@@ -13,7 +13,6 @@ from litestar.exceptions.base_exceptions import LitestarDeprecationWarning
 from litestar.openapi.spec import Parameter as OpenAPIParameter
 from litestar.params import (
     CookieParameter,
-    Dependency,
     FromCookie,
     FromHeader,
     FromPath,
@@ -169,49 +168,6 @@ def test_explicit_form_with_alias_dependency() -> None:
 
 
 @pytest.mark.parametrize(
-    "default,type_",
-    [
-        (_legacy_parameter(query="query"), "query"),
-        (_legacy_parameter(header="header"), "header"),
-        (_legacy_parameter(cookie="cookie"), "cookie"),
-    ],
-)
-def test_deprecated_default_style_handler(default: ParameterKwarg, type_: str) -> None:
-    @get("/")
-    def handler(some_param: str = default) -> None:  # type: ignore[assignment]
-        pass
-
-    with pytest.warns(
-        LitestarDeprecationWarning,
-        match=f"{type_} parameter 'some_param' declared using deprecated default 'param: <type>",
-    ):
-        Litestar([handler])
-
-
-@pytest.mark.parametrize(
-    "default,type_",
-    [
-        (_legacy_parameter(query="query"), "query"),
-        (_legacy_parameter(header="header"), "header"),
-        (_legacy_parameter(cookie="cookie"), "cookie"),
-    ],
-)
-def test_deprecated_default_style_dependency(default: ParameterKwarg, type_: str) -> None:
-    def dependency(some_param: str = default) -> None:  # type: ignore[assignment]
-        pass
-
-    @get("/", dependencies={"some_dependency": dependency})
-    def handler(some_dependency: None) -> None:
-        pass
-
-    with pytest.warns(
-        LitestarDeprecationWarning,
-        match=f"{type_} parameter 'some_param' declared using deprecated default 'param: <type>",
-    ):
-        Litestar([handler])
-
-
-@pytest.mark.parametrize(
     "annotation,type_",
     [
         (Annotated[str, _legacy_parameter(query="query")], "query"),
@@ -342,16 +298,6 @@ def test_annotated_metadata_does_not_shadow_path_param() -> None:
         res = client.get("/7")
         assert res.status_code == 200
         assert res.json() == 7
-
-
-def test_deprecated_dependency_marker() -> None:
-    with pytest.warns(LitestarDeprecationWarning, match="Call to deprecated function 'Dependency'"):
-
-        @get("/")
-        async def handler(foo: Annotated[int, Dependency()] = 1) -> None:
-            pass
-
-        Litestar([handler])
 
 
 def test_named_dependency_explicit_marker() -> None:

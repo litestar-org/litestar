@@ -18,7 +18,6 @@ from litestar.openapi.spec import Example, OpenAPI, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.params import (
     CookieParameter,
-    Dependency,
     FromCookie,
     FromHeader,
     FromPath,
@@ -205,20 +204,6 @@ def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> Non
         app.openapi_schema
 
 
-def test_dependency_params_in_docs_if_dependency_provided_deprecated() -> None:
-    async def produce_dep(param: FromQuery[str]) -> int:
-        return 13
-
-    @get(dependencies={"dep": Provide(produce_dep)})
-    def handler(dep: Optional[int] = Dependency()) -> None:
-        return None
-
-    app = Litestar(route_handlers=[handler])
-    param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore[index, redundant-cast, union-attr]
-    assert "dep" not in param_name_set
-    assert "param" in param_name_set
-
-
 def test_dependency_params_in_docs_if_dependency_provided() -> None:
     async def produce_dep(param: FromQuery[str]) -> int:
         return 13
@@ -235,7 +220,7 @@ def test_dependency_params_in_docs_if_dependency_provided() -> None:
 
 def test_dependency_not_in_doc_params_if_not_provided() -> None:
     @get()
-    def handler(dep: Annotated[Optional[int], Dependency()]) -> None:
+    def handler(dep: NamedDependency[Optional[int]]) -> None:
         return None
 
     app = Litestar(route_handlers=[handler])

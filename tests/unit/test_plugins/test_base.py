@@ -5,13 +5,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from advanced_alchemy.extensions.litestar import SQLAlchemySerializationPlugin
 from click import Group
 
 from litestar import Litestar, MediaType, get
 from litestar.constants import UNDEFINED_SENTINELS
+from litestar.dto import AbstractDTO
 from litestar.file_system import FileSystemRegistry
-from litestar.plugins import CLIPlugin, InitPlugin, OpenAPISchemaPlugin, PluginRegistry
+from litestar.plugins import CLIPlugin, InitPlugin, OpenAPISchemaPlugin, PluginRegistry, SerializationPlugin
 from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.plugins.core import MsgspecDIPlugin
 from litestar.plugins.pydantic import PydanticDIPlugin, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
@@ -52,8 +52,15 @@ def test_plugin_registry() -> None:
         def on_cli_init(self, cli: Group) -> None:
             pass
 
+    class MySerializationPlugin(SerializationPlugin):
+        def supports_type(self, field_definition: FieldDefinition) -> bool:
+            return False
+
+        def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
+            raise NotImplementedError()
+
     cli_plugin = MyCLIPlugin()
-    serialization_plugin = SQLAlchemySerializationPlugin()
+    serialization_plugin = MySerializationPlugin()
     openapi_plugin = PydanticSchemaPlugin()
     init_plugin = PydanticInitPlugin()
 

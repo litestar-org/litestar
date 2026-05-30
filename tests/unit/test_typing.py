@@ -17,14 +17,14 @@ from typing_extensions import (
     TypeAliasType as TeTypeAliasType,
 )
 
+from litestar.exceptions import ImproperlyConfiguredException
+
 try:
     from typing import TypeAliasType  # type: ignore[attr-defined]
 except ImportError:
     TypeAliasType = TeTypeAliasType
 
-from litestar import get
-from litestar.exceptions import LitestarWarning
-from litestar.params import DependencyKwarg, KwargDefinition, ParameterKwarg, QueryParameter
+from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.typing import FieldDefinition
 from tests.unit.test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
@@ -167,8 +167,8 @@ def test_field_definition_kwarg_definition_from_extras() -> None:
     )
 
 
-@pytest.mark.parametrize("kwarg_definition", [KwargDefinition(), DependencyKwarg()])
-def test_field_definition_kwarg_definition_from_kwargs(kwarg_definition: KwargDefinition | DependencyKwarg) -> None:
+def test_field_definition_kwarg_definition_from_kwargs() -> None:
+    kwarg_definition = KwargDefinition()
     assert FieldDefinition.from_annotation(int, kwarg_definition=kwarg_definition).kwarg_definition is kwarg_definition
 
 
@@ -338,7 +338,10 @@ def test_is_required() -> None:
     )
     assert (
         FieldDefinition.from_kwarg(
-            name="foo", kwarg_definition=ParameterKwarg(required=None, default=""), annotation=str
+            name="foo",
+            kwarg_definition=ParameterKwarg(required=None),
+            annotation=str,
+            default=None,
         ).is_required
         is False
     )
@@ -454,30 +457,6 @@ def test_field_definition_get_type_hints_dont_resolve_generics(
     )
 
 
-def test_warn_ambiguous_default_values() -> None:
-    with pytest.warns((LitestarWarning, DeprecationWarning)):
-        FieldDefinition.from_annotation(Annotated[int, ParameterKwarg(name="something", default=1)], default=2)
-
-
-def test_warn_defaults_inside_parameter_definition() -> None:
-    with pytest.warns(DeprecationWarning, match="Deprecated default value specification"):
-        FieldDefinition.from_annotation(Annotated[int, ParameterKwarg(name="something", default=1)], default=1)
-
-
-def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
-    with pytest.warns() as warnings:
-
-        @get(sync_to_thread=False)
-        def handler(foo: Annotated[int, QueryParameter(default=1)]) -> None:
-            pass
-
-        _ = handler.parsed_fn_signature
-
-    (record,) = warnings
-    assert record.category == DeprecationWarning
-    assert "Deprecated default value specification" in str(record.message)
-
-
 @pytest.mark.parametrize(
     "annotation",
     [
@@ -497,3 +476,10 @@ def test_unwrap_type_alias_type_keyword() -> None:
     annotation = ctx["IntAlias"]
     field_definition = FieldDefinition.from_annotation(annotation)
     assert field_definition.is_type_alias_type
+
+
+def test_kwarg_definition_as_default_raises() -> None:
+    with pytest.raises(
+        ImproperlyConfiguredException, match="Usage of parameter defaults to declare metadata is no longer supported."
+    ):
+        FieldDefinition.from_annotation(int, default=ParameterKwarg())

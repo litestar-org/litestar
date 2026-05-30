@@ -68,7 +68,6 @@ def test_process_schema_result() -> None:
         examples=[Example(value=1)],
         external_docs=ExternalDocumentation(url="https://example.com/docs"),
         content_encoding="utf-8",
-        default=test_str,
         title=test_str,
         description=test_str,
         const=True,
@@ -84,7 +83,7 @@ def test_process_schema_result() -> None:
         pattern="^[a-z]$",
     )
     schema = get_schema_for_field_definition(
-        FieldDefinition.from_annotation(annotation=str, kwarg_definition=kwarg_definition)
+        FieldDefinition.from_annotation(annotation=str, kwarg_definition=kwarg_definition, default=test_str)
     )
 
     assert schema.title
@@ -93,7 +92,7 @@ def test_process_schema_result() -> None:
     for signature_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
         if schema_key == "examples":
             assert schema.examples == [kwarg_definition.examples[0].value]
-        else:
+        elif hasattr(kwarg_definition, signature_key):
             assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
 
 
