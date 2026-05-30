@@ -459,7 +459,7 @@ class FieldDefinition:
 
         if not kwargs.get("kwarg_definition"):
             if isinstance(default := kwargs.get("default"), KwargDefinition):
-                alternative = f"Annotated[<type>, {default!r}]"
+                alternative = f"Annotated[<type>, {type(default).__name__}(...)]"
                 if isinstance(default, ParameterKwarg) and not default.is_constrained:
                     alternative = {
                         ParamType.QUERY: "FromQuery",
