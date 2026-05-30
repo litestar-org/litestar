@@ -457,10 +457,11 @@ class FieldDefinition:
 
         annotation_args = () if origin is abc.Callable else get_args(unwrapped)
 
+        if isinstance(default := kwargs.get("default"), KwargDefinition):
+            # TODO: Remove in 4.0
+            raise_for_kwarg_as_default(default)
+
         if not kwargs.get("kwarg_definition"):
-            if isinstance(default := kwargs.get("default"), KwargDefinition):
-                # TODO: Remove in 4.0
-                raise_for_kwarg_as_default(default)
             if kwarg_definition := next((v for v in metadata if isinstance(v, KwargDefinition)), None):
                 kwargs["kwarg_definition"] = kwarg_definition
 
