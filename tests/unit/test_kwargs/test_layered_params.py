@@ -128,15 +128,16 @@ def test_layered_parameters_defaults_and_overrides() -> None:
     class MyController(Controller):
         path = "/controller"
         parameters = {
-            "controller1": Parameter(int, default=50),
+            "controller1": QueryParameter(annotation=int),
             "controller2": QueryParameter(annotation=str, name="controller3"),
         }
 
         @get("/{local:int}")
         def my_handler(
             self,
+            *,
             local: FromPath[int],
-            controller1: FromQuery[int],
+            controller1: FromQuery[int] = 50,
             controller2: Annotated[str, QueryParameter(name="controller4")],
             app1: FromQuery[str] = "moishe",
         ) -> dict:
@@ -153,7 +154,7 @@ def test_layered_parameters_defaults_and_overrides() -> None:
     with create_test_client(
         route_handlers=router,
         parameters={
-            "app1": Parameter(str, default="haim"),
+            "app1": QueryParameter(annotation=str),
         },
     ) as client:
         query = {"controller4": "jeronimo"}

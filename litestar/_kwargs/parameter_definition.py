@@ -50,7 +50,7 @@ def create_parameter_definition(
         param_type = kwarg_definition.param_type
         field_alias = kwarg_definition.name or field_name
         if kwarg_definition.header or kwarg_definition.cookie or kwarg_definition.query:
-            legacy_style = "annotated" if field_definition.is_annotated else "default"
+            legacy_style = "annotated"
         else:
             legacy_style = None
 

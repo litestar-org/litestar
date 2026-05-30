@@ -53,11 +53,6 @@ class KwargDefinition:
 
     Applicable on to string values. See OpenAPI 3.1 for details.
     """
-    default: Any = field(default=Empty)
-    """A default value.
-
-    If const is true, this value is required.
-    """
     title: str | None = field(default=None)
     """String value used in the title section of the OpenAPI schema for the given parameter."""
     description: str | None = field(default=None)
@@ -289,7 +284,6 @@ def Parameter(
     const: bool | None = None,
     content_encoding: str | None = None,
     cookie: str | None = None,
-    default: Any = Empty,
     description: str | None = None,
     examples: list[Example] | None = None,
     external_docs: ExternalDocumentation | None = None,
@@ -321,7 +315,6 @@ def Parameter(
         content_encoding: The content encoding of the value.
             Applicable on to string values. See OpenAPI 3.1 for details.
         cookie: The cookie parameter key - required for cookie parameters.
-        default: A default value. If const is true, this value is required.
         description: String value used in the description section of the OpenAPI schema for the given parameter.
         examples: A list of Example models.
         external_docs: A url pointing at external documentation for the given parameter.
@@ -367,7 +360,6 @@ def Parameter(
         external_docs=external_docs,
         content_encoding=content_encoding,
         required=required,
-        default=default,
         title=title,
         description=description,
         const=const,
@@ -423,7 +415,6 @@ def Body(
     *,
     const: bool | None = None,
     content_encoding: str | None = None,
-    default: Any = Empty,
     description: str | None = None,
     examples: list[Example] | None = None,
     external_docs: ExternalDocumentation | None = None,
@@ -451,7 +442,6 @@ def Body(
             populated with the default value.
         content_encoding: The content encoding of the value. Applicable on to string values.
             See OpenAPI 3.1 for details.
-        default: A default value. If const is true, this value is required.
         description: String value used in the description section of the OpenAPI schema for the given parameter.
         examples: A list of Example models.
         external_docs: A url pointing at external documentation for the given parameter.
@@ -491,7 +481,6 @@ def Body(
         examples=examples,
         external_docs=external_docs,
         content_encoding=content_encoding,
-        default=default,
         title=title,
         description=description,
         const=const,

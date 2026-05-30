@@ -168,49 +168,6 @@ def test_explicit_form_with_alias_dependency() -> None:
 
 
 @pytest.mark.parametrize(
-    "default,type_",
-    [
-        (_legacy_parameter(query="query"), "query"),
-        (_legacy_parameter(header="header"), "header"),
-        (_legacy_parameter(cookie="cookie"), "cookie"),
-    ],
-)
-def test_deprecated_default_style_handler(default: ParameterKwarg, type_: str) -> None:
-    @get("/")
-    def handler(some_param: str = default) -> None:  # type: ignore[assignment]
-        pass
-
-    with pytest.warns(
-        LitestarDeprecationWarning,
-        match=f"{type_} parameter 'some_param' declared using deprecated default 'param: <type>",
-    ):
-        Litestar([handler])
-
-
-@pytest.mark.parametrize(
-    "default,type_",
-    [
-        (_legacy_parameter(query="query"), "query"),
-        (_legacy_parameter(header="header"), "header"),
-        (_legacy_parameter(cookie="cookie"), "cookie"),
-    ],
-)
-def test_deprecated_default_style_dependency(default: ParameterKwarg, type_: str) -> None:
-    def dependency(some_param: str = default) -> None:  # type: ignore[assignment]
-        pass
-
-    @get("/", dependencies={"some_dependency": dependency})
-    def handler(some_dependency: None) -> None:
-        pass
-
-    with pytest.warns(
-        LitestarDeprecationWarning,
-        match=f"{type_} parameter 'some_param' declared using deprecated default 'param: <type>",
-    ):
-        Litestar([handler])
-
-
-@pytest.mark.parametrize(
     "annotation,type_",
     [
         (Annotated[str, _legacy_parameter(query="query")], "query"),

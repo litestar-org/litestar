@@ -59,7 +59,6 @@ if TYPE_CHECKING:
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "content_encoding": "content_encoding",
-    "default": "default",
     "description": "description",
     "enum": "enum",
     "examples": "examples",

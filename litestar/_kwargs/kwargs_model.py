@@ -553,12 +553,6 @@ def _warn_deprecated_param_style(
                 f"style. Use '{short_alternative}[<type>]' or "
                 f"'Annotated[<type>, {param_type.title()}Parameter(...)]' instead"
             )
-        elif style == "default":
-            msg = (
-                f"{param_type_name} parameter {field_name!r} declared using deprecated default "
-                f"'param: <type> = Parameter(...)' style. Use '{short_alternative}[<type>]' "
-                f"or 'Annotated[<type>, {param_type_name.title()}Parameter(...)]' instead"
-            )
         elif style == "annotated":
             msg = (
                 f"{param_type_name} parameter {field_name!r} declared using deprecated annotated "
