@@ -15,3 +15,4 @@ frameworks, this is the place to look.
 
     fastapi
     flask
+    django
