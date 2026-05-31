@@ -148,3 +148,20 @@ docs-linkcheck: 									## Run the link check on the docs
 .PHONY: docs-linkcheck-full
 docs-linkcheck-full: 									## Run the full link check on the docs
 	@uv run --isolated sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_anchors=0
+
+# =============================================================================
+# Chinese Docs
+# =============================================================================
+
+docs-zh-clean: 										## Dump the existing built Chinese docs
+	@echo "=> Cleaning Chinese documentation build assets"
+	@rm -rf docs/zh/_build
+	@echo "=> Removed existing Chinese documentation build assets"
+
+docs-zh: docs-zh-clean 								## Build Chinese documentation
+	@echo "=> Building Chinese documentation"
+	@uv run --isolated sphinx-build -b html docs/zh docs/zh/_build/ -E -a -j auto --keep-going
+
+docs-zh-serve: 										## Serve Chinese docs locally
+	@echo "=> Serving Chinese documentation"
+	uv run --isolated sphinx-autobuild docs/zh docs/zh/_build/ -j auto --watch docs/zh --open-browser --port=0
