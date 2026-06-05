@@ -62,12 +62,17 @@ class PathItemFactory:
         signature_fields = route_handler.parsed_fn_signature.parameters
 
         request_body = None
+        request_body_field = None
         if data_field := signature_fields.get("data"):
             request_body = create_request_body(
                 self.context, route_handler.handler_id, route_handler.data_dto, data_field
             )
+            request_body_field = data_field
+        elif body_field := signature_fields.get("body"):
+            request_body = create_request_body(self.context, route_handler.handler_id, None, body_field)
+            request_body_field = body_field
 
-        raises_validation_error = bool(data_field or self._path_item.parameters or parameters)
+        raises_validation_error = bool(request_body_field or self._path_item.parameters or parameters)
         responses = create_responses_for_handler(
             self.context, route_handler, raises_validation_error=raises_validation_error
         )
