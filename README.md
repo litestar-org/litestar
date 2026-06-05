@@ -604,6 +604,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TanayK07"><img src="https://avatars.githubusercontent.com/u/95276223?v=4?s=100" width="100px;" alt="Tanay Kedia"/><br /><sub><b>Tanay Kedia</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=TanayK07" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=TanayK07" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=TanayK07" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://temrjan.com/en/"><img src="https://avatars.githubusercontent.com/u/238274924?v=4?s=100" width="100px;" alt="Temrjan"/><br /><sub><b>Temrjan</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=temrjan" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/issues?q=author%3Atemrjan" title="Bug reports">🐛</a> <a href="https://github.com/litestar-org/litestar/commits?author=temrjan" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
