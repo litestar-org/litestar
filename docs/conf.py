@@ -54,7 +54,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "msgspec": ("https://jcristharif.com/msgspec/", None),
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
     "cryptography": ("https://cryptography.io/en/latest/", None),
@@ -108,6 +107,8 @@ nitpick_ignore = [
     (PY_CLASS, "jinja2.environment.Environment"),
     (PY_CLASS, "mako.lookup.TemplateLookup"),
     (PY_CLASS, "mako.template.Template"),
+    (PY_CLASS, "msgspec.Meta"),
+    (PY_CLASS, "msgspec.Struct"),
     (PY_CLASS, "minijinja.Environment"),
     (PY_CLASS, "pydantic.BaseModel"),
     (PY_CLASS, "pydantic.generics.GenericModel"),
