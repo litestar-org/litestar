@@ -20,8 +20,8 @@ configuration globally to setting
 :ref:`specific kwargs on route <usage/openapi/schema_generation:Configuring schema generation on a route handler>`
 handler decorators.
 
-Schema Availability
--------------------
+Default schemas
+---------------
 
 By default, the generated OpenAPI schema is available at the following endpoints, relative to the configured ``openapi_path`` (which defaults to ``/schema``):
 
