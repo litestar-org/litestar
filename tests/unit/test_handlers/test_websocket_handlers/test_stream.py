@@ -8,6 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from litestar import Controller, Litestar, WebSocket
+from litestar.di import NamedDependency
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.websocket_handlers import websocket_stream
@@ -54,12 +55,12 @@ def test_websocket_stream_dependency_injection() -> None:
 
     # ensure we can inject dependencies
     @websocket_stream("/1", dependencies={"greeting": provide_hello})
-    async def handler_one(greeting: str) -> AsyncGenerator[str, None]:
+    async def handler_one(greeting: NamedDependency[str]) -> AsyncGenerator[str, None]:
         yield greeting
 
     # ensure dependency injection also works with 'socket' present
     @websocket_stream("/2", dependencies={"greeting": provide_hello})
-    async def handler_two(socket: WebSocket, greeting: str) -> AsyncGenerator[str, None]:
+    async def handler_two(socket: WebSocket, greeting: NamedDependency[str]) -> AsyncGenerator[str, None]:
         yield greeting
 
     with create_test_client([handler_one, handler_two]) as client:
@@ -82,7 +83,7 @@ def test_websocket_stream_dependencies_cleaned_up_after_stream_close() -> None:
         dependencies={"message": dep},
         listen_for_disconnect=False,
     )
-    async def handler(socket: WebSocket, message: str) -> AsyncGenerator[str, None]:
+    async def handler(socket: WebSocket, message: NamedDependency[str]) -> AsyncGenerator[str, None]:
         yield "one"
         await socket.receive_text()
         yield message

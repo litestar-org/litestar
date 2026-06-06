@@ -2,12 +2,12 @@ from typing import Dict
 
 from litestar import Litestar, get
 from litestar.config.app import AppConfig
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.plugins import InitPlugin
 
 
 @get("/", sync_to_thread=False)
-def route_handler(name: str) -> Dict[str, str]:
+def route_handler(name: NamedDependency[str]) -> Dict[str, str]:
     return {"hello": name}
 
 

@@ -83,6 +83,10 @@ is needed.
     the parameters and generate the OpenAPI schema
 
 
+.. seealso::
+    :doc:`/topics/explicit_declarations`
+
+
 Optional, required and nullable
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

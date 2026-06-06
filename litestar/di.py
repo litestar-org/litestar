@@ -3,7 +3,7 @@ from __future__ import annotations
 from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction, ismethod
 from typing import TYPE_CHECKING, Any, Literal, TypeVar
 
-from typing_extensions import Annotated
+from typing_extensions import Annotated, TypeAlias
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
@@ -36,7 +36,7 @@ class Dependency:
         self.kind = kind
 
 
-NamedDependency = Annotated[T, Dependency(kind="named")]
+NamedDependency: TypeAlias = Annotated[T, Dependency(kind="named")]
 """
 Mark a parameter for name-based dependency injection.
 

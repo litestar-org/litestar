@@ -61,8 +61,6 @@ def create_parameter_definition(
 
     if field_definition.is_di_field:
         param_type = ParamType.DEPENDENCY
-        if field_definition.is_annotated:
-            legacy_style = None
 
     return ParameterDefinition(
         param_type=param_type,

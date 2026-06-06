@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import text
 
 from litestar import Litestar, get
+from litestar.di import NamedDependency
 from litestar.plugins.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 
 if TYPE_CHECKING:
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @get(path="/sqlalchemy-app", sync_to_thread=True)
-def async_sqlalchemy_init(db_session: Session, db_engine: Engine) -> str:
+def async_sqlalchemy_init(db_session: NamedDependency[Session], db_engine: NamedDependency[Engine]) -> str:
     """Interact with SQLAlchemy engine and session."""
     one = db_session.execute(text("SELECT 1")).scalar_one()
 

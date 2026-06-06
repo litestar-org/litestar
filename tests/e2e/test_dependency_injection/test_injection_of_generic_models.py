@@ -3,7 +3,7 @@ from typing import Generic, Optional, Type, TypeVar
 from msgspec import Struct
 
 from litestar import get
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -36,7 +36,7 @@ async def get_item_store() -> DictStore:
 
 def test_generic_model_injection() -> None:
     @get("/")
-    def root(store: DictStore) -> Optional[Item]:
+    def root(store: NamedDependency[DictStore]) -> Optional[Item]:
         assert isinstance(store, DictStore)
         return store.get("0")
 

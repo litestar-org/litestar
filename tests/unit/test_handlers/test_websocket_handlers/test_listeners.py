@@ -9,7 +9,7 @@ from pytest_lazy_fixtures import lf
 from litestar import Controller, Litestar, Request, WebSocket
 from litestar.connection import ASGIConnection
 from litestar.datastructures import State
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
@@ -213,7 +213,7 @@ def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
         return cast("int", state.foo)
 
     @websocket_listener("/", dependencies={"foo": Provide(foo_dependency)})
-    def handler(data: str, foo: int) -> Dict[str, Union[str, int]]:
+    def handler(data: str, foo: NamedDependency[int]) -> Dict[str, Union[str, int]]:
         return {"data": data, "foo": foo}
 
     with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
@@ -348,10 +348,10 @@ def test_hook_dependencies() -> None:
     def some_dependency() -> str:
         return "hello"
 
-    def on_accept(name: FromPath[str], state: State, query: dict, some: str) -> None:
+    def on_accept(name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:
         on_accept_mock(name=name, state=state, query=query, some=some)
 
-    def on_disconnect(name: FromPath[str], state: State, query: dict, some: str) -> None:
+    def on_disconnect(name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:
         on_disconnect_mock(name=name, state=state, query=query, some=some)
 
     @websocket_listener("/{name: str}", on_accept=on_accept, on_disconnect=on_disconnect)
@@ -386,10 +386,10 @@ def test_websocket_listener_class_hook_dependencies() -> None:
     class Listener(WebsocketListener):
         path = "/{name: str}"
 
-        def on_accept(self, name: FromPath[str], state: State, query: dict, some: str) -> None:  # pyright: ignore
+        def on_accept(self, name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:  # pyright: ignore
             on_accept_mock(name=name, state=state, query=query, some=some)
 
-        def on_disconnect(self, name: FromPath[str], state: State, query: dict, some: str) -> None:  # pyright: ignore
+        def on_disconnect(self, name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:  # pyright: ignore
             on_disconnect_mock(name=name, state=state, query=query, some=some)
 
         def on_receive(self, data: bytes) -> None:  # pyright: ignore

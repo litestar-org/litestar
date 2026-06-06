@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import select
 
 from litestar import Litestar, post
+from litestar.di import NamedDependency
 from litestar.plugins.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 
 if TYPE_CHECKING:
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
 
 
 @post("/", sync_to_thread=True)
-def handler(db_session: Session, db_engine: Engine) -> Tuple[int, int]:
+def handler(db_session: NamedDependency[Session], db_engine: NamedDependency[Engine]) -> Tuple[int, int]:
     one = db_session.execute(select(1)).scalar()
 
     with db_engine.begin() as conn:

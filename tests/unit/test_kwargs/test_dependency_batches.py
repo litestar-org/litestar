@@ -3,7 +3,7 @@ from typing import List, Set
 import pytest
 
 from litestar._kwargs.dependencies import DependencyContainer, create_dependency_batches
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.exceptions import HTTPException, ValidationException
 from litestar.handlers import get
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_422_UNPROCESSABLE_ENTITY, HTTP_500_INTERNAL_SERVER_ERROR
@@ -84,11 +84,11 @@ def test_dependency_batch_with_exception(exception: Exception, status_code: int,
     def a() -> None:
         raise exception
 
-    def c(a: None, b: None) -> None:
+    def c(a: NamedDependency[None], b: NamedDependency[None]) -> None:
         pass
 
     @get(path="/")
-    def handler(c: None) -> None:
+    def handler(c: NamedDependency[None]) -> None:
         pass
 
     with create_test_client(
