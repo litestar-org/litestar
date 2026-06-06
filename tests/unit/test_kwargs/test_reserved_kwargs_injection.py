@@ -1,12 +1,10 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 import re
-from typing import Annotated, Any, Optional, cast,  Any, List, Optional, Type, cast
+from typing import Any, List, Optional, Type, cast
 from unittest.mock import MagicMock, call
 
-import msgspec.json
-
-
 import msgspec
+import msgspec.json
 import pytest
 from typing_extensions import Annotated
 

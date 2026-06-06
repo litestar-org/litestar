@@ -3716,6 +3716,8 @@ full = [
     { name = "minijinja" },
     { name = "opentelemetry-instrumentation-asgi", version = "0.54b1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version != '3.9.*'" },
     { name = "opentelemetry-instrumentation-asgi", version = "0.60b1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "opentelemetry-sdk", version = "1.33.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version != '3.9.*'" },
+    { name = "opentelemetry-sdk", version = "1.39.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
     { name = "piccolo", version = "1.21.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "piccolo", version = "1.29.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
     { name = "piccolo", version = "1.33.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -3753,6 +3755,8 @@ minijinja = [
 opentelemetry = [
     { name = "opentelemetry-instrumentation-asgi", version = "0.54b1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version != '3.9.*'" },
     { name = "opentelemetry-instrumentation-asgi", version = "0.60b1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "opentelemetry-sdk", version = "1.33.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version != '3.9.*'" },
+    { name = "opentelemetry-sdk", version = "1.39.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
 ]
 piccolo = [
     { name = "piccolo", version = "1.21.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
@@ -3930,6 +3934,7 @@ requires-dist = [
     { name = "multidict", specifier = ">=6.0.2" },
     { name = "multipart", specifier = ">=1.2.0" },
     { name = "opentelemetry-instrumentation-asgi", marker = "extra == 'opentelemetry'" },
+    { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'" },
     { name = "piccolo", marker = "extra == 'piccolo'" },
     { name = "picologging", marker = "python_full_version < '3.13' and extra == 'picologging'" },
     { name = "polyfactory", specifier = ">=2.6.3" },
