@@ -523,7 +523,7 @@ class KwargsModel:
             if field_def.is_any:
                 continue
             if field_def.type_ not in seen:
-                expected_raw_types.append(field_def.raw)
+                expected_raw_types.append(field_def.annotation)
             seen.add(field_def.type_)
 
         if len(seen) > 1:
