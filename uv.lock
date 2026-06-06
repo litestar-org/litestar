@@ -2014,6 +2014,7 @@ full = [
     { name = "mako" },
     { name = "minijinja" },
     { name = "opentelemetry-instrumentation-asgi" },
+    { name = "opentelemetry-sdk" },
     { name = "piccolo" },
     { name = "polyfactory" },
     { name = "prometheus-client" },
@@ -2043,6 +2044,7 @@ minijinja = [
 ]
 opentelemetry = [
     { name = "opentelemetry-instrumentation-asgi" },
+    { name = "opentelemetry-sdk" },
 ]
 piccolo = [
     { name = "litestar-piccolo" },
@@ -2174,6 +2176,7 @@ requires-dist = [
     { name = "multidict", specifier = ">=6.0.2" },
     { name = "multipart", specifier = ">=1.3.1" },
     { name = "opentelemetry-instrumentation-asgi", marker = "extra == 'opentelemetry'" },
+    { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'" },
     { name = "piccolo", marker = "extra == 'piccolo'" },
     { name = "polyfactory", marker = "extra == 'polyfactory'", specifier = ">=2.6.3" },
     { name = "prometheus-client", marker = "extra == 'prometheus'" },
