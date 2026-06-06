@@ -1,6 +1,6 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 import re
-from typing import Any, List, Optional, Type, cast
+from typing import Any, Dict, List, Optional, Type, cast
 from unittest.mock import MagicMock, call
 
 import msgspec
@@ -365,12 +365,12 @@ def test_data_kwarg_in_dependency(decorator: Any, http_method: Any, expected_sta
 def test_data_kwarg_in_dependency_only() -> None:
     mock = MagicMock()
 
-    async def dependency_with_data(data: list[str]) -> list[str]:
+    async def dependency_with_data(data: List[str]) -> List[str]:
         mock(data)
         return data
 
     @post("/", dependencies={"some_data": dependency_with_data})
-    def handler(some_data: list[str]) -> None:
+    def handler(some_data: List[str]) -> None:
         mock(some_data)
         return
 
@@ -390,33 +390,33 @@ def test_data_kwarg_in_dependency_only() -> None:
 
 
 def test_data_kwarg_type_mismatch_between_handler_and_dependency_raises() -> None:
-    async def dependency_with_data(data: list[str]) -> list[str]:
+    async def dependency_with_data(data: List[str]) -> List[str]:
         return data
 
     @post("/", dependencies={"some_data": dependency_with_data})
-    def handler(data: dict[str, str], some_data: list[str]) -> None:
+    def handler(data: Dict[str, str], some_data: List[str]) -> None:
         return None
 
     with pytest.raises(
         ImproperlyConfiguredException,
-        match=re.escape("'data' fields have mismatched types: 'dict[str, str]' <> 'list[str]'"),
+        match=re.escape("'data' fields have mismatched types: 'typing.Dict[str, str]' <> 'typing.List[str]'"),
     ):
         Litestar([handler])
 
 
 def test_data_kwarg_type_mismatch_between_dependencies_raises() -> None:
-    async def data_a(data: list[str]) -> list[str]:
+    async def data_a(data: List[str]) -> List[str]:
         return data
 
-    async def data_b(data: dict[str, str]) -> dict[str, str]:
+    async def data_b(data: Dict[str, str]) -> Dict[str, str]:
         return data
 
     @post("/", dependencies={"a": data_a, "b": data_b})
-    def handler(a: dict[str, str], b: list[str]) -> None:
+    def handler(a: Dict[str, str], b: List[str]) -> None:
         return None
 
     with pytest.raises(
         ImproperlyConfiguredException,
-        match=re.escape("'data' fields have mismatched types: 'dict[str, str]' <> 'list[str]'"),
+        match=re.escape("'data' fields have mismatched types: 'typing.Dict[str, str]' <> 'typing.List[str]'"),
     ):
         Litestar([handler])
