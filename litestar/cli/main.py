@@ -38,7 +38,7 @@ def litestar_group(ctx: click.Context, app_path: str | None, app_dir: Path | Non
     instance.
 
     Alternatively, the application can be specified explicitly via the '--app' option
-    ('litestar --app=<module name>.<submodule>:<app instance or factory>') or the
+    ('litestar --app=<module name>.<submodule>:<app instance or factory> run') or the
     'LITESTAR_APP' environment variable of the same name.
     """
     if ctx.obj is None:  # env has not been loaded yet, so we can lazy load it
