@@ -1,6 +1,6 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 import re
-from typing import Annotated, Any, Optional, cast
+from typing import Annotated, Any, Optional, cast, List, Dict
 from unittest.mock import MagicMock, call
 
 import msgspec.json
@@ -21,7 +21,7 @@ from litestar import (
 from litestar.datastructures.state import ImmutableState, State
 from litestar.di import NamedDependency, Provide
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import FromPath, FromQuery
+from litestar.params import FromPath, FromQuery, JSONBody
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -362,12 +362,12 @@ def test_data_kwarg_in_dependency(decorator: Any, http_method: Any, expected_sta
 def test_data_kwarg_in_dependency_only() -> None:
     mock = MagicMock()
 
-    async def dependency_with_data(data: list[str]) -> list[str]:
+    async def dependency_with_data(data: JSONBody[list[str]]) -> list[str]:
         mock(data)
         return data
 
     @post("/", dependencies={"some_data": dependency_with_data})
-    def handler(some_data: list[str]) -> None:
+    def handler(some_data: NamedDependency[list[str]]) -> None:
         mock(some_data)
         return
 
@@ -387,11 +387,11 @@ def test_data_kwarg_in_dependency_only() -> None:
 
 
 def test_data_kwarg_type_mismatch_between_handler_and_dependency_raises() -> None:
-    async def dependency_with_data(data: list[str]) -> list[str]:
+    async def dependency_with_data(data: JSONBody[List[str]]) -> List[str]:
         return data
 
     @post("/", dependencies={"some_data": dependency_with_data})
-    def handler(data: dict[str, str], some_data: list[str]) -> None:
+    def handler(data: JSONBody[Dict[str, str]], some_data: NamedDependency[List[str]]) -> None:
         return None
 
     with pytest.raises(
@@ -402,14 +402,14 @@ def test_data_kwarg_type_mismatch_between_handler_and_dependency_raises() -> Non
 
 
 def test_data_kwarg_type_mismatch_between_dependencies_raises() -> None:
-    async def data_a(data: list[str]) -> list[str]:
+    async def data_a(data: JSONBody[List[str]]) -> List[str]:
         return data
 
-    async def data_b(data: dict[str, str]) -> dict[str, str]:
+    async def data_b(data: JSONBody[Dict[str, str]]) -> Dict[str, str]:
         return data
 
     @post("/", dependencies={"a": data_a, "b": data_b})
-    def handler(a: dict[str, str], b: list[str]) -> None:
+    def handler(a: NamedDependency[Dict[str, str]], b: NamedDependency[List[str]]) -> None:
         return None
 
     with pytest.raises(

@@ -3,10 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from advanced_alchemy.extensions.litestar import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.plugins.sqlalchemy import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 from sqlalchemy import select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
+from litestar.di import NamedDependency
 
 if TYPE_CHECKING:
     from typing import Any
@@ -24,7 +26,7 @@ class TodoItem(Base):
 
 
 @post("/")
-async def add_item(data: dict[str, Any], db_session: AsyncSession) -> list[dict[str, Any]]:
+async def add_item(data: dict[str, Any], db_session: NamedDependency[AsyncSession]) -> list[dict[str, Any]]:
     todo_item = TodoItem(**data)
     async with db_session.begin():
         db_session.add(todo_item)

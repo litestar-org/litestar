@@ -107,7 +107,7 @@ def test_simple_form_dependency() -> None:
         return {"query": query_param, "header": header_param, "cookie": cookie_param, "path": path_param}
 
     @get("/{path_param:int}", dependencies={"dep": dependency})
-    def handler(dep: dict[str, int]) -> dict[str, int]:
+    def handler(dep: NamedDependency[dict[str, int]]) -> dict[str, int]:
         return dep
 
     with create_test_client([handler], raise_server_exceptions=True) as client:
@@ -127,7 +127,7 @@ def test_explicit_form_dependency() -> None:
         return {"query": query_param, "header": header_param, "cookie": cookie_param, "path": path_param}
 
     @get("/{path_param:int}", dependencies={"dep": dependency})
-    def handler(dep: dict[str, int]) -> dict[str, int]:
+    def handler(dep: NamedDependency[dict[str, int]]) -> dict[str, int]:
         return dep
 
     with create_test_client([handler], raise_server_exceptions=True) as client:
@@ -147,7 +147,7 @@ def test_explicit_form_with_alias_dependency() -> None:
         return {"query": query_p, "header": header_p, "cookie": cookie_p, "path": path_p}
 
     @get("/{path_param:int}", dependencies={"dep": dependency})
-    def handler(dep: dict[str, int]) -> dict[str, int]:
+    def handler(dep: NamedDependency[dict[str, int]]) -> dict[str, int]:
         return dep
 
     app = Litestar([handler])
@@ -200,7 +200,7 @@ def test_deprecated_annotated_style_dependency(annotation: Any, type_: str) -> N
         pass
 
     @get("/", dependencies={"some_dependency": dependency})
-    def handler(some_dependency: None) -> None:
+    def handler(some_dependency: NamedDependency[None]) -> None:
         return None
 
     with pytest.warns(
@@ -238,11 +238,11 @@ def test_deprecated_implicit_style_dependency() -> None:
         pass
 
     @get("/query", dependencies={"query_d": query_dependency})
-    def query_handler(query_d: None) -> None:
+    def query_handler(query_d: NamedDependency[None]) -> None:
         pass
 
     @get("/{path_param:str}", dependencies={"path_d": path_dependency})
-    def path_handler(path_d: None) -> None:
+    def path_handler(path_d: NamedDependency[None]) -> None:
         pass
 
     with pytest.warns(

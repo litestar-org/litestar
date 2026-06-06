@@ -12,7 +12,7 @@ import pytest
 
 from litestar import MediaType, Request, get, post
 from litestar.datastructures import MultiDict
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.params import FromQuery, QueryParameter
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -213,7 +213,7 @@ def test_query_param_dependency_with_alias() -> None:
         return page_size
 
     @get("/", media_type=MediaType.TEXT)
-    def handler(page_size_dep: int) -> str:
+    def handler(page_size_dep: NamedDependency[int]) -> str:
         return str(page_size_dep)
 
     with create_test_client(handler, dependencies={"page_size_dep": Provide(qp_dependency)}) as client:
