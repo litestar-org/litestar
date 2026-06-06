@@ -61,6 +61,14 @@ class HandlerContext:
     paths: list[str]
     dependencies: list[str] = dataclasses.field(default_factory=list)
 
+    def format(self, msg: str) -> str:
+        paths = ",".join(sorted(self.paths))
+        out = f"[paths={paths!r}, handler={self.handler!r}"
+        if self.dependencies:
+            out += f", dependencies={' -> '.join(self.dependencies[::-1])!r}"
+        out += f"] {msg}"
+        return out
+
 
 class KwargsModel:
     """Model required kwargs for a given RouteHandler and its dependencies.
@@ -268,7 +276,7 @@ class KwargsModel:
         return param_definitions, expected_dependencies
 
     @classmethod
-    def create_for_signature_model(
+    def create_for_signature_model(  # noqa: C901
         cls,
         signature_model: type[SignatureModel],
         parsed_signature: ParsedSignature,
@@ -352,6 +360,8 @@ class KwargsModel:
             elif media_type == RequestEncodingType.MESSAGEPACK:
                 expected_msgpack_data = data_field_definition
 
+        expected_data_field_defs = []
+
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
                 signature_model=dependency.provide.signature_model,
@@ -375,14 +385,22 @@ class KwargsModel:
                 expected_header_parameters, dependency_kwargs_model.expected_header_params
             )
 
-            if "data" in expected_reserved_kwargs and "data" in dependency_kwargs_model.expected_reserved_kwargs:
-                cls._validate_dependency_data(
-                    expected_form_data=expected_form_data,
-                    dependency_kwargs_model=dependency_kwargs_model,
-                )
+            if "data" in dependency_kwargs_model.expected_reserved_kwargs:
+                if "data" in expected_reserved_kwargs:
+                    cls._validate_dependency_data(
+                        expected_form_data=expected_form_data,
+                        dependency_kwargs_model=dependency_kwargs_model,
+                    )
+                expected_data_field_defs.append(dependency.provide.signature_model._fields["data"])
 
             expected_reserved_kwargs.update(dependency_kwargs_model.expected_reserved_kwargs)
             sequence_query_parameter_names.update(dependency_kwargs_model.sequence_query_parameter_names)
+
+        if handler_data_field := field_definitions.get("data"):
+            expected_data_field_defs.append(handler_data_field)
+
+        if expected_data_field_defs:
+            cls._validate_data_field_definitions(expected_data_field_defs, ctx)
 
         is_data_optional = (
             field_definitions["data"].is_optional
@@ -475,6 +493,28 @@ class KwargsModel:
                 raise ImproperlyConfiguredException(
                     "Dependencies have incompatible form-data encoding: one expects url-encoded and the other expects multi-part"
                 )
+
+    @classmethod
+    def _validate_data_field_definitions(
+        cls,
+        field_definitions: list[FieldDefinition],
+        ctx: HandlerContext | None,
+    ) -> None:
+        expected_raw_types = []
+        seen = set()
+        for field_def in field_definitions:
+            if field_def.is_any:
+                continue
+            if field_def.type_ not in seen:
+                expected_raw_types.append(field_def.raw)
+            seen.add(field_def.type_)
+
+        if len(seen) > 1:
+            expected_types_repr = " <> ".join([f"'{t}'" for t in sorted(expected_raw_types, key=str)])
+            msg = f"'data' fields have mismatched types: {expected_types_repr}"
+            if ctx is not None:
+                msg = ctx.format(msg)
+            raise ImproperlyConfiguredException(msg)
 
     @classmethod
     def _validate_raw_kwargs(
@@ -570,11 +610,6 @@ def _warn_deprecated_param_style(
             raise ValueError(f"Unknown style {style!r}")
 
     if ctx is not None:
-        paths = ",".join(sorted(ctx.paths))
-        out = f"[paths={paths!r}, handler={ctx.handler!r}"
-        if ctx.dependencies:
-            out += f", dependencies={' -> '.join(ctx.dependencies[::-1])!r}"
-        out += f"] {msg}"
-        msg = out
+        msg = ctx.format(msg)
 
     warnings.warn(msg, category=LitestarDeprecationWarning, stacklevel=stacklevel)

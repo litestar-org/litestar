@@ -61,10 +61,16 @@ class PathItemFactory:
         """
         operation_id = self.create_operation_id(route_handler, http_method)
         parameters = create_parameters_for_handler(self.context, route_handler, self.route.path_parameters)
-        signature_fields = route_handler.parsed_fn_signature.parameters
+        handler_signature_fields = route_handler.parsed_fn_signature.parameters
 
         request_body = None
-        if data_field := signature_fields.get("data"):
+        if (data_field := handler_signature_fields.get("data")) is None:
+            for dependency in route_handler.resolve_dependencies().values():
+                data_field = dependency.parsed_fn_signature.parameters.get("data")
+                if data_field is not None:
+                    break
+
+        if data_field is not None:
             request_body = create_request_body(
                 self.context, route_handler.handler_id, route_handler.resolve_data_dto(), data_field
             )
