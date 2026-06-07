@@ -66,8 +66,7 @@ class HandlerContext:
         out = f"[paths={paths!r}, handler={self.handler!r}"
         if self.dependencies:
             out += f", dependencies={' -> '.join(self.dependencies[::-1])!r}"
-        out += f"] {msg}"
-        return out
+        return out + f"] {msg}"
 
 
 class KwargsModel:
@@ -319,6 +318,24 @@ class KwargsModel:
             field_definitions=field_definitions,
         )
 
+        for dep_field_name in dependencies:
+            dep_field_def = field_definitions.get(dep_field_name)
+            if dep_field_def is None:
+                continue
+            if not dep_field_def.is_annotated:
+                msg = (
+                    f"Inferred dependency field {dep_field_name!r}. Mark the field explicitly "
+                    f"with 'NamedDependency[{dep_field_def.raw}]'. Inferred dependencies will "
+                    "stop working in Litestar 3.0"
+                )
+                if ctx is not None:
+                    msg = ctx.format(msg)
+                warnings.warn(
+                    msg,
+                    category=LitestarDeprecationWarning,
+                    stacklevel=2,
+                )
+
         expected_reserved_kwargs = {field_name for field_name in field_definitions if field_name in RESERVED_KWARGS}
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}
         expected_header_parameters = {p for p in param_definitions if p.param_type == ParamType.HEADER}
@@ -506,7 +523,7 @@ class KwargsModel:
             if field_def.is_any:
                 continue
             if field_def.type_ not in seen:
-                expected_raw_types.append(field_def.raw)
+                expected_raw_types.append(field_def.annotation)
             seen.add(field_def.type_)
 
         if len(seen) > 1:
@@ -573,11 +590,18 @@ def _warn_deprecated_param_style(
     ctx: HandlerContext | None,
 ) -> None:
     if param_type == ParamType.DEPENDENCY:
-        msg = (
-            f"Dependency parameter {field_name!r} declared using deprecated default "
-            "'param: <type> = Dependency(...)' style. Use "
-            "'Annotated[<type>, Dependency(...)]' instead"
-        )
+        if style == "default":
+            msg = (
+                f"Dependency parameter {field_name!r} declared using deprecated default "
+                "'param: <type> = Dependency(...)' style. Use "
+                "'Annotated[<type>, Dependency(...)]' instead"
+            )
+        else:
+            msg = (
+                f"Dependency parameter {field_name!r} declared using deprecated "
+                "'param: Annotated[<type>, Dependency(...)]' style. Use "
+                "'NamedDependency[<type>]' instead"
+            )
     else:
         alternatives = {
             ParamType.QUERY: "FromQuery",

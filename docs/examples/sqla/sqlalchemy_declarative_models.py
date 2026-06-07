@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, get
+from litestar.di import NamedDependency
 
 
 # The SQLAlchemy base includes a declarative model for you to use in your models.
@@ -50,7 +51,9 @@ async def on_startup(app: Litestar) -> None:
 
 
 @get(path="/authors")
-async def get_authors(db_session: AsyncSession, db_engine: AsyncEngine) -> list[Author]:
+async def get_authors(
+    db_session: NamedDependency[AsyncSession], db_engine: NamedDependency[AsyncEngine]
+) -> list[Author]:
     """Interact with SQLAlchemy engine and session."""
     return list(await db_session.scalars(select(Author)))
 

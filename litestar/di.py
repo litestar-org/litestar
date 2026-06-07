@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction, ismethod
-from typing import TYPE_CHECKING, Annotated, Any, Literal, TypeVar
+from typing import TYPE_CHECKING, Annotated, Any, Literal, TypeAlias, TypeVar
 
-from litestar._signature import SignatureModel
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.plugins import DIPlugin, PluginRegistry
 from litestar.types import Empty, TypeDecodersSequence
@@ -20,8 +19,10 @@ from litestar.utils.warnings import (
 )
 
 if TYPE_CHECKING:
+    from litestar._signature import SignatureModel
     from litestar.dto import AbstractDTO
     from litestar.types import AnyCallable
+
 
 __all__ = (
     "NamedDependency",
@@ -39,7 +40,7 @@ class Dependency:
         self.kind = kind
 
 
-NamedDependency = Annotated[T, Dependency(kind="named")]
+NamedDependency: TypeAlias = Annotated[T, Dependency(kind="named")]
 """
 Mark a parameter for name-based dependency injection.
 
@@ -153,6 +154,8 @@ class Provide:
                 self._parsed_fn_signature = ParsedSignature.from_fn(dependency, signature_namespace)
 
         if self._signature_model is None:
+            from litestar._signature import SignatureModel
+
             self._signature_model = SignatureModel.create(
                 dependency_name_set=dependency_keys,
                 fn=self.dependency,

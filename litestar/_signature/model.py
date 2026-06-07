@@ -35,7 +35,7 @@ from litestar.params import (
     KwargDefinition,
     ParameterKwarg,
 )
-from litestar.typing import FieldDefinition  # noqa
+from litestar.typing import FieldDefinition  # noqa: TC001
 from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
 
