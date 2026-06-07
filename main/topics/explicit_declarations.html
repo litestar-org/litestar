@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="amber" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Onboarding from other frameworks - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="FastAPI" href="fastapi.html" /><link rel="prev" title="Benchmarks" href="../benchmarks.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Explicit parameter declarations - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Deployment" href="deployment/index.html" /><link rel="prev" title="Sync vs. Async" href="sync-vs-async.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=470ca8b0" />
@@ -23,7 +23,7 @@
   --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
 }
 </style>
-    <meta property="og:type" content="website"/><meta property="og:title" content="Onboarding from other frameworks"/>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Explicit parameter declarations"/>
   <meta property="og:image" content="_static/logo-light.png"/>
     <meta name="twitter:card" content="summary"/>
   </head>
@@ -370,18 +370,18 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Onboarding from other frameworks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fastapi.html">FastAPI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flask.html">Flask</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../onboarding/index.html">Onboarding from other frameworks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding/fastapi.html">FastAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../onboarding/flask.html">Flask</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../topics/index.html">Topics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../topics/explicit_declarations.html">Explicit parameter declarations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Topics</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Explicit parameter declarations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deployment/index.html">Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deployment/supervisor.html">Supervisor (Linux)</a></li>
 </ul>
 </li>
 </ul>
@@ -448,7 +448,17 @@ data-aria-dark="Switch to auto color mode">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
       <i class="i-lucide close"></i>
     </button>
-    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#what-explicit-declarations">What? Explicit declarations?</a></li>
+<li><a class="reference internal" href="#historical-background">Historical background</a></li>
+<li><a class="reference internal" href="#motivation">Motivation</a><ul>
+<li><a class="reference internal" href="#easy-to-read-over-easy-to-write">Easy to read over easy to write</a></li>
+<li><a class="reference internal" href="#avoiding-errors">Avoiding errors</a></li>
+<li><a class="reference internal" href="#documenting-intent">Documenting intent</a></li>
+</ul>
+</li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
     <iconify-icon icon="simple-icons:github"></iconify-icon>
@@ -470,7 +480,7 @@ data-aria-dark="Switch to auto color mode">
     </span>
   </span>
 </a><div class="edit-this-page">
-  <a href="https://github.com/litestar-org/litestar/blob/main/docs/onboarding/index.rst">Edit this page</a>
+  <a href="https://github.com/litestar-org/litestar/blob/main/docs/topics/explicit_declarations.rst">Edit this page</a>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
@@ -487,8 +497,12 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="1" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">Onboarding from other frameworks</strong>
+        <a itemprop="item" href="index.html"><span itemprop="name">Topics</span></a>
+        <span>/</span>
         <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Explicit parameter declarations</strong>
+        <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
@@ -504,7 +518,7 @@ data-aria-dark="Switch to auto color mode">
     <button
       type="button"
       class="js-copy px-3 py-1 inline-flex items-center gap-1"
-      data-url="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/onboarding/index.rst"
+      data-url="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/topics/explicit_declarations.rst"
     >
       <i class="i-lucide" data-icon="copy"></i>
       <span>Copy page</span>
@@ -518,33 +532,183 @@ data-aria-dark="Switch to auto color mode">
     <div role="presentation">
       <div class="flex flex-col" role="group">
         <button class="js-copy" type="button" role="menuitem"
-          data-url="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/onboarding/index.rst">
+          data-url="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/topics/explicit_declarations.rst">
           <span class="iconify-icon">
             <i class="i-lucide" data-icon="copy"></i>
           </span>
           <span>Copy page</span>
         </button>
-        <a role="menuitem" href="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/onboarding/index.rst" target="_blank" rel="nofollow"><iconify-icon icon="bi:code-slash"></iconify-icon>
-            <span>View Source</span></a><a role="menuitem" href="https://chatgpt.com/?hints=search&q=Read%20https%3A//raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/onboarding/index.rst%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+        <a role="menuitem" href="https://raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/topics/explicit_declarations.rst" target="_blank" rel="nofollow"><iconify-icon icon="bi:code-slash"></iconify-icon>
+            <span>View Source</span></a><a role="menuitem" href="https://chatgpt.com/?hints=search&q=Read%20https%3A//raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/topics/explicit_declarations.rst%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
           <iconify-icon icon="bi:openai"></iconify-icon>
           <span>Open in ChatGPT</span>
-        </a><a role="menuitem" href="https://claude.ai/new?q=Read%20https%3A//raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/onboarding/index.rst%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+        </a><a role="menuitem" href="https://claude.ai/new?q=Read%20https%3A//raw.githubusercontent.com/litestar-org/litestar/refs/heads/main/docs/topics/explicit_declarations.rst%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
           <iconify-icon icon="bi:claude"></iconify-icon>
           <span>Open in Claude</span>
         </a></div>
     </div>
   </div>
 </div><article class="yue" role="main">
-          <section id="onboarding-from-other-frameworks">
-<h1>Onboarding from other frameworks<a class="headerlink" href="#onboarding-from-other-frameworks" title="Link to this heading">¶</a></h1>
-<p>If you’re coming from another framework, or want to see how Litestar compares to other
-frameworks, this is the place to look.</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="fastapi.html"><span class="doc">FastAPI</span></a></p></li>
-<li><p><a class="reference internal" href="flask.html"><span class="doc">Flask</span></a></p></li>
-</ul>
-<div class="toctree-wrapper compound">
+          <section id="explicit-parameter-declarations">
+<h1>Explicit parameter declarations<a class="headerlink" href="#explicit-parameter-declarations" title="Link to this heading">¶</a></h1>
+<p>Litestar embraces and enforces explicit declarations of handler / dependency parameters.
+This articles aims to explain the motivations behind this decision, and address common
+questions and objections regarding its downsides.</p>
+<section id="what-explicit-declarations">
+<h2>What? Explicit declarations?<a class="headerlink" href="#what-explicit-declarations" title="Link to this heading">¶</a></h2>
+<p>Simply put, in Litestar, an explicit parameter declaration is any handler or dependency
+function parameter, marked with a <em>marker</em> such as <a class="reference internal" href="../reference/params.html#litestar.params.FromQuery" title="litestar.params.FromQuery"><code class="xref py py-class docutils literal notranslate"><span class="pre">FromQuery</span></code></a>,
+e.g.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="3">    <span class="k">return</span> <span class="n">name</span>
+</span></pre></div>
 </div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/routing/parameters.html"><span class="doc">Parameters</span></a></p>
+</div>
+</section>
+<section id="historical-background">
+<h2>Historical background<a class="headerlink" href="#historical-background" title="Link to this heading">¶</a></h2>
+<p>Previous versions of Litestar allowed implicit parameters, i.e. parameter sources were
+decided via inference. Specifically, this was possible for path, query, and dependency
+parameters.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Declaring a query parameter ‘message’</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="3">    <span class="k">return</span> <span class="n">message</span>
+</span></pre></div>
+</div>
+</div>
+<p>Here, because <code class="docutils literal notranslate"><span class="pre">message</span></code> is not “consumed” by other sources, would implicitly become a
+query parameter.</p>
+<p>This was influenced by the design of other frameworks such as FastAPI or DRF, and aimed
+to provide convenience when writing.</p>
+<p>However, it gets tricky quickly. For example, if the same route handler would be
+included in a router with a path parameter with the name <code class="docutils literal notranslate"><span class="pre">message</span></code>, the path parameter
+would win, and <code class="docutils literal notranslate"><span class="pre">message</span></code> wouldn’t be a query parameter anymore.</p>
+<p>This means that the inferred parameter source is context dependant.</p>
+<p>There are upsides to this, for example, one could argue that this is a practical
+application of the
+<a class="reference external" href="https://en.wikipedia.org/wiki/Inversion_of_control">Inversion of Control</a> pattern via
+dependency injection; The callee declaring the parameter does not need to know anything
+about the context it’s being called from, it simply declares its dependencies, leaving
+it up to the caller how to provide them.</p>
+<p>This though still holds true with explicit declarations: The callee simply declares
+additional information, i.e. the kind of parameter it requires, which in most cases is
+not a purely cosmetic difference, but carries meaning: An <code class="docutils literal notranslate"><span class="pre">x-api-key</span></code> header is not
+equivalent to a query parameter of the same name.</p>
+</section>
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">¶</a></h2>
+<section id="easy-to-read-over-easy-to-write">
+<h3>Easy to read over easy to write<a class="headerlink" href="#easy-to-read-over-easy-to-write" title="Link to this heading">¶</a></h3>
+<p>Spelling out additional symbols for each declaration is more typing work, there’s no
+arguing with that. Since “code is read much more often than it is written”, and most of
+a developer’s time is spent understanding and reasoning about code <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, it should
+follow that a library should first and foremost be easy to comprehend.</p>
+<p>Therefore, when designing Litestar’s explicit parameter declarations, the goal was that
+to design them in such a way that “any reader, even if unfamiliar with the framework can
+understand their meaning looking at the declarations alone and perhaps their docstrings
+for nuance”.</p>
+<p><strong>Easy to write</strong></p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">This is easy to write!</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+</span><span data-line="4">    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">page</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
+</span><span data-line="6">    <span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+</span><span data-line="7"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="8">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</div>
+<p>This is easy to write, or rather, easy to type. However, there’s not much information
+available to a reader. Where do <code class="docutils literal notranslate"><span class="pre">data</span></code> and all the other parameters come from? One
+could infer from <code class="docutils literal notranslate"><span class="pre">limit</span></code> and <code class="docutils literal notranslate"><span class="pre">page</span></code> that they’re probably query parameters, but as
+discussed in <a class="reference internal" href="#historical-background">Historical background</a>, that could also be context dependant.</p>
+<p><strong>Easy to read</strong></p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">This is easy to read</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+</span><span data-line="4">    <span class="n">limit</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">()],</span>
+</span><span data-line="5">    <span class="n">page</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
+</span><span data-line="6">    <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">],</span>
+</span><span data-line="7"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="8">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</div>
+<p>This is much more verbose, but it’s also packed with information:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">data:</span> <span class="pre">JSONBody[dict[str,</span> <span class="pre">str]]</span></code> tells us:</dt><dd><ul>
+<li><p>This is the request body</p></li>
+<li><p>The request body is in JSON</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limit:</span> <span class="pre">Annotated[int,</span> <span class="pre">QueryParameter()]</span></code>: This <em>is</em> a query parameter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">page:</span> <span class="pre">Annotated[int,</span> <span class="pre">QueryParameter(ge=1)]</span></code>: Another query parameter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">db_session:</span> <span class="pre">NamedDependency[AsyncSession]</span></code> It’s a dependency with a name</p></li>
+</ul>
+</section>
+<section id="avoiding-errors">
+<h3>Avoiding errors<a class="headerlink" href="#avoiding-errors" title="Link to this heading">¶</a></h3>
+<p>An explicit approach brings the significant benefit of being able to fail early; If a
+parameter has no declared source, Litestar can immediately raise an error about this,
+preventing time consuming runtime debugging.</p>
+<p>For example, a very common, and sometimes surprising, error with the inference based
+approach was a <code class="docutils literal notranslate"><span class="pre">missing</span> <span class="pre">required</span> <span class="pre">query</span> <span class="pre">parameter</span> <span class="pre">'xxx'</span></code>, if a dependency was not
+provided. Why? Because whether a parameter is interpreted as a dependency or a query
+parameter depends on the presence of a dependency provider. If no provider is present,
+the parameter would get interpreted as a query parameter, and, if given no default,
+marked as required.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_page</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="3">    <span class="o">...</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">router_a</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">&quot;/a&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;db_session&quot;</span><span class="p">:</span> <span class="n">provide_session</span><span class="p">})</span>
+</span><span data-line="6"><span class="n">router_b</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">&quot;/b&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">])</span>
+</span></pre></div>
+</div>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">/a</span></code> would work as expected, but calling <code class="docutils literal notranslate"><span class="pre">/b</span></code> would result in a
+<code class="docutils literal notranslate"><span class="pre">400</span> <span class="pre">-</span> <span class="pre">Bad</span> <span class="pre">Request</span></code> with the info <code class="docutils literal notranslate"><span class="pre">missing</span> <span class="pre">required</span> <span class="pre">query</span> <span class="pre">parameter</span> <span class="pre">'db_session'</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_page</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="3">    <span class="o">...</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">router_a</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">&quot;/a&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;db_session&quot;</span><span class="p">:</span> <span class="n">provide_session</span><span class="p">})</span>
+</span><span data-line="6"><span class="n">router_b</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">&quot;/b&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">])</span>
+</span></pre></div>
+</div>
+<p>With explicit declarations, these can either be detected at startup time, or a specific
+and <em>correct</em> error can be raised; In this case it would be a
+<code class="docutils literal notranslate"><span class="pre">500</span> <span class="pre">-</span> <span class="pre">Internal</span> <span class="pre">Server</span> <span class="pre">Error</span></code>, including a more helpful error message in stderr:
+<code class="docutils literal notranslate"><span class="pre">Explicit</span> <span class="pre">dependency</span> <span class="pre">'db_session'</span> <span class="pre">for</span> <span class="pre">'get_page'</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">default</span> <span class="pre">value,</span> <span class="pre">or</span> <span class="pre">provided</span> <span class="pre">dependency.</span></code></p>
+</section>
+<section id="documenting-intent">
+<h3>Documenting intent<a class="headerlink" href="#documenting-intent" title="Link to this heading">¶</a></h3>
+<p>When using implicit declarations, the intent is also implicitly documented, i.e. not.
+Intent not expressed by the code usually goes one of two ways: Either it is documented
+in comments, or eventually forgotten. Through the use of explicit declarations, intent
+is <em>always</em> encoded right at the site of use, and not separate comment needs to be added
+and kept up to date.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://web.archive.org/web/20250619090027/https://cacm.acm.org/research/from-code-complexity-metrics-to-program-comprehension/">https://web.archive.org/web/20250619090027/https://cacm.acm.org/research/from-code-complexity-metrics-to-program-comprehension/</a></p>
+</aside>
+</aside>
+</section>
+</section>
 </section>
 
         </article><button class="back-to-top" type="button">
@@ -553,16 +717,16 @@ frameworks, this is the place to look.</p>
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="../benchmarks.html">
+    <a href="sync-vs-async.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title">Benchmarks</div></div>
+        <span>Previous</span><div class="title">Sync vs. Async</div></div>
     </a>
   </div><div class="navigation-next">
-    <a href="fastapi.html">
+    <a href="deployment/index.html">
       <div class="page-info">
         <span>Next</span>
-        <div class="title">FastAPI</div>
+        <div class="title">Deployment</div>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
