@@ -53,7 +53,6 @@ if TYPE_CHECKING:
     from litestar.utils.signature import ParsedSignature
 
 
-
 _ExceptionGroup = get_exception_group()
 
 
@@ -247,19 +246,21 @@ class KwargsModel:
                 create_parameter_definition(
                     field_definition=field_definition,
                     field_name=field_name,
-                    path_parameters=path_parameters,
                 )
                 for field_name, field_definition in layered_parameters.items()
-                if field_name not in ignored_keys and field_name not in field_definitions
+                if field_name not in ignored_keys
+                and field_name not in field_definitions
+                and not field_definition.is_di_field
             ),
             *(
                 create_parameter_definition(
                     field_definition=field_definition,
                     field_name=field_name,
-                    path_parameters=path_parameters,
                 )
                 for field_name, field_definition in field_definitions.items()
-                if field_name not in ignored_keys and field_name not in layered_parameters
+                if field_name not in ignored_keys
+                and field_name not in layered_parameters
+                and not field_definition.is_di_field
             ),
         }
 
@@ -281,7 +282,6 @@ class KwargsModel:
                         extra=field.extra,
                     ),
                     field_name=field_name,
-                    path_parameters=path_parameters,
                 )
             )
 
@@ -295,7 +295,7 @@ class KwargsModel:
         dependencies: dict[str, Provide],
         path_parameters: set[str],
         layered_parameters: dict[str, FieldDefinition],
-        ctx: BaseRouteHandler | HandlerContext | None = None,
+        ctx: BaseRouteHandler | HandlerContext,
     ) -> KwargsModel:
         """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
         during the application bootstrap process.
@@ -312,13 +312,17 @@ class KwargsModel:
             An instance of KwargsModel
         """
 
-        if ctx is not None and not isinstance(ctx, HandlerContext):
+        if not isinstance(ctx, HandlerContext):
             ctx = HandlerContext(handler=ctx.name or ctx.handler_name, paths=sorted(ctx.paths))
 
         field_definitions = signature_model._fields
 
         for field_name, field_def in field_definitions.items():
-            if field_name not in RESERVED_KWARGS and not isinstance(field_def.kwarg_definition, ParameterKwarg):
+            if (
+                field_name not in RESERVED_KWARGS
+                and field_name not in layered_parameters
+                and not field_def.is_marker_field
+            ):
                 msg = ctx.format(f"Missing declaration for parameter {field_name!r}")
                 raise ImproperlyConfiguredException(msg)
 
@@ -335,24 +339,6 @@ class KwargsModel:
             dependencies=dependencies,
             field_definitions=field_definitions,
         )
-
-        for dep_field_name in dependencies:
-            dep_field_def = field_definitions.get(dep_field_name)
-            if dep_field_def is None:
-                continue
-            if not dep_field_def.is_annotated:
-                msg = (
-                    f"Inferred dependency field {dep_field_name!r}. Mark the field explicitly "
-                    f"with 'NamedDependency[{dep_field_def.raw}]'. Inferred dependencies will "
-                    "stop working in Litestar 3.0"
-                )
-                if ctx is not None:
-                    msg = ctx.format(msg)
-                warnings.warn(
-                    msg,
-                    category=LitestarDeprecationWarning,
-                    stacklevel=2,
-                )
 
         expected_reserved_kwargs = {field_name for field_name in field_definitions if field_name in RESERVED_KWARGS}
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}
@@ -388,7 +374,7 @@ class KwargsModel:
                 dependencies=dependencies,
                 path_parameters=path_parameters,
                 layered_parameters=layered_parameters,
-                ctx=dataclasses.replace(ctx, dependencies=[*ctx.dependencies, dependency.key]) if ctx else None,
+                ctx=dataclasses.replace(ctx, dependencies=[*ctx.dependencies, dependency.key]),
             )
 
             expected_path_parameters = merge_parameter_sets(
@@ -442,8 +428,7 @@ class KwargsModel:
         )
 
     async def to_kwargs(self, connection: ASGIConnection) -> dict[str, Any]:
-        """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
-        sync.
+        """Return a dictionary of kwargs.
 
         Args:
             connection: An instance of :class:`Request <litestar.connection.Request>` or

@@ -362,4 +362,3 @@ declared in the route handler. Examine these more closely:
 * ``local_param`` is a route-handler-local :ref:`query parameter <usage/routing/parameters:query parameters>`
   (``FromQuery[str]``), and ``path_param`` is a :ref:`path parameter <usage/routing/parameters:path parameters>`
   (``FromPath[int]``).
-

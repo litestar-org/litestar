@@ -27,14 +27,12 @@ class ParameterDefinition(NamedTuple):
 def create_parameter_definition(
     field_definition: FieldDefinition,
     field_name: str,
-    path_parameters: set[str],
-) -> ParameterDefinition | None:
+) -> ParameterDefinition:
     """Create a ParameterDefinition for the given FieldDefinition.
 
     Args:
         field_definition: FieldDefinition instance.
         field_name: The field's name.
-        path_parameters: A set of path parameter names.
 
     Returns:
         A ParameterDefinition tuple.

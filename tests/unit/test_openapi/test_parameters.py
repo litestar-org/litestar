@@ -253,11 +253,11 @@ def test_layered_parameters() -> None:
         def my_handler(
             self,
             local: FromPath[int],
-            controller1: int,
+            controller1: FromQuery[int],
             router1: str,
-            router2: float,
-            app1: str,
-            app2: list[str],
+            router2: FromHeader[float],
+            app1: FromCookie[str],
+            app2: FromQuery[list[str]],
             controller2: Annotated[float, QueryParameter(ge=5.0)],
         ) -> dict:
             return {}

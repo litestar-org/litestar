@@ -46,7 +46,7 @@ except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
+from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg, ParameterMarker
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
     is_any,
@@ -256,6 +256,12 @@ class FieldDefinition:
         applied, usually produced by 'FromQuery[]', 'FromPath[]', etc.
         """
         return isinstance(self.kwarg_definition, ParameterKwarg) and not self.kwarg_definition.is_marker
+
+    @property
+    def is_marker_field(self) -> bool:
+        return (self.kwarg_definition is not None and isinstance(self.kwarg_definition, ParameterKwarg)) or any(
+            isinstance(m, ParameterMarker) for m in self.metadata
+        )
 
     @property
     def is_const(self) -> bool:
@@ -485,13 +491,12 @@ class FieldDefinition:
                 )
             # if not, create a new KwargDefinition
             else:
-                if (name := kwargs.get("name")) == "data":
-                    model: type[KwargDefinition] = BodyKwarg
-                elif name is None:
-                    model = KwargDefinition
-                else:
-                    model = ParameterKwarg
-                kwargs["kwarg_definition"] = model(**kwarg_definition_merge_args)
+                if kwargs.get("name") == "data":
+                    kwargs["kwarg_definition"] = BodyKwarg(**kwarg_definition_merge_args)
+                elif kwarg_definition_merge_args:
+                    # a parameter is only ever declared via an explicit marker, so plain
+                    # constraint metadata becomes a plain 'KwargDefinition'
+                    kwargs["kwarg_definition"] = KwargDefinition(**kwarg_definition_merge_args)
 
         kwargs.setdefault("annotation", unwrapped)
         kwargs.setdefault("args", annotation_args)

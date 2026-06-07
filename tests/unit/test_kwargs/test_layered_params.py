@@ -3,7 +3,15 @@ from typing import Annotated
 import pytest
 
 from litestar import Controller, Router, get
-from litestar.params import CookieParameter, FromPath, FromQuery, HeaderParameter, QueryParameter
+from litestar.params import (
+    CookieParameter,
+    FromCookie,
+    FromHeader,
+    FromPath,
+    FromQuery,
+    HeaderParameter,
+    QueryParameter,
+)
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -22,10 +30,10 @@ def test_layered_parameters_injected_correctly() -> None:
             local: FromPath[float],
             controller1: FromQuery[int],
             controller2: FromQuery[str],
-            router1: str,
-            router2: float,
-            app1: str,
-            app2: list[str],
+            router1: FromQuery[str],
+            router2: FromHeader[float],
+            app1: FromCookie[str],
+            app2: FromQuery[list[str]],
         ) -> dict:
             assert isinstance(local, float)
             assert isinstance(controller1, int)

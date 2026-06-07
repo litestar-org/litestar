@@ -160,7 +160,7 @@ def test_annotated_metadata_does_not_shadow_dependency() -> None:
         return "from-dependency"
 
     @get("/", dependencies={"foo": provide_foo})
-    async def handler(foo: Annotated[str, "arbitrary metadata"]) -> str:
+    async def handler(foo: NamedDependency[Annotated[str, "arbitrary metadata"]]) -> str:
         return foo
 
     with create_test_client([handler]) as client:
@@ -176,7 +176,7 @@ def test_constraint_metadata_does_not_shadow_dependency() -> None:
         return 42
 
     @get("/", dependencies={"foo": provide_foo})
-    async def handler(foo: Annotated[int, annotated_types.Gt(5)]) -> int:
+    async def handler(foo: NamedDependency[Annotated[int, annotated_types.Gt(5)]]) -> int:
         return foo
 
     with create_test_client([handler]) as client:

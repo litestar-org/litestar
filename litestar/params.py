@@ -38,6 +38,10 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 
+class ParameterMarker:
+    pass
+
+
 @dataclass(frozen=True)
 class KwargDefinition:
     """Data container representing a constrained kwarg."""
@@ -163,7 +167,7 @@ class KwargDefinition:
 
 
 @dataclass(frozen=True)
-class ParameterKwarg(KwargDefinition):
+class ParameterKwarg(KwargDefinition, ParameterMarker):
     """Data container representing a parameter."""
 
     param_type: ClassVar[ParamType]
@@ -245,7 +249,7 @@ FromPath: TypeAlias = Annotated[T, PathParameter()]
 
 
 @dataclass(frozen=True)
-class BodyKwarg(KwargDefinition):
+class BodyKwarg(KwargDefinition, ParameterMarker):
     """Data container representing a request body."""
 
     media_type: str | RequestEncodingType = field(default=RequestEncodingType.JSON)
@@ -365,7 +369,7 @@ def Body(
     )
 
 
-class SkipValidationMarker:
+class SkipValidationMarker(ParameterMarker):
     """Indicate that a type annotated with this as metadata should be
     treated as 'Any'
     """
