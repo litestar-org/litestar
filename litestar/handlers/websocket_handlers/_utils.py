@@ -101,7 +101,7 @@ class ListenerHandler:
         self,
         *args: Any,
         socket: WebSocket,
-        connection_lifespan_dependencies: NamedDependency[Dict[str, Any]],  # noqa: UP006
+        connection_lifespan_dependencies: NamedDependency[dict[str, Any]],
         **kwargs: Any,
     ) -> None:
         lifespan_manager = self._listener._connection_lifespan or self._listener.default_connection_lifespan

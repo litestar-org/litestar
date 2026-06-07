@@ -11,7 +11,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, get
 from litestar.di import NamedDependency
-from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyPlugin, base
 
 
 # The SQLAlchemy base includes a declarative model for you to use in your models.

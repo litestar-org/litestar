@@ -1,6 +1,6 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 import re
-from typing import Annotated, Any, Optional, cast, List, Dict
+from typing import Annotated, Any, Optional, cast
 from unittest.mock import MagicMock, call
 
 import msgspec.json
@@ -387,11 +387,11 @@ def test_data_kwarg_in_dependency_only() -> None:
 
 
 def test_data_kwarg_type_mismatch_between_handler_and_dependency_raises() -> None:
-    async def dependency_with_data(data: JSONBody[List[str]]) -> List[str]:
+    async def dependency_with_data(data: JSONBody[list[str]]) -> list[str]:
         return data
 
     @post("/", dependencies={"some_data": dependency_with_data})
-    def handler(data: JSONBody[Dict[str, str]], some_data: NamedDependency[List[str]]) -> None:
+    def handler(data: JSONBody[dict[str, str]], some_data: NamedDependency[list[str]]) -> None:
         return None
 
     with pytest.raises(
@@ -402,14 +402,14 @@ def test_data_kwarg_type_mismatch_between_handler_and_dependency_raises() -> Non
 
 
 def test_data_kwarg_type_mismatch_between_dependencies_raises() -> None:
-    async def data_a(data: JSONBody[List[str]]) -> List[str]:
+    async def data_a(data: JSONBody[list[str]]) -> list[str]:
         return data
 
-    async def data_b(data: JSONBody[Dict[str, str]]) -> Dict[str, str]:
+    async def data_b(data: JSONBody[dict[str, str]]) -> dict[str, str]:
         return data
 
     @post("/", dependencies={"a": data_a, "b": data_b})
-    def handler(a: NamedDependency[Dict[str, str]], b: NamedDependency[List[str]]) -> None:
+    def handler(a: NamedDependency[dict[str, str]], b: NamedDependency[list[str]]) -> None:
         return None
 
     with pytest.raises(

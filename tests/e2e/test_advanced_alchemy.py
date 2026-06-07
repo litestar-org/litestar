@@ -2,9 +2,7 @@ from advanced_alchemy.extensions.litestar.plugins import SQLAlchemyInitPlugin, S
 from advanced_alchemy.filters import LimitOffset
 
 from litestar import get
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 from litestar.di import NamedDependency
-from litestar.repository.filters import LimitOffset
 from litestar.testing import create_test_client
 
 

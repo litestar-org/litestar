@@ -9,7 +9,6 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
 from litestar.di import NamedDependency
-from litestar.plugins.sqlalchemy import SQLAlchemyAsyncConfig, SQLAlchemyPlugin
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
