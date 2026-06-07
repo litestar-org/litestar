@@ -107,7 +107,7 @@ def json_dependency(data: dict[str, Any]) -> dict[str, Any]:
 )
 def test_dependency_data_kwarg_validation_success_scenarios(body_annotation: Any, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency)})
-    def handler(first: NamedDependency[dict[str, Any]], data: body_annotation) -> None:
+    def handler(first: NamedDependency[dict[str, Any]], data: body_annotation) -> None:  # pyright: ignore
         pass
 
     Litestar(route_handlers=[handler])
