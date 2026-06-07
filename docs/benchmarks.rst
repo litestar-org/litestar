@@ -42,7 +42,7 @@ Serializing a dictionary into JSON
 
 .. note::
     Because all frameworks are being used in their "stock" configuration, Litestar will
-    run the data through `msgspec <https://jcristharif.com/msgspec/>`_ and FastAPI
+    run the data through `msgspec <https://msgspec.dev>`_ and FastAPI
     through `Pydantic <https://docs.pydantic.dev/latest/>`_
 
 
