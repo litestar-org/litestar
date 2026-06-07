@@ -42,7 +42,7 @@ def create_parameter_definition(
     )
 
     if kwarg_definition is None:
-        raise ImproperlyConfiguredException()
+        raise ImproperlyConfiguredException(f"Missing parameter declaration for field {field_name!r}")
 
     param_type = kwarg_definition.param_type
     field_alias = kwarg_definition.name or field_name

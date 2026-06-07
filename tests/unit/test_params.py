@@ -137,6 +137,17 @@ def test_dependency_skip_validation_with_default() -> None:
         assert skipped_resp.json() == {"value": 1}
 
 
+def test_skip_validation_alone_is_not_a_declaration() -> None:
+    # 'SkipValidation' does not declare a parameter source, so a param annotated with
+    # only it should raise the same error as one without any marker
+    @get("/")
+    def handler(value: SkipValidation[int]) -> dict[str, int]:
+        return {"value": value}
+
+    with pytest.raises(ImproperlyConfiguredException, match="Missing declaration for parameter 'value'"):
+        Litestar(route_handlers=[handler])
+
+
 def test_dependency_default_is_not_treated_as_query_parameter() -> None:
     @get("/")
     def handler(value: NamedDependency[int] = 42) -> dict[str, int]:

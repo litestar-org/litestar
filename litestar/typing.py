@@ -244,11 +244,6 @@ class FieldDefinition:
         )
 
     @property
-    def is_parameter_field(self) -> bool:
-        """Check if the field type is a parameter kwarg value."""
-        return isinstance(self.kwarg_definition, ParameterKwarg)
-
-    @property
     def is_non_marker_parameter_field(self) -> bool:
         """Check if the field type is a ParameterKwarg that's not a marker only.
 
@@ -259,9 +254,11 @@ class FieldDefinition:
 
     @property
     def is_marker_field(self) -> bool:
-        return (self.kwarg_definition is not None and isinstance(self.kwarg_definition, ParameterKwarg)) or any(
-            isinstance(m, ParameterMarker) for m in self.metadata
-        )
+        """Check if the field declares its source explicitly, either via a parameter /
+        body marker ('FromQuery[]', 'Body(...)', etc.) or a dependency marker
+        ('NamedDependency[]').
+        """
+        return isinstance(self.kwarg_definition, ParameterMarker) or self.is_di_field
 
     @property
     def is_const(self) -> bool:
