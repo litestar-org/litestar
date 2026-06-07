@@ -71,7 +71,7 @@ As previously mentioned, the default ``media_type`` is ``MediaType.JSON``. which
 * models from libraries that extend pydantic models
 * :class:`UUIDs <uuid.UUID>`
 * :doc:`datetime objects <python:library/datetime>`
-* `msgspec.Struct <https://jcristharif.com/msgspec/structs.html>`_
+* `msgspec.Struct <https://msgspec.devstructs.html>`_
 * container types such as :class:`dict` or :class:`list` containing supported types
 
 If you need to return other values and would like to extend serialization you can do
