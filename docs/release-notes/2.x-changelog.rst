@@ -2700,7 +2700,7 @@
         :pr: 1712
         :issue: 1531, 1532
 
-        DTO factories for `msgspec <https://jcristharif.com/msgspec/>`_ and
+        DTO factories for `msgspec <https://msgspec.dev>`_ and
         `Pydantic <https://docs.pydantic.dev/latest/>`_ have been added:
 
         - :class:`~litestar.dto.msgspec_dto.MsgspecDTO`
@@ -3338,7 +3338,7 @@
         :pr: 1487
 
         Support OpenAPI schema generation for `attrs <https://www.attrs.org>`_ classes and
-        `msgspec <https://jcristharif.com/msgspec/>`_ ``Struct``\ s.
+        `msgspec <https://msgspec.dev>`_ ``Struct``\ s.
 
     .. change:: SQLAlchemy repository: Add ``ModelProtocol``
         :type: feature

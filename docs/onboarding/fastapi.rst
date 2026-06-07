@@ -26,7 +26,7 @@ Pydantic support
 
 Litestar does support Pydantic, but other than FastAPI, it is mostly agnostic about
 the modelling library you use. Litestar internally uses
-`msgspec <https://jcristharif.com/msgspec/>`_, but also ships with support for Pydantic,
+`msgspec <https://msgspec.dev>`_, but also ships with support for Pydantic,
 attrs and all builtin container types such as dataclasses or ``TypedDict``\ s.
 
 These, as well as ``msgspec``, are supported through its plugin system (
