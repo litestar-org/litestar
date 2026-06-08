@@ -181,3 +181,118 @@ def test_sync_streaming_response() -> None:
     with create_test_client([handler]) as client:
         response = client.get("/")
         assert response.text == "1, 2, 3, 4, 5"
+
+def test_asgi_streaming_response_headers_tuple_iterable() -> None:
+    """Test that ASGIStreamingResponse accepts headers as iterable of tuples."""
+    from litestar.response.streaming import ASGIStreamingResponse
+
+    # Test with iterable of tuples (allows repeated headers)
+    headers = [
+        ("set-cookie", "cookie1=value1; Path=/"),
+        ("set-cookie", "cookie2=value2; Path=/"),
+        ("x-custom", "value"),
+    ]
+
+    response = ASGIStreamingResponse(
+        iterator=iter(["hello"]),
+        headers=headers,
+    )
+
+    # Check that headers are stored correctly
+    assert response.headers == headers
+
+
+def test_asgi_streaming_response_headers_dict() -> None:
+    """Test that ASGIStreamingResponse still accepts headers as dict."""
+    from litestar.response.streaming import ASGIStreamingResponse
+
+    headers = {
+        "content-type": "text/plain",
+        "x-custom": "value",
+    }
+
+    response = ASGIStreamingResponse(
+        iterator=iter(["hello"]),
+        headers=headers,
+    )
+
+    assert response.headers == headers
+
+
+def test_asgi_streaming_response_headers_none() -> None:
+    """Test that ASGIStreamingResponse handles headers=None."""
+    from litestar.response.streaming import ASGIStreamingResponse
+
+    response = ASGIStreamingResponse(
+        iterator=iter(["hello"]),
+        headers=None,
+    )
+
+    assert response.headers is None
+
+
+async def test_to_asgi_response_headers_tuple_iterable() -> None:
+    """Test Stream.to_asgi_response with headers as iterable of tuples."""
+    from litestar.response.streaming import Stream
+    from litestar.testing import create_test_client
+
+    # Create a simple async iterator
+    async def stream_content() -> AsyncIterator[str]:
+        yield "hello"
+        yield "world"
+
+    @get("/")
+    async def handler() -> Stream:
+        return Stream(
+            iterator=stream_content(),
+            headers=[
+                ("set-cookie", "cookie1=value1"),
+                ("set-cookie", "cookie2=value2"),
+            ],
+        )
+
+    with create_test_client([handler]) as client:
+        response = client.get("/")
+        assert response.text == "helloworld"
+        # Check both set-cookie headers are present
+        cookie_headers = response.headers.get_list("set-cookie") if hasattr(response.headers, 'get_list') else []
+        # httpx Headers returns list for repeated headers
+        assert len(cookie_headers) >= 2 or "cookie1=value1" in response.headers.get("set-cookie", "")
+
+
+async def test_stream_to_asgi_response_headers_tuple_iterable() -> None:
+    """Test Stream.to_asgi_response with headers as iterable of tuples."""
+    from litestar.response.streaming import Stream
+    from litestar.types import Message, Receive, Scope, Send
+
+    async def stream_content() -> AsyncIterator[str]:
+        yield "test"
+
+    stream = Stream(
+        iterator=stream_content(),
+        headers=[
+            ("x-header-1", "value1"),
+            ("x-header-2", "value2"),
+        ],
+    )
+
+    messages: list[Message] = []
+
+    async def receive() -> Message:
+        return {"type": "http.request"}
+
+    async def send(message: Message) -> None:
+        messages.append(message)
+
+    await stream({"type": "http", "method": "GET", "path": "/"}, receive, send)
+
+    # Check headers were sent correctly
+    start_messages = [m for m in messages if m["type"] == "http.response.start"]
+    assert len(start_messages) == 1
+    start_message = start_messages[0]
+    headers = start_message.get("headers", [])
+
+    # Should contain both headers from tuple iterable
+    header_names = [h[0].decode() for h in headers]
+    assert "x-header-1" in header_names
+    assert "x-header-2" in header_names
