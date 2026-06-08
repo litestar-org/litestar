@@ -774,3 +774,57 @@ def test_decimal_schema_type() -> None:
 
     schema = create_schema_for_annotation(Decimal)
     assert schema.type == OpenAPIType.STRING
+
+def test_schema_dynamic_ref_and_anchor() -> None:
+    """Test that Schema supports $dynamicRef and $dynamicAnchor fields."""
+    schema = Schema(
+        type=OpenAPIType.OBJECT,
+        dynamic_ref="#/components/schemas/Pet",
+        dynamic_anchor="petAnchor",
+    )
+
+    assert schema.dynamic_ref == "#/components/schemas/Pet"
+    assert schema.dynamic_anchor == "petAnchor"
+
+    # Test serialization to dict
+    schema_dict = schema.to_schema()
+    assert schema_dict["$dynamicRef"] == "#/components/schemas/Pet"
+    assert schema_dict["$dynamicAnchor"] == "petAnchor"
+
+
+def test_schema_dynamic_ref_and_anchor_optional() -> None:
+    """Test that dynamic_ref and dynamic_anchor are optional."""
+    schema = Schema(type=OpenAPIType.STRING)
+
+    assert schema.dynamic_ref is None
+    assert schema.dynamic_anchor is None
+
+    schema_dict = schema.to_schema()
+    assert "$dynamicRef" not in schema_dict
+    assert "$dynamicAnchor" not in schema_dict
+
+
+def test_schema_dynamic_ref_and_anchor_with_other_fields() -> None:
+    """Test that dynamic_ref and dynamic_anchor work with other schema fields."""
+    schema = Schema(
+        type=OpenAPIType.OBJECT,
+        title="TestSchema",
+        description="A test schema",
+        dynamic_ref="#/components/schemas/Base",
+        dynamic_anchor="testAnchor",
+        properties={"name": Schema(type=OpenAPIType.STRING)},
+        required=["name"],
+    )
+
+    assert schema.dynamic_ref == "#/components/schemas/Base"
+    assert schema.dynamic_anchor == "testAnchor"
+    assert schema.title == "TestSchema"
+    assert schema.description == "A test schema"
+
+    schema_dict = schema.to_schema()
+    assert schema_dict["$dynamicRef"] == "#/components/schemas/Base"
+    assert schema_dict["$dynamicAnchor"] == "testAnchor"
+    assert schema_dict["title"] == "TestSchema"
+    assert schema_dict["description"] == "A test schema"
+    assert "name" in schema_dict.get("properties", {})
+    assert schema_dict.get("required") == ["name"]
