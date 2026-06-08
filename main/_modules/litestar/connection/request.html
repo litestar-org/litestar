@@ -529,313 +529,318 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="24">    <span class="n">InternalServerException</span><span class="p">,</span>
 </span><span data-line="25">    <span class="n">LitestarException</span><span class="p">,</span>
 </span><span data-line="26">    <span class="n">LitestarWarning</span><span class="p">,</span>
-</span><span data-line="27"><span class="p">)</span>
-</span><span data-line="28"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions.http_exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEntityTooLarge</span>
-</span><span data-line="29"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">decode_json</span><span class="p">,</span> <span class="n">decode_msgpack</span>
-</span><span data-line="30"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">HTTPReceiveMessage</span>
-</span><span data-line="31">
-</span><span data-line="32"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Request&quot;</span><span class="p">,)</span>
-</span><span data-line="33">
+</span><span data-line="27">    <span class="n">ValidationException</span><span class="p">,</span>
+</span><span data-line="28"><span class="p">)</span>
+</span><span data-line="29"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions.http_exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestEntityTooLarge</span>
+</span><span data-line="30"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">decode_json</span><span class="p">,</span> <span class="n">decode_msgpack</span>
+</span><span data-line="31"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">HTTPReceiveMessage</span>
+</span><span data-line="32">
+</span><span data-line="33"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Request&quot;</span><span class="p">,)</span>
 </span><span data-line="34">
-</span><span data-line="35"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="36">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
-</span><span data-line="37">
-</span><span data-line="38">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPRouteHandler</span>  <span class="c1"># noqa: F401</span>
-</span><span data-line="39">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.asgi_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPScope</span><span class="p">,</span> <span class="n">Method</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
-</span><span data-line="40">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.empty</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmptyType</span>
-</span><span data-line="41">
+</span><span data-line="35">
+</span><span data-line="36"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="37">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
+</span><span data-line="38">
+</span><span data-line="39">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPRouteHandler</span>  <span class="c1"># noqa: F401</span>
+</span><span data-line="40">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.asgi_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPScope</span><span class="p">,</span> <span class="n">Method</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+</span><span data-line="41">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.empty</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmptyType</span>
 </span><span data-line="42">
-</span><span data-line="43"><span class="n">SERVER_PUSH_HEADERS</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="44">    <span class="s2">&quot;accept&quot;</span><span class="p">,</span>
-</span><span data-line="45">    <span class="s2">&quot;accept-encoding&quot;</span><span class="p">,</span>
-</span><span data-line="46">    <span class="s2">&quot;accept-language&quot;</span><span class="p">,</span>
-</span><span data-line="47">    <span class="s2">&quot;cache-control&quot;</span><span class="p">,</span>
-</span><span data-line="48">    <span class="s2">&quot;user-agent&quot;</span><span class="p">,</span>
-</span><span data-line="49"><span class="p">}</span>
-</span><span data-line="50">
+</span><span data-line="43">
+</span><span data-line="44"><span class="n">SERVER_PUSH_HEADERS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="45">    <span class="s2">&quot;accept&quot;</span><span class="p">,</span>
+</span><span data-line="46">    <span class="s2">&quot;accept-encoding&quot;</span><span class="p">,</span>
+</span><span data-line="47">    <span class="s2">&quot;accept-language&quot;</span><span class="p">,</span>
+</span><span data-line="48">    <span class="s2">&quot;cache-control&quot;</span><span class="p">,</span>
+</span><span data-line="49">    <span class="s2">&quot;user-agent&quot;</span><span class="p">,</span>
+</span><span data-line="50"><span class="p">}</span>
 </span><span data-line="51">
+</span><span data-line="52">
 <div class="viewcode-block" id="Request">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request">[docs]</a>
-</span><span data-line="52"><span class="k">class</span><span class="w"> </span><span class="nc">Request</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">UserT</span><span class="p">,</span> <span class="n">AuthT</span><span class="p">,</span> <span class="n">StateT</span><span class="p">],</span> <span class="n">ASGIConnection</span><span class="p">[</span><span class="s2">&quot;HTTPRouteHandler&quot;</span><span class="p">,</span> <span class="n">UserT</span><span class="p">,</span> <span class="n">AuthT</span><span class="p">,</span> <span class="n">StateT</span><span class="p">]):</span>
-</span><span data-line="53"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The Litestar Request class.&quot;&quot;&quot;</span>
-</span><span data-line="54">
-</span><span data-line="55">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="56">        <span class="s2">&quot;_accept&quot;</span><span class="p">,</span>
-</span><span data-line="57">        <span class="s2">&quot;_body&quot;</span><span class="p">,</span>
-</span><span data-line="58">        <span class="s2">&quot;_content_length&quot;</span><span class="p">,</span>
-</span><span data-line="59">        <span class="s2">&quot;_content_type&quot;</span><span class="p">,</span>
-</span><span data-line="60">        <span class="s2">&quot;_form&quot;</span><span class="p">,</span>
-</span><span data-line="61">        <span class="s2">&quot;_json&quot;</span><span class="p">,</span>
-</span><span data-line="62">        <span class="s2">&quot;_msgpack&quot;</span><span class="p">,</span>
-</span><span data-line="63">        <span class="s2">&quot;is_connected&quot;</span><span class="p">,</span>
-</span><span data-line="64">        <span class="s2">&quot;supports_push_promise&quot;</span><span class="p">,</span>
-</span><span data-line="65">    <span class="p">)</span>
-</span><span data-line="66">
-</span><span data-line="67">    <span class="n">scope</span><span class="p">:</span> <span class="n">HTTPScope</span>  <span class="c1"># pyright: ignore[reportIncompatibleVariableOverride]</span>
-</span><span data-line="68"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI scope attached to the connection.&quot;&quot;&quot;</span>
-</span><span data-line="69">    <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span>
-</span><span data-line="70"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI receive function.&quot;&quot;&quot;</span>
-</span><span data-line="71">    <span class="n">send</span><span class="p">:</span> <span class="n">Send</span>
-</span><span data-line="72"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI send function.&quot;&quot;&quot;</span>
-</span><span data-line="73">
+</span><span data-line="53"><span class="k">class</span><span class="w"> </span><span class="nc">Request</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">UserT</span><span class="p">,</span> <span class="n">AuthT</span><span class="p">,</span> <span class="n">StateT</span><span class="p">],</span> <span class="n">ASGIConnection</span><span class="p">[</span><span class="s2">&quot;HTTPRouteHandler&quot;</span><span class="p">,</span> <span class="n">UserT</span><span class="p">,</span> <span class="n">AuthT</span><span class="p">,</span> <span class="n">StateT</span><span class="p">]):</span>
+</span><span data-line="54"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The Litestar Request class.&quot;&quot;&quot;</span>
+</span><span data-line="55">
+</span><span data-line="56">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="57">        <span class="s2">&quot;_accept&quot;</span><span class="p">,</span>
+</span><span data-line="58">        <span class="s2">&quot;_body&quot;</span><span class="p">,</span>
+</span><span data-line="59">        <span class="s2">&quot;_content_length&quot;</span><span class="p">,</span>
+</span><span data-line="60">        <span class="s2">&quot;_content_type&quot;</span><span class="p">,</span>
+</span><span data-line="61">        <span class="s2">&quot;_form&quot;</span><span class="p">,</span>
+</span><span data-line="62">        <span class="s2">&quot;_json&quot;</span><span class="p">,</span>
+</span><span data-line="63">        <span class="s2">&quot;_msgpack&quot;</span><span class="p">,</span>
+</span><span data-line="64">        <span class="s2">&quot;is_connected&quot;</span><span class="p">,</span>
+</span><span data-line="65">        <span class="s2">&quot;supports_push_promise&quot;</span><span class="p">,</span>
+</span><span data-line="66">    <span class="p">)</span>
+</span><span data-line="67">
+</span><span data-line="68">    <span class="n">scope</span><span class="p">:</span> <span class="n">HTTPScope</span>  <span class="c1"># pyright: ignore[reportIncompatibleVariableOverride]</span>
+</span><span data-line="69"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI scope attached to the connection.&quot;&quot;&quot;</span>
+</span><span data-line="70">    <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span>
+</span><span data-line="71"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI receive function.&quot;&quot;&quot;</span>
+</span><span data-line="72">    <span class="n">send</span><span class="p">:</span> <span class="n">Send</span>
+</span><span data-line="73"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The ASGI send function.&quot;&quot;&quot;</span>
+</span><span data-line="74">
 <div class="viewcode-block" id="Request.__init__">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request.__init__">[docs]</a>
-</span><span data-line="74">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span> <span class="o">=</span> <span class="n">empty_receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span> <span class="o">=</span> <span class="n">empty_send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="75"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``Request``.</span>
-</span><span data-line="76">
-</span><span data-line="77"><span class="sd">        Args:</span>
-</span><span data-line="78"><span class="sd">            scope: The ASGI connection scope.</span>
-</span><span data-line="79"><span class="sd">            receive: The ASGI receive function.</span>
-</span><span data-line="80"><span class="sd">            send: The ASGI send function.</span>
-</span><span data-line="81"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="82">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
-</span><span data-line="83">        <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="84">        <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">body</span>
-</span><span data-line="85">        <span class="bp">self</span><span class="o">.</span><span class="n">_form</span><span class="p">:</span> <span class="n">FormMultiDict</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="86">        <span class="bp">self</span><span class="o">.</span><span class="n">_json</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="87">        <span class="bp">self</span><span class="o">.</span><span class="n">_msgpack</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="88">        <span class="bp">self</span><span class="o">.</span><span class="n">_content_type</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="89">        <span class="bp">self</span><span class="o">.</span><span class="n">_accept</span><span class="p">:</span> <span class="n">Accept</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="90">        <span class="bp">self</span><span class="o">.</span><span class="n">_content_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="91">        <span class="bp">self</span><span class="o">.</span><span class="n">supports_push_promise</span> <span class="o">=</span> <span class="n">ASGIExtension</span><span class="o">.</span><span class="n">SERVER_PUSH</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_extensions</span></div>
+</span><span data-line="75">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span> <span class="o">=</span> <span class="n">empty_receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span> <span class="o">=</span> <span class="n">empty_send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="76"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``Request``.</span>
+</span><span data-line="77">
+</span><span data-line="78"><span class="sd">        Args:</span>
+</span><span data-line="79"><span class="sd">            scope: The ASGI connection scope.</span>
+</span><span data-line="80"><span class="sd">            receive: The ASGI receive function.</span>
+</span><span data-line="81"><span class="sd">            send: The ASGI send function.</span>
+</span><span data-line="82"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="83">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span><span data-line="84">        <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="85">        <span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">body</span>
+</span><span data-line="86">        <span class="bp">self</span><span class="o">.</span><span class="n">_form</span><span class="p">:</span> <span class="n">FormMultiDict</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="87">        <span class="bp">self</span><span class="o">.</span><span class="n">_json</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="88">        <span class="bp">self</span><span class="o">.</span><span class="n">_msgpack</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="89">        <span class="bp">self</span><span class="o">.</span><span class="n">_content_type</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="90">        <span class="bp">self</span><span class="o">.</span><span class="n">_accept</span><span class="p">:</span> <span class="n">Accept</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="91">        <span class="bp">self</span><span class="o">.</span><span class="n">_content_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="92">        <span class="bp">self</span><span class="o">.</span><span class="n">supports_push_promise</span> <span class="o">=</span> <span class="n">ASGIExtension</span><span class="o">.</span><span class="n">SERVER_PUSH</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_extensions</span></div>
 
-</span><span data-line="92">
-</span><span data-line="93">    <span class="nd">@property</span>
-</span><span data-line="94">    <span class="k">def</span><span class="w"> </span><span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Method</span><span class="p">:</span>
-</span><span data-line="95"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the request method.</span>
-</span><span data-line="96">
-</span><span data-line="97"><span class="sd">        Returns:</span>
-</span><span data-line="98"><span class="sd">            The request :class:`Method &lt;litestar.types.Method&gt;`</span>
-</span><span data-line="99"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="100">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
-</span><span data-line="101">
-</span><span data-line="102">    <span class="nd">@property</span>
-</span><span data-line="103">    <span class="k">def</span><span class="w"> </span><span class="nf">content_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-</span><span data-line="104"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the request&#39;s &#39;Content-Type&#39; header, returning the header value and any options as a dictionary.</span>
-</span><span data-line="105">
-</span><span data-line="106"><span class="sd">        Returns:</span>
-</span><span data-line="107"><span class="sd">            A tuple with the parsed value and a dictionary containing any options send in it.</span>
-</span><span data-line="108"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="109">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_type</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="110">            <span class="k">if</span> <span class="p">(</span><span class="n">content_type</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="111">                <span class="bp">self</span><span class="o">.</span><span class="n">_content_type</span> <span class="o">=</span> <span class="n">content_type</span>
-</span><span data-line="112">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="113">                <span class="bp">self</span><span class="o">.</span><span class="n">_content_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="n">parse_content_header</span><span class="p">(</span>
-</span><span data-line="114">                    <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-</span><span data-line="115">                <span class="p">)</span>
-</span><span data-line="116">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_type</span>
-</span><span data-line="117">
-</span><span data-line="118">    <span class="nd">@property</span>
-</span><span data-line="119">    <span class="k">def</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Accept</span><span class="p">:</span>
-</span><span data-line="120"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the request&#39;s &#39;Accept&#39; header, returning an :class:`Accept &lt;litestar.datastructures.headers.Accept&gt;` instance.</span>
-</span><span data-line="121">
-</span><span data-line="122"><span class="sd">        Returns:</span>
-</span><span data-line="123"><span class="sd">            An :class:`Accept &lt;litestar.datastructures.headers.Accept&gt;` instance, representing the list of acceptable media types.</span>
-</span><span data-line="124"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="125">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accept</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="126">            <span class="k">if</span> <span class="p">(</span><span class="n">accept</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">accept</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="127">                <span class="bp">self</span><span class="o">.</span><span class="n">_accept</span> <span class="o">=</span> <span class="n">accept</span>
-</span><span data-line="128">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="129">                <span class="bp">self</span><span class="o">.</span><span class="n">_accept</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">accept</span> <span class="o">=</span> <span class="n">Accept</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Accept&quot;</span><span class="p">,</span> <span class="s2">&quot;*/*&quot;</span><span class="p">))</span>
-</span><span data-line="130">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accept</span>
-</span><span data-line="131">
+</span><span data-line="93">
+</span><span data-line="94">    <span class="nd">@property</span>
+</span><span data-line="95">    <span class="k">def</span><span class="w"> </span><span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Method</span><span class="p">:</span>
+</span><span data-line="96"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the request method.</span>
+</span><span data-line="97">
+</span><span data-line="98"><span class="sd">        Returns:</span>
+</span><span data-line="99"><span class="sd">            The request :class:`Method &lt;litestar.types.Method&gt;`</span>
+</span><span data-line="100"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="101">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
+</span><span data-line="102">
+</span><span data-line="103">    <span class="nd">@property</span>
+</span><span data-line="104">    <span class="k">def</span><span class="w"> </span><span class="nf">content_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+</span><span data-line="105"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the request&#39;s &#39;Content-Type&#39; header, returning the header value and any options as a dictionary.</span>
+</span><span data-line="106">
+</span><span data-line="107"><span class="sd">        Returns:</span>
+</span><span data-line="108"><span class="sd">            A tuple with the parsed value and a dictionary containing any options send in it.</span>
+</span><span data-line="109"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="110">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_type</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="111">            <span class="k">if</span> <span class="p">(</span><span class="n">content_type</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">content_type</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="112">                <span class="bp">self</span><span class="o">.</span><span class="n">_content_type</span> <span class="o">=</span> <span class="n">content_type</span>
+</span><span data-line="113">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="114">                <span class="bp">self</span><span class="o">.</span><span class="n">_content_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">content_type</span> <span class="o">=</span> <span class="n">parse_content_header</span><span class="p">(</span>
+</span><span data-line="115">                    <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</span><span data-line="116">                <span class="p">)</span>
+</span><span data-line="117">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_type</span>
+</span><span data-line="118">
+</span><span data-line="119">    <span class="nd">@property</span>
+</span><span data-line="120">    <span class="k">def</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Accept</span><span class="p">:</span>
+</span><span data-line="121"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the request&#39;s &#39;Accept&#39; header, returning an :class:`Accept &lt;litestar.datastructures.headers.Accept&gt;` instance.</span>
+</span><span data-line="122">
+</span><span data-line="123"><span class="sd">        Returns:</span>
+</span><span data-line="124"><span class="sd">            An :class:`Accept &lt;litestar.datastructures.headers.Accept&gt;` instance, representing the list of acceptable media types.</span>
+</span><span data-line="125"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="126">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accept</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="127">            <span class="k">if</span> <span class="p">(</span><span class="n">accept</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">accept</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="128">                <span class="bp">self</span><span class="o">.</span><span class="n">_accept</span> <span class="o">=</span> <span class="n">accept</span>
+</span><span data-line="129">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="130">                <span class="bp">self</span><span class="o">.</span><span class="n">_accept</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">accept</span> <span class="o">=</span> <span class="n">Accept</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Accept&quot;</span><span class="p">,</span> <span class="s2">&quot;*/*&quot;</span><span class="p">))</span>
+</span><span data-line="131">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accept</span>
+</span><span data-line="132">
 <div class="viewcode-block" id="Request.json">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request.json">[docs]</a>
-</span><span data-line="132">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="133"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the json request body from the request.</span>
-</span><span data-line="134">
-</span><span data-line="135"><span class="sd">        Returns:</span>
-</span><span data-line="136"><span class="sd">            An arbitrary value</span>
-</span><span data-line="137"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="138">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_json</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="139">            <span class="k">if</span> <span class="p">(</span><span class="n">json_</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">json</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="140">                <span class="bp">self</span><span class="o">.</span><span class="n">_json</span> <span class="o">=</span> <span class="n">json_</span>
-</span><span data-line="141">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="142">                <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span>
-</span><span data-line="143">                <span class="bp">self</span><span class="o">.</span><span class="n">_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">json</span> <span class="o">=</span> <span class="n">decode_json</span><span class="p">(</span>
-</span><span data-line="144">                    <span class="n">body</span> <span class="ow">or</span> <span class="sa">b</span><span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="n">type_decoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">route_handler</span><span class="o">.</span><span class="n">type_decoders</span>
-</span><span data-line="145">                <span class="p">)</span>
-</span><span data-line="146">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_json</span></div>
+</span><span data-line="133">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="134"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the json request body from the request.</span>
+</span><span data-line="135">
+</span><span data-line="136"><span class="sd">        Returns:</span>
+</span><span data-line="137"><span class="sd">            An arbitrary value</span>
+</span><span data-line="138"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="139">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_json</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="140">            <span class="k">if</span> <span class="p">(</span><span class="n">json_</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">json</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="141">                <span class="bp">self</span><span class="o">.</span><span class="n">_json</span> <span class="o">=</span> <span class="n">json_</span>
+</span><span data-line="142">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="143">                <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span>
+</span><span data-line="144">                <span class="bp">self</span><span class="o">.</span><span class="n">_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">json</span> <span class="o">=</span> <span class="n">decode_json</span><span class="p">(</span>
+</span><span data-line="145">                    <span class="n">body</span> <span class="ow">or</span> <span class="sa">b</span><span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="n">type_decoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">route_handler</span><span class="o">.</span><span class="n">type_decoders</span>
+</span><span data-line="146">                <span class="p">)</span>
+</span><span data-line="147">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_json</span></div>
 
-</span><span data-line="147">
+</span><span data-line="148">
 <div class="viewcode-block" id="Request.msgpack">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request.msgpack">[docs]</a>
-</span><span data-line="148">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">msgpack</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="149"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the MessagePack request body from the request.</span>
-</span><span data-line="150">
-</span><span data-line="151"><span class="sd">        Returns:</span>
-</span><span data-line="152"><span class="sd">            An arbitrary value</span>
-</span><span data-line="153"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="154">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msgpack</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="155">            <span class="k">if</span> <span class="p">(</span><span class="n">msgpack</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">msgpack</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="156">                <span class="bp">self</span><span class="o">.</span><span class="n">_msgpack</span> <span class="o">=</span> <span class="n">msgpack</span>
-</span><span data-line="157">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="158">                <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span>
-</span><span data-line="159">                <span class="bp">self</span><span class="o">.</span><span class="n">_msgpack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">msgpack</span> <span class="o">=</span> <span class="n">decode_msgpack</span><span class="p">(</span>
-</span><span data-line="160">                    <span class="n">body</span> <span class="ow">or</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\xc0</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">type_decoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">route_handler</span><span class="o">.</span><span class="n">type_decoders</span>
-</span><span data-line="161">                <span class="p">)</span>
-</span><span data-line="162">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msgpack</span></div>
+</span><span data-line="149">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">msgpack</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="150"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the MessagePack request body from the request.</span>
+</span><span data-line="151">
+</span><span data-line="152"><span class="sd">        Returns:</span>
+</span><span data-line="153"><span class="sd">            An arbitrary value</span>
+</span><span data-line="154"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="155">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msgpack</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="156">            <span class="k">if</span> <span class="p">(</span><span class="n">msgpack</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">msgpack</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="157">                <span class="bp">self</span><span class="o">.</span><span class="n">_msgpack</span> <span class="o">=</span> <span class="n">msgpack</span>
+</span><span data-line="158">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="159">                <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span>
+</span><span data-line="160">                <span class="bp">self</span><span class="o">.</span><span class="n">_msgpack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">msgpack</span> <span class="o">=</span> <span class="n">decode_msgpack</span><span class="p">(</span>
+</span><span data-line="161">                    <span class="n">body</span> <span class="ow">or</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\xc0</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">type_decoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">route_handler</span><span class="o">.</span><span class="n">type_decoders</span>
+</span><span data-line="162">                <span class="p">)</span>
+</span><span data-line="163">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msgpack</span></div>
 
-</span><span data-line="163">
-</span><span data-line="164">    <span class="nd">@property</span>
-</span><span data-line="165">    <span class="k">def</span><span class="w"> </span><span class="nf">content_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="166">        <span class="n">cached_content_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_length</span>
-</span><span data-line="167">        <span class="k">if</span> <span class="n">cached_content_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="168">            <span class="k">return</span> <span class="n">cached_content_length</span>
-</span><span data-line="169">
-</span><span data-line="170">        <span class="n">content_length_header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content-length&quot;</span><span class="p">)</span>
-</span><span data-line="171">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="172">            <span class="n">content_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_length</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="173">                <span class="nb">int</span><span class="p">(</span><span class="n">content_length_header</span><span class="p">)</span> <span class="k">if</span> <span class="n">content_length_header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
-</span><span data-line="174">            <span class="p">)</span>
-</span><span data-line="175">        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="176">            <span class="k">raise</span> <span class="n">ClientException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid content-length: </span><span class="si">{</span><span class="n">content_length_header</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
-</span><span data-line="177">        <span class="k">return</span> <span class="n">content_length</span>
-</span><span data-line="178">
+</span><span data-line="164">
+</span><span data-line="165">    <span class="nd">@property</span>
+</span><span data-line="166">    <span class="k">def</span><span class="w"> </span><span class="nf">content_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="167">        <span class="n">cached_content_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_length</span>
+</span><span data-line="168">        <span class="k">if</span> <span class="n">cached_content_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="169">            <span class="k">return</span> <span class="n">cached_content_length</span>
+</span><span data-line="170">
+</span><span data-line="171">        <span class="n">content_length_header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content-length&quot;</span><span class="p">)</span>
+</span><span data-line="172">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="173">            <span class="n">content_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_length</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="174">                <span class="nb">int</span><span class="p">(</span><span class="n">content_length_header</span><span class="p">)</span> <span class="k">if</span> <span class="n">content_length_header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="175">            <span class="p">)</span>
+</span><span data-line="176">        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="177">            <span class="k">raise</span> <span class="n">ClientException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid content-length: </span><span class="si">{</span><span class="n">content_length_header</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+</span><span data-line="178">        <span class="k">return</span> <span class="n">content_length</span>
+</span><span data-line="179">
 <div class="viewcode-block" id="Request.stream">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request.stream">[docs]</a>
-</span><span data-line="179">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="180"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an async generator that streams chunks of bytes.</span>
-</span><span data-line="181">
-</span><span data-line="182"><span class="sd">        Returns:</span>
-</span><span data-line="183"><span class="sd">            An async generator.</span>
-</span><span data-line="184">
-</span><span data-line="185"><span class="sd">        Raises:</span>
-</span><span data-line="186"><span class="sd">            RuntimeError: if the stream is already consumed</span>
-</span><span data-line="187"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="188">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="189">            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
-</span><span data-line="190">                <span class="k">raise</span> <span class="n">InternalServerException</span><span class="p">(</span><span class="s2">&quot;stream consumed&quot;</span><span class="p">)</span>
-</span><span data-line="191">
-</span><span data-line="192">            <span class="n">announced_content_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_length</span>
-</span><span data-line="193">            <span class="c1"># setting this to &#39;math.inf&#39; as a micro-optimisation; Comparing against a</span>
-</span><span data-line="194">            <span class="c1"># float is slightly faster than checking if a value is &#39;None&#39; and then</span>
-</span><span data-line="195">            <span class="c1"># comparing it to an int. since we expect a limit to be set most of the</span>
-</span><span data-line="196">            <span class="c1"># time, this is a bit more efficient</span>
-</span><span data-line="197">            <span class="n">max_content_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_handler</span><span class="o">.</span><span class="n">request_max_body_size</span> <span class="ow">or</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
-</span><span data-line="198">
-</span><span data-line="199">            <span class="c1"># if the &#39;content-length&#39; header is set, and exceeds the limit, we can bail</span>
-</span><span data-line="200">            <span class="c1"># out early before reading anything</span>
-</span><span data-line="201">            <span class="k">if</span> <span class="n">announced_content_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">announced_content_length</span> <span class="o">&gt;</span> <span class="n">max_content_length</span><span class="p">:</span>
-</span><span data-line="202">                <span class="k">raise</span> <span class="n">RequestEntityTooLarge</span>
-</span><span data-line="203">
-</span><span data-line="204">            <span class="n">total_bytes_streamed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="205">            <span class="k">while</span> <span class="n">event</span> <span class="o">:=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;HTTPReceiveMessage&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">receive</span><span class="p">()):</span>
-</span><span data-line="206">                <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.request&quot;</span><span class="p">:</span>
-</span><span data-line="207">                    <span class="n">body</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">]</span>
-</span><span data-line="208">                    <span class="k">if</span> <span class="n">body</span><span class="p">:</span>
-</span><span data-line="209">                        <span class="n">total_bytes_streamed</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-</span><span data-line="210">
-</span><span data-line="211">                        <span class="c1"># enforce the request body size limit on actual bytes</span>
-</span><span data-line="212">                        <span class="c1"># received. content-length validation is intentionally left to</span>
-</span><span data-line="213">                        <span class="c1"># the ASGI server (e.g. uvicorn) since middleware such as</span>
-</span><span data-line="214">                        <span class="c1"># request decompression can legitimately cause the streamed</span>
-</span><span data-line="215">                        <span class="c1"># body to exceed the wire-format content-length.</span>
-</span><span data-line="216">                        <span class="k">if</span> <span class="n">total_bytes_streamed</span> <span class="o">&gt;</span> <span class="n">max_content_length</span><span class="p">:</span>
-</span><span data-line="217">                            <span class="k">raise</span> <span class="n">RequestEntityTooLarge</span>
-</span><span data-line="218">
-</span><span data-line="219">                        <span class="k">yield</span> <span class="n">body</span>
-</span><span data-line="220">
-</span><span data-line="221">                    <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;more_body&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-</span><span data-line="222">                        <span class="k">break</span>
-</span><span data-line="223">
-</span><span data-line="224">                <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.disconnect&quot;</span><span class="p">:</span>
-</span><span data-line="225">                    <span class="k">raise</span> <span class="n">InternalServerException</span><span class="p">(</span><span class="s2">&quot;client disconnected prematurely&quot;</span><span class="p">)</span>
-</span><span data-line="226">
-</span><span data-line="227">            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="228">            <span class="k">yield</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
-</span><span data-line="229">
-</span><span data-line="230">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="231">            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span>
-</span><span data-line="232">            <span class="k">yield</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
-</span><span data-line="233">            <span class="k">return</span></div>
+</span><span data-line="180">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="181"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an async generator that streams chunks of bytes.</span>
+</span><span data-line="182">
+</span><span data-line="183"><span class="sd">        Returns:</span>
+</span><span data-line="184"><span class="sd">            An async generator.</span>
+</span><span data-line="185">
+</span><span data-line="186"><span class="sd">        Raises:</span>
+</span><span data-line="187"><span class="sd">            RuntimeError: if the stream is already consumed</span>
+</span><span data-line="188"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="189">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="190">            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+</span><span data-line="191">                <span class="k">raise</span> <span class="n">InternalServerException</span><span class="p">(</span><span class="s2">&quot;stream consumed&quot;</span><span class="p">)</span>
+</span><span data-line="192">
+</span><span data-line="193">            <span class="n">announced_content_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_length</span>
+</span><span data-line="194">            <span class="c1"># setting this to &#39;math.inf&#39; as a micro-optimisation; Comparing against a</span>
+</span><span data-line="195">            <span class="c1"># float is slightly faster than checking if a value is &#39;None&#39; and then</span>
+</span><span data-line="196">            <span class="c1"># comparing it to an int. since we expect a limit to be set most of the</span>
+</span><span data-line="197">            <span class="c1"># time, this is a bit more efficient</span>
+</span><span data-line="198">            <span class="n">max_content_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_handler</span><span class="o">.</span><span class="n">request_max_body_size</span> <span class="ow">or</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+</span><span data-line="199">
+</span><span data-line="200">            <span class="c1"># if the &#39;content-length&#39; header is set, and exceeds the limit, we can bail</span>
+</span><span data-line="201">            <span class="c1"># out early before reading anything</span>
+</span><span data-line="202">            <span class="k">if</span> <span class="n">announced_content_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">announced_content_length</span> <span class="o">&gt;</span> <span class="n">max_content_length</span><span class="p">:</span>
+</span><span data-line="203">                <span class="k">raise</span> <span class="n">RequestEntityTooLarge</span>
+</span><span data-line="204">
+</span><span data-line="205">            <span class="n">total_bytes_streamed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="206">            <span class="k">while</span> <span class="n">event</span> <span class="o">:=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;HTTPReceiveMessage&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">receive</span><span class="p">()):</span>
+</span><span data-line="207">                <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.request&quot;</span><span class="p">:</span>
+</span><span data-line="208">                    <span class="n">body</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">]</span>
+</span><span data-line="209">                    <span class="k">if</span> <span class="n">body</span><span class="p">:</span>
+</span><span data-line="210">                        <span class="n">total_bytes_streamed</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+</span><span data-line="211">
+</span><span data-line="212">                        <span class="c1"># enforce the request body size limit on actual bytes</span>
+</span><span data-line="213">                        <span class="c1"># received. content-length validation is intentionally left to</span>
+</span><span data-line="214">                        <span class="c1"># the ASGI server (e.g. uvicorn) since middleware such as</span>
+</span><span data-line="215">                        <span class="c1"># request decompression can legitimately cause the streamed</span>
+</span><span data-line="216">                        <span class="c1"># body to exceed the wire-format content-length.</span>
+</span><span data-line="217">                        <span class="k">if</span> <span class="n">total_bytes_streamed</span> <span class="o">&gt;</span> <span class="n">max_content_length</span><span class="p">:</span>
+</span><span data-line="218">                            <span class="k">raise</span> <span class="n">RequestEntityTooLarge</span>
+</span><span data-line="219">
+</span><span data-line="220">                        <span class="k">yield</span> <span class="n">body</span>
+</span><span data-line="221">
+</span><span data-line="222">                    <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;more_body&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+</span><span data-line="223">                        <span class="k">break</span>
+</span><span data-line="224">
+</span><span data-line="225">                <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.disconnect&quot;</span><span class="p">:</span>
+</span><span data-line="226">                    <span class="k">raise</span> <span class="n">InternalServerException</span><span class="p">(</span><span class="s2">&quot;client disconnected prematurely&quot;</span><span class="p">)</span>
+</span><span data-line="227">
+</span><span data-line="228">            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="229">            <span class="k">yield</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+</span><span data-line="230">
+</span><span data-line="231">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="232">            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span>
+</span><span data-line="233">            <span class="k">yield</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+</span><span data-line="234">            <span class="k">return</span></div>
 
-</span><span data-line="234">
+</span><span data-line="235">
 <div class="viewcode-block" id="Request.body">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request.body">[docs]</a>
-</span><span data-line="235">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-</span><span data-line="236"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the body of the request.</span>
-</span><span data-line="237">
-</span><span data-line="238"><span class="sd">        Returns:</span>
-</span><span data-line="239"><span class="sd">            A byte-string representing the body of the request.</span>
-</span><span data-line="240"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="241">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="242">            <span class="k">if</span> <span class="p">(</span><span class="n">body</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="243">                <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="o">=</span> <span class="n">body</span>
-</span><span data-line="244">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="245">                <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span> <span class="k">async</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">()])</span>
-</span><span data-line="246">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span></div>
+</span><span data-line="236">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="237"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the body of the request.</span>
+</span><span data-line="238">
+</span><span data-line="239"><span class="sd">        Returns:</span>
+</span><span data-line="240"><span class="sd">            A byte-string representing the body of the request.</span>
+</span><span data-line="241"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="242">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="243">            <span class="k">if</span> <span class="p">(</span><span class="n">body</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="244">                <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="o">=</span> <span class="n">body</span>
+</span><span data-line="245">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="246">                <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span> <span class="k">async</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">()])</span>
+</span><span data-line="247">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span></div>
 
-</span><span data-line="247">
+</span><span data-line="248">
 <div class="viewcode-block" id="Request.form">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request.form">[docs]</a>
-</span><span data-line="248">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FormMultiDict</span><span class="p">:</span>
-</span><span data-line="249"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve form data from the request. If the request is either a &#39;multipart/form-data&#39; or an</span>
-</span><span data-line="250"><span class="sd">        &#39;application/x-www-form- urlencoded&#39;, return a FormMultiDict instance populated with the values sent in the</span>
-</span><span data-line="251"><span class="sd">        request, otherwise, an empty instance.</span>
-</span><span data-line="252">
-</span><span data-line="253"><span class="sd">        Returns:</span>
-</span><span data-line="254"><span class="sd">            A FormMultiDict instance</span>
-</span><span data-line="255"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="256">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="257">            <span class="k">if</span> <span class="p">(</span><span class="n">form_data</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">form</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="258">                <span class="n">content_type</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_type</span>
-</span><span data-line="259">                <span class="k">if</span> <span class="n">content_type</span> <span class="o">==</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">:</span>
-</span><span data-line="260">                    <span class="n">form_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">parse_multipart_form</span><span class="p">(</span>
-</span><span data-line="261">                        <span class="n">stream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">(),</span>
-</span><span data-line="262">                        <span class="n">boundary</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
-</span><span data-line="263">                        <span class="n">multipart_form_part_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">multipart_form_part_limit</span><span class="p">,</span>
-</span><span data-line="264">                    <span class="p">)</span>
-</span><span data-line="265">                <span class="k">elif</span> <span class="n">content_type</span> <span class="o">==</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">URL_ENCODED</span><span class="p">:</span>
-</span><span data-line="266">                    <span class="n">form_data</span> <span class="o">=</span> <span class="n">parse_url_encoded_form_data</span><span class="p">(</span>  <span class="c1"># type: ignore[assignment]</span>
-</span><span data-line="267">                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">(),</span>
-</span><span data-line="268">                    <span class="p">)</span>
-</span><span data-line="269">                <span class="k">else</span><span class="p">:</span>
-</span><span data-line="270">                    <span class="n">form_data</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="271">
-</span><span data-line="272">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">form</span> <span class="o">=</span> <span class="n">form_data</span>  <span class="c1"># pyright: ignore[reportAttributeAccessIssue]</span>
-</span><span data-line="273">            <span class="bp">self</span><span class="o">.</span><span class="n">_form</span> <span class="o">=</span> <span class="n">FormMultiDict</span><span class="o">.</span><span class="n">from_form_data</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">,</span> <span class="n">form_data</span><span class="p">))</span>
-</span><span data-line="274">
-</span><span data-line="275">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form</span></div>
-
+</span><span data-line="249">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FormMultiDict</span><span class="p">:</span>
+</span><span data-line="250"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve form data from the request. If the request is either a &#39;multipart/form-data&#39; or an</span>
+</span><span data-line="251"><span class="sd">        &#39;application/x-www-form- urlencoded&#39;, return a FormMultiDict instance populated with the values sent in the</span>
+</span><span data-line="252"><span class="sd">        request, otherwise, an empty instance.</span>
+</span><span data-line="253">
+</span><span data-line="254"><span class="sd">        Returns:</span>
+</span><span data-line="255"><span class="sd">            A FormMultiDict instance</span>
+</span><span data-line="256"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="257">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="258">            <span class="k">if</span> <span class="p">(</span><span class="n">form_data</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">form</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="259">                <span class="n">content_type</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_type</span>
+</span><span data-line="260">                <span class="k">if</span> <span class="n">content_type</span> <span class="o">==</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">:</span>
+</span><span data-line="261">                    <span class="n">raw</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;boundary&quot;</span><span class="p">)</span>
+</span><span data-line="262">                    <span class="k">if</span> <span class="n">raw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="263">                        <span class="k">raise</span> <span class="n">ValidationException</span><span class="p">(</span><span class="s2">&quot;multipart boundary missing in Content-Type&quot;</span><span class="p">)</span>
+</span><span data-line="264">                    <span class="n">boundary_bytes</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+</span><span data-line="265">                    <span class="n">form_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">parse_multipart_form</span><span class="p">(</span>
+</span><span data-line="266">                        <span class="n">stream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">(),</span>
+</span><span data-line="267">                        <span class="n">boundary</span><span class="o">=</span><span class="n">boundary_bytes</span><span class="p">,</span>
+</span><span data-line="268">                        <span class="n">multipart_form_part_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">multipart_form_part_limit</span><span class="p">,</span>
+</span><span data-line="269">                    <span class="p">)</span>
+</span><span data-line="270">                <span class="k">elif</span> <span class="n">content_type</span> <span class="o">==</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">URL_ENCODED</span><span class="p">:</span>
+</span><span data-line="271">                    <span class="n">form_data</span> <span class="o">=</span> <span class="n">parse_url_encoded_form_data</span><span class="p">(</span>  <span class="c1"># type: ignore[assignment]</span>
+</span><span data-line="272">                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">(),</span>
+</span><span data-line="273">                    <span class="p">)</span>
+</span><span data-line="274">                <span class="k">else</span><span class="p">:</span>
+</span><span data-line="275">                    <span class="n">form_data</span> <span class="o">=</span> <span class="p">{}</span>
 </span><span data-line="276">
+</span><span data-line="277">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">form</span> <span class="o">=</span> <span class="n">form_data</span>  <span class="c1"># pyright: ignore[reportAttributeAccessIssue]</span>
+</span><span data-line="278">            <span class="bp">self</span><span class="o">.</span><span class="n">_form</span> <span class="o">=</span> <span class="n">FormMultiDict</span><span class="o">.</span><span class="n">from_form_data</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">,</span> <span class="n">form_data</span><span class="p">))</span>
+</span><span data-line="279">
+</span><span data-line="280">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form</span></div>
+
+</span><span data-line="281">
 <div class="viewcode-block" id="Request.send_push_promise">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.Request.send_push_promise">[docs]</a>
-</span><span data-line="277">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_push_promise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">raise_if_unavailable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="278"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a push promise.</span>
-</span><span data-line="279">
-</span><span data-line="280"><span class="sd">        This method requires the `http.response.push` extension to be sent from the ASGI server.</span>
-</span><span data-line="281">
-</span><span data-line="282"><span class="sd">        Args:</span>
-</span><span data-line="283"><span class="sd">            path: Path to send the promise to.</span>
-</span><span data-line="284"><span class="sd">            raise_if_unavailable: Raise an exception if server push is not supported by</span>
-</span><span data-line="285"><span class="sd">                the server</span>
+</span><span data-line="282">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_push_promise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">raise_if_unavailable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="283"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a push promise.</span>
+</span><span data-line="284">
+</span><span data-line="285"><span class="sd">        This method requires the `http.response.push` extension to be sent from the ASGI server.</span>
 </span><span data-line="286">
-</span><span data-line="287"><span class="sd">        Returns:</span>
-</span><span data-line="288"><span class="sd">            None</span>
-</span><span data-line="289"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="290">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">supports_push_promise</span><span class="p">:</span>
-</span><span data-line="291">            <span class="k">if</span> <span class="n">raise_if_unavailable</span><span class="p">:</span>
-</span><span data-line="292">                <span class="k">raise</span> <span class="n">LitestarException</span><span class="p">(</span><span class="s2">&quot;Attempted to send a push promise but the server does not support it&quot;</span><span class="p">)</span>
-</span><span data-line="293">
-</span><span data-line="294">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-</span><span data-line="295">                <span class="s2">&quot;Attempted to send a push promise but the server does not support it. In a future version, this will &quot;</span>
-</span><span data-line="296">                <span class="s2">&quot;raise an exception. To enable this behaviour in the current version, set raise_if_unavailable=True. &quot;</span>
-</span><span data-line="297">                <span class="s2">&quot;To prevent this behaviour, make sure that the server you are using supports the &#39;http.response.push&#39; &quot;</span>
-</span><span data-line="298">                <span class="s2">&quot;ASGI extension, or check this dynamically via &quot;</span>
-</span><span data-line="299">                <span class="s2">&quot;:attr:`~litestar.connection.Request.supports_push_promise`&quot;</span><span class="p">,</span>
-</span><span data-line="300">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-</span><span data-line="301">                <span class="n">category</span><span class="o">=</span><span class="n">LitestarWarning</span><span class="p">,</span>
-</span><span data-line="302">            <span class="p">)</span>
-</span><span data-line="303">
-</span><span data-line="304">            <span class="k">return</span>
-</span><span data-line="305">
-</span><span data-line="306">        <span class="n">raw_headers</span> <span class="o">=</span> <span class="p">[</span>
-</span><span data-line="307">            <span class="p">(</span><span class="n">header_name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">),</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">))</span>
-</span><span data-line="308">            <span class="k">for</span> <span class="n">header_name</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">SERVER_PUSH_HEADERS</span><span class="p">)</span>
-</span><span data-line="309">            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="n">header_name</span><span class="p">,</span> <span class="p">[])</span>
-</span><span data-line="310">        <span class="p">]</span>
-</span><span data-line="311">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;http.response.push&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="n">raw_headers</span><span class="p">})</span></div>
+</span><span data-line="287"><span class="sd">        Args:</span>
+</span><span data-line="288"><span class="sd">            path: Path to send the promise to.</span>
+</span><span data-line="289"><span class="sd">            raise_if_unavailable: Raise an exception if server push is not supported by</span>
+</span><span data-line="290"><span class="sd">                the server</span>
+</span><span data-line="291">
+</span><span data-line="292"><span class="sd">        Returns:</span>
+</span><span data-line="293"><span class="sd">            None</span>
+</span><span data-line="294"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="295">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">supports_push_promise</span><span class="p">:</span>
+</span><span data-line="296">            <span class="k">if</span> <span class="n">raise_if_unavailable</span><span class="p">:</span>
+</span><span data-line="297">                <span class="k">raise</span> <span class="n">LitestarException</span><span class="p">(</span><span class="s2">&quot;Attempted to send a push promise but the server does not support it&quot;</span><span class="p">)</span>
+</span><span data-line="298">
+</span><span data-line="299">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+</span><span data-line="300">                <span class="s2">&quot;Attempted to send a push promise but the server does not support it. In a future version, this will &quot;</span>
+</span><span data-line="301">                <span class="s2">&quot;raise an exception. To enable this behaviour in the current version, set raise_if_unavailable=True. &quot;</span>
+</span><span data-line="302">                <span class="s2">&quot;To prevent this behaviour, make sure that the server you are using supports the &#39;http.response.push&#39; &quot;</span>
+</span><span data-line="303">                <span class="s2">&quot;ASGI extension, or check this dynamically via &quot;</span>
+</span><span data-line="304">                <span class="s2">&quot;:attr:`~litestar.connection.Request.supports_push_promise`&quot;</span><span class="p">,</span>
+</span><span data-line="305">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span data-line="306">                <span class="n">category</span><span class="o">=</span><span class="n">LitestarWarning</span><span class="p">,</span>
+</span><span data-line="307">            <span class="p">)</span>
+</span><span data-line="308">
+</span><span data-line="309">            <span class="k">return</span>
+</span><span data-line="310">
+</span><span data-line="311">        <span class="n">raw_headers</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="312">            <span class="p">(</span><span class="n">header_name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">),</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin-1&quot;</span><span class="p">))</span>
+</span><span data-line="313">            <span class="k">for</span> <span class="n">header_name</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">SERVER_PUSH_HEADERS</span><span class="p">)</span>
+</span><span data-line="314">            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="n">header_name</span><span class="p">,</span> <span class="p">[])</span>
+</span><span data-line="315">        <span class="p">]</span>
+</span><span data-line="316">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;http.response.push&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="n">raw_headers</span><span class="p">})</span></div>
 </div>
 
 </span></pre></div>
