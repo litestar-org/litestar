@@ -43,7 +43,7 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
 
         required = [field.encode_name for field in struct_fields if self._is_field_required(field=field)]
 
-        # Support tagged unions: https://jcristharif.com/msgspec/structs.html#tagged-unions
+        # Support tagged unions: https://msgspec.devstructs.html#tagged-unions
         # These structs contain a tag_field and a tag. Since these fields are added
         # dynamically, they are not present within the regular struct fields and don't
         # have any type annotation associated with them, so we create a FieldDefinition

@@ -2,6 +2,7 @@ from advanced_alchemy.extensions.litestar.plugins import SQLAlchemyInitPlugin, S
 from advanced_alchemy.filters import LimitOffset
 
 from litestar import get
+from litestar.di import NamedDependency
 from litestar.testing import create_test_client
 
 
@@ -14,7 +15,7 @@ def test_using_pagination() -> None:
         path="/",
         dependencies={"limit_offset": provide_limit_offset_pagination},
     )
-    async def handler(limit_offset: LimitOffset) -> None:
+    async def handler(limit_offset: NamedDependency[LimitOffset]) -> None:
         return None
 
     with create_test_client(
