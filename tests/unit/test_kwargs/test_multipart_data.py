@@ -691,6 +691,7 @@ def test_optional_upload_file_without_file_submitted() -> None:
         assert response.status_code == HTTP_201_CREATED
         assert response.text == "file"
 
+
 # https://github.com/litestar-org/litestar/issues/4638
 def test_missing_or_empty_boundary_parameter_returns_400() -> None:
     with create_test_client(form_handler) as client:
