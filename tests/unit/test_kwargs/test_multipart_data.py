@@ -692,18 +692,10 @@ def test_optional_upload_file_without_file_submitted() -> None:
         assert response.text == "file"
 
 # https://github.com/litestar-org/litestar/issues/4638
-def test_missing_or_empty_boundary_parameter_returns_400():
+def test_missing_or_empty_boundary_parameter_returns_400() -> None:
     with create_test_client(form_handler) as client:
-        response_1 = client.post(
-            "/form",
-            content=b"",
-            headers={"Content-Type": "multipart/form-data"}
-            )
+        response_1 = client.post("/form", content=b"", headers={"Content-Type": "multipart/form-data"})
         assert response_1.status_code == HTTP_400_BAD_REQUEST
 
-        response_2 = client.post(
-            "/form",
-            content=b"",
-            headers={"Content-Type": "multipart/form-data; boundary="}
-            )
+        response_2 = client.post("/form", content=b"", headers={"Content-Type": "multipart/form-data; boundary="})
         assert response_2.status_code == HTTP_400_BAD_REQUEST
