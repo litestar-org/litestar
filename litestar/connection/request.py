@@ -24,6 +24,7 @@ from litestar.exceptions import (
     InternalServerException,
     LitestarException,
     LitestarWarning,
+    ValidationException,
 )
 from litestar.exceptions.http_exceptions import RequestEntityTooLarge
 from litestar.serialization import decode_json, decode_msgpack
@@ -257,9 +258,13 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             if (form_data := self._connection_state.form) is Empty:
                 content_type, options = self.content_type
                 if content_type == RequestEncodingType.MULTI_PART:
+                    raw = options.get("boundary")
+                    if raw is None:
+                        raise ValidationException("multipart boundary missing in Content-Type")
+                    boundary_bytes = raw.encode()
                     form_data = await parse_multipart_form(
                         stream=self.stream(),
-                        boundary=options.get("boundary", "").encode(),
+                        boundary=boundary_bytes,
                         multipart_form_part_limit=self.app.multipart_form_part_limit,
                     )
                 elif content_type == RequestEncodingType.URL_ENCODED:
