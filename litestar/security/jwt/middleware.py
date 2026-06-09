@@ -29,6 +29,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     __slots__ = (
         "algorithm",
         "auth_header",
+        "leeway",
         "require_claims",
         "retrieve_user_handler",
         "revoked_token_handler",
@@ -59,6 +60,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         verify_expiry: bool = True,
         verify_not_before: bool = True,
         strict_audience: bool = False,
+        leeway: int | float | timedelta = 0,
         revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]] | None = None,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
@@ -111,6 +113,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         self.verify_expiry = verify_expiry
         self.verify_not_before = verify_not_before
         self.strict_audience = strict_audience
+        self.leeway = leeway
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
@@ -156,6 +159,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             verify_exp=self.verify_expiry,
             verify_nbf=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
         user = await self.retrieve_user_handler(token, connection)
@@ -194,6 +198,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         verify_expiry: bool = True,
         verify_not_before: bool = True,
         strict_audience: bool = False,
+        leeway: int | float | timedelta = 0,
         revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]] | None = None,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header or cookie name specified, and if present
@@ -219,12 +224,15 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             token_issuer: Verify the issuer when decoding the token. If the issuer in
                 the token does not match any issuer given, raise a
                 :exc:`NotAuthorizedException`
-            require_claims: Require these claims to be present in the JWT payload
+            require_claims: Require these claims are present in the JWT payload
             verify_expiry: Verify that the value of the ``exp`` (*expiration*) claim is in the future
             verify_not_before: Verify that the value of the ``nbf`` (*not before*) claim is in the past
             strict_audience: Verify that the value of the ``aud`` (*audience*) claim is a single value, and
                 not a list of values, and matches ``audience`` exactly. Requires that
                 ``accepted_audiences`` is a sequence of length 1
+            leeway: Leeway, in seconds, to account for clock skew when verifying
+                ``exp`` and ``nbf`` claims. Passed directly to PyJWT's
+                :func:`jwt.decode`. Defaults to ``0``.
             revoked_token_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a boolean
                 indicating whether the token has been revoked.
         """
@@ -246,6 +254,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             verify_expiry=verify_expiry,
             verify_not_before=verify_not_before,
             strict_audience=strict_audience,
+            leeway=leeway,
         )
         self.auth_cookie_key = auth_cookie_key
 
