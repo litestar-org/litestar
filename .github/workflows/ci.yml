@@ -14,7 +14,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
 
       - uses: actions/setup-python@v6
         with:
@@ -36,7 +36,7 @@ jobs:
   mypy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
 
       - uses: actions/setup-python@v6
         with:
@@ -53,7 +53,7 @@ jobs:
   pyright:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
 
       - uses: actions/setup-python@v6
         with:
@@ -70,7 +70,7 @@ jobs:
   slotscheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
 
       - uses: actions/setup-python@v6
         with:
@@ -117,7 +117,7 @@ jobs:
         typing-extensions: ["4.12.1", "4.13.1", "4.14.0", "latest"]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
 
       - name: Set up python
         uses: actions/setup-python@v6
@@ -153,7 +153,7 @@ jobs:
         uvicorn-version: ["uvicorn<0.27.0", "uvicorn>=0.27.0"]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
 
       - name: Set up python 3.11
         uses: actions/setup-python@v6
@@ -198,7 +198,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
 
       - name: Install Build Dependencies
         run: sudo apt-get install build-essential libpq-dev python3-dev -y
@@ -242,7 +242,7 @@ jobs:
       python_version: "3.12"
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -267,7 +267,7 @@ jobs:
     needs:
       - test
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
