@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from collections.abc import Sequence  # noqa: TC003
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any, TypedDict
 
 import jwt
@@ -92,6 +92,7 @@ class Token:
         issuer: str | Sequence[str] | None = None,
         audience: str | Sequence[str] | None = None,
         options: JWTDecodeOptions | None = None,
+        leeway: int | float | timedelta = 0,
     ) -> Any:
         """Decode and verify the JWT and return its payload"""
         return jwt.decode(
@@ -101,6 +102,7 @@ class Token:
             issuer=issuer,
             audience=audience,
             options=options,  # type: ignore[arg-type]
+            leeway=leeway,
         )
 
     @classmethod
@@ -115,6 +117,7 @@ class Token:
         verify_exp: bool = True,
         verify_nbf: bool = True,
         strict_audience: bool = False,
+        leeway: int | float | timedelta = 0,
     ) -> Self:
         """Decode a passed in token string and return a Token instance.
 
@@ -137,6 +140,9 @@ class Token:
                 a single value, and not a list of values, and matches ``audience``
                 exactly. Requires the value passed to the ``audience`` to be a sequence
                 of length 1
+            leeway: Leeway, in seconds, to account for clock skew when verifying
+                ``exp`` and ``nbf`` claims. Passed directly to PyJWT's
+                :func:`jwt.decode`. Defaults to ``0``.
 
         Returns:
             A decoded Token instance.
@@ -172,6 +178,7 @@ class Token:
                 audience=audience,
                 issuer=issuer,
                 options=options,
+                leeway=leeway,
             )
             # msgspec can do these conversions as well, but to keep backwards
             # compatibility, we do it ourselves, since the datetime parsing works a

@@ -94,6 +94,11 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
     not a list of values, and matches ``audience`` exactly. Requires that
     ``accepted_audiences`` is a sequence of length 1
     """
+    leeway: int | float | timedelta = 0
+    """Leeway, in seconds, to account for clock skew when verifying ``exp`` and
+    ``nbf`` claims. Passed directly to PyJWT's :func:`jwt.decode`.
+    Defaults to ``0`` (no leeway).
+    """
 
     @property
     def openapi_components(self) -> Components:
@@ -153,6 +158,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             verify_expiry=self.verify_expiry,
             verify_not_before=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
     def login(
@@ -499,6 +505,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
             verify_expiry=self.verify_expiry,
             verify_not_before=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
     def login(
@@ -719,6 +726,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
             verify_expiry=self.verify_expiry,
             verify_not_before=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
     @property
