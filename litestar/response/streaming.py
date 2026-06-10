@@ -41,7 +41,7 @@ class ASGIStreamingResponse(ASGIResponse):
         content_length: int | None = None,
         cookies: Iterable[Cookie] | None = None,
         encoding: str = "utf-8",
-        headers: dict[str, Any] | None = None,
+        headers: dict[str, Any] | Iterable[tuple[str, str]] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
         status_code: int | None = None,
@@ -53,7 +53,7 @@ class ASGIStreamingResponse(ASGIResponse):
             content_length: The response content length.
             cookies: The response cookies.
             encoding: The response encoding.
-            headers: The response headers.
+            headers: The response headers. Accepts a dict or an iterable of ``(name, value)`` tuples to allow repeated headers.
             is_head_response: A boolean indicating if the response is a HEAD response.
             iterator: An async iterator or iterable.
             media_type: The response media type.
@@ -175,7 +175,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: Iterable[Cookie] | None = None,
-        headers: dict[str, str] | None = None,
+        headers: dict[str, Any] | Iterable[tuple[str, str]] | None = None,
         is_head_response: bool = False,
         media_type: MediaType | str | None = None,
         status_code: int | None = None,
@@ -197,7 +197,13 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
             An ASGIStreamingResponse instance.
         """
 
-        headers = {**headers, **self.headers} if headers is not None else self.headers
+        if headers is not None:
+            headers = {
+                **dict(headers if isinstance(headers, dict) else headers),
+                **self.headers,
+            }
+        else:
+            headers = self.headers
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
