@@ -25,6 +25,7 @@ def create_person_controller() -> Type[Controller]:
         @get(sync_to_thread=False)
         def get_persons(
             self,
+            *,
             # expected to be ignored
             headers: Any,
             request: Any,
@@ -36,7 +37,7 @@ def create_person_controller() -> Type[Controller]:
             # required query parameters below
             page: FromQuery[int],
             name: FromQuery[Optional[Union[str, List[str]]]],  # intentionally without default
-            lucky_number: Annotated[Optional[LuckyNumber], QueryParameter(examples=[Example(value=LuckyNumber.SEVEN)])],
+            lucky_number: Annotated[Optional[LuckyNumber], QueryParameter(examples=[Example(value=LuckyNumber.SEVEN)])] = 1,
             # header parameter
             secret_header: Annotated[str, HeaderParameter(name="secret")],
             # cookie parameter

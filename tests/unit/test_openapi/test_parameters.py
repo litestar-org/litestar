@@ -128,7 +128,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
         ],
         examples=[Gender.MALE, [Gender.MALE, Gender.OTHER]],
     )
-    assert not gender.required
+    assert gender.required
 
     assert secret_header.param_in == ParamType.HEADER
     assert is_schema_value(secret_header.schema)
@@ -151,6 +151,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
             Schema(type=OpenAPIType.NULL),
         ],
         examples=[LuckyNumber.SEVEN],
+        default=1,
     )
     assert not lucky_number.required
 
@@ -615,12 +616,12 @@ def test_nullable_query_param_required(annotation: Any, default: Any, expected_r
     if default is ...:
 
         @get("/test")
-        def handler(param: annotation) -> None:  # pyright: ignore[reportInvalidTypeForm]
+        def handler(param: FromQuery[annotation]) -> None:  # pyright: ignore[reportInvalidTypeForm]
             pass
     else:
 
         @get("/test")
-        def handler(param: annotation = default) -> None:  # pyright: ignore[reportInvalidTypeForm]
+        def handler(param: FromQuery[annotation] = default) -> None:  # pyright: ignore[reportInvalidTypeForm]
             pass
 
     with create_test_client(handler) as client:
