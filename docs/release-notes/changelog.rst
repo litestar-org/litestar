@@ -3,6 +3,58 @@
 Litestar 2 Changelog
 ====================
 
+.. changelog:: 2.24.0
+    :date: 2026-06-11
+
+    .. change:: Fix OpenAPI schema incorrectly marking nullable required fields as not required
+        :type: bugfix
+        :pr: 4687
+        :issue: 4673
+
+        Fields typed as ``T | None`` (nullable) without a default value are now correctly
+        included in the OpenAPI schema's ``required`` array. Previously, Litestar conflated
+        nullability (the type can be ``None``) with optionality (having a default value),
+        causing the generated schema to diverge from the OpenAPI 3.1.0 specification.
+
+        This affected all model types: dataclasses, msgspec Structs, attrs classes, and
+        Pydantic models. For example, a field ``name: int | None`` with no default was
+        previously excluded from ``required``; it is now correctly included.
+
+        Runtime request validation behavior is unchanged; nullable parameters without
+        defaults were already enforced as required at the validation layer.
+
+    .. change:: ``data`` declared in dependency only not included in OpenAPI schema
+        :type: bugfix
+        :pr: 4833
+
+        When ``data`` was declared in a dependency function but not in the handler, the
+        request body was missing from the OpenAPI schema:
+
+        .. code-block:: python
+
+            from litestar import post, Litestar
+
+            async def some_dependency(data: list[str]) -> list[str]:
+                return data
+
+            @post("/", dependencies={"some_data": some_dependency})
+            async def handler(some_data: list[str]) -> None:
+
+        Ensure ``data`` is always documented, and ensure that ``data`` annotations are
+        compatible between dependencies and handler functions.
+
+    .. change:: Deprecate implicitly declared dependencies
+        :type: feature
+        :pr: 4824
+
+        Deprecate implicitly declaring dependencies. Instead, dependencies should be
+        explicitly declared with :data:`~litestar.di.NamedDependency`. Not doing so
+        will raise a :exc:`DeprecationWarning`. Implicitly declared dependencies will be
+        removed in Litestar 3.0
+
+        .. seealso:: :doc:`/topics/explicit_declarations`
+
+
 .. changelog:: 2.23.0
     :date: 2026-05-29
 
