@@ -1428,6 +1428,7 @@ document.write(`
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topics/explicit_declarations.html">Explicit parameter declarations</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
@@ -1566,7 +1567,7 @@ handler takes precedence.</p>
 <h2>Pydantic support<a class="headerlink" href="#pydantic-support" title="Link to this heading">#</a></h2>
 <p>Litestar does support Pydantic, but other than FastAPI, it is mostly agnostic about
 the modelling library you use. Litestar internally uses
-<a class="reference external" href="https://jcristharif.com/msgspec/">msgspec</a>, but also ships with support for Pydantic,
+<a class="reference external" href="https://msgspec.dev">msgspec</a>, but also ships with support for Pydantic,
 attrs and all builtin container types such as dataclasses or <code class="docutils literal notranslate"><span class="pre">TypedDict</span></code>s.</p>
 <p>These, as well as <code class="docutils literal notranslate"><span class="pre">msgspec</span></code>, are supported through its plugin system (
 <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.SerializationPlugin" title="litestar.plugins.SerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPlugin</span></code></a> and
@@ -2226,6 +2227,7 @@ FastAPI</label><div class="sd-tab-content docutils">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="litestar" for="sd-tab-item-28">
 Litestar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">route_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -2240,12 +2242,17 @@ Litestar</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="mi">1</span>
 
 
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">app_dependency</span><span class="p">(</span><span class="n">val_nested</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">app_dependency</span><span class="p">(</span><span class="n">val_nested</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">val_nested</span><span class="p">)</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;val_route&quot;</span><span class="p">:</span> <span class="n">route_dependency</span><span class="p">})</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">val_route</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">val_router</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">val_nested</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val_app</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
+    <span class="n">val_route</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span>
+    <span class="n">val_router</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">val_nested</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">val_app</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;val_route&quot;</span><span class="p">:</span> <span class="n">val_route</span><span class="p">,</span>
         <span class="s2">&quot;val_router&quot;</span><span class="p">:</span> <span class="n">val_router</span><span class="p">,</span>

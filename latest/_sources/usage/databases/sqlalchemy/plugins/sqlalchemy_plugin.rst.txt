@@ -54,14 +54,14 @@ represents a todo item in our SQLite database.
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 6,15-24
+            :lines: 6,16-25
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 6,15-24
+            :lines: 6,16-25
 
 Setting Up an API Endpoint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,14 +75,14 @@ Next, we set up an API endpoint at the root  (``"/"``)  that allows adding a ``T
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 3-5,8,10-14,25-31
+            :lines: 3-5,8-9,11-15,26-32
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 3-5,8,10-14,25-31
+            :lines: 3-5,8-9,11-15,26-32
 
 Initializing the Database
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -101,14 +101,14 @@ We create a function ``init_db`` that we'll use to initialize the database when 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 9,31-35
+            :lines: 10,32-36
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 9,31-33
+            :lines: 10,32-34
 
 Setting Up the Plugin and the App
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -122,14 +122,14 @@ Finally, we set up the SQLAlchemy Plugin and the Litestar app.
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 8,31-35
+            :lines: 8,32-36
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 9,31-33
+            :lines: 10,32-34
 
 This configures the app with the plugin, sets up a route handler for adding items, and specifies that the ``init_db``
 function should be run when the app starts up.

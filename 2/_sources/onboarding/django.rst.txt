@@ -31,7 +31,7 @@ Library-agnostic modelling
 DRF uses ``Serializer`` and ``ModelSerializer`` for request validation, response
 rendering, and database-to-response mapping; Django uses ``Form`` for HTML form workflows.
 Litestar is mostly agnostic about the modelling library. Internally it uses
-`msgspec <https://jcristharif.com/msgspec/>`_, and ships first-class support for
+`msgspec <https://msgspec.dev>`_, and ships first-class support for
 Pydantic, attrs, dataclasses, and ``TypedDict``\ s through its plugin system
 (:class:`~litestar.plugins.SerializationPlugin` and
 :class:`~litestar.plugins.OpenAPISchemaPlugin`). The body of a request is bound to a

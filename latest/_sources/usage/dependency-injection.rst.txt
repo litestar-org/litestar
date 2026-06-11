@@ -7,7 +7,7 @@ the application:
 .. code-block:: python
 
    from litestar import Controller, Router, Litestar, get
-   from litestar.di import Provide
+   from litestar.di import NamedDependency, Provide
 
 
    async def bool_fn() -> bool: ...
@@ -31,10 +31,10 @@ the application:
        @get(path="/handler", dependencies={"local_dependency": Provide(int_fn)})
        def my_route_handler(
            self,
-           app_dependency: bool,
-           router_dependency: dict,
-           controller_dependency: list,
-           local_dependency: int,
+           app_dependency: NamedDependency[bool],
+           router_dependency: NamedDependency[dict],
+           controller_dependency: NamedDependency[list],
+           local_dependency: NamedDependency[int],
        ) -> None: ...
 
 
@@ -73,18 +73,29 @@ Pre-requisites and scope
 
 The pre-requisites for dependency injection are these:
 
-
 #. dependencies must be callables.
 #. dependencies can receive kwargs and a ``self`` arg but not positional args.
-#. the kwarg name and the dependency key must be identical.
+#. the parameter receiving the dependency must be marked with
+   :data:`~litestar.di.NamedDependency`, and its name must match the dependency key.
 #. the dependency must be declared using the ``Provide`` class.
 #. the dependency must be in the *scope* of the handler function.
+
+.. deprecated:: 2.24
+    Previously, a dependency was injected into any parameter whose name matched a
+    dependency key in scope, with no marker required. Relying on this name-based
+    *inference* now emits a :class:`~.exceptions.LitestarDeprecationWarning` and will
+    stop working in Litestar 3.0. Mark the parameter with
+    :data:`~litestar.di.NamedDependency` instead (see
+    :ref:`usage/dependency-injection:Marking dependencies`).
 
 What is *scope* in this context? Dependencies are **isolated** to the context in which they are declared. Thus, in the
 above example, the ``local_dependency`` can only be accessed within the specific route handler on which it was declared;
 The ``controller_dependency`` is available only for route handlers on that specific controller; And the ``router
 dependency`` is available only to the route handlers registered on that particular router. Only the ``app_dependency``
 is available to all route handlers.
+
+.. seealso::
+    :doc:`/topics/explicit_declarations`
 
 .. _yield_dependencies:
 
@@ -196,7 +207,7 @@ can :ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword 
 .. code-block:: python
 
    from litestar import Controller, patch
-   from litestar.di import Provide
+   from litestar.di import NamedDependency, Provide
    from pydantic import BaseModel, UUID4
 
 
@@ -213,7 +224,7 @@ can :ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword 
        dependencies = {"user": Provide(retrieve_db_user)}
 
        @patch(path="/{user_id:uuid}")
-       async def get_user(self, user: User) -> User: ...
+       async def get_user(self, user: NamedDependency[User]) -> User: ...
 
 In the above example we have a ``User`` model that we are persisting into a db. The model is fetched using the helper
 method ``retrieve_db_user`` which receives a ``user_id`` kwarg and retrieves the corresponding ``User`` instance.
@@ -232,7 +243,7 @@ very simple:
 .. code-block:: python
 
    from litestar import Controller, get
-   from litestar.di import Provide
+   from litestar.di import NamedDependency, Provide
 
 
    def bool_fn() -> bool: ...
@@ -250,7 +261,7 @@ very simple:
        @get(path="/handler", dependencies={"some_dependency": Provide(bool_fn)})
        def my_route_handler(
            self,
-           some_dependency: bool,
+           some_dependency: NamedDependency[bool],
        ) -> None: ...
 
 The lower scoped route handler function declares a dependency with the same key as the one declared on the higher scoped
@@ -267,7 +278,7 @@ it in ``Provide``:
 
    from random import randint
    from litestar import get
-   from litestar.di import Provide
+   from litestar.di import NamedDependency, Provide
 
 
    def my_dependency() -> int:
@@ -282,7 +293,7 @@ it in ``Provide``:
            )
        },
    )
-   def my_handler(my_dep: int) -> None: ...
+   def my_handler(my_dep: NamedDependency[int]) -> None: ...
 
 
 .. attention::
@@ -303,7 +314,7 @@ functions:
 .. code-block:: python
 
    from litestar import Litestar, get
-   from litestar.di import Provide
+   from litestar.di import NamedDependency, Provide
    from random import randint
 
 
@@ -311,12 +322,12 @@ functions:
        return randint(1, 10)
 
 
-   async def second_dependency(injected_integer: int) -> bool:
+   async def second_dependency(injected_integer: NamedDependency[int]) -> bool:
        return injected_integer % 2 == 0
 
 
    @get("/true-or-false")
-   def true_or_false_handler(injected_bool: bool) -> str:
+   def true_or_false_handler(injected_bool: NamedDependency[bool]) -> str:
        return "it's true!" if injected_bool else "nope, it's false..."
 
 
@@ -333,12 +344,38 @@ functions:
    The rules for `dependency overrides`_ apply here as well.
 
 
-Explicitly marking dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Marking dependencies
+~~~~~~~~~~~~~~~~~~~~~~
 
-Normally, dependencies are inferred. That means, Litestar will try to match a dependency
-provider to a function parameter. However, this process can also be made explicit by
-using the :data:`~litestar.di.NamedDependency` generic.
+A parameter that should receive an injected dependency is marked with the
+:data:`~litestar.di.NamedDependency` generic. The parameter name is matched against the
+dependency keys in scope, and the type wrapped by ``NamedDependency`` is used to validate
+the injected value:
+
+.. code-block:: python
+
+   from litestar import get
+   from litestar.di import NamedDependency, Provide
+
+
+   async def my_dependency() -> int: ...
+
+
+   @get("/", dependencies={"my_dep": my_dependency})
+   def handler(my_dep: NamedDependency[int]) -> None: ...
+
+.. deprecated:: 2.24
+    Earlier versions *inferred* dependencies: any parameter whose name matched a
+    dependency key in scope was injected automatically, without a marker. Relying on
+    this now emits a :class:`~.exceptions.LitestarDeprecationWarning` and will stop
+    working in Litestar 3.0.
+
+    .. code-block:: python
+
+        # Deprecated: ``my_dep`` is injected only because its name matches the
+        # dependency key. Mark it with ``NamedDependency[int]`` instead.
+        @get("/", dependencies={"my_dep": Provide(my_dependency)})
+        def handler(my_dep: int) -> None: ...
 
 
 Exclude dependencies with default values from OpenAPI docs

@@ -1428,6 +1428,7 @@ document.write(`
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topics/explicit_declarations.html">Explicit parameter declarations</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
@@ -1569,7 +1570,7 @@ are configured per view. In Litestar these are configurable at every layer.</p>
 <p>DRF uses <code class="docutils literal notranslate"><span class="pre">Serializer</span></code> and <code class="docutils literal notranslate"><span class="pre">ModelSerializer</span></code> for request validation, response
 rendering, and database-to-response mapping; Django uses <code class="docutils literal notranslate"><span class="pre">Form</span></code> for HTML form workflows.
 Litestar is mostly agnostic about the modelling library. Internally it uses
-<a class="reference external" href="https://jcristharif.com/msgspec/">msgspec</a>, and ships first-class support for
+<a class="reference external" href="https://msgspec.dev">msgspec</a>, and ships first-class support for
 Pydantic, attrs, dataclasses, and <code class="docutils literal notranslate"><span class="pre">TypedDict</span></code>s through its plugin system
 (<a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.SerializationPlugin" title="litestar.plugins.SerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPlugin</span></code></a> and
 <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin" title="litestar.plugins.OpenAPISchemaPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPlugin</span></code></a>). The body of a request is bound to a
@@ -2109,7 +2110,7 @@ Litestar</label><div class="sd-tab-content docutils">
 <h3>JSON request body<a class="headerlink" href="#json-request-body" title="Link to this heading">#</a></h3>
 <p>DRF’s parser populates <code class="docutils literal notranslate"><span class="pre">request.data</span></code> and a <code class="docutils literal notranslate"><span class="pre">Serializer</span></code> validates the dict into
 a Python object. Litestar injects the validated body through a <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter
-typed against any supported model (dataclasses , msgspec <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>,
+typed against any supported model (dataclasses , msgspec <a class="reference external" href="https://msgspec.dev/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>,
 Pydantic model, attrs class). Validation runs before the handler is called; an invalid
 body raises <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ValidationException" title="litestar.exceptions.ValidationException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationException</span></code></a> which produces a
 <cite>400 - Bad Request</cite> response.</p>

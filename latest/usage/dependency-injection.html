@@ -1428,6 +1428,7 @@ document.write(`
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topics/explicit_declarations.html">Explicit parameter declarations</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
@@ -1549,7 +1550,7 @@ document.write(`
 <p>Litestar has a simple but powerful dependency injection system that allows for declaring dependencies on all layers of
 the application:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">bool_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
@@ -1573,10 +1574,10 @@ the application:</p>
     <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/handler&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;local_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">int_fn</span><span class="p">)})</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">app_dependency</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-        <span class="n">router_dependency</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-        <span class="n">controller_dependency</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
-        <span class="n">local_dependency</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">app_dependency</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span>
+        <span class="n">router_dependency</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">controller_dependency</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span>
+        <span class="n">local_dependency</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
@@ -1629,15 +1630,28 @@ value, a warning will be raised.</p>
 <ol class="arabic simple">
 <li><p>dependencies must be callables.</p></li>
 <li><p>dependencies can receive kwargs and a <code class="docutils literal notranslate"><span class="pre">self</span></code> arg but not positional args.</p></li>
-<li><p>the kwarg name and the dependency key must be identical.</p></li>
+<li><p>the parameter receiving the dependency must be marked with
+<a class="reference internal" href="../reference/di.html#litestar.di.NamedDependency" title="litestar.di.NamedDependency"><code class="xref py py-data docutils literal notranslate"><span class="pre">NamedDependency</span></code></a>, and its name must match the dependency key.</p></li>
 <li><p>the dependency must be declared using the <code class="docutils literal notranslate"><span class="pre">Provide</span></code> class.</p></li>
 <li><p>the dependency must be in the <em>scope</em> of the handler function.</p></li>
 </ol>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 2.24: </span>Previously, a dependency was injected into any parameter whose name matched a
+dependency key in scope, with no marker required. Relying on this name-based
+<em>inference</em> now emits a <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.LitestarDeprecationWarning" title="litestar.exceptions.LitestarDeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarDeprecationWarning</span></code></a> and will
+stop working in Litestar 3.0. Mark the parameter with
+<a class="reference internal" href="../reference/di.html#litestar.di.NamedDependency" title="litestar.di.NamedDependency"><code class="xref py py-data docutils literal notranslate"><span class="pre">NamedDependency</span></code></a> instead (see
+<a class="reference internal" href="#marking-dependencies"><span class="std std-ref">Marking dependencies</span></a>).</p>
+</div>
 <p>What is <em>scope</em> in this context? Dependencies are <strong>isolated</strong> to the context in which they are declared. Thus, in the
 above example, the <code class="docutils literal notranslate"><span class="pre">local_dependency</span></code> can only be accessed within the specific route handler on which it was declared;
 The <code class="docutils literal notranslate"><span class="pre">controller_dependency</span></code> is available only for route handlers on that specific controller; And the <code class="docutils literal notranslate"><span class="pre">router</span>
 <span class="pre">dependency</span></code> is available only to the route handlers registered on that particular router. Only the <code class="docutils literal notranslate"><span class="pre">app_dependency</span></code>
 is available to all route handlers.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../topics/explicit_declarations.html"><span class="doc">Explicit parameter declarations</span></a></p>
+</div>
 </section>
 <section id="dependencies-with-yield-cleanup-step">
 <span id="yield-dependencies"></span><h2>Dependencies with yield (cleanup step)<a class="headerlink" href="#dependencies-with-yield-cleanup-step" title="Link to this heading">#</a></h2>
@@ -1866,7 +1880,7 @@ injected into them.</p>
 <p>In fact, you can inject the same data that you
 can <a class="reference internal" href="routing/handlers.html#reserved-keyword-arguments"><span class="std std-ref">inject into route handlers</span></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">UUID4</span>
 
 
@@ -1883,7 +1897,7 @@ can <a class="reference internal" href="routing/handlers.html#reserved-keyword-a
     <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">retrieve_db_user</span><span class="p">)}</span>
 
     <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>In the above example we have a <code class="docutils literal notranslate"><span class="pre">User</span></code> model that we are persisting into a db. The model is fetched using the helper
@@ -1896,7 +1910,7 @@ in turn makes it available as a kwarg in the <code class="docutils literal notra
 <p>Because dependencies are declared at each level of the app using a string keyed dictionary, overriding dependencies is
 very simple:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">bool_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
@@ -1914,7 +1928,7 @@ very simple:</p>
     <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/handler&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">bool_fn</span><span class="p">)})</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">some_dependency</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">some_dependency</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -1927,7 +1941,7 @@ controller. The lower scoped dependency therefore overrides the higher scoped on
 it in <code class="docutils literal notranslate"><span class="pre">Provide</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">my_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -1942,7 +1956,7 @@ it in <code class="docutils literal notranslate"><span class="pre">Provide</span
         <span class="p">)</span>
     <span class="p">},</span>
 <span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span><span class="n">my_dep</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span><span class="n">my_dep</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <div class="admonition attention">
@@ -1958,6 +1972,7 @@ request, even with <code class="docutils literal notranslate"><span class="pre">
 <p>You can inject dependencies into other dependencies, exactly like you would into handler
 functions:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
 
 
@@ -1965,12 +1980,12 @@ functions:</p>
     <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 
 
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">second_dependency</span><span class="p">(</span><span class="n">injected_integer</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">second_dependency</span><span class="p">(</span><span class="n">injected_integer</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">injected_integer</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/true-or-false&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">true_or_false_handler</span><span class="p">(</span><span class="n">injected_bool</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">true_or_false_handler</span><span class="p">(</span><span class="n">injected_bool</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="s2">&quot;it&#39;s true!&quot;</span> <span class="k">if</span> <span class="n">injected_bool</span> <span class="k">else</span> <span class="s2">&quot;nope, it&#39;s false...&quot;</span>
 
 
@@ -1987,11 +2002,35 @@ functions:</p>
 <p class="admonition-title">Note</p>
 <p>The rules for <a class="reference internal" href="#dependency-overrides">dependency overrides</a> apply here as well.</p>
 </div>
-<section id="explicitly-marking-dependencies">
-<h3>Explicitly marking dependencies<a class="headerlink" href="#explicitly-marking-dependencies" title="Link to this heading">#</a></h3>
-<p>Normally, dependencies are inferred. That means, Litestar will try to match a dependency
-provider to a function parameter. However, this process can also be made explicit by
-using the <a class="reference internal" href="../reference/di.html#litestar.di.NamedDependency" title="litestar.di.NamedDependency"><code class="xref py py-data docutils literal notranslate"><span class="pre">NamedDependency</span></code></a> generic.</p>
+<section id="marking-dependencies">
+<h3>Marking dependencies<a class="headerlink" href="#marking-dependencies" title="Link to this heading">#</a></h3>
+<p>A parameter that should receive an injected dependency is marked with the
+<a class="reference internal" href="../reference/di.html#litestar.di.NamedDependency" title="litestar.di.NamedDependency"><code class="xref py py-data docutils literal notranslate"><span class="pre">NamedDependency</span></code></a> generic. The parameter name is matched against the
+dependency keys in scope, and the type wrapped by <code class="docutils literal notranslate"><span class="pre">NamedDependency</span></code> is used to validate
+the injected value:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my_dep&quot;</span><span class="p">:</span> <span class="n">my_dependency</span><span class="p">})</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">my_dep</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 2.24: </span>Earlier versions <em>inferred</em> dependencies: any parameter whose name matched a
+dependency key in scope was injected automatically, without a marker. Relying on
+this now emits a <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.LitestarDeprecationWarning" title="litestar.exceptions.LitestarDeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarDeprecationWarning</span></code></a> and will stop
+working in Litestar 3.0.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Deprecated: ``my_dep`` is injected only because its name matches the</span>
+<span class="c1"># dependency key. Mark it with ``NamedDependency[int]`` instead.</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my_dep&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">my_dependency</span><span class="p">)})</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">my_dep</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
 <section id="exclude-dependencies-with-default-values-from-openapi-docs">
 <h4>Exclude dependencies with default values from OpenAPI docs<a class="headerlink" href="#exclude-dependencies-with-default-values-from-openapi-docs" title="Link to this heading">#</a></h4>
 <p>Depending on your application design, it is possible to have a dependency declared in a handler or
@@ -2101,7 +2140,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -2110,7 +2149,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)},</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects an `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
 
@@ -2128,7 +2167,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -2137,7 +2176,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_str</span><span class="p">)},</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects an `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
 
@@ -2264,7 +2303,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-overrides">Dependency overrides</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-provide-class">The <code class="docutils literal notranslate"><span class="pre">Provide</span></code> class</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies-within-dependencies">Dependencies within dependencies</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explicitly-marking-dependencies">Explicitly marking dependencies</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#marking-dependencies">Marking dependencies</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#exclude-dependencies-with-default-values-from-openapi-docs">Exclude dependencies with default values from OpenAPI docs</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#early-detection-if-a-dependency-isn-t-provided">Early detection if a dependency isn’t provided</a></li>
 </ul>

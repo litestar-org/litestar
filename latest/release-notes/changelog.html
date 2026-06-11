@@ -1426,6 +1426,7 @@ document.write(`
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topics/explicit_declarations.html">Explicit parameter declarations</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
@@ -1541,6 +1542,61 @@ document.write(`
                   
   <section id="litestar-2-changelog">
 <h1>Litestar 2 Changelog<a class="headerlink" href="#litestar-2-changelog" title="Link to this heading">#</a></h1>
+<section id="2.24.0">
+<h2>2.24.0<a class="headerlink" href="#2.24.0" title="Link to this heading">#</a></h2>
+<strong>Released: </strong>2026-06-11<section id="2.24.0-feature">
+<h3>Features<a class="headerlink" href="#2.24.0-feature" title="Link to this heading">#</a></h3>
+<dl>
+<dt>Deprecate implicitly declared dependencies<a class="headerlink reference internal" href="#2.24.0-deprecate implicitly declared dependencies" id="2.24.0-deprecate implicitly declared dependencies">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Deprecate implicitly declaring dependencies. Instead, dependencies should be
+explicitly declared with <a class="reference internal" href="../reference/di.html#litestar.di.NamedDependency" title="litestar.di.NamedDependency"><code class="xref py py-data docutils literal notranslate"><span class="pre">NamedDependency</span></code></a>. Not doing so
+will raise a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#DeprecationWarning" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a>. Implicitly declared dependencies will be
+removed in Litestar 3.0</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../topics/explicit_declarations.html"><span class="doc">Explicit parameter declarations</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4824">litestar-org/litestar#4824</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.24.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.24.0-bugfix" title="Link to this heading">#</a></h3>
+<dl>
+<dt>Fix OpenAPI schema incorrectly marking nullable required fields as not required<a class="headerlink reference internal" href="#2.24.0-fix openapi schema incorrectly marking nullable required fields as not required" id="2.24.0-fix openapi schema incorrectly marking nullable required fields as not required">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fields typed as <code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">|</span> <span class="pre">None</span></code> (nullable) without a default value are now correctly
+included in the OpenAPI schema’s <code class="docutils literal notranslate"><span class="pre">required</span></code> array. Previously, Litestar conflated
+nullability (the type can be <code class="docutils literal notranslate"><span class="pre">None</span></code>) with optionality (having a default value),
+causing the generated schema to diverge from the OpenAPI 3.1.0 specification.</p>
+<p>This affected all model types: dataclasses, msgspec Structs, attrs classes, and
+Pydantic models. For example, a field <code class="docutils literal notranslate"><span class="pre">name:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></code> with no default was
+previously excluded from <code class="docutils literal notranslate"><span class="pre">required</span></code>; it is now correctly included.</p>
+<p>Runtime request validation behavior is unchanged; nullable parameters without
+defaults were already enforced as required at the validation layer.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/4673">litestar-org/litestar#4673</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4687">litestar-org/litestar#4687</a></span></p>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data</span></code> declared in dependency only not included in OpenAPI schema<a class="headerlink reference internal" href="#2.24.0-data" id="2.24.0-data">#</a></dt><dd><div class="changelog-change docutils container">
+<p>When <code class="docutils literal notranslate"><span class="pre">data</span></code> was declared in a dependency function but not in the handler, the
+request body was missing from the OpenAPI schema:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">post</span><span class="p">,</span> <span class="n">Litestar</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">some_dependency</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some_data&quot;</span><span class="p">:</span> <span class="n">some_dependency</span><span class="p">})</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">some_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>Ensure <code class="docutils literal notranslate"><span class="pre">data</span></code> is always documented, and ensure that <code class="docutils literal notranslate"><span class="pre">data</span></code> annotations are
+compatible between dependencies and handler functions.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/4833">litestar-org/litestar#4833</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.23.0">
 <h2>2.23.0<a class="headerlink" href="#2.23.0" title="Link to this heading">#</a></h2>
 <strong>Released: </strong>2026-05-29<section id="2.23.0-feature">
@@ -2915,7 +2971,7 @@ OpenAPI specification.</p>
 <dt>OpenAPI: Correctly handle <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code> tagged unions<a class="headerlink reference internal" href="#2.12.0-openapi: correctly handle" id="2.12.0-openapi: correctly handle">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug where the OpenAPI schema would not include the struct fields
 implicitly generated by msgspec for its
-<a class="reference external" href="https://jcristharif.com/msgspec/structs.html#tagged-unions">tagged union</a>
+<a class="reference external" href="https://msgspec.devstructs.html#tagged-unions">tagged union</a>
 support.</p>
 <p>The tag field of the struct will now be added as a <code class="docutils literal notranslate"><span class="pre">const</span></code> of the appropriate
 type to the schema.</p>
@@ -3868,7 +3924,7 @@ we want to warn about, and eventually disallow specifying parameter defaults in 
 <p>Simplifies the type that is applied to DTO transfer models for certain Pydantic field types.
 It addresses <code class="docutils literal notranslate"><span class="pre">JsonValue</span></code>, <code class="docutils literal notranslate"><span class="pre">EmailStr</span></code>, <code class="docutils literal notranslate"><span class="pre">IPvAnyAddress</span></code>/<code class="docutils literal notranslate"><span class="pre">IPvAnyNetwork</span></code>/<code class="docutils literal notranslate"><span class="pre">IPvAnyInterface</span></code> types by
 using appropriate <a class="reference external" href="https://docs.python.org/3/glossary.html#term-annotation" title="(in Python v3.14)"><span class="xref std std-term">type annotations</span></a> on the transfer models to ensure compatibility with
-<a class="reference external" href="https://jcristharif.com/msgspec/index.html" title="(in msgspec)"><span>msgspec</span></a> serialization and deserialization.</p>
+<a class="reference external" href="https://msgspec.dev/index.html" title="(in msgspec)"><span>msgspec</span></a> serialization and deserialization.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3296">litestar-org/litestar#3296</a></span></p>
 </div>
 </dd>
@@ -3916,7 +3972,7 @@ would ignore custom <code class="docutils literal notranslate"><span class="pre"
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3192">litestar-org/litestar#3192</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3284">litestar-org/litestar#3284</a></span></p>
 </div>
 </dd>
-<dt>Ensure default values are always represented in schema for dataclasses and <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>s<a class="headerlink reference internal" href="#2.8.0-ensure default values are always represented in schema for dataclasses and" id="2.8.0-ensure default values are always represented in schema for dataclasses and">#</a></dt><dd><div class="changelog-change docutils container">
+<dt>Ensure default values are always represented in schema for dataclasses and <a class="reference external" href="https://msgspec.dev/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>s<a class="headerlink reference internal" href="#2.8.0-ensure default values are always represented in schema for dataclasses and" id="2.8.0-ensure default values are always represented in schema for dataclasses and">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fixes a bug that would prevent default values for dataclasses and <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code> s to be included in the
 OpenAPI schema.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3201">litestar-org/litestar#3201</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3285">litestar-org/litestar#3285</a></span></p>
@@ -6427,7 +6483,7 @@ value, which defaults to <code class="docutils literal notranslate"><span class=
 </div>
 </dd>
 <dt>DTOs: Msgspec and Pydantic DTO factory implementation<a class="headerlink reference internal" href="#2.0.0beta1-dtos: msgspec and pydantic dto factory implementation" id="2.0.0beta1-dtos: msgspec and pydantic dto factory implementation">#</a></dt><dd><div class="changelog-change docutils container">
-<p>DTO factories for <a class="reference external" href="https://jcristharif.com/msgspec/">msgspec</a> and
+<p>DTO factories for <a class="reference external" href="https://msgspec.dev">msgspec</a> and
 <a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic</a> have been added:</p>
 <ul class="simple">
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MsgspecDTO</span></code></p></li>
@@ -6863,7 +6919,7 @@ compatible with <a class="reference external" href="https://trio.readthedocs.io/
 </div>
 </dd>
 <dt>OpenAPI: Support <code class="docutils literal notranslate"><span class="pre">msgspec.Meta</span></code><a class="headerlink reference internal" href="#2.0.0alpha7-openapi: support" id="2.0.0alpha7-openapi: support">#</a></dt><dd><div class="changelog-change docutils container">
-<p><a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Meta" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Meta</span></code></a> is now fully supported for OpenAPI schema generation.</p>
+<p><a class="reference external" href="https://msgspec.dev/api.html#msgspec.Meta" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Meta</span></code></a> is now fully supported for OpenAPI schema generation.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1669">litestar-org/litestar#1669</a></span></p>
 </div>
 </dd>
@@ -7042,7 +7098,7 @@ in a <code class="docutils literal notranslate"><span class="pre">Controller</sp
 </dd>
 <dt>OpenAPI support for attrs and msgspec classes<a class="headerlink reference internal" href="#2.0.0alpha5-openapi support for attrs and msgspec classes" id="2.0.0alpha5-openapi support for attrs and msgspec classes">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Support OpenAPI schema generation for <a class="reference external" href="https://www.attrs.org">attrs</a> classes and
-<a class="reference external" href="https://jcristharif.com/msgspec/">msgspec</a> <code class="docutils literal notranslate"><span class="pre">Struct</span></code>s.</p>
+<a class="reference external" href="https://msgspec.dev">msgspec</a> <code class="docutils literal notranslate"><span class="pre">Struct</span></code>s.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1487">litestar-org/litestar#1487</a></span></p>
 </div>
 </dd>
@@ -7927,6 +7983,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.24.0">2.24.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.24.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.24.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.23.0">2.23.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.23.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.23.0-bugfix">Bugfixes</a></li>
