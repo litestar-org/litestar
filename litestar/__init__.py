@@ -10,6 +10,7 @@ from litestar.handlers import (
     patch,
     post,
     put,
+    query,
     route,
     websocket,
     websocket_listener,

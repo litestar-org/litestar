@@ -296,7 +296,7 @@ class ConnectionDataExtractor:
         Returns:
             Either the parsed request body or the raw byte-string.
         """
-        if request.method == HttpMethod.GET:
+        if request.method in {HttpMethod.GET, HttpMethod.QUERY}:
             return None
         if not self.parse_body:
             return await request.body()

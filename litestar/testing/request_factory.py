@@ -10,7 +10,7 @@ from urllib.parse import urlencode
 from httpx._content import encode_json as httpx_encode_json
 from httpx._content import encode_multipart_data, encode_urlencoded_data
 
-from litestar import delete, patch, post, put
+from litestar import delete, patch, post, put, query
 from litestar.app import Litestar
 from litestar.connection import Request
 from litestar.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
@@ -33,6 +33,7 @@ _decorator_http_method_map: dict[HttpMethod, HTTPHandlerDecorator] = {
     HttpMethod.DELETE: delete,
     HttpMethod.PATCH: patch,
     HttpMethod.PUT: put,
+    HttpMethod.QUERY: query,
 }
 
 
