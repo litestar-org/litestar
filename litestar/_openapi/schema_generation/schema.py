@@ -219,7 +219,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry", "processing_type_aliases")
+    __slots__ = ("generate_examples", "plugins", "prefer_alias", "processing_type_aliases", "schema_registry")
 
     def __init__(
         self,
@@ -240,7 +240,7 @@ class SchemaCreator:
         self.plugins = plugins if plugins is not None else []
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
-        self.processing_type_aliases = set()
+        self.processing_type_aliases: set[Any] = set()
 
     @classmethod
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
