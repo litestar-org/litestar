@@ -844,7 +844,7 @@ def test_decimal_schema_type() -> None:
     assert schema.type == OpenAPIType.STRING
 
 
-@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="PEP-695 aliases are not available before 3.12")
 def test_recursive_type_alias_type_keyword() -> None:
     # https://github.com/litestar-org/litestar/issues/4843
     ctx: dict[str, Any] = {}
@@ -864,9 +864,32 @@ def test_recursive_type_alias_type_keyword() -> None:
     assert schema
     # Verify the nested lists/dicts are resolved correctly without RecursionError
     response_schema = schema["paths"]["/"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
-    one_of = response_schema["oneOf"]
-    # Check that array items and object additionalProperties are empty schemas (Schema()) which denote any type
-    array_schema = next(s for s in one_of if s.get("type") == "array")
-    assert array_schema["items"] == {}
-    object_schema = next(s for s in one_of if s.get("type") == "object")
-    assert object_schema["additionalProperties"] == {}
+    assert response_schema == {
+        "oneOf": [
+            {"type": "boolean"},
+            {"type": "string"},
+            {"type": "number"},
+            {"type": "integer"},
+            {"items": {}, "type": "array"},
+            {"additionalProperties": {}, "type": "object"},
+            {"type": "null"},
+        ]
+    }
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="PEP-695 aliases are not available before 3.12")
+def test_recursive_type_alias_type_keyword_annotated() -> None:
+    ctx: dict[str, Any] = {}
+    exec(
+        "type JSON = None | bool | str | float | int | list[JSON] | dict[str, JSON]",
+        ctx,
+        None,
+    )
+    annotation = ctx["JSON"]
+
+    @get("/")
+    def handler() -> Annotated[annotation, {}]:  # type: ignore[valid-type]
+        return None
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+    assert schema
