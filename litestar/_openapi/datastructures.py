@@ -64,8 +64,12 @@ def _get_normalized_schema_key(field_definition: FieldDefinition) -> tuple[str, 
         return (override,)
 
     annotation = field_definition.annotation
-    module = getattr(annotation, "__module__", "")
-    name = str(annotation)[len(module) + 1 :] if isinstance(annotation, _GenericAlias) else annotation.__qualname__
+    module = getattr(annotation, "__module__", None) or ""
+    if isinstance(annotation, _GenericAlias):
+        name = str(annotation)[len(module) + 1 :]
+    else:
+        # ``TypeAliasType`` (PEP 695 / ``typing_extensions``) exposes ``__name__`` but no ``__qualname__``.
+        name = getattr(annotation, "__qualname__", None) or annotation.__name__
     name = name.replace(".<locals>.", ".")
     return *module.split("."), re.sub(INVALID_KEY_CHARACTER_PATTERN, "_", name)
 
