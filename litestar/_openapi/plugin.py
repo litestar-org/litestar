@@ -68,7 +68,7 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         self._openapi: OpenAPI | None = None
         self._openapi_schema: dict[str, object] | None = None
 
-    def _build_openapi(self) -> OpenAPI:
+    def _build_openapi(self, root_path: str | None = None) -> OpenAPI:
         openapi_config = self.openapi_config
 
         if openapi_config.create_examples:
@@ -77,6 +77,16 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
             ExampleFactory.seed_random(openapi_config.random_seed)
 
         openapi = openapi_config.to_openapi_schema()
+
+        # If no servers are explicitly configured and root_path is available,
+        # use it as the default server URL so the OpenAPI schema reflects the
+        # actual deployment path (e.g. behind a reverse proxy).
+        if root_path and openapi_config.servers == [Server(url="/")]:
+            from copy import deepcopy
+
+            openapi = deepcopy(openapi)
+            openapi.servers = [Server(url=root_path)]
+
         context = OpenAPIContext(openapi_config=openapi_config, plugins=self.app.plugins.openapi)
         path_items: dict[str, PathItem] = {}
         for route in self.included_routes.values():
@@ -90,14 +100,14 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         openapi.components.schemas = context.schema_registry.generate_components_schemas()
         return openapi
 
-    def provide_openapi(self) -> OpenAPI:
+    def provide_openapi(self, root_path: str | None = None) -> OpenAPI:
         if not self._openapi:
-            self._openapi = self._build_openapi()
+            self._openapi = self._build_openapi(root_path=root_path)
         return self._openapi
 
-    def provide_openapi_schema(self) -> dict[str, Any]:
+    def provide_openapi_schema(self, root_path: str | None = None) -> dict[str, Any]:
         if not self._openapi_schema:
-            self._openapi_schema = self.provide_openapi().to_schema()
+            self._openapi_schema = self.provide_openapi(root_path=root_path).to_schema()
         return self._openapi_schema
 
     def create_openapi_router(self) -> Router:
@@ -159,7 +169,8 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
 
             @get(paths, media_type=plugin_.media_type, sync_to_thread=False, name=handler_name)
             def _handler(request: Request) -> bytes:
-                return plugin_.render(request, self.provide_openapi_schema())
+                schema = self.provide_openapi_schema(root_path=request.scope.get("root_path"))
+                return plugin_.render(request, schema)
 
             return _handler
 
