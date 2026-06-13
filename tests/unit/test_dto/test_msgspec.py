@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import itertools
 from dataclasses import replace
-from typing import TYPE_CHECKING, Annotated, ClassVar
+from typing import TYPE_CHECKING, Annotated, ClassVar, Literal
 from unittest.mock import ANY
 
 import pytest
@@ -215,6 +215,92 @@ def test_tag_field_included_in_schema() -> None:
         "type": "object",
         "required": ["foo", "regular_field"],
         "title": "Model3",
+    }
+
+
+def test_tag_field_classvar_annotations_in_schema() -> None:
+    """Test that ClassVar tag field annotations (e.g. msgspec.Meta) are included in OpenAPI schema."""
+
+    class ModelWithAnnotatedTag(
+        Struct, tag="v1", tag_field="version"
+    ):
+        version: ClassVar[
+            Annotated[Literal["v1"], Meta(description="API version identifier")]
+        ] = "v1"
+        name: str = "default"
+
+    class ModelWithTitle(
+        Struct, tag="stable", tag_field="status"
+    ):
+        status: ClassVar[
+            Annotated[
+                Literal["stable"],
+                Meta(title="Release Status", description="Current release status"),
+            ]
+        ] = "stable"
+        value: int = 0
+
+    class ModelPlainTag(Struct, tag="plain", tag_field="kind"):
+        kind: ClassVar[Literal["plain"]] = "plain"
+        data: str = ""
+
+    @post("/annotated")
+    def handler_annotated(data: ModelWithAnnotatedTag) -> None:
+        return None
+
+    @post("/titled")
+    def handler_titled(data: ModelWithTitle) -> None:
+        return None
+
+    @post("/plain")
+    def handler_plain(data: ModelPlainTag) -> None:
+        return None
+
+    components = Litestar(
+        [handler_annotated, handler_titled, handler_plain],
+        signature_types=[ModelWithAnnotatedTag, ModelWithTitle, ModelPlainTag],
+    ).openapi_schema.components.to_schema()["schemas"]
+
+    # ClassVar with Annotated[Literal[...], Meta(description=...)] should include description
+    assert components["test_tag_field_classvar_annotations_in_schema.ModelWithAnnotatedTag"] == {
+        "properties": {
+            "name": {"type": "string", "default": "default"},
+            "version": {
+                "type": "string",
+                "const": "v1",
+                "description": "API version identifier",
+            },
+        },
+        "type": "object",
+        "required": ["version"],
+        "title": "ModelWithAnnotatedTag",
+    }
+
+    # ClassVar with both title and description in Meta
+    assert components["test_tag_field_classvar_annotations_in_schema.ModelWithTitle"] == {
+        "properties": {
+            "value": {"type": "integer", "default": 0},
+            "status": {
+                "type": "string",
+                "const": "stable",
+                "title": "Release Status",
+                "description": "Current release status",
+            },
+        },
+        "type": "object",
+        "required": ["status"],
+        "title": "ModelWithTitle",
+    }
+
+    # ClassVar without Annotated/Meta should still work as before (no description)
+    assert components["test_tag_field_classvar_annotations_in_schema.ModelPlainTag"] == {
+        "properties": {
+            "data": {"type": "string", "default": ""},
+            "kind": {"type": "string", "const": "plain"},
+        },
+        "type": "object",
+        "required": ["kind"],
+        "title": "ModelPlainTag",
     }
 
 
