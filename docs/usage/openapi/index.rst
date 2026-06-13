@@ -20,6 +20,19 @@ configuration globally to setting
 :ref:`specific kwargs on route <usage/openapi/schema_generation:Configuring schema generation on a route handler>`
 handler decorators.
 
+Default schema endpoints
+------------------------
+
+By default, the OpenAPI schema is served at ``/schema`` (configurable via
+:attr:`OpenAPIConfig.path <litestar.openapi.config.OpenAPIConfig.path>`).
+The following endpoints are available under the configured path:
+
+- ``/schema/openapi.json`` — OpenAPI schema as JSON
+- ``/schema/openapi.yaml`` — OpenAPI schema as YAML
+
+These endpoints can be used to import the schema into API clients such as
+`Scalar API Client <https://scalar.com/>`_ or other OpenAPI-compatible tools.
+
 .. toctree::
 
     schema_generation
