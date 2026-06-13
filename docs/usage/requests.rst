@@ -17,7 +17,7 @@ The type of ``data`` can be any supported type, including
 * :class:`TypedDicts <typing.TypedDict>`
 * :func:`dataclasses <dataclasses.dataclass>`
 * Types supported via :doc:`plugins </usage/plugins/index>` ie.
-    - `Msgspec Struct <https://jcristharif.com/msgspec/structs.html>`_
+    - `Msgspec Struct <https://msgspec.dev/structs>`_
     - `Pydantic models <https://docs.pydantic.dev/usage/models/>`_
     - `Attrs classes <https://www.attrs.org/en/stable/>`_
 

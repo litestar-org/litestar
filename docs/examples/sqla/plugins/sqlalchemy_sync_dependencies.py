@@ -6,6 +6,7 @@ from advanced_alchemy.extensions.litestar import SQLAlchemyInitPlugin, SQLAlchem
 from sqlalchemy import select
 
 from litestar import Litestar, post
+from litestar.di import NamedDependency
 
 if TYPE_CHECKING:
     from sqlalchemy import Engine
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @post("/", sync_to_thread=True)
-def handler(db_session: Session, db_engine: Engine) -> tuple[int, int]:
+def handler(db_session: NamedDependency[Session], db_engine: NamedDependency[Engine]) -> tuple[int, int]:
     one = db_session.execute(select(1)).scalar()
 
     with db_engine.begin() as conn:

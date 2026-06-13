@@ -1,6 +1,7 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
-
+import re
 from typing import Annotated, Any, Optional, cast
+from unittest.mock import MagicMock, call
 
 import msgspec.json
 import pytest
@@ -20,14 +21,14 @@ from litestar import (
 from litestar.datastructures.state import ImmutableState, State
 from litestar.di import NamedDependency, Provide
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import FromPath, FromQuery
+from litestar.params import FromPath, FromQuery, JSONBody
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
 )
-from litestar.testing import create_test_client
+from litestar.testing import TestClient, create_test_client
 from litestar.types import Scope
 from tests.models import DataclassPerson, DataclassPersonFactory
 
@@ -356,3 +357,63 @@ def test_data_kwarg_in_dependency(decorator: Any, http_method: Any, expected_sta
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path, json=msgspec.to_builtins(person_instance))
         assert response.status_code == expected_status_code
+
+
+def test_data_kwarg_in_dependency_only() -> None:
+    mock = MagicMock()
+
+    async def dependency_with_data(data: JSONBody[list[str]]) -> list[str]:
+        mock(data)
+        return data
+
+    @post("/", dependencies={"some_data": dependency_with_data})
+    def handler(some_data: NamedDependency[list[str]]) -> None:
+        mock(some_data)
+        return
+
+    app = Litestar([handler])
+    assert app.openapi_schema.paths["/"].post.request_body.to_schema() == {  # type: ignore[union-attr, index]
+        "content": {"application/json": {"schema": {"items": {"type": "string"}, "type": "array"}}},
+        "required": True,
+    }
+
+    with TestClient(app) as client:
+        res = client.post("/", json=["1", "2"])
+        assert res.status_code == 201
+        mock.assert_has_calls([call(["1", "2"]), call(["1", "2"])])
+
+        res = client.post("/", json={"foo": "bar"})
+        assert res.status_code == 400
+
+
+def test_data_kwarg_type_mismatch_between_handler_and_dependency_raises() -> None:
+    async def dependency_with_data(data: JSONBody[list[str]]) -> list[str]:
+        return data
+
+    @post("/", dependencies={"some_data": dependency_with_data})
+    def handler(data: JSONBody[dict[str, str]], some_data: NamedDependency[list[str]]) -> None:
+        return None
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=re.escape("'data' fields have mismatched types: 'dict[str, str]' <> 'list[str]'"),
+    ):
+        Litestar([handler])
+
+
+def test_data_kwarg_type_mismatch_between_dependencies_raises() -> None:
+    async def data_a(data: JSONBody[list[str]]) -> list[str]:
+        return data
+
+    async def data_b(data: JSONBody[dict[str, str]]) -> dict[str, str]:
+        return data
+
+    @post("/", dependencies={"a": data_a, "b": data_b})
+    def handler(a: NamedDependency[dict[str, str]], b: NamedDependency[list[str]]) -> None:
+        return None
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=re.escape("'data' fields have mismatched types: 'dict[str, str]' <> 'list[str]'"),
+    ):
+        Litestar([handler])

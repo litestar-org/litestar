@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
+from litestar.di import NamedDependency
 
 if TYPE_CHECKING:
     from typing import Any
@@ -24,7 +25,7 @@ class TodoItem(Base):
 
 
 @post("/", sync_to_thread=True)
-def add_item(data: dict[str, Any], db_session: Session) -> list[dict[str, Any]]:
+def add_item(data: dict[str, Any], db_session: NamedDependency[Session]) -> list[dict[str, Any]]:
     todo_item = TodoItem(**data)
     with db_session.begin():
         db_session.add(todo_item)

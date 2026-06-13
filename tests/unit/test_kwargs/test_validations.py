@@ -8,7 +8,7 @@ import pytest
 
 from litestar import Litestar, get, post, websocket
 from litestar.constants import RESERVED_KWARGS
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import (
     BodyKwarg,
@@ -107,7 +107,7 @@ def json_dependency(data: dict[str, Any]) -> dict[str, Any]:
 )
 def test_dependency_data_kwarg_validation_success_scenarios(body_annotation: Any, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency)})
-    def handler(first: dict[str, Any], data: body_annotation) -> None:  # pyright: ignore
+    def handler(first: NamedDependency[dict[str, Any]], data: body_annotation) -> None:  # pyright: ignore
         pass
 
     Litestar(route_handlers=[handler])
@@ -126,7 +126,7 @@ def test_dependency_data_kwarg_validation_success_scenarios(body_annotation: Any
 )
 def test_dependency_data_kwarg_validation_failure_scenarios(body_annotation: BodyKwarg, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency, sync_to_thread=False)})
-    def handler(first: dict[str, Any], data: body_annotation) -> None:  # type: ignore[valid-type]
+    def handler(first: NamedDependency[dict[str, Any]], data: body_annotation) -> None:  # type: ignore[valid-type]
         assert first
         assert data
 

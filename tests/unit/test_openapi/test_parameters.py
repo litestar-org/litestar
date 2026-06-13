@@ -176,7 +176,12 @@ def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
             "d": Provide(d_dep),
         },
     )
-    def handler(a: ADep, b: BDep, c: float, d: float) -> str:
+    def handler(
+        a: NamedDependency[ADep],
+        b: NamedDependency[BDep],
+        c: NamedDependency[float],
+        d: NamedDependency[float],
+    ) -> str:
         return "OK"
 
     app = Litestar(route_handlers=[handler])
@@ -195,7 +200,7 @@ def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> Non
         return 1
 
     @get("/test", dependencies={"a": Provide(a_dep), "b": Provide(b_dep)})
-    def handler(a: int, b: int) -> str:
+    def handler(a: NamedDependency[int], b: NamedDependency[int]) -> str:
         return "OK"
 
     app = Litestar(route_handlers=[handler])
