@@ -71,6 +71,31 @@ def test_set_cookie(as_instance: bool) -> None:
         assert response.cookies.get("test") == "abc"
 
 
+@pytest.mark.parametrize("with_same_path", [True, False])
+@pytest.mark.parametrize("registration_type", ["constructor", "method"])
+def test_deduplicate_cookies(with_same_path: bool, registration_type: str) -> None:
+    first_cookie = Cookie(key="test", value="abc", path="/")
+    second_cookie = Cookie(key="test", value="42", path="/" if with_same_path else "/other")
+
+    @get("/")
+    def handler() -> Response:
+        if registration_type == "constructor":
+            return Response(content=None, cookies=[first_cookie, second_cookie])
+        response = Response(content=None)
+        response.set_cookie(first_cookie)
+        response.set_cookie(second_cookie)
+        return response
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        cookies = response.headers.get_list("set-cookie")
+        if with_same_path:
+            assert len(cookies) == 1
+            assert "test=42" in cookies[0]
+        else:
+            assert len(cookies) == 2
+
+
 def test_delete_cookie() -> None:
     @get("/create")
     def create_cookie_handler() -> Response:

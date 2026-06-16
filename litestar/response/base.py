@@ -351,9 +351,7 @@ class Response(Generic[T]):
         Returns:
             None.
         """
-        cookie = Cookie(key=key, path=path, domain=domain, expires=0, max_age=0)
-        self.cookies = [c for c in self.cookies if c != cookie]
-        self.cookies.append(cookie)
+        self.cookies.append(Cookie(key=key, path=path, domain=domain, expires=0, max_age=0))
 
     def render(self, content: Any, media_type: str, enc_hook: Serializer = default_serializer) -> bytes:
         """Handle the rendering of content into a bytes string.
@@ -427,7 +425,7 @@ class Response(Generic[T]):
         return ASGIResponse(
             background=self.background or background,
             body=self.render(self.content, media_type, get_serializer(type_encoders)),
-            cookies=cookies,
+            cookies={c: c for c in cookies}.values(),
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,
