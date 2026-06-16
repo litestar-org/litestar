@@ -28,7 +28,7 @@ def test_response_cookies_2() -> None:
 
 def test_response_cookies_3() -> None:
     with TestClient(app=app_3) as client, patch("docs.examples.responses.response_cookies_3.randint") as mock_randint:
-        mock_randint.return_value = "42"
+        mock_randint.return_value = 42
 
         res = client.get("/resources")
 
@@ -38,7 +38,7 @@ def test_response_cookies_3() -> None:
 
 def test_response_cookies_4() -> None:
     with TestClient(app=app_4) as client, patch("docs.examples.responses.response_cookies_4.randint") as mock_randint:
-        mock_randint.return_value = "42"
+        mock_randint.return_value = 42
 
         res = client.get("/router-path/resources")
 
@@ -48,7 +48,7 @@ def test_response_cookies_4() -> None:
 
 def test_response_cookies_5() -> None:
     with TestClient(app=app_5) as client, patch("docs.examples.responses.response_cookies_5.randint") as mock_randint:
-        mock_randint.return_value = "42"
+        mock_randint.return_value = 42
 
         res = client.get("/router-path/resources")
 
