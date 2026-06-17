@@ -255,6 +255,9 @@ class Response(Generic[T]):
         self.status_code = status_code
         self.response_type_encoders = {**(self.type_encoders or {}), **(type_encoders or {})}
 
+    def _delete_cookie_duplicates(self, cookie: Cookie) -> None:
+        self.cookies = [c for c in self.cookies if c != cookie]
+
     @overload
     def set_cookie(self, /, cookie: Cookie) -> None: ...
 
@@ -313,6 +316,7 @@ class Response(Generic[T]):
                 secure=secure,
                 value=value,
             )
+        self._delete_cookie_duplicates(key)
         self.cookies.append(key)
 
     def set_header(self, key: str, value: Any) -> None:
@@ -354,7 +358,9 @@ class Response(Generic[T]):
         Returns:
             None.
         """
-        self.cookies.append(Cookie(key=key, path=path, domain=domain, expires=0, max_age=0))
+        cookie = Cookie(key=key, path=path, domain=domain, expires=0, max_age=0)
+        self._delete_cookie_duplicates(cookie)
+        self.cookies.append(cookie)
 
     def render(self, content: Any, media_type: str, enc_hook: Serializer = default_serializer) -> bytes:
         """Handle the rendering of content into a bytes string.
