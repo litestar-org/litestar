@@ -99,6 +99,19 @@ def test_delete_cookie() -> None:
         # cookies.
 
 
+def test_cookie_priority() -> None:
+    @get("/test", response_cookies=[Cookie(key="test", value="1")])
+    def handler() -> Response:
+        return Response(
+            content=None,
+            cookies=[Cookie(key="test", value="2")],
+        )
+
+    with create_test_client(handler) as client:
+        response = client.get("/test")
+        assert response.cookies.get("test") == "2"
+
+
 @pytest.mark.parametrize(
     "media_type, expected, should_have_content_length",
     ((MediaType.TEXT, b"", False), (MediaType.HTML, b"", False), (MediaType.JSON, b"null", True)),
