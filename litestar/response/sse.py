@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import itertools
 import re
 from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator
 from dataclasses import dataclass
@@ -292,14 +291,13 @@ class ServerSentEvent(Stream):
             )
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
 
         return ASGIStreamingSSEResponse(
             ping_interval=self.ping_interval,
             background=self.background or background,
             content_length=0,
-            cookies=cookies,
+            cookies=self._merge_cookies(cookies),
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

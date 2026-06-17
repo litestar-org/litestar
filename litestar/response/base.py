@@ -387,6 +387,9 @@ class Response(Generic[T]):
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 
+    def _merge_cookies(self, cookies: Iterable[Cookie] | None) -> Iterable[Cookie] | None:
+        return self.cookies if cookies is None else itertools.chain(cookies, self.cookies)
+
     def to_asgi_response(
         self,
         request: Request,
@@ -416,7 +419,6 @@ class Response(Generic[T]):
         """
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         if type_encoders:
             type_encoders = {**type_encoders, **(self.response_type_encoders or {})}
@@ -428,7 +430,7 @@ class Response(Generic[T]):
         return ASGIResponse(
             background=self.background or background,
             body=self.render(self.content, media_type, get_serializer(type_encoders)),
-            cookies=cookies,
+            cookies=self._merge_cookies(cookies),
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,
