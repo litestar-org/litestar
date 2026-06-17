@@ -116,7 +116,10 @@ class ASGIResponse:
         self.body = body
         self.content_length = content_length
         self._encoded_cookies = tuple(
-            cookie.to_encoded_header() for cookie in (cookies or ()) if not cookie.documentation_only
+            cookie.to_encoded_header()
+            for cookie in {
+                (c.key.lower(), c.domain, c.path): c for c in (cookies or ()) if not c.documentation_only
+            }.values()
         )
         self.encoding = encoding
         self.is_head_response = is_head_response
@@ -425,7 +428,7 @@ class Response(Generic[T]):
         return ASGIResponse(
             background=self.background or background,
             body=self.render(self.content, media_type, get_serializer(type_encoders)),
-            cookies={c: c for c in cookies}.values(),
+            cookies=cookies,
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,
