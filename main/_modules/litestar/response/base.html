@@ -932,56 +932,58 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="387">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Unable to serialize response content&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
 
 </span><span data-line="388">
+</span><span data-line="389">    <span class="k">def</span><span class="w"> </span><span class="nf">_merge_cookies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cookies</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Cookie</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Cookie</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="390">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookies</span> <span class="k">if</span> <span class="n">cookies</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">cookies</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookies</span><span class="p">)</span>
+</span><span data-line="391">
 <div class="viewcode-block" id="Response.to_asgi_response">
 <a class="viewcode-back" href="../../../reference/response/index.html#litestar.response.base.Response.to_asgi_response">[docs]</a>
-</span><span data-line="389">    <span class="k">def</span><span class="w"> </span><span class="nf">to_asgi_response</span><span class="p">(</span>
-</span><span data-line="390">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="391">        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
-</span><span data-line="392">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="393">        <span class="n">background</span><span class="p">:</span> <span class="n">BackgroundTask</span> <span class="o">|</span> <span class="n">BackgroundTasks</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="394">        <span class="n">cookies</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Cookie</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="395">        <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="396">        <span class="n">is_head_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="397">        <span class="n">media_type</span><span class="p">:</span> <span class="n">MediaType</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="398">        <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="399">        <span class="n">type_encoders</span><span class="p">:</span> <span class="n">TypeEncodersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="400">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIResponse</span><span class="p">:</span>
-</span><span data-line="401"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an ASGIResponse from a Response instance.</span>
-</span><span data-line="402">
-</span><span data-line="403"><span class="sd">        Args:</span>
-</span><span data-line="404"><span class="sd">            background: Background task(s) to be executed after the response is sent.</span>
-</span><span data-line="405"><span class="sd">            cookies: A list of cookies to be set on the response.</span>
-</span><span data-line="406"><span class="sd">            headers: Additional headers to be merged with the response headers. Response headers take precedence.</span>
-</span><span data-line="407"><span class="sd">            is_head_response: Whether the response is a HEAD response.</span>
-</span><span data-line="408"><span class="sd">            media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.</span>
-</span><span data-line="409"><span class="sd">            request: The :class:`Request &lt;.connection.Request&gt;` instance.</span>
-</span><span data-line="410"><span class="sd">            status_code: Status code for the response. If ``status_code`` is already set on the response, this is</span>
-</span><span data-line="411"><span class="sd">            type_encoders: A dictionary of type encoders to use for encoding the response content.</span>
-</span><span data-line="412">
-</span><span data-line="413"><span class="sd">        Returns:</span>
-</span><span data-line="414"><span class="sd">            An ASGIResponse instance.</span>
-</span><span data-line="415"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="416">
-</span><span data-line="417">        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">headers</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">}</span> <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span>
-</span><span data-line="418">        <span class="n">cookies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cookies</span> <span class="k">if</span> <span class="n">cookies</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cookies</span><span class="p">,</span> <span class="n">cookies</span><span class="p">)</span>
+</span><span data-line="392">    <span class="k">def</span><span class="w"> </span><span class="nf">to_asgi_response</span><span class="p">(</span>
+</span><span data-line="393">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="394">        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+</span><span data-line="395">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="396">        <span class="n">background</span><span class="p">:</span> <span class="n">BackgroundTask</span> <span class="o">|</span> <span class="n">BackgroundTasks</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="397">        <span class="n">cookies</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Cookie</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="398">        <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="399">        <span class="n">is_head_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="400">        <span class="n">media_type</span><span class="p">:</span> <span class="n">MediaType</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="401">        <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="402">        <span class="n">type_encoders</span><span class="p">:</span> <span class="n">TypeEncodersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="403">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIResponse</span><span class="p">:</span>
+</span><span data-line="404"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an ASGIResponse from a Response instance.</span>
+</span><span data-line="405">
+</span><span data-line="406"><span class="sd">        Args:</span>
+</span><span data-line="407"><span class="sd">            background: Background task(s) to be executed after the response is sent.</span>
+</span><span data-line="408"><span class="sd">            cookies: A list of cookies to be set on the response.</span>
+</span><span data-line="409"><span class="sd">            headers: Additional headers to be merged with the response headers. Response headers take precedence.</span>
+</span><span data-line="410"><span class="sd">            is_head_response: Whether the response is a HEAD response.</span>
+</span><span data-line="411"><span class="sd">            media_type: Media type for the response. If ``media_type`` is already set on the response, this is ignored.</span>
+</span><span data-line="412"><span class="sd">            request: The :class:`Request &lt;.connection.Request&gt;` instance.</span>
+</span><span data-line="413"><span class="sd">            status_code: Status code for the response. If ``status_code`` is already set on the response, this is</span>
+</span><span data-line="414"><span class="sd">            type_encoders: A dictionary of type encoders to use for encoding the response content.</span>
+</span><span data-line="415">
+</span><span data-line="416"><span class="sd">        Returns:</span>
+</span><span data-line="417"><span class="sd">            An ASGIResponse instance.</span>
+</span><span data-line="418"><span class="sd">        &quot;&quot;&quot;</span>
 </span><span data-line="419">
-</span><span data-line="420">        <span class="k">if</span> <span class="n">type_encoders</span><span class="p">:</span>
-</span><span data-line="421">            <span class="n">type_encoders</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">type_encoders</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response_type_encoders</span> <span class="ow">or</span> <span class="p">{})}</span>
-</span><span data-line="422">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="423">            <span class="n">type_encoders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_type_encoders</span>
-</span><span data-line="424">
-</span><span data-line="425">        <span class="n">media_type</span> <span class="o">=</span> <span class="n">get_enum_string_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">media_type</span> <span class="ow">or</span> <span class="n">media_type</span> <span class="ow">or</span> <span class="n">MediaType</span><span class="o">.</span><span class="n">JSON</span><span class="p">)</span>
+</span><span data-line="420">        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">headers</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">}</span> <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span>
+</span><span data-line="421">
+</span><span data-line="422">        <span class="k">if</span> <span class="n">type_encoders</span><span class="p">:</span>
+</span><span data-line="423">            <span class="n">type_encoders</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">type_encoders</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response_type_encoders</span> <span class="ow">or</span> <span class="p">{})}</span>
+</span><span data-line="424">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="425">            <span class="n">type_encoders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_type_encoders</span>
 </span><span data-line="426">
-</span><span data-line="427">        <span class="k">return</span> <span class="n">ASGIResponse</span><span class="p">(</span>
-</span><span data-line="428">            <span class="n">background</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="ow">or</span> <span class="n">background</span><span class="p">,</span>
-</span><span data-line="429">            <span class="n">body</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">media_type</span><span class="p">,</span> <span class="n">get_serializer</span><span class="p">(</span><span class="n">type_encoders</span><span class="p">)),</span>
-</span><span data-line="430">            <span class="n">cookies</span><span class="o">=</span><span class="n">cookies</span><span class="p">,</span>
-</span><span data-line="431">            <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">,</span>
-</span><span data-line="432">            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
-</span><span data-line="433">            <span class="n">is_head_response</span><span class="o">=</span><span class="n">is_head_response</span><span class="p">,</span>
-</span><span data-line="434">            <span class="n">media_type</span><span class="o">=</span><span class="n">media_type</span><span class="p">,</span>
-</span><span data-line="435">            <span class="n">status_code</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">or</span> <span class="n">status_code</span><span class="p">,</span>
-</span><span data-line="436">        <span class="p">)</span></div>
+</span><span data-line="427">        <span class="n">media_type</span> <span class="o">=</span> <span class="n">get_enum_string_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">media_type</span> <span class="ow">or</span> <span class="n">media_type</span> <span class="ow">or</span> <span class="n">MediaType</span><span class="o">.</span><span class="n">JSON</span><span class="p">)</span>
+</span><span data-line="428">
+</span><span data-line="429">        <span class="k">return</span> <span class="n">ASGIResponse</span><span class="p">(</span>
+</span><span data-line="430">            <span class="n">background</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="ow">or</span> <span class="n">background</span><span class="p">,</span>
+</span><span data-line="431">            <span class="n">body</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">media_type</span><span class="p">,</span> <span class="n">get_serializer</span><span class="p">(</span><span class="n">type_encoders</span><span class="p">)),</span>
+</span><span data-line="432">            <span class="n">cookies</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_merge_cookies</span><span class="p">(</span><span class="n">cookies</span><span class="p">),</span>
+</span><span data-line="433">            <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding</span><span class="p">,</span>
+</span><span data-line="434">            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+</span><span data-line="435">            <span class="n">is_head_response</span><span class="o">=</span><span class="n">is_head_response</span><span class="p">,</span>
+</span><span data-line="436">            <span class="n">media_type</span><span class="o">=</span><span class="n">media_type</span><span class="p">,</span>
+</span><span data-line="437">            <span class="n">status_code</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">or</span> <span class="n">status_code</span><span class="p">,</span>
+</span><span data-line="438">        <span class="p">)</span></div>
 </div>
 
 </span></pre></div>
