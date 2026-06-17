@@ -117,9 +117,7 @@ class ASGIResponse:
         self.content_length = content_length
         self._encoded_cookies = tuple(
             cookie.to_encoded_header()
-            for cookie in {
-                (c.key.lower(), c.domain, c.path): c for c in (cookies or ()) if not c.documentation_only
-            }.values()
+            for cookie in {c: c for c in (cookies or ()) if not c.documentation_only}.values()
         )
         self.encoding = encoding
         self.is_head_response = is_head_response
@@ -255,8 +253,9 @@ class Response(Generic[T]):
         self.status_code = status_code
         self.response_type_encoders = {**(self.type_encoders or {}), **(type_encoders or {})}
 
-    def _delete_cookie_duplicates(self, cookie: Cookie) -> None:
+    def _upsert_cookie(self, cookie: Cookie) -> None:
         self.cookies = [c for c in self.cookies if c != cookie]
+        self.cookies.append(cookie)
 
     @overload
     def set_cookie(self, /, cookie: Cookie) -> None: ...
@@ -316,8 +315,7 @@ class Response(Generic[T]):
                 secure=secure,
                 value=value,
             )
-        self._delete_cookie_duplicates(key)
-        self.cookies.append(key)
+        self._upsert_cookie(key)
 
     def set_header(self, key: str, value: Any) -> None:
         """Set a header on the response.
@@ -358,9 +356,7 @@ class Response(Generic[T]):
         Returns:
             None.
         """
-        cookie = Cookie(key=key, path=path, domain=domain, expires=0, max_age=0)
-        self._delete_cookie_duplicates(cookie)
-        self.cookies.append(cookie)
+        self._upsert_cookie(Cookie(key=key, path=path, domain=domain, expires=0, max_age=0))
 
     def render(self, content: Any, media_type: str, enc_hook: Serializer = default_serializer) -> bytes:
         """Handle the rendering of content into a bytes string.
