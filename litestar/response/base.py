@@ -117,7 +117,9 @@ class ASGIResponse:
         self.content_length = content_length
         self._encoded_cookies = tuple(
             cookie.to_encoded_header()
-            for cookie in {c: c for c in (cookies or ()) if not c.documentation_only}.values()
+            for cookie in {
+                (c.key.lower(), c.path, c.domain): c for c in (cookies or ()) if not c.documentation_only
+            }.values()
         )
         self.encoding = encoding
         self.is_head_response = is_head_response
