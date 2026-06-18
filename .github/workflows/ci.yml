@@ -288,7 +288,7 @@ jobs:
         run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v6.0.1
+        uses: codecov/codecov-action@v7.0.0
         with:
           files: coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
