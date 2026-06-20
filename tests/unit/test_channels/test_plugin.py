@@ -279,6 +279,61 @@ async def test_subscribe_non_existent_channel_raises(memory_backend: MemoryChann
         await plugin.subscribe("bar")
 
 
+class _SlowHistoryBackend(MemoryChannelsBackend):
+    """Stand-in for any backend whose ``get_history`` suspends (e.g. redis ``xrevrange``)."""
+
+    def __init__(self, history: int = 1) -> None:
+        super().__init__(history=history)
+        self.in_history = asyncio.Event()
+        self.release = asyncio.Event()
+
+    async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
+        self.in_history.set()
+        await self.release.wait()  # suspend, as a real backend would on I/O
+        return await super().get_history(channel, limit)
+
+
+async def test_subscribe_cancellation_does_not_leak() -> None:
+    """A ``subscribe`` cancelled while fetching history must leave no registered subscriber.
+
+    Regression test for https://github.com/litestar-org/litestar/issues/4871: the subscriber was
+    registered into ``_channels`` before the history ``await``, so a cancellation there leaked it
+    permanently (the caller never received it and could never ``unsubscribe``).
+    """
+    backend = _SlowHistoryBackend(history=1)
+    plugin = ChannelsPlugin(backend=backend, arbitrary_channels_allowed=True)
+    channel = "user:1"
+
+    task = asyncio.create_task(plugin.subscribe([channel], history=1))
+    await backend.in_history.wait()  # subscribe is now suspended in get_history
+
+    task.cancel()  # client disconnects mid-subscribe
+    await asyncio.gather(task, return_exceptions=True)
+
+    assert not plugin._channels.get(channel)  # no subscriber left behind
+    assert channel not in backend._channels  # backend not left subscribed
+
+
+async def test_start_subscription_cancellation_does_not_leak() -> None:
+    """``start_subscription`` cancelled while fetching history must leave no registered subscriber."""
+    backend = _SlowHistoryBackend(history=1)
+    plugin = ChannelsPlugin(backend=backend, arbitrary_channels_allowed=True)
+    channel = "user:1"
+
+    async def consume() -> None:
+        async with plugin.start_subscription([channel], history=1):
+            pass
+
+    task = asyncio.create_task(consume())
+    await backend.in_history.wait()  # entering the context manager, suspended in get_history
+
+    task.cancel()  # client disconnects mid-subscribe
+    await asyncio.gather(task, return_exceptions=True)
+
+    assert not plugin._channels.get(channel)  # no subscriber left behind
+    assert channel not in backend._channels  # backend not left subscribed
+
+
 @pytest.mark.parametrize("unsubscribe_all", [False, True])
 @pytest.mark.parametrize("channels", ["foo", ["foo", "bar"]])
 async def test_unsubscribe(
