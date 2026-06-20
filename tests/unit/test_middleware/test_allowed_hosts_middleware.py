@@ -143,6 +143,7 @@ def test_validation_raises_for_wrong_wildcard_domain() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         AllowedHostsConfig(allowed_hosts=["www.moishe.*.com"])
 
+
 def test_middleware_allowed_hosts_strips_port_from_host_header() -> None:
     # Regression test for: https://github.com/litestar-org/litestar/issues/4869
     @get("/")
