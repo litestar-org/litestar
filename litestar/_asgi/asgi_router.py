@@ -40,6 +40,31 @@ if TYPE_CHECKING:
 __all__ = ("ASGIRouter",)
 
 
+@lru_cache(1024)
+def _handle_routing_cached(
+    mount_paths_regex: Pattern | None,
+    mount_routes: dict[str, RouteTrieNode],
+    path: str,
+    plain_routes: set[str],
+    root_node: RouteTrieNode,
+    method: Method | None,
+) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
+    """Cached standalone routing lookup.
+
+    Separated from ``ASGIRouter.handle_routing`` so that the ``lru_cache``
+    does not hold a strong reference to the router instance via a bound
+    method, which would prevent garbage collection of the app.
+    """
+    return parse_path_to_route(
+        mount_paths_regex=mount_paths_regex,
+        mount_routes=mount_routes,
+        path=path,
+        plain_routes=plain_routes,
+        root_node=root_node,
+        method=method,
+    )
+
+
 class ASGIRouter:
     """Litestar ASGI router.
 
@@ -109,7 +134,6 @@ class ASGIRouter:
             scope["path_template"] = path_template
         await asgi_app(scope, receive, send)
 
-    @lru_cache(1024)  # noqa: B019
     def handle_routing(
         self, path: str, method: Method | None
     ) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
@@ -122,7 +146,7 @@ class ASGIRouter:
         Returns:
             A tuple composed of the ASGIApp of the route, the route handler instance, the resolved and normalized path and any parsed path params.
         """
-        return parse_path_to_route(
+        return _handle_routing_cached(
             mount_paths_regex=self._mount_paths_regex,
             mount_routes=self._mount_routes,
             path=path,
