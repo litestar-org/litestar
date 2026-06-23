@@ -54,6 +54,8 @@ class ASGIRouter:
         "_registered_routes",
         "_static_routes",
         "_trie_initialized",
+        "_routing_cache",
+        "_routing_cache_order",
         "app",
         "root_route_map_node",
         "route_handler_index",
@@ -72,6 +74,8 @@ class ASGIRouter:
         self._plain_routes: set[str] = set()
         self._registered_routes: set[HTTPRoute | WebSocketRoute | ASGIRoute] = set()
         self._trie_initialized = False
+        self._routing_cache: dict[tuple[str, str | None], Any] = {}
+        self._routing_cache_order: list[tuple[str, str | None]] = []
         self.app = app
         self.root_route_map_node: RouteTrieNode = create_node()
         self.route_handler_index: dict[str, RouteHandlerType] = {}
@@ -109,7 +113,6 @@ class ASGIRouter:
             scope["path_template"] = path_template
         await asgi_app(scope, receive, send)
 
-    @lru_cache(1024)  # noqa: B019
     def handle_routing(
         self, path: str, method: Method | None
     ) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
@@ -122,7 +125,10 @@ class ASGIRouter:
         Returns:
             A tuple composed of the ASGIApp of the route, the route handler instance, the resolved and normalized path and any parsed path params.
         """
-        return parse_path_to_route(
+        cache_key = (path, method)
+        if cache_key in self._routing_cache:
+            return self._routing_cache[cache_key]
+        result = parse_path_to_route(
             mount_paths_regex=self._mount_paths_regex,
             mount_routes=self._mount_routes,
             path=path,
@@ -130,6 +136,12 @@ class ASGIRouter:
             root_node=self.root_route_map_node,
             method=method,
         )
+        self._routing_cache[cache_key] = result
+        self._routing_cache_order.append(cache_key)
+        while len(self._routing_cache_order) > 1024:
+            old_key = self._routing_cache_order.pop(0)
+            self._routing_cache.pop(old_key, None)
+        return result
 
     def _store_handler_to_route_mapping(self, route: BaseRoute) -> None:
         """Store the mapping of route handlers to routes and to route handler names.
