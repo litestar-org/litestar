@@ -126,8 +126,8 @@ class ASGIRouter:
             A tuple composed of the ASGIApp of the route, the route handler instance, the resolved and normalized path and any parsed path params.
         """
         cache_key = (path, method)
-        if cache_key in self._routing_cache:
-            return self._routing_cache[cache_key]
+        if (cached_value := self._routing_cache.get(cache_key)) is not None:
+            return cached_value
         result = parse_path_to_route(
             mount_paths_regex=self._mount_paths_regex,
             mount_routes=self._mount_routes,
