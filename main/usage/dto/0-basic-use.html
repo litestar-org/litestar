@@ -589,7 +589,7 @@ provided, the DTO described by the <code class="docutils literal notranslate"><s
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">UserDTO</span>
 </span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">)</span>
+</span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span data-line="8">    <span class="k">return</span> <span class="n">data</span>
 </span></pre></div>
@@ -607,7 +607,7 @@ provided, the DTO described by the <code class="docutils literal notranslate"><s
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">UserReturnDTO</span>
 </span><span data-line="4">
 </span><span data-line="5">
-</span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">UserReturnDTO</span><span class="p">)</span>
+</span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">UserReturnDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span><span data-line="8">    <span class="k">return</span> <span class="n">data</span>
 </span></pre></div>

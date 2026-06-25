@@ -1752,7 +1752,7 @@ Python 3.11+</label><div class="sd-tab-content docutils">
 </span><span data-line="13">        <span class="k">yield</span> <span class="n">encode_json</span><span class="p">({</span><span class="s2">&quot;current_time&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()})</span>
 </span><span data-line="14">
 </span><span data-line="15">
-</span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/time&quot;</span><span class="p">)</span>
+</span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/time&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span data-line="17"><span class="k">def</span><span class="w"> </span><span class="nf">stream_time</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">:</span>
 </span><span data-line="18">    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
 </span><span data-line="19">
@@ -1779,7 +1779,7 @@ Python 3.13+</label><div class="sd-tab-content docutils">
 </span><span data-line="13">        <span class="k">yield</span> <span class="n">encode_json</span><span class="p">({</span><span class="s2">&quot;current_time&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()})</span>
 </span><span data-line="14">
 </span><span data-line="15">
-</span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/time&quot;</span><span class="p">)</span>
+</span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/time&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span data-line="17"><span class="k">def</span><span class="w"> </span><span class="nf">stream_time</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">:</span>
 </span><span data-line="18">    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
 </span><span data-line="19">
