@@ -30,7 +30,7 @@ def admin_user_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
         raise PermissionDeniedException()
 
 
-@post(path="/user", guards=[admin_user_guard])
+@post(path="/user", guards=[admin_user_guard], sync_to_thread=False)
 def create_user(data: JSONBody[User]) -> User: ...
 
 

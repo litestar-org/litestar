@@ -24,7 +24,7 @@ jwt_auth = JWTAuth[User](
 )
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def handler(request: Request[User, Token, Any]) -> Dict[str, Any]:
     return {"id": request.user.id}
 
