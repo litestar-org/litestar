@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from typing import Any
 
 from litestar import Litestar, Request
@@ -16,13 +17,13 @@ def custom_label_callable(request: Request[Any, Any, Any]) -> str:
     return "v2.0"
 
 
-extra_labels = {
+extra_labels: dict[str, str | Callable] = {
     "version_no": custom_label_callable,
     "location": "earth",
 }
 
 # Customizing the buckets for the histogram.
-buckets = [0.1, 0.2, 0.3, 0.4, 0.5]
+buckets: list[str | float] = [0.1, 0.2, 0.3, 0.4, 0.5]
 
 
 # Adding exemplars to the metrics.
@@ -38,7 +39,7 @@ prometheus_config = PrometheusConfig(
     app_name="litestar-example",
     prefix="litestar",
     labels=extra_labels,
-    buckets=buckets,  # pyright: ignore[reportArgumentType]
+    buckets=buckets,
     exemplars=custom_exemplar,
     excluded_http_methods=["POST"],
 )

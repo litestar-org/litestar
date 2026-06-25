@@ -37,9 +37,9 @@ class CustomAuthenticationMiddleware(AbstractAuthenticationMiddleware):
 
         # this would be a database call
         token = MyToken(api_key=auth_header)
-        user = MyUser(name=TOKEN_USER_DATABASE.get(token.api_key))
-        if not user.name:
+        if not (name := TOKEN_USER_DATABASE.get(token.api_key)):
             raise NotAuthorizedException()
+        user = MyUser(name=name)
         return AuthenticationResult(user=user, auth=token)
 
 
