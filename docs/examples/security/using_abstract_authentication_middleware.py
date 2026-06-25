@@ -43,7 +43,7 @@ class CustomAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         return AuthenticationResult(user=user, auth=token)
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def my_http_handler(request: Request[MyUser, MyToken, State]) -> None:
     user = request.user  # correctly typed as MyUser
     auth = request.auth  # correctly typed as MyToken
