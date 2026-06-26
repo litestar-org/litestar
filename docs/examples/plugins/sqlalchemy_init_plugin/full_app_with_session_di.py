@@ -61,7 +61,7 @@ def serialize_todo(todo: TodoItem) -> TodoType:
     return {"title": todo.title, "done": todo.done}
 
 
-async def get_todo_by_title(todo_name, session: AsyncSession) -> TodoItem:
+async def get_todo_by_title(todo_name: str, session: AsyncSession) -> TodoItem:
     query = select(TodoItem).where(TodoItem.title == todo_name)
     result = await session.execute(query)
     try:

@@ -30,7 +30,8 @@ def admin_user_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
 
 
 @post(path="/user", guards=[admin_user_guard], sync_to_thread=False)
-def create_user(data: User) -> User: ...
+def create_user(data: User) -> User:
+    raise NotImplementedError
 
 
 def my_guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None: ...
