@@ -637,11 +637,11 @@ Python 3.11+</label><div class="sd-tab-content docutils">
 </span><span data-line="64">    <span class="c1"># are correct. If we are using passwords, we should check that</span>
 </span><span data-line="65">    <span class="c1"># the password hashes match etc. We will simply assume that we</span>
 </span><span data-line="66">    <span class="c1"># have done all of that we now have a user value:</span>
-</span><span data-line="67">    <span class="n">user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+</span><span data-line="67">    <span class="n">encoded_user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
 </span><span data-line="68">
-</span><span data-line="69">    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
+</span><span data-line="69">    <span class="k">if</span> <span class="ow">not</span> <span class="n">encoded_user_id</span><span class="p">:</span>
 </span><span data-line="70">        <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
-</span><span data-line="71">    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+</span><span data-line="71">    <span class="n">user_id</span> <span class="o">=</span> <span class="n">encoded_user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
 </span><span data-line="72">
 </span><span data-line="73">    <span class="c1"># once verified we can create a session.</span>
 </span><span data-line="74">    <span class="c1"># to do this we simply need to call the Litestar</span>
@@ -781,11 +781,11 @@ Python 3.14+</label><div class="sd-tab-content docutils">
 </span><span data-line="64">    <span class="c1"># are correct. If we are using passwords, we should check that</span>
 </span><span data-line="65">    <span class="c1"># the password hashes match etc. We will simply assume that we</span>
 </span><span data-line="66">    <span class="c1"># have done all of that we now have a user value:</span>
-</span><span data-line="67">    <span class="n">user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+</span><span data-line="67">    <span class="n">encoded_user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
 </span><span data-line="68">
-</span><span data-line="69">    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
+</span><span data-line="69">    <span class="k">if</span> <span class="ow">not</span> <span class="n">encoded_user_id</span><span class="p">:</span>
 </span><span data-line="70">        <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
-</span><span data-line="71">    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+</span><span data-line="71">    <span class="n">user_id</span> <span class="o">=</span> <span class="n">encoded_user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
 </span><span data-line="72">
 </span><span data-line="73">    <span class="c1"># once verified we can create a session.</span>
 </span><span data-line="74">    <span class="c1"># to do this we simply need to call the Litestar</span>

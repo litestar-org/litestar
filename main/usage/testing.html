@@ -776,7 +776,7 @@ the test or fixture. In practice, this can result in some difficult to debug and
 setting up async resources outside the application, for example when using the factory pattern.</p>
 <p>The following example uses a shared instance of an <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code>. It uses the common factory function, which
 allows to customise the client for tests, for example to add authentication headers.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterable</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
 </span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
@@ -800,7 +800,7 @@ allows to customise the client for tests, for example to add authentication head
 </span><span data-line="22">
 </span><span data-line="23">
 </span><span data-line="24"><span class="nd">@pytest_asyncio</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
-</span><span data-line="25"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">http_test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterable</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
+</span><span data-line="25"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">http_test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
 </span><span data-line="26">    <span class="n">client</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;something&quot;</span><span class="p">})</span>
 </span><span data-line="27">    <span class="k">yield</span> <span class="n">client</span>
 </span><span data-line="28">    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
@@ -832,7 +832,7 @@ to <em>loop B</em> that was owned by the <code class="docutils literal notransla
 </ul>
 <p>This can easily fixed by switching the test from <a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> to
 <a class="reference internal" href="../reference/testing.html#litestar.testing.AsyncTestClient" title="litestar.testing.AsyncTestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncTestClient</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterable</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
 </span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
@@ -856,7 +856,7 @@ to <em>loop B</em> that was owned by the <code class="docutils literal notransla
 </span><span data-line="22">
 </span><span data-line="23">
 </span><span data-line="24"><span class="nd">@pytest_asyncio</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
-</span><span data-line="25"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">http_test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterable</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
+</span><span data-line="25"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">http_test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
 </span><span data-line="26">    <span class="n">client</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;something&quot;</span><span class="p">})</span>
 </span><span data-line="27">    <span class="k">yield</span> <span class="n">client</span>
 </span><span data-line="28">    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>

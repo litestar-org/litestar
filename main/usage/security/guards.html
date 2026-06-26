@@ -589,7 +589,7 @@ handler function:</p>
 </span><span data-line="2">    <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">:</span>
 </span><span data-line="3">        <span class="k">raise</span> <span class="n">PermissionDeniedException</span><span class="p">()</span>
 </span><span data-line="4"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/user&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">admin_user_guard</span><span class="p">],</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
 </span></pre></div>
 </div>
 </div>
@@ -616,7 +616,6 @@ on all layers of the app - the Litestar instance, routers, controllers, and indi
 </span><span data-line="11"><span class="n">admin_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">UserController</span><span class="p">],</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">my_guard</span><span class="p">])</span>
 </span><span data-line="12">
 </span><span data-line="13"><span class="c1"># app</span>
-</span><span data-line="14"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">admin_router</span><span class="p">],</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">my_guard</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -651,7 +650,6 @@ the following guard:</p>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/secret&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">secret_token_guard</span><span class="p">],</span> <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;secret&quot;</span><span class="p">:</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SECRET&quot;</span><span class="p">)})</span>
-</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">secret_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 </section>

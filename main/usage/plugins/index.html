@@ -678,7 +678,7 @@ that annotation.</p>
 </span><span data-line="34">        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
 </span><span data-line="35">        <span class="k">if</span> <span class="p">(</span><span class="n">cached</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">annotation</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="36">            <span class="k">return</span> <span class="n">cached</span>
-</span><span data-line="37">        <span class="n">dto_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">=</span> <span class="n">DataclassDTO</span><span class="p">[</span><span class="n">annotation</span><span class="p">]</span>
+</span><span data-line="37">        <span class="n">dto_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">=</span> <span class="n">DataclassDTO</span><span class="p">[</span><span class="n">annotation</span><span class="p">]</span>  <span class="c1"># type: ignore[valid-type]</span>
 </span><span data-line="38">        <span class="bp">self</span><span class="o">.</span><span class="n">_type_dto_map</span><span class="p">[</span><span class="n">annotation</span><span class="p">]</span> <span class="o">=</span> <span class="n">dto_type</span>
 </span><span data-line="39">        <span class="k">return</span> <span class="n">dto_type</span>
 </span><span data-line="40">
@@ -724,7 +724,7 @@ signature (their <a class="reference internal" href="../../reference/app.html#li
 </span><span data-line="8">
 </span><span data-line="9">
 </span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">MyBaseType</span><span class="p">:</span>
-</span><span data-line="11">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+</span><span data-line="11">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="12">        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
 </span><span data-line="13">
 </span><span data-line="14">

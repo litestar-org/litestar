@@ -688,14 +688,15 @@ register a type and a function to resolve symlinks on this file system.</p>
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">fsspec.implementations.local</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalFileSystem</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.file_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyFileSystem</span><span class="p">,</span> <span class="n">LinkableFileSystem</span>
-</span><span data-line="6">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathType</span>
 </span><span data-line="7">
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">local_resolver</span><span class="p">(</span><span class="n">fs</span><span class="p">:</span> <span class="n">AnyFileSystem</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="9">    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</span><span data-line="10">
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">local_resolver</span><span class="p">(</span><span class="n">fs</span><span class="p">:</span> <span class="n">AnyFileSystem</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">PathType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="10">    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 </span><span data-line="11">
-</span><span data-line="12"><span class="c1"># Register LocalFileSystem as supporting symlinks</span>
-</span><span data-line="13"><span class="n">LinkableFileSystem</span><span class="o">.</span><span class="n">register_as_linkable</span><span class="p">(</span><span class="n">LocalFileSystem</span><span class="p">,</span> <span class="n">local_resolver</span><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="c1"># Register LocalFileSystem as supporting symlinks</span>
+</span><span data-line="14"><span class="n">LinkableFileSystem</span><span class="o">.</span><span class="n">register_as_linkable</span><span class="p">(</span><span class="n">LocalFileSystem</span><span class="p">,</span> <span class="n">local_resolver</span><span class="p">)</span>
 </span></pre></div>
 </div>
 <div class="admonition tip">
@@ -723,7 +724,7 @@ can be used to register file systems under a name by which they can be reference
 </span><span data-line="10">    <span class="k">return</span> <span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">file_system</span><span class="o">=</span><span class="s2">&quot;assets&quot;</span><span class="p">)</span>
 </span><span data-line="11">
 </span><span data-line="12">
-</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">assets_fs</span><span class="p">:</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">AbstractFileSystem</span><span class="p">):</span>
+</span><span data-line="13"><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">assets_fs</span><span class="p">:</span> <span class="n">fsspec</span><span class="o">.</span><span class="n">AbstractFileSystem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
 </span><span data-line="14">    <span class="k">return</span> <span class="n">Litestar</span><span class="p">(</span>
 </span><span data-line="15">        <span class="p">[</span><span class="n">file_handler</span><span class="p">],</span>
 </span><span data-line="16">        <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">FileSystemRegistry</span><span class="p">({</span><span class="s2">&quot;assets&quot;</span><span class="p">:</span> <span class="n">assets_fs</span><span class="p">})],</span>
@@ -749,7 +750,7 @@ explicitly.</p>
 </span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 </span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 </span><span data-line="7">    <span class="n">registry</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">FileSystemRegistry</span><span class="p">)</span>
-</span><span data-line="8">    <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">(</span><span class="s2">&quot;some/file.txt&quot;</span><span class="p">)</span>
+</span><span data-line="8">    <span class="k">return</span> <span class="k">await</span> <span class="n">registry</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">(</span><span class="s2">&quot;some/file.txt&quot;</span><span class="p">)</span>
 </span><span data-line="9">
 </span><span data-line="10">
 </span><span data-line="11"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">])</span>

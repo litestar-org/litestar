@@ -616,9 +616,9 @@ For the sake of this example here let us say it is a dataclass:</p>
 </span><span data-line="9">
 </span><span data-line="10">        <span class="c1"># this would be a database call</span>
 </span><span data-line="11">        <span class="n">token</span> <span class="o">=</span> <span class="n">MyToken</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">auth_header</span><span class="p">)</span>
-</span><span data-line="12">        <span class="n">user</span> <span class="o">=</span> <span class="n">MyUser</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">TOKEN_USER_DATABASE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">api_key</span><span class="p">))</span>
-</span><span data-line="13">        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-</span><span data-line="14">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
+</span><span data-line="12">        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name</span> <span class="o">:=</span> <span class="n">TOKEN_USER_DATABASE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">api_key</span><span class="p">)):</span>
+</span><span data-line="13">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
+</span><span data-line="14">        <span class="n">user</span> <span class="o">=</span> <span class="n">MyUser</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 </span><span data-line="15">        <span class="k">return</span> <span class="n">AuthenticationResult</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">token</span><span class="p">)</span>
 </span></pre></div>
 </div>

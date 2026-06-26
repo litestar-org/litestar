@@ -772,11 +772,11 @@ keys matching the current namespace, making it safe and side-effect free.</p>
 </span><span data-line="6"><span class="n">session_store</span> <span class="o">=</span> <span class="n">root_store</span><span class="o">.</span><span class="n">with_namespace</span><span class="p">(</span><span class="s2">&quot;sessions&quot;</span><span class="p">)</span>
 </span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">before_shutdown</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_shutdown</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="10">    <span class="k">await</span> <span class="n">cache_store</span><span class="o">.</span><span class="n">delete_all</span><span class="p">()</span>
 </span><span data-line="11">
 </span><span data-line="12">
-</span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">before_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">before_shutdown</span><span class="p">])</span>
+</span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">on_shutdown</span><span class="p">])</span>
 </span></pre></div>
 </div>
 <p>Even though all three stores defined here use the same Redis instance, calling <code class="docutils literal notranslate"><span class="pre">delete_all</span></code> on the <code class="docutils literal notranslate"><span class="pre">cache_store</span></code>
