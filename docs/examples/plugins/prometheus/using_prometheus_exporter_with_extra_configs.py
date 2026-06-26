@@ -23,7 +23,7 @@ extra_labels: dict[str, str | Callable] = {
 }
 
 # Customizing the buckets for the histogram.
-buckets: list[str | float] = [0.1, 0.2, 0.3, 0.4, 0.5]
+buckets = [0.1, 0.2, 0.3, 0.4, 0.5]
 
 
 # Adding exemplars to the metrics.
