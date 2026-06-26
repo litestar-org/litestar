@@ -17,7 +17,7 @@ def custom_label_callable(request: Request[Any, Any, Any]) -> str:
     return "v2.0"
 
 
-extra_labels: dict[str, str | Callable] = {
+extra_labels: dict[str, str | Callable[[Request[Any, Any, Any]], str]] = {
     "version_no": custom_label_callable,
     "location": "earth",
 }
