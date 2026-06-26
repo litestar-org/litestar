@@ -1,3 +1,5 @@
+from typing import Any
+
 from litestar import Litestar, MediaType, Request, Response, get
 
 
