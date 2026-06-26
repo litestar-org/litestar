@@ -37,7 +37,7 @@ class PrometheusConfig:
     """A mapping of labels to add to the metrics. The values can be either a string or a callable that returns a string."""
     exemplars: Callable[[Request], dict] | None = field(default=None)
     """A callable that returns a list of exemplars to add to the metrics. Only supported in opementrics-text exposition format."""
-    buckets: list[str | float] | None = field(default=None)
+    buckets: Sequence[str | float] | None = field(default=None)
     """A list of buckets to use for the histogram."""
     excluded_http_methods: Method | Sequence[Method] | None = field(default=None)
     """A list of http methods to exclude from the metrics."""
