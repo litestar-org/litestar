@@ -253,7 +253,7 @@ enable_error_code = [
   "possibly-undefined",
   "redundant-self",
 ]
-packages = ["litestar", "tests"]
+packages = ["litestar", "tests", "docs.examples"]
 plugins = ["pydantic.mypy"]
 python_version = "3.11"
 
@@ -343,7 +343,7 @@ exclude = [
   "**/.venv/**",
   "**/.*"
 ]
-include = ["litestar", "tests"]
+include = ["litestar", "tests", "docs/examples"]
 pythonVersion = "3.11"
 reportUnnecessaryTypeIgnoreComment = true
 
