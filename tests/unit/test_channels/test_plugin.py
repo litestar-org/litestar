@@ -308,7 +308,8 @@ async def test_subscribe_cancellation_does_not_leak() -> None:
     await backend.in_history.wait()  # subscribe is now suspended in get_history
 
     task.cancel()  # client disconnects mid-subscribe
-    await asyncio.gather(task, return_exceptions=True)
+    results = await asyncio.gather(task, return_exceptions=True)
+    assert isinstance(results[0], asyncio.CancelledError)  # the cancellation propagated
 
     assert not plugin._channels.get(channel)  # no subscriber left behind
     assert channel not in backend._channels  # backend not left subscribed
@@ -328,7 +329,8 @@ async def test_start_subscription_cancellation_does_not_leak() -> None:
     await backend.in_history.wait()  # entering the context manager, suspended in get_history
 
     task.cancel()  # client disconnects mid-subscribe
-    await asyncio.gather(task, return_exceptions=True)
+    results = await asyncio.gather(task, return_exceptions=True)
+    assert isinstance(results[0], asyncio.CancelledError)  # the cancellation propagated
 
     assert not plugin._channels.get(channel)  # no subscriber left behind
     assert channel not in backend._channels  # backend not left subscribed
