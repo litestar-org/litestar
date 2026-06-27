@@ -876,6 +876,7 @@ def test_recursive_type_alias_type_keyword() -> None:
         ]
     }
 
+
 @pytest.mark.skipif(sys.version_info < (3, 12), reason="PEP-695 aliases are not available before 3.12")
 def test_recursive_type_alias_type_keyword_annotated() -> None:
     ctx: dict[str, Any] = {}

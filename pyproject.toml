@@ -519,3 +519,7 @@ ruff_fix = true
 [tool.unasyncd.per_file_add_replacements."litestar/repository/abc/_async.py"]
 "AbstractAsyncRepository" = "AbstractSyncRepository"
 "AsyncRepoT" = "SyncRepoT"
+
+[tool.unasyncd.per_file_add_replacements."litestar\\repository\\abc\\_async.py"]
+"AbstractAsyncRepository" = "AbstractSyncRepository"
+"AsyncRepoT" = "SyncRepoT"
