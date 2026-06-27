@@ -1,3 +1,5 @@
+from typing import cast
+
 from litestar import Litestar, get
 from litestar.datastructures import State
 from litestar.di import Provide
@@ -8,7 +10,7 @@ class ArqRedis:
 
 
 async def get_arq_redis(state: State) -> ArqRedis:
-    return state.arq_redis
+    return cast(ArqRedis, state.arq_redis)
 
 
 @get("/", dependencies={"arq_redis": Provide(get_arq_redis)})

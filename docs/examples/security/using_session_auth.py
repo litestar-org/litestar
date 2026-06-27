@@ -64,11 +64,11 @@ async def login(data: UserLoginPayload, request: "Request[Any, Any, Any]") -> Us
     # are correct. If we are using passwords, we should check that
     # the password hashes match etc. We will simply assume that we
     # have done all of that we now have a user value:
-    user_id = await memory_store.get(data.email)
+    encoded_user_id = await memory_store.get(data.email)
 
-    if not user_id:
+    if not encoded_user_id:
         raise NotAuthorizedException
-    user_id = user_id.decode("utf-8")
+    user_id = encoded_user_id.decode("utf-8")
 
     # once verified we can create a session.
     # to do this we simply need to call the Litestar

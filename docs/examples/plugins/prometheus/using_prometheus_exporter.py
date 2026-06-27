@@ -2,7 +2,7 @@ from litestar import Litestar
 from litestar.plugins.prometheus import PrometheusConfig, PrometheusController
 
 
-def create_app(group_path: bool = False):
+def create_app(group_path: bool = False) -> Litestar:
     # Default app name and prefix is litestar.
     prometheus_config = PrometheusConfig(group_path=group_path)
 

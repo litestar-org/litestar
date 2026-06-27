@@ -37,7 +37,7 @@ class BaseModel(_BaseModel):
 # The `UUIDBase` class includes a `UUID` based primary key (`id`)
 class AuthorModel(base.UUIDBase):
     # we can optionally provide the table name instead of auto-generating it
-    __tablename__ = "author"  #  type: ignore[assignment]
+    __tablename__ = "author"
     name: Mapped[str]
     dob: Mapped[date | None]
     books: Mapped[list[BookModel]] = relationship(back_populates="author", lazy="noload")
@@ -47,7 +47,7 @@ class AuthorModel(base.UUIDBase):
 # additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
 # record created, and `updated_at` is the last time the record was modified.
 class BookModel(base.UUIDAuditBase):
-    __tablename__ = "book"  #  type: ignore[assignment]
+    __tablename__ = "book"
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
     author: Mapped[AuthorModel] = relationship(lazy="joined", innerjoin=True, viewonly=True)
