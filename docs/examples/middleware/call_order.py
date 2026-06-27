@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from litestar import Controller, Litestar, Router, get
 from litestar.datastructures import State
@@ -31,7 +31,7 @@ class MyController(Controller):
         middleware=[create_test_middleware(6), create_test_middleware(7)],
     )
     async def my_handler(self, state: State) -> list[int]:
-        return state["middleware_calls"]
+        return cast(list[int], state["middleware_calls"])
 
 
 router = Router(

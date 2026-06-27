@@ -1,8 +1,10 @@
+from typing import Any
+
 from litestar import Litestar, MediaType, Request, Response, get
 
 
 @get("/resource", sync_to_thread=False)
-def retrieve_resource(request: Request) -> Response[bytes]:
+def retrieve_resource(request: Request[Any, Any, Any]) -> Response[bytes | None]:
     provided_types = [MediaType.TEXT, MediaType.HTML, "application/xml"]
     preferred_type = request.accept.best_match(provided_types, default=MediaType.TEXT)
 
