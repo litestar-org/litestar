@@ -8,14 +8,15 @@ from structlog.testing import capture_logs
 
 from litestar import Response, get, post
 from litestar.config.compression import CompressionConfig
-from litestar.connection import Request
+from litestar.connection import ASGIConnection, Request
 from litestar.datastructures import Cookie, UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotAuthorizedException, PermissionDeniedException
 from litestar.handlers import HTTPRouteHandler
+from litestar.middleware.authentication import AbstractAuthenticationMiddleware, AuthenticationResult
 from litestar.middleware.logging import LoggingMiddleware
 from litestar.params import Body
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.testing import create_test_client
 from tests.helpers import cleanup_logging_impl
 
@@ -46,6 +47,37 @@ def handler() -> HTTPRouteHandler:
         )
 
     return handler_fn
+
+
+def test_logging_middleware_no_keyerror_when_inner_middleware_raises(caplog: "LogCaptureFixture") -> None:
+    """Regression test for https://github.com/litestar-org/litestar/issues/4855.
+
+    When an inner middleware raises an ``HTTPException`` before any response body is sent
+    (e.g. an auth middleware rejecting the request), ``LoggingMiddleware``'s exception
+    branch set ``HTTP_RESPONSE_START`` but not ``HTTP_RESPONSE_BODY``, so
+    ``extract_response_data()`` raised ``KeyError`` on ``.pop(HTTP_RESPONSE_BODY)`` and the
+    intended 401 surfaced as a 500.
+    """
+
+    class AlwaysRejectAuthMiddleware(AbstractAuthenticationMiddleware):
+        async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:
+            raise NotAuthorizedException("Token expired")
+
+    @get("/")
+    def protected_handler() -> dict[str, str]:
+        return {"secret": "data"}
+
+    with (
+        create_test_client(
+            route_handlers=[protected_handler],
+            middleware=[LoggingMiddleware("litestar.test"), AlwaysRejectAuthMiddleware],
+            raise_server_exceptions=False,
+        ) as client,
+        caplog.at_level(INFO),
+    ):
+        response = client.get("/")
+
+    assert response.status_code == HTTP_401_UNAUTHORIZED
 
 
 def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
