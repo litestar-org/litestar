@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any, Generic, Literal, cast
+from uuid import uuid4
 
 from typing_extensions import TypeVar
 
@@ -239,7 +240,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             exp=(datetime.now(UTC) + (token_expiration or self.default_token_expiration)),
             iss=token_issuer,
             aud=token_audience,
-            jti=token_unique_jwt_id,
+            jti=token_unique_jwt_id or uuid4().hex,
             extras=token_extras or {},
             **kwargs,
         )

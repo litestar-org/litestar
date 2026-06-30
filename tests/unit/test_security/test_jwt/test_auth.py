@@ -121,7 +121,10 @@ async def test_jwt_auth(
         assert decoded_token.sub == str(user.id)
         assert decoded_token.iss == token_issuer
         assert decoded_token.aud == token_audience
-        assert decoded_token.jti == token_unique_jwt_id
+        if token_unique_jwt_id:
+            assert decoded_token.jti == token_unique_jwt_id
+        else: 
+            assert decoded_token.jti is not None
         if token_extras is not None:
             for key, value in token_extras.items():
                 assert decoded_token.extras[key] == value
@@ -133,12 +136,10 @@ async def test_jwt_auth(
         assert response.status_code == HTTP_200_OK
 
         response = client.get("/logout", headers={auth_header: jwt_auth.format_auth_header(encoded_token)})
-        if decoded_token.jti:
-            assert response.json()["message"] == "logged out successfully"
-            response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(encoded_token)})
-            assert response.status_code == HTTP_401_UNAUTHORIZED
-        else:
-            assert response.json()["message"] == f"can't logout, jti is {decoded_token.jti}"
+
+        assert response.json()["message"] == "logged out successfully"
+        response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(encoded_token)})
+        assert response.status_code == HTTP_401_UNAUTHORIZED
 
         response = client.get("/my-endpoint", headers={auth_header: encoded_token})
         assert response.status_code == HTTP_401_UNAUTHORIZED
@@ -301,8 +302,12 @@ async def test_jwt_cookie_auth(
         decoded_token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm=algorithm)
         assert decoded_token.sub == str(user.id)
         assert decoded_token.iss == token_issuer
+        if token_unique_jwt_id:
+            assert decoded_token.jti == token_unique_jwt_id
+        else:
+            assert decoded_token.jti is not None
+
         assert decoded_token.aud == token_audience
-        assert decoded_token.jti == token_unique_jwt_id
         if token_extras is not None:
             for key, value in token_extras.items():
                 assert decoded_token.extras[key] == value
@@ -367,13 +372,11 @@ async def test_jwt_cookie_auth(
         assert response.status_code == HTTP_200_OK
 
         response = client.get("/logout")
-        if decoded_token.jti:
-            assert response.json()["message"] == "logged out successfully"
-            response = client.get("/my-endpoint")
-            assert response.status_code == HTTP_401_UNAUTHORIZED
-        else:
-            assert response.json()["message"] == f"can't logout, jti is {decoded_token.jti}"
 
+        assert response.json()["message"] == "logged out successfully"
+        response = client.get("/my-endpoint")
+        assert response.status_code == HTTP_401_UNAUTHORIZED
+        
 
 async def test_path_exclusion() -> None:
     async def retrieve_user_handler(_: Token, __: "ASGIConnection") -> None:
