@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections import OrderedDict, defaultdict, deque
 from collections.abc import Hashable, Iterable, Mapping, MutableMapping, MutableSequence, Sequence
 from copy import copy
+from dataclasses import fields
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
@@ -219,7 +220,14 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry")
+    __slots__ = (
+        "_in_progress_alias_ids",
+        "_recursive_alias_ids",
+        "generate_examples",
+        "plugins",
+        "prefer_alias",
+        "schema_registry",
+    )
 
     def __init__(
         self,
@@ -240,6 +248,10 @@ class SchemaCreator:
         self.plugins = plugins if plugins is not None else []
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
+        # ids of ``TypeAliasType`` annotations currently being expanded, used to detect self-references
+        self._in_progress_alias_ids: set[int] = set()
+        # ids of ``TypeAliasType`` annotations found to be self-referential during expansion
+        self._recursive_alias_ids: set[int] = set()
 
     @classmethod
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
@@ -343,14 +355,58 @@ class SchemaCreator:
         )
 
     def for_type_alias_type(self, field_definition: FieldDefinition) -> Schema | Reference:
-        return self.for_field_definition(
-            FieldDefinition.from_kwarg(
-                annotation=field_definition.annotation.__value__,
-                name=field_definition.name,
-                default=field_definition.default,
-                kwarg_definition=field_definition.kwarg_definition,
+        """Create a schema for a PEP 695 ``type`` alias (``TypeAliasType``).
+
+        The alias's ``__value__`` is unwrapped and a schema is created for it. Self-referential aliases,
+        e.g. ``type JSON = str | int | list[JSON] | dict[str, JSON]``, are registered as named components so
+        that recursive occurrences resolve to a ``$ref`` -- mirroring how self-referential models are handled
+        (see :meth:`create_component_schema`) and breaking what would otherwise be unbounded recursion.
+        Non-recursive aliases are inlined as before.
+
+        Note:
+            Only the alias that is the entry point of a cycle becomes a component; any *mutually* recursive
+            aliases reached while expanding it are inlined. The result is always valid and finite, but for
+            mutually recursive aliases used at several independent entry points the emitted components are not
+            minimal (each inlines a copy of the other's value).
+        """
+        alias_id = id(field_definition.annotation)
+
+        if alias_id in self._in_progress_alias_ids:
+            # We are already expanding this alias higher up the call stack: this is a recursive reference.
+            # Register it as a component (if not already) and return a reference to break the cycle.
+            self._recursive_alias_ids.add(alias_id)
+            self.schema_registry.get_schema_for_field_definition(field_definition)
+            return self.schema_registry.get_reference_for_field_definition(field_definition)  # type: ignore[return-value]
+
+        self._in_progress_alias_ids.add(alias_id)
+        try:
+            schema = self.for_field_definition(
+                FieldDefinition.from_kwarg(
+                    annotation=field_definition.annotation.__value__,
+                    name=field_definition.name,
+                    default=field_definition.default,
+                    kwarg_definition=field_definition.kwarg_definition,
+                )
             )
-        )
+        finally:
+            self._in_progress_alias_ids.discard(alias_id)
+
+        if alias_id not in self._recursive_alias_ids:
+            # No self-reference was encountered while expanding the value: inline the schema as before.
+            return schema
+
+        self._recursive_alias_ids.discard(alias_id)
+        # The alias was registered as a component while expanding its value (the recursive references above
+        # already point at it). Populate that component with the resolved schema and return a reference to it.
+        component = self.schema_registry.get_schema_for_field_definition(field_definition)
+        if isinstance(schema, Schema):
+            for schema_field in fields(Schema):
+                setattr(component, schema_field.name, getattr(schema, schema_field.name))
+        else:
+            # the value resolved to a reference (e.g. ``type Alias = SomeModel``); defer to it
+            component.all_of = [schema]
+        component.title = field_definition.annotation.__name__
+        return self.schema_registry.get_reference_for_field_definition(field_definition) or component
 
     @staticmethod
     def for_upload_file(field_definition: FieldDefinition) -> Schema:
