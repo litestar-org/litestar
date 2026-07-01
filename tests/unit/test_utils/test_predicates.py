@@ -3,17 +3,7 @@ from collections.abc import AsyncGenerator, Callable, Iterable, Mapping, Mutable
 from dataclasses import MISSING, dataclass
 from functools import partial
 from inspect import Signature
-from typing import (
-    Annotated,
-    Any,
-    ClassVar,
-    Generic,
-    Optional,
-    TypeVar,
-    Union,
-    cast,
-    Literal
-)
+from typing import Annotated, Any, ClassVar, Generic, Literal, Optional, TypeVar, Union, cast
 
 import pytest
 
@@ -289,6 +279,5 @@ class NonDataclass: ...
         (Literal["a"], False),
     ),
 )
-
 def test_is_dataclass_class(cls: Any, expected: bool) -> None:
     assert is_dataclass_class(cls) is expected
