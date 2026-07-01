@@ -362,37 +362,3 @@ declared in the route handler. Examine these more closely:
 * ``local_param`` is a route-handler-local :ref:`query parameter <usage/routing/parameters:query parameters>`
   (``FromQuery[str]``), and ``path_param`` is a :ref:`path parameter <usage/routing/parameters:path parameters>`
   (``FromPath[int]``).
-
-
-.. _deprecated-parameter-styles:
-
-Deprecated declaration styles
------------------------------
-
-Earlier 2.x releases accepted several other ways of declaring handler parameters. These continue to work for the
-remainder of the 2.x line, but they now emit a :class:`~.exceptions.LitestarDeprecationWarning` and will be removed
-in 3.0.
-
-.. list-table::
-    :header-rows: 1
-    :widths: 45 55
-
-    * - Deprecated
-      - Use instead
-    * - ``def h(name: str)`` *(implicit query parameter)*
-      - ``def h(name: FromQuery[str])``
-    * - ``def h(user_id: int)`` *(implicit path parameter)*
-      - ``def h(user_id: FromPath[int])``
-    * - ``Annotated[str, Parameter(query="alias")]``
-      - ``Annotated[str, QueryParameter(name="alias")]``
-    * - ``Annotated[str, Parameter(header="X-API-KEY")]``
-      - ``Annotated[str, HeaderParameter(name="X-API-KEY")]``
-    * - ``Annotated[str, Parameter(cookie="session")]``
-      - ``Annotated[str, CookieParameter(name="session")]``
-    * - ``name: str = Parameter(...)`` *(default-value style)*
-      - ``name: Annotated[str, QueryParameter(...)]``
-
-The :func:`~.params.Parameter` function itself is **not** removed and can still be used to attach pure metadata
-(``description``, ``gt``, etc.) when wrapped in :class:`~typing.Annotated`. Only its ``header``, ``cookie``, and
-``query`` keyword arguments are deprecated — passing any of those emits a :exc:`DeprecationWarning` independently of
-the handler-level warning.

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Hashable, Sequence
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, TypeVar
@@ -21,7 +20,6 @@ __all__ = (
     "KwargDefinition",
     "MsgPackBody",
     "MultipartBody",
-    "Parameter",
     "ParameterKwarg",
     "PathParameter",
     "QueryParameter",
@@ -38,6 +36,10 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T")
+
+
+class ParameterMarker:
+    pass
 
 
 @dataclass(frozen=True)
@@ -165,10 +167,10 @@ class KwargDefinition:
 
 
 @dataclass(frozen=True)
-class ParameterKwarg(KwargDefinition):
+class ParameterKwarg(KwargDefinition, ParameterMarker):
     """Data container representing a parameter."""
 
-    param_type: ClassVar[ParamType] = ParamType.QUERY
+    param_type: ClassVar[ParamType]
     """Type of the parameter"""
 
     name: str | None = None
@@ -178,12 +180,6 @@ class ParameterKwarg(KwargDefinition):
     """
     annotation: Any = field(default=Empty)
     """The field value - `Empty` by default."""
-    header: str | None = field(default=None)
-    """The header name - required for header parameters."""
-    cookie: str | None = field(default=None)
-    """The cookie name - required for cookie parameters."""
-    query: str | None = field(default=None)
-    """The query parameter name - required for query parameters"""
     required: bool | None = field(default=None)
     """A boolean flag dictating whether this parameter is required.
 
@@ -201,32 +197,6 @@ class ParameterKwarg(KwargDefinition):
             A hash
         """
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
-
-    def __post_init__(self) -> None:
-        if (header := self.header) is not None:
-            warnings.warn(
-                f"Deprecated 'header' parameter: Parameter(header={header!r}). Use 'HeaderParameter(name={header!r})' instead",
-                stacklevel=2,
-                category=DeprecationWarning,
-            )
-            object.__setattr__(self, "name", header)
-            object.__setattr__(self, "param_type", ParamType.HEADER)
-        if (cookie := self.cookie) is not None:
-            warnings.warn(
-                f"Deprecated 'cookie' parameter: Parameter(cookie={cookie!r}). Use 'CookieParameter(name={cookie!r})' instead",
-                stacklevel=2,
-                category=DeprecationWarning,
-            )
-            object.__setattr__(self, "name", cookie)
-            object.__setattr__(self, "param_type", ParamType.COOKIE)
-        if (query := self.query) is not None:
-            warnings.warn(
-                f"Deprecated 'query' parameter: Parameter(query={query!r}). Use 'QueryParameter(name={query!r})' instead",
-                stacklevel=2,
-                category=DeprecationWarning,
-            )
-            object.__setattr__(self, "name", query)
-            object.__setattr__(self, "param_type", ParamType.QUERY)
 
 
 class QueryParameter(ParameterKwarg):
@@ -278,109 +248,8 @@ FromPath: TypeAlias = Annotated[T, PathParameter()]
 """Declare a path parameter"""
 
 
-def Parameter(
-    annotation: Any = Empty,
-    *,
-    const: bool | None = None,
-    content_encoding: str | None = None,
-    cookie: str | None = None,
-    description: str | None = None,
-    examples: list[Example] | None = None,
-    external_docs: ExternalDocumentation | None = None,
-    ge: float | None = None,
-    gt: float | None = None,
-    header: str | None = None,
-    le: float | None = None,
-    lt: float | None = None,
-    max_items: int | None = None,
-    max_length: int | None = None,
-    min_items: int | None = None,
-    min_length: int | None = None,
-    multiple_of: float | None = None,
-    pattern: str | None = None,
-    query: str | None = None,
-    required: bool | None = None,
-    title: str | None = None,
-    schema_extra: dict[str, Any] | None = None,
-    schema_component_key: str | None = None,
-    include_in_schema: bool = True,
-) -> Any:
-    """Create an extended parameter kwarg definition.
-
-    Args:
-        annotation: `Empty` by default.
-        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter
-            must equal its default value. This also causes the OpenAPI const field
-            to be populated with the default value.
-        content_encoding: The content encoding of the value.
-            Applicable on to string values. See OpenAPI 3.1 for details.
-        cookie: The cookie parameter key - required for cookie parameters.
-        description: String value used in the description section of the OpenAPI schema for the given parameter.
-        examples: A list of Example models.
-        external_docs: A url pointing at external documentation for the given parameter.
-        ge: Constrict value to be greater or equal to a given float or int.
-            Equivalent to minimum in the OpenAPI specification.
-        gt: Constrict value to be greater than a given float or int.
-            Equivalent to exclusiveMinimum in the OpenAPI specification.
-        header: The header parameter key - required for header parameters.
-        le: Constrict value to be less or equal to a given float or int.
-            Equivalent to maximum in the OpenAPI specification.
-        lt: Constrict value to be less than a given float or int.
-            Equivalent to exclusiveMaximum in the OpenAPI specification.
-        max_items: Constrict a set or a list to have a maximum number of items.
-            Equivalent to maxItems in the OpenAPI specification.
-        max_length: Constrict a string or bytes value to have a maximum length.
-            Equivalent to maxLength in the OpenAPI specification.
-        min_items: Constrict a set or a list to have a minimum number of items. ֿ
-            Equivalent to minItems in the OpenAPI specification.
-        min_length: Constrict a string or bytes value to have a minimum length.
-            Equivalent to minLength in the OpenAPI specification.
-        multiple_of: Constrict value to a multiple of a given float or int.
-            Equivalent to multipleOf in the OpenAPI specification.
-        pattern: A string representing a regex against which the given string will be matched.
-            Equivalent to pattern in the OpenAPI specification.
-        query: The query parameter key for this parameter.
-        required: A boolean flag dictating whether this parameter is required.
-            If set to False, None values will be allowed. Defaults to True.
-        title: String value used in the title section of the OpenAPI schema for the given parameter.
-        schema_extra: Extensions to the generated schema. If set, will overwrite the matching fields in the generated
-            schema.
-
-            .. versionadded:: 2.8.0
-        schema_component_key: Use this as the key for the reference when creating a component for this type
-            .. versionadded:: 2.12.0
-        include_in_schema: A boolean flag dictating whether this parameter should be included in the schema.
-    """
-    return ParameterKwarg(
-        annotation=annotation,
-        header=header,
-        cookie=cookie,
-        query=query,
-        examples=examples,
-        external_docs=external_docs,
-        content_encoding=content_encoding,
-        required=required,
-        title=title,
-        description=description,
-        const=const,
-        gt=gt,
-        ge=ge,
-        lt=lt,
-        le=le,
-        multiple_of=multiple_of,
-        min_items=min_items,
-        max_items=max_items,
-        min_length=min_length,
-        max_length=max_length,
-        pattern=pattern,
-        schema_extra=schema_extra,
-        schema_component_key=schema_component_key,
-        include_in_schema=include_in_schema,
-    )
-
-
 @dataclass(frozen=True)
-class BodyKwarg(KwargDefinition):
+class BodyKwarg(KwargDefinition, ParameterMarker):
     """Data container representing a request body."""
 
     media_type: str | RequestEncodingType = field(default=RequestEncodingType.JSON)
@@ -500,7 +369,7 @@ def Body(
     )
 
 
-class SkipValidationMarker:
+class SkipValidationMarker(ParameterMarker):
     """Indicate that a type annotated with this as metadata should be
     treated as 'Any'
     """

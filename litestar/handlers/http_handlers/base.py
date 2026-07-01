@@ -255,7 +255,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
+            parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if not http_method:
