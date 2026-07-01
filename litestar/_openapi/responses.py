@@ -27,7 +27,6 @@ from litestar.response import (
     Response as LitestarResponse,
 )
 from litestar.response.base import ASGIResponse
-from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
 from litestar.utils import get_enum_string_value, get_name
 
@@ -120,12 +119,12 @@ class ResponseFactory:
 
     def create_success_response(self) -> OpenAPIResponse:
         """Create the schema for a success response."""
-        if self.field_definition.is_subclass_of((NoneType, ASGIResponse)):
-            response = OpenAPIResponse(content=None, description=self.create_description())
-        elif self.field_definition.is_subclass_of(Redirect):
+        if self.field_definition.is_subclass_of(Redirect):
             response = self.create_redirect_response()
         elif self.field_definition.is_subclass_of(File):
             response = self.create_file_response()
+        elif self.field_definition.is_subclass_of(ASGIResponse) or not self.route_handler.returns_content:
+            response = self.create_empty_response()
         else:
             media_type = self.route_handler.media_type
 
@@ -162,6 +161,13 @@ class ResponseFactory:
             )
         self.set_success_response_headers(response)
         return response
+
+    def create_empty_response(self) -> OpenAPIResponse:
+        """Create the schema for a response with no content."""
+        return OpenAPIResponse(
+            content=None,
+            description=self.create_description(),
+        )
 
     def create_redirect_response(self) -> OpenAPIResponse:
         """Create the schema for a redirect response."""

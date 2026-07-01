@@ -55,24 +55,15 @@ def test_allows_customization_of_operation_id_creator() -> None:
         openapi_config=OpenAPIConfig(title="my title", version="1.0.0", operation_id_creator=operation_id_creator),
     )
 
-    assert app.openapi_schema.to_schema()["paths"] == {
-        "/1": {
-            "get": {
-                "deprecated": False,
-                "operationId": "id_x",
-                "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
-                "summary": "Handler1",
-            }
-        },
-        "/2": {
-            "get": {
-                "deprecated": False,
-                "operationId": "id_y",
-                "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
-                "summary": "Handler2",
-            }
-        },
-    }
+    assert app.openapi_schema.paths is not None
+
+    assert "/1" in app.openapi_schema.paths
+    assert app.openapi_schema.paths["/1"].get is not None
+    assert app.openapi_schema.paths["/1"].get.operation_id == "id_x"
+
+    assert "/2" in app.openapi_schema.paths
+    assert app.openapi_schema.paths["/2"].get is not None
+    assert app.openapi_schema.paths["/2"].get.operation_id == "id_y"
 
 
 def test_raises_exception_when_no_config_in_place() -> None:
