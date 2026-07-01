@@ -1,15 +1,15 @@
-from __future__ import annotations  # pragma: no cover
+from __future__ import annotations
 
-__all__ = ("ConflictError", "NotFoundError", "RepositoryError")  # pragma: no cover
+__all__ = ("ConflictError", "NotFoundError", "RepositoryError")
 
 
-class RepositoryError(Exception):  # pragma: no cover
+class RepositoryError(Exception):
     """Base repository exception type."""
 
 
-class ConflictError(RepositoryError):  # pragma: no cover
+class ConflictError(RepositoryError):
     """Data integrity error."""
 
 
-class NotFoundError(RepositoryError):  # pragma: no cover
+class NotFoundError(RepositoryError):
     """An identity does not exist."""

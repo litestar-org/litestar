@@ -12,6 +12,7 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    Literal
 )
 
 import pytest
@@ -56,6 +57,7 @@ class Sub(C): ...
         ((Signature.from_callable(cast("Any", response_handler.fn)).return_annotation, Response), True),
         ((dict[str, Any], C), False),
         ((C(), C), False),
+        ((Literal["a"], int), False),
     ),
 )
 def test_is_class_and_subclass(args: tuple[Any, Any], expected: bool) -> None:
@@ -85,6 +87,7 @@ def test_is_class_and_subclass(args: tuple[Any, Any], expected: bool) -> None:
             (dict[str, Any], True),
             (Union[str, int], False),
             (1, False),
+            (Literal["a"], False),
         )
     ),
 )
@@ -115,6 +118,7 @@ def test_is_non_string_iterable(value: Any, expected: bool) -> None:
             (dict[str, Any], False),
             (Union[str, int], False),
             (1, False),
+            (Literal["a"], False),
         )
     ),
 )
@@ -277,7 +281,14 @@ class NonDataclass: ...
 
 @pytest.mark.parametrize(
     ("cls", "expected"),
-    ((NonGenericDataclass, True), (GenericDataclass, True), (GenericDataclass[int], True), (NonDataclass, False)),
+    (
+        (NonGenericDataclass, True),
+        (GenericDataclass, True),
+        (GenericDataclass[int], True),
+        (NonDataclass, False),
+        (Literal["a"], False),
+    ),
 )
+
 def test_is_dataclass_class(cls: Any, expected: bool) -> None:
     assert is_dataclass_class(cls) is expected
