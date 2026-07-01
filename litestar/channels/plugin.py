@@ -103,10 +103,8 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         self._subscriber_class = subscriber_class
 
         self._channels: dict[str, set[Subscriber]] = {channel: set() for channel in channels or []}
-        # Channels declared up-front are kept even when empty: they back the generated route
-        # handlers and the startup backend subscription. Channels created dynamically (when
-        # ``arbitrary_channels_allowed`` is set) are removed from ``_channels`` once their last
-        # subscriber leaves, otherwise the dict grows unbounded for the process lifetime.
+        # Declared channels are kept when empty (they back route handlers); arbitrary channels
+        # are dropped on unsubscribe to avoid unbounded growth.
         self._declared_channels: set[str] = set(channels or [])
 
     def encode_data(self, data: LitestarEncodableType) -> bytes:
@@ -231,8 +229,6 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         channels_to_unsubscribe: set[str] = set()
 
         for channel in channels:
-            # ``get`` guards against a missing entry: arbitrary channels are deleted below once their
-            # last subscriber leaves, so unsubscribing twice would otherwise raise ``KeyError`` here.
             channel_subscribers = self._channels.get(channel, set())
 
             try:
