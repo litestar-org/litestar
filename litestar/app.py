@@ -434,6 +434,11 @@ class Litestar(Router):
         if self.pdb_on_exception:
             warn_pdb_on_exception()
 
+        # DTO transfer model names only need to be unique within a single application.
+        from litestar.dto._backend import DTOBackend
+
+        DTOBackend._seen_model_names.clear()
+
         try:
             from starlette.exceptions import HTTPException as StarletteHTTPException
 
