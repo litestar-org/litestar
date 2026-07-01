@@ -231,7 +231,9 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         channels_to_unsubscribe: set[str] = set()
 
         for channel in channels:
-            channel_subscribers = self._channels[channel]
+            # ``get`` guards against a missing entry: arbitrary channels are deleted below once their
+            # last subscriber leaves, so unsubscribing twice would otherwise raise ``KeyError`` here.
+            channel_subscribers = self._channels.get(channel, set())
 
             try:
                 channel_subscribers.remove(subscriber)

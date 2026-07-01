@@ -357,6 +357,18 @@ async def test_unsubscribe_arbitrary_channels_does_not_leak(memory_backend: Memo
     assert plugin._channels == {}
 
 
+async def test_unsubscribe_twice_after_arbitrary_channel_removed(memory_backend: MemoryChannelsBackend) -> None:
+    # After the last subscriber leaves an arbitrary channel, its entry is deleted from ``_channels``.
+    # A second unsubscribe for the same channel must not raise ``KeyError`` on the missing entry.
+    plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+    subscriber = await plugin.subscribe(channels="foo")
+
+    await plugin.unsubscribe(subscriber, channels="foo")
+    assert "foo" not in plugin._channels
+
+    await plugin.unsubscribe(subscriber, channels="foo")
+
+
 async def _populate_channels_backend(*, message_count: int, channel: str, backend: ChannelsBackend) -> list[bytes]:
     messages = [f"{channel} - message {i}".encode() for i in range(message_count)]
 
