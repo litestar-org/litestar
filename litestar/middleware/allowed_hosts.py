@@ -64,7 +64,7 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             return
 
         headers = MutableScopeHeaders(scope=scope)
-        if (host := headers.get("host")) is not None and host.split(":")[0]:
+        if (raw_host := headers.get("host")) is not None and (host := raw_host.split(":")[0]):
             if self.allowed_hosts_regex.fullmatch(host):
                 await self.app(scope, receive, send)
                 return
