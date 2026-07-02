@@ -466,13 +466,13 @@ class StubMemoryChannelBackend(MemoryChannelsBackend):
         return await super().unsubscribe(channels)
 
 
-async def test_race_condition_on_unsubscription():
+async def test_race_condition_on_unsubscription() -> None:
     network_lag, second_start_subscription = asyncio.Event(), asyncio.Event()
     plugin = ChannelsPlugin(
         arbitrary_channels_allowed=True, backend=StubMemoryChannelBackend(network_lag, second_start_subscription)
     )
 
-    async def concurrent_subscribe():
+    async def concurrent_subscribe() -> None:
         await network_lag.wait()
         second_start_subscription.set()
         subscriber = await plugin.subscribe("42")
@@ -487,7 +487,7 @@ async def test_race_condition_on_unsubscription():
         await asyncio.gather(concurrent_subscribe(), plugin.unsubscribe(first_subscriber, "42"))
 
 
-async def test_unsubscribe_releases_lock_before_stop_background(memory_backend: MemoryChannelsBackend):
+async def test_unsubscribe_releases_lock_before_stop_background(memory_backend: MemoryChannelsBackend) -> None:
     async with ChannelsPlugin(arbitrary_channels_allowed=True, backend=memory_backend) as plugin:
         subscriber = await plugin.subscribe("test_channel")
         locked = False
