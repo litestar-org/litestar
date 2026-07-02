@@ -105,7 +105,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         self._channels: dict[str, set[Subscriber]] = {channel: set() for channel in channels or []}
         # Declared channels are kept when empty (they back route handlers); arbitrary channels
         # are dropped on unsubscribe to avoid unbounded growth.
-        self._declared_channels: set[str] = set(channels or [])
+        self._declared_channels: set[str] = set(self._channels)
 
     def encode_data(self, data: LitestarEncodableType) -> bytes:
         """Encode data before storing it in the backend"""
