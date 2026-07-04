@@ -8,7 +8,7 @@ from litestar.plugins import DIPlugin
 
 
 class MyBaseType:
-    def __init__(self, param):
+    def __init__(self, param: str) -> None:
         self.param = param
 
 

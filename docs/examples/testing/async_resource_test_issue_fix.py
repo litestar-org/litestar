@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterable
+from collections.abc import AsyncIterator
 
 import httpx
 import pytest
@@ -22,7 +22,7 @@ def create_app(http_client: httpx.AsyncClient) -> Litestar:
 
 
 @pytest_asyncio.fixture()
-async def http_test_client() -> AsyncIterable[httpx.AsyncClient]:
+async def http_test_client() -> AsyncIterator[httpx.AsyncClient]:
     client = httpx.AsyncClient(headers={"Authorization": "something"})
     yield client
     await client.aclose()

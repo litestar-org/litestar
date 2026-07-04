@@ -6,7 +6,7 @@ from litestar.static_files import create_static_files_router
 ASSETS_DIR = Path("assets")
 
 
-def on_startup():
+def on_startup() -> None:
     ASSETS_DIR.mkdir(exist_ok=True)
     ASSETS_DIR.joinpath("hello.txt").write_text("Hello, world!")
 

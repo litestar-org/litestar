@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import itertools
 from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator
 from functools import partial
 from typing import TYPE_CHECKING, Any, Union
@@ -198,7 +197,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         """
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
 
@@ -209,7 +207,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         return ASGIStreamingResponse(
             background=self.background or background,
             content_length=0,
-            cookies=cookies,
+            cookies=self._merge_cookies(cookies),
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

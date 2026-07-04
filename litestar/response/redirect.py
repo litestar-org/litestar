@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import itertools
 from typing import TYPE_CHECKING, Any, Literal
 from urllib.parse import urlencode
 
@@ -150,7 +149,6 @@ class Redirect(Response[Any]):
         type_encoders: TypeEncodersMap | None = None,
     ) -> ASGIResponse:
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
         media_type = get_enum_string_value(self.media_type or media_type or MediaType.TEXT)
 
         return ASGIRedirectResponse(
@@ -158,7 +156,7 @@ class Redirect(Response[Any]):
             background=self.background or background,
             body=b"",
             content_length=None,
-            cookies=cookies,
+            cookies=self._merge_cookies(cookies),
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

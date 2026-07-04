@@ -13,7 +13,7 @@ class User:
 
 
 @post(path="/")
-async def create_user(data: MultipartBody[User]) -> dict[str, str]:
+async def create_user(data: MultipartBody[User]) -> dict[str, str | int]:
     content = await data.form_input_name.read()
     filename = data.form_input_name.filename
     return {"id": data.id, "name": data.name, "filename": filename, "size": len(content)}

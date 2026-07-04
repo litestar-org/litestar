@@ -37,13 +37,13 @@ class CustomAuthenticationMiddleware(AbstractAuthenticationMiddleware):
 
         # this would be a database call
         token = MyToken(api_key=auth_header)
-        user = MyUser(name=TOKEN_USER_DATABASE.get(token.api_key))
-        if not user.name:
+        if not (name := TOKEN_USER_DATABASE.get(token.api_key)):
             raise NotAuthorizedException()
+        user = MyUser(name=name)
         return AuthenticationResult(user=user, auth=token)
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def my_http_handler(request: Request[MyUser, MyToken, State]) -> None:
     user = request.user  # correctly typed as MyUser
     auth = request.auth  # correctly typed as MyToken
