@@ -3,7 +3,6 @@ from __future__ import annotations
 import sys
 import typing
 from dataclasses import dataclass, replace
-from functools import lru_cache
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
 from typing import TYPE_CHECKING, Annotated, Any, Self, Union, get_args, get_origin, get_type_hints
@@ -42,28 +41,10 @@ _GLOBAL_NAMES = {
 
 This allows users to include these names within an `if TYPE_CHECKING:` block in their handler module.
 
-Note:
-    ``litestar.di`` is added separately via :func:`_di_global_names` because it imports from this
-    module, so it cannot be imported at module load without a circular import.
+Names from ``litestar.di`` (e.g. ``NamedDependency``) are added lazily on first use by
+:func:`get_fn_type_hints`, as ``litestar.di`` imports from this module and so cannot be imported
+here at module load without a circular import.
 """
-
-
-@lru_cache(maxsize=1)
-def _di_global_names() -> dict[str, Any]:
-    """Names exported from ``litestar.di`` usable for handler signature forward-ref resolution.
-
-    ``litestar.di`` is imported lazily here because it imports from this module, so importing it at
-    module load would create a circular import. This allows users to reference names such as
-    ``NamedDependency`` from within an ``if TYPE_CHECKING:`` block in their handler module.
-
-    Returns:
-        Mapping of names to exports from ``litestar.di``.
-    """
-    from litestar import di
-
-    return {
-        namespace: export for namespace, export in getmembers(di) if namespace[0].isupper() and namespace in di.__all__
-    }
 
 
 def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, Any]) -> dict[str, Any]:
@@ -174,11 +155,21 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     # inspect the underlying function for methods
     if hasattr(fn_to_inspect, "__func__"):
         fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore[reportFunctionMemberAccess]
+
+    if "NamedDependency" not in _GLOBAL_NAMES:
+        # `litestar.di` imports from this module, so it cannot be imported at module load without a
+        # circular import. It is imported here (once) so names such as `NamedDependency` resolve when
+        # only imported under `if TYPE_CHECKING:` in a handler module. See #4870.
+        from litestar import di
+
+        _GLOBAL_NAMES.update(
+            (name, export) for name, export in getmembers(di) if name[0].isupper() and name in di.__all__
+        )
+
     # Order important. If a litestar name has been overridden in the function module, we want
     # to use that instead of the litestar one.
     namespace = {
         **_GLOBAL_NAMES,
-        **_di_global_names(),
         **vars(typing),
         **vars(sys.modules[module_name]),
         **(namespace or {}),

@@ -45,18 +45,6 @@ def test_named_dependency_resolvable_in_type_checking_block() -> None:
         assert client.get("/di-name").json() == {"value": "provided"}
 
 
-def test_di_global_names_exposes_public_di_exports() -> None:
-    """The lazily-imported ``litestar.di`` namespace exposes ``di``'s public exports."""
-    from litestar import di
-    from litestar.utils.signature import _di_global_names
-
-    _di_global_names.cache_clear()
-    names = _di_global_names()
-
-    assert "NamedDependency" in names
-    assert set(di.__all__) <= set(names)
-
-
 @pytest.mark.parametrize(
     ("method", "decorator"),
     [
