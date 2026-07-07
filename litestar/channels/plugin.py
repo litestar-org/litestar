@@ -187,6 +187,15 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
             max_backlog=self._max_backlog,
             backlog_strategy=self._backlog_strategy,
         )
+
+        # Fetch history before registering the subscriber. This ensures
+        # that if the task is cancelled during a blocking history fetch
+        # (e.g. Redis xrevrange), the subscriber is not leaked into
+        # self._channels — the caller never received a reference and
+        # cannot call unsubscribe().
+        if history:
+            await self.put_subscriber_history(subscriber=subscriber, limit=history, channels=channels)
+
         channels_to_subscribe = set()
 
         async with self._lock:
@@ -198,17 +207,17 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
                             "arbitrary_channels_allowed=True"
                         )
                     self._channels[channel] = set()
-                channel_subscribers = self._channels[channel]
-                if not channel_subscribers:
+                if not self._channels[channel]:
                     channels_to_subscribe.add(channel)
 
-                channel_subscribers.add(subscriber)
-
+            # Subscribe to the backend BEFORE adding the subscriber to
+            # channel sets. If backend.subscribe() is cancelled, the
+            # subscriber was never registered and nothing needs cleanup.
             if channels_to_subscribe:
                 await self._backend.subscribe(channels_to_subscribe)
 
-        if history:
-            await self.put_subscriber_history(subscriber=subscriber, limit=history, channels=channels)
+            for channel in channels:
+                self._channels[channel].add(subscriber)
 
         return subscriber
 
@@ -238,6 +247,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
 
                 if not channel_subscribers:
                     channels_to_unsubscribe.add(channel)
+                    del self._channels[channel]
 
             if channels_to_unsubscribe:
                 await self._backend.unsubscribe(channels_to_unsubscribe)
