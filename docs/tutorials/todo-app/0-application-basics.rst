@@ -11,7 +11,7 @@ Install Litestar
 ++++++++++++++++
 
 To install Litestar, run ``pip install 'litestar[standard]'``. This will install Litestar
-as well as `uvicorn <https://www.uvicorn.org/>`_ -  a web server to serve your application.
+as well as `uvicorn <https://uvicorn.env/>`_ -  a web server to serve your application.
 
 .. note::
     You can use any ASGI-capable web server, but this tutorial will use - and Litestar
@@ -147,7 +147,7 @@ The last step is to actually run the application. Litestar does not include its 
 server, but instead makes use of the
 `ASGI protocol <https://asgi.readthedocs.io>`_, which is a protocol Python objects can
 use in order to interact with application servers like
-`uvicorn <https://www.uvicorn.org/>`_ that actually implement the HTTP protocol and
+`uvicorn <https://uvicorn.env/>`_ that actually implement the HTTP protocol and
 handle it for you.
 
 If you installed Litestar with ``pip install 'litestar[standard]'``, this will have

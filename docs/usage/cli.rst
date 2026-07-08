@@ -2,7 +2,7 @@ CLI
 ===
 
 .. |uvicorn| replace:: uvicorn
-.. _uvicorn: https://www.uvicorn.org/
+.. _uvicorn: https://uvicorn.env/
 
 Litestar provides a convenient command line interface (CLI) for running and managing Litestar applications. The CLI is
 powered by `click <https://click.palletsprojects.com/>`_, `rich <https://rich.readthedocs.io>`_,
