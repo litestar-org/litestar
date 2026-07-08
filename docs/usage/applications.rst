@@ -32,7 +32,7 @@ Startup and Shutdown
 You can pass a list of :term:`callables <python:callable>` - either sync or async functions, methods, or class instances
 - to the :paramref:`~litestar.app.Litestar.on_startup` / :paramref:`~litestar.app.Litestar.on_shutdown`
 :term:`kwargs <argument>` of the :class:`app <litestar.app.Litestar>` instance. Those will be called in
-order, once the ASGI server such as `uvicorn <https://www.uvicorn.org/>`_,
+order, once the ASGI server such as `uvicorn <https://uvicorn.dev/>`_,
 `Hypercorn <https://hypercorn.readthedocs.io/en/latest/#/>`_, `Granian <https://github.com/emmett-framework/granian/>`_,
 `Daphne <https://github.com/django/daphne/>`_, etc. emits the respective event.
 
