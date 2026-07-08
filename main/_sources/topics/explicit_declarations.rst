@@ -49,7 +49,7 @@ However, it gets tricky quickly. For example, if the same route handler would be
 included in a router with a path parameter with the name ``message``, the path parameter
 would win, and ``message`` wouldn't be a query parameter anymore.
 
-This means that the inferred parameter source is context dependant.
+This means that the inferred parameter source is context dependent.
 
 There are upsides to this, for example, one could argue that this is a practical
 application of the
@@ -98,7 +98,7 @@ for nuance".
 This is easy to write, or rather, easy to type. However, there's not much information
 available to a reader. Where do ``data`` and all the other parameters come from? One
 could infer from ``limit`` and ``page`` that they're probably query parameters, but as
-discussed in `Historical background`_, that could also be context dependant.
+discussed in `Historical background`_, that could also be context dependent.
 
 
 **Easy to read**
