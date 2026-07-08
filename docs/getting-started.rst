@@ -211,7 +211,7 @@ entry-point and pass it to Litestar:
 
    app = Litestar(route_handlers=[UserController])
 
-To **run your application**, use an ASGI server such as `uvicorn <https://uvicorn.env/>`_ :
+To **run your application**, use an ASGI server such as `uvicorn <https://uvicorn.dev/>`_ :
 
 .. code-block:: shell
 

@@ -26,7 +26,7 @@ Debugging with an IDE
 ---------------------
 
 You can easily attach your IDEs debugger to your application, whether you're running it
-via the CLI or a webserver like `uvicorn <https://uvicorn.env/>`_.
+via the CLI or a webserver like `uvicorn <https://uvicorn.dev/>`_.
 
 Intellij / PyCharm
 ++++++++++++++++++

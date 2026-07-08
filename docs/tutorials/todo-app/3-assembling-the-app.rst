@@ -74,7 +74,7 @@ receives data of a ``TodoItem`` the same way as the ``POST`` handler.
 
 An instance of ``Litestar`` is created, including the previously defined route handlers.
 This app can now be served using an ASGI server like
-`uvicorn <https://uvicorn.env/>`_, which can be conveniently done using Litestar's
+`uvicorn <https://uvicorn.dev/>`_, which can be conveniently done using Litestar's
 CLI by executing the ``litestar run`` command.
 
 
