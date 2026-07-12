@@ -23,7 +23,7 @@ handler decorators.
 Default schemas
 ---------------
 
-By default, the generated OpenAPI schema is available at the following endpoints, relative to the configured ``openapi_path`` (which defaults to ``/schema``):
+By default, the generated OpenAPI schema is available at the following endpoints, relative to the configured :attr:`OpenAPIConfig.path` (which defaults to ``/schema``):
 
 - ``/openapi.json``: The schema in JSON format.
 - ``/openapi.yaml``: The schema in YAML format.
