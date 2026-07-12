@@ -62,9 +62,10 @@ class PathItemFactory:
         handler_signature_fields = route_handler.parsed_fn_signature.parameters
 
         request_body = None
-        if (data_field := handler_signature_fields.get("data")) is None:
+        data_field = handler_signature_fields.get("data") or handler_signature_fields.get("body")
+        if data_field is None:
             for dependency in route_handler.resolve_dependencies().values():
-                data_field = dependency.parsed_fn_signature.parameters.get("data")
+                data_field = dependency.parsed_fn_signature.parameters.get("data") or dependency.parsed_fn_signature.parameters.get("body")
                 if data_field is not None:
                     break
 
