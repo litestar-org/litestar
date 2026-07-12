@@ -647,6 +647,24 @@ class Schema(BaseSchemaObject):
     discouraged, and later versions of this specification may remove it.
     """
 
+    dynamic_ref: str | None = field(default=None, metadata={"alias": "$dynamicRef"})
+    """A string that references a dynamically resolved schema.
+
+    The ``$dynamicRef`` keyword is an applicator that allows for deferring the full resolution until runtime,
+    at which point it is resolved each time it is encountered while evaluating an instance.
+
+    See `JSON Schema 2020-12 §7.7.2 <https://json-schema.org/draft/2020-12/json-schema-core#section-7.7.2>`_.
+    """
+
+    dynamic_anchor: str | None = field(default=None, metadata={"alias": "$dynamicAnchor"})
+    """A string that identifies a schema for dynamic reference resolution.
+
+    The ``$dynamicAnchor`` keyword is used to create a plain name fragment that is not tied to any particular
+    structural location for referencing purposes.
+
+    See `JSON Schema 2020-12 §7.7.1 <https://json-schema.org/draft/2020-12/json-schema-core#section-7.7.1>`_.
+    """
+
     def __hash__(self) -> int:
         return _recursive_hash(self)
 
