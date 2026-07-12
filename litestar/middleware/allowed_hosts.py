@@ -64,12 +64,12 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             return
 
         headers = MutableScopeHeaders(scope=scope)
-        if (host := headers.get("host")) is not None and host.split(":")[0]:
-            if self.allowed_hosts_regex.fullmatch(host):
+        if (host := headers.get("host")) is not None and (host_without_port := host.split(":")[0]):
+            if self.allowed_hosts_regex.fullmatch(host_without_port):
                 await self.app(scope, receive, send)
                 return
 
-            if self.redirect_domains is not None and self.redirect_domains.fullmatch(host):
+            if self.redirect_domains is not None and self.redirect_domains.fullmatch(host_without_port):
                 url = URL.from_scope(scope)
                 redirect_url = url.with_replacements(netloc=f"www.{url.netloc}")
                 redirect_response = ASGIRedirectResponse(path=str(redirect_url))

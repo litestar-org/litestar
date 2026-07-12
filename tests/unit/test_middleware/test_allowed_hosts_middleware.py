@@ -142,3 +142,22 @@ def test_middleware_does_not_redirect_when_off() -> None:
 def test_validation_raises_for_wrong_wildcard_domain() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         AllowedHostsConfig(allowed_hosts=["www.moishe.*.com"])
+
+
+def test_allowed_hosts_strips_port_from_host_header() -> None:
+    """Test that AllowedHostsMiddleware strips the port from the Host header before matching."""
+    from litestar import Litestar
+    from litestar.testing import TestClient
+
+    @get(path="/")
+    def handler() -> None: ...
+
+    client = TestClient(app=Litestar(route_handlers=[handler], allowed_hosts=["localhost"]))
+    
+    # Without port - should work
+    response = client.get("/", headers={"Host": "localhost"})
+    assert response.status_code == HTTP_200_OK
+    
+    # With port - should also work (port stripped before matching)
+    response = client.get("/", headers={"Host": "localhost:8000"})
+    assert response.status_code == HTTP_200_OK
