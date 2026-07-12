@@ -23,13 +23,31 @@ handler decorators.
 Default schemas
 ---------------
 
-By default, the generated OpenAPI schema is available at the following endpoints, relative to the configured :attr:`OpenAPIConfig.path` (which defaults to ``/schema``):
+Litestar serves the generated OpenAPI schema at paths under :attr:`OpenAPIConfig.path`, which defaults to ``/schema``.
+With the default configuration, the JSON schema is available at ``GET /schema/openapi.json``.
 
-- ``/openapi.json``: The schema in JSON format.
-- ``/openapi.yaml``: The schema in YAML format.
-- ``/openapi.yml``: An alias for the YAML schema.
+Litestar always registers a handler for ``/openapi.json`` under the schema root path, even when
+``JsonRenderPlugin`` is not included in :attr:`OpenAPIConfig.render_plugins`.
 
-These endpoints are particularly useful for importing the schema into 3rd party tools, such as the Scalar API client or Postman.
+YAML schema files are not served by default. To expose ``/openapi.yaml`` and ``/openapi.yml``, add
+:class:`YamlRenderPlugin` to :attr:`OpenAPIConfig.render_plugins`. Rendering YAML requires
+the `PyYAML <https://pyyaml.org/wiki/PyYAMLDocumentation>`_ library, which can be installed via the ``litestar[yaml]``
+package extra. See the YAML tab in :doc:`OpenAPI UI Plugins </usage/openapi/ui_plugins>` for an example.
+
+To change the schema root path, set :attr:`OpenAPIConfig.path`. For example, configuring the path as ``/docs`` serves
+the JSON schema at ``/docs/openapi.json``. See :doc:`Configuring the OpenAPI Root Path </usage/openapi/ui_plugins>` for
+details.
+
+When providing a custom :attr:`OpenAPIConfig.openapi_router`, ``path`` is ignored and routes are registered on that
+router instead.
+
+Do not register application route handlers that conflict with paths used by OpenAPI render plugins. Conflicting routes
+can prevent the schema or documentation UI from being served correctly. Requests to unknown schema paths ending in
+``.json``, ``.yaml``, or ``.yml`` return a ``404 Not Found`` response.
+
+The schema is also available programmatically via :attr:`~litestar.app.Litestar.openapi_schema`.
+
+These endpoints are particularly useful for importing the schema into third party tools, such as Postman.
 
 .. toctree::
 
