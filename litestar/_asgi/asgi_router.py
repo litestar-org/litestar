@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import weakref
 from collections import defaultdict
 from functools import lru_cache
 from re import Pattern
@@ -109,7 +110,12 @@ class ASGIRouter:
             scope["path_template"] = path_template
         await asgi_app(scope, receive, send)
 
-    @lru_cache(1024)  # noqa: B019
+    _handle_routing_cache: dict[tuple[str, Method | None], Any] | None = None
+
+    def __del__(self) -> None:
+        if self._handle_routing_cache is not None:
+            self._handle_routing_cache.clear()
+
     def handle_routing(
         self, path: str, method: Method | None
     ) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
@@ -122,7 +128,12 @@ class ASGIRouter:
         Returns:
             A tuple composed of the ASGIApp of the route, the route handler instance, the resolved and normalized path and any parsed path params.
         """
-        return parse_path_to_route(
+        if self._handle_routing_cache is None:
+            self._handle_routing_cache = {}
+        key = (path, method)
+        if key in self._handle_routing_cache:
+            return self._handle_routing_cache[key]
+        result = parse_path_to_route(
             mount_paths_regex=self._mount_paths_regex,
             mount_routes=self._mount_routes,
             path=path,
@@ -130,6 +141,9 @@ class ASGIRouter:
             root_node=self.root_route_map_node,
             method=method,
         )
+        if len(self._handle_routing_cache) < 1024:
+            self._handle_routing_cache[key] = result
+        return result
 
     def _store_handler_to_route_mapping(self, route: BaseRoute) -> None:
         """Store the mapping of route handlers to routes and to route handler names.
