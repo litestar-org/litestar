@@ -131,6 +131,7 @@ class LoggingMiddleware(ASGIMiddleware):
             if self.response_log_fields:
                 scope_state = ScopeState.from_scope(scope)
                 scope_state.log_context[HTTP_RESPONSE_START] = {"status": exc.status_code}
+                scope_state.log_context.setdefault(HTTP_RESPONSE_BODY, b"")
                 self.log_response(scope=scope)
             raise
         except Exception:
@@ -138,6 +139,7 @@ class LoggingMiddleware(ASGIMiddleware):
             if self.response_log_fields:
                 scope_state = ScopeState.from_scope(scope)
                 scope_state.log_context[HTTP_RESPONSE_START] = {"status": HTTP_500_INTERNAL_SERVER_ERROR}
+                scope_state.log_context.setdefault(HTTP_RESPONSE_BODY, b"")
                 self.log_response(scope=scope)
             raise
 
