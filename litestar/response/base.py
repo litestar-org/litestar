@@ -310,6 +310,8 @@ class Response(Generic[T]):
                 secure=secure,
                 value=value,
             )
+        # Remove existing cookie with the same key, path, and domain before appending
+        self.cookies = [c for c in self.cookies if c != key]
         self.cookies.append(key)
 
     def set_header(self, key: str, value: Any) -> None:
