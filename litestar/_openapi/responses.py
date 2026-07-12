@@ -140,6 +140,10 @@ class ResponseFactory:
                     field_def = FieldDefinition.from_annotation(str)
                     media_type = media_type or MediaType.HTML
                 elif self.field_definition.is_subclass_of(LitestarResponse):
+                    if self.field_definition.inner_types and self.field_definition.inner_types[0].is_subclass_of(NoneType):
+                        response = OpenAPIResponse(content=None, description=self.create_description())
+                        self.set_success_response_headers(response)
+                        return response
                     field_def = (
                         self.field_definition.inner_types[0]
                         if self.field_definition.inner_types
