@@ -468,6 +468,8 @@ class BaseRouteHandler:
         """
         if (_return_dto := self._return_dto) is not Empty:
             return_dto: type[AbstractDTO] | None = _return_dto
+        elif data_dto is not None and data_dto.is_supported_model_type_field(self.parsed_return_field):
+            return_dto = data_dto
         elif plugin_for_return_type := next(
             (
                 plugin
