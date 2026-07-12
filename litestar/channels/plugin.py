@@ -235,6 +235,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
 
             if not channel_subscribers:
                 channels_to_unsubscribe.add(channel)
+                del self._channels[channel]
 
         if all(subscriber not in queues for queues in self._channels.values()):
             await subscriber.put(None)  # this will stop any running task or generator by breaking the inner loop
