@@ -22,7 +22,7 @@ repos:
     rev: "v0.8.1"
     hooks:
       - id: unasyncd
-        additional_dependencies: ["ruff"]
+        additional_dependencies: ["ruff", "anyio<4.14"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.15.7"
     hooks:
