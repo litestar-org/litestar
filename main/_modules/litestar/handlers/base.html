@@ -999,97 +999,99 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="468"><span class="sd">        &quot;&quot;&quot;</span>
 </span><span data-line="469">        <span class="k">if</span> <span class="p">(</span><span class="n">_return_dto</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
 </span><span data-line="470">            <span class="n">return_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">_return_dto</span>
-</span><span data-line="471">        <span class="k">elif</span> <span class="n">plugin_for_return_type</span> <span class="o">:=</span> <span class="nb">next</span><span class="p">(</span>
-</span><span data-line="472">            <span class="p">(</span>
-</span><span data-line="473">                <span class="n">plugin</span>
-</span><span data-line="474">                <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">serialization</span>
-</span><span data-line="475">                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="o">.</span><span class="n">match_predicate_recursively</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">supports_type</span><span class="p">)</span>
-</span><span data-line="476">            <span class="p">),</span>
-</span><span data-line="477">            <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="478">        <span class="p">):</span>
-</span><span data-line="479">            <span class="n">return_dto</span> <span class="o">=</span> <span class="n">plugin_for_return_type</span><span class="o">.</span><span class="n">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">)</span>
-</span><span data-line="480">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="481">            <span class="n">return_dto</span> <span class="o">=</span> <span class="n">data_dto</span>
-</span><span data-line="482">
-</span><span data-line="483">        <span class="k">if</span> <span class="n">return_dto</span> <span class="ow">and</span> <span class="n">return_dto</span><span class="o">.</span><span class="n">is_supported_model_type_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">):</span>
-</span><span data-line="484">            <span class="n">return_dto</span><span class="o">.</span><span class="n">create_for_field_definition</span><span class="p">(</span>
-</span><span data-line="485">                <span class="n">field_definition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">,</span>
-</span><span data-line="486">                <span class="n">handler_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_id</span><span class="p">,</span>
-</span><span data-line="487">            <span class="p">)</span>
-</span><span data-line="488">            <span class="n">resolved_return_dto</span> <span class="o">=</span> <span class="n">return_dto</span>
-</span><span data-line="489">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="490">            <span class="n">resolved_return_dto</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="491">
-</span><span data-line="492">        <span class="k">return</span> <span class="n">resolved_return_dto</span>
+</span><span data-line="471">        <span class="k">elif</span> <span class="n">data_dto</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">data_dto</span><span class="o">.</span><span class="n">is_supported_model_type_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">):</span>
+</span><span data-line="472">            <span class="n">return_dto</span> <span class="o">=</span> <span class="n">data_dto</span>
+</span><span data-line="473">        <span class="k">elif</span> <span class="n">plugin_for_return_type</span> <span class="o">:=</span> <span class="nb">next</span><span class="p">(</span>
+</span><span data-line="474">            <span class="p">(</span>
+</span><span data-line="475">                <span class="n">plugin</span>
+</span><span data-line="476">                <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">serialization</span>
+</span><span data-line="477">                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="o">.</span><span class="n">match_predicate_recursively</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">supports_type</span><span class="p">)</span>
+</span><span data-line="478">            <span class="p">),</span>
+</span><span data-line="479">            <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="480">        <span class="p">):</span>
+</span><span data-line="481">            <span class="n">return_dto</span> <span class="o">=</span> <span class="n">plugin_for_return_type</span><span class="o">.</span><span class="n">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">)</span>
+</span><span data-line="482">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="483">            <span class="n">return_dto</span> <span class="o">=</span> <span class="n">data_dto</span>
+</span><span data-line="484">
+</span><span data-line="485">        <span class="k">if</span> <span class="n">return_dto</span> <span class="ow">and</span> <span class="n">return_dto</span><span class="o">.</span><span class="n">is_supported_model_type_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">):</span>
+</span><span data-line="486">            <span class="n">return_dto</span><span class="o">.</span><span class="n">create_for_field_definition</span><span class="p">(</span>
+</span><span data-line="487">                <span class="n">field_definition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">,</span>
+</span><span data-line="488">                <span class="n">handler_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_id</span><span class="p">,</span>
+</span><span data-line="489">            <span class="p">)</span>
+</span><span data-line="490">            <span class="n">resolved_return_dto</span> <span class="o">=</span> <span class="n">return_dto</span>
+</span><span data-line="491">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="492">            <span class="n">resolved_return_dto</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span data-line="493">
+</span><span data-line="494">        <span class="k">return</span> <span class="n">resolved_return_dto</span>
+</span><span data-line="495">
 <div class="viewcode-block" id="BaseRouteHandler.authorize_connection">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.authorize_connection">[docs]</a>
-</span><span data-line="494">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authorize_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="495"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure the connection is authorized by running all the route guards in scope.&quot;&quot;&quot;</span>
-</span><span data-line="496">        <span class="k">for</span> <span class="n">guard</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
-</span><span data-line="497">            <span class="k">await</span> <span class="n">guard</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+</span><span data-line="496">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authorize_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="497"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure the connection is authorized by running all the route guards in scope.&quot;&quot;&quot;</span>
+</span><span data-line="498">        <span class="k">for</span> <span class="n">guard</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
+</span><span data-line="499">            <span class="k">await</span> <span class="n">guard</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
-</span><span data-line="498">
+</span><span data-line="500">
 <div class="viewcode-block" id="BaseRouteHandler.on_registration">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.on_registration">[docs]</a>
-</span><span data-line="499">    <span class="k">def</span><span class="w"> </span><span class="nf">on_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="500"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called once per handler when the app object is instantiated.</span>
-</span><span data-line="501">
-</span><span data-line="502"><span class="sd">        Args:</span>
-</span><span data-line="503"><span class="sd">            route: The route this handler is being registered on</span>
-</span><span data-line="504"><span class="sd">            app: The application instance</span>
-</span><span data-line="505">
-</span><span data-line="506"><span class="sd">        Returns:</span>
-</span><span data-line="507"><span class="sd">            None</span>
-</span><span data-line="508"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="509">
-</span><span data-line="510">        <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_data_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="511">        <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_return_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">data_dto</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dto</span><span class="p">)</span>
-</span><span data-line="512">
-</span><span data-line="513">        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_handler_function</span><span class="p">()</span>
-</span><span data-line="514">        <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_dependencies</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="515">
-</span><span data-line="516">        <span class="n">check_middleware_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middleware</span><span class="p">)</span></div>
-
+</span><span data-line="501">    <span class="k">def</span><span class="w"> </span><span class="nf">on_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="502"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called once per handler when the app object is instantiated.</span>
+</span><span data-line="503">
+</span><span data-line="504"><span class="sd">        Args:</span>
+</span><span data-line="505"><span class="sd">            route: The route this handler is being registered on</span>
+</span><span data-line="506"><span class="sd">            app: The application instance</span>
+</span><span data-line="507">
+</span><span data-line="508"><span class="sd">        Returns:</span>
+</span><span data-line="509"><span class="sd">            None</span>
+</span><span data-line="510"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="511">
+</span><span data-line="512">        <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_data_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="513">        <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_return_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">data_dto</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dto</span><span class="p">)</span>
+</span><span data-line="514">
+</span><span data-line="515">        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_handler_function</span><span class="p">()</span>
+</span><span data-line="516">        <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_dependencies</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
 </span><span data-line="517">
-</span><span data-line="518">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_handler_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="519"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the route handler function once set by inspecting its return annotations.&quot;&quot;&quot;</span>
-</span><span data-line="520">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">DTOData</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dto</span><span class="p">:</span>
-</span><span data-line="521">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="522">                <span class="sa">f</span><span class="s2">&quot;Handler function </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_name</span><span class="si">}</span><span class="s2"> has a data parameter that is a subclass of DTOData but no &quot;</span>
-</span><span data-line="523">                <span class="s2">&quot;DTO has been registered for it.&quot;</span>
-</span><span data-line="524">            <span class="p">)</span>
-</span><span data-line="525">
+</span><span data-line="518">        <span class="n">check_middleware_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middleware</span><span class="p">)</span></div>
+
+</span><span data-line="519">
+</span><span data-line="520">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_handler_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="521"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the route handler function once set by inspecting its return annotations.&quot;&quot;&quot;</span>
+</span><span data-line="522">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">DTOData</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dto</span><span class="p">:</span>
+</span><span data-line="523">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="524">                <span class="sa">f</span><span class="s2">&quot;Handler function </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_name</span><span class="si">}</span><span class="s2"> has a data parameter that is a subclass of DTOData but no &quot;</span>
+</span><span data-line="525">                <span class="s2">&quot;DTO has been registered for it.&quot;</span>
+</span><span data-line="526">            <span class="p">)</span>
+</span><span data-line="527">
 <div class="viewcode-block" id="BaseRouteHandler.__str__">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.__str__">[docs]</a>
-</span><span data-line="526">    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="527"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a unique identifier for the route handler.</span>
-</span><span data-line="528">
-</span><span data-line="529"><span class="sd">        Returns:</span>
-</span><span data-line="530"><span class="sd">            A string</span>
-</span><span data-line="531"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="532">        <span class="n">target</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AsyncAnyCallable</span><span class="p">]</span> <span class="o">|</span> <span class="n">AsyncAnyCallable</span>  <span class="c1"># pyright: ignore[reportInvalidTypeForm]</span>
-</span><span data-line="533">        <span class="n">target</span> <span class="o">=</span> <span class="n">unwrap_partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
-</span><span data-line="534">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;__qualname__&quot;</span><span class="p">):</span>
-</span><span data-line="535">            <span class="n">target</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-</span><span data-line="536">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span></div>
+</span><span data-line="528">    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="529"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a unique identifier for the route handler.</span>
+</span><span data-line="530">
+</span><span data-line="531"><span class="sd">        Returns:</span>
+</span><span data-line="532"><span class="sd">            A string</span>
+</span><span data-line="533"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="534">        <span class="n">target</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AsyncAnyCallable</span><span class="p">]</span> <span class="o">|</span> <span class="n">AsyncAnyCallable</span>  <span class="c1"># pyright: ignore[reportInvalidTypeForm]</span>
+</span><span data-line="535">        <span class="n">target</span> <span class="o">=</span> <span class="n">unwrap_partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
+</span><span data-line="536">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;__qualname__&quot;</span><span class="p">):</span>
+</span><span data-line="537">            <span class="n">target</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+</span><span data-line="538">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
-</span><span data-line="537">
-</span><span data-line="538">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_kwargs_model</span><span class="p">(</span>
-</span><span data-line="539">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="540">        <span class="n">path_parameters</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-</span><span data-line="541">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KwargsModel</span><span class="p">:</span>
-</span><span data-line="542"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a `KwargsModel` for a given route handler.&quot;&quot;&quot;</span>
-</span><span data-line="543">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar._kwargs</span><span class="w"> </span><span class="kn">import</span> <span class="n">KwargsModel</span>
-</span><span data-line="544">
-</span><span data-line="545">        <span class="k">return</span> <span class="n">KwargsModel</span><span class="o">.</span><span class="n">create_for_signature_model</span><span class="p">(</span>
-</span><span data-line="546">            <span class="n">signature_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signature_model</span><span class="p">,</span>
-</span><span data-line="547">            <span class="n">parsed_signature</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="p">,</span>
-</span><span data-line="548">            <span class="n">dependencies</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span><span class="p">,</span>
-</span><span data-line="549">            <span class="n">path_parameters</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">path_parameters</span><span class="p">),</span>
-</span><span data-line="550">            <span class="n">layered_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_field_definitions</span><span class="p">,</span>
-</span><span data-line="551">            <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-</span><span data-line="552">        <span class="p">)</span></div>
+</span><span data-line="539">
+</span><span data-line="540">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_kwargs_model</span><span class="p">(</span>
+</span><span data-line="541">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="542">        <span class="n">path_parameters</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+</span><span data-line="543">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KwargsModel</span><span class="p">:</span>
+</span><span data-line="544"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a `KwargsModel` for a given route handler.&quot;&quot;&quot;</span>
+</span><span data-line="545">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar._kwargs</span><span class="w"> </span><span class="kn">import</span> <span class="n">KwargsModel</span>
+</span><span data-line="546">
+</span><span data-line="547">        <span class="k">return</span> <span class="n">KwargsModel</span><span class="o">.</span><span class="n">create_for_signature_model</span><span class="p">(</span>
+</span><span data-line="548">            <span class="n">signature_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signature_model</span><span class="p">,</span>
+</span><span data-line="549">            <span class="n">parsed_signature</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="p">,</span>
+</span><span data-line="550">            <span class="n">dependencies</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span><span class="p">,</span>
+</span><span data-line="551">            <span class="n">path_parameters</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">path_parameters</span><span class="p">),</span>
+</span><span data-line="552">            <span class="n">layered_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_field_definitions</span><span class="p">,</span>
+</span><span data-line="553">            <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+</span><span data-line="554">        <span class="p">)</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">
