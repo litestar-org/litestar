@@ -251,19 +251,19 @@ Parameters that support layering are:
 * :ref:`after_request <after_request>`
 * :ref:`after_response <after_response>`
 * :ref:`before_request <before_request>`
-* :ref:`cache_control <usage/responses:cache control>`
+* :ref:`cache_control <usage/responses/headers_and_cookies:Cache Control>`
 * :doc:`dependencies </usage/dependency-injection>`
 * :doc:`dto </usage/dto/0-basic-use>`
-* :ref:`etag <usage/responses:etag>`
+* :ref:`etag <usage/responses/headers_and_cookies:ETag>`
 * :doc:`exception_handlers </usage/exceptions>`
 * :doc:`guards </usage/security/guards>`
 * :ref:`include_in_schema <usage/openapi/schema_generation:configuring schema generation on a route handler>`
 * :doc:`middleware </usage/middleware/index>`
 * :ref:`opt <handler_opts>`
 * :ref:`request_class <usage/requests:custom request>`
-* :ref:`response_class <usage/responses:custom responses>`
-* :ref:`response_cookies <usage/responses:setting response cookies>`
-* :ref:`response_headers <usage/responses:setting response headers>`
+* :ref:`response_class <usage/responses/special_responses:Custom Responses>`
+* :ref:`response_cookies <usage/responses/headers_and_cookies:Setting Response Cookies>`
+* :ref:`response_headers <usage/responses/headers_and_cookies:Setting Response Headers>`
 * :doc:`return_dto </usage/dto/0-basic-use>`
 * ``security``
 * ``tags``

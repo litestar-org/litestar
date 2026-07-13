@@ -411,7 +411,7 @@ and ``headers=`` when the values depend on the request.
 
 .. seealso::
 
-    * :ref:`Responses - Setting Response Cookies <usage/responses:setting response cookies>`
+    * :ref:`Responses - Setting Response Cookies <usage/responses/headers_and_cookies:Setting Response Cookies>`
 
 
 Serialization

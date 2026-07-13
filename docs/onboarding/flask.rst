@@ -418,8 +418,8 @@ and ``headers=`` when the values depend on the request.
 
 .. seealso::
 
-    * :ref:`Responses - Setting Response Headers <usage/responses:setting response headers>`
-    * :ref:`Responses - Setting Response Cookies <usage/responses:setting response cookies>`
+    * :ref:`Responses - Setting Response Headers <usage/responses/headers_and_cookies:Setting Response Headers>`
+    * :ref:`Responses - Setting Response Cookies <usage/responses/headers_and_cookies:Setting Response Cookies>`
 
 
 Serialization
@@ -463,7 +463,7 @@ defaults.
 
 
 .. seealso::
-    :ref:`usage/responses:media type`
+    :ref:`usage/responses/media_types_and_status_codes:Media Type`
 
 
 

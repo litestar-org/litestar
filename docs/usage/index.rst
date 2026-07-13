@@ -7,6 +7,7 @@ Usage
     applications
     routing/index
     requests
+    responses/index
     caching
     channels
     cli
@@ -24,7 +25,6 @@ Usage
     middleware/index
     openapi/index
     plugins/index
-    responses
     security/index
     static-files
     custom-types

@@ -2040,7 +2040,7 @@
                 return ServerSentEvent(my_generator())
 
         .. seealso::
-            :ref:`Server Sent Events <usage/responses:Server Sent Event Responses>`
+            :ref:`Server Sent Events <usage/responses/special_responses:Server Sent Event Responses>`
 
 
     .. change:: SQLAlchemy repository: allow specifying ``id_attribute`` per method
@@ -3655,7 +3655,7 @@
         HTTP header, offering basic content negotiation.
 
         .. seealso::
-            :ref:`usage/responses:Content Negotiation`
+            :ref:`usage/responses/returning_responses:Content Negotiation`
 
     .. change:: Enhanced WebSockets support
         :type: feature
@@ -4159,8 +4159,8 @@
         :breaking:
         :pr: 1209
 
-        :ref:`response headers <usage/responses:Setting Response Headers>` and
-        :ref:`response cookies <usage/responses:Setting Response Cookies>` now have the
+        :ref:`response headers <usage/responses/headers_and_cookies:Setting Response Headers>` and
+        :ref:`response cookies <usage/responses/headers_and_cookies:Setting Response Cookies>` now have the
         same interface, along with the ``headers`` and ``cookies`` keyword arguments to
         ``starlite.response.Response``. They each allow to pass either a
         `:class:`Mapping[str, str] <typing.Mapping>`, e.g. a dictionary, or a :class:`Sequence <typing.Sequence>` of
