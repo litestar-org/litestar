@@ -47,7 +47,6 @@ can prevent the schema or documentation UI from being served correctly. Requests
 
 The schema is also available programmatically via :attr:`~litestar.app.Litestar.openapi_schema`.
 
-These endpoints are particularly useful for importing the schema into third party tools, such as Postman.
 
 .. toctree::
 
