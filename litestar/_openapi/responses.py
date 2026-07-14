@@ -42,12 +42,12 @@ if TYPE_CHECKING:
 
 __all__ = ("create_responses_for_handler",)
 
-CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")
+WORD_BOUNDARY_PATTERN = re.compile(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
 
 
 def pascal_case_to_text(string: str) -> str:
     """Given a 'PascalCased' string, return its split form- 'Pascal Cased'."""
-    return " ".join(re.split(CAPITAL_LETTERS_PATTERN, string)).strip()
+    return " ".join(re.split(WORD_BOUNDARY_PATTERN, string)).strip()
 
 
 def create_cookie_schema(cookie: Cookie) -> Schema:
