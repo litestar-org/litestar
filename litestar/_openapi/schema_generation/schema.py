@@ -16,7 +16,6 @@ from typing import (
     Any,
     Literal,
     Self,
-    Union,
     cast,
     get_args,
 )
@@ -36,7 +35,7 @@ from litestar.datastructures import SecretBytes, SecretString, UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
-from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
+from litestar.params import BodyKwarg, KwargDefinition
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType
@@ -270,7 +269,7 @@ class SchemaCreator:
     def is_constrained_field(self, field_definition: FieldDefinition) -> bool:
         """Return if the field is constrained, taking into account constraints defined by plugins"""
         return (
-            isinstance(field_definition.kwarg_definition, (ParameterKwarg, BodyKwarg))
+            isinstance(field_definition.kwarg_definition, KwargDefinition)
             and field_definition.kwarg_definition.is_constrained
         ) or any(
             p.is_constrained_field(field_definition)
@@ -517,7 +516,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        kwarg_definition = cast("Union[ParameterKwarg, BodyKwarg]", field.kwarg_definition)
+        kwarg_definition = cast("KwargDefinition", field.kwarg_definition)
         if any(is_class_and_subclass(field.annotation, t) for t in (int, float, Decimal)):
             return create_numerical_constrained_field_schema(field.annotation, kwarg_definition)
         if any(is_class_and_subclass(field.annotation, t) for t in (str, bytes)):
@@ -536,7 +535,7 @@ class SchemaCreator:
             A schema instance.
         """
         schema = Schema(type=OpenAPIType.ARRAY)
-        kwarg_definition = cast("Union[ParameterKwarg, BodyKwarg]", field_definition.kwarg_definition)
+        kwarg_definition = cast("KwargDefinition", field_definition.kwarg_definition)
         if kwarg_definition.min_items:
             schema.min_items = kwarg_definition.min_items
         if kwarg_definition.max_items:
