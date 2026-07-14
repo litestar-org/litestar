@@ -42,7 +42,14 @@ if TYPE_CHECKING:
 
 __all__ = ("create_responses_for_handler",)
 
-WORD_BOUNDARY_PATTERN = re.compile(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
+WORD_BOUNDARY_PATTERN = re.compile(
+    r"""
+    (?<=[a-z0-9])(?=[A-Z])      # a lowercase letter or digit, followed by an uppercase letter
+    |
+    (?<=[A-Z])(?=[A-Z][a-z])    # an uppercase run, followed by a new capitalized word
+    """,
+    re.VERBOSE,
+)
 
 
 def pascal_case_to_text(string: str) -> str:
