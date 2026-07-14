@@ -52,7 +52,7 @@ class PrometheusConfig:
     middleware_class: type[PrometheusMiddleware] = field(default=PrometheusMiddleware)
     """The middleware class to use.
     """
-    group_path: bool = field(default=False)
+    group_path: bool = field(default=True)
     """Whether to group paths in the metrics to avoid cardinality explosion.
     """
 
