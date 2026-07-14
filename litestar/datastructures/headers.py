@@ -169,7 +169,7 @@ class MutableScopeHeaders(MutableMapping):
             if header_name.decode("latin-1").lower() == name
         ]
         if not values:
-            if default:
+            if default is not None:
                 return default
             raise KeyError
         return values

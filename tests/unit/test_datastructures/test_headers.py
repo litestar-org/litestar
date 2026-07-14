@@ -156,6 +156,11 @@ def test_mutable_scope_headers_getall_not_found_default(mutable_headers: Mutable
     assert mutable_headers.getall("bar", ["default"]) == ["default"]
 
 
+def test_mutable_scope_headers_getall_not_found_empty_list_default(mutable_headers: MutableScopeHeaders) -> None:
+    """An explicit empty-list default should be returned as-is, not treated as "no default"."""
+    assert mutable_headers.getall("bar", []) == []
+
+
 def test_mutable_scope_headers_extend_header_value(
     raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders
 ) -> None:
