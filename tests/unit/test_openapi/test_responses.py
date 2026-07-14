@@ -15,6 +15,7 @@ from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.responses import (
     ResponseFactory,
     create_error_responses,
+    pascal_case_to_text,
 )
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar.datastructures import Cookie, ResponseHeader
@@ -149,6 +150,37 @@ def test_create_error_responses() -> None:
         assert schema.properties
         assert schema.required
         assert schema.type
+
+
+@pytest.mark.parametrize(
+    ("string", "expected"),
+    [
+        ("PetException", "Pet Exception"),
+        ("InvalidAPIKeyError", "Invalid API Key Error"),
+        ("HTTPException", "HTTP Exception"),
+        ("ValidationException", "Validation Exception"),
+        ("API", "API"),
+        ("Error", "Error"),
+        ("error", "error"),
+        ("HTTP404Error", "HTTP404 Error"),
+        ("Base64Decoder", "Base64 Decoder"),
+        ("", ""),
+    ],
+)
+def test_pascal_case_to_text(string: str, expected: str) -> None:
+    assert pascal_case_to_text(string) == expected
+
+
+def test_create_error_responses_preserves_acronyms_in_description() -> None:
+    class InvalidAPIKeyError(HTTPException):
+        status_code = 401
+
+    _, response = next(create_error_responses(exceptions=[InvalidAPIKeyError]))
+
+    assert response.content
+    schema = response.content[MediaType.JSON].schema
+    assert isinstance(schema, Schema)
+    assert schema.description == "Invalid API Key Error"
 
 
 def test_create_error_responses_with_non_http_status_code() -> None:
