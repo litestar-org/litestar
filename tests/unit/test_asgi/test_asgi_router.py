@@ -271,3 +271,29 @@ async def test_asgi_router_set_exception_handlers_in_scope_successful_routing(
     assert state.exception_handlers is not Empty
     assert state.exception_handlers[RuntimeError] is app_exception_handlers_mock
     assert state.exception_handlers[TypeError] is handler_exception_handlers_mock
+
+
+def test_routing_cache_does_not_prevent_garbage_collection() -> None:
+    """The routing cache must not keep the app alive after all references are dropped.
+
+    A class-level ``lru_cache`` on ``handle_routing`` acted as a GC root anchoring
+    every router (and, through it, every app) forever.
+    https://github.com/litestar-org/litestar/issues/4876
+    """
+    import gc
+
+    def make_app_and_request() -> int:
+        # The client (which references the app) must go out of scope before
+        # collecting, hence the helper function.
+        @get("/ping", sync_to_thread=False)
+        def ping() -> str:
+            return "pong"
+
+        app = Litestar(route_handlers=[ping])
+        with TestClient(app) as client:
+            assert client.get("/ping").status_code == 200
+        return id(app)
+
+    app_id = make_app_and_request()
+    gc.collect()
+    assert not any(id(obj) == app_id for obj in gc.get_objects() if type(obj) is Litestar)
