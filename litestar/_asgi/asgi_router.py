@@ -55,6 +55,7 @@ class ASGIRouter:
         "_static_routes",
         "_trie_initialized",
         "app",
+        "handle_routing",
         "root_route_map_node",
         "route_handler_index",
         "route_mapping",
@@ -73,6 +74,10 @@ class ASGIRouter:
         self._registered_routes: set[HTTPRoute | WebSocketRoute | ASGIRoute] = set()
         self._trie_initialized = False
         self.app = app
+        # The routing cache is created per instance: a class-level lru_cache would
+        # act as a GC root keeping every router (and through it, every app) alive
+        # forever. See https://github.com/litestar-org/litestar/issues/4876
+        self.handle_routing = lru_cache(1024)(self._handle_routing)
         self.root_route_map_node: RouteTrieNode = create_node()
         self.route_handler_index: dict[str, RouteHandlerType] = {}
         self.route_mapping: dict[str, list[BaseRoute]] = defaultdict(list)
@@ -109,11 +114,13 @@ class ASGIRouter:
             scope["path_template"] = path_template
         await asgi_app(scope, receive, send)
 
-    @lru_cache(1024)  # noqa: B019
-    def handle_routing(
+    def _handle_routing(
         self, path: str, method: Method | None
     ) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
         """Handle routing for a given path / method combo. This method is meant to allow easy caching.
+
+        The cached version of this method is available as ``self.handle_routing``,
+        set up in ``__init__``.
 
         Args:
             path: The path of the request.
