@@ -195,6 +195,14 @@ def test_mutable_scope_headers_extend_header_value_preserves_duplicate_entries(
     assert mutable_headers.getall("foo") == ["bar,baz,qux"]
 
 
+def test_mutable_scope_headers_from_tuple_extend_header_value_preserves_duplicate_entries(
+    mutable_headers_from_tuple: MutableScopeHeaders,
+) -> None:
+    mutable_headers_from_tuple.add("foo", "baz")
+    mutable_headers_from_tuple.extend_header_value("foo", "qux")
+    assert mutable_headers_from_tuple.getall("foo") == ["bar,baz,qux"]
+
+
 def test_mutable_scope_headers_getitem(mutable_headers: MutableScopeHeaders, existing_headers_key: str) -> None:
     assert mutable_headers[existing_headers_key] == "bar"
 
