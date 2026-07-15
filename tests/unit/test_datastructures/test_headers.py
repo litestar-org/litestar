@@ -184,6 +184,17 @@ def test_mutable_scope_headers_from_tuple_extend_header_value_new_header(
     assert list(raw_headers_tuple) == [(b"foo", b"bar"), (b"bar", b"baz")]
 
 
+def test_mutable_scope_headers_extend_header_value_preserves_duplicate_entries(
+    mutable_headers: MutableScopeHeaders,
+) -> None:
+    # A header can legitimately appear as multiple separate raw entries (not just a
+    # single comma-joined value). extend_header_value must not silently drop any of
+    # them.
+    mutable_headers.add("foo", "baz")
+    mutable_headers.extend_header_value("foo", "qux")
+    assert mutable_headers.getall("foo") == ["bar,baz,qux"]
+
+
 def test_mutable_scope_headers_getitem(mutable_headers: MutableScopeHeaders, existing_headers_key: str) -> None:
     assert mutable_headers[existing_headers_key] == "bar"
 
