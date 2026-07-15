@@ -1330,7 +1330,7 @@
         additional validation was added to generate a more user friendly CLI errors.
 
         The other SSL-related flags (like password or CA) were not added (yet). See
-        `uvicorn CLI docs <https://www.uvicorn.org/#command-line-options>`_
+        `uvicorn CLI docs <https://uvicorn.dev/#command-line-options>`_
 
         **Generating of a self-signed certificate**
 
