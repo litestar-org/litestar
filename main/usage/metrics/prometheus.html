@@ -566,7 +566,7 @@ this package, you should first install the required dependencies:</p>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.prometheus</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrometheusConfig</span><span class="p">,</span> <span class="n">PrometheusController</span>
 </span><span data-line="3">
 </span><span data-line="4">
-</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">group_path</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
+</span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">group_path</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
 </span><span data-line="6">    <span class="c1"># Default app name and prefix is litestar.</span>
 </span><span data-line="7">    <span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">(</span><span class="n">group_path</span><span class="o">=</span><span class="n">group_path</span><span class="p">)</span>
 </span><span data-line="8">
