@@ -169,9 +169,9 @@ class MutableScopeHeaders(MutableMapping):
             if header_name.decode("latin-1").lower() == name
         ]
         if not values:
-            if default:
+            if default is not None:
                 return default
-            raise KeyError
+            raise KeyError(key)
         return values
 
     def extend_header_value(self, key: str, value: str) -> None:
@@ -199,7 +199,7 @@ class MutableScopeHeaders(MutableMapping):
         for header in self.headers:
             if header[0].decode("latin-1").lower() == name:
                 return header[1].decode("latin-1")
-        raise KeyError
+        raise KeyError(key)
 
     def _find_indices(self, key: str) -> list[int]:
         name = key.lower()
