@@ -246,7 +246,25 @@ class ParameterFactory:
         )
 
         self.create_parameters_for_field_definitions(handler_fields)
-        return self.parameters.list()
+        return self._order_path_parameters(self.parameters.list())
+
+    def _order_path_parameters(self, parameters: list[Parameter]) -> list[Parameter]:
+        """Reorder path parameters to match their position in the URL path.
+
+        Args:
+            parameters: The parameters to reorder.
+
+        Returns:
+            The parameters with path parameters ordered to match the URL path.
+        """
+        path_order = {name: index for index, name in enumerate(self.path_parameters)}
+        path_slots = [i for i, parameter in enumerate(parameters) if parameter.param_in == ParamType.PATH]
+        ordered_path_parameters = sorted(
+            (parameters[i] for i in path_slots), key=lambda parameter: path_order[parameter.name]
+        )
+        for slot, parameter in zip(path_slots, ordered_path_parameters, strict=True):
+            parameters[slot] = parameter
+        return parameters
 
 
 def create_parameters_for_handler(

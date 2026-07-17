@@ -232,6 +232,64 @@ def test_dependency_not_in_doc_params_if_not_provided() -> None:
     assert cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters is None  # type: ignore[index, redundant-cast, union-attr]
 
 
+def test_path_parameter_order_matches_url_when_consumed_via_dependency() -> None:
+    # https://github.com/litestar-org/litestar/issues/3644
+    async def post_dep(post_id: FromPath[int]) -> int:
+        return post_id
+
+    @get(
+        "/users/{user_id:int}/posts/{post_id:int}/comments/{comment_id:int}",
+        dependencies={"dep": Provide(post_dep)},
+    )
+    def handler(user_id: FromPath[int], comment_id: FromPath[int], dep: NamedDependency[int]) -> None:
+        return None
+
+    app = Litestar(route_handlers=[handler])
+    path = "/users/{user_id}/posts/{post_id}/comments/{comment_id}"
+    params = cast("OpenAPI", app.openapi_schema).paths[path].get.parameters  # type: ignore[index, redundant-cast, union-attr]
+    assert [p.name for p in params] == ["user_id", "post_id", "comment_id"]  # type: ignore[union-attr]
+
+
+def test_path_parameter_order_matches_url_when_unconsumed() -> None:
+    # https://github.com/litestar-org/litestar/issues/3644
+    @get("/users/{user_id:int}/posts/{post_id:int}/comments/{comment_id:int}")
+    def handler(user_id: FromPath[int], comment_id: FromPath[int]) -> None:
+        return None
+
+    app = Litestar(route_handlers=[handler])
+    path = "/users/{user_id}/posts/{post_id}/comments/{comment_id}"
+    params = cast("OpenAPI", app.openapi_schema).paths[path].get.parameters  # type: ignore[index, redundant-cast, union-attr]
+    assert [p.name for p in params] == ["user_id", "post_id", "comment_id"]  # type: ignore[union-attr]
+
+
+def test_path_parameter_order_ignores_interleaved_query_parameter() -> None:
+    # https://github.com/litestar-org/litestar/issues/3644
+    async def post_dep(post_id: FromPath[int]) -> int:
+        return post_id
+
+    @get(
+        "/users/{user_id:int}/posts/{post_id:int}/comments/{comment_id:int}",
+        dependencies={"dep": Provide(post_dep)},
+    )
+    def handler(
+        user_id: FromPath[int],
+        query_param: FromQuery[str],
+        comment_id: FromPath[int],
+        dep: NamedDependency[int],
+    ) -> None:
+        return None
+
+    app = Litestar(route_handlers=[handler])
+    path = "/users/{user_id}/posts/{post_id}/comments/{comment_id}"
+    params = cast("OpenAPI", app.openapi_schema).paths[path].get.parameters  # type: ignore[index, redundant-cast, union-attr]
+    assert [(p.name, p.param_in) for p in params] == [  # type: ignore[union-attr]
+        ("user_id", ParamType.PATH),
+        ("query_param", ParamType.QUERY),
+        ("post_id", ParamType.PATH),
+        ("comment_id", ParamType.PATH),
+    ]
+
+
 def test_non_dependency_in_doc_params_if_not_provided() -> None:
     @get()
     def handler(param: FromQuery[Optional[int]]) -> None:
