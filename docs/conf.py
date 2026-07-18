@@ -258,6 +258,7 @@ ignore_missing_refs = {
     "litestar.response.file.async_file_iterator": {"FileSystemAdapter"},
     re.compile("litestar.response.redirect.*"): {"RedirectStatusType"},
     re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
+    re.compile(r"litestar\.repository\.*"): re.compile(".*T"),
     re.compile(r"litestar\.dto.*"): re.compile(".*T|.*FieldDefinition|Empty"),
     re.compile(r"litestar\.template\.(config|TemplateConfig).*"): re.compile(".*EngineType"),
     "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
