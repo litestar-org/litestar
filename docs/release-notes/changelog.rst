@@ -6,6 +6,14 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Remove deprecated ``litestar.contrib`` namespace
+        :type: feature
+        :issue: 4720
+        :breaking:
+
+        Remove the deprecated ``litestar.contrib`` namespace. Integrations previously
+        available from this namespace have moved to their replacement modules.
+
     .. change:: Remove deprecated declaration of metadata through default values
         :type: feature
         :pr: 4819
