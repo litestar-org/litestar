@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
 __all__ = ("create_parameters_for_handler",)
 
+_PARAM_TYPE_ORDER = {"path": 0, "query": 1, "cookie": 2, "header": 3}
+
 
 class ParameterCollection:
     """Facilitates conditional deduplication of parameters.
@@ -246,25 +248,30 @@ class ParameterFactory:
         )
 
         self.create_parameters_for_field_definitions(handler_fields)
-        return self._order_path_parameters(self.parameters.list())
+        return self._order_parameters(self.parameters.list())
 
-    def _order_path_parameters(self, parameters: list[Parameter]) -> list[Parameter]:
-        """Reorder path parameters to match their position in the URL path.
+    def _order_parameters(self, parameters: list[Parameter]) -> list[Parameter]:
+        """Order parameters by type, then canonically within each type.
+
+        Path parameters are ordered by their position in the url. All other parameter types have no
+        positional signal to rely on, so they are ordered alphabetically by name. This keeps the order
+        stable regardless of how a handler happens to consume its parameters (directly, via a dependency,
+        or not at all).
 
         Args:
-            parameters: The parameters to reorder.
+            parameters: The parameters to order.
 
         Returns:
-            The parameters with path parameters ordered to match the URL path.
+            The parameters, ordered by type and then by url position or name.
         """
         path_order = {name: index for index, name in enumerate(self.path_parameters)}
-        path_slots = [i for i, parameter in enumerate(parameters) if parameter.param_in == ParamType.PATH]
-        ordered_path_parameters = sorted(
-            (parameters[i] for i in path_slots), key=lambda parameter: path_order[parameter.name]
-        )
-        for slot, parameter in zip(path_slots, ordered_path_parameters, strict=True):
-            parameters[slot] = parameter
-        return parameters
+
+        def sort_key(parameter: Parameter) -> tuple[int, int | str]:
+            if parameter.param_in == ParamType.PATH:
+                return _PARAM_TYPE_ORDER[ParamType.PATH], path_order[parameter.name]
+            return _PARAM_TYPE_ORDER[parameter.param_in], parameter.name
+
+        return sorted(parameters, key=sort_key)
 
 
 def create_parameters_for_handler(
