@@ -113,4 +113,6 @@ def test_websocket_upgrade_without_matching_handler_is_not_found(path: str) -> N
     ):
         pass
 
-    assert exc.value.exceptions[0].detail == "Not Found"
+    disconnect = exc.value.exceptions[0]
+    assert isinstance(disconnect, WebSocketDisconnect)
+    assert disconnect.detail == "Not Found"
