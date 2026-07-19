@@ -265,13 +265,13 @@ class ParameterFactory:
             The parameters, ordered by type and then by url position or name.
         """
         path_order = {name: index for index, name in enumerate(self.path_parameters)}
-
-        def sort_key(parameter: Parameter) -> tuple[int, int | str]:
-            if parameter.param_in == ParamType.PATH:
-                return _PARAM_TYPE_ORDER[ParamType.PATH], path_order[parameter.name]
-            return _PARAM_TYPE_ORDER[parameter.param_in], parameter.name
-
-        return sorted(parameters, key=sort_key)
+        return sorted(
+            parameters,
+            key=lambda parameter: (
+                _PARAM_TYPE_ORDER[parameter.param_in],
+                path_order[parameter.name] if parameter.param_in == ParamType.PATH else parameter.name,
+            ),
+        )
 
 
 def create_parameters_for_handler(
