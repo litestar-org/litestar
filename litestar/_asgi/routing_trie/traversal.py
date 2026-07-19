@@ -85,7 +85,10 @@ def parse_node_handlers(
             return node.asgi_handlers[method]
         except KeyError as e:
             raise MethodNotAllowedException(headers={"allow": ", ".join(node.asgi_handlers.keys())}) from e
-    return node.asgi_handlers["websocket"]
+    try:
+        return node.asgi_handlers["websocket"]
+    except KeyError as e:
+        raise NotFoundException() from e
 
 
 @lru_cache(1024)
