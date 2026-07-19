@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from litestar._openapi.schema_generation import SchemaCreator
@@ -14,6 +15,8 @@ from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference
@@ -22,6 +25,12 @@ if TYPE_CHECKING:
 __all__ = ("create_parameters_for_handler",)
 
 _PARAM_TYPE_ORDER = {"path": 0, "query": 1, "cookie": 2, "header": 3}
+
+
+def _parameter_sort_key(parameter: Parameter, path_order: Mapping[str, int]) -> tuple[int, int | str]:
+    if parameter.param_in == ParamType.PATH:
+        return _PARAM_TYPE_ORDER[ParamType.PATH], path_order[parameter.name]
+    return _PARAM_TYPE_ORDER[parameter.param_in], parameter.name
 
 
 class ParameterCollection:
@@ -265,13 +274,7 @@ class ParameterFactory:
             The parameters, ordered by type and then by url position or name.
         """
         path_order = {name: index for index, name in enumerate(self.path_parameters)}
-        return sorted(
-            parameters,
-            key=lambda parameter: (
-                _PARAM_TYPE_ORDER[parameter.param_in],
-                path_order[parameter.name] if parameter.param_in == ParamType.PATH else parameter.name,
-            ),
-        )
+        return sorted(parameters, key=partial(_parameter_sort_key, path_order=path_order))
 
 
 def create_parameters_for_handler(
