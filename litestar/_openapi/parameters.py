@@ -24,14 +24,6 @@ if TYPE_CHECKING:
 
 __all__ = ("create_parameters_for_handler",)
 
-_PARAM_TYPE_ORDER = {"path": 0, "query": 1, "cookie": 2, "header": 3}
-
-
-def _parameter_sort_key(parameter: Parameter, path_order: Mapping[str, int]) -> tuple[int, int | str]:
-    if parameter.param_in == ParamType.PATH:
-        return _PARAM_TYPE_ORDER[ParamType.PATH], path_order[parameter.name]
-    return _PARAM_TYPE_ORDER[parameter.param_in], parameter.name
-
 
 class ParameterCollection:
     """Facilitates conditional deduplication of parameters.
@@ -289,3 +281,12 @@ def create_parameters_for_handler(
         path_parameters=path_parameters,
     )
     return factory.create_parameters_for_handler()
+
+
+_PARAM_TYPE_ORDER = {"path": 0, "query": 1, "cookie": 2, "header": 3}
+
+
+def _parameter_sort_key(parameter: Parameter, path_order: Mapping[str, int]) -> tuple[int, int | str]:
+    if parameter.param_in == ParamType.PATH:
+        return _PARAM_TYPE_ORDER[ParamType.PATH], path_order[parameter.name]
+    return _PARAM_TYPE_ORDER[parameter.param_in], parameter.name
