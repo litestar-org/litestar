@@ -72,7 +72,7 @@ class ParameterCollection:
             f"'{parameter.name}' with different types."
         )
 
-    def list(self) -> ValuesView[Parameter]:
+    def list(self) -> Iterable[Parameter]:
         """Return a view of all ``Parameter``'s in the collection."""
         return self._parameters.values()
 
