@@ -692,6 +692,56 @@ def test_optional_upload_file_without_file_submitted() -> None:
         assert response.text == "file"
 
 
+# https://github.com/litestar-org/litestar/issues/4890
+def test_optional_upload_file_without_file_submitted_msgspec_renamed_struct() -> None:
+    """Optional[UploadFile] in a renamed msgspec struct should be None when no file is submitted."""
+
+    class UploadForm(msgspec.Struct, rename="camel"):
+        some_file: Optional[UploadFile] = None
+
+    @post("/", signature_namespace={"UploadForm": UploadForm, "UploadFile": UploadFile})
+    async def handler(
+        data: Annotated[UploadForm, Body(media_type=RequestEncodingType.MULTI_PART)],
+    ) -> str:
+        return "none" if data.some_file is None else "file"
+
+    with create_test_client([handler]) as client:
+        response = client.post(
+            "/",
+            content=(
+                b"--testboundary\r\n"
+                b'Content-Disposition: form-data; name="someFile"; filename=""\r\n'
+                b"Content-Type: application/octet-stream\r\n\r\n"
+                b"\r\n"
+                b"--testboundary--\r\n"
+            ),
+            headers={"Content-Type": "multipart/form-data; boundary=testboundary"},
+        )
+        assert response.status_code == HTTP_201_CREATED
+        assert response.text == "none"
+
+        response = client.post("/", files={"someFile": ("test.txt", b"hello", "text/plain")})
+        assert response.status_code == HTTP_201_CREATED
+        assert response.text == "file"
+
+
+# https://github.com/litestar-org/litestar/issues/4890
+def test_list_upload_file_msgspec_renamed_struct() -> None:
+    class UploadForm(msgspec.Struct, rename="camel"):
+        file_list: list[UploadFile]
+
+    @post("/", signature_namespace={"UploadForm": UploadForm, "UploadFile": UploadFile})
+    async def handler(
+        data: Annotated[UploadForm, Body(media_type=RequestEncodingType.MULTI_PART)],
+    ) -> int:
+        return len(data.file_list)
+
+    with create_test_client([handler]) as client:
+        response = client.post("/", files={"fileList": ("test.txt", b"hello", "text/plain")})
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() == 1
+
+
 # https://github.com/litestar-org/litestar/issues/4638
 def test_missing_or_empty_boundary_parameter_returns_400() -> None:
     with create_test_client(form_handler) as client:
