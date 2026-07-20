@@ -15,7 +15,7 @@ from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Iterable, Mapping, ValuesView
 
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.handlers.base import BaseRouteHandler
@@ -72,9 +72,9 @@ class ParameterCollection:
             f"'{parameter.name}' with different types."
         )
 
-    def list(self) -> list[Parameter]:
-        """Return a list of all ``Parameter``'s in the collection."""
-        return list(self._parameters.values())
+    def list(self) -> ValuesView[Parameter]:
+        """Return a view of all ``Parameter``'s in the collection."""
+        return self._parameters.values()
 
 
 class ParameterFactory:
@@ -251,7 +251,7 @@ class ParameterFactory:
         self.create_parameters_for_field_definitions(handler_fields)
         return self._order_parameters(self.parameters.list())
 
-    def _order_parameters(self, parameters: list[Parameter]) -> list[Parameter]:
+    def _order_parameters(self, parameters: Iterable[Parameter]) -> list[Parameter]:
         """Order parameters by type, then canonically within each type.
 
         Path parameters are ordered by their position in the url. All other parameter types have no
