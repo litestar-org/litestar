@@ -15,7 +15,7 @@ from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping, ValuesView
+    from collections.abc import Iterable, Mapping
 
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.handlers.base import BaseRouteHandler
