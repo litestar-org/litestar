@@ -1,6 +1,9 @@
 from typing import Any
 
+import pytest
+
 from litestar import Router, asgi, get
+from litestar.exceptions import WebSocketDisconnect
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
@@ -91,3 +94,18 @@ def test_parse_path_to_route_mounted_app_path_router() -> None:
 
         response = client.get("/base/sub/unknown/foobar/")
         assert response.status_code == HTTP_404_NOT_FOUND
+
+
+def test_websocket_upgrade_to_http_only_route_is_bad_request() -> None:
+    # a route that exists but doesn't support the websocket protocol is a client error
+    # (400), distinct from a route that doesn't exist at all (404).
+    @get("/")
+    async def index() -> str:
+        return "hello"
+
+    with create_test_client([index], logging_config=None) as client, pytest.raises(
+        WebSocketDisconnect
+    ) as exc_info, client.websocket_connect("/"):
+        pass
+
+    assert exc_info.value.detail == "Bad Request"
