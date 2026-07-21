@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import TYPE_CHECKING, Any
 
 from litestar._asgi.routing_trie.types import PathParameterSentinel
-from litestar.exceptions import MethodNotAllowedException, NotFoundException
+from litestar.exceptions import ClientException, MethodNotAllowedException, NotFoundException
 from litestar.utils import normalize_path
 
 __all__ = ("parse_node_handlers", "parse_path_params", "parse_path_to_route", "traverse_route_map")
@@ -85,7 +85,10 @@ def parse_node_handlers(
             return node.asgi_handlers[method]
         except KeyError as e:
             raise MethodNotAllowedException(headers={"allow": ", ".join(node.asgi_handlers.keys())}) from e
-    return node.asgi_handlers["websocket"]
+    try:
+        return node.asgi_handlers["websocket"]
+    except KeyError as e:
+        raise ClientException() from e
 
 
 @lru_cache(1024)
