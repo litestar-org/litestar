@@ -440,8 +440,45 @@ def default_structlog_standard_lib_processors(as_json: bool = True) -> list[Proc
         return []
 
 
-def default_logger_factory(as_json: bool = True) -> Callable[..., WrappedLogger] | None:
+def _final_renderer_emits_bytes(processors: list[Processor]) -> bool | None:  # pyright: ignore
+    """Detect whether the last processor (the renderer) emits ``bytes`` or ``str``.
+
+    The logger factory must match the renderer's output type: ``BytesLoggerFactory``
+    writes ``bytes`` while ``WriteLoggerFactory`` writes ``str``. The output type cannot
+    be inferred from the renderer's class alone -- ``JSONRenderer`` emits ``str`` with the
+    default serializer but ``bytes`` with a bytes serializer -- so the terminal processor
+    is probed on a minimal event dict. Renderers are pure formatters, so the probe has no
+    side effects.
+
+    Returns:
+        ``True`` if the renderer emits ``bytes``, ``False`` if it emits ``str``, or
+        ``None`` if the output type could not be determined.
+    """
+    if not processors:
+        return None
+    try:
+        rendered = processors[-1](None, "info", {"event": ""})
+    except Exception:  # noqa: BLE001 -- a custom renderer may reject the probe; fall back
+        return None
+    if isinstance(rendered, bytes):
+        return True
+    if isinstance(rendered, str):
+        return False
+    return None
+
+
+def default_logger_factory(
+    as_json: bool = True, processors: list[Processor] | None = None
+) -> Callable[..., WrappedLogger] | None:  # pyright: ignore
     """Set the default logger factory for structlog.
+
+    When ``processors`` is supplied, the factory is chosen to match the output type of the
+    configured renderer (the terminal processor). This keeps a user-supplied ``str``-emitting
+    renderer (e.g. ``KeyValueRenderer`` or ``ConsoleRenderer``) from being paired with the
+    bytes-only ``BytesLoggerFactory``, which raises ``TypeError: can only concatenate str
+    (not "bytes") to str`` on every log record when stderr is not a TTY (e.g. under ``nohup``
+    or a service manager). The ``as_json`` flag is used only as a fallback when the renderer's
+    output type cannot be determined.
 
     Returns:
         An optional logger factory.
@@ -449,7 +486,10 @@ def default_logger_factory(as_json: bool = True) -> Callable[..., WrappedLogger]
     try:
         import structlog
 
-        if as_json:
+        emits_bytes = _final_renderer_emits_bytes(processors) if processors is not None else None
+        if emits_bytes is None:
+            emits_bytes = as_json
+        if emits_bytes:
             return structlog.BytesLoggerFactory()
         return structlog.WriteLoggerFactory()
     except ImportError:
@@ -498,7 +538,7 @@ class StructLoggingConfig(BaseLoggingConfig):
         if self.processors is None:
             self.processors = default_structlog_processors(as_json=self.as_json())
         if self.logger_factory is None:
-            self.logger_factory = default_logger_factory(as_json=self.as_json())
+            self.logger_factory = default_logger_factory(as_json=self.as_json(), processors=self.processors)
         if self.log_exceptions != "never" and self.exception_logging_handler is None:
             self.exception_logging_handler = _default_exception_logging_handler_factory(
                 is_struct_logger=True, traceback_line_limit=self.traceback_line_limit
