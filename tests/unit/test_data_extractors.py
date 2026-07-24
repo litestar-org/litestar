@@ -58,6 +58,12 @@ async def test_parse_json_data() -> None:
     assert await ConnectionDataExtractor()(request).get("body") == await request.body()  # type: ignore[misc]
 
 
+async def test_parse_query_method_json_data() -> None:
+    request = factory.query(path="/a/b/c", data={"hello": "world"})
+    assert request.method == "QUERY"
+    assert await ConnectionDataExtractor(parse_body=True)(request).get("body") == await request.json()  # type: ignore[misc]
+
+
 async def test_parse_form_data() -> None:
     request = factory.post(path="/a/b/c", data={"file": b"123"}, request_media_type=RequestEncodingType.MULTI_PART)
     assert await ConnectionDataExtractor(parse_body=True)(request).get("body") == dict(await request.form())  # type: ignore[misc]
