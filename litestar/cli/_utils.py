@@ -349,6 +349,23 @@ def _autodiscovery_paths(base_dir: Path, arbitrary: bool = True) -> Generator[Pa
             yield from _arbitrary_autodiscovery_paths(path)
 
 
+def _get_return_type_hint(value: Any) -> Any:
+    """Return the resolved ``"return"`` type hint for ``value``, or ``None`` if it has none or can't be resolved.
+
+    ``value`` may be an unrelated callable/class pulled in via a module-level import (e.g.
+    ``from litestar import Request``) rather than something the user actually intends as an app
+    factory. Its annotations can reference names that only exist under ``TYPE_CHECKING`` in their
+    defining module, so resolving them can raise a ``NameError`` even though it has nothing to do
+    with the app factory we're looking for.
+    """
+    if not hasattr(value, "__annotations__"):
+        return None
+    try:
+        return get_type_hints(value, include_extras=True).get("return")
+    except NameError:
+        return None
+
+
 def _autodiscover_app(cwd: Path) -> LoadedApp:
     app_name = getenv("LITESTAR_APP_NAME") or "Litestar"
     quiet_console = envflag("LITESTAR_QUIET_CONSOLE")
@@ -377,9 +394,7 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
         for attr, value in module.__dict__.items():
             if not callable(value):
                 continue
-            return_annotation = (
-                get_type_hints(value, include_extras=True).get("return") if hasattr(value, "__annotations__") else None
-            )
+            return_annotation = _get_return_type_hint(value)
             if not return_annotation:
                 continue
             if return_annotation in ("Litestar", Litestar):
