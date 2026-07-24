@@ -104,7 +104,17 @@ class MemoryStore(Store):
 
     async def exists(self, key: str) -> bool:
         """Check if a given ``key`` exists."""
-        return key in self._store
+        async with self._lock:
+            storage_obj = self._store.get(key)
+
+            if not storage_obj:
+                return False
+
+            if storage_obj.expired:
+                self._store.pop(key)
+                return False
+
+            return True
 
     async def expires_in(self, key: str) -> int | None:
         """Get the time in seconds ``key`` expires in. If no such ``key`` exists or no

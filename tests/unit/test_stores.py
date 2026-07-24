@@ -156,6 +156,22 @@ async def test_exists(store: Store) -> None:
     assert await store.exists("foo") is True
 
 
+async def test_exists_expired(store: Store, frozen_datetime: Traveller) -> None:
+    # exists() must be consistent with get(): an expired key must report as
+    # not existing, not just be lazily cleaned up on the next get()/set() call.
+    await store.set("foo", b"bar", expires_in=1)
+
+    frozen_datetime.shift(2)
+    if isinstance(store, RedisStore):
+        # shifting time does not affect the Redis instance
+        # this is done to emulate auto-expiration
+        await store._redis.expire(f"{store.namespace}:foo", 0)
+    if isinstance(store, ValkeyStore):
+        await store._valkey.expire(f"{store.namespace}:foo", 0)
+
+    assert await store.exists("foo") is False
+
+
 async def test_expires_in_not_set(store: Store) -> None:
     assert await store.expires_in("foo") is None
 
