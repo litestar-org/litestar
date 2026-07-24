@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Iterable
 from secrets import token_hex
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
@@ -451,3 +452,58 @@ async def test_startup_shutdown_cycle(memory_backend: MemoryChannelsBackend) -> 
     assert messages == [b"final_message"]
 
     await plugin._on_shutdown()
+
+
+class StubMemoryChannelBackend(MemoryChannelsBackend):
+    def __init__(self, network_lag: asyncio.Event, second_start_subscription: asyncio.Event, history: int = 0) -> None:
+        super().__init__(history)
+        self.network_lag = network_lag
+        self.second_start_subscription = second_start_subscription
+
+    async def unsubscribe(self, channels: Iterable[str]) -> None:
+        self.network_lag.set()
+        await self.second_start_subscription.wait()
+        return await super().unsubscribe(channels)
+
+
+async def test_race_condition_on_unsubscription() -> None:
+    network_lag, second_start_subscription = asyncio.Event(), asyncio.Event()
+    plugin = ChannelsPlugin(
+        arbitrary_channels_allowed=True, backend=StubMemoryChannelBackend(network_lag, second_start_subscription)
+    )
+
+    async def concurrent_subscribe() -> None:
+        await network_lag.wait()
+        second_start_subscription.set()
+        subscriber = await plugin.subscribe("42")
+        await plugin.wait_published("42", "42")
+        try:
+            await asyncio.wait_for(anext(subscriber.iter_events()), timeout=1.0)
+        except TimeoutError as e:
+            raise ValueError("Expected event not received") from e
+
+    async with plugin:
+        first_subscriber = await plugin.subscribe("42")
+        await asyncio.gather(concurrent_subscribe(), plugin.unsubscribe(first_subscriber, "42"))
+
+
+async def test_unsubscribe_releases_lock_before_stop_background(memory_backend: MemoryChannelsBackend) -> None:
+    async with ChannelsPlugin(arbitrary_channels_allowed=True, backend=memory_backend) as plugin:
+        subscriber = await plugin.subscribe("test_channel")
+        locked = False
+        event_received = asyncio.Event()
+
+        async def bg_task(_: bytes) -> None:
+            nonlocal locked, event_received
+            event_received.set()
+            try:
+                await asyncio.sleep(999)
+            except asyncio.CancelledError:
+                locked = plugin._lock.locked()
+                raise
+
+        async with subscriber.run_in_background(on_event=bg_task):
+            plugin.publish("test", "test_channel")
+            await event_received.wait()
+            await plugin.unsubscribe(subscriber, "test_channel")
+        assert not locked
