@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from litestar._openapi.schema_generation import SchemaCreator
@@ -14,6 +15,8 @@ from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Mapping
+
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference
@@ -69,9 +72,9 @@ class ParameterCollection:
             f"'{parameter.name}' with different types."
         )
 
-    def list(self) -> list[Parameter]:
-        """Return a list of all ``Parameter``'s in the collection."""
-        return list(self._parameters.values())
+    def list(self) -> Iterable[Parameter]:
+        """Return a view of all ``Parameter``'s in the collection."""
+        return self._parameters.values()
 
 
 class ParameterFactory:
@@ -246,7 +249,24 @@ class ParameterFactory:
         )
 
         self.create_parameters_for_field_definitions(handler_fields)
-        return self.parameters.list()
+        return self._order_parameters(self.parameters.list())
+
+    def _order_parameters(self, parameters: Iterable[Parameter]) -> list[Parameter]:
+        """Order parameters by type, then canonically within each type.
+
+        Path parameters are ordered by their position in the url. All other parameter types have no
+        positional signal to rely on, so they are ordered alphabetically by name. This keeps the order
+        stable regardless of how a handler happens to consume its parameters (directly, via a dependency,
+        or not at all).
+
+        Args:
+            parameters: The parameters to order.
+
+        Returns:
+            The parameters, ordered by type and then by url position or name.
+        """
+        path_order = {name: index for index, name in enumerate(self.path_parameters)}
+        return sorted(parameters, key=partial(_parameter_sort_key, path_order=path_order))
 
 
 def create_parameters_for_handler(
@@ -261,3 +281,12 @@ def create_parameters_for_handler(
         path_parameters=path_parameters,
     )
     return factory.create_parameters_for_handler()
+
+
+_PARAM_TYPE_ORDER = {"path": 0, "query": 1, "cookie": 2, "header": 3}
+
+
+def _parameter_sort_key(parameter: Parameter, path_order: Mapping[str, int]) -> tuple[int, int | str]:
+    if parameter.param_in == ParamType.PATH:
+        return _PARAM_TYPE_ORDER[ParamType.PATH], path_order[parameter.name]
+    return _PARAM_TYPE_ORDER[parameter.param_in], parameter.name
