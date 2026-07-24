@@ -40,6 +40,10 @@ _GLOBAL_NAMES = {
 """A mapping of names used for handler signature forward-ref resolution.
 
 This allows users to include these names within an `if TYPE_CHECKING:` block in their handler module.
+
+Names from ``litestar.di`` (e.g. ``NamedDependency``) are added lazily on first use by
+:func:`get_fn_type_hints`, as ``litestar.di`` imports from this module and so cannot be imported
+here at module load without a circular import.
 """
 
 
@@ -151,6 +155,17 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     # inspect the underlying function for methods
     if hasattr(fn_to_inspect, "__func__"):
         fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore[reportFunctionMemberAccess]
+
+    if "NamedDependency" not in _GLOBAL_NAMES:
+        # `litestar.di` imports from this module, so it cannot be imported at module load without a
+        # circular import. It is imported here (once) so names such as `NamedDependency` resolve when
+        # only imported under `if TYPE_CHECKING:` in a handler module. See #4870.
+        from litestar import di
+
+        _GLOBAL_NAMES.update(
+            (name, export) for name, export in getmembers(di) if name[0].isupper() and name in di.__all__
+        )
+
     # Order important. If a litestar name has been overridden in the function module, we want
     # to use that instead of the litestar one.
     namespace = {
