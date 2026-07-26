@@ -280,10 +280,6 @@ disallow_untyped_decorators = false
 module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
 
 [[tool.mypy.overrides]]
-module = ["tests.unit.test_contrib.test_repository"]
-strict_equality = false
-
-[[tool.mypy.overrides]]
 disable_error_code = "index, union-attr"
 module = ["tests.unit.test_plugins.test_pydantic.test_openapi"]
 
@@ -303,8 +299,6 @@ module = [
 [[tool.mypy.overrides]]
 module = [
   "litestar.plugins.pydantic.*",
-  "tests.unit.test_contrib.test_pydantic.*",
-  "tests.unit.test_contrib.test_sqlalchemy",
   "tests.unit.test_logging.test_logging_config",
   "litestar.openapi.spec.base",
   "litestar.utils.helpers",
