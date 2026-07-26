@@ -263,7 +263,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/cli.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/connection.html">connection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../reference/contrib/index.html">contrib</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/controller.html">controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../reference/data_extractors.html">data_extractors</a></li>
@@ -535,7 +534,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="30">
 </span><span data-line="31">
 <div class="viewcode-block" id="CompressionMiddleware">
-<a class="viewcode-back" href="../../../../reference/middleware/compression.html#litestar.config.compression.CompressionMiddleware">[docs]</a>
+<a class="viewcode-back" href="../../../../reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware">[docs]</a>
 </span><span data-line="32"><span class="k">class</span><span class="w"> </span><span class="nc">CompressionMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
 </span><span data-line="33"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Compression Middleware Wrapper.</span>
 </span><span data-line="34">
@@ -543,7 +542,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="36"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="37">
 <div class="viewcode-block" id="CompressionMiddleware.__init__">
-<a class="viewcode-back" href="../../../../reference/middleware/compression.html#litestar.config.compression.CompressionMiddleware.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../../reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.__init__">[docs]</a>
 </span><span data-line="38">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">CompressionConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="39"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``CompressionMiddleware``</span>
 </span><span data-line="40">
@@ -594,7 +593,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="84">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
 </span><span data-line="85">
 <div class="viewcode-block" id="CompressionMiddleware.create_compression_send_wrapper">
-<a class="viewcode-back" href="../../../../reference/middleware/compression.html#litestar.config.compression.CompressionMiddleware.create_compression_send_wrapper">[docs]</a>
+<a class="viewcode-back" href="../../../../reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper">[docs]</a>
 </span><span data-line="86">    <span class="k">def</span><span class="w"> </span><span class="nf">create_compression_send_wrapper</span><span class="p">(</span>
 </span><span data-line="87">        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="88">        <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span>
