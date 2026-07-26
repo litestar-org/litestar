@@ -52,7 +52,7 @@ def test_parsing_of_dependency_as_annotated() -> None:
 @pytest.mark.parametrize("dependency_default", [None, 13])
 def test_dependency_defaults(dependency_default: Any) -> None:
     @get("/")
-    def handler(value: Optional[int] = dependency_default) -> dict[str, Optional[int]]:
+    def handler(value: NamedDependency[Optional[int]] = dependency_default) -> dict[str, Optional[int]]:
         return {"value": value}
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -62,7 +62,7 @@ def test_dependency_defaults(dependency_default: Any) -> None:
 
 def test_dependency_non_optional_with_default() -> None:
     @get("/")
-    def handler(value: int = 13) -> dict[str, int]:
+    def handler(value: NamedDependency[int] = 13) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -72,7 +72,7 @@ def test_dependency_non_optional_with_default() -> None:
 
 def test_dependency_no_default() -> None:
     @get(dependencies={"value": Provide(lambda: 13, sync_to_thread=False)})
-    def test(value: int) -> dict[str, int]:
+    def test(value: NamedDependency[int]) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(route_handlers=[test]) as client:
@@ -99,7 +99,7 @@ def test_dependency_provided_on_controller() -> None:
         dependencies = {"value": Provide(lambda: 13, sync_to_thread=False)}
 
         @get()
-        def test(self, value: int) -> dict[str, int]:
+        def test(self, value: NamedDependency[int]) -> dict[str, int]:
             return {"value": value}
 
     with create_test_client(route_handlers=[C]) as client:
@@ -137,6 +137,17 @@ def test_dependency_skip_validation_with_default() -> None:
         assert skipped_resp.json() == {"value": 1}
 
 
+def test_skip_validation_alone_is_not_a_declaration() -> None:
+    # 'SkipValidation' does not declare a parameter source, so a param annotated with
+    # only it should raise the same error as one without any marker
+    @get("/")
+    def handler(value: SkipValidation[int]) -> dict[str, int]:
+        return {"value": value}
+
+    with pytest.raises(ImproperlyConfiguredException, match="Missing declaration for parameter 'value'"):
+        Litestar(route_handlers=[handler])
+
+
 def test_dependency_default_is_not_treated_as_query_parameter() -> None:
     @get("/")
     def handler(value: NamedDependency[int] = 42) -> dict[str, int]:
@@ -160,7 +171,7 @@ def test_dependency_default_does_not_collide_with_query_param_of_same_name() -> 
         return value * 10
 
     @get("/", dependencies={"computed": Provide(provide_value, sync_to_thread=False)})
-    def handler(computed: int) -> dict[str, int]:
+    def handler(computed: NamedDependency[int]) -> dict[str, int]:
         return {"computed": computed}
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -178,7 +189,7 @@ def test_dependency_nested_sequence() -> None:
         return Obj(seq)
 
     @get("/obj")
-    def get_obj(obj: Obj) -> list[str]:
+    def get_obj(obj: NamedDependency[Obj]) -> list[str]:
         return obj.seq
 
     @get("/seq")

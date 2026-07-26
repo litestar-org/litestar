@@ -12,7 +12,7 @@ import pydantic
 from pydantic_core import PydanticUndefined
 
 from litestar.openapi.spec import Example
-from litestar.params import KwargDefinition, ParameterKwarg
+from litestar.params import KwargDefinition
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_generic, is_undefined_sentinel
@@ -209,7 +209,7 @@ def _create_field_definition_v2(  # noqa: C901
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
     if kwargs:
-        kwarg_definition = ParameterKwarg(**kwargs)
+        kwarg_definition = KwargDefinition(**kwargs)
         field_meta.append(kwarg_definition)
 
     if field_meta:

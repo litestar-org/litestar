@@ -133,7 +133,7 @@ class Router:
             opt: A string keyed mapping of arbitrary values that can be accessed in :data:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :data:`ASGI Scope <.types.Scope>`.
-            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions available to all application
+            parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions available to all application
                 paths.
             path: A path fragment that is prefixed to all route handlers, controllers and other routers associated
                 with the router instance.

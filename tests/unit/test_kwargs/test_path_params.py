@@ -9,7 +9,7 @@ import pytest
 
 from litestar import Litestar, MediaType, get, post
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import FromPath, Parameter, PathParameter
+from litestar.params import FromPath, PathParameter
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -127,7 +127,7 @@ def test_path_param_defined_in_layered_params_error() -> None:
         raise AssertionError("should not be called")
 
     with pytest.raises(ImproperlyConfiguredException) as exc_info:
-        Litestar(route_handlers=[test_method], parameters={"param": Parameter(gt=3)})
+        Litestar(route_handlers=[test_method], parameters={"param": PathParameter(gt=3)})
 
     assert "Kwarg resolution ambiguity detected for the following keys: param." in str(exc_info.value)
 

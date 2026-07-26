@@ -40,11 +40,11 @@ from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import (
+    Body,
     FromPath,
     FromQuery,
     HeaderParameter,
     KwargDefinition,
-    Parameter,
     ParameterKwarg,
     PathParameter,
     QueryParameter,
@@ -104,11 +104,11 @@ def test_override_schema_component_key() -> None:
     @post("/")
     def handler(
         data: Data,
-    ) -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+    ) -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 
     @get("/")
-    def handler_2() -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+    def handler_2() -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 
     app = Litestar([handler, handler_2])
@@ -149,11 +149,11 @@ def test_override_schema_component_key_raise_if_keys_are_not_unique() -> None:
     @post("/")
     def handler(
         data: Data,
-    ) -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+    ) -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 
     @get("/")
-    def handler_2() -> Annotated[Data2, Parameter(schema_component_key="not_data")]:
+    def handler_2() -> Annotated[Data2, Body(schema_component_key="not_data")]:
         return Data2()
 
     with pytest.raises(ImproperlyConfiguredException, match="Schema component keys must be unique"):

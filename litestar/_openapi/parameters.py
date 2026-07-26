@@ -50,14 +50,7 @@ class ParameterCollection:
         """
 
         if (parameter.name, parameter.param_in) not in self._parameters:
-            # because we are defining routes as unique per path, we have to handle here a situation when there is an optional
-            # path parameter. e.g. get(path=["/", "/{param:str}"]). When parsing the parameter for path, the route handler
-            # would still have a kwarg called param:
-            # def handler(param: str | None) -> ...
-            if parameter.param_in != ParamType.QUERY or all(
-                f"{{{parameter.name}:" not in path for path in self.route_handler.paths
-            ):
-                self._parameters[(parameter.name, parameter.param_in)] = parameter
+            self._parameters[(parameter.name, parameter.param_in)] = parameter
             return
 
         pre_existing = self._parameters[(parameter.name, parameter.param_in)]
@@ -123,8 +116,7 @@ class ParameterFactory:
                 is_required = True
                 result = self.schema_creator.for_field_definition(field_definition)
         else:
-            is_required = field_definition.is_required
-            param_in = ParamType.QUERY
+            raise ImproperlyConfiguredException(f"Missing parameter declaration for field {parameter_name!r}")
 
         if not result:
             result = self.schema_creator.for_field_definition(field_definition)
@@ -152,7 +144,7 @@ class ParameterFactory:
         """
         layer_field = self.layered_parameters[field_name]
 
-        field = field_definition if field_definition.is_parameter_field else layer_field
+        field = field_definition if field_definition.is_non_marker_parameter_field else layer_field
         default = layer_field.default if field_definition.has_default else field_definition.default
         annotation = field_definition.annotation if field_definition.annotation is not Empty else layer_field.annotation
 

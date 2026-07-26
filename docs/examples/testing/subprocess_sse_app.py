@@ -5,6 +5,7 @@ Assemble components into an app that shall be tested
 from collections.abc import AsyncGenerator
 
 from litestar import Litestar, get
+from litestar.params import FromPath
 from litestar.response import ServerSentEvent
 from litestar.types import SSEData
 
@@ -17,7 +18,7 @@ async def generator(topic: str) -> AsyncGenerator[SSEData, None]:
 
 
 @get("/notify/{topic:str}")
-async def get_notified(topic: str) -> ServerSentEvent:
+async def get_notified(topic: FromPath[str]) -> ServerSentEvent:
     return ServerSentEvent(generator(topic), event_type="Notifier")
 
 

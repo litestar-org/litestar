@@ -349,9 +349,10 @@ from pathlib import Path
 from litestar import Litestar
 from litestar.handlers import get
 from typing import Optional
+from litestar.params import FromPath
 
 @get(path=["/", "/{path:path}"])
-async def pathfinder(path: Optional[Path] = None) -> str:
+async def pathfinder(path: FromPath[Optional[Path]] = None) -> str:
     return str(path)
 
 app = Litestar(route_handlers=[pathfinder], debug=True)

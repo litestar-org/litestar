@@ -155,7 +155,7 @@ def test_skip_validation_dependency() -> None:
         return "1"
 
     @get("/", dependencies={"foo": provide_foo})
-    def handler(foo: SkipValidation[int]) -> None:
+    def handler(foo: NamedDependency[SkipValidation[int]]) -> None:
         mock(foo)
         return
 
