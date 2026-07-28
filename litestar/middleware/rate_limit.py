@@ -37,12 +37,7 @@ DURATION_VALUES: dict[DurationUnit, int] = {"second": 1, "minute": 60, "hour": 3
 
 
 def _is_rate_limit(value: object) -> TypeGuard[tuple[DurationUnit, int]]:
-    return (
-        isinstance(value, tuple)
-        and len(value) == 2
-        and value[0] in DURATION_VALUES
-        and isinstance(value[1], int)
-    )
+    return isinstance(value, tuple) and len(value) == 2 and value[0] in DURATION_VALUES and isinstance(value[1], int)
 
 
 @dataclass
