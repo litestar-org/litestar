@@ -264,8 +264,9 @@ To use the rate limit middleware, use the :class:`~litestar.middleware.rate_limi
 .. literalinclude:: /examples/middleware/rate_limit.py
     :language: python
 
-The only required configuration kwarg is ``rate_limit``, which expects a tuple containing a time-unit (``"second"``,
-``"minute"``, ``"hour"``, ``"day"``\ ) and a value for the request quota (integer).
+The only required configuration kwarg is ``rate_limit``. It accepts either a tuple containing a time-unit
+(``"second"``, ``"minute"``, ``"hour"``, ``"day"``\ ) and an integer request quota, or a sequence of such tuples.
+When multiple limits are configured, a request is rejected as soon as any limit is exceeded.
 
 
 Using behind a proxy
