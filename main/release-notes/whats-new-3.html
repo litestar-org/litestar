@@ -474,6 +474,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#polyfactory-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">polyfactory</span></code> package removed from default dependencies</a></li>
 <li><a class="reference internal" href="#pyyaml-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">pyyaml</span></code> package removed from default dependencies</a></li>
 <li><a class="reference internal" href="#litestar-htmx-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">litestar-htmx</span></code> package removed from default dependencies</a></li>
+<li><a class="reference internal" href="#click-rich-and-rich-click-packages-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">click</span></code>, <code class="docutils literal notranslate"><span class="pre">rich</span></code> and <code class="docutils literal notranslate"><span class="pre">rich-click</span></code> packages removed from default dependencies</a></li>
 <li><a class="reference internal" href="#improved-file-system-handling-fsspec-integration">Improved file system handling / fsspec integration</a></li>
 <li><a class="reference internal" href="#removal-of-resolve-symlinks-parameter-to-create-static-files-router">Removal of <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code></a></li>
 <li><a class="reference internal" href="#middleware-configuration-constraints">Middleware configuration constraints</a></li>
@@ -850,6 +851,24 @@ OpenAPI schema as YAML has been moved from the default dependencies to the
 <h2><code class="docutils literal notranslate"><span class="pre">litestar-htmx</span></code> package removed from default dependencies<a class="headerlink" href="#litestar-htmx-package-removed-from-default-dependencies" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://github.com/litestar-org/litestar-htmx/">litestar-htmx</a> package powering
 the <a class="reference internal" href="../usage/htmx.html"><span class="doc">HTMX plugin</span></a> has been moved to the <code class="docutils literal notranslate"><span class="pre">litestar[htmx]</span></code> extra.</p>
+</section>
+<section id="click-rich-and-rich-click-packages-removed-from-default-dependencies">
+<h2><code class="docutils literal notranslate"><span class="pre">click</span></code>, <code class="docutils literal notranslate"><span class="pre">rich</span></code> and <code class="docutils literal notranslate"><span class="pre">rich-click</span></code> packages removed from default dependencies<a class="headerlink" href="#click-rich-and-rich-click-packages-removed-from-default-dependencies" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference external" href="https://click.palletsprojects.com/">click</a>, <a class="reference external" href="https://rich.readthedocs.io">rich</a>
+and <a class="reference external" href="https://github.com/ewels/rich-click">rich-click</a> libraries powering the
+<a class="reference internal" href="../usage/cli.html"><span class="doc">CLI</span></a> have been moved from the default dependencies to the
+<code class="docutils literal notranslate"><span class="pre">litestar[cli]</span></code> package extra. They are also included in <code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code> and
+<code class="docutils literal notranslate"><span class="pre">litestar[full]</span></code>.</p>
+<p>Installing <code class="docutils literal notranslate"><span class="pre">litestar</span></code> on its own therefore no longer provides the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> command.
+Invoking it without the extra raises a
+<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.MissingDependencyException" title="litestar.exceptions.MissingDependencyException"><code class="xref py py-class docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a>
+naming the extra to install:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Install the CLI</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[cli]&#39;</span>
+</span></pre></div>
+</div>
+</div>
 </section>
 <section id="improved-file-system-handling-fsspec-integration">
 <h2>Improved file system handling / fsspec integration<a class="headerlink" href="#improved-file-system-handling-fsspec-integration" title="Link to this heading">¶</a></h2>

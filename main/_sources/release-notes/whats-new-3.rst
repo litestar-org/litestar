@@ -328,6 +328,26 @@ The `litestar-htmx <https://github.com/litestar-org/litestar-htmx/>`_ package po
 the :doc:`HTMX plugin </usage/htmx>` has been moved to the ``litestar[htmx]`` extra.
 
 
+``click``, ``rich`` and ``rich-click`` packages removed from default dependencies
+---------------------------------------------------------------------------------
+
+The `click <https://click.palletsprojects.com/>`_, `rich <https://rich.readthedocs.io>`_
+and `rich-click <https://github.com/ewels/rich-click>`_ libraries powering the
+:doc:`CLI </usage/cli>` have been moved from the default dependencies to the
+``litestar[cli]`` package extra. They are also included in ``litestar[standard]`` and
+``litestar[full]``.
+
+Installing ``litestar`` on its own therefore no longer provides the ``litestar`` command.
+Invoking it without the extra raises a
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
+naming the extra to install:
+
+.. code-block:: shell
+    :caption: Install the CLI
+
+    pip install 'litestar[cli]'
+
+
 Improved file system handling / fsspec integration
 ---------------------------------------------------
 

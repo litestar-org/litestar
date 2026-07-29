@@ -548,6 +548,20 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Move <code class="docutils literal notranslate"><span class="pre">click</span></code>, <code class="docutils literal notranslate"><span class="pre">rich</span></code> and <code class="docutils literal notranslate"><span class="pre">rich-click</span></code> to the <code class="docutils literal notranslate"><span class="pre">cli</span></code> extra<a class="headerlink reference internal" href="#3.0.0-move" id="3.0.0-move">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">click</span></code>, <code class="docutils literal notranslate"><span class="pre">rich</span></code> and <code class="docutils literal notranslate"><span class="pre">rich-click</span></code>, which power the CLI, have been moved from
+the default dependencies to the <code class="docutils literal notranslate"><span class="pre">litestar[cli]</span></code> extra. They remain included in
+<code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code> and <code class="docutils literal notranslate"><span class="pre">litestar[full]</span></code>.</p>
+<p>Installing <code class="docutils literal notranslate"><span class="pre">litestar</span></code> on its own therefore no longer provides the <code class="docutils literal notranslate"><span class="pre">litestar</span></code>
+command. Invoking it without the extra now raises a
+<code class="docutils literal notranslate"><span class="pre">MissingDependencyException</span></code> naming the extra to install.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/cli.html"><span class="doc">CLI</span></a></p>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4949">https://github.com/litestar-org/litestar/pull/4949</a></span></p>
+</div>
+</dd>
 <dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib</span></code> namespace<a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib</span></code> namespace. Integrations previously
 available from this namespace have moved to their replacement modules.</p>
