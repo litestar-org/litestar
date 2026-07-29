@@ -15,16 +15,14 @@ if find_spec("rich_click") is not None:  # pragma: no cover
     rich_click.rich_click.ERRORS_SUGGESTION = ""
     rich_click.rich_click.ERRORS_EPILOGUE = ""
     rich_click.rich_click.MAX_WIDTH = 120
-    # replaces 'SHOW_METAVARS_COLUMN' / 'APPEND_METAVARS_HELP'; 'opt_long' precedes
-    # 'opt_short' to keep the long form in the first column, as it has always rendered.
-    rich_click.rich_click.OPTIONS_TABLE_COLUMN_TYPES = ["opt_long", "opt_short", "metavar", "help"]
+    rich_click.rich_click.OPTIONS_TABLE_COLUMN_TYPES = ["required", "opt_long", "opt_short", "metavar", "help"]
     rich_click.rich_click.OPTIONS_TABLE_HELP_SECTIONS = [
         "help",
+        "metavar",
         "deprecated",
         "envvar",
         "default",
         "required",
-        "metavar",
     ]
 
 
