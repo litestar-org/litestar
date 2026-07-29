@@ -6,6 +6,20 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Move ``httpx`` to the ``testing`` extra
+        :type: feature
+        :pr: 4950
+        :breaking:
+
+        ``httpx``, used by the test clients, has been moved from the default dependencies
+        to the ``litestar[testing]`` extra. It remains included in ``litestar[full]``.
+
+        Importing anything from ``litestar.testing`` without the extra installed now
+        raises a ``MissingDependencyException`` naming the extra to install.
+
+        .. seealso::
+            :doc:`/usage/testing`
+
     .. change:: Remove deprecated ``litestar.contrib`` namespace
         :type: feature
         :issue: 4720
