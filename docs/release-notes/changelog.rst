@@ -20,6 +20,22 @@
         .. seealso::
             :doc:`/usage/testing`
 
+    .. change:: Move ``click``, ``rich`` and ``rich-click`` to the ``cli`` extra
+        :type: feature
+        :pr: 4949
+        :breaking:
+
+        ``click``, ``rich`` and ``rich-click``, which power the CLI, have been moved from
+        the default dependencies to the ``litestar[cli]`` extra. They remain included in
+        ``litestar[standard]`` and ``litestar[full]``.
+
+        Installing ``litestar`` on its own therefore no longer provides the ``litestar``
+        command. Invoking it without the extra now raises a
+        ``MissingDependencyException`` naming the extra to install.
+
+        .. seealso::
+            :doc:`/usage/cli`
+
     .. change:: Remove deprecated ``litestar.contrib`` namespace
         :type: feature
         :issue: 4720
