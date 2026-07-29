@@ -1972,7 +1972,6 @@ source = { editable = "." }
 dependencies = [
     { name = "anyio" },
     { name = "click" },
-    { name = "httpx" },
     { name = "msgspec" },
     { name = "multidict" },
     { name = "multipart" },
@@ -2007,6 +2006,7 @@ full = [
     { name = "brotli" },
     { name = "cryptography" },
     { name = "email-validator" },
+    { name = "httpx" },
     { name = "jinja2" },
     { name = "jsbeautifier" },
     { name = "litestar-htmx" },
@@ -2071,6 +2071,9 @@ standard = [
     { name = "jinja2" },
     { name = "jsbeautifier" },
     { name = "uvicorn", extra = ["standard"] },
+]
+testing = [
+    { name = "httpx" },
 ]
 valkey = [
     { name = "valkey", extra = ["libvalkey"] },
@@ -2138,6 +2141,7 @@ linting = [
 test = [
     { name = "aiohttp" },
     { name = "covdefaults" },
+    { name = "litestar", extra = ["testing"] },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
@@ -2162,12 +2166,12 @@ requires-dist = [
     { name = "cryptography", marker = "extra == 'cryptography'" },
     { name = "cryptography", marker = "extra == 'jwt'" },
     { name = "email-validator", marker = "extra == 'pydantic'" },
-    { name = "httpx", specifier = ">=0.22" },
+    { name = "httpx", marker = "extra == 'testing'", specifier = ">=0.22" },
     { name = "jinja2", marker = "extra == 'jinja'", specifier = ">=3.1.2" },
     { name = "jinja2", marker = "extra == 'standard'" },
     { name = "jsbeautifier", marker = "extra == 'cli'" },
     { name = "jsbeautifier", marker = "extra == 'standard'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "valkey", "htmx", "yaml", "zstd"], marker = "extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "testing", "valkey", "htmx", "yaml", "zstd"], marker = "extra == 'full'" },
     { name = "litestar-htmx", marker = "extra == 'htmx'", specifier = ">=0.4.0" },
     { name = "litestar-piccolo", marker = "extra == 'piccolo'" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
@@ -2193,7 +2197,7 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'standard'" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
-provides-extras = ["annotated-types", "attrs", "brotli", "zstd", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "valkey", "yaml"]
+provides-extras = ["annotated-types", "attrs", "brotli", "zstd", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "testing", "standard", "valkey", "yaml"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -2250,6 +2254,7 @@ linting = [
 test = [
     { name = "aiohttp", specifier = ">=3.11.14" },
     { name = "covdefaults" },
+    { name = "litestar", extras = ["testing"] },
     { name = "pytest", specifier = ">=8.4" },
     { name = "pytest-asyncio", specifier = ">0.24.0" },
     { name = "pytest-cov" },
@@ -3070,7 +3075,7 @@ wheels = [
 
 [package.optional-dependencies]
 binary = [
-    { name = "psycopg-binary", marker = "python_full_version < '3.13' and implementation_name != 'pypy'" },
+    { name = "psycopg-binary", marker = "implementation_name != 'pypy'" },
 ]
 pool = [
     { name = "psycopg-pool" },
@@ -3959,23 +3964,23 @@ resolution-markers = [
     "python_full_version < '3.12'",
 ]
 dependencies = [
-    { name = "alabaster", marker = "python_full_version < '3.12'" },
-    { name = "babel", marker = "python_full_version < '3.12'" },
-    { name = "colorama", marker = "python_full_version < '3.12' and sys_platform == 'win32'" },
-    { name = "docutils", marker = "python_full_version < '3.12'" },
-    { name = "imagesize", marker = "python_full_version < '3.12'" },
-    { name = "jinja2", marker = "python_full_version < '3.12'" },
-    { name = "packaging", marker = "python_full_version < '3.12'" },
-    { name = "pygments", marker = "python_full_version < '3.12'" },
-    { name = "requests", marker = "python_full_version < '3.12'" },
-    { name = "roman-numerals", marker = "python_full_version < '3.12'" },
-    { name = "snowballstemmer", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-applehelp", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-devhelp", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-htmlhelp", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-jsmath", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-qthelp", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-serializinghtml", marker = "python_full_version < '3.12'" },
+    { name = "alabaster" },
+    { name = "babel" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "docutils" },
+    { name = "imagesize" },
+    { name = "jinja2" },
+    { name = "packaging" },
+    { name = "pygments" },
+    { name = "requests" },
+    { name = "roman-numerals" },
+    { name = "snowballstemmer" },
+    { name = "sphinxcontrib-applehelp" },
+    { name = "sphinxcontrib-devhelp" },
+    { name = "sphinxcontrib-htmlhelp" },
+    { name = "sphinxcontrib-jsmath" },
+    { name = "sphinxcontrib-qthelp" },
+    { name = "sphinxcontrib-serializinghtml" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/50/a8c6ccc36d5eacdfd7913ddccd15a9cee03ecafc5ee2bc40e1f168d85022/sphinx-9.0.4.tar.gz", hash = "sha256:594ef59d042972abbc581d8baa577404abe4e6c3b04ef61bd7fc2acbd51f3fa3", size = 8710502, upload-time = "2025-12-04T07:45:27.343Z" }
 wheels = [
@@ -3991,23 +3996,23 @@ resolution-markers = [
     "python_full_version == '3.12.*'",
 ]
 dependencies = [
-    { name = "alabaster", marker = "python_full_version >= '3.12'" },
-    { name = "babel", marker = "python_full_version >= '3.12'" },
-    { name = "colorama", marker = "python_full_version >= '3.12' and sys_platform == 'win32'" },
-    { name = "docutils", marker = "python_full_version >= '3.12'" },
-    { name = "imagesize", marker = "python_full_version >= '3.12'" },
-    { name = "jinja2", marker = "python_full_version >= '3.12'" },
-    { name = "packaging", marker = "python_full_version >= '3.12'" },
-    { name = "pygments", marker = "python_full_version >= '3.12'" },
-    { name = "requests", marker = "python_full_version >= '3.12'" },
-    { name = "roman-numerals", marker = "python_full_version >= '3.12'" },
-    { name = "snowballstemmer", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-applehelp", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-devhelp", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-htmlhelp", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-jsmath", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-qthelp", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-serializinghtml", marker = "python_full_version >= '3.12'" },
+    { name = "alabaster" },
+    { name = "babel" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "docutils" },
+    { name = "imagesize" },
+    { name = "jinja2" },
+    { name = "packaging" },
+    { name = "pygments" },
+    { name = "requests" },
+    { name = "roman-numerals" },
+    { name = "snowballstemmer" },
+    { name = "sphinxcontrib-applehelp" },
+    { name = "sphinxcontrib-devhelp" },
+    { name = "sphinxcontrib-htmlhelp" },
+    { name = "sphinxcontrib-jsmath" },
+    { name = "sphinxcontrib-qthelp" },
+    { name = "sphinxcontrib-serializinghtml" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/cd/bd/f08eb0f4eed5c83f1ba2a3bd18f7745a2b1525fad70660a1c00224ec468a/sphinx-9.1.0.tar.gz", hash = "sha256:7741722357dd75f8190766926071fed3bdc211c74dd2d7d4df5404da95930ddb", size = 8718324, upload-time = "2025-12-31T15:09:27.646Z" }
 wheels = [
