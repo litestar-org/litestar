@@ -21,20 +21,17 @@ def test_setting_cors_middleware() -> None:
     assert cors_config.max_age == 600
     assert cors_config.expose_headers == []
 
-    with create_test_client(cors_config=cors_config) as client:
-        unpacked_middleware = []
-        cur = client.app.asgi_handler
-        while hasattr(cur, "app"):
-            unpacked_middleware.append(cur)
-            cur = cast("Any", cur.app)  # pyright: ignore[reportFunctionMemberAccess]
-        unpacked_middleware.append(cur)
-        assert len(unpacked_middleware) == 4
-        cors_middleware = cast("Any", unpacked_middleware[0])
-        assert isinstance(cors_middleware, CORSMiddleware)
-        assert cors_middleware.config.allow_headers == ["*"]
-        assert cors_middleware.config.allow_methods == ["*"]
-        assert cors_middleware.config.allow_origins == cors_config.allow_origins
-        assert cors_middleware.config.allow_origin_regex == cors_config.allow_origin_regex
+    # the middleware stack can no longer be introspected by walking ``.app``:
+    # ``ASGIMiddleware`` returns a closure, so installation is asserted behaviourally.
+    @get("/")
+    async def handler() -> None:
+        return None
+
+    with create_test_client([handler], cors_config=cors_config) as client:
+        response = client.get("/", headers={"Origin": "http://www.example.com"})
+        assert response.headers["Access-Control-Allow-Origin"] == "*"
+        assert response.headers["Access-Control-Allow-Headers"] == "*"
+        assert response.headers["Access-Control-Allow-Methods"] == "*"
 
 
 @pytest.mark.parametrize("origin", [None, "http://www.example.com", "https://moishe.zuchmir.com"])
@@ -155,3 +152,24 @@ def test_cors_test_regex_escape(allow_origin: str, origin: str, host: str, shoul
         assert "Access-Control-Allow-Origin" in res.headers
     else:
         assert "Access-Control-Allow-Origin" not in res.headers
+
+
+async def test_cors_middleware_does_not_wrap_send_for_non_http_scopes() -> None:
+    """CORS is HTTP-only. ``ASGIMiddleware`` does not enforce ``scopes`` at runtime for
+    app-level middleware, so the guard must be explicit: a websocket scope carrying an
+    ``Origin`` header must reach the next app with the *original* ``send``."""
+    received_sends: list[Any] = []
+
+    async def next_app(scope: Any, receive: Any, send: Any) -> None:
+        received_sends.append(send)
+
+    async def send(message: Any) -> None: ...  # pragma: no cover
+
+    async def receive() -> Any: ...  # pragma: no cover
+
+    asgi_app = CORSMiddleware(CORSConfig(allow_origins=["*"]))(next_app)
+    scope = {"type": "websocket", "headers": [(b"origin", b"http://www.example.com")]}
+
+    await asgi_app(cast("Any", scope), receive, send)
+
+    assert received_sends == [send]
