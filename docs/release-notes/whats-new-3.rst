@@ -348,6 +348,16 @@ naming the extra to install:
     pip install 'litestar[cli]'
 
 
+``rich-click>=1.9`` is now required by the CLI
+-----------------------------------------------
+
+The ``litestar[cli]`` extra now requires ``rich-click>=1.9``, which is needed for the
+themed :doc:`CLI </usage/cli>` output. Previously ``rich-click`` was capped at ``<1.9``,
+which silently disabled the theme, as the underlying option only exists from 1.9 onwards.
+
+This only affects applications that additionally pin ``rich-click<1.9`` themselves.
+
+
 Improved file system handling / fsspec integration
 ---------------------------------------------------
 
