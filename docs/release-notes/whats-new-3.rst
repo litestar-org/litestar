@@ -286,6 +286,41 @@ callable as its only argument and returns another ASGI callable:
     :doc:`/usage/middleware/index`
 
 
+Built-in middleware migrated to ``ASGIMiddleware``
+--------------------------------------------------
+
+Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
+``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
+``ResponseCacheMiddleware`` has made this move.
+
+These classes are constructed by Litestar itself from their configuration objects, so
+applications that only configure them - for response caching, via
+:class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
+``cache`` argument - are unaffected.
+
+Code that instantiated one of them directly must drop the ``app`` argument and apply the
+instance to the next ASGI app instead:
+
+.. code-block:: python
+
+    # before
+    middleware = ResponseCacheMiddleware(app=next_app, config=config)
+
+    # after
+    middleware = ResponseCacheMiddleware(config=config)
+    asgi_app = middleware(next_app)
+
+Because ``ASGIMiddleware.__call__`` returns a closure rather than the middleware
+instance, a middleware stack can no longer be introspected by walking the ``.app``
+attribute of each layer.
+
+Subclasses must also rename ``__call__`` to ``handle``, which receives the next ASGI app
+as an additional ``next_app`` argument in place of ``self.app``.
+
+.. seealso::
+    :ref:`asgi-middleware-migration`
+
+
 Removal of ``SerializationPluginProtocol``
 ------------------------------------------
 

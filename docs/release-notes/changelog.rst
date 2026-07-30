@@ -6,6 +6,39 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Migrate ``ResponseCacheMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 4953
+        :issue: 4009
+        :breaking:
+
+        ``ResponseCacheMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases.
+
+        Applications that configure response caching through
+        :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
+        ``cache`` argument are unaffected -- Litestar constructs the middleware itself.
+
+        Code instantiating the middleware directly must drop the ``app`` argument and
+        apply the instance to the next ASGI app instead:
+
+        .. code-block:: python
+
+            # before
+            middleware = ResponseCacheMiddleware(app=next_app, config=config)
+
+            # after
+            middleware = ResponseCacheMiddleware(config=config)
+            asgi_app = middleware(next_app)
+
+        Since ``ASGIMiddleware.__call__`` returns a closure rather than the middleware
+        instance, a middleware stack can no longer be introspected by walking the ``.app``
+        attribute of each layer.
+
+        .. seealso::
+            :ref:`asgi-middleware-migration`
+
     .. change:: Move ``httpx`` to the ``testing`` extra
         :type: feature
         :pr: 4950

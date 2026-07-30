@@ -14,7 +14,7 @@ from datetime import datetime
 from os import urandom
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Union, cast
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from pytest_lazy_fixtures import lf
@@ -24,6 +24,7 @@ from time_machine import travel
 from valkey.asyncio import Valkey as AsyncValkey
 from valkey.client import Valkey
 
+from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.base import BaseSessionBackend
 from litestar.middleware.session.client_side import ClientSideSessionBackend, CookieBackendConfig
@@ -185,6 +186,21 @@ def cookie_session_middleware(
 @pytest.fixture
 def test_client_backend(anyio_backend_name: str) -> AnyIOBackend:
     return cast("AnyIOBackend", anyio_backend_name)
+
+
+@pytest.fixture()
+def response_cache_handle() -> Generator[MagicMock, None, None]:
+    mock = MagicMock()
+    original = ResponseCacheMiddleware.handle
+
+    async def recording_handle(
+        self: ResponseCacheMiddleware, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp
+    ) -> None:
+        mock(scope["path"])
+        await original(self, scope, receive, send, next_app)
+
+    with patch.object(ResponseCacheMiddleware, "handle", recording_handle):
+        yield mock
 
 
 @pytest.fixture
