@@ -1971,7 +1971,6 @@ version = "3.0.0b0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },
-    { name = "httpx" },
     { name = "msgspec" },
     { name = "multidict" },
     { name = "multipart" },
@@ -2008,6 +2007,7 @@ full = [
     { name = "click" },
     { name = "cryptography" },
     { name = "email-validator" },
+    { name = "httpx" },
     { name = "jinja2" },
     { name = "jsbeautifier" },
     { name = "litestar-htmx" },
@@ -2078,6 +2078,9 @@ standard = [
     { name = "rich-click" },
     { name = "uvicorn", extra = ["standard"] },
 ]
+testing = [
+    { name = "httpx" },
+]
 valkey = [
     { name = "valkey", extra = ["libvalkey"] },
 ]
@@ -2144,6 +2147,7 @@ linting = [
 test = [
     { name = "aiohttp" },
     { name = "covdefaults" },
+    { name = "litestar", extra = ["testing"] },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
@@ -2168,11 +2172,11 @@ requires-dist = [
     { name = "cryptography", marker = "extra == 'cryptography'" },
     { name = "cryptography", marker = "extra == 'jwt'" },
     { name = "email-validator", marker = "extra == 'pydantic'" },
-    { name = "httpx", specifier = ">=0.22" },
+    { name = "httpx", marker = "extra == 'testing'", specifier = ">=0.22" },
     { name = "jinja2", marker = "extra == 'jinja'", specifier = ">=3.1.2" },
     { name = "jinja2", marker = "extra == 'standard'" },
     { name = "jsbeautifier", marker = "extra == 'cli'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "valkey", "htmx", "yaml", "zstd"], marker = "extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "testing", "valkey", "htmx", "yaml", "zstd"], marker = "extra == 'full'" },
     { name = "litestar", extras = ["cli"], marker = "extra == 'standard'" },
     { name = "litestar-htmx", marker = "extra == 'htmx'", specifier = ">=0.4.0" },
     { name = "litestar-piccolo", marker = "extra == 'piccolo'" },
@@ -2198,7 +2202,7 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'cli'" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
-provides-extras = ["annotated-types", "attrs", "brotli", "zstd", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "valkey", "yaml"]
+provides-extras = ["annotated-types", "attrs", "brotli", "zstd", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "testing", "valkey", "yaml"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -2255,6 +2259,7 @@ linting = [
 test = [
     { name = "aiohttp", specifier = ">=3.11.14" },
     { name = "covdefaults" },
+    { name = "litestar", extras = ["testing"] },
     { name = "pytest", specifier = ">=8.4" },
     { name = "pytest-asyncio", specifier = ">0.24.0" },
     { name = "pytest-cov" },

@@ -348,6 +348,24 @@ naming the extra to install:
     pip install 'litestar[cli]'
 
 
+``httpx`` package removed from default dependencies
+----------------------------------------------------
+
+The `httpx <https://www.python-httpx.org/>`_ library, on which the
+:doc:`test clients </usage/testing>` are based, has been moved from the default
+dependencies to the ``litestar[testing]`` package extra. It is also included in
+``litestar[full]``.
+
+Importing anything from :mod:`litestar.testing` without the extra installed raises a
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
+naming the extra to install:
+
+.. code-block:: shell
+    :caption: Install the testing extra
+
+    pip install 'litestar[testing]'
+
+
 ``rich-click>=1.9`` is now required by the CLI
 -----------------------------------------------
 
