@@ -555,6 +555,14 @@ data-aria-dark="Switch to auto color mode">
 <p>Testing a Litestar application is made simple by the testing utilities provided out of the box.
 Based on <a class="reference external" href="https://www.python-httpx.org/">httpx</a>, they come with a familiar interface and integrate seamlessly into
 synchronous or asynchronous tests.</p>
+<p><code class="docutils literal notranslate"><span class="pre">httpx</span></code> is not installed by default. It is bundled in the <code class="docutils literal notranslate"><span class="pre">testing</span></code> extra, which you will need to
+install to use anything from <a class="reference internal" href="../reference/testing.html#module-litestar.testing" title="litestar.testing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">litestar.testing</span></code></a>:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Install the testing extra</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[testing]&#39;</span>
+</span></pre></div>
+</div>
+</div>
 <section id="test-clients">
 <h2>Test Clients<a class="headerlink" href="#test-clients" title="Link to this heading">¶</a></h2>
 <p>Litestar provides 2 test clients:</p>
@@ -567,8 +575,8 @@ loop within a separate thread. Ideal when no async behaviour needs to be tested,
 provided by the testing library</p></li>
 </ul>
 <p>Let’s say we have a very simple app with a health check endpoint:</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/main.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/main.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
@@ -586,8 +594,8 @@ provided by the testing library</p></li>
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="sync" for="sd-tab-item-0">
 Sync</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
 </span><span data-line="3">
@@ -608,8 +616,8 @@ Sync</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="async" for="sd-tab-item-1">
 Async</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTestClient</span>
 </span><span data-line="3">
@@ -633,8 +641,8 @@ Async</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="sync" for="sd-tab-item-2">
 Sync</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
 </span><span data-line="3">
@@ -661,8 +669,8 @@ Sync</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="async" for="sd-tab-item-3">
 Async</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/conftest.py</span></code></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
 </span><span data-line="3">
@@ -692,8 +700,8 @@ Async</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="sync" for="sd-tab-item-4">
 Sync</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
@@ -728,8 +736,8 @@ Sync</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="async" for="sd-tab-item-5">
 Async</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/test_health_check.py</span></code></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
@@ -874,8 +882,8 @@ to <em>loop B</em> that was owned by the <code class="docutils literal notransla
 </div>
 <p>Now the fixture, test and application code are all running within the same event loop, ensuring that all resources can
 be cleaned up properly without issues.</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Showcasing the different running event loops when using <code class="docutils literal notranslate"><span class="pre">TestClient</span></code></span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Showcasing the different running event loops when using <code class="docutils literal notranslate"><span class="pre">TestClient</span></code></span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest_asyncio</span>
@@ -986,8 +994,8 @@ persistence across requests, then you might want to inject or inspect session da
 <input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="sync" for="sd-tab-item-8">
 Sync</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
@@ -1012,8 +1020,8 @@ Sync</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
@@ -1038,8 +1046,8 @@ Sync</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="async" for="sd-tab-item-9">
 Async</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
@@ -1065,8 +1073,8 @@ Async</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTestClient</span>
@@ -1098,8 +1106,8 @@ Async</label><div class="sd-tab-content docutils">
 which provides the event loop. For this, it makes use of <code class="xref py py-class docutils literal notranslate"><span class="pre">anyio.BlockingPortal</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">TestClient</span></code> makes this portal public, so it can be used to run arbitrary asynchronous code in the same event loop as
 the application:</p>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Using a blocking portal</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Using a blocking portal</span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Future</span><span class="p">,</span> <span class="n">wait</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">anyio</span>
@@ -1137,8 +1145,8 @@ the application:</p>
 first creates an instance of Litestar and then a test client using it. There are multiple use cases for this helper -
 when you need to check generic logic that is decoupled from a specific Litestar app, or when you want to test endpoints
 in isolation.</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/tests/test_health_check.py</span></code></span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/tests/test_health_check.py</span></code></span><a class="headerlink" href="#id15" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.status_codes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTP_200_OK</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_client</span>
 </span><span data-line="3">
@@ -1279,8 +1287,8 @@ Python 3.13+</label><div class="sd-tab-content docutils">
 you need to test logic that expects to receive a request object.</p>
 <p>For example, lets say we wanted to unit test a <em>guard</em> function in isolation, to which end we’ll reuse the examples
 from the <a class="reference internal" href="security/guards.html"><span class="doc">route guards</span></a> documentation:</p>
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/guards.py</span></code></span><a class="headerlink" href="#id15" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/guards.py</span></code></span><a class="headerlink" href="#id16" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotAuthorizedException</span>
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRouteHandler</span>
@@ -1296,8 +1304,8 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 </div>
 </div>
 <p>We already have our route handler in place:</p>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/secret.py</span></code></span><a class="headerlink" href="#id16" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">my_app/secret.py</span></code></span><a class="headerlink" href="#id17" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">environ</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
@@ -1311,8 +1319,8 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 </div>
 </div>
 <p>We could thus test the guard function like so:</p>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/guards/test_secret_token_guard.py</span></code></span><a class="headerlink" href="#id17" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">tests/guards/test_secret_token_guard.py</span></code></span><a class="headerlink" href="#id18" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotAuthorizedException</span>

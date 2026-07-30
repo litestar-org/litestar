@@ -348,6 +348,34 @@ naming the extra to install:
     pip install 'litestar[cli]'
 
 
+``httpx`` package removed from default dependencies
+----------------------------------------------------
+
+The `httpx <https://www.python-httpx.org/>`_ library, on which the
+:doc:`test clients </usage/testing>` are based, has been moved from the default
+dependencies to the ``litestar[testing]`` package extra. It is also included in
+``litestar[full]``.
+
+Importing anything from :mod:`litestar.testing` without the extra installed raises a
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
+naming the extra to install:
+
+.. code-block:: shell
+    :caption: Install the testing extra
+
+    pip install 'litestar[testing]'
+
+
+``rich-click>=1.9`` is now required by the CLI
+-----------------------------------------------
+
+The ``litestar[cli]`` extra now requires ``rich-click>=1.9``, which is needed for the
+themed :doc:`CLI </usage/cli>` output. Previously ``rich-click`` was capped at ``<1.9``,
+which silently disabled the theme, as the underlying option only exists from 1.9 onwards.
+
+This only affects applications that additionally pin ``rich-click<1.9`` themselves.
+
+
 Improved file system handling / fsspec integration
 ---------------------------------------------------
 

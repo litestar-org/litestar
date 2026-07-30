@@ -475,6 +475,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#pyyaml-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">pyyaml</span></code> package removed from default dependencies</a></li>
 <li><a class="reference internal" href="#litestar-htmx-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">litestar-htmx</span></code> package removed from default dependencies</a></li>
 <li><a class="reference internal" href="#click-rich-and-rich-click-packages-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">click</span></code>, <code class="docutils literal notranslate"><span class="pre">rich</span></code> and <code class="docutils literal notranslate"><span class="pre">rich-click</span></code> packages removed from default dependencies</a></li>
+<li><a class="reference internal" href="#httpx-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">httpx</span></code> package removed from default dependencies</a></li>
+<li><a class="reference internal" href="#rich-click-1-9-is-now-required-by-the-cli"><code class="docutils literal notranslate"><span class="pre">rich-click&gt;=1.9</span></code> is now required by the CLI</a></li>
 <li><a class="reference internal" href="#improved-file-system-handling-fsspec-integration">Improved file system handling / fsspec integration</a></li>
 <li><a class="reference internal" href="#removal-of-resolve-symlinks-parameter-to-create-static-files-router">Removal of <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code></a></li>
 <li><a class="reference internal" href="#middleware-configuration-constraints">Middleware configuration constraints</a></li>
@@ -869,6 +871,29 @@ naming the extra to install:</p>
 </span></pre></div>
 </div>
 </div>
+</section>
+<section id="httpx-package-removed-from-default-dependencies">
+<h2><code class="docutils literal notranslate"><span class="pre">httpx</span></code> package removed from default dependencies<a class="headerlink" href="#httpx-package-removed-from-default-dependencies" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference external" href="https://www.python-httpx.org/">httpx</a> library, on which the
+<a class="reference internal" href="../usage/testing.html"><span class="doc">test clients</span></a> are based, has been moved from the default
+dependencies to the <code class="docutils literal notranslate"><span class="pre">litestar[testing]</span></code> package extra. It is also included in
+<code class="docutils literal notranslate"><span class="pre">litestar[full]</span></code>.</p>
+<p>Importing anything from <a class="reference internal" href="../reference/testing.html#module-litestar.testing" title="litestar.testing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">litestar.testing</span></code></a> without the extra installed raises a
+<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.MissingDependencyException" title="litestar.exceptions.MissingDependencyException"><code class="xref py py-class docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a>
+naming the extra to install:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Install the testing extra</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[testing]&#39;</span>
+</span></pre></div>
+</div>
+</div>
+</section>
+<section id="rich-click-1-9-is-now-required-by-the-cli">
+<h2><code class="docutils literal notranslate"><span class="pre">rich-click&gt;=1.9</span></code> is now required by the CLI<a class="headerlink" href="#rich-click-1-9-is-now-required-by-the-cli" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">litestar[cli]</span></code> extra now requires <code class="docutils literal notranslate"><span class="pre">rich-click&gt;=1.9</span></code>, which is needed for the
+themed <a class="reference internal" href="../usage/cli.html"><span class="doc">CLI</span></a> output. Previously <code class="docutils literal notranslate"><span class="pre">rich-click</span></code> was capped at <code class="docutils literal notranslate"><span class="pre">&lt;1.9</span></code>,
+which silently disabled the theme, as the underlying option only exists from 1.9 onwards.</p>
+<p>This only affects applications that additionally pin <code class="docutils literal notranslate"><span class="pre">rich-click&lt;1.9</span></code> themselves.</p>
 </section>
 <section id="improved-file-system-handling-fsspec-integration">
 <h2>Improved file system handling / fsspec integration<a class="headerlink" href="#improved-file-system-handling-fsspec-integration" title="Link to this heading">¶</a></h2>

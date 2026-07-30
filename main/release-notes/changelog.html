@@ -548,6 +548,40 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Move <code class="docutils literal notranslate"><span class="pre">httpx</span></code> to the <code class="docutils literal notranslate"><span class="pre">testing</span></code> extra<a class="headerlink reference internal" href="#3.0.0-move" id="3.0.0-move">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">httpx</span></code>, used by the test clients, has been moved from the default dependencies
+to the <code class="docutils literal notranslate"><span class="pre">litestar[testing]</span></code> extra. It remains included in <code class="docutils literal notranslate"><span class="pre">litestar[full]</span></code>.</p>
+<p>Importing anything from <code class="docutils literal notranslate"><span class="pre">litestar.testing</span></code> without the extra installed now
+raises a <code class="docutils literal notranslate"><span class="pre">MissingDependencyException</span></code> naming the extra to install.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/testing.html"><span class="doc">Testing</span></a></p>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4950">https://github.com/litestar-org/litestar/pull/4950</a></span></p>
+</div>
+</dd>
+<dt>Require <code class="docutils literal notranslate"><span class="pre">rich-click&gt;=1.9</span></code><a class="headerlink reference internal" href="#3.0.0-require" id="3.0.0-require">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The <code class="docutils literal notranslate"><span class="pre">litestar[cli]</span></code> extra now requires <code class="docutils literal notranslate"><span class="pre">rich-click&gt;=1.9</span></code>. <code class="docutils literal notranslate"><span class="pre">rich-click</span></code> was
+previously capped at <code class="docutils literal notranslate"><span class="pre">&lt;1.9</span></code>, which silently disabled the CLI’s <code class="docutils literal notranslate"><span class="pre">star-box</span></code>
+theme: the underlying <code class="docutils literal notranslate"><span class="pre">theme</span></code> option only exists from 1.9 onwards, and
+assigning an unknown setting is ignored rather than raising.</p>
+<p>The CLI configuration has been migrated off the options 1.9 deprecates
+(<code class="docutils literal notranslate"><span class="pre">use_markdown</span></code> / <code class="docutils literal notranslate"><span class="pre">use_rich_markup</span></code> in favour of <code class="docutils literal notranslate"><span class="pre">text_markup</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">show_metavars_column</span></code> / <code class="docutils literal notranslate"><span class="pre">append_metavars_help</span></code> in favour of
+<code class="docutils literal notranslate"><span class="pre">options_table_column_types</span></code> / <code class="docutils literal notranslate"><span class="pre">options_table_help_sections</span></code>).</p>
+<p>The layout of the help output is preserved: option tables keep the long form in
+the first column, the <code class="docutils literal notranslate"><span class="pre">*</span></code> marker on required parameters, and the metavar
+appended directly after the help text. Colours do change, as the <code class="docutils literal notranslate"><span class="pre">star-box</span></code>
+theme now takes effect for the first time.</p>
+<p>This only affects applications that additionally pin <code class="docutils literal notranslate"><span class="pre">rich-click&lt;1.9</span></code>
+themselves.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/cli.html"><span class="doc">CLI</span></a></p>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4951">https://github.com/litestar-org/litestar/pull/4951</a></span></p>
+</div>
+</dd>
 <dt>Move <code class="docutils literal notranslate"><span class="pre">click</span></code>, <code class="docutils literal notranslate"><span class="pre">rich</span></code> and <code class="docutils literal notranslate"><span class="pre">rich-click</span></code> to the <code class="docutils literal notranslate"><span class="pre">cli</span></code> extra<a class="headerlink reference internal" href="#3.0.0-move" id="3.0.0-move">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p><code class="docutils literal notranslate"><span class="pre">click</span></code>, <code class="docutils literal notranslate"><span class="pre">rich</span></code> and <code class="docutils literal notranslate"><span class="pre">rich-click</span></code>, which power the CLI, have been moved from
 the default dependencies to the <code class="docutils literal notranslate"><span class="pre">litestar[cli]</span></code> extra. They remain included in
