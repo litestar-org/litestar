@@ -1971,13 +1971,9 @@ version = "3.0.0b0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },
-    { name = "click" },
-    { name = "httpx" },
     { name = "msgspec" },
     { name = "multidict" },
     { name = "multipart" },
-    { name = "rich" },
-    { name = "rich-click" },
     { name = "sniffio" },
     { name = "typing-extensions" },
 ]
@@ -1993,7 +1989,10 @@ brotli = [
     { name = "brotli" },
 ]
 cli = [
+    { name = "click" },
     { name = "jsbeautifier" },
+    { name = "rich" },
+    { name = "rich-click" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 cryptography = [
@@ -2005,8 +2004,10 @@ full = [
     { name = "attrs" },
     { name = "backports-zstd", marker = "python_full_version < '3.14'" },
     { name = "brotli" },
+    { name = "click" },
     { name = "cryptography" },
     { name = "email-validator" },
+    { name = "httpx" },
     { name = "jinja2" },
     { name = "jsbeautifier" },
     { name = "litestar-htmx" },
@@ -2023,6 +2024,8 @@ full = [
     { name = "pyjwt" },
     { name = "pyyaml" },
     { name = "redis", extra = ["hiredis"] },
+    { name = "rich" },
+    { name = "rich-click" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "valkey", extra = ["libvalkey"] },
 ]
@@ -2068,9 +2071,15 @@ sqlalchemy = [
     { name = "advanced-alchemy" },
 ]
 standard = [
+    { name = "click" },
     { name = "jinja2" },
     { name = "jsbeautifier" },
+    { name = "rich" },
+    { name = "rich-click" },
     { name = "uvicorn", extra = ["standard"] },
+]
+testing = [
+    { name = "httpx" },
 ]
 valkey = [
     { name = "valkey", extra = ["libvalkey"] },
@@ -2138,6 +2147,7 @@ linting = [
 test = [
     { name = "aiohttp" },
     { name = "covdefaults" },
+    { name = "litestar", extra = ["testing"] },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
@@ -2158,16 +2168,16 @@ requires-dist = [
     { name = "attrs", marker = "extra == 'attrs'" },
     { name = "backports-zstd", marker = "python_full_version < '3.14' and extra == 'zstd'", specifier = ">=1.3.0" },
     { name = "brotli", marker = "extra == 'brotli'" },
-    { name = "click" },
+    { name = "click", marker = "extra == 'cli'" },
     { name = "cryptography", marker = "extra == 'cryptography'" },
     { name = "cryptography", marker = "extra == 'jwt'" },
     { name = "email-validator", marker = "extra == 'pydantic'" },
-    { name = "httpx", specifier = ">=0.22" },
+    { name = "httpx", marker = "extra == 'testing'", specifier = ">=0.22" },
     { name = "jinja2", marker = "extra == 'jinja'", specifier = ">=3.1.2" },
     { name = "jinja2", marker = "extra == 'standard'" },
     { name = "jsbeautifier", marker = "extra == 'cli'" },
-    { name = "jsbeautifier", marker = "extra == 'standard'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "valkey", "htmx", "yaml", "zstd"], marker = "extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "testing", "valkey", "htmx", "yaml", "zstd"], marker = "extra == 'full'" },
+    { name = "litestar", extras = ["cli"], marker = "extra == 'standard'" },
     { name = "litestar-htmx", marker = "extra == 'htmx'", specifier = ">=0.4.0" },
     { name = "litestar-piccolo", marker = "extra == 'piccolo'" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
@@ -2185,15 +2195,14 @@ requires-dist = [
     { name = "pyjwt", marker = "extra == 'jwt'", specifier = ">=2.9.0" },
     { name = "pyyaml", marker = "extra == 'yaml'" },
     { name = "redis", extras = ["hiredis"], marker = "extra == 'redis'", specifier = ">=4.4.4,!=5.3.*" },
-    { name = "rich", specifier = ">=13.0.0" },
-    { name = "rich-click", specifier = "<1.9" },
+    { name = "rich", marker = "extra == 'cli'", specifier = ">=13.0.0" },
+    { name = "rich-click", marker = "extra == 'cli'", specifier = ">=1.9" },
     { name = "sniffio", specifier = ">=1.3.1" },
     { name = "typing-extensions" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'cli'" },
-    { name = "uvicorn", extras = ["standard"], marker = "extra == 'standard'" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
-provides-extras = ["annotated-types", "attrs", "brotli", "zstd", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "valkey", "yaml"]
+provides-extras = ["annotated-types", "attrs", "brotli", "zstd", "cli", "cryptography", "full", "htmx", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "polyfactory", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "testing", "valkey", "yaml"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -2250,6 +2259,7 @@ linting = [
 test = [
     { name = "aiohttp", specifier = ">=3.11.14" },
     { name = "covdefaults" },
+    { name = "litestar", extras = ["testing"] },
     { name = "pytest", specifier = ">=8.4" },
     { name = "pytest-asyncio", specifier = ">0.24.0" },
     { name = "pytest-cov" },
@@ -3070,7 +3080,7 @@ wheels = [
 
 [package.optional-dependencies]
 binary = [
-    { name = "psycopg-binary", marker = "python_full_version < '3.13' and implementation_name != 'pypy'" },
+    { name = "psycopg-binary", marker = "implementation_name != 'pypy'" },
 ]
 pool = [
     { name = "psycopg-pool" },
@@ -3728,16 +3738,16 @@ wheels = [
 
 [[package]]
 name = "rich-click"
-version = "1.8.9"
+version = "1.9.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "rich" },
-    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b7/a8/dcc0a8ec9e91d76ecad9413a84b6d3a3310c6111cfe012d75ed385c78d96/rich_click-1.8.9.tar.gz", hash = "sha256:fd98c0ab9ddc1cf9c0b7463f68daf28b4d0033a74214ceb02f761b3ff2af3136", size = 39378, upload-time = "2025-05-19T21:33:05.569Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f7/ea/21e4867ea0ef881ffd4c0550fc21a061435e50d6324bcd034396633cbc18/rich_click-1.9.8.tar.gz", hash = "sha256:4008f921da88b5d91646c134ec881c1500e5a6b3f093e90e8f29400e09608371", size = 75363, upload-time = "2026-05-28T19:54:59.144Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b6/c2/9fce4c8a9587c4e90500114d742fe8ef0fd92d7bad29d136bb9941add271/rich_click-1.8.9-py3-none-any.whl", hash = "sha256:c3fa81ed8a671a10de65a9e20abf642cfdac6fdb882db1ef465ee33919fbcfe2", size = 36082, upload-time = "2025-05-19T21:33:04.195Z" },
+    { url = "https://files.pythonhosted.org/packages/6d/97/a87901aef6b7e7e4a34c6dd6cc17dca8594a592ef9d9dd765fca2b7facf7/rich_click-1.9.8-py3-none-any.whl", hash = "sha256:12873865396e6927835d4eabb1cc3996edcd65b7ac9b2391a29eca4f335a2f93", size = 72189, upload-time = "2026-05-28T19:54:57.867Z" },
 ]
 
 [[package]]
@@ -3959,23 +3969,23 @@ resolution-markers = [
     "python_full_version < '3.12'",
 ]
 dependencies = [
-    { name = "alabaster", marker = "python_full_version < '3.12'" },
-    { name = "babel", marker = "python_full_version < '3.12'" },
-    { name = "colorama", marker = "python_full_version < '3.12' and sys_platform == 'win32'" },
-    { name = "docutils", marker = "python_full_version < '3.12'" },
-    { name = "imagesize", marker = "python_full_version < '3.12'" },
-    { name = "jinja2", marker = "python_full_version < '3.12'" },
-    { name = "packaging", marker = "python_full_version < '3.12'" },
-    { name = "pygments", marker = "python_full_version < '3.12'" },
-    { name = "requests", marker = "python_full_version < '3.12'" },
-    { name = "roman-numerals", marker = "python_full_version < '3.12'" },
-    { name = "snowballstemmer", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-applehelp", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-devhelp", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-htmlhelp", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-jsmath", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-qthelp", marker = "python_full_version < '3.12'" },
-    { name = "sphinxcontrib-serializinghtml", marker = "python_full_version < '3.12'" },
+    { name = "alabaster" },
+    { name = "babel" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "docutils" },
+    { name = "imagesize" },
+    { name = "jinja2" },
+    { name = "packaging" },
+    { name = "pygments" },
+    { name = "requests" },
+    { name = "roman-numerals" },
+    { name = "snowballstemmer" },
+    { name = "sphinxcontrib-applehelp" },
+    { name = "sphinxcontrib-devhelp" },
+    { name = "sphinxcontrib-htmlhelp" },
+    { name = "sphinxcontrib-jsmath" },
+    { name = "sphinxcontrib-qthelp" },
+    { name = "sphinxcontrib-serializinghtml" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/50/a8c6ccc36d5eacdfd7913ddccd15a9cee03ecafc5ee2bc40e1f168d85022/sphinx-9.0.4.tar.gz", hash = "sha256:594ef59d042972abbc581d8baa577404abe4e6c3b04ef61bd7fc2acbd51f3fa3", size = 8710502, upload-time = "2025-12-04T07:45:27.343Z" }
 wheels = [
@@ -3991,23 +4001,23 @@ resolution-markers = [
     "python_full_version == '3.12.*'",
 ]
 dependencies = [
-    { name = "alabaster", marker = "python_full_version >= '3.12'" },
-    { name = "babel", marker = "python_full_version >= '3.12'" },
-    { name = "colorama", marker = "python_full_version >= '3.12' and sys_platform == 'win32'" },
-    { name = "docutils", marker = "python_full_version >= '3.12'" },
-    { name = "imagesize", marker = "python_full_version >= '3.12'" },
-    { name = "jinja2", marker = "python_full_version >= '3.12'" },
-    { name = "packaging", marker = "python_full_version >= '3.12'" },
-    { name = "pygments", marker = "python_full_version >= '3.12'" },
-    { name = "requests", marker = "python_full_version >= '3.12'" },
-    { name = "roman-numerals", marker = "python_full_version >= '3.12'" },
-    { name = "snowballstemmer", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-applehelp", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-devhelp", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-htmlhelp", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-jsmath", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-qthelp", marker = "python_full_version >= '3.12'" },
-    { name = "sphinxcontrib-serializinghtml", marker = "python_full_version >= '3.12'" },
+    { name = "alabaster" },
+    { name = "babel" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "docutils" },
+    { name = "imagesize" },
+    { name = "jinja2" },
+    { name = "packaging" },
+    { name = "pygments" },
+    { name = "requests" },
+    { name = "roman-numerals" },
+    { name = "snowballstemmer" },
+    { name = "sphinxcontrib-applehelp" },
+    { name = "sphinxcontrib-devhelp" },
+    { name = "sphinxcontrib-htmlhelp" },
+    { name = "sphinxcontrib-jsmath" },
+    { name = "sphinxcontrib-qthelp" },
+    { name = "sphinxcontrib-serializinghtml" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/cd/bd/f08eb0f4eed5c83f1ba2a3bd18f7745a2b1525fad70660a1c00224ec468a/sphinx-9.1.0.tar.gz", hash = "sha256:7741722357dd75f8190766926071fed3bdc211c74dd2d7d4df5404da95930ddb", size = 8718324, upload-time = "2025-12-31T15:09:27.646Z" }
 wheels = [

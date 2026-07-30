@@ -6,6 +6,62 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Move ``httpx`` to the ``testing`` extra
+        :type: feature
+        :pr: 4950
+        :breaking:
+
+        ``httpx``, used by the test clients, has been moved from the default dependencies
+        to the ``litestar[testing]`` extra. It remains included in ``litestar[full]``.
+
+        Importing anything from ``litestar.testing`` without the extra installed now
+        raises a ``MissingDependencyException`` naming the extra to install.
+
+        .. seealso::
+            :doc:`/usage/testing`
+
+    .. change:: Require ``rich-click>=1.9``
+        :type: feature
+        :pr: 4951
+        :breaking:
+
+        The ``litestar[cli]`` extra now requires ``rich-click>=1.9``. ``rich-click`` was
+        previously capped at ``<1.9``, which silently disabled the CLI's ``star-box``
+        theme: the underlying ``theme`` option only exists from 1.9 onwards, and
+        assigning an unknown setting is ignored rather than raising.
+
+        The CLI configuration has been migrated off the options 1.9 deprecates
+        (``use_markdown`` / ``use_rich_markup`` in favour of ``text_markup``, and
+        ``show_metavars_column`` / ``append_metavars_help`` in favour of
+        ``options_table_column_types`` / ``options_table_help_sections``).
+
+        The layout of the help output is preserved: option tables keep the long form in
+        the first column, the ``*`` marker on required parameters, and the metavar
+        appended directly after the help text. Colours do change, as the ``star-box``
+        theme now takes effect for the first time.
+
+        This only affects applications that additionally pin ``rich-click<1.9``
+        themselves.
+
+        .. seealso::
+            :doc:`/usage/cli`
+
+    .. change:: Move ``click``, ``rich`` and ``rich-click`` to the ``cli`` extra
+        :type: feature
+        :pr: 4949
+        :breaking:
+
+        ``click``, ``rich`` and ``rich-click``, which power the CLI, have been moved from
+        the default dependencies to the ``litestar[cli]`` extra. They remain included in
+        ``litestar[standard]`` and ``litestar[full]``.
+
+        Installing ``litestar`` on its own therefore no longer provides the ``litestar``
+        command. Invoking it without the extra now raises a
+        ``MissingDependencyException`` naming the extra to install.
+
+        .. seealso::
+            :doc:`/usage/cli`
+
     .. change:: Remove deprecated ``litestar.contrib`` namespace
         :type: feature
         :issue: 4720
