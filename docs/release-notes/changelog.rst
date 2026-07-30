@@ -19,6 +19,7 @@
 
         .. seealso::
             :doc:`/usage/testing`
+
     .. change:: Require ``rich-click>=1.9``
         :type: feature
         :pr: 4951

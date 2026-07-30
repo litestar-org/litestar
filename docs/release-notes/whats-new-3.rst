@@ -364,6 +364,8 @@ naming the extra to install:
     :caption: Install the testing extra
 
     pip install 'litestar[testing]'
+
+
 ``rich-click>=1.9`` is now required by the CLI
 -----------------------------------------------
 
