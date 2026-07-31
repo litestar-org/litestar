@@ -209,7 +209,13 @@ def build_route_middleware_stack(
             asgi_handler = compression_config.middleware_class(app=asgi_handler, config=app.compression_config)
 
         if has_cached_route:
-            response_cache_middleware = ResponseCacheMiddleware(config=app.response_cache_config)
+            response_cache_config = app.response_cache_config
+            response_cache_middleware = ResponseCacheMiddleware(
+                default_expiration=response_cache_config.default_expiration,
+                key_builder=response_cache_config.key_builder,
+                store=response_cache_config.store,
+                cache_response_filter=response_cache_config.cache_response_filter,
+            )
             asgi_handler = response_cache_middleware(asgi_handler)
 
         if app.allowed_hosts:

@@ -13,9 +13,10 @@ from litestar.utils.scope.state import ScopeState
 from .base import ASGIMiddleware
 
 if TYPE_CHECKING:
-    from litestar.config.response_cache import ResponseCacheConfig
+    from collections.abc import Callable
+
     from litestar.handlers import HTTPRouteHandler
-    from litestar.types import ASGIApp, HTTPScope, Message, Receive, Scope, Send
+    from litestar.types import ASGIApp, CacheKeyBuilder, HTTPScope, Message, Receive, Scope, Send
 
 __all__ = ["ResponseCacheMiddleware"]
 
@@ -25,14 +26,29 @@ class ResponseCacheMiddleware(ASGIMiddleware):
 
     scopes = (ScopeType.HTTP,)
 
-    def __init__(self, config: ResponseCacheConfig) -> None:
+    def __init__(
+        self,
+        *,
+        default_expiration: int | None,
+        key_builder: CacheKeyBuilder,
+        store: str,
+        cache_response_filter: Callable[[HTTPScope, int], bool],
+    ) -> None:
         """Middleware that caches responses of route handlers configured with ``cache``.
 
         Args:
-            config: An instance of
-                :class:`ResponseCacheConfig <litestar.config.response_cache.ResponseCacheConfig>`.
+            default_expiration: Default cache expiration in seconds used when a route handler is
+                configured with ``cache=True``.
+            key_builder: :class:`CacheKeyBuilder <.types.CacheKeyBuilder>` used unless the route
+                handler defines its own.
+            store: Name of the :class:`Store <.stores.base.Store>` to cache responses in.
+            cache_response_filter: A callable that receives the connection scope and a status code,
+                and returns a boolean indicating whether the response should be cached.
         """
-        self.config = config
+        self.default_expiration = default_expiration
+        self.key_builder = key_builder
+        self.store = store
+        self.cache_response_filter = cache_response_filter
 
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         """Handle ASGI call.
@@ -50,7 +66,7 @@ class ResponseCacheMiddleware(ASGIMiddleware):
 
         expires_in: int | None = None
         if route_handler.cache is True:
-            expires_in = self.config.default_expiration
+            expires_in = self.default_expiration
         elif route_handler.cache is not False and isinstance(route_handler.cache, int):
             expires_in = route_handler.cache
 
@@ -61,7 +77,7 @@ class ResponseCacheMiddleware(ASGIMiddleware):
         async def wrapped_send(message: Message) -> None:
             if not value_or_default(connection_state.is_cached, False):
                 if message["type"] == HTTP_RESPONSE_START:
-                    do_cache = connection_state.do_cache = self.config.cache_response_filter(
+                    do_cache = connection_state.do_cache = self.cache_response_filter(
                         cast("HTTPScope", scope), message["status"]
                     )
                     if do_cache:
@@ -70,8 +86,8 @@ class ResponseCacheMiddleware(ASGIMiddleware):
                     messages.append(message)
 
                 if messages and message["type"] == HTTP_RESPONSE_BODY and not message.get("more_body"):
-                    key = (route_handler.cache_key_builder or self.config.key_builder)(Request(scope))
-                    store = self.config.get_store_from_app(scope["litestar_app"])
+                    key = (route_handler.cache_key_builder or self.key_builder)(Request(scope))
+                    store = scope["litestar_app"].stores.get(self.store)
                     await store.set(key, encode_msgpack(messages), expires_in=expires_in)
             await send(message)
 
