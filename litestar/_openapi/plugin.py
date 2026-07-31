@@ -113,7 +113,7 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         schema = self.provide_openapi_schema()
         # Mirror Request.base_url precedence: app_root_path (set by e.g. uvicorn
         # --root-path) wins over the ASGI root_path.
-        root_path = (request.scope.get("app_root_path") or request.scope.get("root_path", "")).rstrip("/")
+        root_path = str(request.scope.get("app_root_path") or request.scope.get("root_path", "")).rstrip("/")
         if root_path and schema.get("servers") == [{"url": "/"}]:
             schema = {**schema, "servers": [{"url": root_path}]}
         return schema
