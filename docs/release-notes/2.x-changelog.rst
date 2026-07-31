@@ -910,7 +910,7 @@
         :issue: 2812
         :pr: 2818
 
-        Fix a bug where an incorrect OpenAPI schema was generated generated when any
+        Fix a bug where an incorrect OpenAPI schema was generated when any
         ``Literal | None``-union was present in an annotation.
 
         For example
