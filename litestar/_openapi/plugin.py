@@ -100,6 +100,24 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
             self._openapi_schema = self.provide_openapi().to_schema()
         return self._openapi_schema
 
+    def schema_for_request(self, request: Request) -> dict[str, Any]:
+        """Return the OpenAPI schema, reflecting the ASGI ``root_path`` in ``servers``.
+
+        When the application is mounted under a sub-path (e.g. ``root_path="/api"``)
+        the schema's default ``servers`` value of ``[{"url": "/"}]`` no longer points
+        at the real base URL. If the user has not customised ``servers``, substitute
+        the request's ``root_path`` so generated URLs are correct (issue #2077). A
+        customised ``servers`` value is left untouched, and the cached schema is not
+        mutated.
+        """
+        schema = self.provide_openapi_schema()
+        # Mirror Request.base_url precedence: app_root_path (set by e.g. uvicorn
+        # --root-path) wins over the ASGI root_path.
+        root_path = (request.scope.get("app_root_path") or request.scope.get("root_path", "")).rstrip("/")
+        if root_path and schema.get("servers") == [{"url": "/"}]:
+            schema = {**schema, "servers": [{"url": root_path}]}
+        return schema
+
     def create_openapi_router(self) -> Router:
         """Create a router for serving OpenAPI documentation and schema files.
 
@@ -159,7 +177,7 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
 
             @get(paths, media_type=plugin_.media_type, sync_to_thread=False, name=handler_name)
             def _handler(request: Request) -> bytes:
-                return plugin_.render(request, self.provide_openapi_schema())
+                return plugin_.render(request, self.schema_for_request(request))
 
             return _handler
 
