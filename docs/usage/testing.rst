@@ -5,6 +5,14 @@ Testing a Litestar application is made simple by the testing utilities provided 
 Based on `httpx <https://www.python-httpx.org/>`_, they come with a familiar interface and integrate seamlessly into
 synchronous or asynchronous tests.
 
+``httpx`` is not installed by default. It is bundled in the ``testing`` extra, which you will need to
+install to use anything from :mod:`litestar.testing`:
+
+.. code-block:: shell
+    :caption: Install the testing extra
+
+    pip install 'litestar[testing]'
+
 
 Test Clients
 ------------
