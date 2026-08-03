@@ -30,12 +30,7 @@
             middleware = ResponseCacheMiddleware(app=next_app, config=response_cache_config)
 
             # after
-            middleware = ResponseCacheMiddleware(
-                default_expiration=response_cache_config.default_expiration,
-                key_builder=response_cache_config.key_builder,
-                store=response_cache_config.store,
-                cache_response_filter=response_cache_config.cache_response_filter,
-            )
+            middleware = ResponseCacheMiddleware(default_expiration=60, store="response_cache")
             asgi_app = middleware(next_app)
 
         Since ``ASGIMiddleware.__call__`` returns a closure rather than the middleware

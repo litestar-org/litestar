@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, cast
 from msgspec.msgpack import encode as encode_msgpack
 
 from litestar import Request
+from litestar.config.response_cache import default_cache_key_builder, default_do_cache_predicate
 from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START
 from litestar.enums import ScopeType
 from litestar.utils.empty import value_or_default
@@ -29,10 +30,10 @@ class ResponseCacheMiddleware(ASGIMiddleware):
     def __init__(
         self,
         *,
-        default_expiration: int | None,
-        key_builder: CacheKeyBuilder,
-        store: str,
-        cache_response_filter: Callable[[HTTPScope, int], bool],
+        default_expiration: int | None = 60,
+        key_builder: CacheKeyBuilder = default_cache_key_builder,
+        store: str = "response_cache",
+        cache_response_filter: Callable[[HTTPScope, int], bool] = default_do_cache_predicate,
     ) -> None:
         """Middleware that caches responses of route handlers configured with ``cache``.
 
