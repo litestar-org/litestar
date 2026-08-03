@@ -868,7 +868,7 @@ add its middleware to your application’s middleware stack:</p>
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.client_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieBackendConfig</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="c1"># we initialize to config with a 16 byte key, i.e. 128 a bit key.</span>
+</span><span data-line="6"><span class="c1"># we initialize to config with a 16 byte key, i.e. a 128 bit key.</span>
 </span><span data-line="7"><span class="c1"># in real world usage we should inject the secret from the environment</span>
 </span><span data-line="8"><span class="n">session_config</span> <span class="o">=</span> <span class="n">CookieBackendConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>
 </span><span data-line="9">

@@ -907,7 +907,7 @@ handler function but before the actual response message is transmitted, the corr
 special life-cycle hook called <a class="reference internal" href="../lifecycle-hooks.html#after-request"><span class="std std-ref">after_request</span></a>. The instructions in this section are for how to
 modify the ASGI response message itself, which is a step further in the response process.</p>
 </div>
-<p>Using the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a> you can intercept and modifying both the
+<p>Using the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a> you can intercept and modify both the
 incoming and outgoing data in a request / response cycle by “wrapping” that respective <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> ASGI
 functions.</p>
 <p>To demonstrate this, let’s say we want to append a header with a timestamp to all outgoing responses. We could achieve
@@ -1009,10 +1009,10 @@ Python 3.14+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<p>The three class variables defined in the above example <code class="docutils literal notranslate"><span class="pre">scopes</span></code>, <code class="docutils literal notranslate"><span class="pre">exclude</span></code>, and <code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code> can be used to
+<p>The three class variables defined in the above example <code class="docutils literal notranslate"><span class="pre">scope</span></code>, <code class="docutils literal notranslate"><span class="pre">exclude</span></code>, and <code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code> can be used to
 fine-tune for which routes and request types the middleware is called:</p>
 <ul class="simple">
-<li><p>The scopes variable is a set that can include either or both : <code class="docutils literal notranslate"><span class="pre">ScopeType.HTTP</span></code> and <code class="docutils literal notranslate"><span class="pre">ScopeType.WEBSOCKET</span></code> , with the default being both.</p></li>
+<li><p>The scope variable is a set that can include either or both : <code class="docutils literal notranslate"><span class="pre">ScopeType.HTTP</span></code> and <code class="docutils literal notranslate"><span class="pre">ScopeType.WEBSOCKET</span></code> , with the default being both.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">exclude</span></code> accepts either a single string or list of strings that are compiled into a regex against which the request’s <code class="docutils literal notranslate"><span class="pre">path</span></code> is checked.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code> is the key to use for in a route handler’s <a class="reference internal" href="../../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Router.opt</span></code></a> dict for a boolean, whether to omit from the middleware.</p></li>
 </ul>
@@ -1206,7 +1206,7 @@ these values to our middleware:</p>
 </span></pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">DefineMiddleware</span></code> is a simple container - it takes a middleware callable as a first parameter, and then any
-positional arguments, followed by key word arguments. The middleware callable will be called with these values as well
+positional arguments, followed by keyword arguments. The middleware callable will be called with these values as well
 as the kwarg <code class="docutils literal notranslate"><span class="pre">app</span></code> as mentioned above.</p>
 </section>
 </section>

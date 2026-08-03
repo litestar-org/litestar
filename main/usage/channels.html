@@ -903,7 +903,7 @@ allows to easily run other code concurrently.</p>
 </div>
 <p>In the above example, the stream is used to send data to a
 <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a>.</p>
-<p>The same can be achieve by passing <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket.send_text" title="litestar.connection.WebSocket.send_text"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Websocket.send_text()</span></code></a> as the
+<p>The same can be achieved by passing <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket.send_text" title="litestar.connection.WebSocket.send_text"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Websocket.send_text()</span></code></a> as the
 callback to <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_in_background()</span></code></a>. This will cause the WebSocket’s method to be invoked every time
 a new <a class="reference internal" href="#term-event"><span class="xref std std-term">event</span></a> becomes available in the <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">stream</span></a>, but gives control back to the application,
 providing an opportunity to perform other tasks, such as receiving incoming data from the socket.</p>
@@ -998,7 +998,7 @@ performance of all the backends, but at the same time is not suitable for
 applications running on multiple processes.</p>
 </dd>
 <dt><a class="reference internal" href="../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend" title="litestar.channels.backends.redis.RedisChannelsPubSubBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisChannelsPubSubBackend</span></code></a></dt><dd><p>A Redis based backend, using <a class="reference external" href="https://redis.io/docs/manual/pubsub/">Pub/Sub</a> to
-delivery messages. This Redis backend has a low latency and overhead and is
+deliver messages. This Redis backend has a low latency and overhead and is
 generally recommended if <a class="reference internal" href="#term-history"><span class="xref std std-term">history</span></a> is not needed</p>
 </dd>
 <dt><a class="reference internal" href="../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend" title="litestar.channels.backends.redis.RedisChannelsStreamBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisChannelsStreamBackend</span></code></a></dt><dd><p>A redis based backend, using <a class="reference external" href="https://redis.io/docs/data-types/streams/">streams</a>

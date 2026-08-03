@@ -579,7 +579,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="28">    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </span><span data-line="29">
 </span><span data-line="30">    <span class="c1"># assuming we have now inserted a user, we want to send a welcome email.</span>
-</span><span data-line="31">    <span class="c1"># To do this in a none-blocking fashion, we will emit an event to a listener, which will send the email,</span>
+</span><span data-line="31">    <span class="c1"># To do this in a non-blocking fashion, we will emit an event to a listener, which will send the email,</span>
 </span><span data-line="32">    <span class="c1"># using a different async block than the one where we are returning a response.</span>
 </span><span data-line="33">    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
 </span><span data-line="34">
@@ -651,7 +651,7 @@ sending an HTTP request to a service management system to create an issue.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span><span class="w"> </span><span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
-<p>This means that it expects a string for <code class="docutils literal notranslate"><span class="pre">event_id</span></code> following by any number of positional and keyword arguments. While
+<p>This means that it expects a string for <code class="docutils literal notranslate"><span class="pre">event_id</span></code> followed by any number of positional and keyword arguments. While
 this is highly flexible, it also means you need to ensure the listeners for a given event can handle all the expected args
 and kwargs.</p>
 <p>For example, the following would raise an exception in python:</p>

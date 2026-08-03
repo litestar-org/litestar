@@ -32,5 +32,5 @@ The above example will work out of the box if you configure a global ``tracer_pr
 exporter to use these (see the
 `OpenTelemetry Exporter docs <https://opentelemetry.io/docs/instrumentation/python/exporters/>`_ for further details).
 
-You can also pass con figuration to the ``OpenTelemetryConfig`` telling it which providers to use. Consult
+You can also pass configuration to the ``OpenTelemetryConfig`` telling it which providers to use. Consult
 :class:`reference docs <litestar.plugins.opentelemetry.OpenTelemetryConfig>` regarding the configuration options you can use.

@@ -570,7 +570,7 @@ data-aria-dark="Switch to auto color mode">
 <p id="parameter-types">Request parameters are parts of the request that can be injected into a handler function
 or dependency. They allow type-coercion, validation, and will show up in the generated
 OpenAPI schema.</p>
-<p>There are for request parameter types supported, which can be specified in two different
+<p>There are four request parameter types supported, which can be specified in two different
 forms:</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -1019,7 +1019,7 @@ header, pass <code class="docutils literal notranslate"><span class="pre">name=&
 <p>A request to <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8000?camelCase=foo</span></code> will be received as
 <code class="docutils literal notranslate"><span class="pre">snake_case=&quot;foo&quot;</span></code> inside the handler.</p>
 <p>The same pattern applies to
-<a class="reference internal" href="../../reference/params.html#litestar.params.HeaderParameter" title="litestar.params.HeaderParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeaderParameter</span></code></a>,:class:<cite>~.params.CookieParameter</cite> and
+<a class="reference internal" href="../../reference/params.html#litestar.params.HeaderParameter" title="litestar.params.HeaderParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeaderParameter</span></code></a>, <a class="reference internal" href="../../reference/params.html#litestar.params.CookieParameter" title="litestar.params.CookieParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CookieParameter</span></code></a> and
 <a class="reference internal" href="../../reference/params.html#litestar.params.PathParameter" title="litestar.params.PathParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathParameter</span></code></a>.</p>
 </section>
 <section id="validation-constraints">

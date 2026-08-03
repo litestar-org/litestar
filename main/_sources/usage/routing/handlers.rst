@@ -378,7 +378,7 @@ In difference to the other route handlers, the :func:`@asgi() <.handlers.asgi>` 
 You can read more about these in the `ASGI specification <https://asgi.readthedocs.io/en/latest/specs/main.html>`_.
 
 Additionally, ASGI route handler functions **must** be :ref:`async functions <python:async def>`.
-This is enforced using inspection, and if the function is not an :ref:`async functions <python:async def>`,
+This is enforced using inspection, and if the function is not an :ref:`async function <python:async def>`,
 an informative exception will be raised.
 
 See the :class:`ASGIRouteHandler API reference documentation <.handlers.asgi_handlers.ASGIRouteHandler>` for full
