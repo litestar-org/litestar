@@ -3,7 +3,7 @@ from os import urandom
 from litestar import Litestar, Request, delete, get, post
 from litestar.middleware.session.client_side import CookieBackendConfig
 
-# we initialize to config with a 16 byte key, i.e. 128 a bit key.
+# we initialize to config with a 16 byte key, i.e. a 128 bit key.
 # in real world usage we should inject the secret from the environment
 session_config = CookieBackendConfig(secret=urandom(16))
 
