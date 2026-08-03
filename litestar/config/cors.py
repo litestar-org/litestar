@@ -21,6 +21,60 @@ if TYPE_CHECKING:
 _RE_ESCAPE_PLACEHOLDER: Final = uuid.uuid4().hex
 
 
+def build_allowed_origins_regex(allow_origins: list[str], allow_origin_regex: str | None) -> Pattern[str]:
+    """Compile a regex matching ``allow_origins``, treating ``*`` as a wildcard."""
+    # escape the allowed origins, while turning '*' into wildcard '.*' matches
+    origins = [
+        re.escape(o.replace("*", _RE_ESCAPE_PLACEHOLDER)).replace(_RE_ESCAPE_PLACEHOLDER, ".*") for o in allow_origins
+    ]
+    if allow_origin_regex:
+        origins.append(allow_origin_regex)
+    return re.compile("|".join(origins))
+
+
+def build_preflight_headers(
+    *,
+    allow_origins: list[str],
+    allow_methods: list[Literal["*"] | Method],
+    allow_headers: list[str],
+    allow_credentials: bool,
+    max_age: int,
+) -> dict[str, str]:
+    """Build the headers set on a pre-flight response."""
+    headers: dict[str, str] = {"Access-Control-Max-Age": str(max_age)}
+    if "*" in allow_origins:
+        headers["Access-Control-Allow-Origin"] = "*"
+    else:
+        headers["Vary"] = "Origin"
+    if allow_credentials:
+        headers["Access-Control-Allow-Credentials"] = str(allow_credentials).lower()
+    if "*" not in allow_headers:
+        headers["Access-Control-Allow-Headers"] = ", ".join(sorted(set(allow_headers) | DEFAULT_ALLOWED_CORS_HEADERS))
+    if allow_methods:
+        headers["Access-Control-Allow-Methods"] = ", ".join(
+            sorted(
+                {"DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"}
+                if "*" in allow_methods
+                else set(allow_methods)
+            )
+        )
+    return headers
+
+
+def build_simple_headers(
+    *, allow_origins: list[str], allow_credentials: bool, expose_headers: list[str]
+) -> dict[str, str]:
+    """Build the headers set on a non-pre-flight ("simple") response."""
+    simple_headers = {}
+    if "*" in allow_origins:
+        simple_headers["Access-Control-Allow-Origin"] = "*"
+    if allow_credentials:
+        simple_headers["Access-Control-Allow-Credentials"] = "true"
+    if expose_headers:
+        simple_headers["Access-Control-Expose-Headers"] = ", ".join(sorted(set(expose_headers)))
+    return simple_headers
+
+
 @dataclass
 class CORSConfig:
     """Configuration for CORS (Cross-Origin Resource Sharing).
@@ -66,14 +120,7 @@ class CORSConfig:
         Returns:
             A compiled regex of the allowed path.
         """
-        # escape the allowed origins, while turning '*' into wildcard '.*' matches
-        origins = [
-            re.escape(o.replace("*", _RE_ESCAPE_PLACEHOLDER)).replace(_RE_ESCAPE_PLACEHOLDER, ".*")
-            for o in self.allow_origins
-        ]
-        if self.allow_origin_regex:
-            origins.append(self.allow_origin_regex)
-        return re.compile("|".join(origins))
+        return build_allowed_origins_regex(self.allow_origins, self.allow_origin_regex)
 
     @cached_property
     def is_allow_all_origins(self) -> bool:
@@ -109,26 +156,13 @@ class CORSConfig:
         Returns:
             A dictionary of headers to set on the response object.
         """
-        headers: dict[str, str] = {"Access-Control-Max-Age": str(self.max_age)}
-        if self.is_allow_all_origins:
-            headers["Access-Control-Allow-Origin"] = "*"
-        else:
-            headers["Vary"] = "Origin"
-        if self.allow_credentials:
-            headers["Access-Control-Allow-Credentials"] = str(self.allow_credentials).lower()
-        if not self.is_allow_all_headers:
-            headers["Access-Control-Allow-Headers"] = ", ".join(
-                sorted(set(self.allow_headers) | DEFAULT_ALLOWED_CORS_HEADERS)
-            )
-        if self.allow_methods:
-            headers["Access-Control-Allow-Methods"] = ", ".join(
-                sorted(
-                    {"DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"}
-                    if self.is_allow_all_methods
-                    else set(self.allow_methods)
-                )
-            )
-        return headers
+        return build_preflight_headers(
+            allow_origins=self.allow_origins,
+            allow_methods=self.allow_methods,
+            allow_headers=self.allow_headers,
+            allow_credentials=self.allow_credentials,
+            max_age=self.max_age,
+        )
 
     @cached_property
     def simple_headers(self) -> dict[str, str]:
@@ -137,14 +171,11 @@ class CORSConfig:
         Returns:
             A dictionary of headers to set on the response object.
         """
-        simple_headers = {}
-        if self.is_allow_all_origins:
-            simple_headers["Access-Control-Allow-Origin"] = "*"
-        if self.allow_credentials:
-            simple_headers["Access-Control-Allow-Credentials"] = "true"
-        if self.expose_headers:
-            simple_headers["Access-Control-Expose-Headers"] = ", ".join(sorted(set(self.expose_headers)))
-        return simple_headers
+        return build_simple_headers(
+            allow_origins=self.allow_origins,
+            allow_credentials=self.allow_credentials,
+            expose_headers=self.expose_headers,
+        )
 
     def is_origin_allowed(self, origin: str) -> bool:
         """Check whether a given origin is allowed.

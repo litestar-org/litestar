@@ -21,8 +21,6 @@ def test_setting_cors_middleware() -> None:
     assert cors_config.max_age == 600
     assert cors_config.expose_headers == []
 
-    # the middleware stack can no longer be introspected by walking ``.app``:
-    # ``ASGIMiddleware`` returns a closure, so installation is asserted behaviourally.
     @get("/")
     async def handler() -> None:
         return None
@@ -167,7 +165,7 @@ async def test_cors_middleware_does_not_wrap_send_for_non_http_scopes() -> None:
 
     async def receive() -> Any: ...  # pragma: no cover
 
-    asgi_app = CORSMiddleware(CORSConfig(allow_origins=["*"]))(next_app)
+    asgi_app = CORSMiddleware(allow_origins=["*"])(next_app)
     scope = {"type": "websocket", "headers": [(b"origin", b"http://www.example.com")]}
 
     await asgi_app(cast("Any", scope), receive, send)
