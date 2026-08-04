@@ -7,7 +7,7 @@ from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
 from typing import TYPE_CHECKING, Annotated, Any, Self, Union, get_args, get_origin, get_type_hints
 
-from litestar import connection, datastructures, params, types
+from litestar import connection, datastructures, di, params, types
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import expand_type_var_in_type_hint, unwrap_annotation
@@ -33,17 +33,14 @@ _GLOBAL_NAMES = {
         tuple(getmembers(connection)),
         tuple(getmembers(datastructures)),
         tuple(getmembers(params)),
+        tuple(getmembers(di)),
     )
     if namespace[0].isupper()
-    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__, params.__all__)
+    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__, params.__all__, di.__all__)
 }
 """A mapping of names used for handler signature forward-ref resolution.
 
 This allows users to include these names within an `if TYPE_CHECKING:` block in their handler module.
-
-Names from ``litestar.di`` (e.g. ``NamedDependency``) are added lazily on first use by
-:func:`get_fn_type_hints`, as ``litestar.di`` imports from this module and so cannot be imported
-here at module load without a circular import.
 """
 
 
@@ -155,16 +152,6 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     # inspect the underlying function for methods
     if hasattr(fn_to_inspect, "__func__"):
         fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore[reportFunctionMemberAccess]
-
-    if "NamedDependency" not in _GLOBAL_NAMES:
-        # `litestar.di` imports from this module, so it cannot be imported at module load without a
-        # circular import. It is imported here (once) so names such as `NamedDependency` resolve when
-        # only imported under `if TYPE_CHECKING:` in a handler module. See #4870.
-        from litestar import di
-
-        _GLOBAL_NAMES.update(
-            (name, export) for name, export in getmembers(di) if name[0].isupper() and name in di.__all__
-        )
 
     # Order important. If a litestar name has been overridden in the function module, we want
     # to use that instead of the litestar one.
