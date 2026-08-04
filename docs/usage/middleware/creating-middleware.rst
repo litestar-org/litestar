@@ -288,7 +288,7 @@ Modifying ASGI Requests and Responses using the MiddlewareProtocol
     special life-cycle hook called :ref:`after_request <after_request>`. The instructions in this section are for how to
     modify the ASGI response message itself, which is a step further in the response process.
 
-Using the :class:`~litestar.middleware.base.MiddlewareProtocol` you can intercept and modifying both the
+Using the :class:`~litestar.middleware.base.MiddlewareProtocol` you can intercept and modify both the
 incoming and outgoing data in a request / response cycle by "wrapping" that respective ``receive`` and ``send`` ASGI
 functions.
 
@@ -358,11 +358,11 @@ create middleware:
 
            await self.app(scope, receive, send_wrapper)
 
-The three class variables defined in the above example ``scopes``, ``exclude``, and ``exclude_opt_key`` can be used to
+The three class variables defined in the above example ``scope``, ``exclude``, and ``exclude_opt_key`` can be used to
 fine-tune for which routes and request types the middleware is called:
 
 
-- The scopes variable is a set that can include either or both : ``ScopeType.HTTP`` and ``ScopeType.WEBSOCKET`` , with the default being both.
+- The scope variable is a set that can include either or both : ``ScopeType.HTTP`` and ``ScopeType.WEBSOCKET`` , with the default being both.
 - ``exclude`` accepts either a single string or list of strings that are compiled into a regex against which the request's ``path`` is checked.
 - ``exclude_opt_key`` is the key to use for in a route handler's :class:`Router.opt <litestar.router.Router>` dict for a boolean, whether to omit from the middleware.
 
@@ -407,5 +407,5 @@ these values to our middleware:
    )
 
 The ``DefineMiddleware`` is a simple container - it takes a middleware callable as a first parameter, and then any
-positional arguments, followed by key word arguments. The middleware callable will be called with these values as well
+positional arguments, followed by keyword arguments. The middleware callable will be called with these values as well
 as the kwarg ``app`` as mentioned above.
