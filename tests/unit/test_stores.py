@@ -172,6 +172,14 @@ async def test_exists_expired(store: Store, frozen_datetime: Traveller) -> None:
     assert await store.exists("foo") is False
 
 
+async def test_exists_empty_value(store: Store) -> None:
+    # MemoryStore/FileStore define exists() as `get(...) is not None`; truth-testing
+    # the value instead would report a stored empty value as not existing.
+    await store.set("foo", b"")
+
+    assert await store.exists("foo") is True
+
+
 async def test_expires_in_not_set(store: Store) -> None:
     assert await store.expires_in("foo") is None
 
