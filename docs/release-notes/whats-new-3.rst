@@ -16,9 +16,31 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``2.x``                                            | ``3.x``                                                                |
 +====================================================+========================================================================+
-| **SECTION**                                                                                                                 |
+| ``litestar.contrib.attrs``                         | ``litestar.plugins.attrs``                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| Put your changes here from v2                         | Put your changes here from v3                                       |
+| ``litestar.contrib.htmx``                          | ``litestar_htmx``                                                      |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.jinja``                         | ``litestar.plugins.jinja``                                             |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.jwt``                           | ``litestar.security.jwt``                                              |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.mako``                          | ``litestar.plugins.mako``                                              |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.minijinja``                     | ``litestar.plugins.minijinja``                                         |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.minijnja``                      | ``litestar.plugins.minijinja``                                         |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.opentelemetry``                 | ``litestar.plugins.opentelemetry``                                     |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.piccolo``                       | ``litestar_piccolo``                                                   |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.prometheus``                    | ``litestar.plugins.prometheus``                                        |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.pydantic``                      | ``litestar.plugins.pydantic``                                          |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.repository``                    | ``litestar.repository``                                                |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.sqlalchemy``                    | ``advanced_alchemy.extensions.litestar``                               |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
@@ -304,6 +326,54 @@ OpenAPI schema as YAML has been moved from the default dependencies to the
 
 The `litestar-htmx <https://github.com/litestar-org/litestar-htmx/>`_ package powering
 the :doc:`HTMX plugin </usage/htmx>` has been moved to the ``litestar[htmx]`` extra.
+
+
+``click``, ``rich`` and ``rich-click`` packages removed from default dependencies
+---------------------------------------------------------------------------------
+
+The `click <https://click.palletsprojects.com/>`_, `rich <https://rich.readthedocs.io>`_
+and `rich-click <https://github.com/ewels/rich-click>`_ libraries powering the
+:doc:`CLI </usage/cli>` have been moved from the default dependencies to the
+``litestar[cli]`` package extra. They are also included in ``litestar[standard]`` and
+``litestar[full]``.
+
+Installing ``litestar`` on its own therefore no longer provides the ``litestar`` command.
+Invoking it without the extra raises a
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
+naming the extra to install:
+
+.. code-block:: shell
+    :caption: Install the CLI
+
+    pip install 'litestar[cli]'
+
+
+``httpx`` package removed from default dependencies
+----------------------------------------------------
+
+The `httpx <https://www.python-httpx.org/>`_ library, on which the
+:doc:`test clients </usage/testing>` are based, has been moved from the default
+dependencies to the ``litestar[testing]`` package extra. It is also included in
+``litestar[full]``.
+
+Importing anything from :mod:`litestar.testing` without the extra installed raises a
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
+naming the extra to install:
+
+.. code-block:: shell
+    :caption: Install the testing extra
+
+    pip install 'litestar[testing]'
+
+
+``rich-click>=1.9`` is now required by the CLI
+-----------------------------------------------
+
+The ``litestar[cli]`` extra now requires ``rich-click>=1.9``, which is needed for the
+themed :doc:`CLI </usage/cli>` output. Previously ``rich-click`` was capped at ``<1.9``,
+which silently disabled the theme, as the underlying option only exists from 1.9 onwards.
+
+This only affects applications that additionally pin ``rich-click<1.9`` themselves.
 
 
 Improved file system handling / fsspec integration

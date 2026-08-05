@@ -10,13 +10,12 @@ try:
 except ImportError:
     import click  # type: ignore[no-redef]
 
-from yaml import dump as dump_yaml
-
 from litestar import Litestar
 from litestar._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
 from litestar.cli._utils import JSBEAUTIFIER_INSTALLED, LitestarCLIException, LitestarGroup
+from litestar.exceptions import MissingDependencyException
 from litestar.serialization import encode_json, get_serializer
 
 __all__ = ("generate_openapi_schema", "generate_typescript_specs", "schema_group")
@@ -31,6 +30,13 @@ def _generate_openapi_schema(app: Litestar, output: Path) -> None:
     """Generate an OpenAPI Schema."""
     serializer = get_serializer(app.type_encoders)
     if output.suffix in (".yml", ".yaml"):
+        try:
+            # Import lazily: pyyaml is an optional dependency, and importing it at
+            # module level made every CLI invocation fail when it is not installed.
+            # https://github.com/litestar-org/litestar/issues/4449
+            from yaml import dump as dump_yaml
+        except ImportError as e:
+            raise MissingDependencyException("pyyaml", extra="yaml") from e
         content = dump_yaml(
             msgspec.to_builtins(app.openapi_schema.to_schema(), enc_hook=serializer),
             default_flow_style=False,

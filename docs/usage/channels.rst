@@ -327,7 +327,7 @@ allows to easily run other code concurrently.
 In the above example, the stream is used to send data to a
 :class:`WebSocket <litestar.connection.WebSocket>`.
 
-The same can be achieve by passing :meth:`Websocket.send_text() <litestar.connection.WebSocket.send_text>` as the
+The same can be achieved by passing :meth:`Websocket.send_text() <litestar.connection.WebSocket.send_text>` as the
 callback to :meth:`~Subscriber.run_in_background`. This will cause the WebSocket's method to be invoked every time
 a new :term:`event` becomes available in the :term:`stream <event stream>`, but gives control back to the application,
 providing an opportunity to perform other tasks, such as receiving incoming data from the socket.
@@ -399,7 +399,7 @@ The following backends are currently implemented:
 
 :class:`RedisChannelsPubSubBackend <.redis.RedisChannelsPubSubBackend>`
     A Redis based backend, using `Pub/Sub <https://redis.io/docs/manual/pubsub/>`_ to
-    delivery messages. This Redis backend has a low latency and overhead and is
+    deliver messages. This Redis backend has a low latency and overhead and is
     generally recommended if :term:`history` is not needed
 
 :class:`RedisChannelsStreamBackend <.redis.RedisChannelsStreamBackend>`
