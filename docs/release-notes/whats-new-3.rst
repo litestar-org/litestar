@@ -298,9 +298,9 @@ applications that only configure them - for response caching, via
 :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
 ``cache`` argument - are unaffected.
 
-Code that instantiated one of them directly must drop the ``app`` argument, pass the
-settings it needs as keyword arguments rather than a configuration object, and apply the
-instance to the next ASGI app:
+Code that composed one of them directly into an ASGI stack must drop the ``app``
+argument, pass the settings as keyword arguments rather than a configuration object, and
+apply the instance to the next ASGI app:
 
 .. code-block:: python
 
@@ -308,7 +308,12 @@ instance to the next ASGI app:
     middleware = ResponseCacheMiddleware(app=next_app, config=response_cache_config)
 
     # after
-    middleware = ResponseCacheMiddleware(default_expiration=60, store="response_cache")
+    middleware = ResponseCacheMiddleware(
+        default_expiration=response_cache_config.default_expiration,
+        key_builder=response_cache_config.key_builder,
+        store=response_cache_config.store,
+        cache_response_filter=response_cache_config.cache_response_filter,
+    )
     asgi_app = middleware(next_app)
 
 Because ``ASGIMiddleware.__call__`` returns a closure rather than the middleware

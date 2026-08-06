@@ -65,6 +65,10 @@ class ResponseCacheMiddleware(ASGIMiddleware):
         """
         route_handler = cast("HTTPRouteHandler", scope["route_handler"])
 
+        if not route_handler.cache:
+            await next_app(scope, receive, send)
+            return
+
         expires_in: int | None = None
         if route_handler.cache is True:
             expires_in = self.default_expiration

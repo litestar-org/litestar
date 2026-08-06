@@ -20,9 +20,9 @@
         :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
         ``cache`` argument are unaffected -- Litestar constructs the middleware itself.
 
-        Code instantiating the middleware directly must drop the ``app`` argument, pass
-        the settings it needs as keyword arguments rather than a ``ResponseCacheConfig``,
-        and apply the instance to the next ASGI app:
+        Code composing the middleware directly into an ASGI stack must drop the ``app``
+        argument, pass the settings as keyword arguments rather than a
+        ``ResponseCacheConfig``, and apply the instance to the next ASGI app:
 
         .. code-block:: python
 
@@ -30,7 +30,12 @@
             middleware = ResponseCacheMiddleware(app=next_app, config=response_cache_config)
 
             # after
-            middleware = ResponseCacheMiddleware(default_expiration=60, store="response_cache")
+            middleware = ResponseCacheMiddleware(
+                default_expiration=response_cache_config.default_expiration,
+                key_builder=response_cache_config.key_builder,
+                store=response_cache_config.store,
+                cache_response_filter=response_cache_config.cache_response_filter,
+            )
             asgi_app = middleware(next_app)
 
         Since ``ASGIMiddleware.__call__`` returns a closure rather than the middleware
@@ -39,6 +44,19 @@
 
         .. seealso::
             :ref:`asgi-middleware-migration`
+
+    .. change:: Stop caching responses of handlers that do not enable caching
+        :type: bugfix
+        :pr: 4953
+
+        ``ResponseCacheMiddleware`` is applied per route, so a handler that never set
+        ``cache`` still had its responses written to the store when it shared a path with
+        a handler that did -- for example a ``POST`` handler on a path whose ``GET``
+        handler sets ``cache=True``. Those entries were written on every request, without
+        an expiry, and were never read back, since responses are only served from the
+        cache for handlers that enable it.
+
+        The middleware now passes such requests through untouched.
 
     .. change:: Move ``httpx`` to the ``testing`` extra
         :type: feature
