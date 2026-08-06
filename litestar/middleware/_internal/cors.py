@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
-from litestar.config.cors import build_allowed_origins_regex, build_preflight_headers, build_simple_headers
+from litestar.config.cors import _build_allowed_origins_regex, _build_preflight_headers, _build_simple_headers
 from litestar.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import HttpMethod, MediaType, ScopeType
@@ -11,6 +11,8 @@ from litestar.response import Response
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 
 if TYPE_CHECKING:
+    from typing import Literal
+
     from litestar.types import ASGIApp, Message, Method, Receive, Scope, Send
 
 __all__ = ("CORSMiddleware",)
@@ -46,25 +48,29 @@ class CORSMiddleware(ASGIMiddleware):
                 ``Access-Control-Expose-Headers`` header.
             max_age: Response caching TTL in seconds, sets the ``Access-Control-Max-Age`` header.
         """
-        self.allow_origins = ["*"] if allow_origins is None else allow_origins
-        self.allow_methods: list[Literal["*"] | Method] = ["*"] if allow_methods is None else allow_methods
+        self.allow_origins = ["*"] if allow_origins is None else list(allow_origins)
+        self.allow_methods: list[Literal["*"] | Method] = ["*"] if allow_methods is None else list(allow_methods)
         self.allow_headers = [v.lower() for v in (["*"] if allow_headers is None else allow_headers)]
         self.allow_credentials = allow_credentials
-        self.expose_headers = [] if expose_headers is None else expose_headers
+        self.allow_origin_regex = allow_origin_regex
+        self.expose_headers = [] if expose_headers is None else list(expose_headers)
         self.max_age = max_age
 
         self.is_allow_all_origins = "*" in self.allow_origins
         self.is_allow_all_methods = "*" in self.allow_methods
         self.is_allow_all_headers = "*" in self.allow_headers
-        self.allowed_origins_regex = build_allowed_origins_regex(self.allow_origins, allow_origin_regex)
-        self.preflight_headers = build_preflight_headers(
+        self.allowed_origins_regex = _build_allowed_origins_regex(
+            allow_origins=self.allow_origins,
+            allow_origin_regex=self.allow_origin_regex,
+        )
+        self.preflight_headers = _build_preflight_headers(
             allow_origins=self.allow_origins,
             allow_methods=self.allow_methods,
             allow_headers=self.allow_headers,
             allow_credentials=self.allow_credentials,
             max_age=self.max_age,
         )
-        self.simple_headers = build_simple_headers(
+        self.simple_headers = _build_simple_headers(
             allow_origins=self.allow_origins,
             allow_credentials=self.allow_credentials,
             expose_headers=self.expose_headers,

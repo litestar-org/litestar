@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 _RE_ESCAPE_PLACEHOLDER: Final = uuid.uuid4().hex
 
 
-def build_allowed_origins_regex(allow_origins: list[str], allow_origin_regex: str | None) -> Pattern[str]:
+def _build_allowed_origins_regex(*, allow_origins: list[str], allow_origin_regex: str | None) -> Pattern[str]:
     """Compile a regex matching ``allow_origins``, treating ``*`` as a wildcard."""
     # escape the allowed origins, while turning '*' into wildcard '.*' matches
     origins = [
@@ -32,7 +32,7 @@ def build_allowed_origins_regex(allow_origins: list[str], allow_origin_regex: st
     return re.compile("|".join(origins))
 
 
-def build_preflight_headers(
+def _build_preflight_headers(
     *,
     allow_origins: list[str],
     allow_methods: list[Literal["*"] | Method],
@@ -61,7 +61,7 @@ def build_preflight_headers(
     return headers
 
 
-def build_simple_headers(
+def _build_simple_headers(
     *, allow_origins: list[str], allow_credentials: bool, expose_headers: list[str]
 ) -> dict[str, str]:
     """Build the headers set on a non-pre-flight ("simple") response."""
@@ -120,7 +120,10 @@ class CORSConfig:
         Returns:
             A compiled regex of the allowed path.
         """
-        return build_allowed_origins_regex(self.allow_origins, self.allow_origin_regex)
+        return _build_allowed_origins_regex(
+            allow_origins=self.allow_origins,
+            allow_origin_regex=self.allow_origin_regex,
+        )
 
     @cached_property
     def is_allow_all_origins(self) -> bool:
@@ -156,7 +159,7 @@ class CORSConfig:
         Returns:
             A dictionary of headers to set on the response object.
         """
-        return build_preflight_headers(
+        return _build_preflight_headers(
             allow_origins=self.allow_origins,
             allow_methods=self.allow_methods,
             allow_headers=self.allow_headers,
@@ -171,7 +174,7 @@ class CORSConfig:
         Returns:
             A dictionary of headers to set on the response object.
         """
-        return build_simple_headers(
+        return _build_simple_headers(
             allow_origins=self.allow_origins,
             allow_credentials=self.allow_credentials,
             expose_headers=self.expose_headers,
