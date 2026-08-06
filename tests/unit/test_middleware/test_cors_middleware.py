@@ -1,4 +1,6 @@
+import inspect
 from collections.abc import Mapping
+from dataclasses import fields
 from typing import Any, Literal, Optional, Union, cast
 
 import pytest
@@ -11,7 +13,7 @@ from litestar.testing import create_test_client
 from litestar.types.asgi_types import Method
 
 
-def test_setting_cors_middleware() -> None:
+def test_cors_config_defaults() -> None:
     cors_config = CORSConfig()
     assert cors_config.allow_credentials is False
     assert cors_config.allow_headers == ["*"]
@@ -21,15 +23,28 @@ def test_setting_cors_middleware() -> None:
     assert cors_config.max_age == 600
     assert cors_config.expose_headers == []
 
+
+def test_cors_middleware_defaults_match_cors_config_defaults() -> None:
+    config = CORSConfig()
+    middleware = CORSMiddleware()
+    config_field_names = {field.name for field in fields(CORSConfig)}
+
+    assert set(inspect.signature(CORSMiddleware.__init__).parameters) - {"self"} == config_field_names
+    for name in config_field_names:
+        assert getattr(middleware, name) == getattr(config, name), name
+
+
+def test_cors_max_age_reaches_the_preflight_response() -> None:
     @get("/")
     async def handler() -> None:
         return None
 
-    with create_test_client([handler], cors_config=cors_config) as client:
-        response = client.get("/", headers={"Origin": "http://www.example.com"})
-        assert response.headers["Access-Control-Allow-Origin"] == "*"
-        assert response.headers["Access-Control-Allow-Headers"] == "*"
-        assert response.headers["Access-Control-Allow-Methods"] == "*"
+    with create_test_client([handler], cors_config=CORSConfig(max_age=1234)) as client:
+        response = client.options(
+            "/",
+            headers={"Origin": "https://example.com", "Access-Control-Request-Method": "GET"},
+        )
+        assert response.headers["Access-Control-Max-Age"] == "1234"
 
 
 @pytest.mark.parametrize("origin", [None, "http://www.example.com", "https://moishe.zuchmir.com"])
