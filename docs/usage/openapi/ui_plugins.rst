@@ -7,7 +7,7 @@ OpenAPI UI Plugins are designed to allow easy integration with your OpenAPI UI f
 facilitate the creation of interactive, user-friendly API documentation, making it easier for developers and end-users
 to understand and interact with your API.
 
-Litestar maintains and ships with UI plugins for a range of popular popular OpenAPI documentation tools:
+Litestar maintains and ships with UI plugins for a range of popular OpenAPI documentation tools:
 
 - `Scalar <https://github.com/scalar/scalar/>`_
 - `RapiDoc <https://rapidocweb.com/>`_

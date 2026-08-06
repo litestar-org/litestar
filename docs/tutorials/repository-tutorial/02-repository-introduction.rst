@@ -7,7 +7,7 @@ few advanced features such as pagination, filtering and bulk operations.
 .. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <02-repo-full-code>` section.
 
 Before we jump in to the code, let's take a look at the available functions available in
-the the synchronous and asynchronous repositories.
+the synchronous and asynchronous repositories.
 
 .. dropdown:: Available Functions in the Repositories
 
@@ -24,7 +24,7 @@ the the synchronous and asynchronous repositories.
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
     | ``list_and_count``  | Selecting Data | Select a list of records specified by the ``kwargs`` parameters. Optionally it can be filtered by the included ``FilterTypes`` args. Results are returned as a 2 value tuple that includes the rows selected and the total count of records.|
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-    | ``get_or_create``   | Creating Data  | Select a single record specified by the the ``kwargs`` parameters.  If no record is found, one is created with the given values.  There's an optional attribute to filter on a subset of the supplied parameters and to merge updates.      |
+    | ``get_or_create``   | Creating Data  | Select a single record specified by the ``kwargs`` parameters.  If no record is found, one is created with the given values.  There's an optional attribute to filter on a subset of the supplied parameters and to merge updates.      |
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
     | ``create``          | Creating Data  | Create a new record in the database.                                                                                                                                                                                                        |
     +---------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
