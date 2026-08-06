@@ -717,10 +717,11 @@ Read more about Compose in the <a class="reference external" href="https://docs.
 </span><span data-line="27"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 </span><span data-line="28"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;5432:5432&quot;</span>
 </span><span data-line="29"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-</span><span data-line="30"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_data:/var/lib/postgresql/data</span>
-</span><span data-line="31">
-</span><span data-line="32"><span class="nt">volumes</span><span class="p">:</span>
-</span><span data-line="33"><span class="w">  </span><span class="nt">db_data</span><span class="p">:</span>
+</span><span data-line="30"><span class="w">      </span><span class="c1"># Note that image versions previous to 18 used /var/lib/postgresql/data</span>
+</span><span data-line="31"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_data:/var/lib/postgresql</span>
+</span><span data-line="32">
+</span><span data-line="33"><span class="nt">volumes</span><span class="p">:</span>
+</span><span data-line="34"><span class="w">  </span><span class="nt">db_data</span><span class="p">:</span>
 </span></pre></div>
 </div>
 </div>
