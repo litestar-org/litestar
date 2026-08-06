@@ -110,7 +110,11 @@ class CORSConfig:
             A dictionary of headers to set on the response object.
         """
         headers: dict[str, str] = {"Access-Control-Max-Age": str(self.max_age)}
-        if self.is_allow_all_origins:
+        # A literal "*" is invalid alongside credentials per the Fetch spec - browsers
+        # reject the response outright. When both are configured, the specific request
+        # origin has to be echoed back instead, which middleware does per-request since
+        # this property is cached and origin-agnostic.
+        if self.is_allow_all_origins and not self.allow_credentials:
             headers["Access-Control-Allow-Origin"] = "*"
         else:
             headers["Vary"] = "Origin"
@@ -138,7 +142,7 @@ class CORSConfig:
             A dictionary of headers to set on the response object.
         """
         simple_headers = {}
-        if self.is_allow_all_origins:
+        if self.is_allow_all_origins and not self.allow_credentials:
             simple_headers["Access-Control-Allow-Origin"] = "*"
         if self.allow_credentials:
             simple_headers["Access-Control-Allow-Credentials"] = "true"

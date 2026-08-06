@@ -80,7 +80,11 @@ def test_cors_simple_response(
 
         if origin:
             if cors_config.is_allow_all_origins:
-                assert response.headers.get("Access-Control-Allow-Origin") == "*"
+                # A literal "*" can't be combined with credentials - browsers reject
+                # such a response outright - so the specific origin is echoed back
+                # instead whenever credentials are allowed.
+                expected_origin = origin if cors_config.allow_credentials else "*"
+                assert response.headers.get("Access-Control-Allow-Origin") == expected_origin
             if cors_config.allow_credentials:
                 assert response.headers.get("Access-Control-Allow-Credentials") == "true"
             if cors_config.expose_headers:

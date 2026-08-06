@@ -50,15 +50,14 @@ class CORSMiddleware(AbstractMiddleware):
             )
             await asgi_response(scope, receive, send)
         elif origin:
-            await self.app(scope, receive, self.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers))
+            await self.app(scope, receive, self.send_wrapper(send=send, origin=origin))
         else:
             await self.app(scope, receive, send)
 
-    def send_wrapper(self, send: Send, origin: str, has_cookie: bool) -> Send:
+    def send_wrapper(self, send: Send, origin: str) -> Send:
         """Wrap ``send`` to ensure that state is not disconnected.
 
         Args:
-            has_cookie: Boolean flag dictating if the connection has a cookie set.
             origin: The value of the ``Origin`` header.
             send: The ASGI send function.
 
@@ -72,7 +71,11 @@ class CORSMiddleware(AbstractMiddleware):
                 headers = MutableScopeHeaders.from_message(message=message)
                 headers.update(self.config.simple_headers)
 
-                if (self.config.is_allow_all_origins and has_cookie) or (
+                # A wildcard origin can't be combined with credentials (browsers reject
+                # it), so a specific, validated origin has to be echoed back instead in
+                # that case - self.config.simple_headers omits Access-Control-Allow-Origin
+                # entirely rather than emitting an invalid "*" when allow_credentials is set.
+                if (self.config.is_allow_all_origins and self.config.allow_credentials) or (
                     not self.config.is_allow_all_origins and self.config.is_origin_allowed(origin=origin)
                 ):
                     headers["Access-Control-Allow-Origin"] = origin
