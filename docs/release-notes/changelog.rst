@@ -6,6 +6,13 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Make channel subscriptions lifecycle-safe
+        :type: bugfix
+
+        Serialize subscriber lifecycle transitions, roll back failed subscriptions,
+        prune unused dynamic channels, and accept generated WebSocket connections only
+        after their backend subscription and requested history are ready.
+
     .. change:: Move ``httpx`` to the ``testing`` extra
         :type: feature
         :pr: 4950
