@@ -13,6 +13,16 @@
         dynamic ``LISTEN`` and ``UNLISTEN`` operations no longer contend with the listener.
         Psycopg 3.2.4 or newer is now required for development and documentation builds.
 
+    .. change:: Add W3C Trace Context Correlation Middleware
+        :type: feature
+        :issue: 4719
+
+        Added standalone W3C Trace Context correlation middleware via
+        :class:`~litestar.middleware.correlation.CorrelationMiddleware`.
+
+        .. seealso::
+            :doc:`/usage/middleware/correlation`
+
     .. change:: Move ``httpx`` to the ``testing`` extra
         :type: feature
         :pr: 4950
