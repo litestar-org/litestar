@@ -32,7 +32,7 @@ _MISSING = object()
 
 
 def _is_lowercase_hex(value: str, length: int) -> bool:
-    return len(value) == length and all(character in _LOWERCASE_HEX for character in value)
+    return len(value) == length and not _LOWERCASE_HEX.difference(value)
 
 
 def _strip_safe_value(value: str) -> str | None:
