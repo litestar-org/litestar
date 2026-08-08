@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# mypy: disable-error-code=method-assign
 import asyncio
 from typing import Any
 from unittest.mock import AsyncMock
