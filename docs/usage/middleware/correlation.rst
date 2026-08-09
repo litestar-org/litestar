@@ -2,7 +2,7 @@
 Correlation Middleware
 ======================
 
-The correlation middleware extracts, generates, and propagates correlation and trace IDs across asynchronous execution contexts using Python's :mod:`contextvars`.
+The correlation middleware extracts, generates, and propagates correlation and trace IDs for each connection.
 
 This facilitates distributed tracing and unified logging across microservices and async handlers.
 
@@ -12,31 +12,30 @@ Features
 - Priority header fallback (:code:`x-request-id`, :code:`traceparent`, :code:`x-cloud-trace-context`, etc.).
 - W3C :code:`traceparent` defensive parsing.
 - UUID4 generation fallback when no header matches.
-- ContextVar isolation across concurrent requests.
-- Automatic scope state propagation (:code:`scope["state"]["correlation_id"]`).
+- The active ID is stored on the connection scope, making it available to handlers and other middlewares.
 - Optional response-header propagation.
 
-Standalone Usage
-----------------
+Usage
+-----
 
 .. literalinclude:: /examples/middleware/correlation_standalone.py
     :language: python
 
-Correlation Context API
------------------------
+Accessing the correlation ID
+----------------------------
 
-The :class:`~litestar.middleware.correlation.CorrelationContext` utility class provides static accessors:
+The active correlation ID is stored on the connection scope and can be retrieved anywhere the scope is available -
+in handlers, dependencies, or other middlewares - using
+:func:`~litestar.middleware.correlation.get_correlation_id`:
 
 .. code-block:: python
 
-    from litestar.middleware.correlation import CorrelationContext
+    from litestar import Request, get
+    from litestar.middleware.correlation import get_correlation_id
 
-    # Retrieve current ID
-    correlation_id = CorrelationContext.get()
 
-    # Scope context manager
-    with CorrelationContext.context("custom-id"):
-        ...
+    @get("/")
+    async def handler(request: Request) -> str | None:
+        return get_correlation_id(request.scope)
 
-The middleware validates W3C ``traceparent`` values, reads raw ASGI headers, optionally propagates the selected ID in
-the response, and restores pre-existing scope state after each request.
+The middleware validates W3C ``traceparent`` values and optionally propagates the selected ID in the response.

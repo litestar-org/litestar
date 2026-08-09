@@ -1,18 +1,20 @@
-from collections.abc import Generator, Sequence
-from contextlib import contextmanager
-from contextvars import ContextVar, Token
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Final
 from uuid import uuid4
 
-from litestar.datastructures.headers import MutableScopeHeaders
+from litestar.datastructures.headers import Headers, MutableScopeHeaders
+from litestar.enums import ScopeType
+from litestar.middleware.base import ASGIMiddleware
+from litestar.types import Empty
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar.types import ASGIApp, Message, Receive, Scope, Send
 
 __all__ = (
     "TRACE_CONTEXT_FALLBACK_HEADERS",
-    "CorrelationContext",
     "CorrelationMiddleware",
+    "get_correlation_id",
 )
 
 TRACE_CONTEXT_FALLBACK_HEADERS: Final[tuple[str, ...]] = (
@@ -26,99 +28,33 @@ TRACE_CONTEXT_FALLBACK_HEADERS: Final[tuple[str, ...]] = (
     "x-client-trace-id",
 )
 
-_correlation_id_var: ContextVar[str | None] = ContextVar("litestar_correlation_id", default=None)
 _LOWERCASE_HEX = frozenset("0123456789abcdef")
-_MISSING = object()
 
 
-def _is_lowercase_hex(value: str, length: int) -> bool:
-    return len(value) == length and not _LOWERCASE_HEX.difference(value)
+def get_correlation_id(scope: "Scope") -> str | None:
+    """Get the correlation ID stored on the connection scope by :class:`CorrelationMiddleware`.
+
+    Args:
+        scope: The ASGI scope.
+
+    Returns:
+        The correlation ID, or ``None`` if none was set.
+    """
+    correlation_id = ScopeState.from_scope(scope).correlation_id
+    return None if correlation_id is Empty else correlation_id
 
 
-def _strip_safe_value(value: str) -> str | None:
-    value = value.strip()
-    if not value or any(ord(character) < 32 or ord(character) == 127 for character in value):
-        return None
-    return value
+class CorrelationMiddleware(ASGIMiddleware):
+    """ASGI middleware for extracting, generating, and propagating correlation IDs.
 
+    The active correlation ID is stored on the connection scope and can be retrieved
+    with :func:`get_correlation_id`.
+    """
 
-class CorrelationContext:
-    """Context manager and accessor for correlation ID tracking."""
-
-    __slots__ = ()
-
-    @classmethod
-    def get(cls) -> str | None:
-        """Get the current correlation ID.
-
-        Returns:
-            The current correlation ID or None if not set.
-        """
-        return _correlation_id_var.get()
-
-    @classmethod
-    def set(cls, value: str | None) -> Token[str | None]:
-        """Set the current correlation ID.
-
-        Args:
-            value: Correlation ID value to set.
-
-        Returns:
-            A ContextVar Token for resetting context.
-        """
-        return _correlation_id_var.set(value)
-
-    @classmethod
-    def reset(cls, token: Token[str | None]) -> None:
-        """Reset the correlation ID using a token.
-
-        Args:
-            token: ContextVar token returned from set().
-        """
-        _correlation_id_var.reset(token)
-
-    @classmethod
-    def clear(cls) -> None:
-        """Clear the current correlation ID."""
-        _correlation_id_var.set(None)
-
-    @classmethod
-    def generate(cls) -> str:
-        """Generate a new correlation ID UUID.
-
-        Returns:
-            A stringified UUID4.
-        """
-        return str(uuid4())
-
-    @classmethod
-    @contextmanager
-    def context(cls, value: str | None = None) -> Generator[str, None, None]:
-        """Context manager for correlation ID tracking.
-
-        Args:
-            value: Optional correlation ID to use. If None, generates a new one.
-
-        Yields:
-            The active correlation ID.
-        """
-        if value is None:
-            value = cls.generate()
-        token = cls.set(value)
-        try:
-            yield value
-        finally:
-            cls.reset(token)
-
-
-class CorrelationMiddleware:
-    """ASGI middleware for extracting, generating, and propagating correlation IDs."""
-
-    __slots__ = ("app", "header_names", "max_length", "response_header_name")
+    scopes = (ScopeType.HTTP, ScopeType.WEBSOCKET)
 
     def __init__(
         self,
-        app: "ASGIApp",
         header_names: Sequence[str] = TRACE_CONTEXT_FALLBACK_HEADERS,
         response_header_name: str | None = "x-request-id",
         max_length: int = 128,
@@ -126,7 +62,6 @@ class CorrelationMiddleware:
         """Initialize CorrelationMiddleware.
 
         Args:
-            app: The ASGI application.
             header_names: Header name or sequence of header names to inspect in priority order.
             response_header_name: Optional header name to echo correlation ID in response. Set to None to disable.
             max_length: Maximum length for correlation IDs to prevent log injection.
@@ -140,22 +75,51 @@ class CorrelationMiddleware:
             normalized_name = name.strip().casefold()
             if normalized_name and normalized_name not in normalized_header_names:
                 normalized_header_names.append(normalized_name)
-        self.app = app
         self.header_names = tuple(normalized_header_names)
         self.response_header_name = response_header_name.strip().casefold() if response_header_name else None
         self.max_length = max_length
 
-    def _sanitize(self, value: str) -> str | None:
-        """Sanitize a correlation ID by stripping whitespace and rejecting control characters.
+    async def handle(self, scope: "Scope", receive: "Receive", send: "Send", next_app: "ASGIApp") -> None:
+        """ASGI call handler.
 
         Args:
-            value: Raw correlation ID.
+            scope: The ASGI scope.
+            receive: The ASGI receive callable.
+            send: The ASGI send callable.
+            next_app: The next ASGI application in the middleware stack.
+        """
+        correlation_id = self._extract_correlation_id(scope)
+        ScopeState.from_scope(scope).correlation_id = correlation_id
+
+        if (response_header_name := self.response_header_name) is None:
+            await next_app(scope, receive, send)
+            return
+
+        async def send_wrapper(message: "Message") -> None:
+            if message["type"] == "http.response.start":
+                headers = MutableScopeHeaders.from_message(message)
+                headers[response_header_name] = correlation_id
+            await send(message)
+
+        await next_app(scope, receive, send_wrapper)
+
+    def _extract_correlation_id(self, scope: "Scope") -> str:
+        """Extract correlation ID from incoming request headers or generate fallback.
+
+        Args:
+            scope: The ASGI scope.
 
         Returns:
-            Sanitized correlation ID, or ``None`` when the value is unsafe.
+            Extracted or generated correlation ID.
         """
-        sanitized = _strip_safe_value(value)
-        return sanitized[: self.max_length] if sanitized is not None else None
+        headers = Headers.from_scope(scope)
+        for name in self.header_names:
+            if (value := headers.get(name)) is None:
+                continue
+            correlation_id = self._parse_traceparent(value) if name == "traceparent" else self._sanitize(value)
+            if correlation_id is not None:
+                return correlation_id
+        return str(uuid4())
 
     def _parse_traceparent(self, value: str) -> str | None:
         """Defensively parse W3C traceparent header.
@@ -185,55 +149,25 @@ class CorrelationMiddleware:
             return trace_id[: self.max_length]
         return sanitized[: self.max_length]
 
-    def _extract_correlation_id(self, scope: "Scope") -> str:
-        """Extract correlation ID from incoming request headers or generate fallback.
+    def _sanitize(self, value: str) -> str | None:
+        """Sanitize a correlation ID by stripping whitespace and rejecting control characters.
 
         Args:
-            scope: The ASGI scope.
+            value: Raw correlation ID.
 
         Returns:
-            Extracted or generated correlation ID.
+            Sanitized correlation ID, or ``None`` when the value is unsafe.
         """
-        for name in self.header_names:
-            name_bytes = name.encode("latin-1")
-            for raw_name, raw_value in scope.get("headers", ()):
-                if raw_name.lower() != name_bytes:
-                    continue
-                value = raw_value.decode("latin-1")
-                correlation_id = self._parse_traceparent(value) if name == "traceparent" else self._sanitize(value)
-                if correlation_id is not None:
-                    return correlation_id
-        return CorrelationContext.generate()
+        sanitized = _strip_safe_value(value)
+        return sanitized[: self.max_length] if sanitized is not None else None
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """ASGI call handler.
 
-        Args:
-            scope: The ASGI scope.
-            receive: The ASGI receive callable.
-            send: The ASGI send callable.
-        """
-        if scope["type"] not in ("http", "websocket"):
-            await self.app(scope, receive, send)
-            return
+def _is_lowercase_hex(value: str, length: int) -> bool:
+    return len(value) == length and _LOWERCASE_HEX.issuperset(value)
 
-        correlation_id = self._extract_correlation_id(scope)
-        token = CorrelationContext.set(correlation_id)
-        state = scope.setdefault("state", {})
-        previous_correlation_id = state.get("correlation_id", _MISSING)
-        state["correlation_id"] = correlation_id
 
-        async def send_wrapper(message: "Message") -> None:
-            if message["type"] == "http.response.start" and self.response_header_name:
-                headers = MutableScopeHeaders.from_message(message)
-                headers[self.response_header_name] = correlation_id
-            await send(message)
-
-        try:
-            await self.app(scope, receive, send_wrapper)
-        finally:
-            CorrelationContext.reset(token)
-            if previous_correlation_id is _MISSING:
-                state.pop("correlation_id", None)
-            else:
-                state["correlation_id"] = previous_correlation_id
+def _strip_safe_value(value: str) -> str | None:
+    value = value.strip()
+    if not value or any(ord(character) < 32 or ord(character) == 127 for character in value):
+        return None
+    return value

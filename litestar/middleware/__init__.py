@@ -10,8 +10,8 @@ from litestar.middleware.base import (
 )
 from litestar.middleware.correlation import (
     TRACE_CONTEXT_FALLBACK_HEADERS,
-    CorrelationContext,
     CorrelationMiddleware,
+    get_correlation_id,
 )
 
 __all__ = (
@@ -20,8 +20,8 @@ __all__ = (
     "AbstractAuthenticationMiddleware",
     "AbstractMiddleware",
     "AuthenticationResult",
-    "CorrelationContext",
     "CorrelationMiddleware",
     "DefineMiddleware",
     "MiddlewareProtocol",
+    "get_correlation_id",
 )
