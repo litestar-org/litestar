@@ -1,8 +1,9 @@
-from enum import StrEnum
+from enum import StrEnum, unique
 
 __all__ = ("OpenAPIFormat", "OpenAPIType")
 
 
+@unique
 class OpenAPIFormat(StrEnum):
     """Formats extracted from: https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-00#page-13"""
 
@@ -22,13 +23,14 @@ class OpenAPIFormat(StrEnum):
     URI_TEMPLATE = "uri-template"
     JSON_POINTER = "json-pointer"
     RELATIVE_JSON_POINTER = "relative-json-pointer"
-    IRI = "iri-reference"
+    IRI = "iri"
     IRI_REFERENCE = "iri-reference"
     UUID = "uuid"
     REGEX = "regex"
     BINARY = "binary"
 
 
+@unique
 class OpenAPIType(StrEnum):
     """An OopenAPI type."""
 
