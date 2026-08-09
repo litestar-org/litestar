@@ -502,52 +502,54 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <h1>Source code for litestar.openapi.spec.enums</h1><div class="highlight"><pre>
-<span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
+<span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span><span class="p">,</span> <span class="n">unique</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;OpenAPIFormat&quot;</span><span class="p">,</span> <span class="s2">&quot;OpenAPIType&quot;</span><span class="p">)</span>
 </span><span data-line="4">
 </span><span data-line="5">
 <div class="viewcode-block" id="OpenAPIFormat">
 <a class="viewcode-back" href="../../../../reference/openapi/spec.html#litestar.openapi.spec.OpenAPIFormat">[docs]</a>
-</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">OpenAPIFormat</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-</span><span data-line="7"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Formats extracted from: https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-00#page-13&quot;&quot;&quot;</span>
-</span><span data-line="8">
-</span><span data-line="9">    <span class="n">DATE</span> <span class="o">=</span> <span class="s2">&quot;date&quot;</span>
-</span><span data-line="10">    <span class="n">DATE_TIME</span> <span class="o">=</span> <span class="s2">&quot;date-time&quot;</span>
-</span><span data-line="11">    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
-</span><span data-line="12">    <span class="n">DURATION</span> <span class="o">=</span> <span class="s2">&quot;duration&quot;</span>
-</span><span data-line="13">    <span class="n">URL</span> <span class="o">=</span> <span class="s2">&quot;url&quot;</span>
-</span><span data-line="14">    <span class="n">EMAIL</span> <span class="o">=</span> <span class="s2">&quot;email&quot;</span>
-</span><span data-line="15">    <span class="n">IDN_EMAIL</span> <span class="o">=</span> <span class="s2">&quot;idn-email&quot;</span>
-</span><span data-line="16">    <span class="n">HOST_NAME</span> <span class="o">=</span> <span class="s2">&quot;hostname&quot;</span>
-</span><span data-line="17">    <span class="n">IDN_HOST_NAME</span> <span class="o">=</span> <span class="s2">&quot;idn-hostname&quot;</span>
-</span><span data-line="18">    <span class="n">IPV4</span> <span class="o">=</span> <span class="s2">&quot;ipv4&quot;</span>
-</span><span data-line="19">    <span class="n">IPV6</span> <span class="o">=</span> <span class="s2">&quot;ipv6&quot;</span>
-</span><span data-line="20">    <span class="n">URI</span> <span class="o">=</span> <span class="s2">&quot;uri&quot;</span>
-</span><span data-line="21">    <span class="n">URI_REFERENCE</span> <span class="o">=</span> <span class="s2">&quot;uri-reference&quot;</span>
-</span><span data-line="22">    <span class="n">URI_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;uri-template&quot;</span>
-</span><span data-line="23">    <span class="n">JSON_POINTER</span> <span class="o">=</span> <span class="s2">&quot;json-pointer&quot;</span>
-</span><span data-line="24">    <span class="n">RELATIVE_JSON_POINTER</span> <span class="o">=</span> <span class="s2">&quot;relative-json-pointer&quot;</span>
-</span><span data-line="25">    <span class="n">IRI</span> <span class="o">=</span> <span class="s2">&quot;iri-reference&quot;</span>
-</span><span data-line="26">    <span class="n">IRI_REFERENCE</span> <span class="o">=</span> <span class="s2">&quot;iri-reference&quot;</span>
-</span><span data-line="27">    <span class="n">UUID</span> <span class="o">=</span> <span class="s2">&quot;uuid&quot;</span>
-</span><span data-line="28">    <span class="n">REGEX</span> <span class="o">=</span> <span class="s2">&quot;regex&quot;</span>
-</span><span data-line="29">    <span class="n">BINARY</span> <span class="o">=</span> <span class="s2">&quot;binary&quot;</span></div>
+</span><span data-line="6"><span class="nd">@unique</span>
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">OpenAPIFormat</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+</span><span data-line="8"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Formats extracted from: https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-00#page-13&quot;&quot;&quot;</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="n">DATE</span> <span class="o">=</span> <span class="s2">&quot;date&quot;</span>
+</span><span data-line="11">    <span class="n">DATE_TIME</span> <span class="o">=</span> <span class="s2">&quot;date-time&quot;</span>
+</span><span data-line="12">    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
+</span><span data-line="13">    <span class="n">DURATION</span> <span class="o">=</span> <span class="s2">&quot;duration&quot;</span>
+</span><span data-line="14">    <span class="n">URL</span> <span class="o">=</span> <span class="s2">&quot;url&quot;</span>
+</span><span data-line="15">    <span class="n">EMAIL</span> <span class="o">=</span> <span class="s2">&quot;email&quot;</span>
+</span><span data-line="16">    <span class="n">IDN_EMAIL</span> <span class="o">=</span> <span class="s2">&quot;idn-email&quot;</span>
+</span><span data-line="17">    <span class="n">HOST_NAME</span> <span class="o">=</span> <span class="s2">&quot;hostname&quot;</span>
+</span><span data-line="18">    <span class="n">IDN_HOST_NAME</span> <span class="o">=</span> <span class="s2">&quot;idn-hostname&quot;</span>
+</span><span data-line="19">    <span class="n">IPV4</span> <span class="o">=</span> <span class="s2">&quot;ipv4&quot;</span>
+</span><span data-line="20">    <span class="n">IPV6</span> <span class="o">=</span> <span class="s2">&quot;ipv6&quot;</span>
+</span><span data-line="21">    <span class="n">URI</span> <span class="o">=</span> <span class="s2">&quot;uri&quot;</span>
+</span><span data-line="22">    <span class="n">URI_REFERENCE</span> <span class="o">=</span> <span class="s2">&quot;uri-reference&quot;</span>
+</span><span data-line="23">    <span class="n">URI_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;uri-template&quot;</span>
+</span><span data-line="24">    <span class="n">JSON_POINTER</span> <span class="o">=</span> <span class="s2">&quot;json-pointer&quot;</span>
+</span><span data-line="25">    <span class="n">RELATIVE_JSON_POINTER</span> <span class="o">=</span> <span class="s2">&quot;relative-json-pointer&quot;</span>
+</span><span data-line="26">    <span class="n">IRI</span> <span class="o">=</span> <span class="s2">&quot;iri&quot;</span>
+</span><span data-line="27">    <span class="n">IRI_REFERENCE</span> <span class="o">=</span> <span class="s2">&quot;iri-reference&quot;</span>
+</span><span data-line="28">    <span class="n">UUID</span> <span class="o">=</span> <span class="s2">&quot;uuid&quot;</span>
+</span><span data-line="29">    <span class="n">REGEX</span> <span class="o">=</span> <span class="s2">&quot;regex&quot;</span>
+</span><span data-line="30">    <span class="n">BINARY</span> <span class="o">=</span> <span class="s2">&quot;binary&quot;</span></div>
 
-</span><span data-line="30">
 </span><span data-line="31">
+</span><span data-line="32">
 <div class="viewcode-block" id="OpenAPIType">
 <a class="viewcode-back" href="../../../../reference/openapi/spec.html#litestar.openapi.spec.OpenAPIType">[docs]</a>
-</span><span data-line="32"><span class="k">class</span><span class="w"> </span><span class="nc">OpenAPIType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-</span><span data-line="33"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An OopenAPI type.&quot;&quot;&quot;</span>
-</span><span data-line="34">
-</span><span data-line="35">    <span class="n">ARRAY</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span>
-</span><span data-line="36">    <span class="n">BOOLEAN</span> <span class="o">=</span> <span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="37">    <span class="n">INTEGER</span> <span class="o">=</span> <span class="s2">&quot;integer&quot;</span>
-</span><span data-line="38">    <span class="n">NULL</span> <span class="o">=</span> <span class="s2">&quot;null&quot;</span>
-</span><span data-line="39">    <span class="n">NUMBER</span> <span class="o">=</span> <span class="s2">&quot;number&quot;</span>
-</span><span data-line="40">    <span class="n">OBJECT</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
-</span><span data-line="41">    <span class="n">STRING</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span></div>
+</span><span data-line="33"><span class="nd">@unique</span>
+</span><span data-line="34"><span class="k">class</span><span class="w"> </span><span class="nc">OpenAPIType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+</span><span data-line="35"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An OopenAPI type.&quot;&quot;&quot;</span>
+</span><span data-line="36">
+</span><span data-line="37">    <span class="n">ARRAY</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span>
+</span><span data-line="38">    <span class="n">BOOLEAN</span> <span class="o">=</span> <span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="39">    <span class="n">INTEGER</span> <span class="o">=</span> <span class="s2">&quot;integer&quot;</span>
+</span><span data-line="40">    <span class="n">NULL</span> <span class="o">=</span> <span class="s2">&quot;null&quot;</span>
+</span><span data-line="41">    <span class="n">NUMBER</span> <span class="o">=</span> <span class="s2">&quot;number&quot;</span>
+</span><span data-line="42">    <span class="n">OBJECT</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
+</span><span data-line="43">    <span class="n">STRING</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">
