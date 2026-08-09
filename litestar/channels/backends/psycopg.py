@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from contextlib import AsyncExitStack
-from typing import Any, AsyncGenerator, Iterable
+import asyncio
+from contextlib import AsyncExitStack, suppress
+from typing import TYPE_CHECKING, Any
 
 from psycopg import AsyncConnection
 from psycopg.sql import SQL, Identifier
 
 from litestar.channels.backends.base import ChannelsBackend
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator, Iterable
 
 
 class PsycoPgChannelsBackend(ChannelsBackend):
@@ -16,13 +20,25 @@ class PsycoPgChannelsBackend(ChannelsBackend):
         self._pg_dsn = pg_dsn
         self._subscribed_channels: set[str] = set()
         self._exit_stack = AsyncExitStack()
+        self._listener_lock = asyncio.Lock()
+        self._listener_task: asyncio.Task[None] | None = None
+        self._event_queue: asyncio.Queue[tuple[str, bytes] | Exception] = asyncio.Queue()
+        self._shutting_down = False
 
     async def on_startup(self) -> None:
+        self._exit_stack = AsyncExitStack()
+        self._event_queue = asyncio.Queue()
+        self._shutting_down = False
         self._listener_conn = await AsyncConnection[Any].connect(self._pg_dsn, autocommit=True)
         await self._exit_stack.enter_async_context(self._listener_conn)
+        self._start_listener()
 
     async def on_shutdown(self) -> None:
-        await self._exit_stack.aclose()
+        async with self._listener_lock:
+            self._shutting_down = True
+            await self._stop_listener()
+            self._subscribed_channels.clear()
+            await self._exit_stack.aclose()
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         dec_data = data.decode("utf-8")
@@ -31,21 +47,62 @@ class PsycoPgChannelsBackend(ChannelsBackend):
                 await conn.execute(SQL("NOTIFY {channel}, {data}").format(channel=Identifier(channel), data=dec_data))
 
     async def subscribe(self, channels: Iterable[str]) -> None:
-        for channel in set(channels) - self._subscribed_channels:
-            await self._listener_conn.execute(SQL("LISTEN {channel}").format(channel=Identifier(channel)))
-            self._subscribed_channels.add(channel)
-        await self._listener_conn.commit()
+        requested_channels = set(channels)
+        async with self._listener_lock:
+            channels_to_subscribe = requested_channels - self._subscribed_channels
+            if not channels_to_subscribe:
+                return
+            await self._stop_listener()
+            try:
+                for channel in channels_to_subscribe:
+                    await self._listener_conn.execute(SQL("LISTEN {channel}").format(channel=Identifier(channel)))
+                    self._subscribed_channels.add(channel)
+            finally:
+                if not self._shutting_down:
+                    self._start_listener()
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
-        for channel in channels:
-            await self._listener_conn.execute(SQL("UNLISTEN {channel}").format(channel=Identifier(channel)))
-            await self._listener_conn.commit()
-
-        self._subscribed_channels = self._subscribed_channels - set(channels)
+        requested_channels = set(channels)
+        async with self._listener_lock:
+            channels_to_unsubscribe = requested_channels & self._subscribed_channels
+            if not channels_to_unsubscribe:
+                return
+            await self._stop_listener()
+            try:
+                for channel in channels_to_unsubscribe:
+                    await self._listener_conn.execute(SQL("UNLISTEN {channel}").format(channel=Identifier(channel)))
+                    self._subscribed_channels.remove(channel)
+            finally:
+                if not self._shutting_down:
+                    self._start_listener()
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
-        async for notify in self._listener_conn.notifies():
-            yield notify.channel, notify.payload.encode("utf-8")
+        while True:
+            event = await self._event_queue.get()
+            if isinstance(event, Exception):
+                raise event
+            if event[0] in self._subscribed_channels:
+                yield event
 
     async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
         raise NotImplementedError()
+
+    def _start_listener(self) -> None:
+        self._listener_task = asyncio.create_task(self._listen())
+
+    async def _stop_listener(self) -> None:
+        if self._listener_task is None:
+            return
+        self._listener_task.cancel()
+        with suppress(asyncio.CancelledError):
+            await self._listener_task
+        self._listener_task = None
+
+    async def _listen(self) -> None:
+        try:
+            async for notify in self._listener_conn.notifies():
+                self._event_queue.put_nowait((notify.channel, notify.payload.encode("utf-8")))
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:  # noqa: BLE001 - listener failures are forwarded to stream consumers
+            self._event_queue.put_nowait(exc)
