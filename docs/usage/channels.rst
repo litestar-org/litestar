@@ -412,7 +412,8 @@ The following backends are currently implemented:
     A postgres backend using the `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ driver
 
 :class:`PsycoPgChannelsBackend <.psycopg.PsycoPgChannelsBackend>`
-    A postgres backend using the `psycopg3 <https://www.psycopg.org/psycopg3/docs/>`_ async driver
+    A postgres backend using version 3.2.4 or newer of the
+    `psycopg3 <https://www.psycopg.org/psycopg3/docs/>`_ async driver
 
 Integrating with websocket handlers
 -----------------------------------
