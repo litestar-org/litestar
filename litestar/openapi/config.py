@@ -68,7 +68,7 @@ class OpenAPIConfig:
     Should be an instance of
         :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`.
     """
-    components: Components | list[Components] = field(default_factory=Components)
+    components: Components = field(default_factory=Components)
     """API Components information.
 
     Should be an instance of :class:`Components <litestar.openapi.spec.components.Components>` or a list thereof.
