@@ -6,6 +6,13 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Harden the PsycoPg channels listener
+        :type: bugfix
+
+        Serialize subscription changes and consume notifications in a background task so
+        dynamic ``LISTEN`` and ``UNLISTEN`` operations no longer contend with the listener.
+        Psycopg 3.2.4 or newer is now required for development and documentation builds.
+
     .. change:: Move ``httpx`` to the ``testing`` extra
         :type: feature
         :pr: 4950
