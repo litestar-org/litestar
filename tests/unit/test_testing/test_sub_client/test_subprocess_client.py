@@ -5,8 +5,7 @@ Test the app running in a subprocess
 import pathlib
 from collections.abc import AsyncIterator, Iterator
 
-import httpx
-import httpx_sse
+import httpx2
 import pytest
 
 from litestar.testing import subprocess_async_client, subprocess_sync_client
@@ -17,13 +16,13 @@ APP = "demo:app"
 
 
 @pytest.fixture(name="async_client")
-async def fx_async_client() -> AsyncIterator[httpx.AsyncClient]:
+async def fx_async_client() -> AsyncIterator[httpx2.AsyncClient]:
     async with subprocess_async_client(workdir=ROOT, app=APP) as client:
         yield client
 
 
 @pytest.fixture(name="sync_client")
-def fx_sync_client() -> Iterator[httpx.Client]:
+def fx_sync_client() -> Iterator[httpx2.Client]:
     with subprocess_sync_client(workdir=ROOT, app=APP) as client:
         yield client
 
@@ -45,24 +44,24 @@ async def test_run_app_exception() -> None:
             ...
 
 
-async def test_subprocess_async_client(async_client: httpx.AsyncClient) -> None:
+async def test_subprocess_async_client(async_client: httpx2.AsyncClient) -> None:
     """Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the
     regular async test client.
     """
 
-    async with httpx_sse.aconnect_sse(async_client, "GET", "/notify/hello") as event_source:
-        async for event in event_source.aiter_sse():
+    async with async_client.sse("/notify/hello") as event_source:
+        async for event in event_source:
             assert event.data == "hello"
             break
 
 
-def test_subprocess_sync_client(sync_client: httpx.Client) -> None:
+def test_subprocess_sync_client(sync_client: httpx2.Client) -> None:
     """Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the
     regular async test client.
     """
 
-    with httpx_sse.connect_sse(sync_client, "GET", "/notify/hello") as event_source:
-        for event in event_source.iter_sse():
+    with sync_client.sse("/notify/hello") as event_source:
+        for event in event_source:
             assert event.data == "hello"
             break
 

@@ -115,7 +115,7 @@ async def test_jwt_auth(
     with create_test_client(route_handlers=[my_handler, login_handler, logout_handler]) as client:
         response = client.get("/login")
         assert response.status_code == response_status_code
-        _, _, encoded_token = response.headers.get(auth_header).partition(" ")
+        _, _, encoded_token = response.headers[auth_header].partition(" ")
         assert encoded_token
         decoded_token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm=algorithm)
         assert decoded_token.sub == str(user.id)
@@ -296,7 +296,7 @@ async def test_jwt_cookie_auth(
     with create_test_client(route_handlers=[my_handler, login_handler, logout_handler]) as client:
         response = client.get("/login")
         assert response.status_code == response_status_code
-        _, _, encoded_token = response.headers.get(auth_header).partition(" ")
+        _, _, encoded_token = response.headers[auth_header].partition(" ")
         assert encoded_token
         decoded_token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm=algorithm)
         assert decoded_token.sub == str(user.id)
