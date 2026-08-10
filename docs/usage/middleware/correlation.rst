@@ -55,7 +55,16 @@ Header behavior
 
 The middleware validates W3C ``traceparent`` values. Values from all other configured headers are treated as opaque
 correlation values. Additional formats, including ``grpc-trace-bin`` and provider-specific headers, can be selected
-with ``header_names``; the middleware does not parse those formats.
+without repeating the defaults:
+
+.. code-block:: python
+
+    CorrelationMiddleware(
+        additional_header_names=("grpc-trace-bin", "x-cloud-trace-context"),
+    )
+
+Use ``header_names`` instead to replace the complete lookup list and control its priority. The two options are
+mutually exclusive. The middleware does not parse additional or replacement header formats.
 
 Incoming scope headers are not modified. By default, the selected correlation ID replaces ``x-request-id`` in the
 response; set ``response_header_name=None`` to disable this. This response header contains the selected correlation

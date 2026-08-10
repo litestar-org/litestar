@@ -55,19 +55,30 @@ class CorrelationMiddleware(ASGIMiddleware):
 
     def __init__(
         self,
-        header_names: Sequence[str] = TRACE_CONTEXT_FALLBACK_HEADERS,
+        header_names: Sequence[str] | None = None,
+        additional_header_names: Sequence[str] | None = None,
         response_header_name: str | None = "x-request-id",
         max_length: int = 128,
     ) -> None:
         """Initialize CorrelationMiddleware.
 
         Args:
-            header_names: Header name or sequence of header names to inspect in priority order.
+            header_names: Header name or sequence of header names to inspect in priority order, replacing the defaults.
+            additional_header_names: Header name or sequence of header names to inspect after the defaults.
             response_header_name: Optional header name to echo correlation ID in response. Set to None to disable.
             max_length: Maximum length for correlation IDs to prevent log injection.
+
+        Raises:
+            ValueError: If ``max_length`` is not positive or both header name options are provided.
         """
         if max_length <= 0:
             raise ValueError("max_length must be greater than 0")
+        if header_names is not None and additional_header_names is not None:
+            raise ValueError("header_names and additional_header_names are mutually exclusive")
+        if header_names is None:
+            if isinstance(additional_header_names, str):
+                additional_header_names = (additional_header_names,)
+            header_names = (*TRACE_CONTEXT_FALLBACK_HEADERS, *(additional_header_names or ()))
         if isinstance(header_names, str):
             header_names = (header_names,)
         normalized_header_names: list[str] = []
