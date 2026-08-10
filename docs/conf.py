@@ -223,7 +223,7 @@ nitpick_ignore_regex = [
     (PY_RE, r"litestar.*\.T"),
     (PY_RE, r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (PY_RE, r"litestar\.types.*"),
-    (PY_RE, r"httpx.*"),
+    (PY_RE, r"httpx2.*"),
     # type vars
     (PY_RE, r"litestar.middleware.session.base.ConfigT"),
     (PY_RE, r"litestar\.connection\.base\.AuthT"),
