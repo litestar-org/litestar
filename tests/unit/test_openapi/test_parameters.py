@@ -9,6 +9,7 @@ from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.parameters import ParameterFactory
 from litestar._openapi.schema_generation.examples import ExampleFactory
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
+from litestar.datastructures import MultiDict
 from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -28,6 +29,7 @@ from litestar.params import (
     QueryParameter,
 )
 from litestar.routes import BaseRoute
+from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 from litestar.utils import find_index
 from tests.unit.test_openapi.utils import Gender, LuckyNumber
@@ -612,3 +614,95 @@ def test_explicit_path_param_with_alias_excluded_when_alias_not_in_path() -> Non
         # routing also works for the aliased path parameter
         assert client.get("/foo").text == "foo"
         assert client.get("/").text == ""
+
+
+@dataclasses.dataclass
+class QueryKwargFilters:
+    required_field: str
+    optional_field: int = 10
+
+
+def test_structured_query_kwarg_documents_each_field() -> None:
+    # https://github.com/litestar-org/litestar/issues/2015
+    @get("/")
+    def handler(query: QueryKwargFilters) -> None:
+        pass
+
+    app = Litestar([handler])
+    params = {p.name: p for p in app.openapi_schema.paths["/"].get.parameters}  # type: ignore[union-attr, index]
+
+    assert set(params) == {"required_field", "optional_field"}
+    assert params["required_field"].to_schema() == {
+        "name": "required_field",
+        "in": "query",
+        "schema": {"type": "string"},
+        "required": True,
+        "deprecated": False,
+        "allowEmptyValue": False,
+        "allowReserved": False,
+    }
+    assert params["optional_field"].to_schema() == {
+        "name": "optional_field",
+        "in": "query",
+        "schema": {"type": "integer", "default": 10},
+        "required": False,
+        "deprecated": False,
+        "allowEmptyValue": False,
+        "allowReserved": False,
+    }
+
+
+def test_structured_query_kwarg_matches_runtime_validation() -> None:
+    """The documented parameters must be the ones the handler actually validates."""
+
+    @get("/")
+    def handler(query: QueryKwargFilters) -> None:
+        pass
+
+    with create_test_client(handler) as client:
+        assert client.get("/", params={"required_field": "value"}).status_code == HTTP_200_OK
+        assert client.get("/", params={"optional_field": 1}).status_code == HTTP_400_BAD_REQUEST
+        assert client.get("/", params={"required_field": "v", "optional_field": "nope"}).status_code == (
+            HTTP_400_BAD_REQUEST
+        )
+
+
+@dataclasses.dataclass
+class NestedQueryKwargFilters:
+    nested: QueryKwargFilters
+    top_level: str
+
+
+def test_structured_query_kwarg_keeps_nested_references() -> None:
+    @get("/")
+    def handler(query: NestedQueryKwargFilters) -> None:
+        pass
+
+    app = Litestar([handler])
+    params = {p.name: p for p in app.openapi_schema.paths["/"].get.parameters}  # type: ignore[union-attr, index]
+
+    assert isinstance(params["nested"].schema, Reference)
+    assert params["nested"].schema.ref == "#/components/schemas/QueryKwargFilters"
+    assert params["top_level"].schema == Schema(type=OpenAPIType.STRING)  # type: ignore[union-attr]
+
+
+@pytest.mark.parametrize("annotation", [Any, dict, dict[str, str], MultiDict])
+def test_unstructured_query_kwarg_documents_no_parameters(annotation: Any) -> None:
+    """An unannotated or mapping-annotated ``query`` kwarg has no known parameter names."""
+
+    @get("/")
+    def handler(query: annotation) -> None:  # type: ignore[valid-type]
+        pass
+
+    app = Litestar([handler])
+    assert not app.openapi_schema.paths["/"].get.parameters  # type: ignore[union-attr, index]
+
+
+def test_structured_query_kwarg_conflicting_with_explicit_parameter() -> None:
+    @get("/")
+    def handler(query: QueryKwargFilters, required_field: FromQuery[int]) -> None:
+        pass
+
+    app = Litestar([handler])
+    with pytest.raises(ImproperlyConfiguredException):
+        app.openapi_schema

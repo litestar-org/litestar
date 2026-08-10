@@ -170,12 +170,56 @@ class ParameterFactory:
         )
         return self.create_parameter(field_definition=field_definition, parameter_name=parameter_name)
 
+    def create_parameters_for_query_kwarg(self, field_definition: FieldDefinition) -> None:
+        """Add a Parameter model for each member of a structured ``query`` kwarg.
+
+        The reserved ``query`` kwarg receives the full mapping of query parameters, so when it is
+        annotated with a structured type every field of that type is itself a query parameter and
+        is validated as one at runtime. Documenting the annotation as a single parameter would be
+        wrong, so it is decomposed into one parameter per field instead.
+
+        Args:
+            field_definition: The field definition of the ``query`` kwarg.
+        """
+        if field_definition.is_any or field_definition.is_mapping:
+            # ``query`` is unannotated or annotated as a plain mapping, so there are no known
+            # parameter names to document. Returning before touching the schema creator keeps
+            # this the no-op it has always been for those annotations.
+            return
+
+        result = self.schema_creator.for_field_definition(field_definition)
+        schema = result if isinstance(result, Schema) else self.context.schema_registry.from_reference(result).schema
+
+        if not schema.properties:
+            return
+
+        required_fields = set(schema.required or ())
+
+        for parameter_name, property_schema in schema.properties.items():
+            resolved_schema = (
+                property_schema
+                if isinstance(property_schema, Schema)
+                else self.context.schema_registry.from_reference(property_schema).schema
+            )
+            self.parameters.add(
+                Parameter(
+                    description=resolved_schema.description,
+                    name=parameter_name,
+                    param_in=ParamType.QUERY,
+                    required=parameter_name in required_fields,
+                    schema=property_schema,
+                )
+            )
+
     def create_parameters_for_field_definitions(self, fields: dict[str, FieldDefinition]) -> None:
         """Add Parameter models to the handler's collection for the given field definitions.
 
         Args:
             fields: The field definitions.
         """
+        if (query_field_definition := fields.get("query")) is not None:
+            self.create_parameters_for_query_kwarg(query_field_definition)
+
         unique_handler_fields = (
             (k, v) for k, v in fields.items() if k not in RESERVED_KWARGS and k not in self.layered_parameters
         )
