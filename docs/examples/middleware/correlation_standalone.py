@@ -4,7 +4,7 @@ from litestar.middleware.correlation import CorrelationMiddleware, get_correlati
 
 @get("/")
 async def index_handler(request: Request) -> dict[str, str | None]:
-    return {"correlation_id": get_correlation_id(request.scope)}
+    return {"correlation_id": get_correlation_id(request)}
 
 
 app = Litestar(

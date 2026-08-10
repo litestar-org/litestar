@@ -1,7 +1,9 @@
-from collections.abc import Sequence
-from typing import TYPE_CHECKING, Final
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Final
 from uuid import uuid4
 
+from litestar.connection import ASGIConnection
 from litestar.datastructures.headers import Headers, MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.middleware.base import ASGIMiddleware
@@ -9,6 +11,8 @@ from litestar.types import Empty
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from litestar.types import ASGIApp, Message, Receive, Scope, Send
 
 __all__ = (
@@ -21,25 +25,21 @@ TRACE_CONTEXT_FALLBACK_HEADERS: Final[tuple[str, ...]] = (
     "x-request-id",
     "x-correlation-id",
     "traceparent",
-    "x-cloud-trace-context",
-    "grpc-trace-bin",
-    "x-amzn-trace-id",
-    "x-b3-traceid",
-    "x-client-trace-id",
 )
 
 _LOWERCASE_HEX = frozenset("0123456789abcdef")
 
 
-def get_correlation_id(scope: "Scope") -> str | None:
+def get_correlation_id(connection: ASGIConnection[Any, Any, Any, Any] | Scope) -> str | None:
     """Get the correlation ID stored on the connection scope by :class:`CorrelationMiddleware`.
 
     Args:
-        scope: The ASGI scope.
+        connection: An ASGI connection or scope.
 
     Returns:
         The correlation ID, or ``None`` if none was set.
     """
+    scope = connection.scope if isinstance(connection, ASGIConnection) else connection
     correlation_id = ScopeState.from_scope(scope).correlation_id
     return None if correlation_id is Empty else correlation_id
 
@@ -79,7 +79,7 @@ class CorrelationMiddleware(ASGIMiddleware):
         self.response_header_name = response_header_name.strip().casefold() if response_header_name else None
         self.max_length = max_length
 
-    async def handle(self, scope: "Scope", receive: "Receive", send: "Send", next_app: "ASGIApp") -> None:
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         """ASGI call handler.
 
         Args:
@@ -95,7 +95,7 @@ class CorrelationMiddleware(ASGIMiddleware):
             await next_app(scope, receive, send)
             return
 
-        async def send_wrapper(message: "Message") -> None:
+        async def send_wrapper(message: Message) -> None:
             if message["type"] == "http.response.start":
                 headers = MutableScopeHeaders.from_message(message)
                 headers[response_header_name] = correlation_id
@@ -103,7 +103,7 @@ class CorrelationMiddleware(ASGIMiddleware):
 
         await next_app(scope, receive, send_wrapper)
 
-    def _extract_correlation_id(self, scope: "Scope") -> str:
+    def _extract_correlation_id(self, scope: Scope) -> str:
         """Extract correlation ID from incoming request headers or generate fallback.
 
         Args:

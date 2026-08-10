@@ -6,12 +6,18 @@ from uuid import UUID
 
 import pytest
 
-from litestar import Litestar, get, websocket
-from litestar.middleware.correlation import CorrelationMiddleware, get_correlation_id
+from litestar import Litestar, Request, get, websocket
+from litestar.middleware.correlation import (
+    TRACE_CONTEXT_FALLBACK_HEADERS,
+    CorrelationMiddleware,
+    get_correlation_id,
+)
 from litestar.params import FromPath
 from litestar.testing import AsyncTestClient
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable
+
     from litestar.connection import WebSocket
     from litestar.types import Message, Receive, Scope, Send
 
@@ -29,6 +35,10 @@ async def _send(_: Message) -> None:
     return None
 
 
+async def _await_middleware(awaitable: Awaitable[None]) -> None:
+    await awaitable
+
+
 def _scope(scope_type: str = "http", headers: list[tuple[bytes, bytes]] | None = None) -> Any:
     return {"type": scope_type, "headers": headers or []}
 
@@ -38,13 +48,17 @@ def test_header_names_are_normalized_and_deduplicated() -> None:
     assert middleware.header_names == ("x-request-id", "x-trace-id")
 
 
+def test_default_header_names_are_conservative() -> None:
+    assert TRACE_CONTEXT_FALLBACK_HEADERS == ("x-request-id", "x-correlation-id", "traceparent")
+
+
 def test_single_header_name_is_not_treated_as_a_sequence_of_characters() -> None:
     async def app(scope: Scope, receive: Receive, send: Send) -> None:
         assert get_correlation_id(scope) == "selected"
 
     middleware = CorrelationMiddleware(header_names="X-Correlation-ID")
     scope = _scope(headers=[(b"x-correlation-id", b"selected")])
-    asyncio.run(middleware(app)(scope, _receive, _send))
+    asyncio.run(_await_middleware(middleware(app)(scope, _receive, _send)))
 
 
 @pytest.mark.parametrize("max_length", [0, -1])
@@ -60,7 +74,7 @@ def test_blank_or_control_character_values_fall_through_to_lower_priority_header
 
     middleware = CorrelationMiddleware(header_names=["x-first", "x-second"])
     scope = _scope(headers=[(b"x-first", unsafe_value), (b"x-second", b"safe-id")])
-    asyncio.run(middleware(app)(scope, _receive, _send))
+    asyncio.run(_await_middleware(middleware(app)(scope, _receive, _send)))
 
 
 @pytest.mark.parametrize(
@@ -82,7 +96,7 @@ def test_malformed_traceparent_uses_sanitized_raw_value(value: str) -> None:
         assert get_correlation_id(scope) == value[:128]
 
     scope = _scope(headers=[(b"traceparent", f"  {value}  ".encode())])
-    asyncio.run(CorrelationMiddleware(header_names="traceparent")(app)(scope, _receive, _send))
+    asyncio.run(_await_middleware(CorrelationMiddleware(header_names="traceparent")(app)(scope, _receive, _send)))
 
 
 def test_valid_traceparent_extracts_trace_id() -> None:
@@ -92,7 +106,7 @@ def test_valid_traceparent_extracts_trace_id() -> None:
         assert get_correlation_id(scope) == trace_id
 
     scope = _scope(headers=[(b"traceparent", f"00-{trace_id}-00f067aa012302b7-01".encode())])
-    asyncio.run(CorrelationMiddleware(header_names="traceparent")(app)(scope, _receive, _send))
+    asyncio.run(_await_middleware(CorrelationMiddleware(header_names="traceparent")(app)(scope, _receive, _send)))
 
 
 def test_traceparent_is_validated_before_max_length_is_applied() -> None:
@@ -101,7 +115,9 @@ def test_traceparent_is_validated_before_max_length_is_applied() -> None:
 
     value = b"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa012302b7-01"
     scope = _scope(headers=[(b"traceparent", value)])
-    asyncio.run(CorrelationMiddleware(header_names="traceparent", max_length=8)(app)(scope, _receive, _send))
+    asyncio.run(
+        _await_middleware(CorrelationMiddleware(header_names="traceparent", max_length=8)(app)(scope, _receive, _send))
+    )
 
 
 def test_unsafe_traceparent_falls_through_to_lower_priority_header() -> None:
@@ -110,7 +126,7 @@ def test_unsafe_traceparent_falls_through_to_lower_priority_header() -> None:
 
     scope = _scope(headers=[(b"traceparent", b"bad\tvalue"), (b"x-request-id", b"safe-id")])
     middleware = CorrelationMiddleware(header_names=["traceparent", "x-request-id"])
-    asyncio.run(middleware(app)(scope, _receive, _send))
+    asyncio.run(_await_middleware(middleware(app)(scope, _receive, _send)))
 
 
 def test_uuid_is_generated_when_no_safe_header_matches() -> None:
@@ -120,11 +136,22 @@ def test_uuid_is_generated_when_no_safe_header_matches() -> None:
         assert UUID(correlation_id)
 
     scope = _scope(headers=[(b"x-request-id", b"bad\nvalue")])
-    asyncio.run(CorrelationMiddleware()(app)(scope, _receive, _send))
+    asyncio.run(_await_middleware(CorrelationMiddleware()(app)(scope, _receive, _send)))
 
 
 def test_get_correlation_id_returns_none_when_middleware_did_not_run() -> None:
     assert get_correlation_id(_scope()) is None
+
+
+def test_explicit_grpc_trace_header_is_opaque_and_unchanged() -> None:
+    value = b"opaque-grpc-trace-value"
+
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
+        assert get_correlation_id(scope) == value.decode()
+        assert scope["headers"] == [(b"grpc-trace-bin", value)]
+
+    scope = _scope(headers=[(b"grpc-trace-bin", value)])
+    asyncio.run(_await_middleware(CorrelationMiddleware(header_names="grpc-trace-bin")(app)(scope, _receive, _send)))
 
 
 def test_response_header_replaces_existing_values() -> None:
@@ -143,7 +170,7 @@ def test_response_header_replaces_existing_values() -> None:
         sent.append(message)
 
     scope = _scope(headers=[(b"x-request-id", b"authoritative")])
-    asyncio.run(CorrelationMiddleware()(app)(scope, _receive, send))
+    asyncio.run(_await_middleware(CorrelationMiddleware()(app)(scope, _receive, send)))
     assert sent[0]["headers"] == [(b"x-request-id", b"authoritative")]
 
 
@@ -157,7 +184,7 @@ def test_response_header_can_be_disabled() -> None:
         sent.append(message)
 
     scope = _scope()
-    asyncio.run(CorrelationMiddleware(response_header_name=None)(app)(scope, _receive, send))
+    asyncio.run(_await_middleware(CorrelationMiddleware(response_header_name=None)(app)(scope, _receive, send)))
     assert sent[0]["headers"] == []
 
 
@@ -174,8 +201,8 @@ async def test_correlation_id_is_available_to_downstream_middleware_and_handlers
             await downstream(scope, receive, send, next_app)
 
     @get("/")
-    async def handler(request: Any) -> dict[str, str | None]:
-        return {"correlation_id": get_correlation_id(request.scope)}
+    async def handler(request: Request[Any, Any, Any]) -> dict[str, str | None]:
+        return {"correlation_id": get_correlation_id(request)}
 
     app = Litestar(route_handlers=[handler], middleware=[CorrelationMiddleware(), DownstreamMiddleware()])
     async with AsyncTestClient(app=app) as client:
@@ -187,9 +214,9 @@ async def test_correlation_id_is_available_to_downstream_middleware_and_handlers
 @pytest.mark.anyio
 async def test_http_requests_are_isolated_concurrently() -> None:
     @get("/{request_id:str}")
-    async def handler(request: Any, request_id: FromPath[str]) -> dict[str, str | None]:
+    async def handler(request: Request[Any, Any, Any], request_id: FromPath[str]) -> dict[str, str | None]:
         await asyncio.sleep(0)
-        return {"correlation_id": get_correlation_id(request.scope), "request_id": request_id}
+        return {"correlation_id": get_correlation_id(request), "request_id": request_id}
 
     app = Litestar(route_handlers=[handler], middleware=[CorrelationMiddleware()])
     async with AsyncTestClient(app=app) as client:
@@ -204,7 +231,7 @@ async def test_websocket_scope_exposes_correlation_id() -> None:
     @websocket("/")
     async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
-        await socket.send_text(get_correlation_id(socket.scope) or "missing")
+        await socket.send_text(get_correlation_id(socket) or "missing")
         await socket.close()
 
     app = Litestar(route_handlers=[handler], middleware=[CorrelationMiddleware()])
