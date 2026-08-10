@@ -128,7 +128,7 @@ and
     * ``http://localhost:8000/schema`` (for `ReDoc <https://redocly.com/redoc>`_),
     * ``http://localhost:8000/schema/swagger`` (for `Swagger UI <https://swagger.io/>`_),
     * ``http://localhost:8000/schema/elements`` (for `Stoplight Elements <https://stoplight.io/open-source/elements/>`_)
-    * ``http://localhost:8000/schema/rapidoc`` (for `RapiDoc <https://rapidocweb.com/>`_)
+    * ``http://localhost:8000/schema/rapidoc`` (for `RapiDoc <https://github.com/rapi-doc/RapiDoc>`_)
 
 You can check out a more in-depth tutorial in the :doc:`/tutorials/todo-app/index` section!
 

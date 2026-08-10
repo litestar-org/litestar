@@ -225,7 +225,7 @@ Litestar serves the documentation from the generated OpenAPI schema with:
 - [ReDoc](https://redoc.ly/)
 - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Stoplight Elements](https://github.com/stoplightio/elements)
-- [RapiDoc](https://rapidocweb.com/)
+- [RapiDoc](https://github.com/rapi-doc/RapiDoc)
 
 All these are available and enabled by default.
 
