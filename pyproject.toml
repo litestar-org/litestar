@@ -144,8 +144,7 @@ dev = [
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
   "opentelemetry-sdk",
-  "httpx",  # TODO(httpx2): remove with httpx-sse in litestar-wfh.3
-  "httpx-sse",
+  "httpx",  # TODO(httpx2): remove in litestar-wfh.3
   "structlog",
 ]
 
