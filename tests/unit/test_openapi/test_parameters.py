@@ -681,8 +681,8 @@ def test_structured_query_kwarg_keeps_nested_references() -> None:
     app = Litestar([handler])
     params = {p.name: p for p in app.openapi_schema.paths["/"].get.parameters}  # type: ignore[union-attr, index]
 
-    assert isinstance(params["nested"].schema, Reference)
-    assert params["nested"].schema.ref == "#/components/schemas/QueryKwargFilters"
+    assert isinstance(params["nested"].schema, Reference)  # type: ignore[union-attr]
+    assert params["nested"].schema.ref == "#/components/schemas/QueryKwargFilters"  # type: ignore[union-attr]
     assert params["top_level"].schema == Schema(type=OpenAPIType.STRING)  # type: ignore[union-attr]
 
 
@@ -691,7 +691,7 @@ def test_unstructured_query_kwarg_documents_no_parameters(annotation: Any) -> No
     """An unannotated or mapping-annotated ``query`` kwarg has no known parameter names."""
 
     @get("/")
-    def handler(query: annotation) -> None:  # type: ignore[valid-type]
+    def handler(query: annotation) -> None:  # pyright: ignore[reportInvalidTypeForm]
         pass
 
     app = Litestar([handler])
