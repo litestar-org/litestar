@@ -10,7 +10,7 @@ to understand and interact with your API.
 Litestar maintains and ships with UI plugins for a range of popular popular OpenAPI documentation tools:
 
 - `Scalar <https://github.com/scalar/scalar/>`_
-- `RapiDoc <https://rapidocweb.com/>`_
+- `RapiDoc <https://github.com/rapi-doc/RapiDoc>`_
 - `ReDoc <https://redocly.com/>`_
 - `Stoplight Elements <https://stoplight.io/open-source/elements>`_
 - `Swagger UI <https://swagger.io/tools/swagger-ui/>`_
