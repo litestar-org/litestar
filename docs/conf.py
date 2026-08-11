@@ -317,7 +317,7 @@ html_theme_options = {
         "About": {
             "Litestar Organization": {
                 "description": "Details about the Litestar organization",
-                "link": "https://litestar.dev/about/organization",
+                "link": "https://litestar.dev/about",
                 "icon": "org",
             },
             "Releases": {
