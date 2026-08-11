@@ -25,7 +25,7 @@ class _ConcurrentConnection:
 
 
 class _FailingConnection(_ConcurrentConnection):
-    def notifies(self) -> _FailingNotifications:
+    def notifies(self, *, timeout: float | None = None, stop_after: int | None = None) -> _FailingNotifications:
         return _FailingNotifications()
 
 
