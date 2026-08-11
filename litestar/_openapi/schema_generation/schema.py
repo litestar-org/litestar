@@ -219,7 +219,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry")
+    __slots__ = ("generate_examples", "plugins", "prefer_alias", "processing_type_aliases", "schema_registry")
 
     def __init__(
         self,
@@ -240,6 +240,7 @@ class SchemaCreator:
         self.plugins = plugins if plugins is not None else []
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
+        self.processing_type_aliases: set[Any] = set()
 
     @classmethod
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
@@ -343,14 +344,22 @@ class SchemaCreator:
         )
 
     def for_type_alias_type(self, field_definition: FieldDefinition) -> Schema | Reference:
-        return self.for_field_definition(
-            FieldDefinition.from_kwarg(
-                annotation=field_definition.annotation.__value__,
-                name=field_definition.name,
-                default=field_definition.default,
-                kwarg_definition=field_definition.kwarg_definition,
+        alias_type = field_definition.annotation
+        if alias_type in self.processing_type_aliases:
+            return Schema()
+
+        self.processing_type_aliases.add(alias_type)
+        try:
+            return self.for_field_definition(
+                FieldDefinition.from_kwarg(
+                    annotation=field_definition.annotation.__value__,
+                    name=field_definition.name,
+                    default=field_definition.default,
+                    kwarg_definition=field_definition.kwarg_definition,
+                )
             )
-        )
+        finally:
+            self.processing_type_aliases.remove(alias_type)
 
     @staticmethod
     def for_upload_file(field_definition: FieldDefinition) -> Schema:
