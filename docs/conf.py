@@ -360,7 +360,7 @@ html_theme_options = {
                 {
                     "title": "Litestar Organization",
                     "summary": "Details about the Litestar organization",
-                    "url": "https://litestar.dev/about/organization",
+                    "url": "https://litestar.dev/about",
                     "icon": "org",
                 },
                 {
