@@ -42,7 +42,7 @@
 
         .. seealso::
             :ref:`asgi-middleware-migration`
-            
+
     .. change:: Harden the PsycoPg channels listener
         :type: bugfix
 
