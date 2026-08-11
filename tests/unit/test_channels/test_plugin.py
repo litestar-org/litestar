@@ -169,13 +169,10 @@ async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_back
 
     async with AsyncTestClient(app) as client:
         async with await client.websocket_connect("/ws/foo") as ws:
-            await asyncio.sleep(0.1)
             await channels_plugin.wait_published("something", "foo")
             assert await ws.receive_text(timeout=2) == "something"
 
         async with await client.websocket_connect("/ws/bar") as ws:
-            await asyncio.sleep(0.1)
-
             await channels_plugin.wait_published("something else", "bar")
             assert await ws.receive_text(timeout=2) == "something else"
 

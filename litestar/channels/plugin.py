@@ -81,8 +81,9 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         self._pub_queue: Queue[tuple[bytes, list[str]]] | None = None
         self._pub_task: Task | None = None
         self._sub_task: Task | None = None
+        configured_channels = list(channels or [])
 
-        if not (channels or arbitrary_channels_allowed):
+        if not (configured_channels or arbitrary_channels_allowed):
             raise ImproperlyConfiguredException("Must define either channels or set arbitrary_channels_allowed=True")
 
         # make the path absolute, so we can simply concatenate it later
@@ -102,7 +103,9 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         self._backlog_strategy: BacklogStrategy = subscriber_backlog_strategy
         self._subscriber_class = subscriber_class
 
-        self._channels: dict[str, set[Subscriber]] = {channel: set() for channel in channels or []}
+        self._configured_channels = set(configured_channels)
+        self._channels: dict[str, set[Subscriber]] = {channel: set() for channel in configured_channels}
+        self._lifecycle_lock = asyncio.Lock()
 
     def encode_data(self, data: LitestarEncodableType) -> bytes:
         """Encode data before storing it in the backend"""
@@ -180,33 +183,39 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         """
         if isinstance(channels, str):
             channels = [channels]
+        else:
+            channels = list(channels)
+
+        if not self._arbitrary_channels_allowed:
+            for channel in channels:
+                if channel not in self._channels:
+                    raise ChannelsException(
+                        f"Unknown channel: {channel!r}. Either explicitly defined the channel or set "
+                        "arbitrary_channels_allowed=True"
+                    )
 
         subscriber = self._subscriber_class(
             plugin=self,
             max_backlog=self._max_backlog,
             backlog_strategy=self._backlog_strategy,
         )
-        channels_to_subscribe = set()
-
-        for channel in channels:
-            if channel not in self._channels:
-                if not self._arbitrary_channels_allowed:
-                    raise ChannelsException(
-                        f"Unknown channel: {channel!r}. Either explicitly defined the channel or set "
-                        "arbitrary_channels_allowed=True"
-                    )
-                self._channels[channel] = set()
-            channel_subscribers = self._channels[channel]
-            if not channel_subscribers:
-                channels_to_subscribe.add(channel)
-
-            channel_subscribers.add(subscriber)
-
-        if channels_to_subscribe:
-            await self._backend.subscribe(channels_to_subscribe)
-
         if history:
             await self.put_subscriber_history(subscriber=subscriber, limit=history, channels=channels)
+        async with self._lifecycle_lock:
+            affected_channels = set()
+            new_channels = set()
+            for channel in channels:
+                channel_subscribers = self._channels.get(channel, set())
+                if subscriber not in channel_subscribers:
+                    if not channel_subscribers:
+                        new_channels.add(channel)
+                    affected_channels.add(channel)
+
+            if new_channels:
+                await self._backend.subscribe(new_channels)
+
+            for channel in affected_channels:
+                self._channels.setdefault(channel, set()).add(subscriber)
 
         return subscriber
 
@@ -219,30 +228,18 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
             subscriber: :class:`Subscriber` to unsubscribe
         """
         if channels is None:
-            channels = list(self._channels.keys())
+            requested_channels = None
         elif isinstance(channels, str):
-            channels = [channels]
+            requested_channels = [channels]
+        else:
+            requested_channels = list(channels)
 
-        channels_to_unsubscribe: set[str] = set()
+        should_stop = await self._remove_subscriber(subscriber, requested_channels)
 
-        for channel in channels:
-            channel_subscribers = self._channels[channel]
-
-            try:
-                channel_subscribers.remove(subscriber)
-            except KeyError:  # subscriber was not subscribed to this channel. This may happen if channels is None
-                continue
-
-            if not channel_subscribers:
-                channels_to_unsubscribe.add(channel)
-
-        if all(subscriber not in queues for queues in self._channels.values()):
+        if should_stop:
             await subscriber.put(None)  # this will stop any running task or generator by breaking the inner loop
             if subscriber.is_running:
                 await subscriber.stop()
-
-        if channels_to_unsubscribe:
-            await self._backend.unsubscribe(channels_to_unsubscribe)
 
     @asynccontextmanager
     async def start_subscription(
@@ -261,12 +258,13 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         Returns:
             A :class:`Subscriber`
         """
-        subscriber = await self.subscribe(channels, history=history)
+        materialized_channels = channels if isinstance(channels, str) else list(channels)
+        subscriber = await self.subscribe(materialized_channels, history=history)
 
         try:
             yield subscriber
         finally:
-            await self.unsubscribe(subscriber, channels)
+            await self.unsubscribe(subscriber, materialized_channels)
 
     async def put_subscriber_history(
         self, subscriber: Subscriber, channels: str | Iterable[str], limit: int | None = None
@@ -282,15 +280,36 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
             for entry in history:
                 await subscriber.put(entry)
 
-    async def _ws_handler_func(self, channel_name: FromPath[str], socket: WebSocket) -> None:
-        await socket.accept()
+    async def _remove_subscriber(self, subscriber: Subscriber, requested_channels: list[str] | None) -> bool:
+        async with self._lifecycle_lock:
+            channels = list(self._channels) if requested_channels is None else requested_channels
+            channels_to_unsubscribe: set[str] = set()
+            affected_channels = set()
+            for channel in channels:
+                channel_subscribers = self._channels.get(channel)
+                if not channel_subscribers or subscriber not in channel_subscribers:
+                    continue
+                if len(channel_subscribers) == 1:
+                    channels_to_unsubscribe.add(channel)
+                affected_channels.add(channel)
+            if channels_to_unsubscribe:
+                await self._backend.unsubscribe(channels_to_unsubscribe)
+            for channel in affected_channels:
+                self._channels[channel].remove(subscriber)
+            for channel in channels_to_unsubscribe - self._configured_channels:
+                del self._channels[channel]
 
+            return all(subscriber not in subscribers for subscribers in self._channels.values())
+
+    async def _ws_handler_func(self, channel_name: FromPath[str], socket: WebSocket) -> None:
         # the ternary operator triggers a mypy bug: https://github.com/python/mypy/issues/10740
         on_event: EventCallback = socket.send_text if self._socket_send_mode == "text" else socket.send_bytes  # type: ignore[assignment]
 
         async with self.start_subscription(channel_name) as subscriber:
             if self._handler_should_send_history:
                 await self.put_subscriber_history(subscriber, channels=channel_name, limit=self._history_limit)
+
+            await socket.accept()
 
             # use the background task, so we can block on receive(), breaking the loop when a connection closes
             async with subscriber.run_in_background(on_event):
