@@ -199,27 +199,23 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
             max_backlog=self._max_backlog,
             backlog_strategy=self._backlog_strategy,
         )
-        try:
-            async with self._lifecycle_lock:
-                channels_to_subscribe = set()
-                for channel in channels:
-                    channel_subscribers = self._channels.setdefault(channel, set())
+        if history:
+            await self.put_subscriber_history(subscriber=subscriber, limit=history, channels=channels)
+        async with self._lifecycle_lock:
+            affected_channels = set()
+            new_channels = set()
+            for channel in channels:
+                channel_subscribers = self._channels.get(channel, set())
+                if subscriber not in channel_subscribers:
                     if not channel_subscribers:
-                        channels_to_subscribe.add(channel)
-                    channel_subscribers.add(subscriber)
+                        new_channels.add(channel)
+                    affected_channels.add(channel)
 
-                if channels_to_subscribe:
-                    await self._backend.subscribe(channels_to_subscribe)
+            if new_channels:
+                await self._backend.subscribe(new_channels)
 
-            if history:
-                await self.put_subscriber_history(subscriber=subscriber, limit=history, channels=channels)
-        except BaseException:
-            cleanup_task = create_task(self.unsubscribe(subscriber, channels))
-            try:
-                await asyncio.gather(asyncio.shield(cleanup_task), return_exceptions=True)
-            except CancelledError:
-                await asyncio.gather(cleanup_task, return_exceptions=True)
-            raise
+            for channel in affected_channels:
+                self._channels.setdefault(channel, set()).add(subscriber)
 
         return subscriber
 
@@ -288,26 +284,20 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         async with self._lifecycle_lock:
             channels = list(self._channels) if requested_channels is None else requested_channels
             channels_to_unsubscribe: set[str] = set()
-            removed_channels: set[str] = set()
+            affected_channels = set()
             for channel in channels:
                 channel_subscribers = self._channels.get(channel)
                 if not channel_subscribers or subscriber not in channel_subscribers:
                     continue
-                channel_subscribers.remove(subscriber)
-                removed_channels.add(channel)
-                if not channel_subscribers:
+                if len(channel_subscribers) == 1:
                     channels_to_unsubscribe.add(channel)
-
+                affected_channels.add(channel)
             if channels_to_unsubscribe:
-                try:
-                    await self._backend.unsubscribe(channels_to_unsubscribe)
-                except BaseException:
-                    for channel in removed_channels:
-                        self._channels.setdefault(channel, set()).add(subscriber)
-                    raise
-                for channel in channels_to_unsubscribe - self._configured_channels:
-                    if not self._channels[channel]:
-                        del self._channels[channel]
+                await self._backend.unsubscribe(channels_to_unsubscribe)
+            for channel in affected_channels:
+                self._channels[channel].remove(subscriber)
+            for channel in channels_to_unsubscribe - self._configured_channels:
+                del self._channels[channel]
 
             return all(subscriber not in subscribers for subscribers in self._channels.values())
 

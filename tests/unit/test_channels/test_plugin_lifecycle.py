@@ -41,17 +41,15 @@ async def test_subscribe_validates_generator_before_mutating_state() -> None:
     backend.subscribe.assert_not_awaited()
 
 
-async def test_subscribe_rolls_back_dynamic_channel_on_backend_error() -> None:
+async def test_subscribe_does_not_mutate_state_on_backend_errors() -> None:
     backend = MemoryChannelsBackend()
-    backend.subscribe = AsyncMock(side_effect=RuntimeError("subscribe failed"))
-    backend.unsubscribe = AsyncMock()
+    backend.subscribe = backend.unsubscribe = AsyncMock(side_effect=RuntimeError("backend failure"))
     plugin = ChannelsPlugin(backend=backend, arbitrary_channels_allowed=True)
 
-    with pytest.raises(RuntimeError, match="subscribe failed"):
+    with pytest.raises(RuntimeError, match="backend failure"):
         await plugin.subscribe("dynamic")
 
     assert "dynamic" not in plugin._channels
-    backend.unsubscribe.assert_awaited_once_with({"dynamic"})
 
 
 async def test_unsubscribe_prunes_only_dynamic_channels_and_is_idempotent() -> None:
