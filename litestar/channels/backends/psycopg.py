@@ -12,6 +12,12 @@ from litestar.channels.backends.base import ChannelsBackend
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Iterable
 
+_LISTEN_POLL_INTERVAL = 0.1
+"""Duration of a single ``notifies()`` pass, after which the listener re-checks whether to stop."""
+
+_STOP_LISTENER_TIMEOUT = 5.0
+"""How long to wait for the listener to stop on its own before falling back to cancellation."""
+
 
 class PsycoPgChannelsBackend(ChannelsBackend):
     _listener_conn: AsyncConnection[Any]
@@ -24,6 +30,7 @@ class PsycoPgChannelsBackend(ChannelsBackend):
         self._listener_task: asyncio.Task[None] | None = None
         self._event_queue: asyncio.Queue[tuple[str, bytes] | Exception] = asyncio.Queue()
         self._shutting_down = False
+        self._stop_listening = False
 
     async def on_startup(self) -> None:
         self._exit_stack = AsyncExitStack()
@@ -88,20 +95,26 @@ class PsycoPgChannelsBackend(ChannelsBackend):
         raise NotImplementedError()
 
     def _start_listener(self) -> None:
+        self._stop_listening = False
         self._listener_task = asyncio.create_task(self._listen())
 
     async def _stop_listener(self) -> None:
         if self._listener_task is None:
             return
-        self._listener_task.cancel()
-        with suppress(asyncio.CancelledError):
-            await self._listener_task
+        self._stop_listening = True
+        try:
+            await asyncio.wait_for(asyncio.shield(self._listener_task), _STOP_LISTENER_TIMEOUT)
+        except asyncio.TimeoutError:
+            self._listener_task.cancel()
+            with suppress(asyncio.CancelledError, asyncio.TimeoutError):
+                await asyncio.wait_for(asyncio.shield(self._listener_task), _STOP_LISTENER_TIMEOUT)
         self._listener_task = None
 
     async def _listen(self) -> None:
         try:
-            async for notify in self._listener_conn.notifies():
-                self._event_queue.put_nowait((notify.channel, notify.payload.encode("utf-8")))
+            while not self._stop_listening:
+                async for notify in self._listener_conn.notifies(timeout=_LISTEN_POLL_INTERVAL):
+                    self._event_queue.put_nowait((notify.channel, notify.payload.encode("utf-8")))
         except asyncio.CancelledError:
             raise
         except Exception as exc:  # noqa: BLE001 - listener failures are forwarded to stream consumers
