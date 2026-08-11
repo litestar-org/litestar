@@ -79,5 +79,10 @@ def create_examples_for_field(field: FieldDefinition) -> list[Example]:
         field_meta = _create_field_meta(replace(field, annotation=_normalize_example_value(field.annotation)))
         value = ExampleFactory.get_field_value(field_meta)
         return [Example(description=f"Example {field.name} value", value=value)]
-    except ParameterException:
+    except (ParameterException, ValueError):
+        # Example generation is best effort: the synthesized value can be
+        # rejected by the model's own validation, e.g. pydantic's
+        # ValidationError (a ValueError subclass) for a field with a
+        # ``validation_alias``, which polyfactory populates by field name.
+        # https://github.com/litestar-org/litestar/issues/4288
         return []

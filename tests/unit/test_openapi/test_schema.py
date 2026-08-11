@@ -842,3 +842,38 @@ def test_decimal_schema_type() -> None:
 
     schema = create_schema_for_annotation(Decimal)
     assert schema.type == OpenAPIType.STRING
+
+
+def test_response_spec_list_container_with_validation_alias() -> None:
+    """Schema generation must not fail when an example value is rejected by
+    the model's own validation.
+
+    polyfactory builds pydantic models by field name, so a field with a
+    ``validation_alias`` raises a ``ValidationError`` during example
+    synthesis, which crashed OpenAPI generation with a 500.
+    https://github.com/litestar-org/litestar/issues/4288
+    """
+    from uuid import UUID
+
+    from pydantic import BaseModel
+    from pydantic import Field as PydanticField
+
+    from litestar import Litestar, get, status_codes
+    from litestar.openapi import OpenAPIConfig, ResponseSpec
+
+    class AliasedModel(BaseModel):
+        model_id: Optional[UUID] = PydanticField(validation_alias="model_id_model")
+        name: Optional[str] = PydanticField(default=None)
+
+    @get(
+        path="/",
+        responses={
+            status_codes.HTTP_200_OK: ResponseSpec(data_container=list[AliasedModel], description="Ok"),
+        },
+    )
+    async def handler() -> list[AliasedModel]:
+        return []
+
+    app = Litestar([handler], openapi_config=OpenAPIConfig(title="t", version="1.0.0"))
+    schema = app.openapi_schema.to_schema()
+    assert any(key.endswith("AliasedModel") for key in schema["components"]["schemas"])
