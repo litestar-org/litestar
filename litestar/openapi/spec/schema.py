@@ -647,6 +647,24 @@ class Schema(BaseSchemaObject):
     discouraged, and later versions of this specification may remove it.
     """
 
+    dynamic_ref: str | None = field(default=None, metadata={"alias": "$dynamicRef"})
+    """The value of ``$dynamicRef`` MUST be a string, in the form of a URI-reference.
+
+    This keyword is used to reference a dynamically-anchored schema. At runtime, the URI reference is resolved against
+    the base URI of the current schema, and the resolved URI is used to locate the schema to be applied.
+
+    See `JSON Schema 2020-12 §7.7.1 <https://json-schema.org/draft/2020-12/json-schema-core#section-7.7.1>`_.
+    """
+
+    dynamic_anchor: str | None = field(default=None, metadata={"alias": "$dynamicAnchor"})
+    """The value of ``$dynamicAnchor`` MUST be a string.
+
+    This keyword is used to create a dynamic anchor in the schema. A dynamic anchor can be referenced by a
+    ``$dynamicRef`` in another schema, allowing for dynamic schema composition.
+
+    See `JSON Schema 2020-12 §7.7.2 <https://json-schema.org/draft/2020-12/json-schema-core#section-7.7.2>`_.
+    """
+
     def __hash__(self) -> int:
         return _recursive_hash(self)
 
