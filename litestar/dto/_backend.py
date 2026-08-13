@@ -15,6 +15,7 @@ from typing import (
     Protocol,
     Union,
     cast,
+    get_args,
 )
 
 import msgspec
@@ -37,8 +38,9 @@ from litestar.enums import RequestEncodingType
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
+from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
-from litestar.utils import unique_name_for_scope
+from litestar.utils import is_union, unique_name_for_scope
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -810,12 +812,28 @@ def _create_struct_field_meta_for_field_definition(field_definition: TransferDTO
         gt=kwarg_definition.gt,
         le=kwarg_definition.le,
         lt=kwarg_definition.lt,
-        max_length=kwarg_definition.max_length if not field_definition.is_partial else None,
-        min_length=kwarg_definition.min_length if not field_definition.is_partial else None,
+        max_length=kwarg_definition.max_length,
+        min_length=kwarg_definition.min_length,
         multiple_of=kwarg_definition.multiple_of,
         pattern=kwarg_definition.pattern,
         title=kwarg_definition.title,
     )
+
+
+def _annotate_with_meta(annotation: Any, meta: msgspec.Meta) -> Any:
+    """Annotate ``annotation`` with ``meta``.
+
+    msgspec only accepts type specific constraints such as ``min_length`` on the type they apply to, so if
+    ``annotation`` is a union of a single concrete type and ``None`` / ``UnsetType`` - as created for optional or
+    partial fields - the metadata has to be applied to that member instead of the union itself.
+    """
+    if is_union(annotation):
+        inner_types = get_args(annotation)
+        constrainable = [inner for inner in inner_types if inner is not NoneType and inner is not UnsetType]
+        if len(constrainable) == 1:
+            return Union[tuple(Annotated[inner, meta] if inner is constrainable[0] else inner for inner in inner_types)]
+
+    return Annotated[annotation, meta]
 
 
 def _create_struct_for_field_definitions(
@@ -837,7 +855,7 @@ def _create_struct_for_field_definitions(
 
         if field_definition.passthrough_constraints:
             if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
-                field_type = Annotated[field_type, field_meta]
+                field_type = _annotate_with_meta(field_type, field_meta)
         elif field_definition.kwarg_definition:
             field_type = Annotated[field_type, field_definition.kwarg_definition]
 
