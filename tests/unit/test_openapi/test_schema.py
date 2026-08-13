@@ -904,3 +904,13 @@ def test_optional_union_keeps_one_of() -> None:
 
     assert one_of is not None
     assert Schema(type=OpenAPIType.NULL) in one_of
+
+
+def test_optional_enum_keeps_one_of() -> None:
+    class Color(Enum):
+        RED = "red"
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Optional[Color]))
+
+    assert schema.one_of is not None
+    assert Schema(type=OpenAPIType.NULL) in schema.one_of
