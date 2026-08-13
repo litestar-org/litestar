@@ -879,6 +879,21 @@ class Owner(TypedDict):
             """
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import attrs
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+@attrs.define
+class Owner:
+    pet: DataclassPet
+""",
+            id="attrs",
+        ),
+        pytest.param(
+            """
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import msgspec
 
 if TYPE_CHECKING:
@@ -906,3 +921,30 @@ def test_nested_hints_resolved_with_signature_namespace(
     schema = Litestar([handler]).openapi_schema.to_schema()
 
     assert "DataclassPet" in schema["components"]["schemas"]
+
+
+def test_class_body_annotation_resolves_without_namespace(create_module: "Callable[[str], ModuleType]") -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+from dataclasses import dataclass
+
+@dataclass
+class Foo:
+    class Bar:
+        pass
+
+    bar: Bar
+"""
+    )
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(module.Foo))
+
+    assert schema.properties is not None
+    assert "bar" in schema.properties
+
+
+def test_not_generating_examples_preserves_signature_namespace() -> None:
+    creator = SchemaCreator(generate_examples=True, plugins=openapi_schema_plugins, signature_namespace={"Foo": int})
+
+    assert creator.not_generating_examples.signature_namespace == {"Foo": int}

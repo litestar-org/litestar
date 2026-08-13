@@ -434,14 +434,17 @@ class FieldDefinition:
             The type hints.
         """
 
+        # an empty dict must become None: get_type_hints only merges class-body
+        # locals (vars of each base) when localns is None
+        localns = namespace or None
         if self.origin is not None or self.is_generic:
             if resolve_generics:
                 return get_type_hints_with_generics_resolved(
-                    self.annotation, include_extras=include_extras, localns=namespace
+                    self.annotation, include_extras=include_extras, localns=localns
                 )
-            return get_type_hints(self.origin or self.annotation, include_extras=include_extras, localns=namespace)
+            return get_type_hints(self.origin or self.annotation, include_extras=include_extras, localns=localns)
 
-        return get_type_hints(self.annotation, include_extras=include_extras, localns=namespace)
+        return get_type_hints(self.annotation, include_extras=include_extras, localns=localns)
 
     @classmethod
     def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
