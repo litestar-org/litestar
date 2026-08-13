@@ -39,7 +39,7 @@ def create_person_controller() -> Type[Controller]:
             name: FromQuery[Optional[Union[str, List[str]]]],  # intentionally without default
             lucky_number: Annotated[
                 Optional[LuckyNumber], QueryParameter(examples=[Example(value=LuckyNumber.SEVEN)])
-            ] = 1,
+            ] = 1,  # type: ignore[assignment]
             # header parameter
             secret_header: Annotated[str, HeaderParameter(name="secret")],
             # cookie parameter
