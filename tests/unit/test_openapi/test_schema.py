@@ -40,6 +40,7 @@ from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import (
+    Body,
     FromPath,
     FromQuery,
     HeaderParameter,
@@ -342,6 +343,16 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.properties["list_field"].min_items == 1  # type: ignore[index, union-attr]
     assert schema.properties["list_field"].max_items == 10  # type: ignore[index, union-attr]
     assert schema.properties["set_field"].min_items == 2  # type: ignore[index, union-attr]
+
+
+def test_msgspec_field_preserves_kwarg_definition_metadata() -> None:
+    class Model(msgspec.Struct):
+        value: Annotated[Annotated[int, msgspec.Meta(gt=0), Body(description="inner")], Body(description="outer")]
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Model))
+
+    assert schema.properties["value"].description == "outer"  # type: ignore[index]
+    assert schema.properties["value"].exclusive_minimum == 0  # type: ignore[index, union-attr]
 
 
 def test_msgspec_optional_annotated_meta_propagates() -> None:

@@ -110,6 +110,17 @@ def _annotated_types_extractor(meta: Any, is_sequence_container: bool) -> dict[s
     return kwargs
 
 
+def _merge_kwarg_definitions(primary: KwargDefinition, fallback: KwargDefinition) -> KwargDefinition:
+    defaults = KwargDefinition()
+    fallback_values = {
+        field.name: getattr(fallback, field.name)
+        for field in dataclasses.fields(KwargDefinition)
+        if getattr(primary, field.name) == getattr(defaults, field.name)
+        and getattr(fallback, field.name) != getattr(defaults, field.name)
+    }
+    return dataclasses.replace(primary, **fallback_values)
+
+
 @dataclass(frozen=True)
 class FieldDefinition:
     """Represents a function parameter or type annotation."""
@@ -461,12 +472,16 @@ class FieldDefinition:
             # TODO: Remove in 4.0
             raise_for_kwarg_as_default(default)
 
-        if not kwargs.get("kwarg_definition"):
-            if kwarg_definition := next((v for v in metadata if isinstance(v, KwargDefinition)), None):
-                kwargs["kwarg_definition"] = kwarg_definition
-
-                metadata = tuple(v for v in metadata if not isinstance(v, KwargDefinition))
-            elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
+        if kwarg_definitions := [v for v in metadata if isinstance(v, KwargDefinition)]:
+            kwarg_definition = kwarg_definitions[-1]
+            for fallback in reversed(kwarg_definitions[:-1]):
+                kwarg_definition = _merge_kwarg_definitions(kwarg_definition, fallback)
+            if existing_kwarg_definition := kwargs.get("kwarg_definition"):
+                kwarg_definition = _merge_kwarg_definitions(kwarg_definition, existing_kwarg_definition)
+            kwargs["kwarg_definition"] = kwarg_definition
+            metadata = tuple(v for v in metadata if not isinstance(v, KwargDefinition))
+        elif not kwargs.get("kwarg_definition"):
+            if (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
                 kwargs["kwarg_definition"] = extra.pop("kwarg_definition")
 
         # there might be additional metadata
