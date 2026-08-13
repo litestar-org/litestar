@@ -420,12 +420,15 @@ class FieldDefinition:
         """
         return any(t.is_subclass_of(cl) for t in self.inner_types)
 
-    def get_type_hints(self, *, include_extras: bool = False, resolve_generics: bool = False) -> dict[str, Any]:
+    def get_type_hints(
+        self, *, include_extras: bool = False, resolve_generics: bool = False, namespace: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Get the type hints for the annotation.
 
         Args:
             include_extras: Flag to indicate whether to include ``Annotated[T, ...]`` or not.
             resolve_generics: Flag to indicate whether to resolve the generic types in the type hints or not.
+            namespace: Additional names to use when resolving forward references.
 
         Returns:
             The type hints.
@@ -433,10 +436,12 @@ class FieldDefinition:
 
         if self.origin is not None or self.is_generic:
             if resolve_generics:
-                return get_type_hints_with_generics_resolved(self.annotation, include_extras=include_extras)
-            return get_type_hints(self.origin or self.annotation, include_extras=include_extras)
+                return get_type_hints_with_generics_resolved(
+                    self.annotation, include_extras=include_extras, localns=namespace
+                )
+            return get_type_hints(self.origin or self.annotation, include_extras=include_extras, localns=namespace)
 
-        return get_type_hints(self.annotation, include_extras=include_extras)
+        return get_type_hints(self.annotation, include_extras=include_extras, localns=namespace)
 
     @classmethod
     def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:

@@ -153,3 +153,13 @@ def test_expand_type_var_in_type_hints(
     type_hint: dict[str, Any], namespace: dict[str, Any] | None, expected: dict[str, Any]
 ) -> None:
     assert expand_type_var_in_type_hint(type_hint, namespace) == expected
+
+
+def test_get_type_hints_with_generics_resolved_without_parameters_attribute() -> None:
+    T_ = TypeVar("T_")
+
+    class NoParams(Generic[T_]):
+        foo: int
+
+    del NoParams.__parameters__
+    assert get_type_hints_with_generics_resolved(NoParams) == {"foo": int}

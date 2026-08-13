@@ -24,7 +24,9 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
         return field.required or field.default_factory is Empty
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
-        type_hints = field_definition.get_type_hints(include_extras=True, resolve_generics=True)
+        type_hints = field_definition.get_type_hints(
+            include_extras=True, resolve_generics=True, namespace=schema_creator.signature_namespace
+        )
         struct_info: msgspec.inspect.StructType = msgspec.inspect.type_info(field_definition.type_)  # type: ignore[assignment]
         struct_fields = struct_info.fields
 

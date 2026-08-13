@@ -842,3 +842,67 @@ def test_decimal_schema_type() -> None:
 
     schema = create_schema_for_annotation(Decimal)
     assert schema.type == OpenAPIType.STRING
+
+
+@pytest.mark.parametrize(
+    "module_source",
+    [
+        pytest.param(
+            """
+from __future__ import annotations
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+@dataclass
+class Owner:
+    pet: DataclassPet
+""",
+            id="dataclass",
+        ),
+        pytest.param(
+            """
+from __future__ import annotations
+from typing import TYPE_CHECKING, TypedDict
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+class Owner(TypedDict):
+    pet: DataclassPet
+""",
+            id="typed_dict",
+        ),
+        pytest.param(
+            """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+import msgspec
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+class Owner(msgspec.Struct):
+    pet: DataclassPet
+""",
+            id="struct",
+            marks=pytest.mark.xfail(
+                reason="msgspec.inspect resolves annotations internally without namespace support", strict=True
+            ),
+        ),
+    ],
+)
+def test_nested_hints_resolved_with_signature_namespace(
+    module_source: str, create_module: "Callable[[str], ModuleType]"
+) -> None:
+    module = create_module(module_source)
+
+    @get("/owner", signature_namespace={"DataclassPet": DataclassPet})
+    async def handler() -> module.Owner:  # type: ignore[name-defined]
+        return module.Owner(pet=DataclassPet(name="doggo", age=2))
+
+    schema = Litestar([handler]).openapi_schema.to_schema()
+
+    assert "DataclassPet" in schema["components"]["schemas"]
