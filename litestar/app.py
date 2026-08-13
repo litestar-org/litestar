@@ -983,7 +983,10 @@ class Litestar(Router):
         Returns:
             None
         """
-        self.plugins.get(OpenAPIPlugin)._build_openapi()
+        plugin = self.plugins.get(OpenAPIPlugin)
+        _ = plugin.openapi_config  # raises when OpenAPI is not configured
+        plugin._openapi = None
+        plugin._openapi_schema = None
 
     def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
