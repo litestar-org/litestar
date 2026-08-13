@@ -161,5 +161,5 @@ def test_get_type_hints_with_generics_resolved_without_parameters_attribute() ->
     class NoParams(Generic[T_]):
         foo: int
 
-    del NoParams.__parameters__
+    delattr(NoParams, "__parameters__")
     assert get_type_hints_with_generics_resolved(NoParams) == {"foo": int}
