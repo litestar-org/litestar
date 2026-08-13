@@ -312,8 +312,14 @@ class SchemaCreator:
                 annotation,
                 include_null=field_definition.is_optional,
             )
-        elif field_definition.is_optional and any(
-            t.is_subclass_of(UploadFile) or t.has_inner_subclass_of(UploadFile) for t in field_definition.inner_types
+        elif (
+            field_definition.is_optional
+            and field_definition.name == "data"
+            and isinstance(field_definition.kwarg_definition, BodyKwarg)
+            and all(
+                t.is_none_type or t.is_subclass_of(UploadFile) or t.has_inner_subclass_of(UploadFile)
+                for t in field_definition.inner_types
+            )
         ):
             result = self.for_upload_file(
                 FieldDefinition.from_kwarg(
@@ -350,6 +356,7 @@ class SchemaCreator:
                 annotation=unwrap_new_type(field_definition.annotation),
                 name=field_definition.name,
                 default=field_definition.default,
+                kwarg_definition=field_definition.kwarg_definition,
             )
         )
 

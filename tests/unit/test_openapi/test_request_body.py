@@ -278,3 +278,32 @@ def test_upload_optional_list_of_files_schema_generation() -> None:
             }
         },
     }
+
+
+def test_upload_file_mixed_union_keeps_alternatives() -> None:
+    @post(path="/mixed-upload")
+    async def handler(data: MultipartBody[UploadFile | str | None] = None) -> None:
+        return None
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+    body_schema = schema["paths"]["/mixed-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"]
+
+    assert {"type": "string"} in body_schema["oneOf"]
+    assert {"type": "null"} in body_schema["oneOf"]
+
+
+def test_nested_optional_upload_file_keeps_null_alternative() -> None:
+    @dataclass
+    class Form:
+        file: UploadFile | None
+
+    @post(path="/nested-optional-upload")
+    async def handler(data: MultipartBody[Form]) -> None:
+        return None
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+    form_schema = next(iter(schema["components"]["schemas"].values()))
+
+    assert {"type": "null"} in form_schema["properties"]["file"]["oneOf"]

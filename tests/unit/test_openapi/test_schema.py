@@ -11,6 +11,7 @@ from typing import (
     Any,
     Generic,
     Literal,
+    NewType,
     Optional,
     TypeAlias,
     TypedDict,
@@ -867,3 +868,13 @@ def test_enum_schema_title_defaults_to_class_name() -> None:
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="flavour", annotation=Flavour))
 
     assert schema.title == "Flavour"
+
+
+def test_new_type_preserves_constraints() -> None:
+    UserId = NewType("UserId", int)
+
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="user_id", annotation=UserId, kwarg_definition=Parameter(gt=0))
+    )
+
+    assert schema.exclusive_minimum == 0
