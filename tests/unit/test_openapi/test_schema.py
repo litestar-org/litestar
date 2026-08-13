@@ -842,3 +842,28 @@ def test_decimal_schema_type() -> None:
 
     schema = create_schema_for_annotation(Decimal)
     assert schema.type == OpenAPIType.STRING
+
+
+def test_enum_schema_respects_annotated_title_and_description() -> None:
+    class Color(Enum):
+        RED = "red"
+
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(
+            name="color",
+            annotation=Color,
+            kwarg_definition=Parameter(title="Custom Color", description="A custom color"),
+        )
+    )
+
+    assert schema.title == "Custom Color"
+    assert schema.description == "A custom color"
+
+
+def test_enum_schema_title_defaults_to_class_name() -> None:
+    class Flavour(Enum):
+        SWEET = "sweet"
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="flavour", annotation=Flavour))
+
+    assert schema.title == "Flavour"

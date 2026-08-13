@@ -211,3 +211,70 @@ def test_unwrap_read_only() -> None:
             }
         }
     }
+
+
+def test_upload_optional_file_schema_generation() -> None:
+    @post(path="/optional-file-upload")
+    async def handle_file_upload(data: MultipartBody[UploadFile | None] = None) -> None:
+        return None
+
+    app = Litestar([handle_file_upload])
+    schema = app.openapi_schema.to_schema()
+    request_body = schema["paths"]["/optional-file-upload"]["post"]["requestBody"]
+
+    assert request_body["required"] is False
+    assert request_body["content"]["multipart/form-data"]["schema"] == {
+        "properties": {"file": {"type": "string", "format": "binary", "contentMediaType": "application/octet-stream"}},
+        "type": "object",
+    }
+
+
+def test_optional_data_request_body_is_not_required() -> None:
+    @dataclass
+    class Payload:
+        name: str
+
+    @post(path="/optional-data")
+    async def handler(data: Payload | None = None) -> None:
+        return None
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+
+    assert schema["paths"]["/optional-data"]["post"]["requestBody"]["required"] is False
+
+
+def test_data_request_body_is_required() -> None:
+    @dataclass
+    class Payload:
+        name: str
+
+    @post(path="/data")
+    async def handler(data: Payload) -> None:
+        return None
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+
+    assert schema["paths"]["/data"]["post"]["requestBody"]["required"] is True
+
+
+def test_upload_optional_list_of_files_schema_generation() -> None:
+    @post(path="/optional-file-list-upload")
+    async def handle_file_list_upload(data: MultipartBody[list[UploadFile] | None] = None) -> None:
+        return None
+
+    app = Litestar([handle_file_list_upload])
+    schema = app.openapi_schema.to_schema()
+    request_body = schema["paths"]["/optional-file-list-upload"]["post"]["requestBody"]
+
+    assert request_body["required"] is False
+    assert request_body["content"]["multipart/form-data"]["schema"] == {
+        "type": "object",
+        "properties": {
+            "files": {
+                "items": {"type": "string", "contentMediaType": "application/octet-stream", "format": "binary"},
+                "type": "array",
+            }
+        },
+    }

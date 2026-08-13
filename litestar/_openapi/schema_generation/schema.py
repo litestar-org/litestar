@@ -312,6 +312,17 @@ class SchemaCreator:
                 annotation,
                 include_null=field_definition.is_optional,
             )
+        elif field_definition.is_optional and any(
+            t.is_subclass_of(UploadFile) or t.has_inner_subclass_of(UploadFile) for t in field_definition.inner_types
+        ):
+            result = self.for_upload_file(
+                FieldDefinition.from_kwarg(
+                    annotation=make_non_optional_union(field_definition.annotation),
+                    name=field_definition.name,
+                    default=field_definition.default,
+                    kwarg_definition=field_definition.kwarg_definition,
+                )
+            )
         elif field_definition.is_optional:
             result = self.for_optional_field(field_definition)
         elif field_definition.is_enum:
@@ -578,8 +589,9 @@ class SchemaCreator:
         schema = self.schema_registry.get_schema_for_field_definition(field_definition)
         schema.type = enum_type
         schema.enum = enum_values
-        schema.title = get_name(field_definition.annotation)
         self.process_schema_result(field_definition, schema)
+        if schema.title is None:
+            schema.title = get_name(field_definition.annotation)
         if schema.description is None:
             schema.description = field_definition.annotation.__doc__
 
