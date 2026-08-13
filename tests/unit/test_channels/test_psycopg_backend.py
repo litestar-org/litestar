@@ -59,7 +59,7 @@ async def test_stream_events_propagates_listener_failures() -> None:
     backend._start_listener()
 
     with pytest.raises(RuntimeError, match="listener failed"):
-        await anext(backend.stream_events())
+        await backend.stream_events().__anext__()
 
 
 async def test_stream_events_filters_queued_events_after_unsubscribe() -> None:
@@ -68,4 +68,4 @@ async def test_stream_events_filters_queued_events_after_unsubscribe() -> None:
     backend._event_queue.put_nowait(("removed", b"old"))
     backend._event_queue.put_nowait(("retained", b"new"))
 
-    assert await anext(backend.stream_events()) == ("retained", b"new")
+    assert await backend.stream_events().__anext__() == ("retained", b"new")
