@@ -413,6 +413,22 @@ class SchemaCreator:
                 default=field_definition.default,
             )
         )
+        # nullable scalars are expressed as 'type: [X, null]' rather than 'oneOf: [X, null]',
+        # which tooling handles better (e.g. Swagger UI file inputs). refs, unions, enums,
+        # const and structured types cannot use a type array and keep the oneOf encoding.
+        if (
+            isinstance(schema_or_reference, Schema)
+            and isinstance(schema_type := schema_or_reference.type, OpenAPIType)
+            and schema_type in (OpenAPIType.STRING, OpenAPIType.INTEGER, OpenAPIType.NUMBER, OpenAPIType.BOOLEAN)
+            and schema_or_reference.one_of is None
+            and schema_or_reference.any_of is None
+            and schema_or_reference.all_of is None
+            and schema_or_reference.enum is None
+            and schema_or_reference.const is None
+        ):
+            schema_or_reference.type = [schema_type, OpenAPIType.NULL]
+            return schema_or_reference
+
         if isinstance(schema_or_reference, Schema) and isinstance(schema_or_reference.one_of, list):
             result = schema_or_reference.one_of
         else:
