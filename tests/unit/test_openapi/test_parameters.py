@@ -383,7 +383,7 @@ def test_parameter_schema_extra() -> None:
             {"type": "string", "enum": ["denied", "values"]},
         ]
     }
-    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["$ref"] == "#/components/schemas/q2"
+    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["allOf"] == [{"$ref": "#/components/schemas/q2"}]
     assert schema["paths"]["/"]["get"]["parameters"][1]["description"] == "gender description"
     assert schema["components"]["schemas"]["q2"]["format"] == "foo"
     assert schema["paths"]["/"]["get"]["parameters"][2]["schema"]["$ref"] == "#/components/schemas/q3"

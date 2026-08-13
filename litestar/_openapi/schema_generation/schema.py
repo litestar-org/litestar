@@ -35,6 +35,7 @@ from litestar._openapi.schema_generation.utils import (
 from litestar.datastructures import SecretBytes, SecretString, UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
+from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
 from litestar.plugins import OpenAPISchemaPlugin
@@ -55,7 +56,7 @@ from litestar.utils.typing import (
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
-    from litestar.openapi.spec import Example, Reference
+    from litestar.openapi.spec import Example
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "content_encoding": "content_encoding",
@@ -331,7 +332,16 @@ class SchemaCreator:
         else:
             result = create_schema_for_annotation(field_definition.annotation)
 
-        return self.process_schema_result(field_definition, result) if isinstance(result, Schema) else result
+        if isinstance(result, Schema):
+            result = self.process_schema_result(field_definition, result)
+
+        if isinstance(result, Reference):
+            wrapper = Schema()
+            self._apply_kwarg_definition_metadata(field_definition, wrapper)
+            if wrapper != Schema():
+                wrapper.all_of = [result]
+                return wrapper
+        return result
 
     def for_new_type(self, field_definition: FieldDefinition) -> Schema | Reference:
         return self.for_field_definition(
@@ -585,10 +595,7 @@ class SchemaCreator:
 
         return self.schema_registry.get_reference_for_field_definition(field_definition) or schema
 
-    def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
-        if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
-            schema.const = field.default
-
+    def _apply_kwarg_definition_metadata(self, field: FieldDefinition, schema: Schema) -> None:
         if field.kwarg_definition:
             for kwarg_definition_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
                 if (value := getattr(field.kwarg_definition, kwarg_definition_key, Empty)) and (
@@ -606,15 +613,21 @@ class SchemaCreator:
                     if getattr(schema, schema_key, None) is None:
                         setattr(schema, schema_key, value)
 
-            if isinstance(field.kwarg_definition, KwargDefinition) and (extra := field.kwarg_definition.schema_extra):
-                field_aliases = schema.field_aliases()
-                for schema_key, value in extra.items():
-                    schema_key = field_aliases.get(schema_key, schema_key)
-                    if not hasattr(schema, schema_key):
-                        raise ValueError(
-                            f"`schema_extra` declares key `{schema_key}` which does not exist in `Schema` object"
-                        )
-                    setattr(schema, schema_key, value)
+    def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
+        if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
+            schema.const = field.default
+
+        self._apply_kwarg_definition_metadata(field, schema)
+
+        if isinstance(field.kwarg_definition, KwargDefinition) and (extra := field.kwarg_definition.schema_extra):
+            field_aliases = schema.field_aliases()
+            for schema_key, value in extra.items():
+                schema_key = field_aliases.get(schema_key, schema_key)
+                if not hasattr(schema, schema_key):
+                    raise ValueError(
+                        f"`schema_extra` declares key `{schema_key}` which does not exist in `Schema` object"
+                    )
+                setattr(schema, schema_key, value)
 
         if schema.default is None and field.default is not Empty:
             schema.default = field.default
