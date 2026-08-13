@@ -90,6 +90,12 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         openapi.components.schemas = context.schema_registry.generate_components_schemas()
         return openapi
 
+    def invalidate_schema_cache(self) -> None:
+        if self._openapi_config is None:
+            raise ImproperlyConfiguredException("OpenAPIConfig not initialized")
+        self._openapi = None
+        self._openapi_schema = None
+
     def provide_openapi(self) -> OpenAPI:
         if not self._openapi:
             self._openapi = self._build_openapi()
