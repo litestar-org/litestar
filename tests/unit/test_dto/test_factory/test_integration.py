@@ -958,6 +958,24 @@ def test_msgspec_dto_copies_constraints_of_union_member(use_experimental_dto_bac
         assert client.post("/", json={"baz": "123"}).status_code == 400
 
 
+def test_msgspec_dto_keeps_meta_on_union_of_several_types(use_experimental_dto_backend: bool) -> None:
+    # a union with more than one constrainable member has no single member to move the metadata
+    # to, so it stays on the union itself
+    class Foo(msgspec.Struct):
+        bar: Annotated[Union[int, str], msgspec.Meta(description="a bar")]
+
+    class FooDTO(MsgspecDTO[Foo]):
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+
+    @post("/", dto=FooDTO, signature_types={Foo})
+    def handler(data: Foo) -> Foo:
+        return data
+
+    with create_test_client([handler]) as client:
+        assert client.post("/", json={"bar": 1}).json() == {"bar": 1}
+        assert client.post("/", json={"bar": "baz"}).json() == {"bar": "baz"}
+
+
 def test_openapi_schema_for_type_with_generic_pagination_type(
     create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
 ) -> None:
