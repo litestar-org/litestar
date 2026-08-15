@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Remove the RapiDoc OpenAPI UI plugin
+        :type: feature
+        :pr: 4977
+        :breaking:
+
+        The ``RapidocRenderPlugin`` has been removed due to lack of upstream maintenance.
+
+        Applications using ``RapidocRenderPlugin`` should migrate to another bundled UI
+        plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
+        ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
+
     .. change:: Migrate ``CORSMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 4952

@@ -548,6 +548,14 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Remove the RapiDoc OpenAPI UI plugin<a class="headerlink reference internal" href="#3.0.0-remove the rapidoc openapi ui plugin" id="3.0.0-remove the rapidoc openapi ui plugin">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The <code class="docutils literal notranslate"><span class="pre">RapidocRenderPlugin</span></code> has been removed due to lack of upstream maintenance.</p>
+<p>Applications using <code class="docutils literal notranslate"><span class="pre">RapidocRenderPlugin</span></code> should migrate to another bundled UI
+plugin, such as <code class="docutils literal notranslate"><span class="pre">ScalarRenderPlugin</span></code> (the default), <code class="docutils literal notranslate"><span class="pre">SwaggerRenderPlugin</span></code>,
+<code class="docutils literal notranslate"><span class="pre">RedocRenderPlugin</span></code> or <code class="docutils literal notranslate"><span class="pre">StoplightRenderPlugin</span></code>.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4977">https://github.com/litestar-org/litestar/pull/4977</a></span></p>
+</div>
+</dd>
 <dt>Migrate <code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code> to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink reference internal" href="#3.0.0-migrate" id="3.0.0-migrate">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p><code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code> has been moved from the legacy <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code> base to
 <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>, as part of migrating all built-in

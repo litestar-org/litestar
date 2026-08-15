@@ -129,6 +129,16 @@ For those previously using the ``root_schema_site`` attribute, the migration inv
 be served at the ``/schema`` endpoint is the first plugin listed in the :attr:`OpenAPIConfig.render_plugins`.
 
 
+Removal of the RapiDoc OpenAPI UI plugin
+----------------------------------------
+
+The ``RapidocRenderPlugin`` has been removed due to lack of upstream maintenance.
+
+If you were using ``RapidocRenderPlugin``, migrate to one of the other bundled UI plugins
+via :attr:`OpenAPIConfig.render_plugins`, e.g. :class:`ScalarRenderPlugin` (the default),
+:class:`SwaggerRenderPlugin`, :class:`RedocRenderPlugin` or :class:`StoplightRenderPlugin`.
+
+
 Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
 -------------------------------------------------------------------------------
 

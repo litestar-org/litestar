@@ -457,6 +457,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#modification-to-root-schema-site-handling">Modification to <code class="docutils literal notranslate"><span class="pre">root_schema_site</span></code> Handling</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#removal-of-the-rapidoc-openapi-ui-plugin">Removal of the RapiDoc OpenAPI UI plugin</a></li>
 <li><a class="reference internal" href="#deprecated-app-parameter-for-response-to-asgi-response-has-been-removed">Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate">to_asgi_response</span></code> has been removed</a></li>
 <li><a class="reference internal" href="#deprecated-scope-state-utilities-removed">Deprecated scope state utilities removed</a></li>
 <li><a class="reference internal" href="#deprecated-utility-function-is-sync-or-async-generator-removed">Deprecated utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> removed</a></li>
@@ -699,6 +700,13 @@ the root path (<code class="docutils literal notranslate"><span class="pre">/</s
 <p>For those previously using the <code class="docutils literal notranslate"><span class="pre">root_schema_site</span></code> attribute, the migration involves ensuring that the UI intended to
 be served at the <code class="docutils literal notranslate"><span class="pre">/schema</span></code> endpoint is the first plugin listed in the <a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.render_plugins" title="litestar.openapi.OpenAPIConfig.render_plugins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OpenAPIConfig.render_plugins</span></code></a>.</p>
 </section>
+</section>
+<section id="removal-of-the-rapidoc-openapi-ui-plugin">
+<h2>Removal of the RapiDoc OpenAPI UI plugin<a class="headerlink" href="#removal-of-the-rapidoc-openapi-ui-plugin" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">RapidocRenderPlugin</span></code> has been removed due to lack of upstream maintenance.</p>
+<p>If you were using <code class="docutils literal notranslate"><span class="pre">RapidocRenderPlugin</span></code>, migrate to one of the other bundled UI plugins
+via <a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.render_plugins" title="litestar.openapi.OpenAPIConfig.render_plugins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OpenAPIConfig.render_plugins</span></code></a>, e.g. <a class="reference internal" href="../reference/openapi/plugins.html#litestar.openapi.plugins.ScalarRenderPlugin" title="litestar.openapi.plugins.ScalarRenderPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarRenderPlugin</span></code></a> (the default),
+<a class="reference internal" href="../reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin" title="litestar.openapi.plugins.SwaggerRenderPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SwaggerRenderPlugin</span></code></a>, <a class="reference internal" href="../reference/openapi/plugins.html#litestar.openapi.plugins.RedocRenderPlugin" title="litestar.openapi.plugins.RedocRenderPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedocRenderPlugin</span></code></a> or <a class="reference internal" href="../reference/openapi/plugins.html#litestar.openapi.plugins.StoplightRenderPlugin" title="litestar.openapi.plugins.StoplightRenderPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoplightRenderPlugin</span></code></a>.</p>
 </section>
 <section id="deprecated-app-parameter-for-response-to-asgi-response-has-been-removed">
 <h2>Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code> has been removed<a class="headerlink" href="#deprecated-app-parameter-for-response-to-asgi-response-has-been-removed" title="Link to this heading">¶</a></h2>

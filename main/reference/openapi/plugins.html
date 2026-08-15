@@ -457,11 +457,6 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.has_path"><code class="docutils literal notranslate">has_path()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin"><code class="docutils literal notranslate"><span class="pre">RapidocRenderPlugin</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.render"><code class="docutils literal notranslate">render()</span></code></a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#litestar.openapi.plugins.RedocRenderPlugin"><code class="docutils literal notranslate"><span class="pre">RedocRenderPlugin</span></code></a><ul>
 <li><a class="reference internal" href="#litestar.openapi.plugins.RedocRenderPlugin.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.openapi.plugins.RedocRenderPlugin.render"><code class="docutils literal notranslate">render()</span></code></a></li>
@@ -677,51 +672,6 @@ additional routes.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the plugin has the path, False otherwise.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.openapi.plugins.RapidocRenderPlugin">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.openapi.plugins.</span></span><span class="sig-name descname"><span class="pre">RapidocRenderPlugin</span></span><a class="reference internal" href="../../_modules/litestar/openapi/plugins.html#RapidocRenderPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.openapi.plugins.RapidocRenderPlugin" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin" title="litestar.openapi.plugins.OpenAPIRenderPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPIRenderPlugin</span></code></a></p>
-<p>Render an OpenAPI schema using Rapidoc.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.openapi.plugins.RapidocRenderPlugin.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'9.3.4'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">js_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/rapidoc'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../_modules/litestar/openapi/plugins.html#RapidocRenderPlugin.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.openapi.plugins.RapidocRenderPlugin.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Initialize the OpenAPI UI render plugin.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.params.version"></span><strong>version</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.params.version">¶</a> – Rapidoc version to download from the CDN. If js_url is provided, this is ignored.</p></li>
-<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.params.js_url"></span><strong>js_url</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.params.js_url">¶</a> – Download url for the RapiDoc JS bundle. If not provided, the version will be used to construct the
-url.</p></li>
-<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.params.path">¶</a> – Path to serve the OpenAPI UI at.</p></li>
-<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.params.**kwargs">¶</a> – Additional arguments to pass to the base class.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.openapi.plugins.RapidocRenderPlugin.render">
-<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><span class="pre">Request</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">openapi_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../datastructures/index.html#litestar.datastructures.Cookie.dict" title="litestar.datastructures.Cookie.dict"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="../../_modules/litestar/openapi/plugins.html#RapidocRenderPlugin.render"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.openapi.plugins.RapidocRenderPlugin.render" title="Link to this definition">¶</a></dt>
-<dd><p>Render an HTML page for Rapidoc.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Override this method to customize the template.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.render.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.render.params.request">¶</a> – The request.</p></li>
-<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.render.params.openapi_schema"></span><strong>openapi_schema</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.render.params.openapi_schema">¶</a> – The OpenAPI schema as a dictionary.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A rendered html string.</p>
 </dd>
 </dl>
 </dd></dl>
