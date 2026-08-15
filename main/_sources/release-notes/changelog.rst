@@ -6,6 +6,15 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Return HTTP 413 when the multipart form part limit is exceeded
+        :type: feature
+        :pr: 4990
+        :issue: 4439
+        :breaking:
+
+        Exceeding the configured multipart form part limit now returns
+        ``413 Request Entity Too Large`` instead of ``400 Bad Request``.
+
     .. change:: Remove the RapiDoc OpenAPI UI plugin
         :type: feature
         :pr: 4977

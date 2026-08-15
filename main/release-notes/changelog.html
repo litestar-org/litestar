@@ -548,6 +548,12 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Return HTTP 413 when the multipart form part limit is exceeded<a class="headerlink reference internal" href="#3.0.0-return http 413 when the multipart form part limit is exceeded" id="3.0.0-return http 413 when the multipart form part limit is exceeded">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Exceeding the configured multipart form part limit now returns
+<code class="docutils literal notranslate"><span class="pre">413</span> <span class="pre">Request</span> <span class="pre">Entity</span> <span class="pre">Too</span> <span class="pre">Large</span></code> instead of <code class="docutils literal notranslate"><span class="pre">400</span> <span class="pre">Bad</span> <span class="pre">Request</span></code>.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4439">https://github.com/litestar-org/litestar/issues/4439</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4990">https://github.com/litestar-org/litestar/pull/4990</a></span></p>
+</div>
+</dd>
 <dt>Remove the RapiDoc OpenAPI UI plugin<a class="headerlink reference internal" href="#3.0.0-remove the rapidoc openapi ui plugin" id="3.0.0-remove the rapidoc openapi ui plugin">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>The <code class="docutils literal notranslate"><span class="pre">RapidocRenderPlugin</span></code> has been removed due to lack of upstream maintenance.</p>
 <p>Applications using <code class="docutils literal notranslate"><span class="pre">RapidocRenderPlugin</span></code> should migrate to another bundled UI
