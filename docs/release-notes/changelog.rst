@@ -6,6 +6,43 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Migrate ``CORSMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 4952
+        :issue: 4009
+        :breaking:
+
+        ``CORSMiddleware`` has been moved from the legacy ``AbstractMiddleware`` base to
+        :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all built-in
+        middleware off the legacy bases.
+
+        Applications that configure CORS through
+        :class:`~litestar.config.cors.CORSConfig` are unaffected -- Litestar constructs
+        the middleware itself.
+
+        Code instantiating the middleware directly must drop the ``app`` argument, pass
+        the settings as keyword arguments rather than a ``CORSConfig``, and apply the
+        instance to the next ASGI app:
+
+        .. code-block:: python
+
+            # before
+            middleware = CORSMiddleware(app=next_app, config=cors_config)
+
+            # after
+            middleware = CORSMiddleware(allow_origins=cors_config.allow_origins, ...)
+            asgi_app = middleware(next_app)
+
+        The settings are copied on construction, so mutating ``CORSConfig`` after the
+        application has been created no longer affects the middleware.
+
+        Since ``ASGIMiddleware.__call__`` returns a closure rather than the middleware
+        instance, a middleware stack can no longer be introspected by walking the ``.app``
+        attribute of each layer.
+
+        .. seealso::
+            :ref:`asgi-middleware-migration`
+
     .. change:: Harden the PsycoPg channels listener
         :type: bugfix
 
