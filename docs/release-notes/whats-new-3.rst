@@ -129,6 +129,16 @@ For those previously using the ``root_schema_site`` attribute, the migration inv
 be served at the ``/schema`` endpoint is the first plugin listed in the :attr:`OpenAPIConfig.render_plugins`.
 
 
+Removal of the RapiDoc OpenAPI UI plugin
+----------------------------------------
+
+The ``RapidocRenderPlugin`` has been removed due to lack of upstream maintenance.
+
+If you were using ``RapidocRenderPlugin``, migrate to one of the other bundled UI plugins
+via :attr:`OpenAPIConfig.render_plugins`, e.g. :class:`ScalarRenderPlugin` (the default),
+:class:`SwaggerRenderPlugin`, :class:`RedocRenderPlugin` or :class:`StoplightRenderPlugin`.
+
+
 Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
 -------------------------------------------------------------------------------
 
@@ -284,6 +294,52 @@ callable as its only argument and returns another ASGI callable:
 
 .. seealso::
     :doc:`/usage/middleware/index`
+
+
+Built-in middleware migrated to ``ASGIMiddleware``
+--------------------------------------------------
+
+Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
+``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
+``CORSMiddleware`` has made this move.
+
+These classes are constructed by Litestar itself from their configuration objects, so
+applications that only configure them - for CORS, via
+:class:`~litestar.config.cors.CORSConfig` - are unaffected.
+
+Code that composed one of them directly into an ASGI stack must drop the ``app``
+argument, pass the settings as keyword arguments rather than a configuration object, and
+apply the instance to the next ASGI app:
+
+.. code-block:: python
+
+    # before
+    middleware = CORSMiddleware(app=next_app, config=cors_config)
+
+    # after
+    middleware = CORSMiddleware(
+        allow_origins=cors_config.allow_origins,
+        allow_methods=cors_config.allow_methods,
+        allow_headers=cors_config.allow_headers,
+        allow_credentials=cors_config.allow_credentials,
+        allow_origin_regex=cors_config.allow_origin_regex,
+        expose_headers=cors_config.expose_headers,
+        max_age=cors_config.max_age,
+    )
+    asgi_app = middleware(next_app)
+
+The settings are copied on construction, so mutating ``CORSConfig`` after the application
+has been created no longer affects the middleware.
+
+Because ``ASGIMiddleware.__call__`` returns a closure rather than the middleware
+instance, a middleware stack can no longer be introspected by walking the ``.app``
+attribute of each layer.
+
+Subclasses must also rename ``__call__`` to ``handle``, which receives the next ASGI app
+as an additional ``next_app`` argument in place of ``self.app``.
+
+.. seealso::
+    :ref:`asgi-middleware-migration`
 
 
 Removal of ``SerializationPluginProtocol``
