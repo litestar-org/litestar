@@ -8,6 +8,7 @@ from litestar.constants import RESERVED_KWARGS
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.parameter import Parameter
+from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
 from litestar.params import ParameterKwarg
 from litestar.types import Empty
@@ -16,7 +17,6 @@ from litestar.typing import FieldDefinition
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.handlers.base import BaseRouteHandler
-    from litestar.openapi.spec import Reference
     from litestar.types.internal_types import PathParameterDefinition
 
 __all__ = ("create_parameters_for_handler",)
@@ -131,11 +131,17 @@ class ParameterFactory:
 
         schema = result if isinstance(result, Schema) else self.context.schema_registry.from_reference(result).schema
 
+        description = schema.description
+        if description is None and schema.all_of:
+            reference = next((s for s in schema.all_of if isinstance(s, Reference)), None)
+            if reference is not None:
+                description = self.context.schema_registry.from_reference(reference).schema.description
+
         examples_list = kwarg_definition.examples or [] if kwarg_definition else []
         examples = get_formatted_examples(field_definition, examples_list)
 
         return Parameter(
-            description=schema.description,
+            description=description,
             name=parameter_name,
             param_in=param_in,
             required=is_required,
