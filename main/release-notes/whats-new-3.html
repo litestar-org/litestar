@@ -469,6 +469,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#removal-of-clipluginprotocol">Removal of  <code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a></li>
 <li><a class="reference internal" href="#removal-of-openapischemapluginprotocol">Removal of <code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code></a></li>
 <li><a class="reference internal" href="#dropped-support-for-starlette-middleware-protocol">Dropped support for starlette middleware protocol</a></li>
+<li><a class="reference internal" href="#built-in-middleware-migrated-to-asgimiddleware">Built-in middleware migrated to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a></li>
 <li><a class="reference internal" href="#removal-of-serializationpluginprotocol">Removal of <code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a></li>
 <li><a class="reference internal" href="#removal-of-body-in-streaming-responses">Removal of <code class="docutils literal notranslate"><span class="pre">body</span></code> in streaming responses</a></li>
 <li><a class="reference internal" href="#polyfactory-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">polyfactory</span></code> package removed from default dependencies</a></li>
@@ -821,6 +822,45 @@ callable as its only argument and returns another ASGI callable:</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../usage/middleware/index.html"><span class="doc">Middleware</span></a></p>
+</div>
+</section>
+<section id="built-in-middleware-migrated-to-asgimiddleware">
+<h2>Built-in middleware migrated to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink" href="#built-in-middleware-migrated-to-asgimiddleware" title="Link to this heading">¶</a></h2>
+<p>Litestar’s built-in middleware are being moved from the legacy <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code> and
+<code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> bases onto <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>.
+<code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code> has made this move.</p>
+<p>These classes are constructed by Litestar itself from their configuration objects, so
+applications that only configure them - for CORS, via
+<a class="reference internal" href="../reference/config.html#litestar.config.cors.CORSConfig" title="litestar.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CORSConfig</span></code></a> - are unaffected.</p>
+<p>Code that composed one of them directly into an ASGI stack must drop the <code class="docutils literal notranslate"><span class="pre">app</span></code>
+argument, pass the settings as keyword arguments rather than a configuration object, and
+apply the instance to the next ASGI app:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># before</span>
+</span><span data-line="2"><span class="n">middleware</span> <span class="o">=</span> <span class="n">CORSMiddleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">next_app</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">cors_config</span><span class="p">)</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># after</span>
+</span><span data-line="5"><span class="n">middleware</span> <span class="o">=</span> <span class="n">CORSMiddleware</span><span class="p">(</span>
+</span><span data-line="6">    <span class="n">allow_origins</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_origins</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">allow_methods</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_methods</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">allow_headers</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_headers</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">allow_credentials</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_credentials</span><span class="p">,</span>
+</span><span data-line="10">    <span class="n">allow_origin_regex</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_origin_regex</span><span class="p">,</span>
+</span><span data-line="11">    <span class="n">expose_headers</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">expose_headers</span><span class="p">,</span>
+</span><span data-line="12">    <span class="n">max_age</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">max_age</span><span class="p">,</span>
+</span><span data-line="13"><span class="p">)</span>
+</span><span data-line="14"><span class="n">asgi_app</span> <span class="o">=</span> <span class="n">middleware</span><span class="p">(</span><span class="n">next_app</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>The settings are copied on construction, so mutating <code class="docutils literal notranslate"><span class="pre">CORSConfig</span></code> after the application
+has been created no longer affects the middleware.</p>
+<p>Because <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware.__call__</span></code> returns a closure rather than the middleware
+instance, a middleware stack can no longer be introspected by walking the <code class="docutils literal notranslate"><span class="pre">.app</span></code>
+attribute of each layer.</p>
+<p>Subclasses must also rename <code class="docutils literal notranslate"><span class="pre">__call__</span></code> to <code class="docutils literal notranslate"><span class="pre">handle</span></code>, which receives the next ASGI app
+as an additional <code class="docutils literal notranslate"><span class="pre">next_app</span></code> argument in place of <code class="docutils literal notranslate"><span class="pre">self.app</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/middleware/creating-middleware.html#asgi-middleware-migration"><span class="std std-ref">Migrating from MiddlewareProtocol / AbstractMiddleware</span></a></p>
 </div>
 </section>
 <section id="removal-of-serializationpluginprotocol">

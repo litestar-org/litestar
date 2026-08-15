@@ -548,6 +548,36 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Migrate <code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code> to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink reference internal" href="#3.0.0-migrate" id="3.0.0-migrate">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code> has been moved from the legacy <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code> base to
+<a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>, as part of migrating all built-in
+middleware off the legacy bases.</p>
+<p>Applications that configure CORS through
+<a class="reference internal" href="../reference/config.html#litestar.config.cors.CORSConfig" title="litestar.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CORSConfig</span></code></a> are unaffected – Litestar constructs
+the middleware itself.</p>
+<p>Code instantiating the middleware directly must drop the <code class="docutils literal notranslate"><span class="pre">app</span></code> argument, pass
+the settings as keyword arguments rather than a <code class="docutils literal notranslate"><span class="pre">CORSConfig</span></code>, and apply the
+instance to the next ASGI app:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># before</span>
+</span><span data-line="2"><span class="n">middleware</span> <span class="o">=</span> <span class="n">CORSMiddleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">next_app</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">cors_config</span><span class="p">)</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># after</span>
+</span><span data-line="5"><span class="n">middleware</span> <span class="o">=</span> <span class="n">CORSMiddleware</span><span class="p">(</span><span class="n">allow_origins</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_origins</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</span><span data-line="6"><span class="n">asgi_app</span> <span class="o">=</span> <span class="n">middleware</span><span class="p">(</span><span class="n">next_app</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>The settings are copied on construction, so mutating <code class="docutils literal notranslate"><span class="pre">CORSConfig</span></code> after the
+application has been created no longer affects the middleware.</p>
+<p>Since <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware.__call__</span></code> returns a closure rather than the middleware
+instance, a middleware stack can no longer be introspected by walking the <code class="docutils literal notranslate"><span class="pre">.app</span></code>
+attribute of each layer.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/middleware/creating-middleware.html#asgi-middleware-migration"><span class="std std-ref">Migrating from MiddlewareProtocol / AbstractMiddleware</span></a></p>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4009">https://github.com/litestar-org/litestar/issues/4009</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4952">https://github.com/litestar-org/litestar/pull/4952</a></span></p>
+</div>
+</dd>
 <dt>Move <code class="docutils literal notranslate"><span class="pre">httpx</span></code> to the <code class="docutils literal notranslate"><span class="pre">testing</span></code> extra<a class="headerlink reference internal" href="#3.0.0-move" id="3.0.0-move">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p><code class="docutils literal notranslate"><span class="pre">httpx</span></code>, used by the test clients, has been moved from the default dependencies
 to the <code class="docutils literal notranslate"><span class="pre">litestar[testing]</span></code> extra. It remains included in <code class="docutils literal notranslate"><span class="pre">litestar[full]</span></code>.</p>

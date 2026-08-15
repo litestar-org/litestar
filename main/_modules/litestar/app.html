@@ -1479,75 +1479,84 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="946"><span class="sd">        &quot;&quot;&quot;</span>
 </span><span data-line="947">        <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">wrap_in_exception_handler</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asgi_router</span><span class="p">)</span>
 </span><span data-line="948">
-</span><span data-line="949">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cors_config</span><span class="p">:</span>
-</span><span data-line="950">            <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">CORSMiddleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">asgi_handler</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cors_config</span><span class="p">)</span>
-</span><span data-line="951">
-</span><span data-line="952">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="953">            <span class="n">otel_plugin</span><span class="p">:</span> <span class="n">OpenTelemetryPlugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OpenTelemetryPlugin&quot;</span><span class="p">)</span>
-</span><span data-line="954">            <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">otel_plugin</span><span class="o">.</span><span class="n">middleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">asgi_handler</span><span class="p">)</span>
-</span><span data-line="955">        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-</span><span data-line="956">            <span class="k">pass</span>
-</span><span data-line="957">
-</span><span data-line="958">        <span class="k">return</span> <span class="n">asgi_handler</span>
-</span><span data-line="959">
-</span><span data-line="960">    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Send</span><span class="p">:</span>
-</span><span data-line="961"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap the ASGI send and handles any &#39;before send&#39; hooks.</span>
-</span><span data-line="962">
-</span><span data-line="963"><span class="sd">        Args:</span>
-</span><span data-line="964"><span class="sd">            send: The ASGI send function.</span>
-</span><span data-line="965"><span class="sd">            scope: The ASGI scope.</span>
+</span><span data-line="949">        <span class="k">if</span> <span class="n">cors_config</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cors_config</span><span class="p">:</span>
+</span><span data-line="950">            <span class="n">cors_middleware</span> <span class="o">=</span> <span class="n">CORSMiddleware</span><span class="p">(</span>
+</span><span data-line="951">                <span class="n">allow_origins</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_origins</span><span class="p">,</span>
+</span><span data-line="952">                <span class="n">allow_methods</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_methods</span><span class="p">,</span>
+</span><span data-line="953">                <span class="n">allow_headers</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_headers</span><span class="p">,</span>
+</span><span data-line="954">                <span class="n">allow_credentials</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_credentials</span><span class="p">,</span>
+</span><span data-line="955">                <span class="n">allow_origin_regex</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">allow_origin_regex</span><span class="p">,</span>
+</span><span data-line="956">                <span class="n">expose_headers</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">expose_headers</span><span class="p">,</span>
+</span><span data-line="957">                <span class="n">max_age</span><span class="o">=</span><span class="n">cors_config</span><span class="o">.</span><span class="n">max_age</span><span class="p">,</span>
+</span><span data-line="958">            <span class="p">)</span>
+</span><span data-line="959">            <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">cors_middleware</span><span class="p">(</span><span class="n">asgi_handler</span><span class="p">)</span>
+</span><span data-line="960">
+</span><span data-line="961">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="962">            <span class="n">otel_plugin</span><span class="p">:</span> <span class="n">OpenTelemetryPlugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OpenTelemetryPlugin&quot;</span><span class="p">)</span>
+</span><span data-line="963">            <span class="n">asgi_handler</span> <span class="o">=</span> <span class="n">otel_plugin</span><span class="o">.</span><span class="n">middleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">asgi_handler</span><span class="p">)</span>
+</span><span data-line="964">        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+</span><span data-line="965">            <span class="k">pass</span>
 </span><span data-line="966">
-</span><span data-line="967"><span class="sd">        Returns:</span>
-</span><span data-line="968"><span class="sd">            An ASGI send function.</span>
-</span><span data-line="969"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="970">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_send</span><span class="p">:</span>
+</span><span data-line="967">        <span class="k">return</span> <span class="n">asgi_handler</span>
+</span><span data-line="968">
+</span><span data-line="969">    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Send</span><span class="p">:</span>
+</span><span data-line="970"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap the ASGI send and handles any &#39;before send&#39; hooks.</span>
 </span><span data-line="971">
-</span><span data-line="972">            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_send</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="973">                <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_send</span><span class="p">:</span>
-</span><span data-line="974">                    <span class="k">await</span> <span class="n">hook</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">scope</span><span class="p">)</span>
-</span><span data-line="975">                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-</span><span data-line="976">
-</span><span data-line="977">            <span class="k">return</span> <span class="n">wrapped_send</span>
-</span><span data-line="978">        <span class="k">return</span> <span class="n">send</span>
-</span><span data-line="979">
+</span><span data-line="972"><span class="sd">        Args:</span>
+</span><span data-line="973"><span class="sd">            send: The ASGI send function.</span>
+</span><span data-line="974"><span class="sd">            scope: The ASGI scope.</span>
+</span><span data-line="975">
+</span><span data-line="976"><span class="sd">        Returns:</span>
+</span><span data-line="977"><span class="sd">            An ASGI send function.</span>
+</span><span data-line="978"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="979">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_send</span><span class="p">:</span>
+</span><span data-line="980">
+</span><span data-line="981">            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_send</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="982">                <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_send</span><span class="p">:</span>
+</span><span data-line="983">                    <span class="k">await</span> <span class="n">hook</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">scope</span><span class="p">)</span>
+</span><span data-line="984">                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span data-line="985">
+</span><span data-line="986">            <span class="k">return</span> <span class="n">wrapped_send</span>
+</span><span data-line="987">        <span class="k">return</span> <span class="n">send</span>
+</span><span data-line="988">
 <div class="viewcode-block" id="Litestar.update_openapi_schema">
 <a class="viewcode-back" href="../../reference/app.html#litestar.app.Litestar.update_openapi_schema">[docs]</a>
-</span><span data-line="980">    <span class="k">def</span><span class="w"> </span><span class="nf">update_openapi_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="981"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the OpenAPI schema to reflect the route handlers registered on the app.</span>
-</span><span data-line="982">
-</span><span data-line="983"><span class="sd">        Returns:</span>
-</span><span data-line="984"><span class="sd">            None</span>
-</span><span data-line="985"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="986">        <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">OpenAPIPlugin</span><span class="p">)</span><span class="o">.</span><span class="n">_build_openapi</span><span class="p">()</span></div>
+</span><span data-line="989">    <span class="k">def</span><span class="w"> </span><span class="nf">update_openapi_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="990"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the OpenAPI schema to reflect the route handlers registered on the app.</span>
+</span><span data-line="991">
+</span><span data-line="992"><span class="sd">        Returns:</span>
+</span><span data-line="993"><span class="sd">            None</span>
+</span><span data-line="994"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="995">        <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">OpenAPIPlugin</span><span class="p">)</span><span class="o">.</span><span class="n">_build_openapi</span><span class="p">()</span></div>
 
-</span><span data-line="987">
+</span><span data-line="996">
 <div class="viewcode-block" id="Litestar.emit">
 <a class="viewcode-back" href="../../reference/app.html#litestar.app.Litestar.emit">[docs]</a>
-</span><span data-line="988">    <span class="k">def</span><span class="w"> </span><span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="989"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit an event to all attached listeners.</span>
-</span><span data-line="990">
-</span><span data-line="991"><span class="sd">        Args:</span>
-</span><span data-line="992"><span class="sd">            event_id: The ID of the event to emit, e.g ``my_event``.</span>
-</span><span data-line="993"><span class="sd">            args: args to pass to the listener(s).</span>
-</span><span data-line="994"><span class="sd">            kwargs: kwargs to pass to the listener(s)</span>
-</span><span data-line="995">
-</span><span data-line="996"><span class="sd">        Returns:</span>
-</span><span data-line="997"><span class="sd">            None</span>
-</span><span data-line="998"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="999">        <span class="bp">self</span><span class="o">.</span><span class="n">event_emitter</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">event_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</span><span data-line="997">    <span class="k">def</span><span class="w"> </span><span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="998"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit an event to all attached listeners.</span>
+</span><span data-line="999">
+</span><span data-line="1000"><span class="sd">        Args:</span>
+</span><span data-line="1001"><span class="sd">            event_id: The ID of the event to emit, e.g ``my_event``.</span>
+</span><span data-line="1002"><span class="sd">            args: args to pass to the listener(s).</span>
+</span><span data-line="1003"><span class="sd">            kwargs: kwargs to pass to the listener(s)</span>
+</span><span data-line="1004">
+</span><span data-line="1005"><span class="sd">        Returns:</span>
+</span><span data-line="1006"><span class="sd">            None</span>
+</span><span data-line="1007"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="1008">        <span class="bp">self</span><span class="o">.</span><span class="n">event_emitter</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">event_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </div>
 
-</span><span data-line="1000">
-</span><span data-line="1001">
-</span><span data-line="1002"><span class="k">def</span><span class="w"> </span><span class="nf">_maybe_add_options_handler</span><span class="p">(</span>
-</span><span data-line="1003">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">http_handlers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">HTTPRouteHandler</span><span class="p">],</span> <span class="n">root</span><span class="p">:</span> <span class="n">Router</span>
-</span><span data-line="1004"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">HTTPRouteHandler</span><span class="p">]:</span>
-</span><span data-line="1005">    <span class="n">handler_methods</span> <span class="o">=</span> <span class="p">{</span><span class="n">method</span> <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">http_handlers</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">http_methods</span><span class="p">}</span>
-</span><span data-line="1006">    <span class="k">if</span> <span class="s2">&quot;OPTIONS&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">handler_methods</span><span class="p">:</span>
-</span><span data-line="1007">        <span class="n">options_handler</span> <span class="o">=</span> <span class="n">create_options_handler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">allow_methods</span><span class="o">=</span><span class="p">{</span><span class="o">*</span><span class="n">handler_methods</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">})</span>  <span class="c1"># pyright: ignore[reportArgumentType]</span>
-</span><span data-line="1008">        <span class="n">options_handler</span> <span class="o">=</span> <span class="n">options_handler</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
-</span><span data-line="1009">        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">http_handlers</span><span class="p">,</span> <span class="n">options_handler</span><span class="p">]</span>
-</span><span data-line="1010">    <span class="k">return</span> <span class="n">http_handlers</span>
+</span><span data-line="1009">
+</span><span data-line="1010">
+</span><span data-line="1011"><span class="k">def</span><span class="w"> </span><span class="nf">_maybe_add_options_handler</span><span class="p">(</span>
+</span><span data-line="1012">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">http_handlers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">HTTPRouteHandler</span><span class="p">],</span> <span class="n">root</span><span class="p">:</span> <span class="n">Router</span>
+</span><span data-line="1013"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">HTTPRouteHandler</span><span class="p">]:</span>
+</span><span data-line="1014">    <span class="n">handler_methods</span> <span class="o">=</span> <span class="p">{</span><span class="n">method</span> <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">http_handlers</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">http_methods</span><span class="p">}</span>
+</span><span data-line="1015">    <span class="k">if</span> <span class="s2">&quot;OPTIONS&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">handler_methods</span><span class="p">:</span>
+</span><span data-line="1016">        <span class="n">options_handler</span> <span class="o">=</span> <span class="n">create_options_handler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">allow_methods</span><span class="o">=</span><span class="p">{</span><span class="o">*</span><span class="n">handler_methods</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">})</span>  <span class="c1"># pyright: ignore[reportArgumentType]</span>
+</span><span data-line="1017">        <span class="n">options_handler</span> <span class="o">=</span> <span class="n">options_handler</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+</span><span data-line="1018">        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">http_handlers</span><span class="p">,</span> <span class="n">options_handler</span><span class="p">]</span>
+</span><span data-line="1019">    <span class="k">return</span> <span class="n">http_handlers</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
