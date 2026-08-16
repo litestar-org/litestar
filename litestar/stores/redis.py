@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, overload
+from typing import TYPE_CHECKING, Literal, cast, overload
 
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool
@@ -185,7 +185,7 @@ class RedisStore(NamespacedStore):
         """
         key = self._make_key(key)
         if renew_for:
-            return await self._redis.getex(key, ex=renew_for)
+            return cast("bytes | None", await self._redis.getex(key, ex=renew_for))
         return await self._redis.get(key)
 
     async def delete(self, key: str) -> None:
