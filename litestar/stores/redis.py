@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from datetime import timedelta
-from typing import TYPE_CHECKING, Literal, cast, overload
+from typing import TYPE_CHECKING, Literal, overload
 
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool
@@ -13,6 +12,7 @@ from litestar.utils.empty import value_or_default
 from .base import NamespacedStore
 
 if TYPE_CHECKING:
+    from datetime import timedelta
     from types import TracebackType
 
     from redis.asyncio.connection import Connection
@@ -25,7 +25,6 @@ class RedisStore(NamespacedStore):
 
     __slots__ = (
         "_delete_all_script",
-        "_get_and_renew_script",
         "_redis",
         "handle_client_shutdown",
     )
@@ -45,23 +44,6 @@ class RedisStore(NamespacedStore):
         self._redis = redis
         self.namespace: str | None = value_or_default(namespace, "LITESTAR")
         self.handle_client_shutdown = handle_client_shutdown
-
-        # script to get and renew a key in one atomic step
-        self._get_and_renew_script = self._redis.register_script(
-            b"""
-        local key = KEYS[1]
-        local renew = tonumber(ARGV[1])
-
-        local data = redis.call('GET', key)
-        local ttl = redis.call('TTL', key)
-
-        if ttl > 0 then
-            redis.call('EXPIRE', key, renew)
-        end
-
-        return data
-        """
-        )
 
         # script to delete all keys in the namespace
         self._delete_all_script = self._redis.register_script(
@@ -194,8 +176,8 @@ class RedisStore(NamespacedStore):
             renew_for: If given and the value had an initial expiry time set, renew the
                 expiry time for ``renew_for`` seconds. If the value has not been set
                 with an expiry time this is a no-op. Atomicity of this step is guaranteed
-                by using a lua script to execute fetch and renewal. If ``renew_for`` is
-                not given, the script will be bypassed so no overhead will occur
+                by using Redis ``GETEX`` to execute fetch and renewal. If ``renew_for``
+                is not given, ``GETEX`` will be bypassed so no overhead will occur
 
         Returns:
             The value associated with ``key`` if it exists and is not expired, else
@@ -203,10 +185,7 @@ class RedisStore(NamespacedStore):
         """
         key = self._make_key(key)
         if renew_for:
-            if isinstance(renew_for, timedelta):
-                renew_for = renew_for.seconds
-            data = await self._get_and_renew_script(keys=[key], args=[renew_for])
-            return cast("bytes | None", data)
+            return await self._redis.getex(key, ex=renew_for)
         return await self._redis.get(key)
 
     async def delete(self, key: str) -> None:

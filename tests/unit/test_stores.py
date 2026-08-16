@@ -7,7 +7,7 @@ import string
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -104,17 +104,30 @@ async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_da
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
 @pytest.mark.xdist_group("redis")
-async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | timedelta) -> None:
+async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | timedelta, mocker: MockerFixture) -> None:
     # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
     # instance, so we test this separately
     await redis_store.set("foo", b"bar", expires_in=1)
+    getex = mocker.spy(redis_store._redis, "getex")
     await redis_store.get("foo", renew_for=renew_for)
+
+    getex.assert_awaited_once_with("LITESTAR:foo", ex=renew_for)
 
     await asyncio.sleep(1.1)
 
     stored_value = await redis_store.get("foo")
 
     assert stored_value is not None
+
+
+async def test_get_and_renew_redis_uses_getex() -> None:
+    redis = MagicMock()
+    redis.getex = AsyncMock(return_value=b"bar")
+    store = RedisStore(redis=redis)
+
+    assert await store.get("foo", renew_for=10) == b"bar"
+
+    redis.getex.assert_awaited_once_with("LITESTAR:foo", ex=10)
 
 
 @pytest.mark.flaky(reruns=5)
