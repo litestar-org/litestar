@@ -91,7 +91,9 @@ class ParameterFactory:
             path_parameters: The path parameters for the route.
         """
         self.context = context
-        self.schema_creator = SchemaCreator.from_openapi_context(self.context, prefer_alias=True)
+        self.schema_creator = SchemaCreator.from_openapi_context(
+            self.context, prefer_alias=True, signature_namespace=route_handler.signature_namespace
+        )
         self.route_handler = route_handler
         self.parameters = ParameterCollection(route_handler)
         self.dependency_providers = route_handler.dependencies

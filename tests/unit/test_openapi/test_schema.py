@@ -844,6 +844,112 @@ def test_decimal_schema_type() -> None:
     assert schema.type == OpenAPIType.STRING
 
 
+@pytest.mark.parametrize(
+    "module_source",
+    [
+        pytest.param(
+            """
+from __future__ import annotations
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+@dataclass
+class Owner:
+    pet: DataclassPet
+""",
+            id="dataclass",
+        ),
+        pytest.param(
+            """
+from __future__ import annotations
+from typing import TYPE_CHECKING, TypedDict
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+class Owner(TypedDict):
+    pet: DataclassPet
+""",
+            id="typed_dict",
+        ),
+        pytest.param(
+            """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+import attrs
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+@attrs.define
+class Owner:
+    pet: DataclassPet
+""",
+            id="attrs",
+        ),
+        pytest.param(
+            """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+import msgspec
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+class Owner(msgspec.Struct):
+    pet: DataclassPet
+""",
+            id="struct",
+            marks=pytest.mark.xfail(
+                reason="msgspec.inspect resolves annotations internally without namespace support", strict=True
+            ),
+        ),
+    ],
+)
+def test_nested_hints_resolved_with_signature_namespace(
+    module_source: str, create_module: "Callable[[str], ModuleType]"
+) -> None:
+    module = create_module(module_source)
+
+    @get("/owner", signature_namespace={"DataclassPet": DataclassPet})
+    async def handler() -> module.Owner:  # type: ignore[name-defined]
+        return module.Owner(pet=DataclassPet(name="doggo", age=2))
+
+    schema = Litestar([handler]).openapi_schema.to_schema()
+
+    assert "DataclassPet" in schema["components"]["schemas"]
+
+
+def test_class_body_annotation_resolves_without_namespace(create_module: "Callable[[str], ModuleType]") -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+from dataclasses import dataclass
+
+@dataclass
+class Foo:
+    class Bar:
+        pass
+
+    bar: Bar
+"""
+    )
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(module.Foo))
+
+    assert schema.properties is not None
+    assert "bar" in schema.properties
+
+
+def test_not_generating_examples_preserves_signature_namespace() -> None:
+    creator = SchemaCreator(generate_examples=True, plugins=openapi_schema_plugins, signature_namespace={"Foo": int})
+
+    assert creator.not_generating_examples.signature_namespace == {"Foo": int}
+
+
 def test_reference_result_keeps_kwarg_metadata() -> None:
     creator = SchemaCreator(plugins=openapi_schema_plugins)
     result = creator.for_field_definition(

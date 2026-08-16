@@ -220,7 +220,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry")
+    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry", "signature_namespace")
 
     def __init__(
         self,
@@ -228,6 +228,7 @@ class SchemaCreator:
         plugins: Iterable[OpenAPISchemaPlugin] | None = None,
         prefer_alias: bool = True,
         schema_registry: SchemaRegistry | None = None,
+        signature_namespace: dict[str, Any] | None = None,
     ) -> None:
         """Instantiate a SchemaCreator.
 
@@ -236,11 +237,13 @@ class SchemaCreator:
             plugins: A list of plugins.
             prefer_alias: Whether to prefer the alias name for the schema.
             schema_registry: A SchemaRegistry instance.
+            signature_namespace: Additional names for forward reference resolution.
         """
         self.generate_examples = generate_examples
         self.plugins = plugins if plugins is not None else []
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
+        self.signature_namespace = signature_namespace or {}
 
     @classmethod
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
@@ -254,7 +257,12 @@ class SchemaCreator:
         """Return a SchemaCreator with generate_examples set to False."""
         if not self.generate_examples:
             return self
-        return type(self)(generate_examples=False, plugins=self.plugins, prefer_alias=False)
+        return type(self)(
+            generate_examples=False,
+            plugins=self.plugins,
+            prefer_alias=False,
+            signature_namespace=self.signature_namespace,
+        )
 
     @staticmethod
     def plugin_supports_field(plugin: OpenAPISchemaPlugin, field: FieldDefinition) -> bool:
