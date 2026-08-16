@@ -291,7 +291,8 @@ Built-in middleware migrated to ``ASGIMiddleware``
 
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``ResponseCacheMiddleware`` has made this move.
+``ResponseCacheMiddleware`` has made this move, and has also been moved into
+``litestar.middleware._internal``, removing it from the public API.
 
 These classes are constructed by Litestar itself from their configuration objects, so
 applications that only configure them - for response caching, via

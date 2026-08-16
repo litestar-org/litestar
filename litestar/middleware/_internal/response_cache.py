@@ -8,10 +8,9 @@ from litestar import Request
 from litestar.config.response_cache import default_cache_key_builder, default_do_cache_predicate
 from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START
 from litestar.enums import ScopeType
+from litestar.middleware.base import ASGIMiddleware
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
-
-from .base import ASGIMiddleware
 
 if TYPE_CHECKING:
     from collections.abc import Callable

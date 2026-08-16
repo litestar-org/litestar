@@ -182,10 +182,10 @@ def build_route_middleware_stack(
     Returns:
         An ASGIApp that is composed of a "stack" of middlewares.
     """
+    from litestar.middleware._internal.response_cache import ResponseCacheMiddleware
     from litestar.middleware.allowed_hosts import AllowedHostsMiddleware
     from litestar.middleware.base import ASGIMiddleware
     from litestar.middleware.csrf import CSRFMiddleware
-    from litestar.middleware.response_cache import ResponseCacheMiddleware
     from litestar.routes import HTTPRoute
 
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]

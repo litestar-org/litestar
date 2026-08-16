@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from litestar import get
 from litestar.config.response_cache import ResponseCacheConfig
-from litestar.middleware.response_cache import ResponseCacheMiddleware
+from litestar.middleware._internal.response_cache import ResponseCacheMiddleware
 from litestar.params import FromPath
 from litestar.testing import create_test_client
 

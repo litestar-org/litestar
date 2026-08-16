@@ -14,7 +14,8 @@
 
         ``ResponseCacheMiddleware`` has been moved from the legacy ``AbstractMiddleware``
         base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
-        built-in middleware off the legacy bases.
+        built-in middleware off the legacy bases. It now lives in
+        ``litestar.middleware._internal``, removing it from the public API.
 
         Applications that configure response caching through
         :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
