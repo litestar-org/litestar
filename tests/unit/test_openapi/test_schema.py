@@ -34,6 +34,7 @@ from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
@@ -835,6 +836,136 @@ def test_type_alias_type_keyword() -> None:
     assert param.schema.type is OpenAPIType.INTEGER  # type: ignore[union-attr]
     # ensure other attributes than the plain type are carried over correctly
     assert param.description == "foo"
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+def test_recursive_type_alias_type() -> None:
+    # https://github.com/litestar-org/litestar/issues/4843
+    # A self-referential PEP 695 ``type`` alias must not blow the stack when generating the OpenAPI schema.
+    ctx: dict[str, Any] = {"__name__": __name__}
+    exec("type JSON = None | bool | str | float | int | list[JSON] | dict[str, JSON]", ctx, None)
+    annotation = ctx["JSON"]
+
+    @get("/")
+    def handler() -> annotation:  # type: ignore[valid-type]
+        return {}
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+
+    # the alias is registered as a named component and the response references it
+    assert "JSON" in schema["components"]["schemas"]
+    response_schema = schema["paths"]["/"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+    assert response_schema == {"$ref": "#/components/schemas/JSON"}
+
+    # the recursive occurrences inside the component resolve to a ``$ref`` back to the alias, breaking the cycle
+    component = schema["components"]["schemas"]["JSON"]
+    one_of = component["oneOf"]
+    array_schema = next(s for s in one_of if s.get("type") == "array")
+    object_schema = next(s for s in one_of if s.get("type") == "object")
+    assert array_schema["items"] == {"$ref": "#/components/schemas/JSON"}
+    assert object_schema["additionalProperties"] == {"$ref": "#/components/schemas/JSON"}
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+def test_mutually_recursive_type_alias_types() -> None:
+    # Mutually recursive aliases must terminate as well, not just directly self-referential ones.
+    ctx: dict[str, Any] = {"__name__": __name__}
+    exec("type A = str | list[B]\ntype B = int | dict[str, A]", ctx, None)
+    annotation = ctx["A"]
+
+    @get("/")
+    def handler() -> annotation:  # type: ignore[valid-type]
+        return ""
+
+    app = Litestar([handler])
+    # smoke test: this must not raise ``RecursionError``
+    schema = app.openapi_schema.to_schema()
+    response_schema = schema["paths"]["/"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+    assert response_schema == {"$ref": "#/components/schemas/A"}
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+def test_type_alias_type_to_recursive_model() -> None:
+    # An alias whose value is a single component (here a dataclass) that recurses back into the alias: the alias's
+    # value resolves to a ``Reference`` rather than a ``Schema``, so the component defers to it via ``allOf``.
+    # ``exec`` into the module globals so the dataclass's forward reference to the alias can be resolved.
+    exec(
+        "@dataclass\nclass _AliasContainer:\n    children: 'list[_AliasNode]'\ntype _AliasNode = _AliasContainer",
+        globals(),
+    )
+    annotation = globals()["_AliasNode"]
+
+    @get("/")
+    def handler() -> annotation:  # type: ignore[valid-type]
+        ...
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+    schemas = schema["components"]["schemas"]
+    assert schema["paths"]["/"]["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+        "$ref": "#/components/schemas/_AliasNode"
+    }
+    # the ``_AliasNode`` component defers to the ``_AliasContainer`` component
+    assert schemas["_AliasNode"]["allOf"] == [{"$ref": "#/components/schemas/_AliasContainer"}]
+    # and ``_AliasContainer`` references ``_AliasNode`` back, completing the cycle without recursing infinitely
+    assert schemas["_AliasContainer"]["properties"]["children"]["items"] == {"$ref": "#/components/schemas/_AliasNode"}
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+def test_recursive_type_alias_type_with_example_generation() -> None:
+    # https://github.com/litestar-org/litestar/issues/4843
+    # The example factory does not guard against recursive ``type`` aliases, so example generation must be
+    # skipped for them -- otherwise it recurses without bound (here ``dict[str, JSON]`` is the dangerous shape,
+    # processed after the alias has finished expanding).
+    ctx: dict[str, Any] = {"__name__": __name__}
+    exec("type JSON = None | bool | str | float | int | list[JSON] | dict[str, JSON]", ctx, None)
+    annotation = ctx["JSON"]
+
+    @get("/")
+    def handler() -> dict[str, annotation]:  # type: ignore[valid-type]
+        return {}
+
+    app = Litestar([handler], openapi_config=OpenAPIConfig(title="t", version="1", create_examples=True))
+    # must terminate (no ``RecursionError`` / hang) -- a non-recursive annotation containing the alias
+    schema = app.openapi_schema.to_schema()
+    component = schema["components"]["schemas"]["JSON"]
+    # example generation was skipped for the self-referential shapes, so no value was fabricated for them
+    assert component.get("examples", []) == []
+    array_member = next(s for s in component["oneOf"] if s.get("type") == "array")
+    assert array_member.get("examples", []) == []
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+def test_contains_recursive_type_alias_detection() -> None:
+    from litestar._openapi.schema_generation.examples import _contains_recursive_type_alias
+
+    # the composite annotations are built inside ``exec`` so they are not analysed as type expressions
+    ctx: dict[str, Any] = {"__name__": __name__}
+    exec(
+        "type Name = str\n"
+        "type JSON = None | str | list[JSON]\n"
+        "type Wrapper = list[JSON]\n"
+        "type A = str | list[B]\n"
+        "type B = int | dict[str, A]\n"
+        "dict_str_json = dict[str, JSON]\n"
+        "tuple_name_name = tuple[Name, Name]\n"
+        "dict_name_name = dict[Name, Name]",
+        ctx,
+        None,
+    )
+
+    # directly recursive, mutually recursive, and aliases that *contain* a recursive one
+    assert _contains_recursive_type_alias(ctx["JSON"]) is True
+    assert _contains_recursive_type_alias(ctx["dict_str_json"]) is True
+    assert _contains_recursive_type_alias(ctx["Wrapper"]) is True
+    assert _contains_recursive_type_alias(ctx["A"]) is True
+    assert _contains_recursive_type_alias(ctx["B"]) is True
+    # a non-recursive alias is not flagged -- even when reused several times in one annotation
+    assert _contains_recursive_type_alias(ctx["Name"]) is False
+    assert _contains_recursive_type_alias(ctx["tuple_name_name"]) is False
+    assert _contains_recursive_type_alias(ctx["dict_name_name"]) is False
+    assert _contains_recursive_type_alias(int) is False
 
 
 def test_decimal_schema_type() -> None:
