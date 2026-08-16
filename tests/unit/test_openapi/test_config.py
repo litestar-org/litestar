@@ -121,5 +121,8 @@ def test_update_openapi_schema_rebuilds_schema() -> None:
     plugin.openapi_config.title = "Updated"
     app.update_openapi_schema()
 
+    assert plugin._openapi is not None
+    assert plugin._openapi_schema is not None
+
     assert app.openapi_schema.info.title == "Updated"
     assert plugin.provide_openapi_schema()["info"]["title"] == "Updated"
