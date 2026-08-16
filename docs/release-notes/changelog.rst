@@ -37,6 +37,10 @@
         built-in middleware off the legacy bases. It now lives in
         ``litestar.middleware._internal``, removing it from the public API.
 
+        .. note::
+            The move into ``litestar.middleware._internal`` does not affect usage:
+            the middleware was only ever applied internally by Litestar to begin with.
+
         Applications that configure response caching through
         :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
         ``cache`` argument are unaffected -- Litestar constructs the middleware itself.
