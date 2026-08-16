@@ -10,7 +10,6 @@ to understand and interact with your API.
 Litestar maintains and ships with UI plugins for a range of popular OpenAPI documentation tools:
 
 - `Scalar <https://github.com/scalar/scalar/>`_
-- `RapiDoc <https://rapidocweb.com/>`_
 - `ReDoc <https://redocly.com/>`_
 - `Stoplight Elements <https://stoplight.io/open-source/elements>`_
 - `Swagger UI <https://swagger.io/tools/swagger-ui/>`_
@@ -31,12 +30,6 @@ Using OpenAPI UI Plugins is as simple as importing the plugin, instantiating it,
         :sync: scalar
 
         .. literalinclude:: /examples/openapi/plugins/scalar_simple.py
-            :language: python
-
-    .. tab-item:: rapidoc
-        :sync: rapidoc
-
-        .. literalinclude:: /examples/openapi/plugins/rapidoc_simple.py
             :language: python
 
     .. tab-item:: redoc
@@ -83,7 +76,7 @@ each plugin's options, see the :doc:`API Reference </reference/openapi/plugins>`
 
 All plugins support:
 
-- ``path``: Each plugin has its own default, e.g., ``/rapidoc`` for RapiDoc. This can be overridden to serve the UI at
+- ``path``: Each plugin has its own default, e.g., ``/scalar`` for Scalar. This can be overridden to serve the UI at
   a different path.
 - ``media_type``: The default media type for the plugin, typically the default is ``text/html``.
 - ``favicon``: A string that should be a valid ``<link>`` tag, e.g.,
@@ -93,7 +86,7 @@ All plugins support:
 Most plugins support the following additional options:
 
 - ``version``: The version of the UIs JS and (in some cases) CSS bundle to use. We use the ``version`` to construct the
-  URL to retrieve the bundle from ``unpkg``, e.g., ``https://unpkg.com/rapidoc@<version>/dist/rapidoc-min.js``
+  URL to retrieve the bundle from ``unpkg``, e.g., ``https://unpkg.com/@stoplight/elements@<version>/web-components.min.js``
 - ``js_url``: The URL to the JS bundle. If provided, this will override the ``version`` option.
 - ``css_url``: The URL to the CSS bundle. If provided, this will override the ``version`` option.
 
@@ -105,12 +98,6 @@ Here's some example plugin configurations:
         :sync: scalar
 
         .. literalinclude:: /examples/openapi/plugins/scalar_config.py
-            :language: python
-
-    .. tab-item:: rapidoc
-        :sync: rapidoc
-
-        .. literalinclude:: /examples/openapi/plugins/rapidoc_config.py
             :language: python
 
     .. tab-item:: redoc
@@ -181,10 +168,10 @@ The class ``ScalarRenderPlugin`` inherits from :class:`OpenAPIRenderPlugin`:
 
 We support configuration via the following arguments:
 
-- ``version``: Specifies the version of RapiDoc to use.
-- ``js_url``: Custom URL to the RapiDoc JavaScript bundle.
-- ``css_url``: Custom URL to the RapiDoc CSS bundle.
-- ``path``: The URL path where the RapiDoc UI will be served.
+- ``version``: Specifies the version of Scalar to use.
+- ``js_url``: Custom URL to the Scalar JavaScript bundle.
+- ``css_url``: Custom URL to the Scalar CSS bundle.
+- ``path``: The URL path where the Scalar UI will be served.
 - ``**kwargs``: Captures additional arguments to pass to the superclass.
 
 And we construct a url for the Scalar JavaScript bundle if one is not provided:

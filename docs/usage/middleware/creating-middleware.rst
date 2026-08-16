@@ -146,6 +146,8 @@ Now suppose that ``MyCustomMiddleware`` has the constraint ``first=True`` then t
 ``app_config.middleware.insert(0, MyCustomMiddleware())`` so that it is the first middleware in the stack.
 
 
+.. _asgi-middleware-migration:
+
 Migrating from ``MiddlewareProtocol`` / ``AbstractMiddleware``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

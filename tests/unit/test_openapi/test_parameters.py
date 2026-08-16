@@ -383,7 +383,7 @@ def test_parameter_schema_extra() -> None:
             {"type": "string", "enum": ["denied", "values"]},
         ]
     }
-    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["$ref"] == "#/components/schemas/q2"
+    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["allOf"] == [{"$ref": "#/components/schemas/q2"}]
     assert schema["paths"]["/"]["get"]["parameters"][1]["description"] == "gender description"
     assert schema["components"]["schemas"]["q2"]["format"] == "foo"
     assert schema["paths"]["/"]["get"]["parameters"][2]["schema"]["$ref"] == "#/components/schemas/q3"
@@ -428,9 +428,9 @@ def test_unwrap_new_type() -> None:
 
     app = Litestar([handler])
     assert app.openapi_schema.paths["/{path_param}"].get.parameters[0].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
-    assert app.openapi_schema.paths["/{path_param}"].get.parameters[1].schema.one_of == [  # type: ignore[index, union-attr]
-        Schema(type=OpenAPIType.STRING),
-        Schema(type=OpenAPIType.NULL),
+    assert app.openapi_schema.paths["/{path_param}"].get.parameters[1].schema.type == [  # type: ignore[index, union-attr]
+        OpenAPIType.STRING,
+        OpenAPIType.NULL,
     ]
     assert app.openapi_schema.paths["/{path_param}"].get.parameters[2].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
     assert (
@@ -612,3 +612,13 @@ def test_explicit_path_param_with_alias_excluded_when_alias_not_in_path() -> Non
         # routing also works for the aliased path parameter
         assert client.get("/foo").text == "foo"
         assert client.get("/").text == ""
+
+
+def test_reference_parameter_keeps_component_description_when_wrapper_has_none() -> None:
+    @get("/genders")
+    async def handler(gender: Annotated[Gender, Parameter(title="The gender")]) -> Any:
+        return gender
+
+    parameters = _create_parameters(app=Litestar(route_handlers=[handler]), path="/genders")
+
+    assert parameters[0].description == Gender.__doc__

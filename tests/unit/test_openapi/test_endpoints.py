@@ -10,7 +10,6 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import (
     JsonRenderPlugin,
     OpenAPIRenderPlugin,
-    RapidocRenderPlugin,
     RedocRenderPlugin,
     ScalarRenderPlugin,
     StoplightRenderPlugin,
@@ -74,18 +73,6 @@ def test_default_stoplight_elements_cdn_urls(
     ) as client:
         response = client.get("/schema/elements")
         assert all(cdn_url in response.text for cdn_url in default_stoplight_elements_bundles)
-
-
-def test_default_rapidoc_elements_cdn_urls(
-    person_controller: type[Controller], pet_controller: type[Controller], config_factory: ConfigFactoryType
-) -> None:
-    default_rapidoc_version = "9.3.4"
-    default_rapidoc_bundles = [f"https://unpkg.com/rapidoc@{default_rapidoc_version}/dist/rapidoc-min.js"]
-    with create_test_client(
-        [person_controller, pet_controller], openapi_config=config_factory((RapidocRenderPlugin(),))
-    ) as client:
-        response = client.get("/schema/rapidoc")
-        assert all(cdn_url in response.text for cdn_url in default_rapidoc_bundles)
 
 
 def test_redoc_with_google_fonts(
@@ -164,15 +151,6 @@ def test_openapi_scalar_offline(
         assert all(offline_url in response.text for offline_url in [OFFLINE_LOCATION_JS_URL, OFFLINE_LOCATION_CSS_URL])
 
 
-def test_openapi_rapidoc_offline(
-    person_controller: type[Controller], pet_controller: type[Controller], config_factory: ConfigFactoryType
-) -> None:
-    offline_config = config_factory((RapidocRenderPlugin(js_url=OFFLINE_LOCATION_JS_URL),))
-    with create_test_client([person_controller, pet_controller], openapi_config=offline_config) as client:
-        response = client.get("/schema/rapidoc")
-        assert OFFLINE_LOCATION_JS_URL in response.text
-
-
 @pytest.mark.parametrize("root_path", root_paths)
 @pytest.mark.parametrize(
     ("plugin", "path"),
@@ -181,7 +159,6 @@ def test_openapi_rapidoc_offline(
         (SwaggerRenderPlugin(), "/schema/swagger"),
         (StoplightRenderPlugin(), "/schema/elements"),
         (ScalarRenderPlugin(), "/schema/scalar"),
-        (RapidocRenderPlugin(), "/schema/rapidoc"),
     ],
 )
 def test_openapi_plugins(
@@ -233,7 +210,7 @@ def test_openapi_plugin_not_found(person_controller: type[Controller], pet_contr
             version="1.0.0",
         ),
     ) as client:
-        response = client.get("/schema/rapidoc")
+        response = client.get("/schema/nonexistent")
         assert response.status_code == HTTP_404_NOT_FOUND
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
 

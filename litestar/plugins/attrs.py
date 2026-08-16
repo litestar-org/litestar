@@ -38,7 +38,9 @@ class AttrsSchemaPlugin(OpenAPISchemaPlugin):
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
         """
 
-        type_hints = field_definition.get_type_hints(include_extras=True, resolve_generics=True)
+        type_hints = field_definition.get_type_hints(
+            include_extras=True, resolve_generics=True, namespace=schema_creator.signature_namespace
+        )
         attr_fields = attr.fields_dict(field_definition.type_)
         return schema_creator.create_component_schema(
             field_definition,

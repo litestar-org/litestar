@@ -97,7 +97,6 @@ litestar run
 - Support for [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457) standardized "Problem Detail" error responses
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Scalar](https://github.com/scalar/scalar/)
-  - [RapiDoc](https://github.com/rapi-doc/RapiDoc)
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
@@ -225,7 +224,6 @@ Litestar serves the documentation from the generated OpenAPI schema with:
 - [ReDoc](https://redoc.ly/)
 - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Stoplight Elements](https://github.com/stoplightio/elements)
-- [RapiDoc](https://rapidocweb.com/)
 
 All these are available and enabled by default.
 
