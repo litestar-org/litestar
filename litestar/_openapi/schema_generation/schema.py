@@ -261,6 +261,7 @@ class SchemaCreator:
             generate_examples=False,
             plugins=self.plugins,
             prefer_alias=False,
+            schema_registry=self.schema_registry,
             signature_namespace=self.signature_namespace,
         )
 

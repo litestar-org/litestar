@@ -1,5 +1,7 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
+import json
+import re
 import sys
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
@@ -35,6 +37,7 @@ from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.enums import OpenAPIFormat
 from litestar.openapi.spec.example import Example
@@ -42,6 +45,7 @@ from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import (
+    Body,
     FromPath,
     FromQuery,
     HeaderParameter,
@@ -844,6 +848,27 @@ def test_decimal_schema_type() -> None:
 
     schema = create_schema_for_annotation(Decimal)
     assert schema.type == OpenAPIType.STRING
+
+
+def test_not_generating_examples_preserves_schema_registry() -> None:
+    creator = SchemaCreator(generate_examples=True, plugins=openapi_schema_plugins)
+
+    assert creator.not_generating_examples.schema_registry is creator.schema_registry
+
+
+def test_constrained_collection_with_example_generation_registers_item_component() -> None:
+    class Color(Enum):
+        RED = "red"
+
+    @post("/items")
+    async def handler(data: Annotated[list[Color], Body(min_items=1)]) -> None:
+        return None
+
+    app = Litestar([handler], openapi_config=OpenAPIConfig(title="test", version="1.0.0", create_examples=True))
+    schema = app.openapi_schema.to_schema()
+
+    referenced = set(re.findall(r'"#/components/schemas/([^"]+)"', json.dumps(schema, default=str)))
+    assert referenced <= set(schema["components"]["schemas"])
 
 
 def test_enum_schema_respects_annotated_title_and_description() -> None:
