@@ -35,6 +35,7 @@ from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
+from litestar.openapi.spec.enums import OpenAPIFormat
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
@@ -469,7 +470,7 @@ annotations.append(TypedDictGeneric[int])
 @pytest.mark.parametrize("cls", annotations)
 def test_schema_generation_with_generic_classes(cls: Any) -> None:
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
+    expected_optional_foo_schema = Schema(type=[OpenAPIType.INTEGER, OpenAPIType.NULL])
 
     properties = get_schema_for_field_definition(
         FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
@@ -523,7 +524,7 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
 )
 def test_schema_generation_with_pagination(annotation: Any) -> None:
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
+    expected_optional_foo_schema = Schema(type=[OpenAPIType.INTEGER, OpenAPIType.NULL])
 
     properties = get_schema_for_field_definition(FieldDefinition.from_annotation(annotation).inner_types[-1]).properties
 
@@ -842,6 +843,77 @@ def test_decimal_schema_type() -> None:
 
     schema = create_schema_for_annotation(Decimal)
     assert schema.type == OpenAPIType.STRING
+
+
+def test_optional_simple_field_uses_type_array() -> None:
+    @dataclass
+    class Model:
+        nickname: str | None
+
+    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Model)).properties
+    assert properties is not None
+    nickname = properties["nickname"]
+
+    assert isinstance(nickname, Schema)
+    assert nickname.type == [OpenAPIType.STRING, OpenAPIType.NULL]
+    assert nickname.one_of is None
+
+
+def test_optional_upload_file_model_field_keeps_binary_format() -> None:
+    from litestar.datastructures import UploadFile
+
+    @dataclass
+    class Form:
+        file: UploadFile | None
+
+    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Form)).properties
+    assert properties is not None
+    file_schema = properties["file"]
+
+    assert isinstance(file_schema, Schema)
+    assert file_schema.type == [OpenAPIType.STRING, OpenAPIType.NULL]
+    assert file_schema.format == OpenAPIFormat.BINARY
+
+
+def test_optional_reference_field_keeps_one_of() -> None:
+    @dataclass
+    class Model:
+        person: DataclassPerson | None
+
+    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Model)).properties
+    assert properties is not None
+    person = properties["person"]
+    assert isinstance(person, Schema)
+    one_of = person.one_of
+
+    assert one_of is not None
+    assert isinstance(one_of[0], Reference)
+    assert Schema(type=OpenAPIType.NULL) in one_of
+
+
+def test_optional_union_keeps_one_of() -> None:
+    @dataclass
+    class Model:
+        value: str | int | None
+
+    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Model)).properties
+    assert properties is not None
+    value = properties["value"]
+    assert isinstance(value, Schema)
+    one_of = value.one_of
+
+    assert one_of is not None
+    assert Schema(type=OpenAPIType.NULL) in one_of
+
+
+def test_optional_enum_keeps_one_of() -> None:
+    class Color(Enum):
+        RED = "red"
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Optional[Color]))
+
+    assert schema.one_of is not None
+    assert Schema(type=OpenAPIType.NULL) in schema.one_of
 
 
 @pytest.mark.parametrize(
