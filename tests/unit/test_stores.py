@@ -7,11 +7,12 @@ import string
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
+from redis.exceptions import ResponseError
 from time_machine import Traveller
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -246,6 +247,73 @@ async def test_redis_set_with_expires_in_and_keep_ttl_raises(
 
     with pytest.raises(ValueError, match="Cannot set both 'expires_in' and 'keep_ttl'"):
         await store.set("key", b"value", expires_in=60, keep_ttl=True)  # type: ignore[call-overload]
+
+
+@pytest.mark.parametrize("renew_for,expected_ex", [(10, 10), (timedelta(seconds=15), 15)])
+async def test_redis_get_with_renew_for_uses_getex(renew_for: int | timedelta, expected_ex: int) -> None:
+    mock_redis = AsyncMock()
+    mock_redis.getex.return_value = b"getex_value"
+    mock_script = AsyncMock()
+    mock_redis.register_script.return_value = mock_script
+
+    store = RedisStore(redis=mock_redis)
+    res = await store.get("test_key", renew_for=renew_for)
+
+    assert res == b"getex_value"
+    mock_redis.getex.assert_awaited_once_with("LITESTAR:test_key", ex=expected_ex)
+    mock_script.assert_not_called()
+
+
+async def test_redis_get_with_renew_for_fallback_on_unsupported_getex() -> None:
+    mock_redis = AsyncMock()
+    mock_redis.getex.side_effect = ResponseError("unknown command `GETEX`")
+    mock_script = AsyncMock(return_value=b"script_value")
+    mock_redis.register_script = MagicMock(return_value=mock_script)
+
+    store = RedisStore(redis=mock_redis)
+
+    # First call encounters ResponseError and falls back to Lua script
+    res1 = await store.get("key1", renew_for=10)
+    assert res1 == b"script_value"
+    assert store._supports_getex is False
+    mock_redis.getex.assert_awaited_once_with("LITESTAR:key1", ex=10)
+    mock_script.assert_awaited_once_with(keys=["LITESTAR:key1"], args=[10])
+
+    # Second call should skip GETEX directly and use Lua script
+    mock_redis.getex.reset_mock()
+    mock_script.reset_mock()
+
+    res2 = await store.get("key2", renew_for=20)
+    assert res2 == b"script_value"
+    mock_redis.getex.assert_not_called()
+    mock_script.assert_awaited_once_with(keys=["LITESTAR:key2"], args=[20])
+
+
+async def test_redis_get_without_renew_for_uses_get() -> None:
+    mock_redis = AsyncMock()
+    mock_redis.get.return_value = b"plain_value"
+    mock_script = AsyncMock()
+    mock_redis.register_script.return_value = mock_script
+
+    store = RedisStore(redis=mock_redis)
+    res = await store.get("test_key")
+
+    assert res == b"plain_value"
+    mock_redis.get.assert_awaited_once_with("LITESTAR:test_key")
+    mock_redis.getex.assert_not_called()
+    mock_script.assert_not_called()
+
+
+async def test_redis_with_namespace_preserves_supports_getex() -> None:
+    mock_redis = AsyncMock()
+    mock_redis.getex.return_value = b"nested_value"
+
+    parent_store = RedisStore(redis=mock_redis, namespace="PARENT")
+    parent_store._supports_getex = False
+
+    child_store = parent_store.with_namespace("CHILD")
+    assert child_store._supports_getex is False
+    assert child_store.namespace == "PARENT_CHILD"
 
 
 @pytest.mark.xdist_group("redis")

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Literal, cast, overload
 
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool
+from redis.exceptions import ResponseError
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty, EmptyType
@@ -27,6 +28,7 @@ class RedisStore(NamespacedStore):
         "_delete_all_script",
         "_get_and_renew_script",
         "_redis",
+        "_supports_getex",
         "handle_client_shutdown",
     )
 
@@ -45,6 +47,7 @@ class RedisStore(NamespacedStore):
         self._redis = redis
         self.namespace: str | None = value_or_default(namespace, "LITESTAR")
         self.handle_client_shutdown = handle_client_shutdown
+        self._supports_getex: bool = True
 
         # script to get and renew a key in one atomic step
         self._get_and_renew_script = self._redis.register_script(
@@ -130,11 +133,13 @@ class RedisStore(NamespacedStore):
         The current instances namespace will serve as a prefix for the namespace, so it
         can be considered the parent namespace.
         """
-        return type(self)(
+        store = type(self)(
             redis=self._redis,
             namespace=f"{self.namespace}_{namespace}" if self.namespace else namespace,
             handle_client_shutdown=self.handle_client_shutdown,
         )
+        store._supports_getex = self._supports_getex
+        return store
 
     def _make_key(self, key: str) -> str:
         prefix = f"{self.namespace}:" if self.namespace else ""
@@ -205,6 +210,11 @@ class RedisStore(NamespacedStore):
         if renew_for:
             if isinstance(renew_for, timedelta):
                 renew_for = renew_for.seconds
+            if self._supports_getex:
+                try:
+                    return cast("bytes | None", await self._redis.getex(key, ex=renew_for))
+                except ResponseError:
+                    self._supports_getex = False
             data = await self._get_and_renew_script(keys=[key], args=[renew_for])
             return cast("bytes | None", data)
         return await self._redis.get(key)
