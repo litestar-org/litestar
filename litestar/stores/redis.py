@@ -27,6 +27,7 @@ class RedisStore(NamespacedStore):
         "_delete_all_script",
         "_get_and_renew_script",
         "_redis",
+        "_supports_getex",
         "handle_client_shutdown",
     )
 
@@ -45,8 +46,9 @@ class RedisStore(NamespacedStore):
         self._redis = redis
         self.namespace: str | None = value_or_default(namespace, "LITESTAR")
         self.handle_client_shutdown = handle_client_shutdown
+        self._supports_getex: bool | None = None  # lazy-detected on first use
 
-        # script to get and renew a key in one atomic step
+        # script to get and renew a key in one atomic step (fallback for Redis < 6.2)
         self._get_and_renew_script = self._redis.register_script(
             b"""
         local key = KEYS[1]
@@ -186,6 +188,22 @@ class RedisStore(NamespacedStore):
             value = value.encode("utf-8")
         await self._redis.set(self._make_key(key), value, ex=expires_in, keepttl=keep_ttl)
 
+    async def _check_getex_support(self) -> bool:
+        """Check if the connected Redis server supports GETEX (>= 6.2.0).
+
+        The result is cached after the first call.
+        """
+        if self._supports_getex is None:
+            try:
+                info = await self._redis.info("server")
+                version_str = info.get("redis_version", "0.0.0")
+                parts = version_str.split(".")
+                major, minor = int(parts[0]), int(parts[1]) if len(parts) > 1 else 0
+                self._supports_getex = (major, minor) >= (6, 2)
+            except (ConnectionError, TypeError, ValueError, IndexError):
+                self._supports_getex = False
+        return self._supports_getex
+
     async def get(self, key: str, renew_for: int | timedelta | None = None) -> bytes | None:
         """Get a value.
 
@@ -194,8 +212,8 @@ class RedisStore(NamespacedStore):
             renew_for: If given and the value had an initial expiry time set, renew the
                 expiry time for ``renew_for`` seconds. If the value has not been set
                 with an expiry time this is a no-op. Atomicity of this step is guaranteed
-                by using a lua script to execute fetch and renewal. If ``renew_for`` is
-                not given, the script will be bypassed so no overhead will occur
+                by using Redis GETEX on Redis >= 6.2, or a Lua script on older versions.
+                If ``renew_for`` is not given, a plain GET is used so no overhead occurs
 
         Returns:
             The value associated with ``key`` if it exists and is not expired, else
@@ -204,7 +222,9 @@ class RedisStore(NamespacedStore):
         key = self._make_key(key)
         if renew_for:
             if isinstance(renew_for, timedelta):
-                renew_for = renew_for.seconds
+                renew_for = int(renew_for.total_seconds())
+            if await self._check_getex_support():
+                return await self._redis.getex(key, ex=renew_for)
             data = await self._get_and_renew_script(keys=[key], args=[renew_for])
             return cast("bytes | None", data)
         return await self._redis.get(key)
