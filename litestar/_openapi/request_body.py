@@ -52,4 +52,4 @@ def create_request_body(
     else:
         schema = schema_creator.for_field_definition(data_field)
 
-    return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema)})
+    return RequestBody(required=not data_field.is_optional, content={media_type: OpenAPIMediaType(schema=schema)})

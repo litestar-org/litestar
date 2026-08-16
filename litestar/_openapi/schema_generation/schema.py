@@ -321,6 +321,27 @@ class SchemaCreator:
                 annotation,
                 include_null=field_definition.is_optional,
             )
+        elif field_definition.is_subclass_of(UploadFile) or (
+            # optional handler-level upload bodies keep their multipart schema; optionality
+            # is expressed through `requestBody.required` instead of a `oneOf` with `null`
+            field_definition.is_optional
+            and field_definition.name == "data"
+            and isinstance(field_definition.kwarg_definition, BodyKwarg)
+            and all(
+                t.is_none_type or t.is_subclass_of(UploadFile) or t.has_inner_subclass_of(UploadFile)
+                for t in field_definition.inner_types
+            )
+        ):
+            result = self.for_upload_file(
+                FieldDefinition.from_kwarg(
+                    annotation=make_non_optional_union(field_definition.annotation),
+                    name=field_definition.name,
+                    default=field_definition.default,
+                    kwarg_definition=field_definition.kwarg_definition,
+                )
+                if field_definition.is_optional
+                else field_definition
+            )
         elif field_definition.is_optional:
             result = self.for_optional_field(field_definition)
         elif field_definition.is_enum:
@@ -335,8 +356,6 @@ class SchemaCreator:
             # this case does not recurse for all base cases, so it needs to happen
             # after all non-concrete cases
             result = self.for_object_type(field_definition)
-        elif field_definition.is_subclass_of(UploadFile):
-            result = self.for_upload_file(field_definition)
         else:
             result = create_schema_for_annotation(field_definition.annotation)
 
@@ -357,6 +376,7 @@ class SchemaCreator:
                 annotation=unwrap_new_type(field_definition.annotation),
                 name=field_definition.name,
                 default=field_definition.default,
+                kwarg_definition=field_definition.kwarg_definition,
             )
         )
 
@@ -614,8 +634,9 @@ class SchemaCreator:
         schema = self.schema_registry.get_schema_for_field_definition(field_definition)
         schema.type = enum_type
         schema.enum = enum_values
-        schema.title = get_name(field_definition.annotation)
         self.process_schema_result(field_definition, schema)
+        if schema.title is None:
+            schema.title = get_name(field_definition.annotation)
         if schema.description is None:
             schema.description = field_definition.annotation.__doc__
 
