@@ -312,7 +312,9 @@ class SchemaCreator:
                 annotation,
                 include_null=field_definition.is_optional,
             )
-        elif (
+        elif field_definition.is_subclass_of(UploadFile) or (
+            # optional handler-level upload bodies keep their multipart schema; optionality
+            # is expressed through `requestBody.required` instead of a `oneOf` with `null`
             field_definition.is_optional
             and field_definition.name == "data"
             and isinstance(field_definition.kwarg_definition, BodyKwarg)
@@ -328,6 +330,8 @@ class SchemaCreator:
                     default=field_definition.default,
                     kwarg_definition=field_definition.kwarg_definition,
                 )
+                if field_definition.is_optional
+                else field_definition
             )
         elif field_definition.is_optional:
             result = self.for_optional_field(field_definition)
@@ -343,8 +347,6 @@ class SchemaCreator:
             # this case does not recurse for all base cases, so it needs to happen
             # after all non-concrete cases
             result = self.for_object_type(field_definition)
-        elif field_definition.is_subclass_of(UploadFile):
-            result = self.for_upload_file(field_definition)
         else:
             result = create_schema_for_annotation(field_definition.annotation)
 
