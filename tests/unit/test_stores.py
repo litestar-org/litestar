@@ -111,7 +111,7 @@ async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | tim
     getex = mocker.spy(redis_store._redis, "getex")
     await redis_store.get("foo", renew_for=renew_for)
 
-    getex.assert_awaited_once_with("LITESTAR:foo", ex=renew_for)
+    getex.assert_called_once_with("LITESTAR:foo", ex=renew_for)
 
     await asyncio.sleep(1.1)
 
