@@ -35,6 +35,7 @@ from litestar._openapi.schema_generation.utils import (
 from litestar.datastructures import SecretBytes, SecretString, UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
+from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
 from litestar.plugins import OpenAPISchemaPlugin
@@ -55,7 +56,7 @@ from litestar.utils.typing import (
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
-    from litestar.openapi.spec import Example, Reference
+    from litestar.openapi.spec import Example
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "content_encoding": "content_encoding",
@@ -219,7 +220,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry")
+    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry", "signature_namespace")
 
     def __init__(
         self,
@@ -227,6 +228,7 @@ class SchemaCreator:
         plugins: Iterable[OpenAPISchemaPlugin] | None = None,
         prefer_alias: bool = True,
         schema_registry: SchemaRegistry | None = None,
+        signature_namespace: dict[str, Any] | None = None,
     ) -> None:
         """Instantiate a SchemaCreator.
 
@@ -235,11 +237,13 @@ class SchemaCreator:
             plugins: A list of plugins.
             prefer_alias: Whether to prefer the alias name for the schema.
             schema_registry: A SchemaRegistry instance.
+            signature_namespace: Additional names for forward reference resolution.
         """
         self.generate_examples = generate_examples
         self.plugins = plugins if plugins is not None else []
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
+        self.signature_namespace = signature_namespace or {}
 
     @classmethod
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
@@ -253,7 +257,12 @@ class SchemaCreator:
         """Return a SchemaCreator with generate_examples set to False."""
         if not self.generate_examples:
             return self
-        return type(self)(generate_examples=False, plugins=self.plugins, prefer_alias=False)
+        return type(self)(
+            generate_examples=False,
+            plugins=self.plugins,
+            prefer_alias=False,
+            signature_namespace=self.signature_namespace,
+        )
 
     @staticmethod
     def plugin_supports_field(plugin: OpenAPISchemaPlugin, field: FieldDefinition) -> bool:
@@ -331,7 +340,16 @@ class SchemaCreator:
         else:
             result = create_schema_for_annotation(field_definition.annotation)
 
-        return self.process_schema_result(field_definition, result) if isinstance(result, Schema) else result
+        if isinstance(result, Schema):
+            result = self.process_schema_result(field_definition, result)
+
+        if isinstance(result, Reference):
+            wrapper = Schema()
+            self._apply_kwarg_definition_metadata(field_definition, wrapper)
+            if wrapper != Schema():
+                wrapper.all_of = [result]
+                return wrapper
+        return result
 
     def for_new_type(self, field_definition: FieldDefinition) -> Schema | Reference:
         return self.for_field_definition(
@@ -603,10 +621,7 @@ class SchemaCreator:
 
         return self.schema_registry.get_reference_for_field_definition(field_definition) or schema
 
-    def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
-        if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
-            schema.const = field.default
-
+    def _apply_kwarg_definition_metadata(self, field: FieldDefinition, schema: Schema) -> None:
         if field.kwarg_definition:
             for kwarg_definition_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
                 if (value := getattr(field.kwarg_definition, kwarg_definition_key, Empty)) and (
@@ -624,15 +639,21 @@ class SchemaCreator:
                     if getattr(schema, schema_key, None) is None:
                         setattr(schema, schema_key, value)
 
-            if isinstance(field.kwarg_definition, KwargDefinition) and (extra := field.kwarg_definition.schema_extra):
-                field_aliases = schema.field_aliases()
-                for schema_key, value in extra.items():
-                    schema_key = field_aliases.get(schema_key, schema_key)
-                    if not hasattr(schema, schema_key):
-                        raise ValueError(
-                            f"`schema_extra` declares key `{schema_key}` which does not exist in `Schema` object"
-                        )
-                    setattr(schema, schema_key, value)
+    def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
+        if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
+            schema.const = field.default
+
+        self._apply_kwarg_definition_metadata(field, schema)
+
+        if isinstance(field.kwarg_definition, KwargDefinition) and (extra := field.kwarg_definition.schema_extra):
+            field_aliases = schema.field_aliases()
+            for schema_key, value in extra.items():
+                schema_key = field_aliases.get(schema_key, schema_key)
+                if not hasattr(schema, schema_key):
+                    raise ValueError(
+                        f"`schema_extra` declares key `{schema_key}` which does not exist in `Schema` object"
+                    )
+                setattr(schema, schema_key, value)
 
         if schema.default is None and field.default is not Empty:
             schema.default = field.default
