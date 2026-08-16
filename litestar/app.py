@@ -946,8 +946,17 @@ class Litestar(Router):
         """
         asgi_handler = wrap_in_exception_handler(app=self.asgi_router)
 
-        if self.cors_config:
-            asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
+        if cors_config := self.cors_config:
+            cors_middleware = CORSMiddleware(
+                allow_origins=cors_config.allow_origins,
+                allow_methods=cors_config.allow_methods,
+                allow_headers=cors_config.allow_headers,
+                allow_credentials=cors_config.allow_credentials,
+                allow_origin_regex=cors_config.allow_origin_regex,
+                expose_headers=cors_config.expose_headers,
+                max_age=cors_config.max_age,
+            )
+            asgi_handler = cors_middleware(asgi_handler)
 
         try:
             otel_plugin: OpenTelemetryPlugin = self.plugins.get("OpenTelemetryPlugin")

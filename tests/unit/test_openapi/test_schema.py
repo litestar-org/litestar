@@ -948,3 +948,44 @@ def test_not_generating_examples_preserves_signature_namespace() -> None:
     creator = SchemaCreator(generate_examples=True, plugins=openapi_schema_plugins, signature_namespace={"Foo": int})
 
     assert creator.not_generating_examples.signature_namespace == {"Foo": int}
+
+
+def test_reference_result_keeps_kwarg_metadata() -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    result = creator.for_field_definition(
+        FieldDefinition.from_kwarg(
+            name="person",
+            annotation=DataclassPerson,
+            kwarg_definition=Parameter(title="A person", description="The person to greet"),
+        )
+    )
+
+    assert isinstance(result, Schema)
+    assert result.title == "A person"
+    assert result.description == "The person to greet"
+    assert result.all_of is not None
+    assert len(result.all_of) == 1
+    assert isinstance(result.all_of[0], Reference)
+
+
+def test_reference_result_without_kwarg_metadata_stays_reference() -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    result = creator.for_field_definition(FieldDefinition.from_kwarg(name="person", annotation=DataclassPerson))
+
+    assert isinstance(result, Reference)
+
+
+def test_reference_result_keeps_kwarg_metadata_on_subsequent_use() -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    first = creator.for_field_definition(FieldDefinition.from_kwarg(name="a", annotation=DataclassPerson))
+    second = creator.for_field_definition(
+        FieldDefinition.from_kwarg(
+            name="b", annotation=DataclassPerson, kwarg_definition=Parameter(description="second use")
+        )
+    )
+
+    assert isinstance(first, Reference)
+    assert isinstance(second, Schema)
+    assert second.description == "second use"
+    assert second.all_of is not None
+    assert isinstance(second.all_of[0], Reference)
