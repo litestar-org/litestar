@@ -129,6 +129,16 @@ For those previously using the ``root_schema_site`` attribute, the migration inv
 be served at the ``/schema`` endpoint is the first plugin listed in the :attr:`OpenAPIConfig.render_plugins`.
 
 
+Removal of the RapiDoc OpenAPI UI plugin
+----------------------------------------
+
+The ``RapidocRenderPlugin`` has been removed due to lack of upstream maintenance.
+
+If you were using ``RapidocRenderPlugin``, migrate to one of the other bundled UI plugins
+via :attr:`OpenAPIConfig.render_plugins`, e.g. :class:`ScalarRenderPlugin` (the default),
+:class:`SwaggerRenderPlugin`, :class:`RedocRenderPlugin` or :class:`StoplightRenderPlugin`.
+
+
 Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
 -------------------------------------------------------------------------------
 
@@ -291,11 +301,13 @@ Built-in middleware migrated to ``ASGIMiddleware``
 
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``ResponseCacheMiddleware`` has made this move, and has also been moved into
+``CORSMiddleware`` and ``ResponseCacheMiddleware`` have made this move.
+``ResponseCacheMiddleware`` has also been moved into
 ``litestar.middleware._internal``, removing it from the public API.
 
 These classes are constructed by Litestar itself from their configuration objects, so
-applications that only configure them - for response caching, via
+applications that only configure them - for CORS, via
+:class:`~litestar.config.cors.CORSConfig`, and for response caching, via
 :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
 ``cache`` argument - are unaffected.
 
@@ -306,16 +318,22 @@ apply the instance to the next ASGI app:
 .. code-block:: python
 
     # before
-    middleware = ResponseCacheMiddleware(app=next_app, config=response_cache_config)
+    middleware = CORSMiddleware(app=next_app, config=cors_config)
 
     # after
-    middleware = ResponseCacheMiddleware(
-        default_expiration=response_cache_config.default_expiration,
-        key_builder=response_cache_config.key_builder,
-        store=response_cache_config.store,
-        cache_response_filter=response_cache_config.cache_response_filter,
+    middleware = CORSMiddleware(
+        allow_origins=cors_config.allow_origins,
+        allow_methods=cors_config.allow_methods,
+        allow_headers=cors_config.allow_headers,
+        allow_credentials=cors_config.allow_credentials,
+        allow_origin_regex=cors_config.allow_origin_regex,
+        expose_headers=cors_config.expose_headers,
+        max_age=cors_config.max_age,
     )
     asgi_app = middleware(next_app)
+
+The settings are copied on construction, so mutating ``CORSConfig`` after the application
+has been created no longer affects the middleware.
 
 Because ``ASGIMiddleware.__call__`` returns a closure rather than the middleware
 instance, a middleware stack can no longer be introspected by walking the ``.app``

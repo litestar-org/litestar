@@ -15,7 +15,9 @@ class TypedDictSchemaPlugin(OpenAPISchemaPlugin):
         return field_definition.is_typeddict_type
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
-        type_hints = field_definition.get_type_hints(include_extras=True, resolve_generics=True)
+        type_hints = field_definition.get_type_hints(
+            include_extras=True, resolve_generics=True, namespace=schema_creator.signature_namespace
+        )
 
         return schema_creator.create_component_schema(
             field_definition,
