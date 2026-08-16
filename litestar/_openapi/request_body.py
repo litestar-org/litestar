@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.enums import RequestEncodingType
@@ -22,6 +22,7 @@ def create_request_body(
     handler_id: str,
     resolved_data_dto: type[AbstractDTO] | None,
     data_field: FieldDefinition,
+    signature_namespace: dict[str, Any] | None = None,
 ) -> RequestBody:
     """Create a RequestBody instance for the given route handler's data field.
 
@@ -30,12 +31,15 @@ def create_request_body(
         handler_id: The handler id.
         resolved_data_dto: The resolved data dto.
         data_field: The data field.
+        signature_namespace: Additional names for forward reference resolution.
 
     Returns:
         A RequestBody instance.
     """
     media_type: RequestEncodingType | str = RequestEncodingType.JSON
-    schema_creator = SchemaCreator.from_openapi_context(context, prefer_alias=True)
+    schema_creator = SchemaCreator.from_openapi_context(
+        context, prefer_alias=True, signature_namespace=signature_namespace
+    )
     if isinstance(data_field.kwarg_definition, BodyKwarg) and data_field.kwarg_definition.media_type:
         media_type = data_field.kwarg_definition.media_type
 

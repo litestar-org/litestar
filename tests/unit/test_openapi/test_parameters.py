@@ -428,9 +428,9 @@ def test_unwrap_new_type() -> None:
 
     app = Litestar([handler])
     assert app.openapi_schema.paths["/{path_param}"].get.parameters[0].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
-    assert app.openapi_schema.paths["/{path_param}"].get.parameters[1].schema.one_of == [  # type: ignore[index, union-attr]
-        Schema(type=OpenAPIType.STRING),
-        Schema(type=OpenAPIType.NULL),
+    assert app.openapi_schema.paths["/{path_param}"].get.parameters[1].schema.type == [  # type: ignore[index, union-attr]
+        OpenAPIType.STRING,
+        OpenAPIType.NULL,
     ]
     assert app.openapi_schema.paths["/{path_param}"].get.parameters[2].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
     assert (

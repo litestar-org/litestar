@@ -306,4 +306,6 @@ def test_nested_optional_upload_file_keeps_null_alternative() -> None:
     schema = app.openapi_schema.to_schema()
     form_schema = next(iter(schema["components"]["schemas"].values()))
 
-    assert {"type": "null"} in form_schema["properties"]["file"]["oneOf"]
+    file_schema = form_schema["properties"]["file"]
+    assert file_schema["type"] == ["string", "null"]
+    assert file_schema["format"] == "binary"
