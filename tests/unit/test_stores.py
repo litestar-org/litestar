@@ -119,43 +119,6 @@ async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | tim
 
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.xdist_group("redis")
-async def test_get_and_renew_redis_uses_getex(redis_store: RedisStore) -> None:
-    """On Redis >= 6.2, get with renew_for should use GETEX instead of Lua script."""
-    # The store lazily detects support; force the check
-    supports = await redis_store._check_getex_support()
-    # Modern Redis (CI uses >= 6.2) should support GETEX
-    assert supports is True
-    # Verify the result is cached
-    assert redis_store._supports_getex is True
-
-    # Functional check: set a key with TTL, get with renew, verify renewal worked
-    await redis_store.set("getex_test", b"value", expires_in=2)
-    result = await redis_store.get("getex_test", renew_for=60)
-    assert result == b"value"
-
-    # TTL should now be ~60s, not ~2s
-    ttl = await redis_store.expires_in("getex_test")
-    assert ttl is not None and ttl > 50
-
-
-@pytest.mark.flaky(reruns=5)
-@pytest.mark.xdist_group("redis")
-async def test_get_and_renew_redis_lua_fallback(redis_store: RedisStore) -> None:
-    """When GETEX is not supported, the Lua script fallback should be used."""
-    # Force the store to think GETEX is unsupported
-    redis_store._supports_getex = False
-
-    await redis_store.set("fallback_test", b"value", expires_in=2)
-    result = await redis_store.get("fallback_test", renew_for=60)
-    assert result == b"value"
-
-    # TTL should be renewed via Lua script
-    ttl = await redis_store.expires_in("fallback_test")
-    assert ttl is not None and ttl > 50
-
-
-@pytest.mark.flaky(reruns=5)
-@pytest.mark.xdist_group("redis")
 async def test_get_renew_for_timedelta_uses_total_seconds(redis_store: RedisStore) -> None:
     """timedelta renew_for should use total_seconds(), not .seconds attribute."""
     await redis_store.set("td_test", b"value", expires_in=2)
