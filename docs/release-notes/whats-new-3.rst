@@ -301,23 +301,35 @@ Built-in middleware migrated to ``ASGIMiddleware``
 
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``CORSMiddleware``, ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have made this
-move. ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
-``litestar.middleware._internal``, removing them from the public API; for CSRF this
-includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
-``generate_csrf_hash`` helpers.
+``CORSMiddleware``, ``ResponseCacheMiddleware``, ``CSRFMiddleware`` and
+``CompressionMiddleware`` have made this move. ``ResponseCacheMiddleware`` and
+``CSRFMiddleware`` have also been moved into ``litestar.middleware._internal``, removing
+them from the public API; for CSRF this includes the ``litestar.middleware.csrf`` module
+and its ``generate_csrf_token`` / ``generate_csrf_hash`` helpers.
 
 These classes are constructed by Litestar itself from their configuration objects (for
 CSRF, via a ``from_config`` classmethod on the middleware), so applications that only
 configure them - for CORS, via
 :class:`~litestar.config.cors.CORSConfig`, for response caching, via
 :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
-``cache`` argument, and for CSRF, via :class:`~litestar.config.csrf.CSRFConfig` - are
-unaffected, with one exception: :attr:`~litestar.config.csrf.CSRFConfig.exclude`
-patterns are now matched against the **handler's path template**
+``cache`` argument, for CSRF, via :class:`~litestar.config.csrf.CSRFConfig`, and for
+compression, via :class:`~litestar.config.compression.CompressionConfig` - are
+unaffected, with one exception: the ``exclude`` patterns of ``CSRFConfig`` and
+``CompressionConfig`` are now matched against the **handler's path template**
 (e.g. ``/user/{user_id:int}``) at startup, instead of the request path
-(e.g. ``/user/1``) at runtime. Patterns targeting literal paths keep working; patterns
-written to match expanded path parameters must be rewritten against the template.
+(e.g. ``/user/1``) at runtime. Patterns targeting literal handler paths keep working;
+patterns written to match expanded path parameters must be rewritten against the
+template. For mounted ASGI apps, patterns match the mount path only, not sub-paths, and
+a handler registered on multiple paths is excluded as a whole when any of its paths
+matches.
+
+The ``CompressionFacade`` protocol also changes: facades now receive
+:attr:`~litestar.config.compression.CompressionConfig.backend_config` directly instead
+of the whole ``CompressionConfig``. Custom facades must rename their ``config``
+parameter to ``backend_config`` and read their settings from it. Subclasses set via
+:attr:`~litestar.config.compression.CompressionConfig.middleware_class` must rename
+``__call__`` to ``handle``, which receives the next ASGI app as an additional
+``next_app`` argument in place of ``self.app``.
 
 Code that composed one of them directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and

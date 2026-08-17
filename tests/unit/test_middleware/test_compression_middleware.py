@@ -4,7 +4,7 @@ import sys
 import zlib
 from collections.abc import AsyncIterator, Callable
 from io import BytesIO
-from typing import Literal, Union
+from typing import Any, Literal, Union
 from unittest.mock import MagicMock
 
 import pytest
@@ -237,8 +237,9 @@ async def test_compression_streaming_response_emitted_messages(
     async def fake_send(message: Message) -> None:
         mock(message)
 
+    config = CompressionConfig(backend=backend)
     wrapped_send = CompressionMiddleware(
-        mock_asgi_app, CompressionConfig(backend=backend)
+        facade=config.compression_facade, backend_config=config.backend_config
     ).create_compression_send_wrapper(fake_send, compression_encoding, create_scope())
 
     await wrapped_send(HTTPResponseStartEvent(type="http.response.start", status=200, headers={}))
@@ -283,14 +284,14 @@ def test_compression_with_custom_backend(handler: HTTPRouteHandler) -> None:
             self,
             buffer: BytesIO,
             compression_encoding: Union[Literal[CompressionEncoding.GZIP], str],
-            config: CompressionConfig,
+            backend_config: Any = None,
         ) -> None:
             self.buffer = buffer
             self.compression_encoding = compression_encoding
-            self.config = config
+            self.backend_config = backend_config
 
         def write(self, body: Union[bytes, bytearray], final: bool = False) -> None:
-            self.buffer.write(zlib.compress(body, level=self.config.backend_config["level"]))
+            self.buffer.write(zlib.compress(body, level=self.backend_config["level"]))
 
         def close(self) -> None: ...
 
@@ -308,9 +309,9 @@ def test_compression_with_custom_middleware(handler: HTTPRouteHandler) -> None:
     mock = MagicMock()
 
     class CustomCompressionMiddleware(CompressionMiddleware):
-        async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
             mock()
-            await super().__call__(scope, receive, send)
+            await super().handle(scope, receive, send, next_app)
             return
 
     config = CompressionConfig(backend="gzip", middleware_class=CustomCompressionMiddleware)
@@ -321,3 +322,124 @@ def test_compression_with_custom_middleware(handler: HTTPRouteHandler) -> None:
         assert response.headers["Content-Encoding"] == "gzip"
         assert int(response.headers["Content-Length"]) < 40000
         mock.assert_called_once()
+
+
+def test_exclude_matches_handler_path_template() -> None:
+    from litestar.params import FromPath
+
+    @get("/user/{user_id:int}", media_type=MediaType.TEXT)
+    def excluded_handler(user_id: FromPath[int]) -> str:
+        return "_litestar_" * 4000
+
+    @get("/order/{order_id:int}", media_type=MediaType.TEXT)
+    def compressed_handler(order_id: FromPath[int]) -> str:
+        return "_litestar_" * 4000
+
+    # exclusion patterns match the handler's path template, not the request path
+    with create_test_client(
+        route_handlers=[excluded_handler, compressed_handler],
+        compression_config=CompressionConfig(backend="gzip", exclude=[r"/user/\{user_id:int\}"]),
+    ) as client:
+        response = client.get("/user/1", headers={"Accept-Encoding": "gzip"})
+        assert "content-encoding" not in response.headers
+
+        response = client.get("/order/1", headers={"Accept-Encoding": "gzip"})
+        assert response.headers["content-encoding"] == "gzip"
+
+    # a request-path pattern does not match a dynamic handler and excludes nothing
+    with create_test_client(
+        route_handlers=[excluded_handler, compressed_handler],
+        compression_config=CompressionConfig(backend="gzip", exclude=["^/user/1$"]),
+    ) as client:
+        response = client.get("/user/1", headers={"Accept-Encoding": "gzip"})
+        assert response.headers["content-encoding"] == "gzip"
+
+
+@pytest.mark.parametrize(
+    "make_config, low, high",
+    (
+        (lambda level: CompressionConfig(backend="gzip", gzip_compress_level=level), 1, 9),
+        (lambda level: CompressionConfig(backend="brotli", brotli_quality=level), 0, 11),
+    ),
+    ids=("gzip", "brotli"),
+)
+def test_backend_settings_wiring(
+    handler: HTTPRouteHandler, make_config: Callable[[int], CompressionConfig], low: int, high: int
+) -> None:
+    def content_length(level: int) -> int:
+        config = make_config(level)
+        encoding = config.compression_facade.encoding
+        with create_test_client([handler], compression_config=config) as client:
+            response = client.get("/", headers={"Accept-Encoding": encoding})
+            assert response.headers["Content-Encoding"] == encoding
+            return int(response.headers["Content-Length"])
+
+    assert content_length(low) > content_length(high)
+
+
+def test_instance_construction_backend_config_used_for_primary_gzip(handler: HTTPRouteHandler) -> None:
+    from litestar.middleware.compression.gzip_facade import GzipCompression
+
+    def content_length(compress_level: int) -> int:
+        middleware = CompressionMiddleware(facade=GzipCompression, backend_config={"compress_level": compress_level})
+        with create_test_client([handler], middleware=[middleware]) as client:
+            response = client.get("/", headers={"Accept-Encoding": "gzip"})
+            assert response.headers["Content-Encoding"] == "gzip"
+            return int(response.headers["Content-Length"])
+
+    assert content_length(1) > content_length(9)
+
+
+def test_exclude_opt_key_wiring(handler: HTTPRouteHandler) -> None:
+    @get("/no-compress", media_type=MediaType.TEXT, no_compression=True)
+    def excluded_handler() -> str:
+        return "_litestar_" * 4000
+
+    with create_test_client(
+        [handler, excluded_handler],
+        compression_config=CompressionConfig(backend="gzip", exclude_opt_key="no_compression"),
+    ) as client:
+        response = client.get("/no-compress", headers={"Accept-Encoding": "gzip"})
+        assert "Content-Encoding" not in response.headers
+
+        response = client.get("/", headers={"Accept-Encoding": "gzip"})
+        assert response.headers["Content-Encoding"] == "gzip"
+
+
+def test_minimum_size_wiring(handler: HTTPRouteHandler) -> None:
+    with create_test_client(
+        [handler], compression_config=CompressionConfig(backend="gzip", minimum_size=50000)
+    ) as client:
+        response = client.get("/", headers={"Accept-Encoding": "gzip"})
+        assert "Content-Encoding" not in response.headers
+
+
+def test_asgi_route_still_compressed() -> None:
+    from litestar import asgi
+
+    @asgi("/mounted", is_mount=True)
+    async def mounted(scope: Scope, receive: Receive, send: Send) -> None:
+        body = b"_litestar_" * 4000
+        await send(
+            {
+                "type": "http.response.start",
+                "status": 200,
+                "headers": [(b"content-type", b"text/plain"), (b"content-length", str(len(body)).encode())],
+            }
+        )
+        await send({"type": "http.response.body", "body": body, "more_body": False})
+
+    with create_test_client([mounted], compression_config=CompressionConfig(backend="gzip")) as client:
+        response = client.get("/mounted", headers={"Accept-Encoding": "gzip"})
+        assert response.headers["Content-Encoding"] == "gzip"
+
+
+def test_gzip_fallback_compress_level_wiring(handler: HTTPRouteHandler) -> None:
+    def content_length(compress_level: int) -> int:
+        config = CompressionConfig(backend="brotli", gzip_compress_level=compress_level)
+        with create_test_client([handler], compression_config=config) as client:
+            response = client.get("/", headers={"Accept-Encoding": "gzip"})
+            assert response.headers["Content-Encoding"] == "gzip"
+            return int(response.headers["Content-Length"])
+
+    assert content_length(1) > content_length(9)
