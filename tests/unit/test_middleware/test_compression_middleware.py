@@ -4,7 +4,7 @@ import sys
 import zlib
 from collections.abc import AsyncIterator, Callable
 from io import BytesIO
-from typing import Any, Literal, Union
+from typing import Literal, Union
 from unittest.mock import MagicMock
 
 import pytest
@@ -230,17 +230,15 @@ async def test_compression_streaming_response_emitted_messages(
     backend: Literal["gzip", "brotli", "zstd"],
     compression_encoding: CompressionEncoding,
     create_scope: Callable[..., Scope],
-    mock_asgi_app: ASGIApp,
 ) -> None:
     mock = MagicMock()
 
     async def fake_send(message: Message) -> None:
         mock(message)
 
-    config = CompressionConfig(backend=backend)
-    wrapped_send = CompressionMiddleware(
-        facade=config.compression_facade, backend_config=config.backend_config
-    ).create_compression_send_wrapper(fake_send, compression_encoding, create_scope())
+    wrapped_send = CompressionMiddleware(CompressionConfig(backend=backend)).create_compression_send_wrapper(
+        fake_send, compression_encoding, create_scope()
+    )
 
     await wrapped_send(HTTPResponseStartEvent(type="http.response.start", status=200, headers={}))
     # first body message always has compression headers (at least for gzip)
@@ -284,14 +282,14 @@ def test_compression_with_custom_backend(handler: HTTPRouteHandler) -> None:
             self,
             buffer: BytesIO,
             compression_encoding: Union[Literal[CompressionEncoding.GZIP], str],
-            backend_config: Any = None,
+            config: CompressionConfig,
         ) -> None:
             self.buffer = buffer
             self.compression_encoding = compression_encoding
-            self.backend_config = backend_config
+            self.config = config
 
         def write(self, body: Union[bytes, bytearray], final: bool = False) -> None:
-            self.buffer.write(zlib.compress(body, level=self.backend_config["level"]))
+            self.buffer.write(zlib.compress(body, level=self.config.backend_config["level"]))
 
         def close(self) -> None: ...
 
@@ -377,11 +375,9 @@ def test_backend_settings_wiring(
     assert content_length(low) > content_length(high)
 
 
-def test_instance_construction_backend_config_used_for_primary_gzip(handler: HTTPRouteHandler) -> None:
-    from litestar.middleware.compression.gzip_facade import GzipCompression
-
+def test_direct_instance_in_middleware_list(handler: HTTPRouteHandler) -> None:
     def content_length(compress_level: int) -> int:
-        middleware = CompressionMiddleware(facade=GzipCompression, backend_config={"compress_level": compress_level})
+        middleware = CompressionMiddleware(CompressionConfig(backend="gzip", gzip_compress_level=compress_level))
         with create_test_client([handler], middleware=[middleware]) as client:
             response = client.get("/", headers={"Accept-Encoding": "gzip"})
             assert response.headers["Content-Encoding"] == "gzip"

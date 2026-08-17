@@ -62,11 +62,7 @@ class CompressionConfig:
     compression_facade: type[CompressionFacade] = GzipCompression
     """The compression facade to use for the actual compression."""
     backend_config: Any = None
-    """Configuration specific to the backend, passed through to the compression facade.
-
-    For the built-in ``gzip``, ``brotli`` and ``zstd`` backends this is derived from the
-    backend-specific fields; any user-provided value is replaced.
-    """
+    """Configuration specific to the backend."""
     zstd_gzip_fallback: bool = True
     """Use GZIP as a fallback if Zstd is not supported by the client."""
     gzip_fallback: bool = True
@@ -79,8 +75,6 @@ class CompressionConfig:
         if self.backend == "gzip":
             if self.gzip_compress_level < 0 or self.gzip_compress_level > 9:
                 raise ImproperlyConfiguredException("gzip_compress_level must be a value between 0 and 9")
-
-            self.backend_config = {"compress_level": self.gzip_compress_level}
         elif self.backend == "brotli":
             # Brotli is not guaranteed to be installed.
             from litestar.middleware.compression.brotli_facade import BrotliCompression
@@ -93,12 +87,6 @@ class CompressionConfig:
 
             self.gzip_fallback = self.brotli_gzip_fallback
             self.compression_facade = BrotliCompression
-            self.backend_config = {
-                "quality": self.brotli_quality,
-                "mode": self.brotli_mode,
-                "lgwin": self.brotli_lgwin,
-                "lgblock": self.brotli_lgblock,
-            }
         elif self.backend == "zstd":
             from litestar.middleware.compression.zstd_facade import ZstdCompression
 
@@ -110,4 +98,3 @@ class CompressionConfig:
 
             self.gzip_fallback = self.zstd_gzip_fallback
             self.compression_facade = ZstdCompression
-            self.backend_config = {"compress_level": self.zstd_compress_level}
