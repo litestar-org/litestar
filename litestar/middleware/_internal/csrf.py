@@ -104,7 +104,7 @@ class CSRFMiddleware(ASGIMiddleware):
         self.header_name = header_name
         self.cookie_secure = cookie_secure
         self.cookie_httponly = cookie_httponly
-        self.cookie_samesite = cookie_samesite
+        self.cookie_samesite: Literal["lax", "strict", "none"] = cookie_samesite
         self.cookie_domain = cookie_domain
         self.safe_methods = set(safe_methods)
         self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
