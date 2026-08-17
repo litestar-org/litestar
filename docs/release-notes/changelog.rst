@@ -8,6 +8,7 @@
 
     .. change:: Fix ``TypeError`` when generating a schema for a union of enums
         :type: bugfix
+        :pr: 4997
 
         Annotating a handler with a union whose members are all enums (e.g.
         ``Color | Size``) crashed schema generation with ``TypeError: issubclass()
