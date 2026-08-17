@@ -6,6 +6,15 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Prefer specific routes over a ``{path:path}`` catch-all
+        :type: bugfix
+        :issue: 4991
+
+        A ``{path:path}`` catch-all no longer shadows a more specific route that
+        starts with a path parameter and continues with a static suffix, such as
+        ``/{slug:str}/hello``. ``GET /foo/hello`` matches the specific route;
+        unmatched paths still fall through to the catch-all.
+
     .. change:: Fix ``TypeError`` when generating a schema for a union of enums
         :type: bugfix
         :pr: 4997

@@ -255,6 +255,59 @@ def test_support_for_path_type_parameters() -> None:
         assert response.status_code == HTTP_200_OK
 
 
+@pytest.mark.parametrize("catchall_first", [False, True])
+def test_path_type_catchall_does_not_shadow_param_static_suffix(catchall_first: bool) -> None:
+    # https://github.com/litestar-org/litestar/issues/4991
+    @get("/{slug:str}/hello", media_type=MediaType.TEXT)
+    def specific(slug: FromPath[str]) -> str:
+        return f"specific:{slug}"
+
+    @get("/{path:path}", media_type=MediaType.TEXT)
+    def catch_all(path: FromPath[Path]) -> str:
+        return f"catch_all:{path}"
+
+    handlers = [catch_all, specific] if catchall_first else [specific, catch_all]
+    with create_test_client(handlers) as client:
+        response = client.get("/foo/hello")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "specific:foo"
+
+        response = client.get("/foo/bar")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "catch_all:/foo/bar"
+
+        response = client.get("/foo/hello/extra")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "catch_all:/foo/hello/extra"
+
+        response = client.get("/foo")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "catch_all:/foo"
+
+
+def test_path_type_catchall_with_static_prefix() -> None:
+    @get("/hello/{slug:str}", media_type=MediaType.TEXT)
+    def specific(slug: FromPath[str]) -> str:
+        return f"specific:{slug}"
+
+    @get("/{path:path}", media_type=MediaType.TEXT)
+    def catch_all(path: FromPath[Path]) -> str:
+        return f"catch_all:{path}"
+
+    with create_test_client([specific, catch_all]) as client:
+        response = client.get("/hello/world")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "specific:world"
+
+        response = client.get("/foo/bar")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "catch_all:/foo/bar"
+
+        response = client.get("/hello")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "catch_all:/hello"
+
+
 def test_base_path_param_resolution() -> None:
     # https://github.com/litestar-org/litestar/issues/1830
     @get("/{name:str}")

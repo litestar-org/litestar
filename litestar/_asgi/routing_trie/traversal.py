@@ -34,31 +34,53 @@ def traverse_route_map(
     Returns:
         A tuple containing the target RouteMapNode and a list containing all path parameter values.
     """
-    current_node = root_node
-    path_params: list[str] = []
     path_components = [p for p in path.split("/") if p]
-
-    for i, component in enumerate(path_components):
-        if component in current_node.child_keys:
-            current_node = current_node.children[component]
-            continue
-
-        if current_node.is_path_param_node:
-            current_node = current_node.children[PathParameterSentinel]
-
-            if current_node.is_path_type:
-                path_params.append(normalize_path("/".join(path_components[i:])))
-                break
-
-            path_params.append(component)
-            continue
-
+    matched = _traverse_node(root_node, path_components, [])
+    if matched is None:
         raise NotFoundException()
 
+    current_node, path_params = matched
     if not current_node.asgi_handlers:
         raise NotFoundException()
 
     return current_node, path_params, path
+
+
+def _traverse_node(
+    node: RouteTrieNode,
+    components: list[str],
+    path_params: list[str],
+) -> tuple[RouteTrieNode, list[str]] | None:
+    """Walk one trie node, backtracking when a greedy ``{path:path}`` would hide a more specific route."""
+    if not components:
+        return (node, path_params) if node.asgi_handlers else None
+
+    component = components[0]
+    remaining = components[1:]
+
+    if component in node.child_keys:
+        matched = _traverse_node(node.children[component], remaining, path_params)
+        if matched is not None:
+            return matched
+
+    if not node.is_path_param_node:
+        return None
+
+    param_node = node.children[PathParameterSentinel]
+    if param_node.is_path_type:
+        # Try children of the catch-all node (e.g. ``{slug}/hello``) before
+        # consuming the rest of the path. Skip when nothing remains: an empty
+        # continuation would bind the catch-all handler to a raw segment
+        # instead of a normalised path.
+        if remaining:
+            matched = _traverse_node(param_node, remaining, [*path_params, component])
+            if matched is not None:
+                return matched
+        if param_node.asgi_handlers:
+            return param_node, [*path_params, normalize_path("/".join(components))]
+        return None
+
+    return _traverse_node(param_node, remaining, [*path_params, component])
 
 
 def parse_node_handlers(
