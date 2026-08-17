@@ -26,6 +26,50 @@
         plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
         ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
 
+    .. change:: Migrate ``ResponseCacheMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 4953
+        :issue: 4009
+        :breaking:
+
+        ``ResponseCacheMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases. It now lives in
+        ``litestar.middleware._internal``, removing it from the public API.
+
+        .. note::
+            The move into ``litestar.middleware._internal`` does not affect usage:
+            the middleware was only ever applied internally by Litestar to begin with.
+
+        Applications that configure response caching through
+        :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
+        ``cache`` argument are unaffected -- Litestar constructs the middleware itself.
+
+        Code composing the middleware directly into an ASGI stack must drop the ``app``
+        argument, pass the settings as keyword arguments rather than a
+        ``ResponseCacheConfig``, and apply the instance to the next ASGI app:
+
+        .. code-block:: python
+
+            # before
+            middleware = ResponseCacheMiddleware(app=next_app, config=response_cache_config)
+
+            # after
+            middleware = ResponseCacheMiddleware(
+                default_expiration=response_cache_config.default_expiration,
+                key_builder=response_cache_config.key_builder,
+                store=response_cache_config.store,
+                cache_response_filter=response_cache_config.cache_response_filter,
+            )
+            asgi_app = middleware(next_app)
+
+        Since ``ASGIMiddleware.__call__`` returns a closure rather than the middleware
+        instance, a middleware stack can no longer be introspected by walking the ``.app``
+        attribute of each layer.
+
+        .. seealso::
+            :ref:`asgi-middleware-migration`
+
     .. change:: Migrate ``CORSMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 4952
@@ -63,6 +107,18 @@
         .. seealso::
             :ref:`asgi-middleware-migration`
 
+    .. change:: Stop caching responses of handlers that do not enable caching
+        :type: bugfix
+        :pr: 4953
+
+        ``ResponseCacheMiddleware`` is applied per route, so a handler that never set
+        ``cache`` still had its responses written to the store when it shared a path with
+        a handler that did -- for example a ``POST`` handler on a path whose ``GET``
+        handler sets ``cache=True``. Those entries were written on every request, without
+        an expiry, and were never read back, since responses are only served from the
+        cache for handlers that enable it.
+
+        The middleware now passes such requests through untouched.
     .. change:: Harden the PsycoPg channels listener
         :type: bugfix
 
