@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Protocol
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol
 
 if TYPE_CHECKING:
     from io import BytesIO
 
-    from litestar.config.compression import CompressionConfig
     from litestar.enums import CompressionEncoding
 
 
@@ -18,14 +17,14 @@ class CompressionFacade(Protocol):
     """The encoding of the compression."""
 
     def __init__(
-        self, buffer: BytesIO, compression_encoding: CompressionEncoding | str, config: CompressionConfig
+        self, buffer: BytesIO, compression_encoding: CompressionEncoding | str, backend_config: Any = None
     ) -> None:
         """Initialize ``CompressionFacade``.
 
         Args:
             buffer: A bytes IO buffer to write the compressed data into.
             compression_encoding: The compression encoding used.
-            config: The app compression config.
+            backend_config: Configuration specific to the backend.
         """
         ...
 
