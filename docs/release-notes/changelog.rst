@@ -8,6 +8,7 @@
 
     .. change:: Prefer specific routes over a ``{path:path}`` catch-all
         :type: bugfix
+        :pr: 5004
         :issue: 4991
 
         A ``{path:path}`` catch-all no longer shadows a more specific route that
