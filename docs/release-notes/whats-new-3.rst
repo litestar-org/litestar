@@ -323,15 +323,14 @@ template. For mounted ASGI apps, patterns match the mount path only, not sub-pat
 a handler registered on multiple paths is excluded as a whole when any of its paths
 matches.
 
-The ``CompressionFacade`` protocol also changes: facades now receive
-:attr:`~litestar.config.compression.CompressionConfig.backend_config` directly instead
-of the whole ``CompressionConfig``. Custom facades must rename their ``config``
-parameter to ``backend_config`` and read their settings from it. Subclasses set via
+``CompressionMiddleware`` keeps its ``CompressionConfig``-based constructor (minus the
+``app`` argument), since the config remains part of the public ``CompressionFacade``
+protocol, which is unchanged. Subclasses set via
 :attr:`~litestar.config.compression.CompressionConfig.middleware_class` must rename
 ``__call__`` to ``handle``, which receives the next ASGI app as an additional
 ``next_app`` argument in place of ``self.app``.
 
-Code that composed one of them directly into an ASGI stack must drop the ``app``
+Code that composed one of the others directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and
 apply the instance to the next ASGI app:
 

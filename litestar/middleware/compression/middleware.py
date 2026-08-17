@@ -13,7 +13,7 @@ from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
-    from litestar.middleware.compression.facade import CompressionFacade
+    from litestar.config.compression import CompressionConfig
     from litestar.types import (
         ASGIApp,
         HTTPResponseStartEvent,
@@ -37,42 +37,15 @@ class CompressionMiddleware(ASGIMiddleware):
 
     scopes = (ScopeType.HTTP, ScopeType.ASGI)
 
-    def __init__(
-        self,
-        *,
-        facade: type[CompressionFacade],
-        backend_config: Any = None,
-        gzip_fallback: bool = True,
-        gzip_backend_config: Any = None,
-        minimum_size: int = 500,
-        exclude: str | list[str] | None = None,
-        exclude_opt_key: str | None = None,
-    ) -> None:
+    def __init__(self, config: CompressionConfig) -> None:
         """Initialize ``CompressionMiddleware``
 
         Args:
-            facade: The compression facade to use for the actual compression.
-            backend_config: Configuration specific to the compression backend, passed
-                through to the facade.
-            gzip_fallback: Use GZIP as a fallback if the facade's encoding is not
-                supported by the client.
-            gzip_backend_config: Configuration passed to the GZIP facade when GZIP is
-                used as a fallback for a facade with a different encoding.
-            minimum_size: Minimum response size (bytes) to enable compression.
-            exclude: A pattern or list of patterns to skip in the compression middleware,
-                matched against the handler path.
-            exclude_opt_key: An identifier to use on routes to disable compression for a
-                particular route.
+            config: An instance of CompressionConfig.
         """
-        self.facade = facade
-        self.backend_config = dict(backend_config) if isinstance(backend_config, dict) else backend_config
-        self.gzip_fallback = gzip_fallback
-        self.gzip_backend_config = (
-            dict(gzip_backend_config) if isinstance(gzip_backend_config, dict) else gzip_backend_config
-        )
-        self.minimum_size = minimum_size
-        self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
-        self.exclude_opt_key = exclude_opt_key
+        self.config = config
+        self.exclude_path_pattern = tuple(config.exclude) if isinstance(config.exclude, list) else config.exclude
+        self.exclude_opt_key = config.exclude_opt_key
 
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         """Handle ASGI call.
@@ -91,16 +64,19 @@ class CompressionMiddleware(ASGIMiddleware):
             return
 
         accept_encoding = Headers.from_scope(scope).get("accept-encoding", "")
+        config = self.config
 
-        if self.facade.encoding in accept_encoding:
+        if config.compression_facade.encoding in accept_encoding:
             await next_app(
                 scope,
                 receive,
-                self.create_compression_send_wrapper(send=send, compression_encoding=self.facade.encoding, scope=scope),
+                self.create_compression_send_wrapper(
+                    send=send, compression_encoding=config.compression_facade.encoding, scope=scope
+                ),
             )
             return
 
-        if self.gzip_fallback and CompressionEncoding.GZIP in accept_encoding:
+        if config.gzip_fallback and CompressionEncoding.GZIP in accept_encoding:
             await next_app(
                 scope,
                 receive,
@@ -131,18 +107,13 @@ class CompressionMiddleware(ASGIMiddleware):
         """
         bytes_buffer = BytesIO()
 
-        # We can't use `self.facade` directly if the compression is `gzip` since it may be
-        # being used as a fallback.
+        # We can't use `self.config.compression_facade` directly if the compression is `gzip` since
+        # it may be being used as a fallback.
         if compression_encoding == CompressionEncoding.GZIP:
-            backend_config = (
-                self.backend_config if self.facade.encoding == CompressionEncoding.GZIP else self.gzip_backend_config
-            )
-            facade = GzipCompression(
-                buffer=bytes_buffer, compression_encoding=compression_encoding, backend_config=backend_config
-            )
+            facade = GzipCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
         else:
-            facade = self.facade(  # type: ignore[assignment]
-                buffer=bytes_buffer, compression_encoding=compression_encoding, backend_config=self.backend_config
+            facade = self.config.compression_facade(  # type: ignore[assignment]
+                buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config
             )
 
         initial_message: HTTPResponseStartEvent | None = None
@@ -194,7 +165,7 @@ class CompressionMiddleware(ASGIMiddleware):
                         await send(initial_message)
                         await send(message)
 
-                    elif len(body) >= self.minimum_size:
+                    elif len(body) >= self.config.minimum_size:
                         facade.write(body, final=not more_body)
                         facade.close()
                         body = bytes_buffer.getvalue()

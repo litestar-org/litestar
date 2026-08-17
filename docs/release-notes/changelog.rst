@@ -38,6 +38,7 @@
 
     .. change:: Migrate ``CompressionMiddleware`` to ``ASGIMiddleware``
         :type: feature
+        :pr: 4999
         :issue: 4009
         :breaking:
 
@@ -47,8 +48,9 @@
 
         Applications that configure compression through
         :class:`~litestar.config.compression.CompressionConfig` are unaffected, since
-        Litestar constructs the middleware itself. The constructor takes keyword
-        arguments now instead of an ``app`` and a ``CompressionConfig``:
+        Litestar constructs the middleware itself. The middleware still takes the
+        ``CompressionConfig`` - which the ``CompressionFacade`` protocol continues to
+        receive unchanged - but no longer wraps an ``app``:
 
         .. code-block:: python
 
@@ -56,24 +58,8 @@
             middleware = CompressionMiddleware(app=next_app, config=config)
 
             # after
-            middleware = CompressionMiddleware(
-                facade=config.compression_facade,
-                backend_config=config.backend_config,
-                gzip_fallback=config.gzip_fallback,
-                gzip_backend_config={"compress_level": config.gzip_compress_level},
-                minimum_size=config.minimum_size,
-                exclude=config.exclude,
-                exclude_opt_key=config.exclude_opt_key,
-            )
+            middleware = CompressionMiddleware(config=config)
             asgi_app = middleware(next_app)
-
-        The ``CompressionFacade`` protocol changes accordingly: facades now receive
-        :attr:`~litestar.config.compression.CompressionConfig.backend_config` directly
-        instead of the whole ``CompressionConfig``. Custom facades must rename their
-        ``config`` parameter to ``backend_config`` and read their settings from it;
-        ``self.config.backend_config["level"]`` becomes ``backend_config["level"]``.
-        For the built-in backends, ``CompressionConfig`` now derives ``backend_config``
-        from the backend-specific fields, which keep working unchanged.
 
         Subclasses set via
         :attr:`~litestar.config.compression.CompressionConfig.middleware_class` must
