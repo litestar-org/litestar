@@ -345,7 +345,8 @@ class SchemaCreator:
             )
         elif field_definition.is_optional:
             result = self.for_optional_field(field_definition)
-        elif field_definition.is_enum:
+        elif field_definition.is_enum and not field_definition.is_union:
+            # `is_enum` is also true for unions whose members are all enums
             result = self.for_enum_field(field_definition)
         elif field_definition.is_union:
             result = self.for_union_field(field_definition)
