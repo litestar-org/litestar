@@ -744,11 +744,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
             security_schemes={
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="oauth2",
-                    scheme="Bearer",
-                    name=self.auth_header,
-                    security_scheme_in="header",
                     flows=OAuthFlows(password=self.oauth_flow),
-                    bearer_format="JWT",
                     description=self.description,
                 )
             }
