@@ -836,10 +836,14 @@ callable as its only argument and returns another ASGI callable:</p>
 <h2>Built-in middleware migrated to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink" href="#built-in-middleware-migrated-to-asgimiddleware" title="Link to this heading">¶</a></h2>
 <p>Litestar’s built-in middleware are being moved from the legacy <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code> and
 <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> bases onto <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>.
-<code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code> has made this move.</p>
+<code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code> and <code class="docutils literal notranslate"><span class="pre">ResponseCacheMiddleware</span></code> have made this move.
+<code class="docutils literal notranslate"><span class="pre">ResponseCacheMiddleware</span></code> has also been moved into
+<code class="docutils literal notranslate"><span class="pre">litestar.middleware._internal</span></code>, removing it from the public API.</p>
 <p>These classes are constructed by Litestar itself from their configuration objects, so
 applications that only configure them - for CORS, via
-<a class="reference internal" href="../reference/config.html#litestar.config.cors.CORSConfig" title="litestar.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CORSConfig</span></code></a> - are unaffected.</p>
+<a class="reference internal" href="../reference/config.html#litestar.config.cors.CORSConfig" title="litestar.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CORSConfig</span></code></a>, and for response caching, via
+<a class="reference internal" href="../reference/config.html#litestar.config.response_cache.ResponseCacheConfig" title="litestar.config.response_cache.ResponseCacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseCacheConfig</span></code></a> and the handler-level
+<code class="docutils literal notranslate"><span class="pre">cache</span></code> argument - are unaffected.</p>
 <p>Code that composed one of them directly into an ASGI stack must drop the <code class="docutils literal notranslate"><span class="pre">app</span></code>
 argument, pass the settings as keyword arguments rather than a configuration object, and
 apply the instance to the next ASGI app:</p>
