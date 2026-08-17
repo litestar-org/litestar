@@ -208,15 +208,7 @@ def build_route_middleware_stack(
                 asgi_handler = csrf_middleware(asgi_handler)
 
         if app.compression_config:
-            compression_middleware = app.compression_config.middleware_class(
-                facade=app.compression_config.compression_facade,
-                backend_config=app.compression_config.backend_config,
-                gzip_fallback=app.compression_config.gzip_fallback,
-                gzip_backend_config={"compress_level": app.compression_config.gzip_compress_level},
-                minimum_size=app.compression_config.minimum_size,
-                exclude=app.compression_config.exclude,
-                exclude_opt_key=app.compression_config.exclude_opt_key,
-            )
+            compression_middleware = app.compression_config.middleware_class(config=app.compression_config)
             if not compression_middleware.should_bypass_for_handler(route_handler):
                 asgi_handler = compression_middleware(asgi_handler)
 
