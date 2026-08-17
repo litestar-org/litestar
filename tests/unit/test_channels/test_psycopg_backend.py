@@ -47,6 +47,7 @@ async def test_subscription_mutations_are_serialized() -> None:
     backend = PsycoPgChannelsBackend("postgresql://unused")
     connection = _ConcurrentConnection()
     backend._listener_conn = connection  # type: ignore[assignment]
+    backend._listener_lock = asyncio.Lock()  # normally created by on_startup, which needs a real connection
 
     await asyncio.gather(backend.subscribe(["one"]), backend.subscribe(["two"]))
 
