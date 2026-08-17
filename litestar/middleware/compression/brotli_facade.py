@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Literal
 
 from litestar.enums import CompressionEncoding
 from litestar.exceptions import MissingDependencyException
@@ -15,6 +15,8 @@ except ImportError as e:
 if TYPE_CHECKING:
     from io import BytesIO
 
+    from litestar.config.compression import CompressionConfig
+
 
 class BrotliCompression(CompressionFacade):
     __slots__ = ("buffer", "compression_encoding", "compressor")
@@ -25,9 +27,8 @@ class BrotliCompression(CompressionFacade):
         self,
         buffer: BytesIO,
         compression_encoding: Literal[CompressionEncoding.BROTLI] | str,
-        backend_config: Any = None,
+        config: CompressionConfig,
     ) -> None:
-        backend_config = backend_config or {}
         self.buffer = buffer
         self.compression_encoding = compression_encoding
         modes: dict[Literal["generic", "text", "font"], int] = {
@@ -36,10 +37,10 @@ class BrotliCompression(CompressionFacade):
             "generic": int(MODE_GENERIC),
         }
         self.compressor = Compressor(
-            quality=backend_config.get("quality", 5),
-            mode=modes[backend_config.get("mode", "text")],
-            lgwin=backend_config.get("lgwin", 22),
-            lgblock=backend_config.get("lgblock", 0),
+            quality=config.brotli_quality,
+            mode=modes[config.brotli_mode],
+            lgwin=config.brotli_lgwin,
+            lgblock=config.brotli_lgblock,
         )
 
     def write(self, body: bytes | bytearray, final: bool = False) -> None:
