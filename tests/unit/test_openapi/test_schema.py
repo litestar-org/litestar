@@ -1138,5 +1138,4 @@ def test_union_of_enums() -> None:
     assert schema.one_of is not None
     assert len(schema.one_of) == 2
     components = creator.schema_registry.generate_components_schemas()
-    enums = sorted(v.enum for v in components.values())  # type: ignore[arg-type]
-    assert enums == [["red"], ["small"]]
+    assert {tuple(v.enum or ()) for v in components.values()} == {("red",), ("small",)}
