@@ -1038,6 +1038,15 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> when generating a schema for a union of enums<a class="headerlink reference internal" href="#3.0.0-fix" id="3.0.0-fix">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Annotating a handler with a union whose members are all enums (e.g.
+<code class="docutils literal notranslate"><span class="pre">Color</span> <span class="pre">|</span> <span class="pre">Size</span></code>) crashed schema generation with <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">issubclass()</span>
+<span class="pre">arg</span> <span class="pre">1</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">a</span> <span class="pre">class</span></code>, as the union was dispatched to the enum schema
+handler. Such unions are now documented as a <code class="docutils literal notranslate"><span class="pre">oneOf</span></code> with a component
+schema per enum.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4997">https://github.com/litestar-org/litestar/pull/4997</a></span></p>
+</div>
+</dd>
 <dt>Stop caching responses of handlers that do not enable caching<a class="headerlink reference internal" href="#3.0.0-stop caching responses of handlers that do not enable caching" id="3.0.0-stop caching responses of handlers that do not enable caching">#</a></dt><dd><div class="changelog-change docutils container">
 <p><code class="docutils literal notranslate"><span class="pre">ResponseCacheMiddleware</span></code> is applied per route, so a handler that never set
 <code class="docutils literal notranslate"><span class="pre">cache</span></code> still had its responses written to the store when it shared a path with

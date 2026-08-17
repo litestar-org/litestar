@@ -6,6 +6,16 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix ``TypeError`` when generating a schema for a union of enums
+        :type: bugfix
+        :pr: 4997
+
+        Annotating a handler with a union whose members are all enums (e.g.
+        ``Color | Size``) crashed schema generation with ``TypeError: issubclass()
+        arg 1 must be a class``, as the union was dispatched to the enum schema
+        handler. Such unions are now documented as a ``oneOf`` with a component
+        schema per enum.
+
     .. change:: Return HTTP 413 when the multipart form part limit is exceeded
         :type: feature
         :pr: 4990
