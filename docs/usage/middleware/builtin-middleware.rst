@@ -259,12 +259,13 @@ Rate-Limit Middleware
 Litestar includes an optional :class:`~litestar.middleware.rate_limit.RateLimitMiddleware` that follows
 the `IETF RateLimit draft specification <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>`_.
 
-To use the rate limit middleware, use the :class:`~litestar.middleware.rate_limit.RateLimitConfig`:
+To use the rate limit middleware, add a configured
+:class:`~litestar.middleware.rate_limit.RateLimitMiddleware` instance to the middleware list:
 
 .. literalinclude:: /examples/middleware/rate_limit.py
     :language: python
 
-The only required configuration kwarg is ``rate_limit``, which expects a tuple containing a time-unit (``"second"``,
+The only required kwarg is ``rate_limit``, which expects a tuple containing a time-unit (``"second"``,
 ``"minute"``, ``"hour"``, ``"day"``\ ) and a value for the request quota (integer).
 
 
