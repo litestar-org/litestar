@@ -9,7 +9,7 @@ import anyio
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.exceptions import TooManyRequestsException
-from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
+from litestar.middleware.base import ASGIMiddleware
 from litestar.serialization import decode_json, encode_json
 from litestar.utils import ensure_async_callable
 
@@ -57,40 +57,99 @@ def get_remote_address(request: Request[Any, Any, Any]) -> str:
     return request.client.host if request.client else "127.0.0.1"
 
 
-class RateLimitMiddleware(AbstractMiddleware):
+class RateLimitMiddleware(ASGIMiddleware):
     """Rate-limiting middleware."""
 
-    def __init__(self, app: ASGIApp, config: RateLimitConfig) -> None:
+    scopes = (ScopeType.HTTP, ScopeType.ASGI)
+
+    def __init__(
+        self,
+        rate_limit: tuple[DurationUnit, int],
+        *,
+        store: str = "rate_limit",
+        identifier_for_request: Callable[[Request[Any, Any, Any]], str] = get_remote_address,
+        check_throttle_handler: Callable[[Request[Any, Any, Any]], SyncOrAsyncUnion[bool]] | None = None,
+        set_rate_limit_headers: bool = True,
+        rate_limit_policy_header_key: str = "RateLimit-Policy",
+        rate_limit_limit_header_key: str = "RateLimit-Limit",
+        rate_limit_remaining_header_key: str = "RateLimit-Remaining",
+        rate_limit_reset_header_key: str = "RateLimit-Reset",
+        exclude: str | list[str] | None = None,
+        exclude_opt_key: str | None = None,
+    ) -> None:
         """Initialize ``RateLimitMiddleware``.
 
         Args:
-            app: The ``next`` ASGI app to call.
-            config: An instance of RateLimitConfig.
+            rate_limit: A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or
+                ("minute", 5).
+            store: Name of the :class:`Store <.stores.base.Store>` to use, looked up on the application's store
+                registry.
+            identifier_for_request: A callable that receives the request and returns an identifier for which the
+                limit should be applied.
+            check_throttle_handler: Handler callable that receives the request instance, returning a boolean dictating
+                whether or not the request should be checked for rate limiting.
+            set_rate_limit_headers: Boolean dictating whether to set the rate limit headers on the response.
+            rate_limit_policy_header_key: Key to use for the rate limit policy header.
+            rate_limit_limit_header_key: Key to use for the rate limit limit header.
+            rate_limit_remaining_header_key: Key to use for the rate limit remaining header.
+            rate_limit_reset_header_key: Key to use for the rate limit reset header.
+            exclude: A pattern or list of patterns to skip in the rate limiting middleware, matched against the
+                handler path.
+            exclude_opt_key: An identifier to use on routes to disable rate limiting for a particular route.
         """
-        super().__init__(
-            app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes={ScopeType.HTTP}
+        self.unit: DurationUnit = rate_limit[0]
+        self.max_requests: int = rate_limit[1]
+        self.store = store
+        self.get_identifier_for_request = identifier_for_request
+        self.check_throttle_handler = cast(
+            "Callable[[Request], Awaitable[bool]] | None",
+            ensure_async_callable(check_throttle_handler) if check_throttle_handler else None,
         )
-        self.check_throttle_handler = cast("Callable[[Request], Awaitable[bool]] | None", config.check_throttle_handler)
-        self.config = config
-        self.max_requests: int = config.rate_limit[1]
-        self.unit: DurationUnit = config.rate_limit[0]
-        self.get_identifier_for_request = config.identifier_for_request
+        self.set_rate_limit_headers = set_rate_limit_headers
+        self.rate_limit_policy_header_key = rate_limit_policy_header_key
+        self.rate_limit_limit_header_key = rate_limit_limit_header_key
+        self.rate_limit_remaining_header_key = rate_limit_remaining_header_key
+        self.rate_limit_reset_header_key = rate_limit_reset_header_key
+        self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
+        self.exclude_opt_key = exclude_opt_key
         self._lock = anyio.Lock()
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable.
+    @classmethod
+    def from_config(cls, config: RateLimitConfig) -> RateLimitMiddleware:
+        """Create an instance from a :class:`RateLimitConfig`."""
+        return cls(
+            rate_limit=config.rate_limit,
+            store=config.store,
+            identifier_for_request=config.identifier_for_request,
+            check_throttle_handler=config.check_throttle_handler,
+            set_rate_limit_headers=config.set_rate_limit_headers,
+            rate_limit_policy_header_key=config.rate_limit_policy_header_key,
+            rate_limit_limit_header_key=config.rate_limit_limit_header_key,
+            rate_limit_remaining_header_key=config.rate_limit_remaining_header_key,
+            rate_limit_reset_header_key=config.rate_limit_reset_header_key,
+            exclude=config.exclude,
+            exclude_opt_key=config.exclude_opt_key,
+        )
+
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+        """Handle ASGI call.
 
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.
             send: The ASGI send function.
+            next_app: The next ASGI application in the middleware stack to call.
 
         Returns:
             None
         """
+        if scope["type"] != ScopeType.HTTP:
+            await next_app(scope, receive, send)
+            return
+
         app = scope["litestar_app"]
         request: Request[Any, Any, Any] = app.request_class(scope)
-        store = self.config.get_store_from_app(app)
+        store = app.stores.get(self.store)
         if await self.should_check_request(request=request):
             identifier = self.get_identifier_for_request(request)
             key = f"{type(self).__name__}::{identifier}"
@@ -103,14 +162,14 @@ class RateLimitMiddleware(AbstractMiddleware):
                 if len(cache_object.history) >= self.max_requests:
                     raise TooManyRequestsException(
                         headers=self.create_response_headers(cache_object=cache_object)
-                        if self.config.set_rate_limit_headers
+                        if self.set_rate_limit_headers
                         else None
                     )
                 await self.set_cached_history(key=key, cache_object=cache_object, store=store)
-            if self.config.set_rate_limit_headers:
+            if self.set_rate_limit_headers:
                 send = self.create_send_wrapper(send=send, cache_object=cache_object)
 
-        await self.app(scope, receive, send)
+        await next_app(scope, receive, send)
 
     def create_send_wrapper(self, send: Send, cache_object: CacheObject) -> Send:
         """Create a ``send`` function that wraps the original send to inject response headers.
@@ -206,10 +265,10 @@ class RateLimitMiddleware(AbstractMiddleware):
         )
 
         return {
-            self.config.rate_limit_policy_header_key: f"{self.max_requests}; w={DURATION_VALUES[self.unit]}",
-            self.config.rate_limit_limit_header_key: str(self.max_requests),
-            self.config.rate_limit_remaining_header_key: remaining_requests,
-            self.config.rate_limit_reset_header_key: str(cache_object.reset - int(time())),
+            self.rate_limit_policy_header_key: f"{self.max_requests}; w={DURATION_VALUES[self.unit]}",
+            self.rate_limit_limit_header_key: str(self.max_requests),
+            self.rate_limit_remaining_header_key: remaining_requests,
+            self.rate_limit_reset_header_key: str(cache_object.reset - int(time())),
         }
 
 
@@ -259,7 +318,7 @@ class RateLimitConfig:
             self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore[arg-type]
 
     @property
-    def middleware(self) -> DefineMiddleware:
+    def middleware(self) -> RateLimitMiddleware:
         """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
@@ -279,10 +338,9 @@ class RateLimitConfig:
                 app = Litestar(route_handlers=[my_handler], middleware=[throttle_config.middleware])
 
         Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>` including ``self`` as the
-            config kwarg value.
+            An instance of :attr:`middleware_class`, configured from this config instance.
         """
-        return DefineMiddleware(self.middleware_class, config=self)
+        return self.middleware_class.from_config(self)
 
     def get_store_from_app(self, app: Litestar) -> Store:
         """Get the store defined in :attr:`store` from an :class:`Litestar <.app.Litestar>` instance."""
