@@ -305,11 +305,6 @@ class RateLimitConfig:
     def middleware(self) -> RateLimitMiddleware:
         """Create an instance of :attr:`middleware_class`, configured from this config instance.
 
-        .. deprecated:: 3.0
-            Construct a :class:`RateLimitMiddleware` instance directly and pass it to the
-            middleware list instead, e.g.
-            ``middleware=[RateLimitMiddleware(rate_limit=("minute", 10), exclude=["/schema"])]``.
-
         Returns:
             An instance of :attr:`middleware_class`, configured from this config instance.
         """
