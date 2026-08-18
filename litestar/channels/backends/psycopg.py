@@ -35,8 +35,6 @@ class PsycoPgChannelsBackend(ChannelsBackend):
     async def on_startup(self) -> None:
         self._exit_stack = AsyncExitStack()
         self._event_queue = asyncio.Queue()
-        # Created here rather than in __init__ because on Python <= 3.9 it binds to the event loop
-        # active at creation time
         self._listener_lock = asyncio.Lock()
         self._shutting_down = False
         self._listener_conn = await AsyncConnection[Any].connect(self._pg_dsn, autocommit=True)

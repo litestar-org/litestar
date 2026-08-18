@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, AsyncGenerator
 
 import pytest
+from psycopg import AsyncConnection
 
 from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
 
@@ -14,6 +15,12 @@ class _ConcurrentConnection:
         self.active_operations = 0
         self.max_active_operations = 0
 
+    async def __aenter__(self) -> _ConcurrentConnection:
+        return self
+
+    async def __aexit__(self, *args: Any) -> None:
+        return None
+
     async def execute(self, *args: Any, **kwargs: Any) -> None:
         self.active_operations += 1
         self.max_active_operations = max(self.max_active_operations, self.active_operations)
@@ -22,6 +29,16 @@ class _ConcurrentConnection:
 
     async def commit(self) -> None:
         return None
+
+    def notifies(self, *, timeout: float | None = None, stop_after: int | None = None) -> Any:
+        return self._no_notifications()
+
+    @staticmethod
+    async def _no_notifications() -> AsyncGenerator[Any, None]:
+        await asyncio.sleep(0.01)
+        nothing: Any
+        for nothing in ():
+            yield nothing
 
 
 class _FailingConnection(_ConcurrentConnection):
@@ -43,15 +60,32 @@ class _Notification:
     payload: str
 
 
-async def test_subscription_mutations_are_serialized() -> None:
+@pytest.fixture()
+def stub_connection() -> _ConcurrentConnection:
+    return _ConcurrentConnection()
+
+
+@pytest.fixture()
+async def started_backend(
+    monkeypatch: pytest.MonkeyPatch, stub_connection: _ConcurrentConnection
+) -> AsyncGenerator[PsycoPgChannelsBackend, None]:
+    async def fake_connect(*args: Any, **kwargs: Any) -> _ConcurrentConnection:
+        return stub_connection
+
+    monkeypatch.setattr(AsyncConnection, "connect", fake_connect)
+
     backend = PsycoPgChannelsBackend("postgresql://unused")
-    connection = _ConcurrentConnection()
-    backend._listener_conn = connection  # type: ignore[assignment]
-    backend._listener_lock = asyncio.Lock()  # normally created by on_startup, which needs a real connection
+    await backend.on_startup()
+    yield backend
+    await backend.on_shutdown()
 
-    await asyncio.gather(backend.subscribe(["one"]), backend.subscribe(["two"]))
 
-    assert connection.max_active_operations == 1
+async def test_subscription_mutations_are_serialized(
+    started_backend: PsycoPgChannelsBackend, stub_connection: _ConcurrentConnection
+) -> None:
+    await asyncio.gather(started_backend.subscribe(["one"]), started_backend.subscribe(["two"]))
+
+    assert stub_connection.max_active_operations == 1
 
 
 async def test_stream_events_propagates_listener_failures() -> None:
