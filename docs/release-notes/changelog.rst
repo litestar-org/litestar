@@ -6,6 +6,54 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Migrate ``RateLimitMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 5005
+        :issue: 4009
+        :breaking:
+
+        ``RateLimitMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases.
+
+        Applications that configure rate limiting through
+        :class:`~litestar.middleware.rate_limit.RateLimitConfig` and its ``middleware``
+        property are unaffected: the property now returns a configured
+        ``RateLimitMiddleware`` instance instead of a ``DefineMiddleware``, built via a
+        ``from_config`` classmethod on the middleware, and
+        ``middleware=[rate_limit_config.middleware]`` keeps working as before.
+
+        Code constructing the middleware directly must drop the ``app`` argument, pass
+        the settings as keyword arguments rather than a configuration object, and apply
+        the instance to the next ASGI app:
+
+        .. code-block:: python
+
+            # before
+            middleware = RateLimitMiddleware(app=next_app, config=config)
+
+            # after
+            middleware = RateLimitMiddleware(
+                rate_limit=("minute", 10),
+                store=config.store,
+                exclude=config.exclude,
+            )
+            asgi_app = middleware(next_app)
+
+        Two behavioural changes for excluded routes, matching the other migrated
+        middleware:
+
+        - :attr:`~litestar.middleware.rate_limit.RateLimitConfig.exclude` patterns are
+          now matched against the **handler's path template** (e.g.
+          ``/user/{user_id:int}``) at startup, instead of the request path (e.g.
+          ``/user/1``) at runtime. Patterns targeting literal handler paths keep
+          working; patterns written to match expanded path parameters must be rewritten
+          against the template. For mounted ASGI apps, patterns match the mount path
+          only, not sub-paths, and a handler registered on multiple paths is excluded as
+          a whole when any of its paths matches.
+        - Handlers excluded via ``exclude`` or ``exclude_opt_key`` now bypass the
+          middleware entirely at startup rather than per request.
+
     .. change:: Add support for ``leeway`` parameter in JWT security backends
         :type: feature
         :pr: 5037
@@ -390,7 +438,7 @@
         Pydantic models. For example, a field ``name: int | None`` with no default was
         previously excluded from ``required``; it is now correctly included.
 
-        Runtime request validation behavior is unchanged — nullable parameters without
+        Runtime request validation behavior is unchanged â€” nullable parameters without
         defaults were already enforced as required at the validation layer.
 
     .. change:: Drop support for Pydantic 1
@@ -489,8 +537,8 @@
         import directly from ``advanced_alchemy.extensions.litestar``.
 
         Migration:
-        - ``from litestar.contrib.sqlalchemy import X`` → ``from advanced_alchemy.extensions.litestar import X``
-        - ``from litestar.plugins.sqlalchemy import Y`` → ``from advanced_alchemy.extensions.litestar import Y``
+        - ``from litestar.contrib.sqlalchemy import X`` â†’ ``from advanced_alchemy.extensions.litestar import X``
+        - ``from litestar.plugins.sqlalchemy import Y`` â†’ ``from advanced_alchemy.extensions.litestar import Y``
 
         This completes the separation of concerns, with advanced-alchemy being the sole provider
         of SQLAlchemy integration for Litestar.

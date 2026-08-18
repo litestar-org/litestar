@@ -303,3 +303,89 @@ def test_custom_identity_function() -> None:
 
         response = client.get("/", headers={"x-private-header": "value"})
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+        # a different identity gets its own quota, even though the remote address is the same
+        response = client.get("/", headers={"x-private-header": "other-value"})
+        assert response.status_code == HTTP_200_OK
+
+
+@travel(datetime.utcnow, tick=False)
+def test_set_rate_limit_headers_disabled() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=("second", 1), set_rate_limit_headers=False)
+
+    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert config.rate_limit_policy_header_key not in response.headers
+        assert config.rate_limit_limit_header_key not in response.headers
+        assert config.rate_limit_remaining_header_key not in response.headers
+        assert config.rate_limit_reset_header_key not in response.headers
+
+        response = client.get("/")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+        assert config.rate_limit_limit_header_key not in response.headers
+
+
+@travel(datetime.utcnow, tick=False)
+def test_custom_header_keys() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(
+        rate_limit=("minute", 2),
+        rate_limit_policy_header_key="X-Policy",
+        rate_limit_limit_header_key="X-Limit",
+        rate_limit_remaining_header_key="X-Remaining",
+        rate_limit_reset_header_key="X-Reset",
+    )
+
+    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+        response = client.get("/")
+        assert response.headers.get("X-Policy") == "2; w=60"
+        assert response.headers.get("X-Limit") == "2"
+        assert response.headers.get("X-Remaining") == "1"
+        assert response.headers.get("X-Reset") == "60"
+
+
+@travel(datetime.utcnow, tick=False)
+def test_mounted_apps_are_rate_limited() -> None:
+    asgi_handler = ASGIRouteHandler("/asgi", is_mount=True, fn=ASGIResponse(body="something"))
+
+    config = RateLimitConfig(rate_limit=("minute", 1))
+
+    with create_test_client([asgi_handler], middleware=[config.middleware]) as client:
+        response = client.get("/asgi")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/asgi")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+@travel(datetime.utcnow, tick=False)
+def test_exclude_matches_handler_path_template() -> None:
+    from litestar.params import FromPath
+
+    @get("/user/{user_id:int}")
+    def excluded_handler(user_id: FromPath[int]) -> None:
+        return None
+
+    @get("/order/{order_id:int}")
+    def limited_handler(order_id: FromPath[int]) -> None:
+        return None
+
+    # exclusion patterns match the handler's path template, not the request path
+    config = RateLimitConfig(rate_limit=("second", 1), exclude=[r"/user/\{user_id:int\}"])
+
+    with create_test_client(
+        route_handlers=[excluded_handler, limited_handler], middleware=[config.middleware]
+    ) as client:
+        assert client.get("/user/1").status_code == HTTP_200_OK
+        assert client.get("/user/1").status_code == HTTP_200_OK
+
+        assert client.get("/order/1").status_code == HTTP_200_OK
+        assert client.get("/order/1").status_code == HTTP_429_TOO_MANY_REQUESTS

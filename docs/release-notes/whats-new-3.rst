@@ -302,9 +302,9 @@ Built-in middleware migrated to ``ASGIMiddleware``
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
 ``CORSMiddleware``, ``ResponseCacheMiddleware``, ``CSRFMiddleware``,
-``CompressionMiddleware`` and ``AllowedHostsMiddleware`` have made this move.
-``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
-``litestar.middleware._internal``, removing them from the public API; for CSRF this
+``CompressionMiddleware``, ``AllowedHostsMiddleware`` and ``RateLimitMiddleware`` have
+made this move. ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved
+into ``litestar.middleware._internal``, removing them from the public API; for CSRF this
 includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
 ``generate_csrf_hash`` helpers.
 
@@ -363,6 +363,16 @@ attribute of each layer.
 
 Subclasses must also rename ``__call__`` to ``handle``, which receives the next ASGI app
 as an additional ``next_app`` argument in place of ``self.app``.
+
+For rate limiting, :attr:`~litestar.middleware.rate_limit.RateLimitConfig.middleware`
+now returns a configured :class:`~litestar.middleware.rate_limit.RateLimitMiddleware`
+instance instead of a ``DefineMiddleware`` - applications using
+``middleware=[rate_limit_config.middleware]`` are unaffected. The
+:attr:`~litestar.middleware.rate_limit.RateLimitConfig.exclude` patterns are now matched
+against the **handler's path template** (e.g. ``/user/{user_id:int}``) at startup,
+instead of the request path (e.g. ``/user/1``) at runtime, and handlers excluded via
+``exclude`` or ``exclude_opt_key`` bypass the middleware entirely at startup rather than
+per request.
 
 .. seealso::
     :ref:`asgi-middleware-migration`
