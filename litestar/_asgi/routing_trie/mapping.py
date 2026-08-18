@@ -203,19 +203,7 @@ def build_route_middleware_stack(
         asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
         if app.csrf_config:
-            csrf_middleware = CSRFMiddleware(
-                secret=app.csrf_config.secret,
-                cookie_name=app.csrf_config.cookie_name,
-                cookie_path=app.csrf_config.cookie_path,
-                header_name=app.csrf_config.header_name,
-                cookie_secure=app.csrf_config.cookie_secure,
-                cookie_httponly=app.csrf_config.cookie_httponly,
-                cookie_samesite=app.csrf_config.cookie_samesite,
-                cookie_domain=app.csrf_config.cookie_domain,
-                safe_methods=app.csrf_config.safe_methods,
-                exclude=app.csrf_config.exclude,
-                exclude_opt_key=app.csrf_config.exclude_from_csrf_key,
-            )
+            csrf_middleware = CSRFMiddleware.from_config(app.csrf_config)
             if not csrf_middleware.should_bypass_for_handler(route_handler):
                 asgi_handler = csrf_middleware(asgi_handler)
 
