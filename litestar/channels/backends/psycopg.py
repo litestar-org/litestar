@@ -21,12 +21,12 @@ _STOP_LISTENER_TIMEOUT = 5.0
 
 class PsycoPgChannelsBackend(ChannelsBackend):
     _listener_conn: AsyncConnection[Any]
+    _listener_lock: asyncio.Lock
 
     def __init__(self, pg_dsn: str) -> None:
         self._pg_dsn = pg_dsn
         self._subscribed_channels: set[str] = set()
         self._exit_stack = AsyncExitStack()
-        self._listener_lock = asyncio.Lock()
         self._listener_task: asyncio.Task[None] | None = None
         self._event_queue: asyncio.Queue[tuple[str, bytes] | Exception] = asyncio.Queue()
         self._shutting_down = False
@@ -35,6 +35,7 @@ class PsycoPgChannelsBackend(ChannelsBackend):
     async def on_startup(self) -> None:
         self._exit_stack = AsyncExitStack()
         self._event_queue = asyncio.Queue()
+        self._listener_lock = asyncio.Lock()
         self._shutting_down = False
         self._listener_conn = await AsyncConnection[Any].connect(self._pg_dsn, autocommit=True)
         await self._exit_stack.enter_async_context(self._listener_conn)

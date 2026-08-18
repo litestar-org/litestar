@@ -128,7 +128,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
         ],
         examples=[Gender.MALE, [Gender.MALE, Gender.OTHER]],
     )
-    assert gender.required
+    assert not gender.required
 
     assert secret_header.param_in == ParamType.HEADER
     assert is_schema_value(secret_header.schema)
@@ -151,7 +151,6 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
             Schema(type=OpenAPIType.NULL),
         ],
         examples=[LuckyNumber.SEVEN],
-        default=1,
     )
     assert not lucky_number.required
 

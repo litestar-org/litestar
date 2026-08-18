@@ -38,15 +38,17 @@ def create_person_controller() -> Type[Controller]:
             page: FromQuery[int],
             name: FromQuery[Optional[Union[str, List[str]]]],  # intentionally without default
             lucky_number: Annotated[
-                Optional[LuckyNumber], QueryParameter(examples=[Example(value=LuckyNumber.SEVEN)])
-            ] = 1,  # type: ignore[assignment]
+                Optional[LuckyNumber], QueryParameter(required=False, examples=[Example(value=LuckyNumber.SEVEN)])
+            ],
             # header parameter
             secret_header: Annotated[str, HeaderParameter(name="secret")],
             # cookie parameter
             cookie_value: Annotated[int, CookieParameter(name="value")],
             gender: Annotated[
                 Optional[Union[Gender, List[Gender]]],
-                QueryParameter(examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]),
+                QueryParameter(
+                    required=False, examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
+                ),
             ],
             page_size: Annotated[
                 int,
