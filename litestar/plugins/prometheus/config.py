@@ -4,10 +4,10 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from litestar.exceptions import MissingDependencyException
-from litestar.middleware.base import DefineMiddleware
 from litestar.plugins.prometheus.middleware import (
     PrometheusMiddleware,
 )
+from litestar.utils.deprecation import warn_deprecation
 
 __all__ = ("PrometheusConfig",)
 
@@ -57,13 +57,30 @@ class PrometheusConfig:
     """
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Create an instance of :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>` that wraps with.
-
-        [PrometheusMiddleware][litestar.plugins.prometheus.PrometheusMiddleware]. or a subclass
-        of this middleware.
+    def middleware(self) -> PrometheusMiddleware:
+        """Create an instance of :class:`PrometheusMiddleware <litestar.plugins.prometheus.PrometheusMiddleware>`,
+        or a subclass of this middleware, configured from this config instance.
 
         Returns:
-            An instance of ``DefineMiddleware``.
+            An instance of :attr:`middleware_class`.
         """
-        return DefineMiddleware(self.middleware_class, config=self)
+        warn_deprecation(
+            version="3.0",
+            deprecated_name="PrometheusConfig.middleware",
+            kind="property",
+            removal_in="4.0",
+            alternative="PrometheusMiddleware",
+            info="Construct a PrometheusMiddleware instance directly and pass it to the middleware list",
+        )
+        return self.middleware_class(
+            app_name=self.app_name,
+            prefix=self.prefix,
+            labels=self.labels,
+            exemplars=self.exemplars,
+            buckets=self.buckets,
+            excluded_http_methods=self.excluded_http_methods,
+            exclude=self.exclude,
+            exclude_opt_key=self.exclude_opt_key,
+            scopes=self.scopes,
+            group_path=self.group_path,
+        )
