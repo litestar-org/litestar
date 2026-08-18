@@ -16,18 +16,22 @@ from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
 
-def create_config(**kwargs: Any) -> PrometheusConfig:
+def create_middleware(**kwargs: Any) -> PrometheusMiddleware:
+    _reset_registry()
+    return PrometheusMiddleware(**kwargs)
+
+
+def _reset_registry() -> None:
     collectors = list(REGISTRY._collector_to_names.keys())
     for collector in collectors:
         REGISTRY.unregister(collector)
 
     PrometheusMiddleware._metrics = {}
-    return PrometheusConfig(**kwargs)
 
 
 @pytest.mark.flaky(reruns=5)
 def test_prometheus_exporter_metrics_with_http() -> None:
-    config = create_config()
+    prometheus_middleware = create_middleware()
 
     @get("/duration")
     def duration_handler() -> dict:
@@ -39,7 +43,7 @@ def test_prometheus_exporter_metrics_with_http() -> None:
         raise HTTPException("Error Occurred", status_code=500)
 
     with create_test_client(
-        [duration_handler, handler_error, PrometheusController], middleware=[config.middleware]
+        [duration_handler, handler_error, PrometheusController], middleware=[prometheus_middleware]
     ) as client:
         client.get("/error")
         client.get("/duration")
@@ -105,13 +109,13 @@ def test_prometheus_group_path_defaults_to_true() -> None:
 
 
 def test_prometheus_group_path_default_uses_route_template_for_parameterized_routes() -> None:
-    config = create_config()
+    prometheus_middleware = create_middleware()
 
     @get("/users/{user_id:int}")
     def get_user(user_id: FromPath[int]) -> dict:
         return {"user_id": user_id}
 
-    with create_test_client([get_user, PrometheusController], middleware=[config.middleware]) as client:
+    with create_test_client([get_user, PrometheusController], middleware=[prometheus_middleware]) as client:
         for user_id in range(1, 4):
             client.get(f"/users/{user_id}")
         metrics = client.get("/metrics").content.decode()
@@ -128,7 +132,7 @@ def test_prometheus_group_path_default_uses_route_template_for_parameterized_rou
 def test_prometheus_middleware_configurations() -> None:
     labels = {"foo": "bar", "baz": lambda a: "qux"}
 
-    config = create_config(
+    prometheus_middleware = create_middleware(
         app_name="litestar_test",
         prefix="litestar_rocks",
         labels=labels,
@@ -144,7 +148,7 @@ def test_prometheus_middleware_configurations() -> None:
     def ignore() -> dict:
         return {"hello": "world"}
 
-    with create_test_client([test, ignore, PrometheusController], middleware=[config.middleware]) as client:
+    with create_test_client([test, ignore, PrometheusController], middleware=[prometheus_middleware]) as client:
         client.get("/test")
         client.post("/ignore")
         metrics_exporter_response = client.get("/metrics")
@@ -177,9 +181,12 @@ def test_prometheus_middleware_configurations() -> None:
             in metrics
         )
 
+        # default-bucket boundaries must be absent, proving the custom buckets replaced them
+        assert """le="0.005",method="GET",path="/test""" not in metrics
+
 
 def test_prometheus_controller_configurations() -> None:
-    config = create_config(
+    prometheus_middleware = create_middleware(
         exemplars=lambda a: {"trace_id": "1234"},
     )
 
@@ -191,7 +198,7 @@ def test_prometheus_controller_configurations() -> None:
     def test() -> dict:
         return {"hello": "world"}
 
-    with create_test_client([test, CustomPrometheusController], middleware=[config.middleware]) as client:
+    with create_test_client([test, CustomPrometheusController], middleware=[prometheus_middleware]) as client:
         client.get("/test")
 
         metrics_exporter_response = client.get("/metrics/custom")
@@ -206,13 +213,13 @@ def test_prometheus_controller_configurations() -> None:
 
 
 def test_prometheus_with_websocket() -> None:
-    config = create_config()
+    prometheus_middleware = create_middleware()
 
     @websocket_listener("/test")
     def test(data: str) -> dict:
         return {"hello": data}
 
-    with create_test_client([test, PrometheusController], middleware=[config.middleware]) as client:
+    with create_test_client([test, PrometheusController], middleware=[prometheus_middleware]) as client:
         with client.websocket_connect("/test") as websocket:
             websocket.send_text("litestar")
             websocket.receive_json()
@@ -233,11 +240,11 @@ def test_procdir(monkeypatch: MonkeyPatch, tmp_path: Path, mocker: MockerFixture
     proc_dir = tmp_path / "something"
     proc_dir.mkdir()
     monkeypatch.setenv(env_var, str(proc_dir))
-    config = create_config()
+    prometheus_middleware = create_middleware()
     mock_registry = mocker.patch("litestar.plugins.prometheus.controller.CollectorRegistry")
     mock_collector = mocker.patch("litestar.plugins.prometheus.controller.multiprocess.MultiProcessCollector")
 
-    with create_test_client([PrometheusController], middleware=[config.middleware]) as client:
+    with create_test_client([PrometheusController], middleware=[prometheus_middleware]) as client:
         client.get("/metrics")
 
     mock_collector.assert_called_once_with(mock_registry.return_value)
@@ -250,7 +257,7 @@ def test_prometheus_middleware_records_correct_status_for_auth_exceptions() -> N
     HTTP exceptions were being recorded with status_code=200 instead of their actual
     status codes (e.g., 401, 403).
     """
-    config = create_config()
+    prometheus_middleware = create_middleware()
 
     @get("/protected")
     def protected_handler() -> dict:
@@ -266,7 +273,7 @@ def test_prometheus_middleware_records_correct_status_for_auth_exceptions() -> N
 
     with create_test_client(
         [protected_handler, forbidden_handler, server_error_handler, PrometheusController],
-        middleware=[config.middleware],
+        middleware=[prometheus_middleware],
     ) as client:
         # Test 401 Unauthorized
         response = client.get("/protected")
@@ -316,7 +323,7 @@ def test_prometheus_middleware_records_generic_exception_as_500() -> None:
     This test verifies that non-HTTPException errors are recorded with status_code=500
     in Prometheus metrics.
     """
-    config = create_config()
+    prometheus_middleware = create_middleware()
 
     @get("/generic_error")
     def generic_error_handler() -> dict:
@@ -324,7 +331,7 @@ def test_prometheus_middleware_records_generic_exception_as_500() -> None:
 
     with create_test_client(
         [generic_error_handler, PrometheusController],
-        middleware=[config.middleware],
+        middleware=[prometheus_middleware],
     ) as client:
         # Test generic exception
         response = client.get("/generic_error")
@@ -347,3 +354,81 @@ def test_prometheus_middleware_records_generic_exception_as_500() -> None:
             """litestar_requests_error_total{app_name="litestar",method="GET",path="/generic_error",status_code="500"} 1.0"""
             in metrics
         )
+
+
+def test_prometheus_mounted_asgi_apps_are_instrumented() -> None:
+    from litestar.handlers import ASGIRouteHandler
+    from litestar.response.base import ASGIResponse
+
+    prometheus_middleware = create_middleware(group_path=False)
+
+    asgi_handler = ASGIRouteHandler("/mounted", is_mount=True, fn=ASGIResponse(body="something"))
+
+    with create_test_client([asgi_handler, PrometheusController], middleware=[prometheus_middleware]) as client:
+        client.get("/mounted")
+        metrics = client.get("/metrics").content.decode()
+
+        assert 'path="/"' in metrics
+
+
+def test_prometheus_group_path_disabled_uses_request_path() -> None:
+    prometheus_middleware = create_middleware(group_path=False)
+
+    @get("/users/{user_id:int}")
+    def get_user(user_id: FromPath[int]) -> dict:
+        return {"user_id": user_id}
+
+    with create_test_client([get_user, PrometheusController], middleware=[prometheus_middleware]) as client:
+        client.get("/users/1")
+        metrics = client.get("/metrics").content.decode()
+
+        assert 'path="/users/1"' in metrics
+        assert 'path="/users/{user_id}"' not in metrics
+
+
+def test_prometheus_scopes_enforced_for_connections_through_mounts() -> None:
+    from litestar.handlers import ASGIRouteHandler
+    from litestar.response.base import ASGIResponse
+
+    # mounted ASGI apps stay wrapped regardless of scopes, so restricting to websocket must
+    # still exclude http connections through the mount at runtime
+    prometheus_middleware = create_middleware(scopes={"websocket"}, group_path=False)
+
+    asgi_handler = ASGIRouteHandler("/mounted", is_mount=True, fn=ASGIResponse(body="something"))
+
+    with create_test_client([asgi_handler, PrometheusController], middleware=[prometheus_middleware]) as client:
+        client.get("/mounted")
+        metrics = client.get("/metrics").content.decode()
+
+        assert 'path="/"' not in metrics
+
+
+def test_prometheus_custom_middleware_subclass() -> None:
+    class CustomPrometheusMiddleware(PrometheusMiddleware):
+        async def handle(self, scope: Any, receive: Any, send: Any, next_app: Any) -> None:
+            self.app_name = "overridden"
+            await super().handle(scope, receive, send, next_app)
+
+    _reset_registry()
+    prometheus_middleware = CustomPrometheusMiddleware()
+
+    @get("/test")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    with create_test_client([handler, PrometheusController], middleware=[prometheus_middleware]) as client:
+        client.get("/test")
+        metrics = client.get("/metrics").content.decode()
+
+        assert 'app_name="overridden"' in metrics
+
+
+def test_config_middleware_property_deprecated() -> None:
+    _reset_registry()
+    config = PrometheusConfig(app_name="deprecated-path")
+
+    with pytest.warns(DeprecationWarning, match="PrometheusConfig.middleware"):
+        middleware = config.middleware
+
+    assert isinstance(middleware, PrometheusMiddleware)
+    assert middleware.app_name == "deprecated-path"
