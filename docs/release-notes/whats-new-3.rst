@@ -364,15 +364,16 @@ attribute of each layer.
 Subclasses must also rename ``__call__`` to ``handle``, which receives the next ASGI app
 as an additional ``next_app`` argument in place of ``self.app``.
 
-For rate limiting, :attr:`~litestar.middleware.rate_limit.RateLimitConfig.middleware`
-now returns a configured :class:`~litestar.middleware.rate_limit.RateLimitMiddleware`
-instance instead of a ``DefineMiddleware`` - applications using
-``middleware=[rate_limit_config.middleware]`` are unaffected. The
-:attr:`~litestar.middleware.rate_limit.RateLimitConfig.exclude` patterns are now matched
-against the **handler's path template** (e.g. ``/user/{user_id:int}``) at startup,
-instead of the request path (e.g. ``/user/1``) at runtime, and handlers excluded via
-``exclude`` or ``exclude_opt_key`` bypass the middleware entirely at startup rather than
-per request.
+For rate limiting, :class:`~litestar.middleware.rate_limit.RateLimitMiddleware` is now
+directly constructible, making the
+:class:`~litestar.middleware.rate_limit.RateLimitConfig` object obsolete: its
+``middleware`` property is deprecated and will be removed in ``4.0``. Pass a configured
+middleware instance to the middleware list instead, e.g.
+``middleware=[RateLimitMiddleware(rate_limit=("minute", 10))]``. The ``exclude``
+patterns are now matched against the **handler's path template** (e.g.
+``/user/{user_id:int}``) at startup, instead of the request path (e.g. ``/user/1``) at
+runtime, and handlers excluded via ``exclude`` or ``exclude_opt_key`` bypass the
+middleware entirely at startup rather than per request.
 
 .. seealso::
     :ref:`asgi-middleware-migration`

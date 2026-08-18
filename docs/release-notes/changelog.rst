@@ -16,32 +16,25 @@
         base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
         built-in middleware off the legacy bases.
 
-        Applications that configure rate limiting through
-        :class:`~litestar.middleware.rate_limit.RateLimitConfig` and its ``middleware``
-        property are unaffected: the property now returns a configured
-        ``RateLimitMiddleware`` instance instead of a ``DefineMiddleware``, built via a
-        ``from_config`` classmethod on the middleware, and
-        ``middleware=[rate_limit_config.middleware]`` keeps working as before.
-
-        Code constructing the middleware directly must drop the ``app`` argument, pass
-        the settings as keyword arguments rather than a configuration object, and apply
-        the instance to the next ASGI app:
+        Since the middleware is now directly constructible, the
+        :class:`~litestar.middleware.rate_limit.RateLimitConfig` configuration object is
+        obsolete and its ``middleware`` property is deprecated; it will be removed in
+        ``4.0``. Pass a configured ``RateLimitMiddleware`` instance to the middleware
+        list instead:
 
         .. code-block:: python
 
             # before
-            middleware = RateLimitMiddleware(app=next_app, config=config)
+            config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
+            app = Litestar(..., middleware=[config.middleware])
 
             # after
-            middleware = RateLimitMiddleware(
-                rate_limit=("minute", 10),
-                store=config.store,
-                exclude=config.exclude,
+            app = Litestar(
+                ...,
+                middleware=[RateLimitMiddleware(rate_limit=("minute", 10), exclude=["/schema"])],
             )
-            asgi_app = middleware(next_app)
 
-        Two behavioural changes for excluded routes
-        middleware:
+        Two behavioural changes for excluded routes:
 
         - :attr:`~litestar.middleware.rate_limit.RateLimitConfig.exclude` patterns are
           now matched against the **handler's path template** (e.g.

@@ -12,6 +12,7 @@ from litestar.exceptions import TooManyRequestsException
 from litestar.middleware.base import ASGIMiddleware
 from litestar.serialization import decode_json, encode_json
 from litestar.utils import ensure_async_callable
+from litestar.utils.deprecation import warn_deprecation
 
 __all__ = (
     "CacheObject",
@@ -113,23 +114,6 @@ class RateLimitMiddleware(ASGIMiddleware):
         self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
         self.exclude_opt_key = exclude_opt_key
         self._lock = anyio.Lock()
-
-    @classmethod
-    def from_config(cls, config: RateLimitConfig) -> RateLimitMiddleware:
-        """Create an instance from a :class:`RateLimitConfig`."""
-        return cls(
-            rate_limit=config.rate_limit,
-            store=config.store,
-            identifier_for_request=config.identifier_for_request,
-            check_throttle_handler=config.check_throttle_handler,
-            set_rate_limit_headers=config.set_rate_limit_headers,
-            rate_limit_policy_header_key=config.rate_limit_policy_header_key,
-            rate_limit_limit_header_key=config.rate_limit_limit_header_key,
-            rate_limit_remaining_header_key=config.rate_limit_remaining_header_key,
-            rate_limit_reset_header_key=config.rate_limit_reset_header_key,
-            exclude=config.exclude,
-            exclude_opt_key=config.exclude_opt_key,
-        )
 
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         """Handle ASGI call.
@@ -319,28 +303,37 @@ class RateLimitConfig:
 
     @property
     def middleware(self) -> RateLimitMiddleware:
-        """Use this property to insert the config into a middleware list on one of the application layers.
+        """Create an instance of :attr:`middleware_class`, configured from this config instance.
 
-        Examples:
-            .. code-block::  python
-
-                from litestar import Litestar, Request, get
-                from litestar.middleware.rate_limit import RateLimitConfig
-
-                # limit to 10 requests per minute, excluding the schema path
-                throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
-
-
-                @get("/")
-                def my_handler(request: Request) -> None: ...
-
-
-                app = Litestar(route_handlers=[my_handler], middleware=[throttle_config.middleware])
+        .. deprecated:: 3.0
+            Construct a :class:`RateLimitMiddleware` instance directly and pass it to the
+            middleware list instead, e.g.
+            ``middleware=[RateLimitMiddleware(rate_limit=("minute", 10), exclude=["/schema"])]``.
 
         Returns:
             An instance of :attr:`middleware_class`, configured from this config instance.
         """
-        return self.middleware_class.from_config(self)
+        warn_deprecation(
+            version="3.0",
+            deprecated_name="RateLimitConfig.middleware",
+            kind="property",
+            removal_in="4.0",
+            alternative="RateLimitMiddleware",
+            info="Construct a RateLimitMiddleware instance directly and pass it to the middleware list",
+        )
+        return self.middleware_class(
+            rate_limit=self.rate_limit,
+            store=self.store,
+            identifier_for_request=self.identifier_for_request,
+            check_throttle_handler=self.check_throttle_handler,
+            set_rate_limit_headers=self.set_rate_limit_headers,
+            rate_limit_policy_header_key=self.rate_limit_policy_header_key,
+            rate_limit_limit_header_key=self.rate_limit_limit_header_key,
+            rate_limit_remaining_header_key=self.rate_limit_remaining_header_key,
+            rate_limit_reset_header_key=self.rate_limit_reset_header_key,
+            exclude=self.exclude,
+            exclude_opt_key=self.exclude_opt_key,
+        )
 
     def get_store_from_app(self, app: Litestar) -> Store:
         """Get the store defined in :attr:`store` from an :class:`Litestar <.app.Litestar>` instance."""
