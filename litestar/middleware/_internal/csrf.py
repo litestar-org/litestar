@@ -16,6 +16,7 @@ from litestar.utils.scope.state import ScopeState
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from litestar.config.csrf import CSRFConfig
     from litestar.connection import Request
     from litestar.types import (
         ASGIApp,
@@ -109,6 +110,23 @@ class CSRFMiddleware(ASGIMiddleware):
         self.safe_methods = set(safe_methods)
         self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
         self.exclude_opt_key = exclude_opt_key
+
+    @classmethod
+    def from_config(cls, config: CSRFConfig) -> CSRFMiddleware:
+        """Create an instance from a :class:`~litestar.config.csrf.CSRFConfig`."""
+        return cls(
+            secret=config.secret,
+            cookie_name=config.cookie_name,
+            cookie_path=config.cookie_path,
+            header_name=config.header_name,
+            cookie_secure=config.cookie_secure,
+            cookie_httponly=config.cookie_httponly,
+            cookie_samesite=config.cookie_samesite,
+            cookie_domain=config.cookie_domain,
+            safe_methods=config.safe_methods,
+            exclude=config.exclude,
+            exclude_opt_key=config.exclude_from_csrf_key,
+        )
 
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         """Handle ASGI call.

@@ -51,6 +51,7 @@
 
     .. change:: Migrate ``CSRFMiddleware`` to ``ASGIMiddleware``
         :type: feature
+        :pr: 4998
         :issue: 4009
         :breaking:
 
@@ -62,7 +63,8 @@
 
         Applications that configure CSRF protection through
         :class:`~litestar.config.csrf.CSRFConfig` are unaffected, since Litestar
-        constructs the middleware itself.
+        constructs the middleware itself, via a ``from_config`` classmethod on the
+        middleware.
 
         Two behavioural changes for excluded routes:
 

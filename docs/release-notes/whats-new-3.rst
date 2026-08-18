@@ -307,8 +307,9 @@ move. ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved in
 includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
 ``generate_csrf_hash`` helpers.
 
-These classes are constructed by Litestar itself from their configuration objects, so
-applications that only configure them - for CORS, via
+These classes are constructed by Litestar itself from their configuration objects (for
+CSRF, via a ``from_config`` classmethod on the middleware), so applications that only
+configure them - for CORS, via
 :class:`~litestar.config.cors.CORSConfig`, for response caching, via
 :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
 ``cache`` argument, and for CSRF, via :class:`~litestar.config.csrf.CSRFConfig` - are
