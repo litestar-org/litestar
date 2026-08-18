@@ -40,7 +40,7 @@
             )
             asgi_app = middleware(next_app)
 
-        Two behavioural changes for excluded routes, matching the other migrated
+        Two behavioural changes for excluded routes
         middleware:
 
         - :attr:`~litestar.middleware.rate_limit.RateLimitConfig.exclude` patterns are
