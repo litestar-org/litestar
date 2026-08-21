@@ -223,7 +223,9 @@ def build_route_middleware_stack(
             asgi_handler = response_cache_middleware(asgi_handler)
 
         if app.allowed_hosts:
-            asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)
+            allowed_hosts_middleware = AllowedHostsMiddleware.from_config(app.allowed_hosts)
+            if not allowed_hosts_middleware.should_bypass_for_handler(route_handler):
+                asgi_handler = allowed_hosts_middleware(asgi_handler)
 
         # due to the way we're traversing over the app layers, the middleware stack is
         # constructed in 'application > handler' order, which is the order we want the

@@ -36,6 +36,49 @@
         plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
         ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
 
+    .. change:: Migrate ``AllowedHostsMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 5001
+        :issue: 4009
+        :breaking:
+
+        ``AllowedHostsMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases.
+
+        Applications that configure allowed hosts through
+        :class:`~litestar.config.allowed_hosts.AllowedHostsConfig` or the
+        ``allowed_hosts`` argument are unaffected, since Litestar constructs the
+        middleware itself. The constructor takes keyword arguments now instead of an
+        ``app`` and an ``AllowedHostsConfig``:
+
+        .. code-block:: python
+
+            # before
+            middleware = AllowedHostsMiddleware(app=next_app, config=config)
+
+            # after
+            middleware = AllowedHostsMiddleware(
+                allowed_hosts=config.allowed_hosts,
+                exclude=config.exclude,
+                exclude_opt_key=config.exclude_opt_key,
+                scopes=config.scopes,
+                www_redirect=config.www_redirect,
+            )
+            asgi_app = middleware(next_app)
+
+        Two behavioural changes for excluded routes, matching the other migrated
+        middleware:
+
+        - :attr:`~litestar.config.allowed_hosts.AllowedHostsConfig.exclude` patterns are
+          now matched against the **handler's path template** (e.g.
+          ``/user/{user_id:int}``) at startup, instead of the request path (e.g.
+          ``/user/1``) at runtime. For mounted ASGI apps, patterns match the mount path
+          only, not sub-paths, and a handler registered on multiple paths is excluded as
+          a whole when any of its paths matches.
+        - Handlers excluded via ``exclude`` or ``exclude_opt_key`` now bypass the
+          middleware entirely at startup rather than per request.
+
     .. change:: Migrate ``CompressionMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 4999
