@@ -36,6 +36,48 @@
         plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
         ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
 
+    .. change:: Migrate ``CompressionMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 4999
+        :issue: 4009
+        :breaking:
+
+        ``CompressionMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases.
+
+        Applications that configure compression through
+        :class:`~litestar.config.compression.CompressionConfig` are unaffected, since
+        Litestar constructs the middleware itself. The middleware still takes the
+        ``CompressionConfig`` - which the ``CompressionFacade`` protocol continues to
+        receive unchanged - but no longer wraps an ``app``:
+
+        .. code-block:: python
+
+            # before
+            middleware = CompressionMiddleware(app=next_app, config=config)
+
+            # after
+            middleware = CompressionMiddleware(config=config)
+            asgi_app = middleware(next_app)
+
+        Subclasses set via
+        :attr:`~litestar.config.compression.CompressionConfig.middleware_class` must
+        rename ``__call__`` to ``handle``, which receives the next ASGI app as an
+        additional ``next_app`` argument in place of ``self.app``.
+
+        Two behavioural changes for excluded routes, matching the other migrated
+        middleware:
+
+        - :attr:`~litestar.config.compression.CompressionConfig.exclude` patterns are now
+          matched against the **handler's path template** (e.g. ``/user/{user_id:int}``)
+          at startup, instead of the request path (e.g. ``/user/1``) at runtime. For
+          mounted ASGI apps, patterns match the mount path only, not sub-paths, and a
+          handler registered on multiple paths is excluded as a whole when any of its
+          paths matches.
+        - Handlers excluded via ``exclude`` or ``exclude_opt_key`` now bypass the
+          middleware entirely at startup rather than per request.
+
     .. change:: Migrate ``CSRFMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 4998
