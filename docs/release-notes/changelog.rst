@@ -6,6 +6,47 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Migrate ``RateLimitMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 5005
+        :issue: 4009
+        :breaking:
+
+        ``RateLimitMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases.
+
+        Since the middleware is now directly constructible, the
+        :class:`~litestar.middleware.rate_limit.RateLimitConfig` configuration object is
+        obsolete and its ``middleware`` property is deprecated; it will be removed in
+        ``4.0``. Pass a configured ``RateLimitMiddleware`` instance to the middleware
+        list instead:
+
+        .. code-block:: python
+
+            # before
+            config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
+            app = Litestar(..., middleware=[config.middleware])
+
+            # after
+            app = Litestar(
+                ...,
+                middleware=[RateLimitMiddleware(rate_limit=("minute", 10), exclude=["/schema"])],
+            )
+
+        Two behavioural changes for excluded routes:
+
+        - :attr:`~litestar.middleware.rate_limit.RateLimitConfig.exclude` patterns are
+          now matched against the **handler's path template** (e.g.
+          ``/user/{user_id:int}``) at startup, instead of the request path (e.g.
+          ``/user/1``) at runtime. Patterns targeting literal handler paths keep
+          working; patterns written to match expanded path parameters must be rewritten
+          against the template. For mounted ASGI apps, patterns match the mount path
+          only, not sub-paths, and a handler registered on multiple paths is excluded as
+          a whole when any of its paths matches.
+        - Handlers excluded via ``exclude`` or ``exclude_opt_key`` now bypass the
+          middleware entirely at startup rather than per request.
+
     .. change:: Fix ``TypeError`` when generating a schema for a union of enums
         :type: bugfix
         :pr: 4997

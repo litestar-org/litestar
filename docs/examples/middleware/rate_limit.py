@@ -1,7 +1,7 @@
 from litestar import Litestar, MediaType, get
-from litestar.middleware.rate_limit import RateLimitConfig
+from litestar.middleware.rate_limit import RateLimitMiddleware
 
-rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=["/schema"])
+rate_limit_middleware = RateLimitMiddleware(rate_limit=("minute", 1), exclude=["/schema"])
 
 
 @get("/", media_type=MediaType.TEXT, sync_to_thread=False)
@@ -10,4 +10,4 @@ def handler() -> str:
     return "ok"
 
 
-app = Litestar(route_handlers=[handler], middleware=[rate_limit_config.middleware])
+app = Litestar(route_handlers=[handler], middleware=[rate_limit_middleware])
