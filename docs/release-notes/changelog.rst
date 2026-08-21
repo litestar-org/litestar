@@ -36,6 +36,33 @@
         plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
         ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
 
+    .. change:: Migrate ``CSRFMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 4998
+        :issue: 4009
+        :breaking:
+
+        ``CSRFMiddleware`` has been moved from the legacy ``MiddlewareProtocol`` base to
+        :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all built-in
+        middleware off the legacy bases. It now lives in ``litestar.middleware._internal``.
+        This removes the ``litestar.middleware.csrf`` module, including the
+        ``generate_csrf_token`` and ``generate_csrf_hash`` helpers, from the public API.
+
+        Applications that configure CSRF protection through
+        :class:`~litestar.config.csrf.CSRFConfig` are unaffected, since Litestar
+        constructs the middleware itself, via a ``from_config`` classmethod on the
+        middleware.
+
+        Two behavioural changes for excluded routes:
+
+        - :attr:`~litestar.config.csrf.CSRFConfig.exclude` patterns are now matched against
+          the **handler's path template** (e.g. ``/user/{user_id:int}``) at startup, instead
+          of the request path (e.g. ``/user/1``) at runtime. Patterns targeting literal
+          paths keep working; patterns written to match expanded path parameters must be
+          rewritten against the template.
+        - Handlers excluded via ``exclude`` or ``exclude_from_csrf`` now bypass the
+          middleware entirely at startup rather than per request.
+
     .. change:: Migrate ``ResponseCacheMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 4953
