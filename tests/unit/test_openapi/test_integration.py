@@ -19,7 +19,7 @@ from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.plugins import YamlRenderPlugin
 from litestar.openapi.spec import Parameter as OpenAPIParameter
-from litestar.openapi.spec import Schema
+from litestar.openapi.spec import Schema, Server
 from litestar.params import FromCookie, FromPath, FromQuery, HeaderParameter
 from litestar.serialization.msgspec_hooks import decode_json, encode_json, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
@@ -491,3 +491,55 @@ def test_components_schemas_in_alphabetical_order() -> None:
         "test_components_schemas_in_alphabetical_order.C",
     ]
     assert list(openapi.components.schemas.keys()) == expected_keys
+
+
+def test_openapi_servers_reflect_root_path() -> None:
+    """When mounted under a root_path, servers should point at it (issue #2077)."""
+
+    @get("/", sync_to_thread=False)
+    def handler() -> None:
+        return None
+
+    with create_test_client(
+        route_handlers=[handler],
+        openapi_config=OpenAPIConfig(title="Example API", version="1.0.0"),
+        root_path="/api",
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == HTTP_200_OK
+        assert response.json()["servers"] == [{"url": "/api"}]
+
+
+def test_openapi_servers_root_path_does_not_override_custom_servers() -> None:
+    """A user-configured ``servers`` value is left untouched by the root_path."""
+
+    @get("/", sync_to_thread=False)
+    def handler() -> None:
+        return None
+
+    with create_test_client(
+        route_handlers=[handler],
+        openapi_config=OpenAPIConfig(
+            title="Example API",
+            version="1.0.0",
+            servers=[Server(url="https://example.com")],
+        ),
+        root_path="/api",
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.json()["servers"] == [{"url": "https://example.com"}]
+
+
+def test_openapi_servers_default_without_root_path() -> None:
+    """Without a root_path the default ``/`` server is unchanged."""
+
+    @get("/", sync_to_thread=False)
+    def handler() -> None:
+        return None
+
+    with create_test_client(
+        route_handlers=[handler],
+        openapi_config=OpenAPIConfig(title="Example API", version="1.0.0"),
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.json()["servers"] == [{"url": "/"}]
