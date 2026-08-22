@@ -1,28 +1,24 @@
-from __future__ import annotations
-
 import warnings
-from typing import TYPE_CHECKING, Any
+from collections.abc import Callable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Union
 
+from litestar.connection import ASGIConnection
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
+from litestar.routes import BaseRoute
+from litestar.types import (
+    AsyncAnyCallable,
+    ExceptionHandlersMap,
+    Guard,
+    ParametersMap,
+)
 from litestar.types.builtin_types import NoneType
 from litestar.utils.predicates import is_async_callable
 
-__all__ = ("ASGIRouteHandler", "asgi")
-
-
 if TYPE_CHECKING:
-    from collections.abc import Callable, Mapping, Sequence
-
     from litestar import Litestar, Router
-    from litestar.connection import ASGIConnection
-    from litestar.routes import BaseRoute
-    from litestar.types import (
-        AsyncAnyCallable,
-        ExceptionHandlersMap,
-        Guard,
-        ParametersMap,
-    )
+
+__all__ = ("ASGIRouteHandler", "asgi")
 
 
 class ASGIRouteHandler(BaseRouteHandler):
@@ -36,14 +32,14 @@ class ASGIRouteHandler(BaseRouteHandler):
         path: str | Sequence[str] | None = None,
         *,
         fn: AsyncAnyCallable,
-        exception_handlers: ExceptionHandlersMap | None = None,
+        exception_handlers: Union[ExceptionHandlersMap, None] = None,
         guards: Sequence[Guard] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
         is_mount: bool = False,
         signature_namespace: Mapping[str, Any] | None = None,
         copy_scope: bool | None = None,
-        parameters: ParametersMap | None = None,
+        parameters: Union[ParametersMap, None] = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for ASGI routes.
@@ -86,7 +82,7 @@ class ASGIRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+    def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
         super().on_registration(app=app, route=route)
 
         if self.copy_scope is None:
@@ -99,7 +95,7 @@ class ASGIRouteHandler(BaseRouteHandler):
                 stacklevel=1,
             )
 
-    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+    def _get_merge_opts(self, others: tuple["Router", ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
         merge_opts["is_mount"] = self.is_mount
         merge_opts["copy_scope"] = self.copy_scope
@@ -119,7 +115,7 @@ class ASGIRouteHandler(BaseRouteHandler):
         if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException("Functions decorated with 'asgi' must be async functions")
 
-    async def handle(self, connection: ASGIConnection[ASGIRouteHandler, Any, Any, Any]) -> None:
+    async def handle(self, connection: ASGIConnection["ASGIRouteHandler", Any, Any, Any]) -> None:
         """ASGI app that authorizes the connection and then awaits the handler function.
 
         .. versionadded: 3.0
@@ -140,7 +136,7 @@ class ASGIRouteHandler(BaseRouteHandler):
 def asgi(
     path: str | Sequence[str] | None = None,
     *,
-    exception_handlers: ExceptionHandlersMap | None = None,
+    exception_handlers: Union[ExceptionHandlersMap, None] = None,
     guards: Sequence[Guard] | None = None,
     name: str | None = None,
     opt: Mapping[str, Any] | None = None,

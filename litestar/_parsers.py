@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from collections import defaultdict
 from functools import lru_cache
 from http.cookies import _unquote as unquote_cookie

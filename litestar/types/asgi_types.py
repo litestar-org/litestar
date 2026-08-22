@@ -29,19 +29,18 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from __future__ import annotations
-
 from collections.abc import Awaitable, Callable, Iterable
 from typing import (
     TYPE_CHECKING,
     Any,
     Literal,
     NotRequired,
+    TypeAlias,
     TypedDict,
     Union,
 )
 
-from litestar.enums import HttpMethod
+from litestar.enums import HttpMethod, ScopeType
 
 __all__ = (
     "ASGIApp",
@@ -91,10 +90,7 @@ __all__ = (
 )
 
 if TYPE_CHECKING:
-    from typing import TypeAlias
-
     from litestar.app import Litestar
-    from litestar.enums import ScopeType
     from litestar.types.empty import EmptyType
 
     from .internal_types import RouteHandlerType
@@ -103,6 +99,7 @@ if TYPE_CHECKING:
 HttpMethodName: TypeAlias = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
 Method: TypeAlias = Union[HttpMethodName, HttpMethod]
 ScopeSession: TypeAlias = "EmptyType | dict[str, Any] | DataContainerType | None"
+RawHeaders: TypeAlias = Iterable[tuple[bytes, bytes]]
 
 
 class ASGIVersion(TypedDict):
@@ -121,8 +118,8 @@ class HeaderScope(TypedDict):
 class BaseScope(HeaderScope):
     """Base ASGI-scope."""
 
-    app: Litestar  # deprecated
-    litestar_app: Litestar
+    app: "Litestar"  # deprecated
+    litestar_app: "Litestar"
     asgi: ASGIVersion
     auth: Any
     client: tuple[str, int] | None
@@ -134,7 +131,7 @@ class BaseScope(HeaderScope):
     query_string: bytes
     raw_path: bytes
     root_path: str
-    route_handler: RouteHandlerType
+    route_handler: "RouteHandlerType"
     scheme: str
     server: tuple[str, int | None] | None
     session: ScopeSession
@@ -159,10 +156,10 @@ class WebSocketScope(BaseScope):
 class LifeSpanScope(TypedDict):
     """Lifespan-ASGI-scope."""
 
-    app: Litestar
+    app: "Litestar"
     asgi: ASGIVersion
     type: Literal["lifespan"]
-    litestar_app: NotRequired[Litestar]
+    litestar_app: NotRequired["Litestar"]
     state: NotRequired[dict[str, Any]]
 
 
@@ -340,6 +337,5 @@ Scope: TypeAlias = Union[HTTPScope, WebSocketScope]
 Receive: TypeAlias = Callable[..., Awaitable[Union[HTTPReceiveMessage, WebSocketReceiveMessage]]]
 Send: TypeAlias = Callable[[Message], Awaitable[None]]
 ASGIApp: TypeAlias = Callable[[Scope, Receive, Send], Awaitable[None]]
-RawHeaders: TypeAlias = Iterable[tuple[bytes, bytes]]
 RawHeadersList: TypeAlias = list[tuple[bytes, bytes]]
 WebSocketMode: TypeAlias = Literal["text", "binary"]

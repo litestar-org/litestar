@@ -1,12 +1,7 @@
-from __future__ import annotations
-
-from collections.abc import Callable
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Literal,
-    Union,
-)
+from collections.abc import Callable, Mapping, MutableMapping, Sequence
+from os import PathLike
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, Union
 
 __all__ = (
     "Dependencies",
@@ -23,11 +18,6 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, MutableMapping, Sequence
-    from os import PathLike
-    from pathlib import Path
-    from typing import TypeAlias
-
     from litestar.datastructures.cookie import Cookie
     from litestar.datastructures.response_header import ResponseHeader
     from litestar.di import Provide
@@ -42,9 +32,9 @@ ExceptionHandlersMap: TypeAlias = "MutableMapping[Union[int, type[Exception]], E
 Middleware: TypeAlias = Callable[..., "ASGIApp"]
 MiddlewareFactory: TypeAlias = Callable[..., Middleware]
 ParametersMap: TypeAlias = "Mapping[str, ParameterKwarg]"
-PathType: TypeAlias = "Union[Path, PathLike, str]"
+PathType: TypeAlias = Union[Path, PathLike, str]
 ResponseCookies: TypeAlias = "Union[Sequence[Cookie], Mapping[str, str]]"
 ResponseHeaders: TypeAlias = "Union[Sequence[ResponseHeader], Mapping[str, str]]"
 Scopes: TypeAlias = "set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]"
-TypeDecodersSequence: TypeAlias = "Sequence[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]"
-TypeEncodersMap: TypeAlias = "Mapping[Any, Callable[[Any], Any]]"
+TypeDecodersSequence: TypeAlias = Sequence[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]
+TypeEncodersMap: TypeAlias = Mapping[Any, Callable[[Any], Any]]
