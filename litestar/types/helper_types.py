@@ -1,18 +1,15 @@
-from __future__ import annotations
-
 from collections.abc import AsyncIterable, AsyncIterator, Awaitable, Iterable, Iterator, Sequence
 from functools import partial
 from typing import (
     TYPE_CHECKING,
     Any,
     Literal,
+    TypeAlias,
     TypeVar,
     Union,
 )
 
 if TYPE_CHECKING:
-    from typing import TypeAlias
-
     from litestar.response.sse import ServerSentEventMessage
 
 

@@ -1,17 +1,19 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator, Callable, Coroutine, Mapping, Sequence
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from typing import (
     TYPE_CHECKING,
     Any,
     Optional,
+    Union,
     overload,
 )
 
 from litestar.connection import WebSocket
 from litestar.di import NamedDependency
+from litestar.dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
+from litestar.routes import BaseRoute
 from litestar.types import (
     AnyCallable,
     Dependencies,
@@ -22,6 +24,8 @@ from litestar.types import (
     Middleware,
     TypeEncodersMap,
 )
+from litestar.types.asgi_types import WebSocketMode
+from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
 from litestar.utils import ensure_async_callable
 from litestar.utils.signature import ParsedSignature, get_fn_type_hints
 
@@ -35,15 +39,7 @@ from ._utils import (
 from .route_handler import WebsocketRouteHandler
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Callable, Coroutine, Mapping, Sequence
-
     from litestar import Litestar, Router
-    from litestar.di import NamedDependency
-    from litestar.dto import AbstractDTO
-    from litestar.routes import BaseRoute
-    from litestar.types.asgi_types import WebSocketMode
-    from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
-
 
 __all__ = ("WebsocketListener", "WebsocketListenerRouteHandler", "websocket_listener")
 
@@ -72,7 +68,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         *,
         fn: AnyCallable,
         connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
-        dependencies: Dependencies | None = None,
+        dependencies: Union[Dependencies, None] = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
         guards: Sequence[Guard] | None = None,
@@ -86,7 +82,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
-        parameters: ParametersMap | None = None,
+        parameters: Union[ParametersMap, None] = None,
         **kwargs: Any,
     ) -> None: ...
 
@@ -97,7 +93,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         *,
         fn: AnyCallable,
         connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
-        dependencies: Dependencies | None = None,
+        dependencies: Union[Dependencies, None] = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
         guards: Sequence[Guard] | None = None,
@@ -113,7 +109,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
-        parameters: ParametersMap | None = None,
+        parameters: Union[ParametersMap, None] = None,
         **kwargs: Any,
     ) -> None: ...
 
@@ -124,7 +120,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         fn: AnyCallable,
         connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
         connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
-        dependencies: Dependencies | None = None,
+        dependencies: Union[Dependencies, None] = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
         guards: Sequence[Guard] | None = None,
@@ -140,7 +136,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
-        parameters: ParametersMap | None = None,
+        parameters: Union[ParametersMap, None] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``WebsocketRouteHandler``
@@ -227,7 +223,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             **kwargs,
         )
 
-    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+    def _get_merge_opts(self, others: tuple["Router", ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
         merge_opts.update(
             receive_mode=self._receive_mode,
@@ -239,7 +235,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         )
         return merge_opts
 
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+    def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
         self.fn = self._prepare_fn()
         super().on_registration(route, app)
 
@@ -320,7 +316,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
 class WebsocketListener(ABC):
     path: str | list[str] | None = None
     """A path fragment for the route handler function or a sequence of path fragments. If not given defaults to ``/``"""
-    dependencies: Dependencies | None = None
+    dependencies: Union[Dependencies, None] = None
     """A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances."""
     dto: type[AbstractDTO] | None | EmptyType = Empty
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and validation of request data"""
@@ -416,7 +412,7 @@ def websocket_listener(
     path: str | list[str] | None = None,
     *,
     connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
-    dependencies: Dependencies | None = None,
+    dependencies: Union[Dependencies, None] = None,
     dto: type[AbstractDTO] | None | EmptyType = Empty,
     exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
     guards: list[Guard] | None = None,
@@ -439,7 +435,7 @@ def websocket_listener(
     path: str | list[str] | None = None,
     *,
     connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
-    dependencies: Dependencies | None = None,
+    dependencies: Union[Dependencies, None] = None,
     dto: type[AbstractDTO] | None | EmptyType = Empty,
     exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
     guards: list[Guard] | None = None,
@@ -464,7 +460,7 @@ def websocket_listener(
     *,
     connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
     connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
-    dependencies: Dependencies | None = None,
+    dependencies: Union[Dependencies, None] = None,
     dto: type[AbstractDTO] | None | EmptyType = Empty,
     exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
     guards: list[Guard] | None = None,

@@ -1,17 +1,22 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
 
 import contextlib
+from collections.abc import Awaitable, Callable, Iterable, Mapping, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, TypedDict, cast
+from typing import TYPE_CHECKING, Any, AnyStr, TypedDict, Union, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
+from litestar._kwargs import KwargsModel
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
+from litestar.background_tasks import BackgroundTask, BackgroundTasks
+from litestar.config.response_cache import CACHE_FOREVER
 from litestar.connection import Request
 from litestar.datastructures import CacheControlHeader, ETag, FormMultiDict, Header
+from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.response_header import ResponseHeader
+from litestar.dto import AbstractDTO
 from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import (
     ClientException,
@@ -28,9 +33,11 @@ from litestar.handlers.http_handlers._utils import (
     is_empty_response_annotation,
     normalize_http_method,
 )
-from litestar.openapi.spec import Operation
+from litestar.openapi.datastructures import ResponseSpec
+from litestar.openapi.spec import Operation, SecurityRequirement
 from litestar.response import File, Response
 from litestar.response.file import ASGIFileResponse
+from litestar.routes import BaseRoute
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
     AfterRequestHookHandler,
@@ -54,6 +61,12 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
+from litestar.types.callable_types import (
+    AsyncAnyCallable,
+    OperationIDCreator,
+)
+from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
+from litestar.typing import FieldDefinition
 from litestar.utils import deprecated as litestar_deprecated
 from litestar.utils import ensure_async_callable
 from litestar.utils.empty import value_or_default
@@ -62,27 +75,12 @@ from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Callable, Iterable, Mapping, Sequence
-    from typing import Any
-
     from litestar import Litestar, Router
-    from litestar._kwargs import KwargsModel
-    from litestar.background_tasks import BackgroundTask, BackgroundTasks
-    from litestar.config.response_cache import CACHE_FOREVER
-    from litestar.datastructures.cookie import Cookie
-    from litestar.dto import AbstractDTO
-    from litestar.openapi.datastructures import ResponseSpec
-    from litestar.openapi.spec import SecurityRequirement
-    from litestar.routes import BaseRoute
     from litestar.types.callable_types import (
         AsyncAfterRequestHookHandler,
         AsyncAfterResponseHookHandler,
-        AsyncAnyCallable,
         AsyncBeforeRequestHookHandler,
-        OperationIDCreator,
     )
-    from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
-    from litestar.typing import FieldDefinition
 
 __all__ = ("HTTPRouteHandler",)
 
@@ -135,17 +133,17 @@ class HTTPRouteHandler(BaseRouteHandler):
         path: str | Sequence[str] | None = None,
         *,
         fn: AnyCallable,
-        after_request: AfterRequestHookHandler | None = None,
-        after_response: AfterResponseHookHandler | None = None,
+        after_request: Union[AfterRequestHookHandler, None] = None,
+        after_response: Union[AfterResponseHookHandler, None] = None,
         background: BackgroundTask | BackgroundTasks | None = None,
-        before_request: BeforeRequestHookHandler | None = None,
+        before_request: Union[BeforeRequestHookHandler, None] = None,
         cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
-        cache_key_builder: CacheKeyBuilder | None = None,
-        dependencies: Dependencies | None = None,
+        cache_key_builder: Union[CacheKeyBuilder, None] = None,
+        dependencies: Union[Dependencies, None] = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         etag: ETag | None = None,
-        exception_handlers: ExceptionHandlersMap | None = None,
+        exception_handlers: Union[ExceptionHandlersMap, None] = None,
         guards: Sequence[Guard] | None = None,
         http_method: Method | Sequence[Method],
         media_type: MediaType | str | None = None,
@@ -155,8 +153,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         request_class: type[Request] | None = None,
         request_max_body_size: int | None | EmptyType = Empty,
         response_class: type[Response] | None = None,
-        response_cookies: ResponseCookies | None = None,
-        response_headers: ResponseHeaders | None = None,
+        response_cookies: Union[ResponseCookies, None] = None,
+        response_headers: Union[ResponseHeaders, None] = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         status_code: int | None = None,
         sync_to_thread: bool | None = None,
@@ -167,7 +165,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         description: str | None = None,
         include_in_schema: bool | EmptyType = Empty,
         operation_class: type[Operation] = Operation,
-        operation_id: str | OperationIDCreator | None = None,
+        operation_id: Union[str, OperationIDCreator, None] = None,
         raises: Sequence[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: Mapping[int, ResponseSpec] | None = None,
@@ -177,7 +175,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         tags: Sequence[str] | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
-        parameters: ParametersMap | None = None,
+        parameters: Union[ParametersMap, None] = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for HTTP routes.
@@ -296,14 +294,14 @@ class HTTPRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-        self.after_request: AsyncAfterRequestHookHandler | None = (
+        self.after_request: Union[AsyncAfterRequestHookHandler, None] = (
             ensure_async_callable(after_request) if after_request else None  # type: ignore[assignment]
         )
-        self.after_response: AsyncAfterResponseHookHandler | None = (  # pyright: ignore[reportAttributeAccessIssue]
+        self.after_response: Union[AsyncAfterResponseHookHandler, None] = (  # pyright: ignore[reportAttributeAccessIssue]
             ensure_async_callable(after_response) if after_response else None
         )
         self.background = background
-        self.before_request: AsyncBeforeRequestHookHandler | None = (
+        self.before_request: Union[AsyncBeforeRequestHookHandler, None] = (
             ensure_async_callable(before_request) if before_request else None
         )
         self.cache = cache
@@ -340,7 +338,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
 
-    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+    def _get_merge_opts(self, others: tuple["Router", ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
 
         # these only exist on the handler, and therefore don't need merging
@@ -365,7 +363,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             cache_key_builder=self.cache_key_builder,
         )
 
-        other: HTTPRouteHandler | Router
+        other: Union[HTTPRouteHandler, Router]
         for other in (self, *others):  # type: ignore[assignment]
             merge_opts["after_response"] = merge_opts.get("after_response") or other.after_response
             merge_opts["after_request"] = merge_opts.get("after_request") or other.after_request
@@ -438,7 +436,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     @staticmethod
     def _resolve_response_headers(
-        response_headers: ResponseHeaders | None,
+        response_headers: Union[ResponseHeaders, None],
         *extra_headers: Header | None,
     ) -> frozenset[ResponseHeader]:
         """Return all header parameters in the scope of the handler function.
@@ -533,7 +531,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     def request_max_body_size(self) -> int | None:
         return value_or_default(self._request_max_body_size, None)  # pyright: ignore[reportReturnType]
 
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+    def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
         super().on_registration(route=route, app=app)
 
         if self._request_max_body_size is Empty:
@@ -628,7 +626,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         return_type: FieldDefinition,
         status_code: int,
         background: BackgroundTask | BackgroundTasks | None,
-        after_request: AfterRequestHookHandler | None,
+        after_request: Union[AfterRequestHookHandler, None] = None,
     ) -> tuple[Callable[..., Awaitable[ASGIApp]], Callable[..., Awaitable[ASGIApp]]]:
         media_type = media_type.value if isinstance(media_type, Enum) else media_type
         return_annotation = return_type.annotation

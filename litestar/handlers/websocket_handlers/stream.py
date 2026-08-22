@@ -1,36 +1,33 @@
-from __future__ import annotations
-
 import dataclasses
 import functools
 import warnings
 from collections.abc import AsyncGenerator, Awaitable, Callable, Mapping
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 import anyio
 from msgspec.json import Encoder as JsonEncoder
 
+from litestar.dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning, WebSocketDisconnect
 from litestar.handlers.websocket_handlers.route_handler import WebsocketRouteHandler
-from litestar.types import Empty
+from litestar.routes import BaseRoute
+from litestar.types import Dependencies, Empty, EmptyType, ExceptionHandler, Guard, Middleware, TypeEncodersMap
+from litestar.types.asgi_types import WebSocketMode
 from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
     from litestar import Litestar, WebSocket
-    from litestar.dto import AbstractDTO
-    from litestar.routes import BaseRoute
-    from litestar.types import Dependencies, EmptyType, ExceptionHandler, Guard, Middleware, TypeEncodersMap
-    from litestar.types.asgi_types import WebSocketMode
 
 
 async def send_websocket_stream(
-    socket: WebSocket,
+    socket: "WebSocket",
     stream: AsyncGenerator[Any, Any],
     *,
     close: bool = True,
     mode: WebSocketMode = "text",
-    send_handler: Callable[[WebSocket, Any], Awaitable[Any]] | None = None,
+    send_handler: Callable[["WebSocket", Any], Awaitable[Any]] | None = None,
     listen_for_disconnect: bool = False,
     warn_on_data_discard: bool = True,
 ) -> None:
@@ -127,14 +124,14 @@ async def send_websocket_stream(
 def websocket_stream(
     path: str | list[str] | None = None,
     *,
-    dependencies: Dependencies | None = None,
+    dependencies: Union[Dependencies, None] = None,
     exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
     guards: list[Guard] | None = None,
     middleware: list[Middleware] | None = None,
     name: str | None = None,
     opt: dict[str, Any] | None = None,
     signature_namespace: Mapping[str, Any] | None = None,
-    websocket_class: type[WebSocket] | None = None,
+    websocket_class: type["WebSocket"] | None = None,
     mode: WebSocketMode = "text",
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     type_encoders: TypeEncodersMap | None = None,
@@ -208,11 +205,25 @@ def websocket_stream(
     return decorator
 
 
+class _WebSocketStreamOptions:
+    def __init__(
+        self,
+        generator_fn: Callable[..., AsyncGenerator[Any, Any]],
+        listen_for_disconnect: bool,
+        warn_on_data_discard: bool,
+        send_mode: WebSocketMode,
+    ) -> None:
+        self.generator_fn = generator_fn
+        self.listen_for_disconnect = listen_for_disconnect
+        self.warn_on_data_discard = warn_on_data_discard
+        self.send_mode = send_mode
+
+
 class WebSocketStreamHandler(WebsocketRouteHandler):
     __slots__ = ("_ws_stream_options",)
     _ws_stream_options: _WebSocketStreamOptions
 
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+    def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
         self._ws_stream_options = self.opt["stream_options"]
 
         parsed_handler_signature = parsed_stream_fn_signature = ParsedSignature.from_fn(
@@ -263,7 +274,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         listen_for_disconnect = self._ws_stream_options.listen_for_disconnect
         warn_on_data_discard = self._ws_stream_options.warn_on_data_discard
 
-        async def send_handler(socket: WebSocket, data: Any) -> None:
+        async def send_handler(socket: "WebSocket", data: Any) -> None:
             if isinstance(data, (str, bytes)):
                 await socket.send_data(data=data, mode=send_mode)
                 return
@@ -278,7 +289,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
             await socket.send_data(data=data, mode=send_mode)
 
         @functools.wraps(stream_fn)
-        async def handler_fn(*args: Any, socket: WebSocket, **kw: Any) -> None:
+        async def handler_fn(*args: Any, socket: "WebSocket", **kw: Any) -> None:
             if receives_socket_parameter:
                 kw["socket"] = socket
 
@@ -294,17 +305,3 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
 
         self.fn = handler_fn  # pyright: ignore[reportGeneralTypeIssues]
         super().on_registration(route, app)
-
-
-class _WebSocketStreamOptions:
-    def __init__(
-        self,
-        generator_fn: Callable[..., AsyncGenerator[Any, Any]],
-        listen_for_disconnect: bool,
-        warn_on_data_discard: bool,
-        send_mode: WebSocketMode,
-    ) -> None:
-        self.generator_fn = generator_fn
-        self.listen_for_disconnect = listen_for_disconnect
-        self.warn_on_data_discard = warn_on_data_discard
-        self.send_mode = send_mode

@@ -1,13 +1,13 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
 
 from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction, ismethod
 from typing import TYPE_CHECKING, Annotated, Any, Literal, TypeAlias, TypeVar
 
+from litestar.dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.plugins import DIPlugin, PluginRegistry
-from litestar.types import Empty, TypeDecodersSequence
+from litestar.types import AnyCallable, Empty, TypeDecodersSequence
 from litestar.utils import ensure_async_callable
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.predicates import is_async_callable
@@ -20,9 +20,6 @@ from litestar.utils.warnings import (
 
 if TYPE_CHECKING:
     from litestar._signature import SignatureModel
-    from litestar.dto import AbstractDTO
-    from litestar.types import AnyCallable
-
 
 __all__ = (
     "NamedDependency",
@@ -121,7 +118,7 @@ class Provide:
         self._signature_model: type[SignatureModel] | None = None
 
     @property
-    def signature_model(self) -> type[SignatureModel]:
+    def signature_model(self) -> type["SignatureModel"]:
         if self._signature_model is None:
             raise ValueError(f"Cannot access signature model of Provider {self} because it is not finalized")
         return self._signature_model

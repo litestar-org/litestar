@@ -1,11 +1,7 @@
-from __future__ import annotations
-
 from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar
 
 if TYPE_CHECKING:
-    from typing import TypeAlias
-
     from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.connection.base import ASGIConnection
@@ -37,7 +33,7 @@ BeforeRequestHookHandler: TypeAlias = "Callable[[Request], Any | Awaitable[Any]]
 
 AsyncAnyCallable: TypeAlias = Callable[..., Awaitable[Any]]
 AnyCallable: TypeAlias = Callable[..., Any]
-AnyGenerator: TypeAlias = "Generator[Any, Any, Any] | AsyncGenerator[Any, Any]"
+AnyGenerator: TypeAlias = Generator[Any, Any, Any] | AsyncGenerator[Any, Any]
 BeforeMessageSendHookHandler: TypeAlias = "Callable[[Message, Scope], SyncOrAsyncUnion[None]]"
 CacheKeyBuilder: TypeAlias = "Callable[[Request], str]"
 ExceptionHandler: TypeAlias = "Callable[[Request, ExceptionT], Response]"

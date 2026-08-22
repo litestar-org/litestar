@@ -1,25 +1,19 @@
-from __future__ import annotations
-
+from collections.abc import Sequence
 from functools import lru_cache
 from inspect import isawaitable
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, Union, cast
 
-from litestar.datastructures import UploadFile
+from litestar.background_tasks import BackgroundTask, BackgroundTasks
+from litestar.connection import Request
+from litestar.datastructures import Cookie, ResponseHeader, UploadFile
 from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.response import Response
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from litestar.types import AfterRequestHookHandler, ASGIApp, AsyncAnyCallable, Method, TypeEncodersMap
+from litestar.types.asgi_types import HttpMethodName
 from litestar.types.builtin_types import NoneType
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    from litestar.background_tasks import BackgroundTask, BackgroundTasks
-    from litestar.connection import Request
-    from litestar.datastructures import Cookie, ResponseHeader
-    from litestar.types import AfterRequestHookHandler, ASGIApp, AsyncAnyCallable, Method, TypeEncodersMap
-    from litestar.types.asgi_types import HttpMethodName
-    from litestar.typing import FieldDefinition
+from litestar.typing import FieldDefinition
 
 __all__ = (
     "create_data_handler",
@@ -33,7 +27,7 @@ __all__ = (
 
 
 def create_data_handler(
-    after_request: AfterRequestHookHandler | None,
+    after_request: Union[AfterRequestHookHandler, None],
     background: BackgroundTask | BackgroundTasks | None,
     cookies: frozenset[Cookie],
     headers: frozenset[ResponseHeader],
@@ -83,7 +77,7 @@ def create_data_handler(
     return handler
 
 
-def create_generic_asgi_response_handler(after_request: AfterRequestHookHandler | None) -> AsyncAnyCallable:
+def create_generic_asgi_response_handler(after_request: Union[AfterRequestHookHandler, None]) -> AsyncAnyCallable:
     """Create a handler function for Responses.
 
     Args:
@@ -118,7 +112,7 @@ def normalize_headers(headers: frozenset[ResponseHeader]) -> dict[str, str]:
 
 
 def create_response_handler(
-    after_request: AfterRequestHookHandler | None,
+    after_request: Union[AfterRequestHookHandler, None],
     background: BackgroundTask | BackgroundTasks | None,
     cookies: frozenset[Cookie],
     headers: frozenset[ResponseHeader],
