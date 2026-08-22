@@ -18,17 +18,19 @@ from litestar._openapi.typescript_converter.types import (
     TypeScriptType,
     TypeScriptUnion,
 )
-from litestar.enums import HttpMethod, ParamType
+from litestar.enums import ParamType
 from litestar.openapi.spec import (
     Components,
     OpenAPI,
     Operation,
     Parameter,
+    PathItem,
     Reference,
     RequestBody,
     Responses,
     Schema,
 )
+from litestar.openapi.spec.base import BaseSchemaObject
 
 __all__ = (
     "convert_openapi_to_typescript",
@@ -40,7 +42,8 @@ __all__ = (
     "resolve_ref",
 )
 
-from litestar.openapi.spec.base import BaseSchemaObject
+# OpenAPI 3.x path-item method fields — derived from the PathItem spec's Operation-typed fields.
+_PATH_ITEM_METHODS = tuple(f.name for f in fields(PathItem) if "Operation" in str(f.type) and "None" in str(f.type))
 
 T = TypeVar("T")
 
@@ -275,10 +278,8 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
         shared_params = [
             get_openapi_type(p, components=openapi_schema.components) for p in (path_item.parameters or [])
         ]
-        for method in HttpMethod:
-            if (
-                operation := cast("Operation | None", getattr(path_item, method.lower(), "None"))
-            ) and operation.operation_id:
+        for method in _PATH_ITEM_METHODS:
+            if (operation := cast("Operation | None", getattr(path_item, method, None))) and operation.operation_id:
                 params = parse_params(
                     [
                         *(
