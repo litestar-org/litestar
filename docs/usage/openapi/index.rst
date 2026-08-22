@@ -20,6 +20,17 @@ configuration globally to setting
 :ref:`specific kwargs on route <usage/openapi/schema_generation:Configuring schema generation on a route handler>`
 handler decorators.
 
+Default schemas
+---------------
+
+By default, the generated OpenAPI schema is available at the following endpoints, relative to the configured ``openapi_path`` (which defaults to ``/schema``):
+
+- ``/openapi.json``: The schema in JSON format.
+- ``/openapi.yaml``: The schema in YAML format.
+- ``/openapi.yml``: An alias for the YAML schema.
+
+These endpoints are particularly useful for importing the schema into 3rd party tools, such as the Scalar API client or Postman.
+
 .. toctree::
 
     schema_generation
