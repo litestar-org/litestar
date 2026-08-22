@@ -103,6 +103,9 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         self._subscriber_class = subscriber_class
 
         self._channels: dict[str, set[Subscriber]] = {channel: set() for channel in channels or []}
+        # Declared channels are kept when empty (they back route handlers); arbitrary channels
+        # are dropped on unsubscribe to avoid unbounded growth.
+        self._declared_channels: set[str] = set(self._channels)
 
     def encode_data(self, data: LitestarEncodableType) -> bytes:
         """Encode data before storing it in the backend"""
@@ -226,7 +229,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         channels_to_unsubscribe: set[str] = set()
 
         for channel in channels:
-            channel_subscribers = self._channels[channel]
+            channel_subscribers = self._channels.get(channel, set())
 
             try:
                 channel_subscribers.remove(subscriber)
@@ -235,6 +238,8 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
 
             if not channel_subscribers:
                 channels_to_unsubscribe.add(channel)
+                if channel not in self._declared_channels:
+                    del self._channels[channel]
 
         if all(subscriber not in queues for queues in self._channels.values()):
             await subscriber.put(None)  # this will stop any running task or generator by breaking the inner loop

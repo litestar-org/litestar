@@ -326,6 +326,48 @@ async def test_unsubscribe_last_subscriber_unsubscribes_backend(
     assert not plugin._channels.get("foo")
 
 
+async def test_unsubscribe_removes_arbitrary_channel(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+    subscriber = await plugin.subscribe(channels="foo")
+    assert "foo" in plugin._channels
+
+    await plugin.unsubscribe(subscriber, channels="foo")
+
+    assert "foo" not in plugin._channels
+
+
+async def test_unsubscribe_keeps_declared_channel(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend, channels=["foo"])
+    subscriber = await plugin.subscribe(channels="foo")
+
+    await plugin.unsubscribe(subscriber, channels="foo")
+
+    assert "foo" in plugin._channels
+    assert plugin._channels["foo"] == set()
+
+
+async def test_unsubscribe_arbitrary_channels_does_not_leak(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+
+    for i in range(1000):
+        channel = f"channel_{i}"
+        subscriber = await plugin.subscribe(channels=channel)
+        await plugin.unsubscribe(subscriber, channels=channel)
+
+    assert plugin._channels == {}
+
+
+async def test_unsubscribe_twice_after_arbitrary_channel_removed(memory_backend: MemoryChannelsBackend) -> None:
+    # Second unsubscribe must not raise KeyError once the channel entry has been removed.
+    plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+    subscriber = await plugin.subscribe(channels="foo")
+
+    await plugin.unsubscribe(subscriber, channels="foo")
+    assert "foo" not in plugin._channels
+
+    await plugin.unsubscribe(subscriber, channels="foo")
+
+
 async def _populate_channels_backend(*, message_count: int, channel: str, backend: ChannelsBackend) -> list[bytes]:
     messages = [f"{channel} - message {i}".encode() for i in range(message_count)]
 
