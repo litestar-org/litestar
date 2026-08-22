@@ -136,6 +136,32 @@
         dynamic ``LISTEN`` and ``UNLISTEN`` operations no longer contend with the listener.
         Psycopg 3.2.4 or newer is now required for development and documentation builds.
 
+    .. change:: Base the test clients on ``httpx2``
+        :type: feature
+        :breaking:
+
+        The ``litestar[testing]`` extra now installs `httpx2 <https://github.com/pydantic/httpx2>`_,
+        the fork of ``httpx`` maintained by Pydantic, instead of ``httpx``.
+
+        ``httpx2`` keeps the public API of ``httpx`` 0.28.1, so test code generally works
+        unchanged. Four things differ:
+
+        - ``TestClient`` and ``AsyncTestClient`` now subclass ``httpx2.Client`` and
+          ``httpx2.AsyncClient``, and ``subprocess_sync_client`` / ``subprocess_async_client``
+          return ``httpx2`` clients. Annotations such as ``response: httpx.Response`` need
+          updating.
+        - The logger is named ``httpx2``, which affects logging configuration and ``caplog``
+          assertions that reference the ``httpx`` logger.
+        - The ``User-Agent`` header sent by the clients is now ``python-httpx2/<version>``.
+        - The extra pulls ``anyio>=4.10`` and ``idna>=3.18``, and uses ``truststore`` (the
+          operating system trust store) rather than ``certifi``.
+
+        ``httpx2.alias_httpx()`` makes ``import httpx`` resolve to ``httpx2`` process-wide
+        for suites that cannot be updated yet. Litestar never calls it.
+
+        .. seealso::
+            :doc:`/usage/testing`
+
     .. change:: Move ``httpx`` to the ``testing`` extra
         :type: feature
         :pr: 4950

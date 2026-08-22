@@ -2,10 +2,10 @@ Testing
 =======
 
 Testing a Litestar application is made simple by the testing utilities provided out of the box.
-Based on `httpx <https://www.python-httpx.org/>`_, they come with a familiar interface and integrate seamlessly into
+Based on `httpx2 <https://github.com/pydantic/httpx2>`_, they come with a familiar interface and integrate seamlessly into
 synchronous or asynchronous tests.
 
-``httpx`` is not installed by default. It is bundled in the ``testing`` extra, which you will need to
+``httpx2`` is not installed by default. It is bundled in the ``testing`` extra, which you will need to
 install to use anything from :mod:`litestar.testing`:
 
 .. code-block:: shell
@@ -178,7 +178,7 @@ synchronous :class:`~litestar.testing.TestClient` means that the application wil
 the test or fixture. In practice, this can result in some difficult to debug and solve situations, especially when
 setting up async resources outside the application, for example when using the factory pattern.
 
-The following example uses a shared instance of an ``httpx.AsyncClient``. It uses the common factory function, which
+The following example uses a shared instance of an ``httpx2.AsyncClient``. It uses the common factory function, which
 allows to customise the client for tests, for example to add authentication headers.
 
 .. literalinclude:: /examples/testing/async_resource_test_issue.py
@@ -190,10 +190,10 @@ instance. This is happening because:
 - The ``http_test_client`` fixture sets up the client in *event loop A*
 - The ``TestClient`` instance created within the ``test_handler`` test sets up *event loop B* and runs the application
   in it
-- A call to ``http_client.get``, the ``httpx.AsyncClient`` instance creates a new connection within *loop B* and
+- A call to ``http_client.get``, the ``httpx2.AsyncClient`` instance creates a new connection within *loop B* and
   attaches it to the client instance
 - The ``TestClient`` instance closes *event loop B*
-- The cleanup step of the ``http_test_client`` fixture calls ``httpx.AsyncClient.aclose()`` instance within *loop A*,
+- The cleanup step of the ``http_test_client`` fixture calls ``httpx2.AsyncClient.aclose()`` instance within *loop A*,
   which internally tries to close the connection made in the previous step. That connection however is still attached
   to *loop B* that was owned by the ``TestClient`` instance, and is now closed
 
@@ -215,7 +215,7 @@ be cleaned up properly without issues.
 Testing websockets
 ++++++++++++++++++
 
-Litestar's test client enhances the httpx client to support websockets. To test a websocket endpoint, you can use the
+Litestar's test client enhances the httpx2 client to support websockets. To test a websocket endpoint, you can use the
 :meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>` method on the test client. The method returns
 a websocket connection object that you can use to send and receive messages, see an example below for json:
 
@@ -328,7 +328,7 @@ request.
 Litestar offers two helper functions,
 :func:`litestar.testing.subprocess_sync_client` and
 :func:`litestar.testing.subprocess_async_client` that will
-launch a Litestar instance with in a subprocess and set up an httpx client for running
+launch a Litestar instance with in a subprocess and set up an httpx2 client for running
 tests. You can either load your actual app file or create subsets from it as you would
 with the regular test client setup:
 
@@ -343,7 +343,7 @@ By default, the subprocess client will capture all output from the litestar inst
 .. code-block:: python
 
     @pytest.fixture(name="async_client")
-    async def fx_async_client() -> AsyncIterator[httpx.AsyncClient]:
+    async def fx_async_client() -> AsyncIterator[httpx2.AsyncClient]:
         async with subprocess_async_client(workdir=ROOT, app="subprocess_sse_app:app", capture_output=False) as client:
             yield client
 

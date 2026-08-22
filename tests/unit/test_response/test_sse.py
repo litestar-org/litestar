@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING
 
 import anyio
 import pytest
-from httpx_sse import ServerSentEvent as HTTPXServerSentEvent
-from httpx_sse import aconnect_sse
+from httpx2 import ServerSentEvent as HTTPXServerSentEvent
 
 from litestar import get
 from litestar.exceptions import ImproperlyConfiguredException
@@ -33,8 +32,8 @@ async def test_sse_steaming_response() -> None:
         return ServerSentEvent(content=generator, event_id="123", event_type="special", retry_duration=1000)
 
     async with create_async_test_client(handler) as client:
-        async with aconnect_sse(client, "GET", f"{client.base_url}/test") as event_source:
-            events = [sse async for sse in event_source.aiter_sse()]
+        async with client.sse(f"{client.base_url}/test") as event_source:
+            events = [sse async for sse in event_source]
             assert len(events) == 5
             for idx, sse in enumerate(events, start=1):
                 assert sse.event == "special"
@@ -92,8 +91,8 @@ async def test_various_sse_inputs(input: str, expected_events: list[HTTPXServerS
         return ServerSentEvent(numbers(), event_type="special", event_id="123", retry_duration=1000)
 
     async with create_async_test_client(handler) as client:
-        async with aconnect_sse(client, "GET", f"{client.base_url}/testme") as event_source:
-            events = [sse async for sse in event_source.aiter_sse()]
+        async with client.sse(f"{client.base_url}/testme") as event_source:
+            events = [sse async for sse in event_source]
             assert len(events) == len(expected_events)
             for i in range(len(expected_events)):
                 assert events[i].event == expected_events[i].event
@@ -119,8 +118,8 @@ async def test_sse_without_ping_interval_works_unchanged() -> None:
         return ServerSentEvent(gen())
 
     async with create_async_test_client(handler) as client:
-        async with aconnect_sse(client, "GET", f"{client.base_url}/test") as event_source:
-            events = [sse async for sse in event_source.aiter_sse()]
+        async with client.sse(f"{client.base_url}/test") as event_source:
+            events = [sse async for sse in event_source]
             assert len(events) == 3
             for idx, sse in enumerate(events):
                 assert sse.data == str(idx)
@@ -176,8 +175,8 @@ async def test_sse_ping_stops_when_stream_ends() -> None:
         return ServerSentEvent(gen(), ping_interval=0.1)
 
     async with create_async_test_client(handler) as client:
-        async with aconnect_sse(client, "GET", f"{client.base_url}/test") as event_source:
-            events = [sse async for sse in event_source.aiter_sse()]
+        async with client.sse(f"{client.base_url}/test") as event_source:
+            events = [sse async for sse in event_source]
             assert len(events) == 2
             assert events[0].data == "hello"
             assert events[1].data == "world"

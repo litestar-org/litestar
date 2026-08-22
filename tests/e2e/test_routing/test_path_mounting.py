@@ -2,7 +2,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import httpx
+import httpx2
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
@@ -126,6 +126,6 @@ app = Litestar(route_handlers=[handler])
 """
     run_server(app, server_command)
 
-    res = httpx.get("http://127.0.0.1:9999/sub/path/fragment")
+    res = httpx2.get("http://127.0.0.1:9999/sub/path/fragment")
     assert res.status_code == 200
     assert res.text == "/fragment/"
