@@ -281,7 +281,7 @@ async def _get_fs_info(
                 resolver = LinkableFileSystem.get_symlink_resolver(fs)
                 if resolver is None:
                     raise TypeError(
-                        f"path {joined_path} contains a a symlink, but the file system "
+                        f"path {joined_path} contains a symlink, but the file system "
                         f"{fs} does not support resolving symlinks."
                     )
 
