@@ -186,6 +186,14 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
             max_backlog=self._max_backlog,
             backlog_strategy=self._backlog_strategy,
         )
+
+        # Fetch history before registering the subscriber. ``put_subscriber_history`` performs the only real
+        # I/O here (the cancellation window); doing it first means a cancellation discards an unregistered
+        # subscriber instead of leaking it into ``_channels``, where the caller could never reach it to
+        # unsubscribe. See https://github.com/litestar-org/litestar/issues/4871.
+        if history:
+            await self.put_subscriber_history(subscriber=subscriber, limit=history, channels=channels)
+
         channels_to_subscribe = set()
 
         for channel in channels:
@@ -204,9 +212,6 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
 
         if channels_to_subscribe:
             await self._backend.subscribe(channels_to_subscribe)
-
-        if history:
-            await self.put_subscriber_history(subscriber=subscriber, limit=history, channels=channels)
 
         return subscriber
 
