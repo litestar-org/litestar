@@ -1,0 +1,5 @@
+# Zizmor security audit baseline policy configuration
+rules:
+  dependabot-cooldown:
+    config:
+      days: 7
