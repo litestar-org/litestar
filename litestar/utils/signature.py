@@ -7,7 +7,7 @@ from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
 from typing import TYPE_CHECKING, Annotated, Any, Self, Union, get_args, get_origin, get_type_hints
 
-from litestar import connection, datastructures, params, types
+from litestar import connection, datastructures, di, params, types
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import expand_type_var_in_type_hint, unwrap_annotation
@@ -33,9 +33,10 @@ _GLOBAL_NAMES = {
         tuple(getmembers(connection)),
         tuple(getmembers(datastructures)),
         tuple(getmembers(params)),
+        tuple(getmembers(di)),
     )
     if namespace[0].isupper()
-    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__, params.__all__)
+    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__, params.__all__, di.__all__)
 }
 """A mapping of names used for handler signature forward-ref resolution.
 
@@ -151,6 +152,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     # inspect the underlying function for methods
     if hasattr(fn_to_inspect, "__func__"):
         fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore[reportFunctionMemberAccess]
+
     # Order important. If a litestar name has been overridden in the function module, we want
     # to use that instead of the litestar one.
     namespace = {
