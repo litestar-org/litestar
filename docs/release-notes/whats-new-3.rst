@@ -301,15 +301,23 @@ Built-in middleware migrated to ``ASGIMiddleware``
 
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``CORSMiddleware`` and ``ResponseCacheMiddleware`` have made this move.
-``ResponseCacheMiddleware`` has also been moved into
-``litestar.middleware._internal``, removing it from the public API.
+``CORSMiddleware``, ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have made this
+move. ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
+``litestar.middleware._internal``, removing them from the public API; for CSRF this
+includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
+``generate_csrf_hash`` helpers.
 
-These classes are constructed by Litestar itself from their configuration objects, so
-applications that only configure them - for CORS, via
-:class:`~litestar.config.cors.CORSConfig`, and for response caching, via
+These classes are constructed by Litestar itself from their configuration objects (for
+CSRF, via a ``from_config`` classmethod on the middleware), so applications that only
+configure them - for CORS, via
+:class:`~litestar.config.cors.CORSConfig`, for response caching, via
 :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
-``cache`` argument - are unaffected.
+``cache`` argument, and for CSRF, via :class:`~litestar.config.csrf.CSRFConfig` - are
+unaffected, with one exception: :attr:`~litestar.config.csrf.CSRFConfig.exclude`
+patterns are now matched against the **handler's path template**
+(e.g. ``/user/{user_id:int}``) at startup, instead of the request path
+(e.g. ``/user/1``) at runtime. Patterns targeting literal paths keep working; patterns
+written to match expanded path parameters must be rewritten against the template.
 
 Code that composed one of them directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and
