@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+import pytest
+
 from litestar import Controller, Litestar, Response, Router, get
 from litestar.datastructures import Cookie
 from litestar.status_codes import HTTP_200_OK
@@ -69,6 +71,30 @@ def test_response_cookie_rendering() -> None:
     with create_test_client(test_method) as client:
         response = client.get("/")
         assert response.headers["Set-Cookie"] == "test=123; Path=/; SameSite=lax"
+
+
+@pytest.mark.parametrize("with_same_path", [True, False])
+def test_response_cookie_deduplication(with_same_path: bool) -> None:
+    @get(
+        "/",
+    )
+    def test_method() -> Response[None]:
+        return Response(
+            None,
+            cookies=[
+                Cookie(key="Test", value="test", path="/"),
+                Cookie(key="test", value="42", path="/" if with_same_path else "/other"),
+            ],
+        )
+
+    with create_test_client(test_method) as client:
+        response = client.get("/")
+        raw_cookies = response.headers.get_list("Set-Cookie")
+        if with_same_path:
+            assert len(raw_cookies) == 1
+            assert "test=42" in raw_cookies[0]
+        else:
+            assert len(raw_cookies) == 2
 
 
 def test_response_cookie_documentation_only_not_rendering() -> None:
