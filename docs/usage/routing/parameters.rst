@@ -175,6 +175,15 @@ The following types are supported in the ``{name:type}`` slot:
 * ``timedelta``: Accepts duration strings compatible with the standard (Pydantic/Msgspec) timedelta formats.
 * ``uuid``: Accepts all uuid values.
 
+.. important::
+    Routing does not take the name or the type of a path parameter into account, so
+    ``/{id:int}`` and ``/{id:str}`` are the same route as far as routing is concerned;
+    the declared type only determines how the captured value is coerced. Registering
+    handlers for both would leave one of them unreachable and therefore raises an
+    :exc:`~.exceptions.ImproperlyConfiguredException`. To serve several value types
+    under the same path, use a single handler with the widest slot type and branch on
+    the value inside it.
+
 Query parameters
 ~~~~~~~~~~~~~~~~
 
