@@ -100,7 +100,7 @@ if TYPE_CHECKING:
     from .internal_types import RouteHandlerType
     from .serialization import DataContainerType
 
-HttpMethodName: TypeAlias = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
+HttpMethodName: TypeAlias = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "QUERY", "HEAD", "TRACE", "OPTIONS"]
 Method: TypeAlias = Union[HttpMethodName, HttpMethod]
 ScopeSession: TypeAlias = "EmptyType | dict[str, Any] | DataContainerType | None"
 

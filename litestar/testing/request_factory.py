@@ -10,7 +10,7 @@ from urllib.parse import urlencode
 from httpx._content import encode_json as httpx_encode_json
 from httpx._content import encode_multipart_data, encode_urlencoded_data
 
-from litestar import delete, patch, post, put
+from litestar import delete, patch, post, put, query
 from litestar.app import Litestar
 from litestar.connection import Request
 from litestar.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
@@ -33,6 +33,7 @@ _decorator_http_method_map: dict[HttpMethod, HTTPHandlerDecorator] = {
     HttpMethod.DELETE: delete,
     HttpMethod.PATCH: patch,
     HttpMethod.PUT: put,
+    HttpMethod.QUERY: query,
 }
 
 
@@ -509,6 +510,60 @@ class RequestFactory:
             data=data,
             headers=headers,
             http_method=HttpMethod.PATCH,
+            path=path,
+            query_params=query_params,
+            request_media_type=request_media_type,
+            session=session,
+            user=user,
+            state=state,
+            path_params=path_params,
+            http_version=http_version,
+            route_handler=route_handler,
+        )
+
+    def query(
+        self,
+        path: str = "/",
+        headers: dict[str, str] | None = None,
+        cookies: list[Cookie] | str | None = None,
+        session: dict[str, Any] | None = None,
+        user: Any = None,
+        auth: Any = None,
+        request_media_type: RequestEncodingType = RequestEncodingType.JSON,
+        data: dict[str, Any] | DataContainerType | None = None,
+        query_params: dict[str, str | list[str]] | None = None,
+        state: dict[str, Any] | None = None,
+        path_params: dict[str, str] | None = None,
+        http_version: str | None = "1.1",
+        route_handler: RouteHandlerType | None = None,
+    ) -> Request[Any, Any, Any]:
+        """Create a QUERY :class:`Request <litestar.connection.Request>` instance.
+
+        Args:
+            path: The request's path.
+            headers: A dictionary of headers.
+            cookies: A string representing the cookie header or a list of "Cookie" instances.
+                This value can include multiple cookies.
+            session: A dictionary of session data.
+            user: A value for `request.scope["user"]`.
+            auth: A value for `request.scope["auth"]`.
+            request_media_type: The 'Content-Type' header of the request.
+            data: A value for the request's body. Can be any supported serializable type.
+            query_params: A dictionary of values from which the request's query will be generated.
+            state: Arbitrary request state.
+            path_params: A string keyed dictionary of path parameter values.
+            http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
+
+        Returns:
+            A :class:`Request <litestar.connection.Request>` instance
+        """
+        return self._create_request_with_data(
+            auth=auth,
+            cookies=cookies,
+            data=data,
+            headers=headers,
+            http_method=HttpMethod.QUERY,
             path=path,
             query_params=query_params,
             request_media_type=request_media_type,
