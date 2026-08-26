@@ -1,7 +1,7 @@
 from types import NoneType, UnionType
-from typing import TypeAlias, Union
+from typing import Union
 
-from typing_extensions import _TypedDictMeta  # type: ignore[attr-defined]
+from typing_extensions import TypeAliasType, _TypedDictMeta  # type: ignore[attr-defined]
 
 __all__ = (
     "NoneType",
@@ -12,4 +12,4 @@ __all__ = (
 
 
 UnionTypes = {UnionType, Union}
-TypedDictClass: TypeAlias = type[_TypedDictMeta]
+TypedDictClass = TypeAliasType("TypedDictClass", type[_TypedDictMeta])

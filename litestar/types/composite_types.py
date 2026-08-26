@@ -1,7 +1,9 @@
 from collections.abc import Callable, Mapping, MutableMapping, Sequence
 from os import PathLike
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias, Union
+from typing import TYPE_CHECKING, Any, Literal, Union
+
+from typing_extensions import TypeAliasType
 
 __all__ = (
     "Dependencies",
@@ -27,14 +29,18 @@ if TYPE_CHECKING:
     from .asgi_types import ASGIApp
     from .callable_types import AnyCallable, ExceptionHandler
 
-Dependencies: TypeAlias = "Mapping[str, Union[Provide, AnyCallable]]"
-ExceptionHandlersMap: TypeAlias = "MutableMapping[Union[int, type[Exception]], ExceptionHandler]"
-Middleware: TypeAlias = Callable[..., "ASGIApp"]
-MiddlewareFactory: TypeAlias = Callable[..., Middleware]
-ParametersMap: TypeAlias = "Mapping[str, ParameterKwarg]"
-PathType: TypeAlias = Union[Path, PathLike, str]
-ResponseCookies: TypeAlias = "Union[Sequence[Cookie], Mapping[str, str]]"
-ResponseHeaders: TypeAlias = "Union[Sequence[ResponseHeader], Mapping[str, str]]"
-Scopes: TypeAlias = "set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]"
-TypeDecodersSequence: TypeAlias = Sequence[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]
-TypeEncodersMap: TypeAlias = Mapping[Any, Callable[[Any], Any]]
+Dependencies = TypeAliasType("Dependencies", "Mapping[str, Union[Provide, AnyCallable]]")
+ExceptionHandlersMap = TypeAliasType(
+    "ExceptionHandlersMap", "MutableMapping[Union[int, type[Exception]], ExceptionHandler]"
+)
+Middleware = TypeAliasType("Middleware", Callable[..., "ASGIApp"])
+MiddlewareFactory = TypeAliasType("MiddlewareFactory", Callable[..., Middleware])
+ParametersMap = TypeAliasType("ParametersMap", "Mapping[str, ParameterKwarg]")
+PathType = TypeAliasType("PathType", Union[Path, PathLike, str])
+ResponseCookies = TypeAliasType("ResponseCookies", "Union[Sequence[Cookie], Mapping[str, str]]")
+ResponseHeaders = TypeAliasType("ResponseHeaders", "Union[Sequence[ResponseHeader], Mapping[str, str]]")
+Scopes = TypeAliasType("Scopes", "set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]")
+TypeDecodersSequence = TypeAliasType(
+    "TypeDecodersSequence", Sequence[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]
+)
+TypeEncodersMap = TypeAliasType("TypeEncodersMap", Mapping[Any, Callable[[Any], Any]])

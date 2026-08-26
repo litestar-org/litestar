@@ -1,5 +1,7 @@
 from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
-from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar, Union
+
+from typing_extensions import TypeAliasType
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -16,34 +18,49 @@ if TYPE_CHECKING:
 
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
 
-AfterExceptionHookHandler: TypeAlias = "Callable[[ExceptionT, Scope], SyncOrAsyncUnion[None]]"
+AfterExceptionHookHandler = TypeAliasType(
+    "AfterExceptionHookHandler", "Callable[[ExceptionT, Scope], SyncOrAsyncUnion[None]]", type_params=(ExceptionT,)
+)
 AsyncAfterRequestHookHandler: TypeAlias = (
     "Callable[[ASGIApp], Awaitable[ASGIApp]] | Callable[[Response], Awaitable[Response]]"
 )
 SyncAfterRequestHookHandler: TypeAlias = "Callable[[ASGIApp], ASGIApp] | Callable[[Response], Response]"
-AfterRequestHookHandler: TypeAlias = "AsyncAfterRequestHookHandler | SyncAfterRequestHookHandler"
+AfterRequestHookHandler = TypeAliasType(
+    "AfterRequestHookHandler",
+    Union[AsyncAfterRequestHookHandler, SyncAfterRequestHookHandler],
+)
 
 AsyncAfterResponseHookHandler: TypeAlias = "Callable[[Request], Awaitable[None]]"
 SyncAfterResponseHookHandler: TypeAlias = "Callable[[Request], None]"
-AfterResponseHookHandler: TypeAlias = "AsyncAfterResponseHookHandler | SyncAfterResponseHookHandler"
+AfterResponseHookHandler = TypeAliasType(
+    "AfterResponseHookHandler", Union[AsyncAfterResponseHookHandler, SyncAfterResponseHookHandler]
+)
 
-AsyncBeforeRequestHookHandler: TypeAlias = "Callable[[Request], Awaitable[Any]]"
-BeforeRequestHookHandler: TypeAlias = "Callable[[Request], Any | Awaitable[Any]]"
+AsyncBeforeRequestHookHandler = TypeAliasType("AsyncBeforeRequestHookHandler", "Callable[[Request], Awaitable[Any]]")
+BeforeRequestHookHandler = TypeAliasType("BeforeRequestHookHandler", "Callable[[Request], Any | Awaitable[Any]]")
 
 
-AsyncAnyCallable: TypeAlias = Callable[..., Awaitable[Any]]
-AnyCallable: TypeAlias = Callable[..., Any]
-AnyGenerator: TypeAlias = Generator[Any, Any, Any] | AsyncGenerator[Any, Any]
-BeforeMessageSendHookHandler: TypeAlias = "Callable[[Message, Scope], SyncOrAsyncUnion[None]]"
-CacheKeyBuilder: TypeAlias = "Callable[[Request], str]"
-ExceptionHandler: TypeAlias = "Callable[[Request, ExceptionT], Response]"
-ExceptionLoggingHandler: TypeAlias = "Callable[[Logger, Scope, list[str]], None]"
-GetLogger: TypeAlias = "Callable[..., Logger]"
+AsyncAnyCallable = TypeAliasType("AsyncAnyCallable", Callable[..., Awaitable[Any]])
+AnyCallable = TypeAliasType("AnyCallable", Callable[..., Any])
+AnyGenerator = TypeAliasType("AnyGenerator", Generator[Any, Any, Any] | AsyncGenerator[Any, Any])
+BeforeMessageSendHookHandler = TypeAliasType(
+    "BeforeMessageSendHookHandler", "Callable[[Message, Scope], SyncOrAsyncUnion[None]]"
+)
+CacheKeyBuilder = TypeAliasType("CacheKeyBuilder", "Callable[[Request], str]")
+ExceptionHandler = TypeAliasType(
+    "ExceptionHandler", "Callable[[Request, ExceptionT], Response]", type_params=(ExceptionT,)
+)
+ExceptionLoggingHandler = TypeAliasType("ExceptionLoggingHandler", "Callable[[Logger, Scope, list[str]], None]")
+GetLogger = TypeAliasType("GetLogger", "Callable[..., Logger]")
 AsyncGuard: TypeAlias = "Callable[[ASGIConnection, BaseRouteHandler], Awaitable[None]]"
 SyncGuard: TypeAlias = "Callable[[ASGIConnection, BaseRouteHandler], None]"
-Guard: TypeAlias = "AsyncGuard | SyncGuard"
-LifespanHook: TypeAlias = "Callable[[Litestar], SyncOrAsyncUnion[Any]] | Callable[[], SyncOrAsyncUnion[Any]]"
-OnAppInitHandler: TypeAlias = "Callable[[AppConfig], AppConfig]"
-OperationIDCreator: TypeAlias = "Callable[[HTTPRouteHandler, Method, list[str | PathParameterDefinition]], str]"
-Serializer: TypeAlias = Callable[[Any], Any]
-HTTPHandlerDecorator: TypeAlias = "Callable[..., Callable[[AnyCallable], HTTPRouteHandler]]"
+Guard = TypeAliasType("Guard", Union[AsyncGuard, SyncGuard])
+LifespanHook = TypeAliasType(
+    "LifespanHook", "Callable[[Litestar], SyncOrAsyncUnion[Any]] | Callable[[], SyncOrAsyncUnion[Any]]"
+)
+OnAppInitHandler = TypeAliasType("OnAppInitHandler", "Callable[[AppConfig], AppConfig]")
+OperationIDCreator = TypeAliasType(
+    "OperationIDCreator", "Callable[[HTTPRouteHandler, Method, list[str | PathParameterDefinition]], str]"
+)
+Serializer = TypeAliasType("Serializer", Callable[[Any], Any])
+HTTPHandlerDecorator = TypeAliasType("HTTPHandlerDecorator", "Callable[..., Callable[[AnyCallable], HTTPRouteHandler]]")

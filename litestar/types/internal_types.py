@@ -1,5 +1,9 @@
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Literal, NamedTuple, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal, NamedTuple
+
+from typing_extensions import TypeAliasType
+
+from litestar.template.config import EngineType
 
 __all__ = (
     "ControllerRouterHandler",
@@ -18,15 +22,20 @@ if TYPE_CHECKING:
     from litestar.handlers.websocket_handlers import WebsocketRouteHandler
     from litestar.router import Router
     from litestar.template import TemplateConfig
-    from litestar.template.config import EngineType
     from litestar.types import Method
 
 
-ReservedKwargs: TypeAlias = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
-RouteHandlerType: TypeAlias = "HTTPRouteHandler | WebsocketRouteHandler | ASGIRouteHandler"
-ControllerRouterHandler: TypeAlias = "type[Controller] | RouteHandlerType | Router | Callable[..., Any]"
-RouteHandlerMapItem: TypeAlias = 'dict[Method | Literal["websocket", "asgi"], BaseRouteHandler]'
-TemplateConfigType: TypeAlias = "TemplateConfig[EngineType]"
+ReservedKwargs = TypeAliasType(
+    "ReservedKwargs", Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
+)
+RouteHandlerType = TypeAliasType("RouteHandlerType", "HTTPRouteHandler | WebsocketRouteHandler | ASGIRouteHandler")
+ControllerRouterHandler = TypeAliasType(
+    "ControllerRouterHandler", "type[Controller] | RouteHandlerType | Router | Callable[..., Any]"
+)
+RouteHandlerMapItem = TypeAliasType(
+    "RouteHandlerMapItem", 'dict[Method | Literal["websocket", "asgi"], BaseRouteHandler]'
+)
+TemplateConfigType = TypeAliasType("TemplateConfigType", "TemplateConfig[EngineType]", type_params=(EngineType,))
 
 
 class PathParameterDefinition(NamedTuple):
