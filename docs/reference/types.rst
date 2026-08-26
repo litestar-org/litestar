@@ -9,56 +9,60 @@ Callable types
 --------------
 
 
-.. autodata:: litestar.types.AfterExceptionHookHandler
+.. autotype:: litestar.types.AfterExceptionHookHandler
 
-.. autodata:: litestar.types.AfterRequestHookHandler
+.. autotype:: litestar.types.AfterRequestHookHandler
 
-.. autodata:: litestar.types.AfterResponseHookHandler
+.. autotype:: litestar.types.AfterResponseHookHandler
 
-.. autodata:: litestar.types.AnyCallable
+.. autotype:: litestar.types.AnyCallable
 
-.. autodata:: litestar.types.AsyncAnyCallable
+.. autotype:: litestar.types.AsyncAnyCallable
 
-.. autodata:: litestar.types.BeforeMessageSendHookHandler
+.. autotype:: litestar.types.BeforeMessageSendHookHandler
 
-.. autodata:: litestar.types.BeforeRequestHookHandler
+.. autotype:: litestar.types.BeforeRequestHookHandler
 
-.. autodata:: litestar.types.CacheKeyBuilder
+.. autotype:: litestar.types.CacheKeyBuilder
 
-.. autodata:: litestar.types.ExceptionHandler
+.. autotype:: litestar.types.ExceptionHandler
 
-.. autodata:: litestar.types.Guard
+.. autotype:: litestar.types.Guard
 
-.. autodata:: litestar.types.LifespanHook
+.. autotype:: litestar.types.LifespanHook
 
-.. autodata:: litestar.types.OnAppInitHandler
+.. autotype:: litestar.types.OnAppInitHandler
 
-.. autodata:: litestar.types.Serializer
+.. autotype:: litestar.types.Serializer
 
 
 ASGI Types
 ----------
 
-.. autodata:: litestar.types.Method
+.. autotype:: litestar.types.asgi_types.HttpMethodName
+
+.. autotype:: litestar.types.Method
 
 ASGI Application
 ~~~~~~~~~~~~~~~~~
 
-.. autodata:: litestar.types.ASGIApp
+.. autotype:: litestar.types.ASGIApp
 
 ASGI Application Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autodata:: litestar.types.Scope
+.. autotype:: litestar.types.Scope
 
-.. autodata:: litestar.types.Receive
+.. autotype:: litestar.types.Receive
 
-.. autodata:: litestar.types.Send
+.. autotype:: litestar.types.Send
 
 ASGI Scopes
 ~~~~~~~~~~~~
 
 .. autoclass:: litestar.types.ASGIVersion
+
+.. autoclass:: litestar.types.asgi_types.HeaderScope
 
 .. autoclass:: litestar.types.BaseScope
 
@@ -114,28 +118,28 @@ ASGI Events
 Event Groupings
 ~~~~~~~~~~~~~~~
 
-.. autodata:: litestar.types.HTTPReceiveMessage
+.. autotype:: litestar.types.HTTPReceiveMessage
 
-.. autodata:: litestar.types.WebSocketReceiveMessage
+.. autotype:: litestar.types.WebSocketReceiveMessage
 
-.. autodata:: litestar.types.LifeSpanReceiveMessage
+.. autotype:: litestar.types.LifeSpanReceiveMessage
 
-.. autodata:: litestar.types.HTTPSendMessage
+.. autotype:: litestar.types.HTTPSendMessage
 
-.. autodata:: litestar.types.WebSocketSendMessage
+.. autotype:: litestar.types.WebSocketSendMessage
 
-.. autodata:: litestar.types.LifeSpanSendMessage
+.. autotype:: litestar.types.LifeSpanSendMessage
 
-.. autodata:: litestar.types.LifeSpanReceive
+.. autotype:: litestar.types.LifeSpanReceive
 
-.. autodata:: litestar.types.LifeSpanSend
+.. autotype:: litestar.types.LifeSpanSend
 
 Send / Receive Parameter Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autodata:: litestar.types.Message
+.. autotype:: litestar.types.Message
 
-.. autodata:: litestar.types.ReceiveMessage
+.. autotype:: litestar.types.ReceiveMessage
 
 
 Helper Types
@@ -143,12 +147,13 @@ Helper Types
 
 Helper types are useful generic types that can be used.
 
-.. autoclass:: litestar.types.SyncOrAsyncUnion
+.. autotype:: litestar.types.SyncOrAsyncUnion
 
-.. autoclass:: litestar.types.AnyIOBackend
+.. autotype:: litestar.types.AnyIOBackend
 
-.. autoclass:: litestar.types.OptionalSequence
+.. autotype:: litestar.types.OptionalSequence
 
+.. autoclass:: litestar.types.internal_types.PathParameterDefinition
 
 Protocols
 ---------
@@ -159,22 +164,24 @@ Protocols
 Composite Types
 ---------------
 
-.. autoclass:: litestar.types.Dependencies
+.. autotype:: litestar.types.Dependencies
 
-.. autoclass:: litestar.types.ExceptionHandlersMap
+.. autotype:: litestar.types.ExceptionHandlersMap
 
-.. autodata:: litestar.types.Middleware
+.. autotype:: litestar.types.Middleware
 
-.. autoclass:: litestar.types.ResponseCookies
+.. autotype:: litestar.types.ResponseCookies
 
-.. autoclass:: litestar.types.ResponseHeaders
+.. autotype:: litestar.types.ResponseHeaders
 
-.. autoclass:: litestar.types.PathType
+.. autotype:: litestar.types.PathType
 
-.. autodata:: litestar.types.Scopes
+.. autotype:: litestar.types.Scopes
 
-.. autoclass:: litestar.types.TypeEncodersMap
+.. autotype:: litestar.types.TypeEncodersMap
 
-.. autoclass:: litestar.types.TypeDecodersSequence
+.. autotype:: litestar.types.TypeDecodersSequence
 
-.. autoclass:: litestar.types.ParametersMap
+.. autotype:: litestar.types.ParametersMap
+
+.. autotype:: litestar.types.callable_types.OperationIDCreator

@@ -1,19 +1,15 @@
-from __future__ import annotations
-
 import asyncio
 import contextvars
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from functools import partial
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, TypeVar, Union
 
 import sniffio
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-    from concurrent.futures import ThreadPoolExecutor
-
     import trio
-
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -30,7 +26,7 @@ __all__ = (
 
 class _State:
     EXECUTOR: ThreadPoolExecutor | None = None
-    LIMITER: trio.CapacityLimiter | None = None
+    LIMITER: Union["trio.CapacityLimiter", None] = None
 
 
 async def _run_sync_asyncio(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
@@ -89,7 +85,7 @@ def get_asyncio_executor() -> ThreadPoolExecutor | None:
     return _State.EXECUTOR
 
 
-def set_trio_capacity_limiter(limiter: trio.CapacityLimiter | None) -> None:
+def set_trio_capacity_limiter(limiter: Union["trio.CapacityLimiter", None]) -> None:
     """Set the capacity limiter used when running synchronous callable within a trio
     context
     """
@@ -103,7 +99,7 @@ def set_trio_capacity_limiter(limiter: trio.CapacityLimiter | None) -> None:
     _State.LIMITER = limiter
 
 
-def get_trio_capacity_limiter() -> trio.CapacityLimiter | None:
+def get_trio_capacity_limiter() -> Union["trio.CapacityLimiter", None]:
     """Get the capacity limiter used when running synchronous callable within a trio
     context
     """

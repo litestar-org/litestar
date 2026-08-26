@@ -1,6 +1,5 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator, Callable, Coroutine, Mapping, Sequence
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from typing import (
     TYPE_CHECKING,
@@ -11,7 +10,9 @@ from typing import (
 
 from litestar.connection import WebSocket
 from litestar.di import NamedDependency
+from litestar.dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
+from litestar.routes import BaseRoute
 from litestar.types import (
     AnyCallable,
     Dependencies,
@@ -22,6 +23,8 @@ from litestar.types import (
     Middleware,
     TypeEncodersMap,
 )
+from litestar.types.asgi_types import WebSocketMode
+from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
 from litestar.utils import ensure_async_callable
 from litestar.utils.signature import ParsedSignature, get_fn_type_hints
 
@@ -35,15 +38,7 @@ from ._utils import (
 from .route_handler import WebsocketRouteHandler
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Callable, Coroutine, Mapping, Sequence
-
     from litestar import Litestar, Router
-    from litestar.di import NamedDependency
-    from litestar.dto import AbstractDTO
-    from litestar.routes import BaseRoute
-    from litestar.types.asgi_types import WebSocketMode
-    from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
-
 
 __all__ = ("WebsocketListener", "WebsocketListenerRouteHandler", "websocket_listener")
 
@@ -227,7 +222,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             **kwargs,
         )
 
-    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+    def _get_merge_opts(self, others: tuple["Router", ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
         merge_opts.update(
             receive_mode=self._receive_mode,
@@ -239,7 +234,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         )
         return merge_opts
 
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+    def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
         self.fn = self._prepare_fn()
         super().on_registration(route, app)
 

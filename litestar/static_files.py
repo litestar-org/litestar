@@ -1,10 +1,11 @@
-from __future__ import annotations
-
 import os
+from collections.abc import Mapping, Sequence
 from os.path import commonpath
 from pathlib import Path, PurePath
-from typing import TYPE_CHECKING, Any, Literal
+from typing import Any, Literal, Union
 
+from litestar import Request
+from litestar.datastructures import CacheControlHeader
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.file_system import (
     AnyFileSystem,
@@ -15,37 +16,31 @@ from litestar.file_system import (
     maybe_wrap_fsspec_file_system,
 )
 from litestar.handlers import get, head
+from litestar.openapi.spec import SecurityRequirement
+from litestar.params import FromPath
 from litestar.response.file import ASGIFileResponse
 from litestar.router import Router
 from litestar.status_codes import HTTP_404_NOT_FOUND
-from litestar.types import Empty
+from litestar.types import (
+    AfterRequestHookHandler,
+    AfterResponseHookHandler,
+    BeforeRequestHookHandler,
+    Empty,
+    EmptyType,
+    ExceptionHandlersMap,
+    Guard,
+    Middleware,
+    PathType,
+)
 from litestar.utils import normalize_path
 
 __all__ = ("create_static_files_router",)
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
-
-    from litestar import Request
-    from litestar.datastructures import CacheControlHeader
-    from litestar.openapi.spec import SecurityRequirement
-    from litestar.params import FromPath
-    from litestar.types import (
-        AfterRequestHookHandler,
-        AfterResponseHookHandler,
-        BeforeRequestHookHandler,
-        EmptyType,
-        ExceptionHandlersMap,
-        Guard,
-        Middleware,
-        PathType,
-    )
 
 
 def create_static_files_router(
     path: str,
     directories: Sequence[PathType],
-    file_system: AnyFileSystem | str | None = None,
+    file_system: Union[AnyFileSystem, str, None] = None,
     send_as_attachment: bool = False,
     html_mode: bool = False,
     name: str = "static",
