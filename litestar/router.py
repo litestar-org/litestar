@@ -2,7 +2,7 @@
 
 
 from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.connection import Request, WebSocket
@@ -77,23 +77,23 @@ class Router:
         self,
         path: str,
         *,
-        after_request: Union[AfterRequestHookHandler, None] = None,
-        after_response: Union[AfterResponseHookHandler, None] = None,
-        before_request: Union[BeforeRequestHookHandler, None] = None,
+        after_request: AfterRequestHookHandler | None = None,
+        after_response: AfterResponseHookHandler | None = None,
+        before_request: BeforeRequestHookHandler | None = None,
         cache_control: CacheControlHeader | None = None,
-        dependencies: Union[Dependencies, None] = None,
+        dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         etag: ETag | None = None,
-        exception_handlers: Union[ExceptionHandlersMap, None] = None,
+        exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
         include_in_schema: bool | EmptyType = Empty,
         middleware: Sequence[Middleware] | None = None,
         opt: Mapping[str, Any] | None = None,
-        parameters: Union[ParametersMap, None] = None,
+        parameters: ParametersMap | None = None,
         request_class: type[Request] | None = None,
         response_class: type[Response] | None = None,
-        response_cookies: Union[ResponseCookies, None] = None,
-        response_headers: Union[ResponseHeaders, None] = None,
+        response_cookies: ResponseCookies | None = None,
+        response_headers: ResponseHeaders | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         route_handlers: Sequence[ControllerRouterHandler],
         security: Sequence[SecurityRequirement] | None = None,
@@ -101,7 +101,7 @@ class Router:
         signature_types: Sequence[Any] | None = None,
         tags: Sequence[str] | None = None,
         type_decoders: TypeDecodersSequence | None = None,
-        type_encoders: Union[TypeEncodersMap, None] = None,
+        type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
         request_max_body_size: int | None | EmptyType = Empty,
     ) -> None:
@@ -162,10 +162,10 @@ class Router:
                 all route handlers, controllers and other routers associated with the router instance.
         """
 
-        self.after_request: Union[AsyncAfterRequestHookHandler, None] = (
+        self.after_request: AsyncAfterRequestHookHandler | None = (
             ensure_async_callable(after_request) if after_request else None  # type: ignore[assignment]
         )
-        self.after_response: Union[AsyncAfterResponseHookHandler, None] = (  # pyright: ignore[reportAttributeAccessIssue]
+        self.after_response: AsyncAfterResponseHookHandler | None = (  # pyright: ignore[reportAttributeAccessIssue]
             ensure_async_callable(after_response) if after_response else None
         )
         self.before_request = ensure_async_callable(before_request) if before_request else None

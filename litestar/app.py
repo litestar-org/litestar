@@ -15,7 +15,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Self, TypedDict, Union, cast
+from typing import TYPE_CHECKING, Any, Self, TypedDict, cast
 from uuid import UUID
 
 from litestar._asgi import ASGIRouter
@@ -168,10 +168,10 @@ class Litestar(Router):
         route_handlers: Sequence[ControllerRouterHandler] | None = None,
         *,
         after_exception: Sequence[AfterExceptionHookHandler] | None = None,
-        after_request: Union[AfterRequestHookHandler, None] = None,
-        after_response: Union[AfterResponseHookHandler, None] = None,
+        after_request: AfterRequestHookHandler | None = None,
+        after_response: AfterResponseHookHandler | None = None,
         allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
-        before_request: Union[BeforeRequestHookHandler, None] = None,
+        before_request: BeforeRequestHookHandler | None = None,
         before_send: Sequence[BeforeMessageSendHookHandler] | None = None,
         cache_control: CacheControlHeader | None = None,
         compression_config: CompressionConfig | None = None,
@@ -179,10 +179,10 @@ class Litestar(Router):
         csrf_config: CSRFConfig | None = None,
         dto: type[AbstractDTO] | EmptyType | None = Empty,
         debug: bool | None = None,
-        dependencies: Union[Dependencies, None] = None,
+        dependencies: Dependencies | None = None,
         etag: ETag | None = None,
         event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
-        exception_handlers: Union[ExceptionHandlersMap, None] = None,
+        exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
         include_in_schema: bool | EmptyType = Empty,
         listeners: Sequence[EventListener] | None = None,
@@ -193,15 +193,15 @@ class Litestar(Router):
         on_startup: Sequence[LifespanHook] | None = None,
         openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
         opt: Mapping[str, Any] | None = None,
-        parameters: Union[ParametersMap, None] = None,
+        parameters: ParametersMap | None = None,
         path: str | None = None,
         plugins: Sequence[PluginProtocol] | None = None,
         request_class: type[Request] | None = None,
         request_max_body_size: int | None = 10_000_000,
         response_cache_config: ResponseCacheConfig | None = None,
         response_class: type[Response] | None = None,
-        response_cookies: Union[ResponseCookies, None] = None,
-        response_headers: Union[ResponseHeaders, None] = None,
+        response_cookies: ResponseCookies | None = None,
+        response_headers: ResponseHeaders | None = None,
         return_dto: type[AbstractDTO] | EmptyType | None = Empty,
         security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
@@ -209,7 +209,7 @@ class Litestar(Router):
         state: State | None = None,
         stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
-        template_config: Union[TemplateConfigType, None] = None,
+        template_config: TemplateConfigType | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
@@ -773,7 +773,7 @@ class Litestar(Router):
         for handler, bases in self._iter_handlers(handlers, bases=[self]):
             yield handler.merge(*bases)
 
-    def _validate_registration_value(self, value: ControllerRouterHandler) -> Union[RouteHandlerType, Router]:
+    def _validate_registration_value(self, value: ControllerRouterHandler) -> RouteHandlerType | Router:
         """Ensure values passed to the register method are supported."""
         from litestar.controller import Controller
         from litestar.handlers import ASGIRouteHandler, WebsocketListener

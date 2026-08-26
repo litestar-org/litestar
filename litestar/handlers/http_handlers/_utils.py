@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from functools import lru_cache
 from inspect import isawaitable
-from typing import Any, Union, cast
+from typing import Any, cast
 
 from litestar.background_tasks import BackgroundTask, BackgroundTasks
 from litestar.connection import Request
@@ -27,7 +27,7 @@ __all__ = (
 
 
 def create_data_handler(
-    after_request: Union[AfterRequestHookHandler, None],
+    after_request: AfterRequestHookHandler | None,
     background: BackgroundTask | BackgroundTasks | None,
     cookies: frozenset[Cookie],
     headers: frozenset[ResponseHeader],
@@ -77,7 +77,7 @@ def create_data_handler(
     return handler
 
 
-def create_generic_asgi_response_handler(after_request: Union[AfterRequestHookHandler, None]) -> AsyncAnyCallable:
+def create_generic_asgi_response_handler(after_request: AfterRequestHookHandler | None) -> AsyncAnyCallable:
     """Create a handler function for Responses.
 
     Args:
@@ -112,7 +112,7 @@ def normalize_headers(headers: frozenset[ResponseHeader]) -> dict[str, str]:
 
 
 def create_response_handler(
-    after_request: Union[AfterRequestHookHandler, None],
+    after_request: AfterRequestHookHandler | None,
     background: BackgroundTask | BackgroundTasks | None,
     cookies: frozenset[Cookie],
     headers: frozenset[ResponseHeader],

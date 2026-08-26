@@ -2,7 +2,7 @@ import abc
 import os
 import os.path
 import pathlib
-from collections.abc import AsyncGenerator, Awaitable, Callable, Mapping
+from collections.abc import AsyncGenerator, Mapping
 from datetime import datetime
 from stat import S_ISDIR
 from typing import TYPE_CHECKING, Any, ClassVar, Final, NotRequired, TypeAlias, Union, cast
@@ -29,13 +29,14 @@ __all__ = (
 
 if TYPE_CHECKING:
     import io
+    from collections.abc import Awaitable, Callable
 
     from fsspec import AbstractFileSystem as FsspecFileSystem
     from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
 
 
 AnyFileSystem: TypeAlias = "Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncFileSystem]"
-SymlinkResolver: TypeAlias = Callable[[AnyFileSystem, PathType], Awaitable[str]]
+SymlinkResolver: TypeAlias = "Callable[[AnyFileSystem, PathType], Awaitable[str]]"
 
 
 class FileInfo(TypedDict):
@@ -116,7 +117,7 @@ class LinkableFileSystem(BaseFileSystem, abc.ABC):
         cls._registry[fs_type] = resolver
 
     @classmethod
-    def get_symlink_resolver(cls, fs: AnyFileSystem) -> SymlinkResolver | None:
+    def get_symlink_resolver(cls, fs: AnyFileSystem) -> Union[SymlinkResolver, None]:
         """For a given file system, get a function to resolve potential symlinks in a path.
 
         For classes implementing :class:`~litestar.file_system.LinkableFileSystem`,

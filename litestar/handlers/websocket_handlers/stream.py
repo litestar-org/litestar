@@ -2,7 +2,7 @@ import dataclasses
 import functools
 import warnings
 from collections.abc import AsyncGenerator, Awaitable, Callable, Mapping
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import anyio
 from msgspec.json import Encoder as JsonEncoder
@@ -124,7 +124,7 @@ async def send_websocket_stream(
 def websocket_stream(
     path: str | list[str] | None = None,
     *,
-    dependencies: Union[Dependencies, None] = None,
+    dependencies: Dependencies | None = None,
     exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
     guards: list[Guard] | None = None,
     middleware: list[Middleware] | None = None,

@@ -1,5 +1,5 @@
 from collections.abc import Callable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any
 
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
@@ -25,7 +25,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         path: str | list[str] | None = None,
         *,
         fn: AsyncAnyCallable,
-        dependencies: Union[Dependencies, None] = None,
+        dependencies: Dependencies | None = None,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
         guards: Sequence[Guard] | None = None,
         middleware: Sequence[Middleware] | None = None,
@@ -33,7 +33,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         opt: dict[str, Any] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         websocket_class: type[WebSocket] | None = None,
-        parameters: Union[ParametersMap, None] = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for WebSocket routes.
@@ -162,7 +162,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
 def websocket(
     path: str | list[str] | None = None,
     *,
-    dependencies: Union[Dependencies, None] = None,
+    dependencies: Dependencies | None = None,
     exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
     guards: list[Guard] | None = None,
     middleware: list[Middleware] | None = None,

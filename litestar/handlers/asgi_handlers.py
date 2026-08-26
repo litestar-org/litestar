@@ -1,6 +1,6 @@
 import warnings
 from collections.abc import Callable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any
 
 from litestar.connection import ASGIConnection
 from litestar.exceptions import ImproperlyConfiguredException
@@ -32,14 +32,14 @@ class ASGIRouteHandler(BaseRouteHandler):
         path: str | Sequence[str] | None = None,
         *,
         fn: AsyncAnyCallable,
-        exception_handlers: Union[ExceptionHandlersMap, None] = None,
+        exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
         is_mount: bool = False,
         signature_namespace: Mapping[str, Any] | None = None,
         copy_scope: bool | None = None,
-        parameters: Union[ParametersMap, None] = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for ASGI routes.
@@ -136,7 +136,7 @@ class ASGIRouteHandler(BaseRouteHandler):
 def asgi(
     path: str | Sequence[str] | None = None,
     *,
-    exception_handlers: Union[ExceptionHandlersMap, None] = None,
+    exception_handlers: ExceptionHandlersMap | None = None,
     guards: Sequence[Guard] | None = None,
     name: str | None = None,
     opt: Mapping[str, Any] | None = None,

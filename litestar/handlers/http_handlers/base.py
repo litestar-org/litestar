@@ -4,7 +4,7 @@
 import contextlib
 from collections.abc import Awaitable, Callable, Iterable, Mapping, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, Any, AnyStr, TypedDict, Union, cast
+from typing import TYPE_CHECKING, Any, AnyStr, TypedDict, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
@@ -133,17 +133,17 @@ class HTTPRouteHandler(BaseRouteHandler):
         path: str | Sequence[str] | None = None,
         *,
         fn: AnyCallable,
-        after_request: Union[AfterRequestHookHandler, None] = None,
-        after_response: Union[AfterResponseHookHandler, None] = None,
+        after_request: AfterRequestHookHandler | None = None,
+        after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
-        before_request: Union[BeforeRequestHookHandler, None] = None,
+        before_request: BeforeRequestHookHandler | None = None,
         cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
-        cache_key_builder: Union[CacheKeyBuilder, None] = None,
-        dependencies: Union[Dependencies, None] = None,
+        cache_key_builder: CacheKeyBuilder | None = None,
+        dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         etag: ETag | None = None,
-        exception_handlers: Union[ExceptionHandlersMap, None] = None,
+        exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
         http_method: Method | Sequence[Method],
         media_type: MediaType | str | None = None,
@@ -153,8 +153,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         request_class: type[Request] | None = None,
         request_max_body_size: int | None | EmptyType = Empty,
         response_class: type[Response] | None = None,
-        response_cookies: Union[ResponseCookies, None] = None,
-        response_headers: Union[ResponseHeaders, None] = None,
+        response_cookies: ResponseCookies | None = None,
+        response_headers: ResponseHeaders | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         status_code: int | None = None,
         sync_to_thread: bool | None = None,
@@ -165,7 +165,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         description: str | None = None,
         include_in_schema: bool | EmptyType = Empty,
         operation_class: type[Operation] = Operation,
-        operation_id: Union[str, OperationIDCreator, None] = None,
+        operation_id: str | OperationIDCreator | None = None,
         raises: Sequence[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: Mapping[int, ResponseSpec] | None = None,
@@ -175,7 +175,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         tags: Sequence[str] | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
-        parameters: Union[ParametersMap, None] = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for HTTP routes.
@@ -294,14 +294,14 @@ class HTTPRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-        self.after_request: Union[AsyncAfterRequestHookHandler, None] = (
+        self.after_request: AsyncAfterRequestHookHandler | None = (
             ensure_async_callable(after_request) if after_request else None  # type: ignore[assignment]
         )
-        self.after_response: Union[AsyncAfterResponseHookHandler, None] = (  # pyright: ignore[reportAttributeAccessIssue]
+        self.after_response: AsyncAfterResponseHookHandler | None = (  # pyright: ignore[reportAttributeAccessIssue]
             ensure_async_callable(after_response) if after_response else None
         )
         self.background = background
-        self.before_request: Union[AsyncBeforeRequestHookHandler, None] = (
+        self.before_request: AsyncBeforeRequestHookHandler | None = (
             ensure_async_callable(before_request) if before_request else None
         )
         self.cache = cache
@@ -363,7 +363,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             cache_key_builder=self.cache_key_builder,
         )
 
-        other: Union[HTTPRouteHandler, Router]
+        other: HTTPRouteHandler | Router
         for other in (self, *others):  # type: ignore[assignment]
             merge_opts["after_response"] = merge_opts.get("after_response") or other.after_response
             merge_opts["after_request"] = merge_opts.get("after_request") or other.after_request
@@ -436,7 +436,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     @staticmethod
     def _resolve_response_headers(
-        response_headers: Union[ResponseHeaders, None],
+        response_headers: ResponseHeaders | None,
         *extra_headers: Header | None,
     ) -> frozenset[ResponseHeader]:
         """Return all header parameters in the scope of the handler function.
@@ -626,7 +626,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         return_type: FieldDefinition,
         status_code: int,
         background: BackgroundTask | BackgroundTasks | None,
-        after_request: Union[AfterRequestHookHandler, None] = None,
+        after_request: AfterRequestHookHandler | None,
     ) -> tuple[Callable[..., Awaitable[ASGIApp]], Callable[..., Awaitable[ASGIApp]]]:
         media_type = media_type.value if isinstance(media_type, Enum) else media_type
         return_annotation = return_type.annotation

@@ -4,7 +4,7 @@
 import functools
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from functools import partial
-from typing import TYPE_CHECKING, Any, NoReturn, Self, Union, cast
+from typing import TYPE_CHECKING, Any, NoReturn, Self, cast
 
 from litestar._kwargs import KwargsModel
 from litestar._signature import SignatureModel
@@ -75,9 +75,9 @@ class BaseRouteHandler:
         path: str | Sequence[str] | None = None,
         *,
         fn: AsyncAnyCallable,
-        dependencies: Union[Dependencies, None] = None,
+        dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
-        exception_handlers: Union[ExceptionHandlersMap, None] = None,
+        exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
@@ -85,7 +85,7 @@ class BaseRouteHandler:
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         signature_types: Sequence[Any] | None = None,
-        parameters: Union[ParametersMap, None] = None,
+        parameters: ParametersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,

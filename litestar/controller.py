@@ -2,7 +2,7 @@ import types
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from operator import attrgetter
-from typing import Any, Union, cast
+from typing import Any, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.connection import Request, WebSocket
@@ -71,17 +71,17 @@ class Controller:
         "websocket_class",
     )
 
-    after_request: Union[AfterRequestHookHandler, None]
+    after_request: AfterRequestHookHandler | None
     """A sync or async function executed before a :class:`Request <.connection.Request>` is passed to any route handler.
 
     If this function returns a value, the request will not reach the route handler, and instead this value will be used.
     """
-    after_response: Union[AfterResponseHookHandler, None]
+    after_response: AfterResponseHookHandler | None
     """A sync or async function called after the response has been awaited.
 
     It receives the :class:`Request <.connection.Request>` instance and should not return any values.
     """
-    before_request: Union[BeforeRequestHookHandler, None]
+    before_request: BeforeRequestHookHandler | None
     """A sync or async function called immediately before calling the route handler.
 
     It receives the :class:`Request <.connection.Request>` instance and any non-``None`` return value is used for the
@@ -93,7 +93,7 @@ class Controller:
 
     Can be overridden by route handlers.
     """
-    dependencies: Union[Dependencies, None]
+    dependencies: Dependencies | None
     """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
     dto: type[AbstractDTO] | None | EmptyType
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and validation of request data."""
@@ -102,7 +102,7 @@ class Controller:
 
     Can be overridden by route handlers.
     """
-    exception_handlers: Union[ExceptionHandlersMap, None]
+    exception_handlers: ExceptionHandlersMap | None
     """A map of handler functions to status codes and/or exception types."""
     guards: Sequence[Guard] | None
     """A sequence of :class:`Guard <.types.Guard>` callables."""
@@ -114,7 +114,7 @@ class Controller:
     """A string key mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or wherever you
     have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
     """
-    parameters: Union[ParametersMap, None]
+    parameters: ParametersMap | None
     """A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application paths."""
     path: str
     """A path fragment for the controller.
@@ -134,9 +134,9 @@ class Controller:
     """A custom subclass of :class:`Response <.response.Response>` to be used as the default response for all route
     handlers under the controller.
     """
-    response_cookies: Union[ResponseCookies, None]
+    response_cookies: ResponseCookies | None
     """A list of :class:`Cookie <.datastructures.Cookie>` instances."""
-    response_headers: Union[ResponseHeaders, None]
+    response_headers: ResponseHeaders | None
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>` instances."""
     return_dto: type[AbstractDTO] | None | EmptyType
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing outbound response
