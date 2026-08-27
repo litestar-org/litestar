@@ -120,6 +120,12 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
         digits = 1
         while True:
             size = self._chunk_size(f"{self.config.key}-{'9' * digits}")
+            if size < 1:
+                raise ImproperlyConfiguredException(
+                    f"The name and attributes of the {self.config.key!r} session cookie take up all "
+                    f"{MAX_COOKIE_SIZE} bytes a cookie may occupy, leaving no room for session data. "
+                    "Shorten the configured 'key', 'path' or 'domain'."
+                )
             count = -(-len(encoded) // size)
             if len(str(count - 1)) <= digits:
                 return [encoded[i : i + size] for i in range(0, len(encoded), size)]

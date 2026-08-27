@@ -291,6 +291,19 @@ def test_session_cookies_do_not_exceed_max_cookie_size(
         assert len(header) <= MAX_COOKIE_SIZE
 
 
+def test_dump_data_raises_when_cookie_attributes_leave_no_room() -> None:
+    """A configuration whose cookie name and attributes fill the entire size limit must fail loudly.
+
+    Emitting no cookies at all would log every user out with nothing in the response, and nothing in the
+    logs, to point at the cause.
+    """
+    config = CookieBackendConfig(secret=os.urandom(16), path="/" + "p" * MAX_COOKIE_SIZE)
+    backend = ClientSideSessionBackend(config=config)
+
+    with pytest.raises(ImproperlyConfiguredException, match="leaving no room for session data"):
+        backend.dump_data(create_session())
+
+
 async def test_store_in_message_clears_cookies_when_session_grows_gt_chunk_size(
     cookie_session_backend: ClientSideSessionBackend,
 ) -> None:
