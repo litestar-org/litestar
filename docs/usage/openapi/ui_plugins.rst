@@ -19,6 +19,11 @@ Litestar maintains and ships with UI plugins for a range of popular popular Open
 Each plugin is easily configurable, allowing developers to customize aspects like version, paths, CSS and JavaScript
 resources.
 
+.. deprecated:: 2.24.0
+    RapiDoc is unmaintained and its former domain has been hijacked. The
+    :class:`~litestar.openapi.plugins.RapidocRenderPlugin` will be removed in 3.0; use another UI plugin,
+    such as Scalar, Swagger UI or ReDoc, instead.
+
 
 Using OpenAPI UI Plugins
 ------------------------
