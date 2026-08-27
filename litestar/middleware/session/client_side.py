@@ -38,7 +38,11 @@ if TYPE_CHECKING:
     from litestar.types import Message, Scope, ScopeSession
 
 NONCE_SIZE = 12
+# Retained for backwards compatibility; no longer used. The space available for a cookie's value is now
+# measured from the cookie itself, see ``ClientSideSessionBackend._chunk_size``.
 CHUNK_SIZE = 4096 - 64
+MAX_COOKIE_SIZE: Final = 4096
+"""The maximum size of a single cookie, as mandated by :rfc:`6265`."""
 AAD = b"additional_authenticated_data="
 SET_COOKIE_INCLUDE = {f.name for f in fields(Cookie) if f.name not in {"key", "secret"}}
 CLEAR_COOKIE_INCLUDE = {f.name for f in fields(Cookie) if f.name not in {"key", "secret", "max_age"}}
@@ -70,6 +74,22 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
             extract_dataclass_items(config, exclude_none=True, include=CLEAR_COOKIE_INCLUDE)
         )
 
+    def _chunk_size(self, name: str) -> int:
+        """Return the number of bytes available for the value of a cookie named ``name``.
+
+        The budget is measured from a cookie with a zero-length value, which is itself emitted quoted
+        (``session=""``). The two quote bytes are therefore already accounted for, which matters because
+        base64 values contain ``+``, ``/`` and ``=`` and are consequently quoted as well.
+
+        Args:
+            name: Key the cookie will be emitted under.
+
+        Returns:
+            The maximum length of that cookie's value.
+        """
+        overhead = len(Cookie(value="", key=name, **self._set_cookie_params).to_header(header=""))
+        return MAX_COOKIE_SIZE - overhead
+
     def dump_data(self, data: Any, scope: Scope | None = None) -> list[bytes]:
         """Given serializable data, including pydantic models and numpy types, dump it into a bytes string, encrypt,
         encode and split it into chunks of the desirable size.
@@ -83,14 +103,27 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
               string that is encrypted using AES-CGM.
 
         Returns:
-            List of encoded bytes string of a maximum length equal to the ``CHUNK_SIZE`` constant.
+            List of encoded bytes strings, each short enough that the cookie carrying it stays within the
+            :rfc:`6265` size limit of ``MAX_COOKIE_SIZE`` bytes.
         """
         serialized = self.serialize_data(data, scope)
         associated_data = encode_json({"expires_at": round(time.time()) + self.config.max_age})
         nonce = urandom(NONCE_SIZE)
         encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=associated_data)
         encoded = b64encode(nonce + encrypted + AAD + associated_data)
-        return [encoded[i : i + CHUNK_SIZE] for i in range(0, len(encoded), CHUNK_SIZE)]
+        if len(encoded) <= self._chunk_size(self.config.key):
+            return [encoded]
+
+        # Chunks are stored under ``<key>-<index>``, so the space left for the value depends on how many
+        # digits the largest index takes. Widen the allowance until the resulting chunk count no longer
+        # needs more digits than the size it was computed for.
+        digits = 1
+        while True:
+            size = self._chunk_size(f"{self.config.key}-{'9' * digits}")
+            count = -(-len(encoded) // size)
+            if len(str(count - 1)) <= digits:
+                return [encoded[i : i + size] for i in range(0, len(encoded), size)]
+            digits += 1
 
     def load_data(self, data: list[bytes]) -> dict[str, Any]:
         """Given a list of strings, decodes them into the session object.
@@ -111,8 +144,26 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
             return self.deserialize_data(decrypted)
         return {}
 
+    def _chunk_index(self, key: str) -> int:
+        """Return the numeric index of a session chunk cookie.
+
+        The configured key may itself contain hyphens, so the index is read from the suffix left after
+        the key rather than by splitting the name on ``-``.
+
+        Args:
+            key: A cookie key matching the session-cookie pattern.
+
+        Returns:
+            The index of the chunk, or ``-1`` for the unchunked cookie.
+        """
+        suffix = key[len(self.config.key) :]
+        return int(suffix[1:]) if suffix else -1
+
     def get_cookie_keys(self, connection: ASGIConnection) -> list[str]:
         """Return a list of cookie-keys from the connection if they match the session-cookie pattern.
+
+        The keys are returned in chunk order, so that the values they hold can be concatenated back into
+        the original payload.
 
         Args:
             connection: An ASGIConnection instance
@@ -120,7 +171,10 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
         Returns:
             A list of session-cookie keys
         """
-        return sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
+        return sorted(
+            (key for key in connection.cookies if self.cookie_re.fullmatch(key)),
+            key=self._chunk_index,
+        )
 
     def get_cookie_key_set(self, connection: ASGIConnection) -> set[str]:
         """Return a set of cookie-keys from the connection if they match the session-cookie pattern.
@@ -232,7 +286,8 @@ class CookieBackendConfig(BaseBackendConfig[ClientSideSessionBackend]):
     ``<data>`` is the session data.
 
     Notes:
-        - If a session cookie exceeds 4KB in size it is split. In this case the key will be of the format
+        - Session data that does not fit into a single cookie is split across as many as are needed, each of
+          them within the :rfc:`6265` limit of 4096 bytes. In this case the keys will be of the format
           ``session-{segment number}``.
 
     """
