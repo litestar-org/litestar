@@ -15,7 +15,6 @@ from typing import (
     Protocol,
     Union,
     cast,
-    get_args,
 )
 
 import msgspec
@@ -38,9 +37,8 @@ from litestar.enums import RequestEncodingType
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
-from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
-from litestar.utils import is_union, unique_name_for_scope
+from litestar.utils import unique_name_for_scope
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -820,22 +818,6 @@ def _create_struct_field_meta_for_field_definition(field_definition: TransferDTO
     )
 
 
-def _annotate_with_meta(annotation: Any, meta: msgspec.Meta) -> Any:
-    """Annotate ``annotation`` with ``meta``.
-
-    msgspec only accepts type specific constraints such as ``min_length`` on the type they apply to, so if
-    ``annotation`` is a union of a single concrete type and ``None`` / ``UnsetType`` - as created for optional or
-    partial fields - the metadata has to be applied to that member instead of the union itself.
-    """
-    if is_union(annotation):
-        inner_types = get_args(annotation)
-        constrainable = [inner for inner in inner_types if inner is not NoneType and inner is not UnsetType]
-        if len(constrainable) == 1:
-            return Union[tuple(Annotated[inner, meta] if inner is constrainable[0] else inner for inner in inner_types)]
-
-    return Annotated[annotation, meta]
-
-
 def _create_struct_for_field_definitions(
     *,
     model_name: str,
@@ -850,12 +832,18 @@ def _create_struct_for_field_definitions(
             continue
 
         field_type = _create_transfer_model_type_annotation(field_definition.transfer_type)
-        if field_definition.is_partial:
-            field_type = Union[field_type, UnsetType]
 
         if field_definition.passthrough_constraints:
             if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
-                field_type = _annotate_with_meta(field_type, field_meta)
+                if field_definition.is_partial:
+                    # msgspec only accepts constraints on concrete types, not unions.
+                    # Apply meta to the inner type before wrapping in Union.
+                    field_type = Annotated[field_type, field_meta]
+                    field_type = Union[field_type, UnsetType]
+                else:
+                    field_type = Annotated[field_type, field_meta]
+        elif field_definition.is_partial:
+            field_type = Union[field_type, UnsetType]
         elif field_definition.kwarg_definition:
             field_type = Annotated[field_type, field_definition.kwarg_definition]
 
