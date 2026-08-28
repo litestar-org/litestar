@@ -453,7 +453,7 @@ def test_unique_ok() -> None:
     [
         ({"first": True, "last": True}, "Cannot set 'first=True' if 'last=True'"),
         ({"first": True, "unique": False}, "Cannot set 'first=True' if 'unique=False'"),
-        ({"first": True, "after": ("something",)}, "Cannot set 'first=True' if if 'after' is not empty"),
+        ({"first": True, "after": ("something",)}, "Cannot set 'first=True' if 'after' is not empty"),
         ({"last": True, "unique": False}, "Cannot set 'last=True' if 'unique=False'"),
         ({"last": True, "before": ("something",)}, "Cannot set 'last=True' if 'before' is not empty"),
     ],

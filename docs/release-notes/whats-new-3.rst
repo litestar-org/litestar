@@ -301,11 +301,15 @@ Built-in middleware migrated to ``ASGIMiddleware``
 
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``CORSMiddleware`` has made this move.
+``CORSMiddleware`` and ``ResponseCacheMiddleware`` have made this move.
+``ResponseCacheMiddleware`` has also been moved into
+``litestar.middleware._internal``, removing it from the public API.
 
 These classes are constructed by Litestar itself from their configuration objects, so
 applications that only configure them - for CORS, via
-:class:`~litestar.config.cors.CORSConfig` - are unaffected.
+:class:`~litestar.config.cors.CORSConfig`, and for response caching, via
+:class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
+``cache`` argument - are unaffected.
 
 Code that composed one of them directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and

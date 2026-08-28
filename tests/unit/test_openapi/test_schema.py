@@ -1122,3 +1122,20 @@ def test_reference_result_keeps_kwarg_metadata_on_subsequent_use() -> None:
     assert second.description == "second use"
     assert second.all_of is not None
     assert isinstance(second.all_of[0], Reference)
+
+
+def test_union_of_enums() -> None:
+    class Color(Enum):
+        RED = "red"
+
+    class Size(Enum):
+        SMALL = "small"
+
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    schema = creator.for_field_definition(FieldDefinition.from_annotation(Union[Color, Size]))
+
+    assert isinstance(schema, Schema)
+    assert schema.one_of is not None
+    assert len(schema.one_of) == 2
+    components = creator.schema_registry.generate_components_schemas()
+    assert {tuple(v.enum or ()) for v in components.values()} == {("red",), ("small",)}
