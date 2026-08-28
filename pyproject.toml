@@ -92,7 +92,7 @@ standard = [
   "litestar[cli]",
   "jinja2",
 ]
-testing = ["httpx>=0.22"]
+testing = ["httpx2>=2.5"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
 yaml = ["pyyaml"]
 
@@ -144,7 +144,6 @@ dev = [
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
   "opentelemetry-sdk",
-  "httpx-sse",
   "structlog",
 ]
 
