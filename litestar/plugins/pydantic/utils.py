@@ -240,6 +240,10 @@ def get_model_info(
     model_field_info = model.model_fields
     title = model_config.get("title")
     example = model_config.get("example")
+    if example is None:
+        extra = model_config.get('json_schema_extra')
+        if isinstance(extra, dict):
+            example = extra.get('example')
 
     model_fields: dict[str, pydantic.fields.FieldInfo] = {
         k: getattr(f, "field_info", f) for k, f in model_field_info.items()
