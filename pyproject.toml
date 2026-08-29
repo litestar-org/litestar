@@ -231,6 +231,7 @@ filterwarnings = [
   "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
   "ignore:Use of deprecated default '__check_model__':DeprecationWarning:polyfactory:",
   "ignore:Registering routes.*:litestar.exceptions.base_exceptions.LitestarWarning",
+  "ignore:.*'click\\.utils\\..*' is deprecated:DeprecationWarning",
   "ignore::pytest.PytestUnraisableExceptionWarning:", # ignore temporarily until the underlying issue can be fixed, which requires the new async-aware test client
 ]
 markers = [
