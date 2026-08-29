@@ -142,3 +142,17 @@ def test_middleware_does_not_redirect_when_off() -> None:
 def test_validation_raises_for_wrong_wildcard_domain() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         AllowedHostsConfig(allowed_hosts=["www.moishe.*.com"])
+
+
+def test_middleware_allowed_hosts_strips_port_from_host_header() -> None:
+    # Regression test for: https://github.com/litestar-org/litestar/issues/4869
+    @get("/")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    config = AllowedHostsConfig(allowed_hosts=["moishe.zuchmir.com"])
+
+    with create_test_client(handler, allowed_hosts=config) as client:
+        client.base_url = "http://moishe.zuchmir.com:8000"
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
