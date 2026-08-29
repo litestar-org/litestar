@@ -23,6 +23,11 @@ from litestar.utils.scope.state import ScopeState
 
 __all__ = ("LoggingMiddleware",)
 
+# Key under which ``LoggingMiddleware`` records, in ``ScopeState.log_context``, the status code of an
+# exception it caught. Its presence tells ``extract_response_data()`` that the request ended early, so
+# any response message the send wrapper never got to record has to be filled in.
+CAUGHT_EXCEPTION_STATUS_CODE = "caught_exception_status_code"
+
 
 if TYPE_CHECKING:
     import logging
@@ -129,17 +134,30 @@ class LoggingMiddleware(ASGIMiddleware):
         except HTTPException as exc:
             # Log response with the correct status code from the exception
             if self.response_log_fields:
-                scope_state = ScopeState.from_scope(scope)
-                scope_state.log_context[HTTP_RESPONSE_START] = {"status": exc.status_code}
-                self.log_response(scope=scope)
+                self._log_response_for_caught_exception(scope=scope, status_code=exc.status_code)
             raise
         except Exception:
             # Log response with 500 status for unhandled exceptions
             if self.response_log_fields:
-                scope_state = ScopeState.from_scope(scope)
-                scope_state.log_context[HTTP_RESPONSE_START] = {"status": HTTP_500_INTERNAL_SERVER_ERROR}
-                self.log_response(scope=scope)
+                self._log_response_for_caught_exception(scope=scope, status_code=HTTP_500_INTERNAL_SERVER_ERROR)
             raise
+
+    def _log_response_for_caught_exception(self, scope: Scope, status_code: int) -> None:
+        """Log the response for a request that ended in an exception.
+
+        The send wrapper only records response messages that were actually sent, so a request that
+        fails early leaves the logging context incomplete. Record the status code the exception maps
+        to and let :meth:`extract_response_data` fill in whatever is missing. See #4855.
+
+        Args:
+            scope: The ASGI connection scope.
+            status_code: The status code the caught exception maps to.
+
+        Returns:
+            None
+        """
+        ScopeState.from_scope(scope).log_context[CAUGHT_EXCEPTION_STATUS_CODE] = status_code
+        self.log_response(scope=scope)
 
     async def log_request(self, scope: Scope, receive: Receive) -> None:
         """Extract request data and log the message.
@@ -218,6 +236,16 @@ class LoggingMiddleware(ASGIMiddleware):
         data: dict[str, Any] = {"message": self.response_log_message}
         serializer = get_serializer_from_scope(scope)
         connection_state = ScopeState.from_scope(scope)
+        caught_exception_status_code = connection_state.log_context.pop(CAUGHT_EXCEPTION_STATUS_CODE, None)
+        if caught_exception_status_code is not None:
+            # The request ended in an exception, so the send wrapper never recorded the messages the
+            # extractor needs. Supply only the ones that are missing, so a response that had already
+            # started is logged as it was actually sent rather than being overwritten.
+            connection_state.log_context.setdefault(
+                HTTP_RESPONSE_START,
+                {"type": HTTP_RESPONSE_START, "status": caught_exception_status_code, "headers": []},
+            )
+            connection_state.log_context.setdefault(HTTP_RESPONSE_BODY, {"type": HTTP_RESPONSE_BODY, "body": b""})
         extracted_data = self.response_extractor(
             messages=(
                 # NOTE: we don't pop the start message from the logging context in case
