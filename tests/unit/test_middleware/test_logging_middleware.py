@@ -1,4 +1,5 @@
-from collections.abc import Generator
+from collections.abc import AsyncGenerator, Generator
+from contextlib import suppress
 from logging import INFO
 from typing import TYPE_CHECKING, Annotated, Any
 
@@ -16,6 +17,7 @@ from litestar.handlers import HTTPRouteHandler
 from litestar.middleware.authentication import AbstractAuthenticationMiddleware, AuthenticationResult
 from litestar.middleware.logging import LoggingMiddleware
 from litestar.params import Body
+from litestar.response import Stream
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.testing import create_test_client
 from tests.helpers import cleanup_logging_impl
@@ -68,16 +70,63 @@ def test_logging_middleware_no_keyerror_when_inner_middleware_raises(caplog: "Lo
         return {"secret": "data"}
 
     with (
+        capture_logs() as cap_logs,
         create_test_client(
             route_handlers=[protected_handler],
-            middleware=[LoggingMiddleware("litestar.test"), AlwaysRejectAuthMiddleware],
+            middleware=[
+                LoggingMiddleware(
+                    structlog.getLogger("litestar.test"),
+                    log_structured=True,
+                    response_log_fields=("status_code",),
+                ),
+                AlwaysRejectAuthMiddleware,
+            ],
             raise_server_exceptions=False,
         ) as client,
-        caplog.at_level(INFO),
     ):
         response = client.get("/")
 
     assert response.status_code == HTTP_401_UNAUTHORIZED
+    # the response is logged with the status code the exception maps to, not a synthesized 500
+    assert cap_logs[-1]["status_code"] == HTTP_401_UNAUTHORIZED
+
+
+def test_logging_middleware_exception_does_not_overwrite_a_started_response(caplog: "LogCaptureFixture") -> None:
+    """A response that already started is logged as it was sent, not as the exception status.
+
+    ``extract_response_data()`` only fills in the response messages the send wrapper never got to
+    record, so a stream that fails partway through is still logged with the status it actually sent.
+    """
+
+    async def failing_stream() -> AsyncGenerator[bytes, None]:
+        yield b"first chunk"
+        raise RuntimeError("stream failed partway through")
+
+    @get("/")
+    async def streaming_handler() -> Stream:
+        return Stream(failing_stream())
+
+    with (
+        capture_logs() as cap_logs,
+        create_test_client(
+            route_handlers=[streaming_handler],
+            middleware=[
+                LoggingMiddleware(
+                    structlog.getLogger("litestar.test"),
+                    log_structured=True,
+                    response_log_fields=("status_code",),
+                )
+            ],
+            raise_server_exceptions=False,
+        ) as client,
+    ):
+        with suppress(Exception):
+            client.get("/")
+
+    response_logs = [log for log in cap_logs if "status_code" in log]
+    assert response_logs
+    # 200 was already sent to the client, so logging it as a 500 would misreport what happened
+    assert all(log["status_code"] == HTTP_200_OK for log in response_logs)
 
 
 def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
