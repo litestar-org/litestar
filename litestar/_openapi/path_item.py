@@ -91,7 +91,7 @@ class PathItemFactory:
             responses=responses,
             request_body=request_body,
             parameters=parameters or None,  # type: ignore[arg-type]
-            security=list(route_handler.security) if route_handler.security else None,
+            security=list(route_handler.security) if route_handler.security is not None else None,
         )
 
     def create_operation_id(self, route_handler: HTTPRouteHandler, http_method: HttpMethod) -> str:
