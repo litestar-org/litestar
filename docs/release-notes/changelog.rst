@@ -6,6 +6,20 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix ``TypeError`` from ``MsgspecDTO`` on ``Optional[Annotated[T, Meta(...)]]`` struct fields
+        :type: bugfix
+        :issue: 5025
+
+        A request to a handler using ``MsgspecDTO`` for a struct with a field like
+        ``Optional[Annotated[str, msgspec.Meta(min_length=1)]]`` raised
+        ``TypeError: Can only set `min_length` on a str, bytes, or collection type``
+        during request decoding, returning HTTP 500. The DTO transfer model was
+        built as ``Annotated[Optional[str], Meta(min_length=1)]`` — with the
+        constraint on the outer ``Union`` rather than the ``str`` arm — which
+        ``msgspec`` rejects. Meta constraints are now pushed into the non-``None``
+        arm of an ``Optional`` field when the transfer model is generated,
+        mirroring ``Optional[Annotated[T, Meta(...)]]`` which ``msgspec`` accepts.
+
     .. change:: Fix ``TypeError`` when generating a schema for a union of enums
         :type: bugfix
         :pr: 4997

@@ -646,6 +646,51 @@ class Outer(msgspec.Struct):
         assert data.some_field == value
 
 
+@pytest.mark.parametrize(
+    ("meta_kwargs", "invalid_value"),
+    (
+        ({"min_length": 1}, ""),
+        ({"max_length": 2}, "abc"),
+        ({"pattern": "^a"}, "b"),
+        ({"gt": 0}, 0),
+        ({"ge": 1}, 0),
+        ({"lt": 10}, 10),
+        ({"le": 5}, 6),
+    ),
+)
+def test_msgspec_dto_optional_annotated_meta_constraint(
+    asgi_connection: Request[Any, Any, Any],
+    create_module: Callable[[str], ModuleType],
+    meta_kwargs: dict[str, Any],
+    invalid_value: Any,
+) -> None:
+    # https://github.com/litestar-org/litestar/issues/5025
+
+    inner_type = "int" if any(k in meta_kwargs for k in ("gt", "ge", "lt", "le")) else "str"
+    meta_repr = ", ".join(f"{k}={v!r}" for k, v in meta_kwargs.items())
+    module = create_module(f"""
+from typing import Annotated, Optional
+import msgspec
+
+class Body(msgspec.Struct):
+    value: Optional[Annotated[{inner_type}, msgspec.Meta({meta_repr})]] = None
+""")
+
+    backend = DTOCodegenBackend(
+        handler_id="test",
+        dto_factory=MsgspecDTO[module.Body],  # type: ignore[name-defined]
+        field_definition=TransferDTOFieldDefinition.from_annotation(module.Body),
+        model_type=module.Body,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+
+    assert backend.populate_data_from_builtins({"value": None}, asgi_connection).value is None
+
+    with pytest.raises(msgspec.ValidationError):
+        backend.populate_data_from_builtins({"value": invalid_value}, asgi_connection)
+
+
 def test_nested_union_with_multiple_composite_types_raises(
     asgi_connection: Request[Any, Any, Any],
     create_module: Callable[[str], ModuleType],
