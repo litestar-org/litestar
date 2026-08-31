@@ -32,7 +32,7 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.stores.base import Store
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
-from litestar.stores.redis import RedisStore
+from litestar.stores.redis import RedisStore, RedisStoreNamespaceStrategy
 from litestar.stores.valkey import ValkeyStore
 from litestar.testing import RequestFactory
 from tests.helpers import not_none
@@ -87,6 +87,11 @@ def redis_store(redis_client: AsyncRedis) -> RedisStore:
 
 
 @pytest.fixture()
+def redis_hash_store(redis_client: AsyncRedis) -> RedisStore:
+    return RedisStore(redis=redis_client, namespace_strategy=RedisStoreNamespaceStrategy.HASH)
+
+
+@pytest.fixture()
 def valkey_store(valkey_client: AsyncValkey) -> ValkeyStore:
     return ValkeyStore(valkey=valkey_client)
 
@@ -116,6 +121,7 @@ def file_store_create_directories_flag_false(tmp_path: Path) -> FileStore:
 @pytest.fixture(
     params=[
         pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("redis_hash_store", marks=pytest.mark.xdist_group("redis")),
         pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
         "memory_store",
         "file_store",

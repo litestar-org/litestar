@@ -161,13 +161,31 @@ When using the :class:`RedisStore <.redis.RedisStore>`, this allows to reuse the
 :class:`Redis <redis.asyncio.Redis>` instance and connection, while ensuring isolation.
 
 .. note::
-    :class:`RedisStore <.redis.RedisStore>` uses the ``LITESTAR`` namespace by default; all keys created by this store,
-    will use the ``LITESTAR`` prefix when storing data in redis.
+    :class:`RedisStore <.redis.RedisStore>` uses the ``LITESTAR`` namespace by default. With the default ``"keys"``
+    strategy, physical Redis keys use the ``LITESTAR`` prefix.
     :meth:`RedisStore.delete_all <.redis.RedisStore.delete_all>` is implemented in such a way that it will only delete
     keys matching the current namespace, making it safe and side-effect free.
 
     This can be turned off by explicitly passing ``namespace=None`` to the store when creating a new instance.
 
+Redis 7.4 and later can store each namespace as a single hash with independent expiration for each field. This makes
+bulk deletion scale with the number of namespaces instead of the number of stored values. Enable this layout explicitly
+with :attr:`RedisStoreNamespaceStrategy.HASH <.redis.RedisStoreNamespaceStrategy.HASH>`:
+
+.. code-block:: python
+
+    from litestar.stores.redis import RedisStore, RedisStoreNamespaceStrategy
+
+    store = RedisStore.with_client(namespace_strategy=RedisStoreNamespaceStrategy.HASH)
+
+Existing prefixed keys are not migrated or visible through the hash layout, so the default remains
+:attr:`RedisStoreNamespaceStrategy.KEYS <.redis.RedisStoreNamespaceStrategy.KEYS>` for backwards compatibility. Hashes
+use a Litestar-owned physical key prefix so deleting a hash namespace does not remove legacy prefixed keys. The
+:attr:`RedisStoreNamespaceStrategy.AUTO <.redis.RedisStoreNamespaceStrategy.AUTO>` strategy can be selected explicitly
+to use hashes on Redis 7.4 and later and prefixed keys on older servers; because a Redis upgrade can then change the
+selected layout when the store is recreated, use it only when the stored data can be migrated or regenerated.
+Redis 8 and later additionally use the atomic ``HSETEX`` and ``HGETEX`` commands where their semantics match the store contract.
+The hash layout applies only after a namespace is configured, including on child stores created with ``with_namespace``.
 
 .. literalinclude:: /examples/stores/namespacing.py
     :language: python
