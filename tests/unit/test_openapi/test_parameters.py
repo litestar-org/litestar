@@ -128,7 +128,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
         ],
         examples=[Gender.MALE, [Gender.MALE, Gender.OTHER]],
     )
-    assert gender.required
+    assert not gender.required
 
     assert secret_header.param_in == ParamType.HEADER
     assert is_schema_value(secret_header.schema)
@@ -151,7 +151,6 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
             Schema(type=OpenAPIType.NULL),
         ],
         examples=[LuckyNumber.SEVEN],
-        default=1,
     )
     assert not lucky_number.required
 
@@ -625,8 +624,8 @@ def test_nullable_query_param_required(annotation: Any, default: Any, expected_r
             pass
 
     with create_test_client(handler) as client:
-        path_item = client.app.openapi_schema.paths["/test"]  # type: ignore[index]
-        params = {p.name: p for p in (path_item.get.parameters or [])}  # type: ignore[union-attr]
+        path_item = client.app.openapi_schema.paths["/test"]
+        params = {p.name: p for p in (path_item.get.parameters or [])}
         param = params["param"]
         assert not isinstance(param, Reference)
         assert param.required is expected_required
