@@ -5,7 +5,15 @@ from __future__ import annotations
 from importlib.util import find_spec
 
 if find_spec("rich_click") is not None:  # pragma: no cover
-    import rich_click
+    import warnings
+
+    # rich_click 1.9.x imports deprecated click.utils.get_binary_stream (removed in Click 9.0).
+    # Suppress during import until rich_click releases a fix. See: https://github.com/litestar-org/litestar/issues/5020
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore", message=".*is deprecated and will be removed in Click 9.0", category=DeprecationWarning
+        )
+        import rich_click
 
     rich_click.rich_click.THEME = "star-box"
     rich_click.rich_click.TEXT_MARKUP = "rich"
