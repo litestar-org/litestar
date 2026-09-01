@@ -6,9 +6,9 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
-    .. change:: Fix ``TypeError`` when Optional field has msgspec.Meta constraint
+    .. change:: Fix ``TypeError`` when Optional field has ``msgspec.Meta`` constraint
         :type: bugfix
-        :pr: 5032
+        :pr: 5033
         :issue: 5025
 
         Previously, attempting to use the Optional data type in a ``msgspec.Struct`` with a
