@@ -161,13 +161,12 @@ When using the :class:`RedisStore <.redis.RedisStore>`, this allows to reuse the
 :class:`Redis <redis.asyncio.Redis>` instance and connection, while ensuring isolation.
 
 .. note::
-    :class:`RedisStore <.redis.RedisStore>` uses the ``LITESTAR`` namespace by default; all keys created by this store,
-    will use the ``LITESTAR`` prefix when storing data in redis.
+    :class:`RedisStore <.redis.RedisStore>` uses the ``LITESTAR`` namespace by default. With the default ``"keys"``
+    strategy, physical Redis keys use the ``LITESTAR`` prefix.
     :meth:`RedisStore.delete_all <.redis.RedisStore.delete_all>` is implemented in such a way that it will only delete
     keys matching the current namespace, making it safe and side-effect free.
 
     This can be turned off by explicitly passing ``namespace=None`` to the store when creating a new instance.
-
 
 .. literalinclude:: /examples/stores/namespacing.py
     :language: python
