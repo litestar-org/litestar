@@ -32,7 +32,7 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.stores.base import Store
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
-from litestar.stores.redis import RedisStore, RedisStoreNamespaceStrategy
+from litestar.stores.redis import RedisStore
 from litestar.stores.valkey import ValkeyStore
 from litestar.testing import RequestFactory
 from tests.helpers import not_none
@@ -88,7 +88,7 @@ def redis_store(redis_client: AsyncRedis) -> RedisStore:
 
 @pytest.fixture()
 def redis_hash_store(redis_client: AsyncRedis) -> RedisStore:
-    return RedisStore(redis=redis_client, namespace_strategy=RedisStoreNamespaceStrategy.HASH)
+    return RedisStore(redis=redis_client, namespace_strategy="hash")
 
 
 @pytest.fixture()
