@@ -6,6 +6,29 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Add configurable namespace storage strategies to ``RedisStore``
+        :type: feature
+        :issue: 4992
+
+        ``RedisStore`` now supports a ``namespace_strategy`` argument:
+        ``"keys"`` (the default, preserving the existing key layout), ``"hash"``,
+        which stores each namespace in a single Redis hash with independently
+        expiring fields on Redis 7.4 and later, and ``"auto"``, which uses the
+        hash layout when the server supports field expiration and falls back to
+        the key layout otherwise.
+
+        The two layouts are not migrated automatically; changing strategies (or
+        upgrading Redis) can change where existing data is stored.
+
+    .. change:: Keep same-prefix namespaces isolated in ``RedisStore`` and ``ValkeyStore`` ``delete_all``
+        :type: bugfix
+        :issue: 4992
+
+        In key-based layouts, ``delete_all`` now escapes Redis glob characters and
+        matches child namespaces explicitly, so namespaces that share a prefix
+        (e.g. ``foo`` vs ``foobar``) or contain glob characters such as ``*``,
+        ``?`` or ``[...]`` are no longer deleted together.
+
     .. change:: Fix ``TypeError`` when generating a schema for a union of enums
         :type: bugfix
         :pr: 4997

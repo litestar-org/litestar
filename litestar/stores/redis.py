@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from enum import StrEnum
 from typing import TYPE_CHECKING, Literal, cast, overload
 
 from redis.asyncio import Redis
@@ -22,22 +21,18 @@ if TYPE_CHECKING:
 __all__ = ("RedisStore", "RedisStoreNamespaceStrategy")
 
 
-class RedisStoreNamespaceStrategy(StrEnum):
-    """Storage strategies for namespaced values in :class:`RedisStore`."""
-
-    KEYS = "keys"
-    HASH = "hash"
-    AUTO = "auto"
+RedisStoreNamespaceStrategy = Literal["keys", "hash", "auto"]
 
 
 _HASH_FIELD_EXPIRATION_MIN_VERSION = (7, 4)
 _HASH_FIELD_EXPIRATION_COMMANDS_VERSION = (8, 0)
 _HASH_KEY_PREFIX = "__litestar_redis_store_hash__:"
-_HASH_NAMESPACE_SEPARATOR = b"_".hex()
-_ResolvedNamespaceStrategy = Literal[
-    RedisStoreNamespaceStrategy.KEYS,
-    RedisStoreNamespaceStrategy.HASH,
-]
+_ResolvedNamespaceStrategy = Literal["keys", "hash"]
+
+
+def _escape_redis_glob(value: str) -> str:
+    """Escape glob metacharacters in a value used with Redis ``SCAN MATCH``."""
+    return value.replace("\\", "\\\\").replace("*", "\\*").replace("?", "\\?").replace("[", "\\[").replace("]", "\\]")
 
 
 class RedisStore(NamespacedStore):
@@ -62,7 +57,7 @@ class RedisStore(NamespacedStore):
         redis: Redis,
         namespace: str | None | EmptyType = Empty,
         handle_client_shutdown: bool = False,
-        namespace_strategy: RedisStoreNamespaceStrategy = RedisStoreNamespaceStrategy.KEYS,
+        namespace_strategy: RedisStoreNamespaceStrategy = "keys",
     ) -> None:
         """Initialize :class:`RedisStore`
 
@@ -72,18 +67,15 @@ class RedisStore(NamespacedStore):
                 defaults to ``LITESTAR``. Namespacing can be explicitly disabled by passing
                 ``None``. This will make :meth:`.delete_all` unavailable.
             handle_client_shutdown: If ``True``, handle the shutdown of the `redis` instance automatically during the store's lifespan. Should be set to `True` unless the shutdown is handled externally
-            namespace_strategy: How namespaced values are stored. See
-                :class:`RedisStoreNamespaceStrategy` for available strategies.
+            namespace_strategy: One of ``"keys"``, ``"hash"``, or ``"auto"``.
         """
         self._redis = redis
         self.namespace: str | None = value_or_default(namespace, "LITESTAR")
         self.handle_client_shutdown = handle_client_shutdown
-        self.namespace_strategy = RedisStoreNamespaceStrategy(namespace_strategy)
+        self.namespace_strategy: RedisStoreNamespaceStrategy = namespace_strategy
         self._redis_version: tuple[int, int] | None = None
         self._resolved_namespace_strategy: _ResolvedNamespaceStrategy | None = (
-            RedisStoreNamespaceStrategy.KEYS
-            if self.namespace_strategy is RedisStoreNamespaceStrategy.KEYS or not self.namespace
-            else None
+            "keys" if self.namespace_strategy == "keys" or not self.namespace else None
         )
 
         # script to get and renew a key in one atomic step
@@ -149,6 +141,7 @@ class RedisStore(NamespacedStore):
         local hash = KEYS[1]
         local field = ARGV[1]
         local renew = tonumber(ARGV[2])
+        -- Check TTL and renewal atomically so persistent fields remain persistent.
         local ttl = redis.call('HTTL', hash, 'FIELDS', 1, field)[1]
 
         if ttl > 0 then
@@ -165,15 +158,17 @@ class RedisStore(NamespacedStore):
             redis.call('UNLINK', KEYS[1])
         end
 
-        local cursor = 0
+        for _,pattern in ipairs(ARGV) do
+            local cursor = 0
 
-        repeat
-            local result = redis.call('SCAN', cursor, 'MATCH', ARGV[1])
-            for _,key in ipairs(result[2]) do
-                redis.call('UNLINK', key)
-            end
-            cursor = tonumber(result[1])
-        until cursor == 0
+            repeat
+                local result = redis.call('SCAN', cursor, 'MATCH', pattern)
+                for _,key in ipairs(result[2]) do
+                    redis.call('UNLINK', key)
+                end
+                cursor = tonumber(result[1])
+            until cursor == 0
+        end
         """
         )
 
@@ -202,7 +197,7 @@ class RedisStore(NamespacedStore):
         username: str | None = None,
         password: str | None = None,
         namespace: str | None | EmptyType = Empty,
-        namespace_strategy: RedisStoreNamespaceStrategy = RedisStoreNamespaceStrategy.KEYS,
+        namespace_strategy: RedisStoreNamespaceStrategy = "keys",
     ) -> RedisStore:
         """Initialize a :class:`RedisStore` instance with a new class:`redis.asyncio.Redis` instance.
 
@@ -213,8 +208,7 @@ class RedisStore(NamespacedStore):
             username: Redis username to use
             password: Redis password to use
             namespace: Virtual key namespace to use
-            namespace_strategy: How namespaced values are stored. See
-                :class:`RedisStore` for details.
+            namespace_strategy: One of ``"keys"``, ``"hash"``, or ``"auto"``.
         """
         pool: ConnectionPool[Connection] = ConnectionPool.from_url(
             url=url,
@@ -252,7 +246,13 @@ class RedisStore(NamespacedStore):
         return prefix + key
 
     def _make_hash_key(self) -> str:
-        """Return the physical Redis key for the current hash namespace."""
+        """Return the physical Redis key for the current hash namespace.
+
+        Unlike ``_make_key``, this creates one key shared by all fields in the namespace
+        and encodes the namespace so Redis glob characters remain literal.
+        The dedicated prefix keeps hash keys separate from the legacy ``namespace:key``
+        layout when a namespace strategy is changed.
+        """
         namespace = cast("str", self.namespace)
         return f"{_HASH_KEY_PREFIX}{namespace.encode('utf-8').hex()}"
 
@@ -267,13 +267,13 @@ class RedisStore(NamespacedStore):
         self._redis_version = (int(major), int(minor))
 
         if self._redis_version < _HASH_FIELD_EXPIRATION_MIN_VERSION:
-            if self.namespace_strategy is RedisStoreNamespaceStrategy.HASH:
+            if self.namespace_strategy == "hash":
                 raise ImproperlyConfiguredException(
                     f"The hash namespace strategy requires Redis 7.4 or later (server version: {version_text})"
                 )
-            self._resolved_namespace_strategy = RedisStoreNamespaceStrategy.KEYS
+            self._resolved_namespace_strategy = "keys"
         else:
-            self._resolved_namespace_strategy = RedisStoreNamespaceStrategy.HASH
+            self._resolved_namespace_strategy = "hash"
         return self._resolved_namespace_strategy
 
     async def _execute_command(self, *args: str | bytes | int) -> object:
@@ -314,6 +314,7 @@ class RedisStore(NamespacedStore):
                 await self._execute_command("HSETEX", hash_key, "KEEPTTL", "FIELDS", 1, key, value)
                 return
         elif expires_in is not None:
+            # Redis 7.4 has field expiry commands but not HSETEX, so keep both operations atomic.
             await self._hash_set_with_expiry_script(
                 keys=[hash_key], args=[key, value, self._expiry_seconds(expires_in)]
             )
@@ -368,7 +369,7 @@ class RedisStore(NamespacedStore):
             raise ValueError("Cannot set both 'expires_in' and 'keep_ttl': these options are mutually exclusive")
         if isinstance(value, str):
             value = value.encode("utf-8")
-        if await self._resolve_namespace_strategy() is RedisStoreNamespaceStrategy.HASH:
+        if await self._resolve_namespace_strategy() == "hash":
             await self._set_hash_value(key, value, expires_in, keep_ttl)
             return
         await self._redis.set(self._make_key(key), value, ex=expires_in, keepttl=keep_ttl)
@@ -388,7 +389,7 @@ class RedisStore(NamespacedStore):
             The value associated with ``key`` if it exists and is not expired, else
             ``None``
         """
-        if await self._resolve_namespace_strategy() is RedisStoreNamespaceStrategy.HASH:
+        if await self._resolve_namespace_strategy() == "hash":
             hash_key = self._make_hash_key()
             if renew_for:
                 redis_version = cast("tuple[int, int]", self._redis_version)
@@ -417,7 +418,7 @@ class RedisStore(NamespacedStore):
         Args:
             key: Key of the value to delete
         """
-        if await self._resolve_namespace_strategy() is RedisStoreNamespaceStrategy.HASH:
+        if await self._resolve_namespace_strategy() == "hash":
             await self._redis.hdel(self._make_hash_key(), key)
             return
         await self._redis.delete(self._make_key(key))
@@ -431,15 +432,18 @@ class RedisStore(NamespacedStore):
         if not self.namespace:
             raise ImproperlyConfiguredException("Cannot perform delete operation: No namespace configured")
 
-        if await self._resolve_namespace_strategy() is RedisStoreNamespaceStrategy.HASH:
+        if await self._resolve_namespace_strategy() == "hash":
             hash_key = self._make_hash_key()
-            await self._delete_all_script(keys=[hash_key], args=[f"{hash_key}{_HASH_NAMESPACE_SEPARATOR}*"])
+            namespace = self.namespace
+            child_namespace_prefix = f"{namespace}_".encode().hex()
+            await self._delete_all_script(keys=[hash_key], args=[f"{_HASH_KEY_PREFIX}{child_namespace_prefix}*"])
             return
-        await self._delete_all_script(keys=[], args=[f"{self.namespace}*:*"])
+        namespace = _escape_redis_glob(self.namespace)
+        await self._delete_all_script(keys=[], args=[f"{namespace}:*", f"{namespace}_*:*"])
 
     async def exists(self, key: str) -> bool:
         """Check if a given ``key`` exists."""
-        if await self._resolve_namespace_strategy() is RedisStoreNamespaceStrategy.HASH:
+        if await self._resolve_namespace_strategy() == "hash":
             return await self._redis.hexists(self._make_hash_key(), key) == 1
         return await self._redis.exists(self._make_key(key)) == 1
 
@@ -447,7 +451,7 @@ class RedisStore(NamespacedStore):
         """Get the time in seconds ``key`` expires in. If no such ``key`` exists or no
         expiry time was set, return ``None``.
         """
-        if await self._resolve_namespace_strategy() is RedisStoreNamespaceStrategy.HASH:
+        if await self._resolve_namespace_strategy() == "hash":
             result = await self._execute_command("HTTL", self._make_hash_key(), "FIELDS", 1, key)
             ttl = cast("list[int]", result)[0]
             return None if ttl == -2 else ttl
