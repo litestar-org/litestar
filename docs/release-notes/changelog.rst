@@ -6,6 +6,22 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix ``TypeError`` when Optional field has ``msgspec.Meta`` constraint
+        :type: bugfix
+        :pr: 5033
+        :issue: 5025
+
+        Previously, attempting to use the Optional data type in a ``msgspec.Struct`` with a
+        msgspec constraint resulted in a ``TypeError``. This occurred because the ``msgspec.Meta``
+        annotation was applied to the entire union, not the original data type. ``msgspec`` does
+        not allow such an annotation.
+
+        Now, only the non-None data type is annotated in the structure field, and msgspec
+        correctly handles constraints. And None is still accepted.
+
+        This also affected partial DTOs with an ``Optional`` field, which previously also
+        returned a 500, now - 400.
+
     .. change:: Fix ``TypeError`` when generating a schema for a union of enums
         :type: bugfix
         :pr: 4997
