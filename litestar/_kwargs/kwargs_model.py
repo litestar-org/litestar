@@ -10,6 +10,7 @@ from litestar._kwargs.cleanup import DependencyCleanupGroup
 from litestar._kwargs.dependencies import (
     DependencyContainer,
     create_dependency_batches,
+    create_dependency_graph,
     resolve_dependency,
 )
 from litestar._kwargs.extractors import (
@@ -67,6 +68,21 @@ class HandlerContext:
         if self.dependencies:
             out += f", dependencies={' -> '.join(self.dependencies[::-1])!r}"
         return out + f"] {msg}"
+
+
+@dataclasses.dataclass(slots=True)
+class _SignatureMetadata:
+    data_field_definition: FieldDefinition | None
+    expected_cookie_params: set[ParameterDefinition]
+    expected_data_dto: type[AbstractDTO] | None
+    expected_form_data: tuple[RequestEncodingType | str, FieldDefinition] | None
+    expected_header_params: set[ParameterDefinition]
+    expected_msgpack_data: FieldDefinition | None
+    expected_path_params: set[ParameterDefinition]
+    expected_query_params: set[ParameterDefinition]
+    expected_reserved_kwargs: set[str]
+    is_data_optional: bool
+    sequence_query_parameter_names: set[str]
 
 
 class KwargsModel:
@@ -208,26 +224,21 @@ class KwargsModel:
         cls,
         path_parameters: set[str],
         layered_parameters: dict[str, FieldDefinition],
-        dependencies: dict[str, Provide],
+        dependency_keys: set[str],
         field_definitions: dict[str, FieldDefinition],
-    ) -> tuple[set[ParameterDefinition], set[DependencyContainer]]:
+    ) -> set[ParameterDefinition]:
         """Get parameter_definitions for the construction of KwargsModel instance.
 
         Args:
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
-            dependencies: A string keyed dictionary mapping dependency providers.
+            dependency_keys: Keys of dependencies directly requested by the signature.
             field_definitions: The SignatureModel fields.
 
         Returns:
-            A Tuple of sets
+            A set of parameter definitions.
         """
-        expected_dependencies = {
-            cls._create_dependency_graph(key=key, dependencies=dependencies)
-            for key in dependencies
-            if key in field_definitions
-        }
-        ignored_keys = {*RESERVED_KWARGS, *(dependency.key for dependency in expected_dependencies)}
+        ignored_keys = {*RESERVED_KWARGS, *dependency_keys}
 
         param_definitions = {
             *(
@@ -272,36 +283,31 @@ class KwargsModel:
                 )
             )
 
-        return param_definitions, expected_dependencies
+        return param_definitions
 
     @classmethod
-    def create_for_signature_model(  # noqa: C901
+    def _create_signature_metadata(
         cls,
         signature_model: type[SignatureModel],
-        parsed_signature: ParsedSignature,
         dependencies: dict[str, Provide],
+        dependency_keys: set[str],
         path_parameters: set[str],
         layered_parameters: dict[str, FieldDefinition],
-        ctx: BaseRouteHandler | HandlerContext | None = None,
-    ) -> KwargsModel:
-        """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
-        during the application bootstrap process.
+        ctx: HandlerContext | None,
+    ) -> _SignatureMetadata:
+        """Create request metadata local to a single handler or dependency signature.
 
         Args:
-            signature_model: A :class:`SignatureModel <litestar._signature.SignatureModel>` subclass.
-            parsed_signature: A :class:`ParsedSignature <litestar._signature.ParsedSignature>` instance.
+            signature_model: Signature model to inspect.
             dependencies: A string keyed dictionary mapping dependency providers.
+            dependency_keys: Keys of dependencies directly requested by the signature.
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
-            ctx: Route handler / Route handler context
+            ctx: Route handler context.
 
         Returns:
-            An instance of KwargsModel
+            Metadata extracted from the signature.
         """
-
-        if ctx is not None and not isinstance(ctx, HandlerContext):
-            ctx = HandlerContext(handler=ctx.name or ctx.handler_name, paths=sorted(ctx.paths))
-
         field_definitions = signature_model._fields
 
         cls._validate_raw_kwargs(
@@ -311,18 +317,16 @@ class KwargsModel:
             layered_parameters=layered_parameters,
         )
 
-        param_definitions, expected_dependencies = cls._get_param_definitions(
+        param_definitions = cls._get_param_definitions(
             path_parameters=path_parameters,
             layered_parameters=layered_parameters,
-            dependencies=dependencies,
+            dependency_keys=dependency_keys,
             field_definitions=field_definitions,
         )
 
-        for dep_field_name in dependencies:
+        for dep_field_name in dependency_keys:
             dep_field_def = field_definitions.get(dep_field_name)
-            if dep_field_def is None:
-                continue
-            if not dep_field_def.is_annotated:
+            if dep_field_def is not None and not dep_field_def.is_annotated:
                 msg = (
                     f"Inferred dependency field {dep_field_name!r}. Mark the field explicitly "
                     f"with 'NamedDependency[{dep_field_def.raw}]'. Inferred dependencies will "
@@ -370,64 +374,18 @@ class KwargsModel:
                 media_type = data_field_definition.kwarg_definition.media_type
 
             if media_type in (RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED):
-                expected_form_data = (media_type, data_field_definition)  # pyright: ignore[reportAssignmentType]
+                expected_form_data = (media_type, data_field_definition)
                 expected_data_dto = signature_model._data_dto
             elif signature_model._data_dto:
                 expected_data_dto = signature_model._data_dto
             elif media_type == RequestEncodingType.MESSAGEPACK:
                 expected_msgpack_data = data_field_definition
 
-        expected_data_field_defs = []
+        is_data_optional = bool(data_field_definition and data_field_definition.is_optional)
 
-        for dependency in expected_dependencies:
-            dependency_kwargs_model = cls.create_for_signature_model(
-                signature_model=dependency.provide.signature_model,
-                parsed_signature=parsed_signature,
-                dependencies=dependencies,
-                path_parameters=path_parameters,
-                layered_parameters=layered_parameters,
-                ctx=dataclasses.replace(ctx, dependencies=[*ctx.dependencies, dependency.key]) if ctx else None,
-            )
-
-            expected_path_parameters = merge_parameter_sets(
-                expected_path_parameters, dependency_kwargs_model.expected_path_params
-            )
-            expected_query_parameters = merge_parameter_sets(
-                expected_query_parameters, dependency_kwargs_model.expected_query_params
-            )
-            expected_cookie_parameters = merge_parameter_sets(
-                expected_cookie_parameters, dependency_kwargs_model.expected_cookie_params
-            )
-            expected_header_parameters = merge_parameter_sets(
-                expected_header_parameters, dependency_kwargs_model.expected_header_params
-            )
-
-            if "data" in dependency_kwargs_model.expected_reserved_kwargs:
-                if "data" in expected_reserved_kwargs:
-                    cls._validate_dependency_data(
-                        expected_form_data=expected_form_data,
-                        dependency_kwargs_model=dependency_kwargs_model,
-                    )
-                expected_data_field_defs.append(dependency.provide.signature_model._fields["data"])
-
-            expected_reserved_kwargs.update(dependency_kwargs_model.expected_reserved_kwargs)
-            sequence_query_parameter_names.update(dependency_kwargs_model.sequence_query_parameter_names)
-
-        if handler_data_field := field_definitions.get("data"):
-            expected_data_field_defs.append(handler_data_field)
-
-        if expected_data_field_defs:
-            cls._validate_data_field_definitions(expected_data_field_defs, ctx)
-
-        is_data_optional = (
-            field_definitions["data"].is_optional
-            if "data" in expected_reserved_kwargs and "data" in field_definitions
-            else False
-        )
-
-        return KwargsModel(
+        return _SignatureMetadata(
+            data_field_definition=data_field_definition,
             expected_cookie_params=expected_cookie_parameters,
-            expected_dependencies=expected_dependencies,
             expected_data_dto=expected_data_dto,
             expected_form_data=expected_form_data,
             expected_header_params=expected_header_parameters,
@@ -436,6 +394,126 @@ class KwargsModel:
             expected_query_params=expected_query_parameters,
             expected_reserved_kwargs=expected_reserved_kwargs,
             is_data_optional=is_data_optional,
+            sequence_query_parameter_names=sequence_query_parameter_names,
+        )
+
+    @classmethod
+    def create_for_signature_model(
+        cls,
+        signature_model: type[SignatureModel],
+        parsed_signature: ParsedSignature,
+        dependencies: dict[str, Provide],
+        path_parameters: set[str],
+        layered_parameters: dict[str, FieldDefinition],
+        ctx: BaseRouteHandler | HandlerContext | None = None,
+    ) -> KwargsModel:
+        """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
+        during the application bootstrap process.
+
+        Args:
+            signature_model: A :class:`SignatureModel <litestar._signature.SignatureModel>` subclass.
+            parsed_signature: A :class:`ParsedSignature <litestar._signature.ParsedSignature>` instance.
+            dependencies: A string keyed dictionary mapping dependency providers.
+            path_parameters: Any expected path parameters.
+            layered_parameters: A string keyed dictionary of layered parameters.
+            ctx: Route handler / Route handler context
+
+        Returns:
+            An instance of KwargsModel
+        """
+        if ctx is not None and not isinstance(ctx, HandlerContext):
+            ctx = HandlerContext(handler=ctx.name or ctx.handler_name, paths=sorted(ctx.paths))
+
+        root_dependency_keys = tuple(key for key in dependencies if key in signature_model._fields)
+        dependency_graph = create_dependency_graph(dependency_keys=root_dependency_keys, dependencies=dependencies)
+        root_metadata = cls._create_signature_metadata(
+            signature_model=signature_model,
+            dependencies=dependencies,
+            dependency_keys=set(root_dependency_keys),
+            path_parameters=path_parameters,
+            layered_parameters=layered_parameters,
+            ctx=ctx,
+        )
+
+        expected_path_parameters = root_metadata.expected_path_params
+        expected_query_parameters = root_metadata.expected_query_params
+        expected_cookie_parameters = root_metadata.expected_cookie_params
+        expected_header_parameters = root_metadata.expected_header_params
+        expected_reserved_kwargs = root_metadata.expected_reserved_kwargs
+        sequence_query_parameter_names = root_metadata.sequence_query_parameter_names
+        expected_data_field_defs = (
+            [root_metadata.data_field_definition] if root_metadata.data_field_definition is not None else []
+        )
+        dependency_metadata_by_key: dict[str, _SignatureMetadata] = {}
+
+        for dependency in dependency_graph.nodes.values():
+            dependency_ctx = (
+                dataclasses.replace(ctx, dependencies=[*ctx.dependencies, *dependency_graph.paths[dependency.key]])
+                if ctx
+                else None
+            )
+            dependency_metadata = cls._create_signature_metadata(
+                signature_model=dependency.provide.signature_model,
+                dependencies=dependencies,
+                dependency_keys={sub_dependency.key for sub_dependency in dependency.dependencies},
+                path_parameters=path_parameters,
+                layered_parameters=layered_parameters,
+                ctx=dependency_ctx,
+            )
+            dependency_metadata_by_key[dependency.key] = dependency_metadata
+
+            expected_path_parameters = merge_parameter_sets(
+                expected_path_parameters, dependency_metadata.expected_path_params
+            )
+            expected_query_parameters = merge_parameter_sets(
+                expected_query_parameters, dependency_metadata.expected_query_params
+            )
+            expected_cookie_parameters = merge_parameter_sets(
+                expected_cookie_parameters, dependency_metadata.expected_cookie_params
+            )
+            expected_header_parameters = merge_parameter_sets(
+                expected_header_parameters, dependency_metadata.expected_header_params
+            )
+
+            if dependency_metadata.data_field_definition is not None:
+                expected_data_field_defs.append(dependency_metadata.data_field_definition)
+
+            expected_reserved_kwargs.update(dependency_metadata.expected_reserved_kwargs)
+            sequence_query_parameter_names.update(dependency_metadata.sequence_query_parameter_names)
+
+        metadata_and_dependencies = (
+            (root_metadata, dependency_graph.roots),
+            *(
+                (dependency_metadata_by_key[dependency.key], dependency.dependencies)
+                for dependency in dependency_graph.nodes.values()
+            ),
+        )
+        for metadata, direct_dependencies in metadata_and_dependencies:
+            if metadata.data_field_definition is None:
+                continue
+            for dependency in direct_dependencies:
+                dependency_metadata = dependency_metadata_by_key[dependency.key]
+                if dependency_metadata.data_field_definition is None:
+                    continue
+                cls._validate_dependency_data(
+                    expected_form_data=metadata.expected_form_data,
+                    dependency_expected_form_data=dependency_metadata.expected_form_data,
+                )
+
+        if expected_data_field_defs:
+            cls._validate_data_field_definitions(expected_data_field_defs, ctx)
+
+        return KwargsModel(
+            expected_cookie_params=expected_cookie_parameters,
+            expected_dependencies=dependency_graph.roots,
+            expected_data_dto=root_metadata.expected_data_dto,
+            expected_form_data=root_metadata.expected_form_data,
+            expected_header_params=expected_header_parameters,
+            expected_msgpack_data=root_metadata.expected_msgpack_data,
+            expected_path_params=expected_path_parameters,
+            expected_query_params=expected_query_parameters,
+            expected_reserved_kwargs=expected_reserved_kwargs,
+            is_data_optional=root_metadata.is_data_optional,
             sequence_query_parameter_names=sequence_query_parameter_names,
         )
 
@@ -480,32 +558,19 @@ class KwargsModel:
         return cleanup_group
 
     @classmethod
-    def _create_dependency_graph(cls, key: str, dependencies: dict[str, Provide]) -> DependencyContainer:
-        """Create a graph like structure of dependencies, with each dependency including its own dependencies as a
-        list.
-        """
-        provide = dependencies[key]
-        sub_dependency_keys = [k for k in provide.signature_model._fields if k in dependencies]
-        return DependencyContainer(
-            key=key,
-            provide=provide,
-            dependencies=[cls._create_dependency_graph(key=k, dependencies=dependencies) for k in sub_dependency_keys],
-        )
-
-    @classmethod
     def _validate_dependency_data(
         cls,
         expected_form_data: tuple[RequestEncodingType | str, FieldDefinition] | None,
-        dependency_kwargs_model: KwargsModel,
+        dependency_expected_form_data: tuple[RequestEncodingType | str, FieldDefinition] | None,
     ) -> None:
         """Validate that the 'data' kwarg is compatible across dependencies."""
-        if bool(expected_form_data) != bool(dependency_kwargs_model.expected_form_data):
+        if bool(expected_form_data) != bool(dependency_expected_form_data):
             raise ImproperlyConfiguredException(
                 "Dependencies have incompatible 'data' kwarg types: one expects JSON and the other expects form-data"
             )
-        if expected_form_data and dependency_kwargs_model.expected_form_data:
+        if expected_form_data and dependency_expected_form_data:
             local_media_type = expected_form_data[0]
-            dependency_media_type = dependency_kwargs_model.expected_form_data[0]
+            dependency_media_type = dependency_expected_form_data[0]
             if local_media_type != dependency_media_type:
                 raise ImproperlyConfiguredException(
                     "Dependencies have incompatible form-data encoding: one expects url-encoded and the other expects multi-part"

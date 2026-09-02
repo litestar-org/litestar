@@ -2,10 +2,21 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-__all__ = ("DependencyContainer", "create_dependency_batches", "map_dependencies_recursively", "resolve_dependency")
+from litestar.exceptions import ImproperlyConfiguredException
+
+__all__ = (
+    "DependencyContainer",
+    "DependencyGraph",
+    "create_dependency_batches",
+    "create_dependency_graph",
+    "map_dependencies_recursively",
+    "resolve_dependency",
+)
 
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
@@ -34,6 +45,89 @@ class DependencyContainer:
 
     def __hash__(self) -> int:
         return hash(self.key)
+
+
+class DependencyGraph:
+    """Canonical graph of the dependencies reachable by a handler."""
+
+    __slots__ = ("nodes", "paths", "roots")
+
+    def __init__(self) -> None:
+        self.nodes: dict[str, DependencyContainer] = {}
+        self.paths: dict[str, tuple[str, ...]] = {}
+        self.roots: set[DependencyContainer] = set()
+
+
+def create_dependency_graph(dependency_keys: Iterable[str], dependencies: dict[str, Provide]) -> DependencyGraph:
+    """Create a canonical graph containing only dependencies reachable from ``dependency_keys``.
+
+    Each dependency key is represented by exactly one :class:`DependencyContainer`. The graph is traversed
+    iteratively so deeply nested dependency chains don't consume the Python call stack. Cycles are rejected with the
+    dependency path that introduced them.
+
+    Args:
+        dependency_keys: Keys directly requested by the handler.
+        dependencies: All providers available to the handler.
+
+    Returns:
+        The reachable dependency graph.
+
+    Raises:
+        ImproperlyConfiguredException: If the dependency graph contains a cycle.
+    """
+    graph = DependencyGraph()
+    adjacency: dict[str, tuple[str, ...]] = {}
+    states: dict[str, int] = {}
+
+    def get_node(key: str) -> DependencyContainer:
+        if (node := graph.nodes.get(key)) is None:
+            node = graph.nodes[key] = DependencyContainer(key=key, provide=dependencies[key], dependencies=[])
+        return node
+
+    def get_sub_dependency_keys(key: str) -> tuple[str, ...]:
+        if (keys := adjacency.get(key)) is None:
+            keys = adjacency[key] = tuple(
+                field_name for field_name in dependencies[key].signature_model._fields if field_name in dependencies
+            )
+        return keys
+
+    for root_key in dependency_keys:
+        root = get_node(root_key)
+        graph.roots.add(root)
+        graph.paths.setdefault(root_key, (root_key,))
+
+        if states.get(root_key) == 2:
+            continue
+
+        states[root_key] = 1
+        stack: list[tuple[str, int]] = [(root_key, 0)]
+
+        while stack:
+            key, next_child_index = stack[-1]
+            sub_dependency_keys = get_sub_dependency_keys(key)
+
+            if next_child_index == len(sub_dependency_keys):
+                states[key] = 2
+                stack.pop()
+                continue
+
+            sub_dependency_key = sub_dependency_keys[next_child_index]
+            stack[-1] = (key, next_child_index + 1)
+            graph.nodes[key].dependencies.append(get_node(sub_dependency_key))
+
+            state = states.get(sub_dependency_key, 0)
+            if state == 1:
+                active_path = [active_key for active_key, _ in stack]
+                cycle_start = active_path.index(sub_dependency_key)
+                cycle = [*active_path[cycle_start:], sub_dependency_key]
+                raise ImproperlyConfiguredException(f"Dependency cycle detected: {' -> '.join(cycle)}")
+
+            if state == 0:
+                graph.paths[sub_dependency_key] = (*graph.paths[key], sub_dependency_key)
+                states[sub_dependency_key] = 1
+                stack.append((sub_dependency_key, 0))
+
+    return graph
 
 
 async def resolve_dependency(
