@@ -895,3 +895,33 @@ async def test_jwt_auth_verify_nbf(
 
     response = client.get("/", headers={"Authorization": header})
     assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize(
+    "leeway, expected_status_code",
+    [
+        pytest.param(2, 200, id="with_leeway"),
+        pytest.param(0, 401, id="without_leeway"),
+    ],
+)
+async def test_jwt_auth_leeway(
+    leeway: int,
+    expected_status_code: int,
+    create_jwt_app: CreateJWTApp,
+) -> None:
+    @dataclasses.dataclass
+    class CustomToken(Token):
+        def __post_init__(self) -> None:
+            pass
+
+    jwt_auth, client = create_jwt_app(leeway=leeway)
+
+    header = jwt_auth.format_auth_header(
+        CustomToken(
+            sub="foo",
+            exp=(datetime.now(tz=UTC) - timedelta(seconds=1)),
+        ).encode(jwt_auth.token_secret, jwt_auth.algorithm),
+    )
+
+    response = client.get("/", headers={"Authorization": header})
+    assert response.status_code == expected_status_code
