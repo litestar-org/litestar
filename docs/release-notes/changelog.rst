@@ -8,7 +8,7 @@
 
     .. change:: Add support for ``leeway`` parameter in JWT security backends
         :type: feature
-        :pr: tbd
+        :pr: 5037
         :issue: 4584
         :breaking:
 
