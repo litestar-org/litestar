@@ -21,6 +21,12 @@ if TYPE_CHECKING:
 
 __all__ = ("create_parameters_for_handler",)
 
+_DOCUMENTABLE_RESERVED_KWARGS: dict[str, ParamType] = {
+    "query": ParamType.QUERY,
+    "headers": ParamType.HEADER,
+    "cookies": ParamType.COOKIE,
+}
+
 
 class ParameterCollection:
     """Facilitates conditional deduplication of parameters.
@@ -178,6 +184,58 @@ class ParameterFactory:
         )
         return self.create_parameter(field_definition=field_definition, parameter_name=parameter_name)
 
+    def _get_model_schema(self, field_definition: FieldDefinition) -> Schema | None:
+        """Return the object schema for a model-typed reserved kwarg.
+
+        Args:
+            field_definition: The reserved kwarg field definition.
+
+        Returns:
+            The model schema, or ``None`` when the field is not an object model.
+        """
+
+        def resolve_schema(schema: Schema | Reference) -> Schema:
+            return schema if isinstance(schema, Schema) else self.context.schema_registry.from_reference(schema).schema
+
+        def find_object_schema(schema: Schema | Reference) -> Schema | None:
+            resolved_schema = resolve_schema(schema)
+            if resolved_schema.properties is not None:
+                return resolved_schema
+
+            for schema_variant in (*(resolved_schema.one_of or ()), *(resolved_schema.all_of or ())):
+                if object_schema := find_object_schema(schema_variant):
+                    return object_schema
+
+            return None
+
+        return find_object_schema(self.schema_creator.for_field_definition(field_definition))
+
+    def _create_parameters_from_model(self, field_definition: FieldDefinition, param_type: ParamType) -> None:
+        """Create parameters from the properties of a model-typed reserved kwarg.
+
+        Args:
+            field_definition: The model field definition.
+            param_type: The OpenAPI parameter location.
+        """
+        if (schema := self._get_model_schema(field_definition)) is None:
+            return
+
+        required = set(schema.required or [])
+        for parameter_name, parameter_schema in (schema.properties or {}).items():
+            description = parameter_schema.description if isinstance(parameter_schema, Schema) else None
+            if isinstance(parameter_schema, Reference):
+                description = self.context.schema_registry.from_reference(parameter_schema).schema.description
+
+            self.parameters.add(
+                Parameter(
+                    description=description,
+                    name=parameter_name,
+                    param_in=param_type,
+                    required=parameter_name in required,
+                    schema=parameter_schema,
+                )
+            )
+
     def create_parameters_for_field_definitions(self, fields: dict[str, FieldDefinition]) -> None:
         """Add Parameter models to the handler's collection for the given field definitions.
 
@@ -222,6 +280,13 @@ class ParameterFactory:
 
         for field_name, field_definition in intersection_fields:
             self.parameters.add(self.get_layered_parameter(field_name=field_name, field_definition=field_definition))
+
+        for kwarg_name, param_type in _DOCUMENTABLE_RESERVED_KWARGS.items():
+            if reserved_field_definition := fields.get(kwarg_name):
+                self._create_parameters_from_model(
+                    field_definition=reserved_field_definition,
+                    param_type=param_type,
+                )
 
     def create_parameters_for_handler(self) -> list[Parameter]:
         """Create a list of path/query/header Parameter models for the given PathHandler."""

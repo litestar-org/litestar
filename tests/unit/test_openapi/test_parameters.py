@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Annotated, Any, NewType, Optional, cast
 from uuid import UUID
 
 import pytest
+from pydantic import BaseModel, Field
 
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.datastructures import OpenAPIContext
@@ -622,3 +623,105 @@ def test_reference_parameter_keeps_component_description_when_wrapper_has_none()
     parameters = _create_parameters(app=Litestar(route_handlers=[handler]), path="/genders")
 
     assert parameters[0].description == Gender.__doc__
+
+
+def test_issue_2015_pydantic_model_query_generates_parameters() -> None:
+    # https://github.com/litestar-org/litestar/issues/2015
+    class EvenOdd(BaseModel):
+        even: Annotated[str, Field(pattern=r"^\d*[02468]$")]
+        odd: Annotated[str, Field(pattern=r"^\d*[13579]$")]
+
+    @get("/")
+    async def handler(query: EvenOdd) -> EvenOdd:
+        return query
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+
+    assert params is not None
+    param_map = {param.name: param for param in cast("list[OpenAPIParameter]", params)}
+    assert param_map["even"].param_in == ParamType.QUERY
+    assert param_map["even"].required is True
+    assert param_map["odd"].param_in == ParamType.QUERY
+    assert param_map["odd"].required is True
+
+
+def test_issue_2015_model_headers_and_cookies_generate_parameters() -> None:
+    # https://github.com/litestar-org/litestar/issues/2015
+    @dataclasses.dataclass
+    class RequestHeaders:
+        x_api_key: str
+
+    @dataclasses.dataclass
+    class RequestCookies:
+        session_id: str
+
+    @get("/")
+    async def handler(headers: RequestHeaders, cookies: RequestCookies) -> None:
+        return None
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+
+    assert params is not None
+    param_map = {param.name: param for param in cast("list[OpenAPIParameter]", params)}
+    assert param_map["x_api_key"].param_in == ParamType.HEADER
+    assert param_map["x_api_key"].required is True
+    assert param_map["session_id"].param_in == ParamType.COOKIE
+    assert param_map["session_id"].required is True
+
+
+def test_issue_2015_optional_model_query_generates_parameters() -> None:
+    # https://github.com/litestar-org/litestar/issues/2015
+    class SearchQuery(BaseModel):
+        query: str
+        page: int = 1
+
+    @get("/")
+    async def handler(query: SearchQuery | None = None) -> None:
+        return None
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+
+    assert params is not None
+    param_map = {param.name: param for param in cast("list[OpenAPIParameter]", params)}
+    assert param_map["query"].required is True
+    assert param_map["page"].required is False
+
+
+def test_issue_2015_nested_model_parameter_keeps_reference_schema() -> None:
+    # https://github.com/litestar-org/litestar/issues/2015
+    class Pagination(BaseModel):
+        page: int
+
+    class SearchQuery(BaseModel):
+        pagination: Pagination
+
+    @get("/")
+    async def handler(query: SearchQuery) -> None:
+        return None
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+
+    assert params is not None
+    param_map = {param.name: param for param in cast("list[OpenAPIParameter]", params)}
+    assert isinstance(param_map["pagination"].schema, Reference)
+
+
+def test_issue_2015_annotated_model_query_generates_parameters() -> None:
+    # https://github.com/litestar-org/litestar/issues/2015
+    class SearchQuery(BaseModel):
+        query: str
+
+    @get("/")
+    async def handler(query: Annotated[SearchQuery, QueryParameter(description="Search filters")]) -> None:
+        return None
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+
+    assert params is not None
+    param_map = {param.name: param for param in cast("list[OpenAPIParameter]", params)}
+    assert param_map["query"].param_in == ParamType.QUERY
