@@ -6,23 +6,6 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
-    .. change:: Precompute CORS ``Access-Control-Allow-Headers`` and ``Access-Control-Allow-Methods`` values
-        :type: feature
-        :breaking:
-
-        ``CORSMiddleware`` now builds the ``Access-Control-Allow-Headers`` and
-        ``Access-Control-Allow-Methods`` header values once at construction time
-        instead of re-sorting and re-joining the configured values on every
-        response, slightly reducing per-response overhead when CORS is enabled.
-
-        This only affects code that mutates the middleware's ``allow_headers`` or
-        ``allow_methods`` attributes after construction, which is no longer
-        reflected in response headers. Litestar reads
-        :class:`~litestar.config.cors.CORSConfig` exactly once at application
-        startup, and the rest of the derived CORS state (``preflight_headers``,
-        ``simple_headers`` and the compiled origin regex) was already frozen at
-        construction, so mutating configuration at runtime was never supported.
-
     .. change:: Fix ``TypeError`` when generating a schema for a union of enums
         :type: bugfix
         :pr: 4997
