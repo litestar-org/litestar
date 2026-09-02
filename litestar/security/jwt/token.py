@@ -83,11 +83,12 @@ class Token:
             raise ImproperlyConfiguredException(f"exp value must be a datetime in the future, leeway is {leeway}")
 
         if isinstance(self.iat, datetime) and (
-            (iat := _normalize_datetime(self.iat)).timestamp() <= _normalize_datetime(datetime.now(UTC)).timestamp()
+            ((iat := _normalize_datetime(self.iat)) - timedelta(seconds=leeway)).timestamp()
+            <= _normalize_datetime(datetime.now(UTC)).timestamp()
         ):
             self.iat = iat
         else:
-            raise ImproperlyConfiguredException("iat must be a current or past time")
+            raise ImproperlyConfiguredException(f"iat must be a current or past time, leeway is {leeway}")
 
     @classmethod
     def decode_payload(

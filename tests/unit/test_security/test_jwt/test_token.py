@@ -337,12 +337,28 @@ def test_token_issuer(issuer: str | list[str] | None) -> None:
     assert token.iss == iss
 
 
-def test_leeway() -> None:
+def test_leeway_exp() -> None:
     token_secret = secrets.token_hex()
     raw_token = {
         "sub": secrets.token_hex(),
         "iat": (datetime.now(UTC) - timedelta(seconds=30)),
         "exp": (datetime.now(UTC) - timedelta(seconds=1)),
+    }
+    encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
+    token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256", leeway=_LEEWAY)
+    assert token.sub == raw_token["sub"]
+    assert token.extras == {}
+
+    with pytest.raises(NotAuthorizedException):
+        Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
+
+
+def test_leeway_iat() -> None:
+    token_secret = secrets.token_hex()
+    raw_token = {
+        "sub": secrets.token_hex(),
+        "iat": (datetime.now(UTC) + timedelta(seconds=1)),
+        "exp": (datetime.now(UTC) + timedelta(seconds=30)),
     }
     encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
     token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256", leeway=_LEEWAY)
