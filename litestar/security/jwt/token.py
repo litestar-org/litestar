@@ -199,9 +199,7 @@ class Token:
                 raise ImproperlyConfiguredException(f"{_LEEWAY_EXTRA_KEY} is a reserved key and cannot be set")
 
             extras[_LEEWAY_EXTRA_KEY] = leeway
-            token = msgspec.convert(payload, cls, strict=False)
-            token.extras.pop(_LEEWAY_EXTRA_KEY, None)
-            return token
+            return msgspec.convert(payload, cls, strict=False)
         except (
             KeyError,
             jwt.exceptions.InvalidTokenError,
