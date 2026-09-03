@@ -68,7 +68,7 @@ class Token:
     """Extra fields that were found on the JWT token."""
 
     def __post_init__(self) -> None:
-        leeway = self.extras.get(_LEEWAY_EXTRA_KEY, 0)
+        leeway = self.extras.pop(_LEEWAY_EXTRA_KEY, 0)
 
         if len(self.sub) < 1:
             raise ImproperlyConfiguredException("sub must be a string with a length greater than 0")
