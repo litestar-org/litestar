@@ -5,7 +5,7 @@ import secrets
 import string
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any, Optional, TypeAlias
+from typing import TYPE_CHECKING, Any, Final, Optional, TypeAlias
 from uuid import uuid4
 
 import jwt
@@ -23,6 +23,8 @@ from litestar.testing import TestClient, create_test_client
 from tests.models import User, UserFactory
 
 if TYPE_CHECKING:
+    from time_machine import Traveller
+
     from litestar.connection import ASGIConnection
 
 
@@ -897,31 +899,33 @@ async def test_jwt_auth_verify_nbf(
     assert response.status_code == expected_status_code
 
 
+_LEEWAY: Final = 2
+
+
 @pytest.mark.parametrize(
-    "leeway, expected_status_code",
+    "seconds, expected_status_code",
     [
-        pytest.param(2, 200, id="with_leeway"),
-        pytest.param(0, 401, id="without_leeway"),
+        pytest.param(_LEEWAY - 1, 200, id="with_leeway"),
+        pytest.param(_LEEWAY, 401, id="at_leeway"),
+        pytest.param(_LEEWAY + 1, 401, id="past_leeway"),
     ],
 )
 async def test_jwt_auth_leeway(
-    leeway: int,
+    seconds: int,
     expected_status_code: int,
     create_jwt_app: CreateJWTApp,
+    frozen_datetime: "Traveller",
 ) -> None:
-    @dataclasses.dataclass
-    class CustomToken(Token):
-        def __post_init__(self) -> None:
-            pass
-
-    jwt_auth, client = create_jwt_app(leeway=leeway)
+    jwt_auth, client = create_jwt_app(leeway=_LEEWAY)
 
     header = jwt_auth.format_auth_header(
-        CustomToken(
+        Token(
             sub="foo",
-            exp=(datetime.now(tz=UTC) - timedelta(seconds=1)),
+            exp=datetime.now(tz=UTC),
         ).encode(jwt_auth.token_secret, jwt_auth.algorithm),
     )
+
+    frozen_datetime.shift(seconds)
 
     response = client.get("/", headers={"Authorization": header})
     assert response.status_code == expected_status_code

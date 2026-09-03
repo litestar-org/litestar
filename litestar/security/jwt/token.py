@@ -4,7 +4,7 @@ import dataclasses
 from collections.abc import Sequence  # noqa: TC003
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any, Final, TypedDict
 
 import jwt
 import msgspec
@@ -19,7 +19,7 @@ __all__ = (
     "Token",
 )
 
-_LEEWAY_EXTRA_KEY = "__leeway__"
+_LEEWAY_EXTRA_KEY: Final = "__leeway__"
 
 
 def _normalize_datetime(value: datetime) -> datetime:
