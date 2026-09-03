@@ -917,6 +917,8 @@ async def test_jwt_auth_leeway(
     create_jwt_app: CreateJWTApp,
     frozen_datetime: "Traveller",
 ) -> None:
+    # According to RFC 7519 and PyJWT implementation, a token is expired ON OR AFTER (exp + leeway).
+    # So the exact moment it hits the deadline, it must return 401.
     jwt_auth, client = create_jwt_app(leeway=_LEEWAY)
 
     header = jwt_auth.format_auth_header(
