@@ -68,7 +68,6 @@ class Token:
     """Extra fields that were found on the JWT token."""
 
     def __post_init__(self) -> None:
-        # using extras because of msgspec.convert in decode method below doesn't support InitVar
         leeway = self.extras.get(_LEEWAY_EXTRA_KEY, 0)
 
         if len(self.sub) < 1:

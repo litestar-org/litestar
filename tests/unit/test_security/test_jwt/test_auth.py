@@ -902,6 +902,7 @@ async def test_jwt_auth_verify_nbf(
 _LEEWAY: Final = 2
 
 
+@pytest.mark.time_machine(datetime(2026, 9, 3))
 @pytest.mark.parametrize(
     "seconds, expected_status_code",
     [
