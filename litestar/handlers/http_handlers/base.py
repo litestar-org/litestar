@@ -720,7 +720,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_data: Any = None
         parameter_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
 
-        if before_request_handler := self.resolve_before_request():
+        if before_request_handler := self.before_request:
             response_data = await before_request_handler(request)
 
         # create and enter an AsyncExit stack as we may or may not have a
