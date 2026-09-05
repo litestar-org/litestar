@@ -50,7 +50,7 @@ brotli = ["brotli"]
 zstd = [
     "backports-zstd>=1.3.0; python_version < '3.14'",
 ]
-cli = ["click", "jsbeautifier", "rich>=13.0.0", "rich-click>=1.9", "uvicorn[standard]"]
+cli = ["click", "jsbeautifier", "rich>=13.0.0", "rich-click>=1.9.9", "uvicorn[standard]"]
 cryptography = ["cryptography"]
 full = [
   """litestar[annotated-types, \
