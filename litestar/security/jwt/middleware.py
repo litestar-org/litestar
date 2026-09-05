@@ -28,6 +28,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     __slots__ = (
         "algorithm",
         "auth_header",
+        "leeway",
         "require_claims",
         "retrieve_user_handler",
         "revoked_token_handler",
@@ -59,6 +60,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         verify_not_before: bool = True,
         strict_audience: bool = False,
         revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]] | None = None,
+        leeway: int = 0,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
         from persistence using the provided function.
@@ -90,6 +92,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
                 ``accepted_audiences`` is a sequence of length 1
             revoked_token_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a boolean
                 indicating whether the token has been revoked.
+            leeway: A number of potential seconds as a clock error for expired tokens.
         """
         super().__init__(
             app=app,
@@ -110,6 +113,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         self.verify_expiry = verify_expiry
         self.verify_not_before = verify_not_before
         self.strict_audience = strict_audience
+        self.leeway = leeway
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
@@ -155,6 +159,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             verify_exp=self.verify_expiry,
             verify_nbf=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
         user = await self.retrieve_user_handler(token, connection)
@@ -194,6 +199,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         verify_not_before: bool = True,
         strict_audience: bool = False,
         revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]] | None = None,
+        leeway: int = 0,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header or cookie name specified, and if present
         retrieves the user from persistence using the provided function.
@@ -226,6 +232,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
                 ``accepted_audiences`` is a sequence of length 1
             revoked_token_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a boolean
                 indicating whether the token has been revoked.
+            leeway: A number of potential seconds as a clock error for expired tokens.
         """
         super().__init__(
             algorithm=algorithm,
@@ -245,6 +252,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             verify_expiry=verify_expiry,
             verify_not_before=verify_not_before,
             strict_audience=strict_audience,
+            leeway=leeway,
         )
         self.auth_cookie_key = auth_cookie_key
 

@@ -15,6 +15,7 @@ class CustomToken(Token):
         issuer: Optional[List[str]] = None,
         audience: Union[str, Sequence[str], None] = None,
         options: Optional[JWTDecodeOptions] = None,
+        leeway: int = 0,
     ) -> Any:
         payload = super().decode_payload(
             encoded_token=encoded_token,
@@ -23,6 +24,7 @@ class CustomToken(Token):
             issuer=issuer,
             audience=audience,
             options=options,
+            leeway=leeway,
         )
         payload["sub"] = payload["sub"].split("@", maxsplit=1)[1]
         return payload

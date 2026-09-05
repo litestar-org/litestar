@@ -71,6 +71,8 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
     """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
+    leeway: int = 0
+    """The number of potential seconds as a clock error for expired tokens."""
     accepted_audiences: Sequence[str] | None = None
     """Audiences to accept when verifying the token. If given, and the audience in the
     token does not match, a 401 response is returned
@@ -150,6 +152,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             verify_expiry=self.verify_expiry,
             verify_not_before=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
     def login(
@@ -323,6 +326,8 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
+    leeway: int = 0
+    """The number of potential seconds as a clock error for expired tokens."""
     accepted_audiences: Sequence[str] | None = None
     """Audiences to accept when verifying the token. If given, and the audience in the
     token does not match, a 401 response is returned
@@ -427,6 +432,8 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
+    leeway: int = 0
+    """The number of potential seconds as a clock error for expired tokens."""
     accepted_audiences: Sequence[str] | None = None
     """Audiences to accept when verifying the token. If given, and the audience in the
     token does not match, a 401 response is returned
@@ -496,6 +503,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
             verify_expiry=self.verify_expiry,
             verify_not_before=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
     def login(
@@ -667,6 +675,8 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
+    leeway: int = 0
+    """The number of potential seconds as a clock error for expired tokens."""
     accepted_audiences: Sequence[str] | None = None
     """Audiences to accept when verifying the token. If given, and the audience in the
     token does not match, a 401 response is returned
@@ -716,6 +726,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
             verify_expiry=self.verify_expiry,
             verify_not_before=self.verify_not_before,
             strict_audience=self.strict_audience,
+            leeway=self.leeway,
         )
 
     @property

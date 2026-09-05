@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import dataclasses
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, TypedDict, Union
+from datetime import datetime, timedelta
+from datetime import timezone
+from typing import Dict, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, Final, TypedDict
 
 import jwt
 import msgspec
@@ -17,6 +19,8 @@ __all__ = (
     "JWTDecodeOptions",
     "Token",
 )
+
+_LEEWAY_EXTRA_KEY: Final = "__leeway__"
 
 
 def _normalize_datetime(value: datetime) -> datetime:
@@ -65,24 +69,26 @@ class Token:
     """Extra fields that were found on the JWT token."""
 
     def __post_init__(self) -> None:
+        leeway = self.extras.pop(_LEEWAY_EXTRA_KEY, 0)
+
         if len(self.sub) < 1:
             raise ImproperlyConfiguredException("sub must be a string with a length greater than 0")
 
         if isinstance(self.exp, datetime) and (
-            (exp := _normalize_datetime(self.exp)).timestamp()
+            ((exp := _normalize_datetime(self.exp)) + timedelta(seconds=leeway)).timestamp()
             >= _normalize_datetime(datetime.now(timezone.utc)).timestamp()
         ):
             self.exp = exp
         else:
-            raise ImproperlyConfiguredException("exp value must be a datetime in the future")
+            raise ImproperlyConfiguredException(f"exp value must be a datetime in the future, leeway is {leeway}")
 
         if isinstance(self.iat, datetime) and (
-            (iat := _normalize_datetime(self.iat)).timestamp()
+            ((iat := _normalize_datetime(self.iat)) - timedelta(seconds=leeway)).timestamp()
             <= _normalize_datetime(datetime.now(timezone.utc)).timestamp()
         ):
             self.iat = iat
         else:
-            raise ImproperlyConfiguredException("iat must be a current or past time")
+            raise ImproperlyConfiguredException(f"iat must be a current or past time, leeway is {leeway}")
 
     @classmethod
     def decode_payload(
@@ -93,6 +99,7 @@ class Token:
         issuer: str | Sequence[str] | None = None,
         audience: str | Sequence[str] | None = None,
         options: JWTDecodeOptions | None = None,
+        leeway: int = 0,
     ) -> Any:
         """Decode and verify the JWT and return its payload"""
         return jwt.decode(
@@ -102,6 +109,7 @@ class Token:
             issuer=issuer,  # type: ignore[arg-type]
             audience=audience,
             options=options,  # type: ignore[arg-type]
+            leeway=leeway,
         )
 
     @classmethod
@@ -116,6 +124,7 @@ class Token:
         verify_exp: bool = True,
         verify_nbf: bool = True,
         strict_audience: bool = False,
+        leeway: int = 0,
     ) -> Self:
         """Decode a passed in token string and return a Token instance.
 
@@ -138,6 +147,7 @@ class Token:
                 a single value, and not a list of values, and matches ``audience``
                 exactly. Requires the value passed to the ``audience`` to be a sequence
                 of length 1
+            leeway: The number of potential seconds as a clock error for expired tokens.
 
         Returns:
             A decoded Token instance.
@@ -173,6 +183,7 @@ class Token:
                 audience=audience,
                 issuer=issuer,
                 options=options,
+                leeway=leeway,
             )
             # msgspec can do these conversions as well, but to keep backwards
             # compatibility, we do it ourselves, since the datetime parsing works a
@@ -184,6 +195,11 @@ class Token:
             extras = payload.setdefault("extras", {})
             for key in extra_fields:
                 extras[key] = payload.pop(key)
+
+            if _LEEWAY_EXTRA_KEY in extras:
+                raise ImproperlyConfiguredException(f"{_LEEWAY_EXTRA_KEY} is a reserved key and cannot be set")
+
+            extras[_LEEWAY_EXTRA_KEY] = leeway
             return msgspec.convert(payload, cls, strict=False)
         except (
             KeyError,
