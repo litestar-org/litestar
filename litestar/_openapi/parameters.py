@@ -7,6 +7,7 @@ from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.constants import RESERVED_KWARGS
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.openapi.spec.enums import OpenAPIType
 from litestar.openapi.spec.parameter import Parameter
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
@@ -197,18 +198,39 @@ class ParameterFactory:
         def resolve_schema(schema: Schema | Reference) -> Schema:
             return schema if isinstance(schema, Schema) else self.context.schema_registry.from_reference(schema).schema
 
-        def find_object_schema(schema: Schema | Reference) -> Schema | None:
+        def find_object_schemas(schema: Schema | Reference, seen: set[int]) -> tuple[list[Schema], bool]:
             resolved_schema = resolve_schema(schema)
+            if id(resolved_schema) in seen:
+                return [], False
+            seen.add(id(resolved_schema))
+
             if resolved_schema.properties is not None:
-                return resolved_schema
+                return [resolved_schema], False
 
-            for schema_variant in (*(resolved_schema.one_of or ()), *(resolved_schema.all_of or ())):
-                if object_schema := find_object_schema(schema_variant):
-                    return object_schema
+            if resolved_schema.type == OpenAPIType.NULL:
+                return [], False
 
-            return None
+            object_schemas = []
+            has_unsupported_schema = False
+            schema_variants = (
+                *(resolved_schema.one_of or ()),
+                *(resolved_schema.any_of or ()),
+                *(resolved_schema.all_of or ()),
+            )
+            if not schema_variants:
+                return [], True
 
-        return find_object_schema(self.schema_creator.for_field_definition(field_definition))
+            for schema_variant in schema_variants:
+                schemas, unsupported = find_object_schemas(schema_variant, seen)
+                object_schemas.extend(schemas)
+                has_unsupported_schema |= unsupported
+
+            return object_schemas, has_unsupported_schema
+
+        object_schemas, has_unsupported_schema = find_object_schemas(
+            self.schema_creator.for_field_definition(field_definition), set()
+        )
+        return object_schemas[0] if len(object_schemas) == 1 and not has_unsupported_schema else None
 
     def _create_parameters_from_model(self, field_definition: FieldDefinition, param_type: ParamType) -> None:
         """Create parameters from the properties of a model-typed reserved kwarg.
@@ -221,7 +243,16 @@ class ParameterFactory:
             return
 
         required = set(schema.required or [])
+        property_fields = self.context.schema_registry.get_property_fields_for_schema(schema)
         for parameter_name, parameter_schema in (schema.properties or {}).items():
+            property_field = property_fields.get(parameter_name) if property_fields else None
+            if (
+                property_field is not None
+                and isinstance(property_field.kwarg_definition, ParameterKwarg)
+                and not property_field.kwarg_definition.include_in_schema
+            ):
+                continue
+
             description = parameter_schema.description if isinstance(parameter_schema, Schema) else None
             if isinstance(parameter_schema, Reference):
                 description = self.context.schema_registry.from_reference(parameter_schema).schema.description
@@ -283,6 +314,12 @@ class ParameterFactory:
 
         for kwarg_name, param_type in _DOCUMENTABLE_RESERVED_KWARGS.items():
             if reserved_field_definition := fields.get(kwarg_name):
+                if (
+                    isinstance(kwarg_definition := reserved_field_definition.kwarg_definition, ParameterKwarg)
+                    and not kwarg_definition.include_in_schema
+                ):
+                    continue
+
                 self._create_parameters_from_model(
                     field_definition=reserved_field_definition,
                     param_type=param_type,

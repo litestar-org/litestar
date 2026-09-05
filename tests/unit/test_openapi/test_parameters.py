@@ -725,3 +725,64 @@ def test_issue_2015_annotated_model_query_generates_parameters() -> None:
     assert params is not None
     param_map = {param.name: param for param in cast("list[OpenAPIParameter]", params)}
     assert param_map["query"].param_in == ParamType.QUERY
+
+
+def test_issue_2015_reserved_model_respects_include_in_schema() -> None:
+    class SearchQuery(BaseModel):
+        query: str
+
+    @get("/")
+    async def handler(query: Annotated[SearchQuery, QueryParameter(include_in_schema=False)]) -> None:
+        return None
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+
+    assert not params
+
+
+def test_issue_2015_union_model_query_is_not_partially_documented() -> None:
+    class SearchQuery(BaseModel):
+        query: str
+
+    class PaginationQuery(BaseModel):
+        page: int
+
+    @get("/")
+    async def handler(query: SearchQuery | PaginationQuery) -> None:
+        return None
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+
+    assert not params
+
+
+def test_issue_2015_model_union_with_scalar_is_not_partially_documented() -> None:
+    class SearchQuery(BaseModel):
+        query: str
+
+    @get("/")
+    async def handler(query: SearchQuery | str) -> None:
+        return None
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+
+    assert not params
+
+
+def test_issue_2015_model_property_respects_include_in_schema() -> None:
+    class SearchQuery(BaseModel):
+        visible: str
+        hidden: Annotated[str, QueryParameter(include_in_schema=False)]
+
+    @get("/")
+    async def handler(query: SearchQuery) -> None:
+        return None
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/"].get.parameters  # type: ignore[index, union-attr]
+
+    assert params is not None
+    assert {param.name for param in cast("list[OpenAPIParameter]", params)} == {"visible"}

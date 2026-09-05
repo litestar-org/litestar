@@ -9,7 +9,7 @@ from litestar.openapi.spec import Reference, Schema
 from litestar.params import KwargDefinition
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
+    from collections.abc import Iterator, Mapping, Sequence
 
     from litestar.openapi import OpenAPIConfig
     from litestar.plugins import OpenAPISchemaPlugin
@@ -73,17 +73,25 @@ def _get_normalized_schema_key(field_definition: FieldDefinition) -> tuple[str, 
 class RegisteredSchema:
     """Object to store a schema and any references to it."""
 
-    def __init__(self, key: tuple[str, ...], schema: Schema, references: list[Reference]) -> None:
+    def __init__(
+        self,
+        key: tuple[str, ...],
+        schema: Schema,
+        references: list[Reference],
+        property_fields: Mapping[str, FieldDefinition] | None = None,
+    ) -> None:
         """Create a new RegisteredSchema object.
 
         Args:
             key: The key used to register the schema.
             schema: The schema object.
             references: A list of references to the schema.
+            property_fields: The field definitions used to create the schema's properties.
         """
         self.key = key
         self.schema = schema
         self.references = references
+        self.property_fields = property_fields
 
 
 class SchemaRegistry:
@@ -104,18 +112,25 @@ class SchemaRegistry:
         self._model_name_groups: defaultdict[str, list[RegisteredSchema]] = defaultdict(list)
         self._component_type_map: dict[tuple[str, ...], FieldDefinition] = {}
 
-    def get_schema_for_field_definition(self, field: FieldDefinition) -> Schema:
+    def get_schema_for_field_definition(
+        self,
+        field: FieldDefinition,
+        property_fields: Mapping[str, FieldDefinition] | None = None,
+    ) -> Schema:
         """Get a registered schema by its key.
 
         Args:
             field: The field definition to get the schema for
+            property_fields: The field definitions used to create the schema's properties.
 
         Returns:
             A RegisteredSchema object.
         """
         key = _get_normalized_schema_key(field)
         if key not in self._schema_key_map:
-            self._schema_key_map[key] = registered_schema = RegisteredSchema(key, Schema(), [])
+            self._schema_key_map[key] = registered_schema = RegisteredSchema(
+                key, Schema(), [], property_fields=property_fields
+            )
             self._model_name_groups[key[-1]].append(registered_schema)
             self._component_type_map[key] = field
         else:
@@ -124,7 +139,27 @@ class SchemaRegistry:
                     f"Schema component keys must be unique. Cannot override existing key {'_'.join(key)!r} for type "
                     f"{existing_type.raw!r} with new type {field.raw!r}"
                 )
+            if property_fields is not None:
+                self._schema_key_map[key].property_fields = property_fields
         return self._schema_key_map[key].schema
+
+    def get_property_fields_for_schema(self, schema: Schema) -> Mapping[str, FieldDefinition] | None:
+        """Return the field definitions used to create a registered schema's properties.
+
+        Args:
+            schema: The registered schema.
+
+        Returns:
+            The schema's property field definitions, or ``None`` if the schema is not registered.
+        """
+        return next(
+            (
+                registered_schema.property_fields
+                for registered_schema in self._schema_key_map.values()
+                if registered_schema.schema is schema
+            ),
+            None,
+        )
 
     def get_reference_for_field_definition(self, field: FieldDefinition) -> Reference | None:
         """Get a reference to a registered schema by its key.

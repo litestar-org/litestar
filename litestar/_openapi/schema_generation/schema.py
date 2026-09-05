@@ -717,7 +717,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        schema = self.schema_registry.get_schema_for_field_definition(type_)
+        schema = self.schema_registry.get_schema_for_field_definition(type_, property_fields=property_fields)
         schema.title = title or _get_type_schema_name(type_)
         schema.required = required
         schema.type = openapi_type
