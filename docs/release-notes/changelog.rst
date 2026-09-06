@@ -49,6 +49,52 @@
         plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
         ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
 
+    .. change:: Migrate ``SessionMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 5060
+        :issue: 4009
+        :breaking:
+
+        :class:`~litestar.middleware.session.base.SessionMiddleware` has been moved from the
+        legacy ``AbstractMiddleware`` base to :class:`~litestar.middleware.ASGIMiddleware`,
+        as part of migrating all built-in middleware off the legacy bases.
+
+        The middleware still takes a session backend, which keeps receiving its
+        configuration unchanged, but no longer wraps an ``app``. The ``middleware``
+        property of :class:`~litestar.middleware.session.server_side.ServerSideSessionConfig`
+        and :class:`~litestar.middleware.session.client_side.CookieBackendConfig` now returns
+        a ``SessionMiddleware`` instance instead of a ``DefineMiddleware`` wrapping it, so
+        applications using ``middleware=[session_config.middleware]`` are unaffected. Code
+        that constructed the middleware directly, or introspected the ``DefineMiddleware``,
+        must be updated:
+
+        .. code-block:: python
+
+            # before
+            middleware = SessionMiddleware(app=next_app, backend=backend)
+            backend = session_config.middleware.kwargs["backend"]
+
+            # after
+            middleware = SessionMiddleware(backend=backend)
+            asgi_app = middleware(next_app)
+            backend = session_config.middleware.backend
+
+        Two behavioural changes for excluded routes:
+
+        - ``exclude`` patterns are now matched against the **handler's path template**
+          (e.g. ``/user/{user_id:int}``) at startup, instead of the request path (e.g.
+          ``/user/1``) at runtime. Since the template includes the names and types of
+          path parameters, unanchored patterns should be anchored.
+        - Handlers excluded via ``exclude`` or ``exclude_opt_key`` now bypass the
+          middleware entirely at startup rather than per request.
+
+        Since ``ASGIMiddleware.__call__`` returns a closure rather than the middleware
+        instance, a middleware stack can no longer be introspected by walking the ``.app``
+        attribute of each layer.
+
+        .. seealso::
+            :ref:`asgi-middleware-migration`
+
     .. change:: Migrate ``ResponseCacheMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 4953
