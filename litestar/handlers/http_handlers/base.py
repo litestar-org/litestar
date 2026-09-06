@@ -99,6 +99,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_kwargs_models",
         "_request_class",
         "_request_max_body_size",
+        "_resolved_before_request",
         "_response_class",
         "_response_type_handler",
         "_sync_to_thread",
@@ -305,6 +306,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.background = background
         self.before_request: AsyncBeforeRequestHookHandler | None = (
             ensure_async_callable(before_request) if before_request else None
+        )
+        self._resolved_before_request: AsyncAnyCallable | None = (
+            self.resolve_before_request()
+            if type(self).resolve_before_request is not HTTPRouteHandler.resolve_before_request
+            else self.before_request
         )
         self.cache = cache
         self.cache_control = cache_control
@@ -720,7 +726,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_data: Any = None
         parameter_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
 
-        if before_request_handler := self.before_request:
+        if before_request_handler := self._resolved_before_request:
             response_data = await before_request_handler(request)
 
         # create and enter an AsyncExit stack as we may or may not have a
