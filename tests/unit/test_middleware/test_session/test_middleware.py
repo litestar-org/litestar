@@ -1,13 +1,16 @@
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
-from litestar import HttpMethod, Request, Response, get, post, route
+from litestar import HttpMethod, Request, Response, WebSocket, asgi, get, post, route
+from litestar.enums import ScopeType
 from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
 from litestar.types import Empty
 
 if TYPE_CHECKING:
     from litestar.middleware.session.base import BaseBackendConfig
+    from litestar.types import Receive, Scope, Send
 
 
 def test_session_middleware_not_installed_raises() -> None:
@@ -210,3 +213,39 @@ def test_does_not_override_cookies(session_backend_config_memory: "ServerSideSes
     with create_test_client(index, middleware=[session_backend_config_memory.middleware]) as client:
         res = client.get("/")
         assert res.cookies.get("foo") == "bar"
+
+
+def test_empty_exclude_list_does_not_disable_middleware(
+    session_backend_config_memory: "ServerSideSessionConfig",
+) -> None:
+    session_backend_config_memory.exclude = []
+
+    @get("/")
+    def handler(request: Request) -> None:
+        request.session["foo"] = "bar"
+
+    with create_test_client(handler, middleware=[session_backend_config_memory.middleware]) as client:
+        client.get("/")
+        assert client.cookies.get("session")
+
+
+def test_scopes_filter_connections_inside_asgi_mounts(session_backend_config_memory: "ServerSideSessionConfig") -> None:
+    session_backend_config_memory.scopes = {ScopeType.HTTP}
+
+    @asgi("/mount", is_mount=True)
+    async def mounted_handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        session = str(scope.get("session"))
+        if scope["type"] == ScopeType.WEBSOCKET:
+            socket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
+            await socket.accept()
+            await socket.send_text(session)
+            await socket.close()
+            return
+        await ASGIResponse(body=session.encode())(scope, receive, send)
+
+    with create_test_client(
+        route_handlers=[mounted_handler], middleware=[session_backend_config_memory.middleware]
+    ) as client:
+        assert client.get("/mount/http").text == "{}"
+        with client.websocket_connect("/mount/ws") as ws:
+            assert ws.receive_text() == "None"
