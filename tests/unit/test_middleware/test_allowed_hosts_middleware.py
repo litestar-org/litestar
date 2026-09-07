@@ -74,6 +74,10 @@ def test_allowed_hosts_middleware_redirect_regex() -> None:
         ("http://moisheAzuchmir.com", None, HTTP_400_BAD_REQUEST),
         ("http://x.moishe.zuchmir.com", None, HTTP_400_BAD_REQUEST),
         (None, "x.example.com", HTTP_400_BAD_REQUEST),
+        # the port is not part of the host and must be stripped before matching
+        ("http://x.example.com:8000", None, HTTP_200_OK),
+        ("http://moishe.zuchmir.com:8000", None, HTTP_200_OK),
+        ("http://x.moishe.zuchmir.com:8000", None, HTTP_400_BAD_REQUEST),
     ],
 )
 def test_middleware_allowed_hosts(
