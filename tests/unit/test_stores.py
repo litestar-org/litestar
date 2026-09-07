@@ -258,6 +258,29 @@ async def test_redis_hash_strategy_rejects_unsupported_server() -> None:
         await store.__aenter__()
 
 
+@pytest.mark.parametrize("namespace_strategy", ["auto", "hash"])
+async def test_redis_strategy_handles_missing_server_version(
+    namespace_strategy: RedisStoreNamespaceStrategy,
+) -> None:
+    redis = MagicMock()
+    redis.info = AsyncMock(side_effect=ConnectionError("INFO is unavailable"))
+    store = RedisStore(redis=redis, namespace_strategy=namespace_strategy)
+
+    if namespace_strategy == "hash":
+        with pytest.raises(ImproperlyConfiguredException, match="requires a Redis server version"):
+            await store.__aenter__()
+    else:
+        await store.__aenter__()
+        assert store._resolved_namespace_strategy == "keys"
+
+
+async def test_redis_strategy_rejects_invalid_value() -> None:
+    redis = MagicMock()
+
+    with pytest.raises(ValueError, match="namespace_strategy must be one of"):
+        RedisStore(redis=redis, namespace_strategy="invalid")  # type: ignore[arg-type]
+
+
 @pytest.mark.parametrize("namespace_strategy", ["hash", "auto"])
 async def test_redis_hash_strategy_resolves_after_adding_namespace(
     namespace_strategy: RedisStoreNamespaceStrategy,

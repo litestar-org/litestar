@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Literal, cast, overload
 
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool
+from redis.exceptions import RedisError
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty, EmptyType
@@ -69,6 +70,8 @@ class RedisStore(NamespacedStore):
             handle_client_shutdown: If ``True``, handle the shutdown of the `redis` instance automatically during the store's lifespan. Should be set to `True` unless the shutdown is handled externally
             namespace_strategy: One of ``"keys"``, ``"hash"``, or ``"auto"``.
         """
+        if namespace_strategy not in ("keys", "hash", "auto"):
+            raise ValueError("namespace_strategy must be one of 'keys', 'hash', or 'auto'")
         self._redis = redis
         self.namespace: str | None = value_or_default(namespace, "LITESTAR")
         self.handle_client_shutdown = handle_client_shutdown
@@ -261,10 +264,18 @@ class RedisStore(NamespacedStore):
         if self._resolved_namespace_strategy is not None:
             return self._resolved_namespace_strategy
 
-        server_info = await self._redis.info("server")
-        version_text = cast("str", server_info["redis_version"])
-        major, minor, *_ = version_text.split(".")
-        self._redis_version = (int(major), int(minor))
+        try:
+            server_info = await self._redis.info("server")
+            version_text = cast("str", server_info["redis_version"])
+            major, minor, *_ = version_text.split(".")
+            self._redis_version = (int(major), int(minor))
+        except (ConnectionError, KeyError, OSError, RedisError, TypeError, ValueError):
+            if self.namespace_strategy == "hash":
+                raise ImproperlyConfiguredException(
+                    "The hash namespace strategy requires a Redis server version"
+                ) from None
+            self._resolved_namespace_strategy = "keys"
+            return self._resolved_namespace_strategy
 
         if self._redis_version < _HASH_FIELD_EXPIRATION_MIN_VERSION:
             if self.namespace_strategy == "hash":
