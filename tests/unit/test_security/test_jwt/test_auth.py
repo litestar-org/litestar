@@ -416,7 +416,6 @@ def test_jwt_auth_openapi() -> None:
             "BearerToken": {
                 "type": "http",
                 "description": "JWT api-key authentication and authorization.",
-                "name": "Authorization",
                 "scheme": "Bearer",
                 "bearerFormat": "JWT",
             }
@@ -437,7 +436,6 @@ def test_jwt_auth_openapi() -> None:
                 "BearerToken": {
                     "type": "http",
                     "description": "JWT api-key authentication and authorization.",
-                    "name": "Authorization",
                     "scheme": "Bearer",
                     "bearerFormat": "JWT",
                 }
