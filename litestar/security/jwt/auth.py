@@ -109,7 +109,6 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="http",
                     scheme="Bearer",
-                    name=self.auth_header,
                     bearer_format="JWT",
                     description=self.description,
                 )
