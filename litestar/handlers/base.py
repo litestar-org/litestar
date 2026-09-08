@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import functools
-import itertools
 from functools import partial
 from typing import TYPE_CHECKING, Any, NoReturn, cast
 
@@ -46,14 +45,10 @@ if TYPE_CHECKING:
 
 __all__ = ("BaseRouteHandler",)
 
-_handler_instance_counter = itertools.count()
-"""Source of process-wide unique instance identifiers for :attr:`BaseRouteHandler.handler_id`.
-
-``id()`` is not usable for this: CPython may reuse the address of a garbage collected
-handler instance, so two distinct handlers with the same ``str(self)`` (e.g. two
-handlers built from same-named local functions across parametrized test runs) can end
-up with colliding ``handler_id`` values and share DTO/signature caches keyed by it.
-"""
+# Process-wide source of instance numbers for ``BaseRouteHandler.handler_id``. ``id(self)`` is not
+# usable for that: CPython reuses the address of a garbage collected handler, so two handlers
+# built from same-named functions could share the DTO and signature caches keyed by handler_id.
+_instance_ids = iter(range(1 << 63))
 
 
 class BaseRouteHandler:
@@ -139,7 +134,7 @@ class BaseRouteHandler:
         self._parsed_data_field: FieldDefinition | None | EmptyType = Empty
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
         self._resolved_signature_model: type[SignatureModel] | EmptyType = Empty
-        self._instance_id = next(_handler_instance_counter)
+        self._instance_id: int | EmptyType = Empty
 
         self.dependencies = (
             {
@@ -242,6 +237,8 @@ class BaseRouteHandler:
     @property
     def handler_id(self) -> str:
         """A unique identifier used for generation of DTOs."""
+        if self._instance_id is Empty:
+            self._instance_id = next(_instance_ids)
         return f"{self!s}::{self._instance_id}"
 
     @property
