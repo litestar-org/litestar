@@ -49,6 +49,75 @@
         plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
         ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
 
+    .. change:: Migrate ``AbstractAuthenticationMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 5061
+        :issue: 4009
+        :breaking:
+
+        :class:`~litestar.middleware.authentication.AbstractAuthenticationMiddleware`, and
+        with it ``JWTAuthenticationMiddleware``, ``JWTCookieAuthenticationMiddleware`` and
+        ``SessionAuthMiddleware``, have been moved from the legacy ``__call__`` based
+        middleware shape to :class:`~litestar.middleware.ASGIMiddleware`, as part of
+        migrating all built-in middleware off the legacy bases.
+
+        Applications that configure authentication through
+        :class:`~litestar.security.jwt.JWTAuth`, :class:`~litestar.security.jwt.JWTCookieAuth`,
+        :class:`~litestar.security.jwt.OAuth2PasswordBearerAuth` or
+        :class:`~litestar.security.session_auth.SessionAuth` are unaffected. Their
+        ``middleware`` property now returns a middleware instance instead of a
+        ``DefineMiddleware``.
+
+        Subclasses of ``AbstractAuthenticationMiddleware`` keep implementing
+        ``authenticate_request``, but the ``app`` argument is gone from the constructor,
+        the remaining arguments are keyword-only, and the middleware is registered as an
+        instance:
+
+        .. code-block:: python
+
+            # before
+            middleware = DefineMiddleware(MyAuthenticationMiddleware, exclude="schema")
+
+            # after
+            middleware = MyAuthenticationMiddleware(exclude="schema")
+
+        Two behavioural changes for excluded routes:
+
+        - ``exclude`` patterns are now matched against the **handler's path template**
+          (e.g. ``/user/{user_id:int}``) at startup, instead of the request path (e.g.
+          ``/user/1``) at runtime. Since the template includes the names and types of
+          path parameters, unanchored patterns should be anchored: ``exclude="schema"``
+          would also exclude a handler for ``/items/{schema_id:int}``.
+        - Handlers excluded via ``exclude`` or the exclude opt key now bypass the
+          middleware entirely at startup rather than per request.
+        - An empty ``exclude`` (``[]`` or ``""``) now excludes nothing, where it
+          previously matched every path and disabled authentication entirely.
+
+        Registering a subclass by passing the class itself in ``middleware=[...]`` is no
+        longer supported; pass an instance.
+
+        ``SessionAuth`` no longer wraps the session middleware inside its authentication
+        middleware. ``SessionAuth.on_app_init`` registers the session middleware and the
+        authentication middleware as two application-level middleware, and
+        ``SessionAuth.middleware`` returns the authentication middleware only, so using it
+        on a handler or router requires the session middleware to be installed on the
+        application. As a side effect, the ``litestar sessions`` CLI commands now also work
+        for applications configured through ``SessionAuth``.
+
+        The :class:`~litestar.plugins.flash.FlashPlugin` requires a session middleware on
+        the application and no longer accepts ``SessionAuth.middleware`` in its place.
+
+        Since the authentication middleware is now registered as an instance,
+        :class:`~litestar.middleware.constraints.MiddlewareConstraints` referencing
+        ``AbstractAuthenticationMiddleware`` now also apply to the middleware created by
+        these configurations, where they were previously not matched. Note that
+        ``on_app_init`` registers the authentication middleware first, so a constraint
+        requiring another middleware to run before it can only be satisfied by registering
+        the middleware manually.
+
+        .. seealso::
+            :ref:`asgi-middleware-migration`
+
     .. change:: Migrate ``SessionMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 5060
