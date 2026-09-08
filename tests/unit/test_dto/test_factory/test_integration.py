@@ -19,6 +19,7 @@ from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType
+from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.spec.response import OpenAPIResponse
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
@@ -1136,3 +1137,47 @@ def test_forbid_unknown_fields(
     with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"bar": "hello", "baz": "given"})
         assert response.status_code == expected_status_code
+
+
+def test_forbid_unknown_fields_handler_id_does_not_depend_on_id(
+    use_experimental_dto_backend: bool, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Regression test for a flake in ``test_forbid_unknown_fields``.
+
+    ``BaseRouteHandler.handler_id`` used to be ``f"{self!s}::{id(self)}"``. ``str(self)`` is
+    derived only from the handler function's module and qualname, so two handlers built from
+    same-named local functions produce identical ``str(self)``, and once the first handler is
+    garbage collected CPython may reuse its address, so ``id(self)`` collided too. Both handlers
+    then shared one key in ``AbstractDTO._dto_backends`` and the second silently reused the first
+    handler's cached backend. Forcing ``id`` to collide makes that failure deterministic.
+    """
+    import litestar.handlers.base as handlers_base
+
+    monkeypatch.setattr(handlers_base, "id", lambda obj: 0, raising=False)
+
+    def _make_handler(forbid_unknown_fields: bool) -> HTTPRouteHandler:
+        @dataclass
+        class Foo:
+            bar: str
+
+        config = DTOConfig(
+            forbid_unknown_fields=forbid_unknown_fields,
+            experimental_codegen_backend=use_experimental_dto_backend,
+        )
+        dto = DataclassDTO[Annotated[Foo, config]]
+
+        @post(dto=dto, signature_types=[Foo])
+        def handler(data: Foo) -> Foo:
+            return data
+
+        return handler
+
+    handler_no_forbid = _make_handler(False)
+    handler_forbid = _make_handler(True)
+    assert handler_forbid.handler_id != handler_no_forbid.handler_id
+
+    with create_test_client(route_handlers=[handler_no_forbid]) as client:
+        assert client.post("/", json={"bar": "hello", "baz": "given"}).status_code == 201
+
+    with create_test_client(route_handlers=[handler_forbid]) as client:
+        assert client.post("/", json={"bar": "hello", "baz": "given"}).status_code == 400
