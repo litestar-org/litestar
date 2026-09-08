@@ -8,7 +8,6 @@ from typing_extensions import TypeVar
 
 from litestar.datastructures import Cookie
 from litestar.enums import MediaType
-from litestar.middleware import DefineMiddleware
 from litestar.openapi.spec import Components, OAuthFlow, OAuthFlows, SecurityRequirement, SecurityScheme
 from litestar.security.base import AbstractSecurityConfig
 from litestar.security.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
@@ -129,15 +128,13 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         return {self.openapi_security_scheme_name: []}
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Create :class:`JWTAuthenticationMiddleware` wrapped in
-        :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+    def middleware(self) -> JWTAuthenticationMiddleware:
+        """Create :class:`JWTAuthenticationMiddleware`.
 
         Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+            An instance of :class:`JWTAuthenticationMiddleware`.
         """
-        return DefineMiddleware(
-            self.authentication_middleware_class,
+        return self.authentication_middleware_class(
             algorithm=self.algorithm,
             auth_header=self.auth_header,
             exclude=self.exclude,
@@ -479,15 +476,13 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
         )
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Create :class:`JWTCookieAuthenticationMiddleware` wrapped in
-            :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+    def middleware(self) -> JWTCookieAuthenticationMiddleware:
+        """Create :class:`JWTCookieAuthenticationMiddleware`.
 
         Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+            An instance of :class:`JWTCookieAuthenticationMiddleware`.
         """
-        return DefineMiddleware(
-            self.authentication_middleware_class,
+        return self.authentication_middleware_class(
             algorithm=self.algorithm,
             auth_cookie_key=self.key,
             auth_header=self.auth_header,
@@ -702,15 +697,13 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     """
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Create ``JWTCookieAuthenticationMiddleware`` wrapped in
-            :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+    def middleware(self) -> JWTCookieAuthenticationMiddleware:
+        """Create :class:`JWTCookieAuthenticationMiddleware`.
 
         Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+            An instance of :class:`JWTCookieAuthenticationMiddleware`.
         """
-        return DefineMiddleware(
-            self.authentication_middleware_class,
+        return self.authentication_middleware_class(
             algorithm=self.algorithm,
             auth_cookie_key=self.key,
             auth_header=self.auth_header,
