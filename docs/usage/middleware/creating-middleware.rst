@@ -48,6 +48,8 @@ outgoing responses:
 
 
 
+.. _migrating-to-asgi-middleware:
+
 Migrating from ``MiddlewareProtocol`` / ``AbstractMiddleware``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -279,6 +281,14 @@ Thus, in the following example, the middleware will only run against the handler
 
 Using DefineMiddleware to pass arguments
 ----------------------------------------
+
+.. deprecated:: 2.25
+    ``DefineMiddleware`` is deprecated and will be removed in Litestar 3.0. Use
+    :class:`~litestar.middleware.ASGIMiddleware` instead, which allows passing
+    configuration directly to the middleware instance. See
+    :ref:`migrating to ASGIMiddleware <migrating-to-asgi-middleware>`.
+    To pass arguments to a middleware factory or class that cannot be migrated yet, a
+    :func:`functools.partial` can be used in place of ``DefineMiddleware``.
 
 Litestar offers a simple way to pass positional arguments (``*args``) and keyword arguments (``**kwargs``) to middleware
 using the :class:`~litestar.middleware.base.DefineMiddleware` class. Let's extend
