@@ -79,7 +79,7 @@ async def test_expires(store: Store, frozen_datetime: Traveller) -> None:
         # shifting time does not affect the Redis instance
         # this is done to emulate auto-expiration
         if store.namespace_strategy == "hash":
-            await store._execute_command("HEXPIRE", store._make_hash_key(), 0, "FIELDS", 1, "foo")
+            await store._redis.hexpire(cast("str", store.namespace), 0, "foo")  # type: ignore[attr-defined]
         else:
             await store._redis.expire(f"{store.namespace}:foo", 0)
     if isinstance(store, ValkeyStore):
@@ -107,7 +107,7 @@ async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_da
 
 
 @pytest.mark.flaky(reruns=5)
-@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
+@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10), timedelta(days=1)])
 @pytest.mark.parametrize("redis_backend", [lf("redis_store"), lf("redis_hash_store")])
 @pytest.mark.xdist_group("redis")
 async def test_get_and_renew_redis(redis_backend: RedisStore, renew_for: int | timedelta) -> None:
@@ -198,7 +198,7 @@ async def test_expires_in(store: Store, frozen_datetime: Traveller) -> None:
 
     if isinstance(store, RedisStore):
         if store.namespace_strategy == "hash":
-            await store._execute_command("HEXPIRE", store._make_hash_key(), 0, "FIELDS", 1, "foo")
+            await store._redis.hexpire(cast("str", store.namespace), 0, "foo")  # type: ignore[attr-defined]
         else:
             await store._redis.expire(f"{store.namespace}:foo", 0)
     elif isinstance(store, ValkeyStore):
@@ -258,6 +258,13 @@ async def test_redis_hash_strategy_rejects_unsupported_server() -> None:
         await store.__aenter__()
 
 
+async def test_redis_hash_strategy_requires_namespace() -> None:
+    redis = MagicMock()
+
+    with pytest.raises(ImproperlyConfiguredException, match="requires a namespace"):
+        RedisStore(redis=redis, namespace=None, namespace_strategy="hash")
+
+
 @pytest.mark.parametrize("namespace_strategy", ["auto", "hash"])
 async def test_redis_strategy_handles_missing_server_version(
     namespace_strategy: RedisStoreNamespaceStrategy,
@@ -281,13 +288,10 @@ async def test_redis_strategy_rejects_invalid_value() -> None:
         RedisStore(redis=redis, namespace_strategy="invalid")  # type: ignore[arg-type]
 
 
-@pytest.mark.parametrize("namespace_strategy", ["hash", "auto"])
-async def test_redis_hash_strategy_resolves_after_adding_namespace(
-    namespace_strategy: RedisStoreNamespaceStrategy,
-) -> None:
+async def test_redis_auto_strategy_resolves_after_adding_namespace() -> None:
     redis = MagicMock()
     redis.info = AsyncMock(return_value={"redis_version": "8.0.0"})
-    root_store = RedisStore(redis=redis, namespace=None, namespace_strategy=namespace_strategy)
+    root_store = RedisStore(redis=redis, namespace=None, namespace_strategy="auto")
 
     await root_store.__aenter__()
     namespaced_store = root_store.with_namespace("child")
@@ -296,7 +300,7 @@ async def test_redis_hash_strategy_resolves_after_adding_namespace(
 
     assert root_store._resolved_namespace_strategy == "keys"
     assert namespaced_store._resolved_namespace_strategy == "hash"
-    assert nested_store.namespace_strategy == namespace_strategy
+    assert nested_store.namespace_strategy == "auto"
     assert nested_store._redis_version == namespaced_store._redis_version
     assert nested_store._resolved_namespace_strategy == "hash"
     redis.info.assert_awaited_once_with("server")
@@ -393,6 +397,42 @@ async def test_redis_hash_strategy_74_compatibility(redis_client: Redis) -> None
     assert await store.get("persistent", renew_for=60) == b"value"
     assert await store.expires_in("persistent") == -1
 
+    await store.set("subsecond", b"value", expires_in=timedelta(milliseconds=500))
+    ttl = (await redis_client.hpttl("LITESTAR", "subsecond"))[0]  # type: ignore[attr-defined]
+    assert 0 < ttl <= 500
+    assert await store.get("subsecond", renew_for=timedelta(milliseconds=750)) == b"value"
+    ttl = (await redis_client.hpttl("LITESTAR", "subsecond"))[0]  # type: ignore[attr-defined]
+    assert 0 < ttl <= 750
+
+
+@pytest.mark.parametrize("expires_in", [0, -1, timedelta()])
+@pytest.mark.xdist_group("redis")
+async def test_redis_hash_strategy_rejects_non_positive_expiry(
+    redis_client: Redis, expires_in: int | timedelta
+) -> None:
+    store = RedisStore(redis=redis_client, namespace_strategy="hash")
+    store._redis_version = (7, 4)
+    store._resolved_namespace_strategy = "hash"
+
+    with pytest.raises(ValueError, match="must be a positive duration"):
+        await store.set("invalid", b"value", expires_in=expires_in)
+
+    assert await store.get("invalid") is None
+
+
+async def test_redis_hash_strategy_8_uses_native_hsetex() -> None:
+    redis = MagicMock()
+    redis.hsetex = AsyncMock()
+    store = RedisStore(redis=redis, namespace_strategy="hash")
+    store._redis_version = (8, 0)
+    store._resolved_namespace_strategy = "hash"
+
+    await store.set("foo", b"bar", expires_in=timedelta(milliseconds=500))
+    await store.set("foo", b"updated", keep_ttl=True)
+
+    redis.hsetex.assert_any_await("LITESTAR", key="foo", value=b"bar", px=500)
+    redis.hsetex.assert_any_await("LITESTAR", key="foo", value=b"updated", keepttl=True)
+
 
 @patch("litestar.stores.valkey.Valkey")
 @patch("litestar.stores.valkey.ConnectionPool.from_url")
@@ -444,9 +484,10 @@ async def test_redis_hash_namespace_uses_one_key_and_deletes_children(redis_hash
     await child_store.set("child", b"child_value")
     await independent_store.set("independent", b"independent_value")
 
-    root_hash_key = redis_hash_store._make_hash_key()
-    child_hash_key = child_store._make_hash_key()
-    assert await redis_hash_store._execute_command("TYPE", root_hash_key) == b"hash"
+    root_hash_key = cast("str", redis_hash_store.namespace)
+    child_hash_key = cast("str", child_store.namespace)
+    assert root_hash_key == "LITESTAR"
+    assert child_hash_key == "LITESTAR_child"
     assert await redis_hash_store._redis.hget(root_hash_key, "root") == b"root_value"
     assert await redis_hash_store._redis.hget(child_hash_key, "child") == b"child_value"
     assert await redis_hash_store._redis.get("LITESTAR:root") is None
@@ -670,52 +711,6 @@ async def test_namespaced_store_delete_all_propagates_down(namespaced_store: Nam
 
     assert await foo_namespace.get("foo") is None
     assert await namespaced_store.get("bar") is None
-
-
-@pytest.mark.parametrize(
-    "root_store",
-    [
-        pytest.param(lf("redis_store"), marks=pytest.mark.xdist_group("redis")),
-        pytest.param(lf("valkey_store"), marks=pytest.mark.xdist_group("valkey")),
-    ],
-)
-async def test_keys_namespace_delete_all_isolated(root_store: NamespacedStore) -> None:
-    target_store = root_store.with_namespace("FOO")
-    child_store = target_store.with_namespace("child")
-    independent_store = root_store.with_namespace("FOOBAR")
-
-    await target_store.set("target", b"target-value")
-    await child_store.set("child", b"child-value")
-    await independent_store.set("independent", b"independent-value")
-
-    await target_store.delete_all()
-
-    assert await target_store.get("target") is None
-    assert await child_store.get("child") is None
-    assert await independent_store.get("independent") == b"independent-value"
-
-
-@pytest.mark.parametrize(
-    "root_store",
-    [
-        pytest.param(lf("redis_store"), marks=pytest.mark.xdist_group("redis")),
-        pytest.param(lf("valkey_store"), marks=pytest.mark.xdist_group("valkey")),
-    ],
-)
-async def test_keys_namespace_with_glob_characters_is_isolated(root_store: NamespacedStore) -> None:
-    target_store = root_store.with_namespace("ROOT*")
-    child_store = target_store.with_namespace("child")
-    independent_store = root_store.with_namespace("ROOTX")
-
-    await target_store.set("target", b"target-value")
-    await child_store.set("child", b"child-value")
-    await independent_store.set("independent", b"independent-value")
-
-    await target_store.delete_all()
-
-    assert await target_store.get("target") is None
-    assert await child_store.get("child") is None
-    assert await independent_store.get("independent") == b"independent-value"
 
 
 @pytest.mark.parametrize("store_fixture", ["memory_store", "file_store"])

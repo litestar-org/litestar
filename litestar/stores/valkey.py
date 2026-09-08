@@ -21,11 +21,6 @@ if TYPE_CHECKING:
 __all__ = ("ValkeyStore",)
 
 
-def _escape_redis_glob(value: str) -> str:
-    """Escape glob metacharacters in a value used with Valkey ``SCAN MATCH``."""
-    return value.replace("\\", "\\\\").replace("*", "\\*").replace("?", "\\?").replace("[", "\\[").replace("]", "\\]")
-
-
 class ValkeyStore(NamespacedStore):
     """Valkey based, thread and process safe asynchronous key/value store."""
 
@@ -72,17 +67,15 @@ class ValkeyStore(NamespacedStore):
         # script to delete all keys in the namespace
         self._delete_all_script = self._valkey.register_script(
             b"""
-        for _,pattern in ipairs(ARGV) do
-            local cursor = 0
+        local cursor = 0
 
-            repeat
-                local result = server.call('SCAN', cursor, 'MATCH', pattern)
-                for _,key in ipairs(result[2]) do
-                    server.call('UNLINK', key)
-                end
-                cursor = tonumber(result[1])
-            until cursor == 0
-        end
+        repeat
+            local result = server.call('SCAN', cursor, 'MATCH', ARGV[1])
+            for _,key in ipairs(result[2]) do
+                server.call('UNLINK', key)
+            end
+            cursor = tonumber(result[1])
+        until cursor == 0
         """
         )
 
@@ -205,8 +198,7 @@ class ValkeyStore(NamespacedStore):
         if not self.namespace:
             raise ImproperlyConfiguredException("Cannot perform delete operation: No namespace configured")
 
-        namespace = _escape_redis_glob(self.namespace)
-        await self._delete_all_script(keys=[], args=[f"{namespace}:*", f"{namespace}_*:*"])
+        await self._delete_all_script(keys=[], args=[f"{self.namespace}*:*"])
 
     async def exists(self, key: str) -> bool:
         """Check if a given ``key`` exists."""

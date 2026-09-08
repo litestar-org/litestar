@@ -14,7 +14,6 @@ from litestar.utils.empty import value_or_default
 from .base import NamespacedStore
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Callable
     from types import TracebackType
 
     from redis.asyncio.connection import Connection
@@ -27,7 +26,6 @@ RedisStoreNamespaceStrategy = Literal["keys", "hash", "auto"]
 
 _HASH_FIELD_EXPIRATION_MIN_VERSION = (7, 4)
 _HASH_FIELD_EXPIRATION_COMMANDS_VERSION = (8, 0)
-_HASH_KEY_PREFIX = "__litestar_redis_store_hash__:"
 _ResolvedNamespaceStrategy = Literal["keys", "hash"]
 
 
@@ -41,6 +39,7 @@ class RedisStore(NamespacedStore):
 
     __slots__ = (
         "_delete_all_script",
+        "_delete_hash_children_script",
         "_get_and_renew_script",
         "_hash_get_and_renew_script",
         "_hash_get_and_renew_with_hgetex_script",
@@ -56,7 +55,7 @@ class RedisStore(NamespacedStore):
     def __init__(
         self,
         redis: Redis,
-        namespace: str | None | EmptyType = Empty,
+        namespace: str | EmptyType | None = Empty,
         handle_client_shutdown: bool = False,
         namespace_strategy: RedisStoreNamespaceStrategy = "keys",
     ) -> None:
@@ -68,12 +67,16 @@ class RedisStore(NamespacedStore):
                 defaults to ``LITESTAR``. Namespacing can be explicitly disabled by passing
                 ``None``. This will make :meth:`.delete_all` unavailable.
             handle_client_shutdown: If ``True``, handle the shutdown of the `redis` instance automatically during the store's lifespan. Should be set to `True` unless the shutdown is handled externally
-            namespace_strategy: One of ``"keys"``, ``"hash"``, or ``"auto"``.
+            namespace_strategy: Storage layout to use. ``"keys"`` preserves the existing
+                key-per-value layout, ``"hash"`` stores fields in a Redis hash named after
+                the namespace, and ``"auto"`` selects based on the Redis server version.
         """
         if namespace_strategy not in ("keys", "hash", "auto"):
             raise ValueError("namespace_strategy must be one of 'keys', 'hash', or 'auto'")
         self._redis = redis
         self.namespace: str | None = value_or_default(namespace, "LITESTAR")
+        if namespace_strategy == "hash" and not self.namespace:
+            raise ImproperlyConfiguredException("The hash namespace strategy requires a namespace")
         self.handle_client_shutdown = handle_client_shutdown
         self.namespace_strategy: RedisStoreNamespaceStrategy = namespace_strategy
         self._redis_version: tuple[int, int] | None = None
@@ -103,10 +106,10 @@ class RedisStore(NamespacedStore):
         local hash = KEYS[1]
         local field = ARGV[1]
         local value = ARGV[2]
-        local expires = tonumber(ARGV[3])
+        local expires_ms = tonumber(ARGV[3])
 
         redis.call('HSET', hash, field, value)
-        return redis.call('HEXPIRE', hash, expires, 'FIELDS', 1, field)
+        return redis.call('HPEXPIRE', hash, expires_ms, 'FIELDS', 1, field)
         """
         )
 
@@ -130,10 +133,10 @@ class RedisStore(NamespacedStore):
         local field = ARGV[1]
         local renew = tonumber(ARGV[2])
         local data = redis.call('HGET', hash, field)
-        local ttl = redis.call('HTTL', hash, 'FIELDS', 1, field)[1]
+        local ttl = redis.call('HPTTL', hash, 'FIELDS', 1, field)[1]
 
         if ttl > 0 then
-            redis.call('HEXPIRE', hash, renew, 'FIELDS', 1, field)
+            redis.call('HPEXPIRE', hash, renew, 'FIELDS', 1, field)
         end
         return data
         """
@@ -145,10 +148,10 @@ class RedisStore(NamespacedStore):
         local field = ARGV[1]
         local renew = tonumber(ARGV[2])
         -- Check TTL and renewal atomically so persistent fields remain persistent.
-        local ttl = redis.call('HTTL', hash, 'FIELDS', 1, field)[1]
+        local ttl = redis.call('HPTTL', hash, 'FIELDS', 1, field)[1]
 
         if ttl > 0 then
-            return redis.call('HGETEX', hash, 'EX', renew, 'FIELDS', 1, field)[1]
+            return redis.call('HGETEX', hash, 'PX', renew, 'FIELDS', 1, field)[1]
         end
         return redis.call('HGET', hash, field)
         """
@@ -157,21 +160,35 @@ class RedisStore(NamespacedStore):
         # script to delete all keys in the namespace
         self._delete_all_script = self._redis.register_script(
             b"""
+        local cursor = 0
+
+        repeat
+            local result = redis.call('SCAN', cursor, 'MATCH', ARGV[1])
+            for _,key in ipairs(result[2]) do
+                redis.call('UNLINK', key)
+            end
+            cursor = tonumber(result[1])
+        until cursor == 0
+        """
+        )
+
+        self._delete_hash_children_script = self._redis.register_script(
+            b"""
         if #KEYS == 1 then
             redis.call('UNLINK', KEYS[1])
         end
 
-        for _,pattern in ipairs(ARGV) do
-            local cursor = 0
+        local cursor = 0
 
-            repeat
-                local result = redis.call('SCAN', cursor, 'MATCH', pattern)
-                for _,key in ipairs(result[2]) do
+        repeat
+            local result = redis.call('SCAN', cursor, 'MATCH', ARGV[1])
+            for _,key in ipairs(result[2]) do
+                if redis.call('TYPE', key).ok == 'hash' then
                     redis.call('UNLINK', key)
                 end
-                cursor = tonumber(result[1])
-            until cursor == 0
-        end
+            end
+            cursor = tonumber(result[1])
+        until cursor == 0
         """
         )
 
@@ -199,7 +216,7 @@ class RedisStore(NamespacedStore):
         port: int | None = None,
         username: str | None = None,
         password: str | None = None,
-        namespace: str | None | EmptyType = Empty,
+        namespace: str | EmptyType | None = Empty,
         namespace_strategy: RedisStoreNamespaceStrategy = "keys",
     ) -> RedisStore:
         """Initialize a :class:`RedisStore` instance with a new class:`redis.asyncio.Redis` instance.
@@ -211,7 +228,7 @@ class RedisStore(NamespacedStore):
             username: Redis username to use
             password: Redis password to use
             namespace: Virtual key namespace to use
-            namespace_strategy: One of ``"keys"``, ``"hash"``, or ``"auto"``.
+            namespace_strategy: Storage layout to use. See :class:`RedisStore`.
         """
         pool: ConnectionPool[Connection] = ConnectionPool.from_url(
             url=url,
@@ -248,17 +265,6 @@ class RedisStore(NamespacedStore):
         prefix = f"{self.namespace}:" if self.namespace else ""
         return prefix + key
 
-    def _make_hash_key(self) -> str:
-        """Return the physical Redis key for the current hash namespace.
-
-        Unlike ``_make_key``, this creates one key shared by all fields in the namespace
-        and encodes the namespace so Redis glob characters remain literal.
-        The dedicated prefix keeps hash keys separate from the legacy ``namespace:key``
-        layout when a namespace strategy is changed.
-        """
-        namespace = cast("str", self.namespace)
-        return f"{_HASH_KEY_PREFIX}{namespace.encode('utf-8').hex()}"
-
     async def _resolve_namespace_strategy(self) -> _ResolvedNamespaceStrategy:
         """Resolve and validate the configured namespace storage strategy."""
         if self._resolved_namespace_strategy is not None:
@@ -287,15 +293,15 @@ class RedisStore(NamespacedStore):
             self._resolved_namespace_strategy = "hash"
         return self._resolved_namespace_strategy
 
-    async def _execute_command(self, *args: str | bytes | int) -> object:
-        """Execute a command not typed by the minimum supported redis-py version."""
-        execute_command = cast("Callable[..., Awaitable[object]]", self._redis.execute_command)
-        return await execute_command(*args)
-
     @staticmethod
     def _expiry_seconds(value: int | timedelta) -> int:
         """Convert an expiry value to whole seconds."""
         return int(value.total_seconds()) if isinstance(value, timedelta) else value
+
+    @staticmethod
+    def _expiry_milliseconds(value: int | timedelta) -> int:
+        """Convert an expiry value to whole milliseconds."""
+        return int(value.total_seconds() * 1000) if isinstance(value, timedelta) else value * 1000
 
     async def _set_hash_value(
         self,
@@ -305,33 +311,26 @@ class RedisStore(NamespacedStore):
         keep_ttl: bool,
     ) -> None:
         """Set a value using Redis hash field expiration commands."""
-        hash_key = self._make_hash_key()
+        hash_key = cast("str", self.namespace)
         redis_version = cast("tuple[int, int]", self._redis_version)
 
-        if redis_version >= _HASH_FIELD_EXPIRATION_COMMANDS_VERSION:
-            if expires_in is not None:
-                await self._execute_command(
-                    "HSETEX",
-                    hash_key,
-                    "EX",
-                    self._expiry_seconds(expires_in),
-                    "FIELDS",
-                    1,
-                    key,
-                    value,
+        if expires_in is not None:
+            expires_in_ms = self._expiry_milliseconds(expires_in)
+            if expires_in_ms <= 0:
+                raise ValueError("'expires_in' must be a positive duration")
+            if redis_version >= _HASH_FIELD_EXPIRATION_COMMANDS_VERSION:
+                await self._redis.hsetex(  # type: ignore[attr-defined]
+                    hash_key, key=key, value=value, px=expires_in_ms
                 )
                 return
-            if keep_ttl:
-                await self._execute_command("HSETEX", hash_key, "KEEPTTL", "FIELDS", 1, key, value)
-                return
-        elif expires_in is not None:
             # Redis 7.4 has field expiry commands but not HSETEX, so keep both operations atomic.
-            await self._hash_set_with_expiry_script(
-                keys=[hash_key], args=[key, value, self._expiry_seconds(expires_in)]
-            )
+            await self._hash_set_with_expiry_script(keys=[hash_key], args=[key, value, expires_in_ms])
             return
-        elif keep_ttl:
-            await self._hash_set_keep_ttl_script(keys=[hash_key], args=[key, value])
+        if keep_ttl:
+            if redis_version >= _HASH_FIELD_EXPIRATION_COMMANDS_VERSION:
+                await self._redis.hsetex(hash_key, key=key, value=value, keepttl=True)  # type: ignore[attr-defined]
+            else:
+                await self._hash_set_keep_ttl_script(keys=[hash_key], args=[key, value])
             return
 
         await self._redis.hset(hash_key, key, value)
@@ -401,7 +400,7 @@ class RedisStore(NamespacedStore):
             ``None``
         """
         if await self._resolve_namespace_strategy() == "hash":
-            hash_key = self._make_hash_key()
+            hash_key = cast("str", self.namespace)
             if renew_for:
                 redis_version = cast("tuple[int, int]", self._redis_version)
                 script = (
@@ -409,14 +408,13 @@ class RedisStore(NamespacedStore):
                     if redis_version >= _HASH_FIELD_EXPIRATION_COMMANDS_VERSION
                     else self._hash_get_and_renew_script
                 )
-                data = await script(keys=[hash_key], args=[key, self._expiry_seconds(renew_for)])
+                data = await script(keys=[hash_key], args=[key, self._expiry_milliseconds(renew_for)])
                 return cast("bytes | None", data)
             return await self._redis.hget(hash_key, key)
 
         key = self._make_key(key)
         if renew_for:
-            if isinstance(renew_for, timedelta):
-                renew_for = renew_for.seconds
+            renew_for = self._expiry_seconds(renew_for)
             data = await self._get_and_renew_script(keys=[key], args=[renew_for])
             return cast("bytes | None", data)
         return await self._redis.get(key)
@@ -430,7 +428,7 @@ class RedisStore(NamespacedStore):
             key: Key of the value to delete
         """
         if await self._resolve_namespace_strategy() == "hash":
-            await self._redis.hdel(self._make_hash_key(), key)
+            await self._redis.hdel(cast("str", self.namespace), key)
             return
         await self._redis.delete(self._make_key(key))
 
@@ -444,18 +442,16 @@ class RedisStore(NamespacedStore):
             raise ImproperlyConfiguredException("Cannot perform delete operation: No namespace configured")
 
         if await self._resolve_namespace_strategy() == "hash":
-            hash_key = self._make_hash_key()
-            namespace = self.namespace
-            child_namespace_prefix = f"{namespace}_".encode().hex()
-            await self._delete_all_script(keys=[hash_key], args=[f"{_HASH_KEY_PREFIX}{child_namespace_prefix}*"])
+            hash_key = self.namespace
+            child_namespace = _escape_redis_glob(f"{self.namespace}_")
+            await self._delete_hash_children_script(keys=[hash_key], args=[f"{child_namespace}*"])
             return
-        namespace = _escape_redis_glob(self.namespace)
-        await self._delete_all_script(keys=[], args=[f"{namespace}:*", f"{namespace}_*:*"])
+        await self._delete_all_script(keys=[], args=[f"{self.namespace}*:*"])
 
     async def exists(self, key: str) -> bool:
         """Check if a given ``key`` exists."""
         if await self._resolve_namespace_strategy() == "hash":
-            return await self._redis.hexists(self._make_hash_key(), key) == 1
+            return await self._redis.hexists(cast("str", self.namespace), key) == 1
         return await self._redis.exists(self._make_key(key)) == 1
 
     async def expires_in(self, key: str) -> int | None:
@@ -463,7 +459,7 @@ class RedisStore(NamespacedStore):
         expiry time was set, return ``None``.
         """
         if await self._resolve_namespace_strategy() == "hash":
-            result = await self._execute_command("HTTL", self._make_hash_key(), "FIELDS", 1, key)
+            result = await self._redis.httl(cast("str", self.namespace), key)  # type: ignore[attr-defined]
             ttl = cast("list[int]", result)[0]
             return None if ttl == -2 else ttl
         ttl = await self._redis.ttl(self._make_key(key))
