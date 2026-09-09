@@ -12,6 +12,7 @@ deployment strategies, ASGI and WSGI, and so on.
     :caption: Articles
     :maxdepth: 2
 
+    recipes
     sync-vs-async
     explicit_declarations
     deployment/index
