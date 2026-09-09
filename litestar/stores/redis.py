@@ -147,6 +147,8 @@ class RedisStore(NamespacedStore):
         value: str | bytes,
         expires_in: int | timedelta | None = ...,
         keep_ttl: Literal[False] = ...,
+        nx: bool = ...,
+        xx: bool = ...,
     ) -> None: ...
 
     @overload
@@ -157,6 +159,8 @@ class RedisStore(NamespacedStore):
         expires_in: None = ...,
         *,
         keep_ttl: Literal[True],
+        nx: bool = ...,
+        xx: bool = ...,
     ) -> None: ...
 
     async def set(
@@ -165,6 +169,8 @@ class RedisStore(NamespacedStore):
         value: str | bytes,
         expires_in: int | timedelta | None = None,
         keep_ttl: bool = False,
+        nx: bool = False,
+        xx: bool = False,
     ) -> None:
         """Set a value.
 
@@ -173,6 +179,8 @@ class RedisStore(NamespacedStore):
             value: Value to store
             expires_in: Time in seconds before the key is considered expired
             keep_ttl: If ``True``, the TTL of the key will not be changed. If ``False``, the TTL of the key will be set to the value of ``expires_in``
+            nx: If ``True``, only set the key if it does not already exist.
+            xx: If ``True``, only set the key if it already exists.
 
         Raises:
             ValueError: If both ``expires_in`` and ``keep_ttl`` are set, as these options are mutually exclusive
@@ -184,7 +192,7 @@ class RedisStore(NamespacedStore):
             raise ValueError("Cannot set both 'expires_in' and 'keep_ttl': these options are mutually exclusive")
         if isinstance(value, str):
             value = value.encode("utf-8")
-        await self._redis.set(self._make_key(key), value, ex=expires_in, keepttl=keep_ttl)
+        await self._redis.set(self._make_key(key), value, ex=expires_in, keepttl=keep_ttl, nx=nx, xx=xx)
 
     async def get(self, key: str, renew_for: int | timedelta | None = None) -> bytes | None:
         """Get a value.

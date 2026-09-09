@@ -264,6 +264,28 @@ async def test_redis_set_with_keep_ttl(redis_store: RedisStore) -> None:
     assert await redis_store.get("foo") == b"updated"
 
 
+@pytest.mark.xdist_group("redis")
+async def test_redis_set_with_nx_and_xx(redis_store: RedisStore) -> None:
+    """Test that nx and xx conditionally create or update keys."""
+
+    # Test nx (set if not exists)
+    await redis_store.set("nx", b"created", nx=True)
+    assert await redis_store.get("nx") == b"created"
+
+    # Test xx (set if exists)
+    await redis_store.set("nx", b"not-created", nx=True)
+    assert await redis_store.get("nx") == b"created"
+
+    # Test xx (set if exists)
+    await redis_store.set("xx", b"not-created", xx=True)
+    assert await redis_store.get("xx") is None
+
+    # Now create the key and then update it with xx=True
+    await redis_store.set("xx", b"created")
+    await redis_store.set("xx", b"updated", xx=True)
+    assert await redis_store.get("xx") == b"updated"
+
+
 @patch("litestar.stores.valkey.Valkey")
 @patch("litestar.stores.valkey.ConnectionPool.from_url")
 def test_valkey_with_non_default(connection_pool_from_url_mock: Mock, mock_valkey: Mock) -> None:
