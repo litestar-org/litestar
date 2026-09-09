@@ -21,7 +21,7 @@ from typing import (
 
 from msgspec import UNSET
 
-from litestar.dto._backend import DTOBackend
+from litestar.dto._backend import DTOBackend, _nested_destination_type
 from litestar.dto._types import (
     CollectionType,
     CompositeType,
@@ -336,17 +336,18 @@ class TransferFunctionFactory:
         transfer_type: TransferType,
         is_data_field: bool,
         attribute_accessor: Callable[[object, str], Any],
+        nested_as_dict: bool,
     ) -> Callable[[Any], Any]:
         factory = cls(
             is_data_field=is_data_field,
-            nested_as_dict=False,
+            nested_as_dict=nested_as_dict,
             attribute_accessor=attribute_accessor,
         )
         tmp_return_type_name = factory._create_local_name("tmp_return_type")
         source_value_name = factory._create_local_name("source_value")
         factory._create_transfer_type_data_body(
             transfer_type=transfer_type,
-            nested_as_dict=False,
+            nested_as_dict=nested_as_dict,
             assignment_target=tmp_return_type_name,
             source_value_name=source_value_name,
         )
@@ -504,12 +505,12 @@ class TransferFunctionFactory:
         assignment_target: str,
     ) -> None:
         if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
-            if nested_as_dict:
-                destination_type: Any = dict
-            elif self.is_data_field:
-                destination_type = transfer_type.field_definition.annotation
-            else:
-                destination_type = transfer_type.nested_field_info.model
+            destination_type: Any = _nested_destination_type(
+                nested_as_dict=nested_as_dict,
+                is_data_field=self.is_data_field,
+                field_annotation=transfer_type.field_definition.annotation,
+                nested_model=transfer_type.nested_field_info.model,
+            )
 
             self._create_transfer_instance_data(
                 field_definitions=transfer_type.nested_field_info.field_definitions,
@@ -525,6 +526,7 @@ class TransferFunctionFactory:
                 transfer_type=transfer_type,
                 source_value_name=source_value_name,
                 assignment_target=assignment_target,
+                nested_as_dict=nested_as_dict,
             )
             return
 
@@ -535,6 +537,7 @@ class TransferFunctionFactory:
                     is_data_field=self.is_data_field,
                     transfer_type=transfer_type.inner_type,
                     attribute_accessor=self.attribute_accessor,
+                    nested_as_dict=nested_as_dict,
                 )
                 transfer_type_data_name = self._add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
                 self._add_stmt(
@@ -552,6 +555,7 @@ class TransferFunctionFactory:
                     is_data_field=self.is_data_field,
                     transfer_type=transfer_type.value_type,
                     attribute_accessor=self.attribute_accessor,
+                    nested_as_dict=nested_as_dict,
                 )
                 transfer_type_data_name = self._add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
                 self._add_stmt(
@@ -569,6 +573,7 @@ class TransferFunctionFactory:
         transfer_type: UnionType,
         source_value_name: str,
         assignment_target: str,
+        nested_as_dict: bool,
     ) -> None:
         def _handle_transfer_instance(simple_type_: SimpleType, conditional_: str) -> None:
             if simple_type_.field_definition.is_none_type:
@@ -577,9 +582,14 @@ class TransferFunctionFactory:
                 return
 
             field_definitions: tuple[TransferDTOFieldDefinition, ...] | None
-            if simple_type_.nested_field_info and self.is_data_field:
+            if simple_type_.nested_field_info and (nested_as_dict or self.is_data_field):
                 constraint_type = simple_type_.nested_field_info.model
-                destination_type = simple_type_.field_definition.annotation
+                destination_type: Any = _nested_destination_type(
+                    nested_as_dict=nested_as_dict,
+                    is_data_field=self.is_data_field,
+                    field_annotation=simple_type_.field_definition.annotation,
+                    nested_model=simple_type_.nested_field_info.model,
+                )
                 field_definitions = simple_type_.nested_field_info.field_definitions
             else:
                 constraint_type = simple_type_.field_definition.annotation
@@ -634,7 +644,7 @@ class TransferFunctionFactory:
             with self._start_block("else:"):
                 self._create_transfer_type_data_body(
                     transfer_type=non_simple_types[0],
-                    nested_as_dict=False,
+                    nested_as_dict=nested_as_dict,
                     source_value_name=source_value_name,
                     assignment_target=assignment_target,
                 )

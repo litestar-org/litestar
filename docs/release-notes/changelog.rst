@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Defer nested model validation for ``DTOData``
+        :type: bugfix
+        :issue: 3620
+
+        ``DTOData`` is documented to keep payload data as builtins and only construct
+        the domain model when ``create_instance()`` is called. Nested models inside
+        collections and mappings were still instantiated during decode, so Pydantic
+        constraints on nested types ran before the handler. Nested values now remain
+        dictionaries until ``create_instance()``, matching top-level ``DTOData``
+        behaviour.
+
     .. change:: Add support for ``leeway`` parameter in JWT security backends
         :type: feature
         :pr: 5037
