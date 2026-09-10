@@ -6,6 +6,19 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Add support for ``leeway`` parameter in JWT security backends
+        :type: feature
+        :pr: 5037
+        :issue: 4584
+        :breaking:
+
+        Add support for ``leeway`` parameter in JWT security backends, which allows set
+        a number of potential seconds as a clock error for expired tokens.
+
+        ``Token.decode`` and ``Token.decode_payload`` now take a ``leeway`` argument.
+        Custom token classes overriding either method must accept it and forward to
+        ``super()``, otherwise decoding raises ``TypeError``.
+
     .. change:: Fix ``TypeError`` when generating a schema for a union of enums
         :type: bugfix
         :pr: 4997

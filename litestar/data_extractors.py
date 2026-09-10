@@ -165,6 +165,8 @@ class ConnectionDataExtractor:
     async def extract(
         self, connection: ASGIConnection[Any, Any, Any, Any], fields: Iterable[str]
     ) -> ExtractedRequestData:
+        if not isinstance(fields, (set, frozenset)):
+            fields = frozenset(fields)
         extractors = (
             {**self.connection_extractors, **self.request_extractors}  # type: ignore[misc]
             if isinstance(connection, Request)
