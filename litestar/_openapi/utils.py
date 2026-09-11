@@ -39,8 +39,11 @@ def default_operation_id_creator(
     )
 
     components_namespace = ""
+    seen_components: set[str] = set()
     for component in (c.name if isinstance(c, PathParameterDefinition) else c for c in path_components):
-        if component.title() not in components_namespace:
-            components_namespace += component.title()
+        title = component.title()
+        if title not in seen_components:
+            seen_components.add(title)
+            components_namespace += title
 
     return SEPARATORS_CLEANUP_PATTERN.sub("", components_namespace + handler_namespace)
