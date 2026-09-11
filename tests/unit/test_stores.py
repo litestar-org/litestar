@@ -7,17 +7,19 @@ import string
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
+from redis.exceptions import ConnectionError as RedisConnectionError
+from redis.exceptions import ResponseError
 from time_machine import Traveller
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
-from litestar.stores.redis import RedisStore
+from litestar.stores.redis import RedisStore, _HashStrategy, _KeysStrategy
 from litestar.stores.registry import StoreRegistry
 from litestar.stores.valkey import ValkeyStore
 
@@ -36,6 +38,15 @@ def mock_redis() -> None:
 @pytest.fixture()
 def mock_valkey() -> None:
     patch("litestar.Store.valkey_backend.Valkey")
+
+
+async def _force_expire_redis(store: RedisStore, key: str) -> None:
+    """Expire a key immediately; time travel does not affect the Redis server."""
+    strategy = await store._get_strategy()
+    if isinstance(strategy, _HashStrategy):
+        await store._redis.hexpire(store.namespace, 0, key)  # type: ignore[attr-defined]
+    else:
+        await store._redis.expire(f"{store.namespace}:{key}", 0)
 
 
 async def test_get(store: Store) -> None:
@@ -76,7 +87,7 @@ async def test_expires(store: Store, frozen_datetime: Traveller) -> None:
     if isinstance(store, RedisStore):
         # shifting time does not affect the Redis instance
         # this is done to emulate auto-expiration
-        await store._redis.expire(f"{store.namespace}:foo", 0)
+        await _force_expire_redis(store, "foo")
     if isinstance(store, ValkeyStore):
         await store._valkey.expire(f"{store.namespace}:foo", 0)
 
@@ -102,7 +113,7 @@ async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_da
 
 
 @pytest.mark.flaky(reruns=5)
-@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
+@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10), timedelta(days=1)])
 @pytest.mark.xdist_group("redis")
 async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | timedelta) -> None:
     # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
@@ -191,7 +202,7 @@ async def test_expires_in(store: Store, frozen_datetime: Traveller) -> None:
     assert math.ceil(expiration / 10) == 1
 
     if isinstance(store, RedisStore):
-        await store._redis.expire(f"{store.namespace}:foo", 0)
+        await _force_expire_redis(store, "foo")
     elif isinstance(store, ValkeyStore):
         await store._valkey.expire(f"{store.namespace}:foo", 0)
     expiration = await store.expires_in("foo")
@@ -335,9 +346,10 @@ async def test_valkey_delete_all_no_namespace_raises(valkey_client: Valkey) -> N
 
 
 @pytest.mark.xdist_group("redis")
-def test_redis_namespaced_key(redis_store: RedisStore) -> None:
-    assert redis_store.namespace == "LITESTAR"
-    assert redis_store._make_key("foo") == "LITESTAR:foo"
+def test_redis_namespaced_key(redis_store_keys: RedisStore) -> None:
+    assert redis_store_keys.namespace == "LITESTAR"
+    assert isinstance(redis_store_keys._strategy, _KeysStrategy)
+    assert redis_store_keys._strategy._make_key("foo") == "LITESTAR:foo"
 
 
 @pytest.mark.xdist_group("valkey")
@@ -353,6 +365,7 @@ def test_redis_with_namespace(redis_store: RedisStore) -> None:
     assert namespaced_test.namespace == "LITESTAR_TEST"
     assert namespaced_test_foo.namespace == "LITESTAR_TEST_FOO"
     assert namespaced_test._redis is redis_store._redis
+    assert namespaced_test.strategy == redis_store.strategy
 
 
 @pytest.mark.xdist_group("valkey")
@@ -447,7 +460,8 @@ def test_file_with_namespace_invalid_namespace_char(file_store: FileStore, inval
 
 @pytest.fixture(
     params=[
-        pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("redis_store_keys", id="redis_store[keys]", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("redis_store_hash", id="redis_store[hash]", marks=pytest.mark.xdist_group("redis")),
         pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
         "file_store",
     ]
@@ -580,3 +594,138 @@ async def test_valkey_store_with_client_shutdown(valkey_service: None) -> None:
         for x in valkey_store._valkey.connection_pool._available_connections
         + list(valkey_store._valkey.connection_pool._in_use_connections)
     )
+
+
+@pytest.mark.parametrize(
+    "version, expected",
+    [
+        ("7.4.0", _HashStrategy),
+        ("8.0.1", _HashStrategy),
+        ("7.2.4", _KeysStrategy),
+        ("6.2.11", _KeysStrategy),
+        ("255.255.255", _HashStrategy),
+        ("garbage", _KeysStrategy),
+        (7.4, _HashStrategy),
+    ],
+)
+async def test_redis_strategy_auto_detect(version: str | float, expected: type) -> None:
+    redis = MagicMock()
+    redis.info = AsyncMock(return_value={"redis_version": version})
+    store = RedisStore(redis=redis)
+
+    assert store._strategy is None
+    strategy = await store._get_strategy()
+    assert isinstance(strategy, expected)
+    redis.info.assert_awaited_once_with("server")
+
+    await store._get_strategy()
+    redis.info.assert_awaited_once_with("server")
+
+
+async def test_redis_strategy_detect_noperm_falls_back_to_keys() -> None:
+    redis = MagicMock()
+    redis.info = AsyncMock(side_effect=ResponseError("NOPERM"))
+    store = RedisStore(redis=redis)
+
+    strategy = await store._get_strategy()
+    assert isinstance(strategy, _KeysStrategy)
+
+
+async def test_redis_strategy_detect_missing_version_falls_back_to_keys() -> None:
+    redis = MagicMock()
+    redis.info = AsyncMock(return_value={})
+    store = RedisStore(redis=redis)
+
+    strategy = await store._get_strategy()
+    assert isinstance(strategy, _KeysStrategy)
+
+
+async def test_redis_strategy_detect_connection_error_propagates() -> None:
+    redis = MagicMock()
+    redis.info = AsyncMock(side_effect=RedisConnectionError())
+    store = RedisStore(redis=redis)
+
+    with pytest.raises(RedisConnectionError):
+        await store.get("x")
+
+
+@pytest.mark.parametrize("strategy", ["keys", "hash"])
+async def test_redis_explicit_strategy_skips_detection(strategy: str) -> None:
+    redis = MagicMock()
+    redis.info = AsyncMock(return_value={"redis_version": "7.4.0"})
+    store = RedisStore(redis=redis, strategy=strategy)  # type: ignore[arg-type]
+
+    resolved = await store._get_strategy()
+    redis.info.assert_not_awaited()
+    assert isinstance(resolved, _HashStrategy if strategy == "hash" else _KeysStrategy)
+
+
+@pytest.mark.parametrize("namespace", [None, ""])
+def test_redis_hash_strategy_requires_namespace(namespace: str | None) -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        RedisStore(redis=MagicMock(), namespace=namespace, strategy="hash")
+
+
+@pytest.mark.parametrize("namespace", [None, ""])
+async def test_redis_no_namespace_defaults_to_keys(namespace: str | None) -> None:
+    redis = MagicMock()
+    redis.info = AsyncMock(return_value={"redis_version": "7.4.0"})
+    store = RedisStore(redis=redis, namespace=namespace)
+
+    assert isinstance(store._strategy, _KeysStrategy)
+    redis.info.assert_not_awaited()
+
+
+@pytest.mark.xdist_group("redis")
+async def test_redis_with_namespace_propagates_resolved_strategy(redis_client: Redis) -> None:
+    store = RedisStore(redis=redis_client)
+    await store._get_strategy()
+
+    child = store.with_namespace("x")
+
+    assert child.strategy == store._strategy_name()
+    assert child.strategy is not None
+
+
+@pytest.mark.xdist_group("redis")
+async def test_redis_hash_layout(redis_store_hash: RedisStore) -> None:
+    await redis_store_hash.set("foo", b"bar")
+
+    assert await redis_store_hash._redis.hgetall("LITESTAR") == {b"foo": b"bar"}
+    assert await redis_store_hash._redis.exists("LITESTAR:foo") == 0
+
+
+@pytest.mark.xdist_group("redis")
+async def test_redis_hash_delete_all_scopes(redis_store_hash: RedisStore) -> None:
+    await redis_store_hash.set("a", b"a-value")
+    await redis_store_hash.with_namespace("FOO").set("b", b"b-value")
+    await redis_store_hash._redis.hset("LITESTARX", "k", b"v")
+    await redis_store_hash._redis.set("unrelated", b"v")
+
+    await redis_store_hash.delete_all()
+
+    assert await redis_store_hash.get("a") is None
+    assert await redis_store_hash.with_namespace("FOO").get("b") is None
+    assert await redis_store_hash._redis.hget("LITESTARX", "k") == b"v"
+    assert await redis_store_hash._redis.get("unrelated") == b"v"
+
+
+@pytest.mark.xdist_group("redis")
+@pytest.mark.flaky(reruns=5)
+async def test_redis_hash_set_subsecond_ttl(redis_store_hash: RedisStore) -> None:
+    await redis_store_hash.set("foo", b"bar", expires_in=timedelta(milliseconds=200))
+
+    await asyncio.sleep(0.5)
+
+    assert await redis_store_hash.get("foo") is None
+
+
+@pytest.mark.xdist_group("redis")
+@pytest.mark.parametrize("expires_in", [0, -5, timedelta(microseconds=-1000)])
+async def test_redis_hash_set_invalid_expires_in_does_not_write(
+    redis_store_hash: RedisStore, expires_in: int | timedelta
+) -> None:
+    with pytest.raises(ValueError):
+        await redis_store_hash.set("foo", b"bar", expires_in=expires_in)
+
+    assert await redis_store_hash.exists("foo") is False
