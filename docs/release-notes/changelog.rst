@@ -6,6 +6,15 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix ``RedisStore.get`` truncating ``renew_for`` timedeltas of one day or more
+        :type: bugfix
+        :pr: 5053
+
+        :meth:`RedisStore.get <litestar.stores.redis.RedisStore.get>` converted a
+        :class:`~datetime.timedelta` ``renew_for`` value with ``timedelta.seconds``, which drops the
+        ``days`` component. Renewing for ``timedelta(days=1)`` therefore set an expiry of ``0``
+        seconds and deleted the key. The conversion now uses ``timedelta.total_seconds()``.
+
     .. change:: Add support for ``leeway`` parameter in JWT security backends
         :type: feature
         :pr: 5037
