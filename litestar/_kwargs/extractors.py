@@ -126,7 +126,7 @@ def create_connection_value_extractor(
 
 @lru_cache(1024)
 def create_query_default_dict(
-    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...]
+    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: frozenset[str]
 ) -> defaultdict[str, list[str] | str]:
     """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
 

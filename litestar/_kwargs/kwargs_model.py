@@ -129,7 +129,7 @@ class KwargsModel:
         self.expected_query_params = expected_query_params
         self.expected_reserved_kwargs = expected_reserved_kwargs
         self.expected_data_dto = expected_data_dto
-        self.sequence_query_parameter_names = tuple(sequence_query_parameter_names)
+        self.sequence_query_parameter_names = frozenset(sequence_query_parameter_names)
 
         self.has_kwargs = (
             expected_cookie_params
