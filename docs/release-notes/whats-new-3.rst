@@ -408,13 +408,17 @@ naming the extra to install:
     pip install 'litestar[cli]'
 
 
-``httpx`` package removed from default dependencies
-----------------------------------------------------
+Test clients are based on ``httpx2``, installed via the ``testing`` extra
+-------------------------------------------------------------------------
 
-The `httpx <https://www.python-httpx.org/>`_ library, on which the
-:doc:`test clients </usage/testing>` are based, has been moved from the default
-dependencies to the ``litestar[testing]`` package extra. It is also included in
-``litestar[full]``.
+The :doc:`test clients </usage/testing>` were based on
+`httpx <https://www.python-httpx.org/>`_, which was a default dependency. Two things
+changed in 3.0:
+
+- ``httpx`` moved out of the default dependencies into the ``litestar[testing]``
+  package extra. It is also included in ``litestar[full]``.
+- That extra now installs `httpx2 <https://github.com/pydantic/httpx2>`_, the fork of
+  ``httpx`` maintained by Pydantic, instead of ``httpx``.
 
 Importing anything from :mod:`litestar.testing` without the extra installed raises a
 :class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
@@ -424,6 +428,23 @@ naming the extra to install:
     :caption: Install the testing extra
 
     pip install 'litestar[testing]'
+
+``httpx2`` is a fork of ``httpx`` 0.28.1 and keeps its public API, so test code
+generally works unchanged. Four things are worth checking:
+
+- :class:`~litestar.testing.TestClient` and
+  :class:`~litestar.testing.AsyncTestClient` now subclass ``httpx2.Client`` and
+  ``httpx2.AsyncClient``, and :func:`~litestar.testing.subprocess_sync_client` /
+  :func:`~litestar.testing.subprocess_async_client` return ``httpx2`` clients.
+  Annotations such as ``response: httpx.Response`` need updating.
+- The logger is named ``httpx2``. Logging configuration and ``caplog`` assertions
+  that reference the ``httpx`` logger need updating.
+- The ``User-Agent`` header sent by the clients is now ``python-httpx2/<version>``.
+- The extra pulls ``anyio>=4.10`` and ``idna>=3.18``, and uses ``truststore`` (the
+  operating system trust store) rather than ``certifi``.
+
+If you cannot update a test suite yet, ``httpx2.alias_httpx()`` makes ``import httpx``
+resolve to ``httpx2`` process-wide. Litestar never calls it for you.
 
 
 ``rich-click>=1.9`` is now required by the CLI

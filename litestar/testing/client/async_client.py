@@ -5,7 +5,7 @@ import contextlib
 from typing import TYPE_CHECKING, Generic
 
 import anyio
-from httpx import AsyncClient
+from httpx2 import AsyncClient
 
 from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
@@ -17,8 +17,8 @@ if TYPE_CHECKING:
     from types import TracebackType
     from typing import Self
 
-    from httpx._client import UseClientDefault
-    from httpx._types import (
+    from httpx2._client import UseClientDefault
+    from httpx2._types import (
         AuthTypes,
         CookieTypes,
         HeaderTypes,
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
-from httpx._client import USE_CLIENT_DEFAULT, UseClientDefault
+from httpx2._client import USE_CLIENT_DEFAULT, UseClientDefault
 
 from litestar.testing.client._base import _get_session_data, _prepare_ws_connect_request, _set_session_data
 from litestar.types import ASGIApp
@@ -38,7 +38,7 @@ from litestar.types import ASGIApp
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
-    from httpx._types import (
+    from httpx2._types import (
         CookieTypes,
         HeaderTypes,
         QueryParamTypes,
