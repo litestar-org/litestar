@@ -7,10 +7,18 @@ import re
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
+from docutils.nodes import Element, reference
+from docutils.parsers.rst import directives
 from shibuya._pygments import ShibuyaPygmentsBridge
+from sphinx.addnodes import pending_xref
 from sphinx.application import Sphinx
+from sphinx.environment import BuildEnvironment
+from sphinx.ext.autodoc import DataDocumenter, ModuleLevelDocumenter
+from sphinx.util.typing import stringify_annotation
 from sqlalchemy.exc import SAWarning
+from typing_extensions import TypeAliasType
 
 warnings.filterwarnings("ignore", category=SAWarning)
 
@@ -104,6 +112,7 @@ nitpick_ignore = [
     (PY_CLASS, "_schema.Table"),
     (PY_CLASS, "_types.TypeDecorator"),
     (PY_CLASS, "abc.Collection"),
+    (PY_CLASS, "concurrent.futures.thread.ThreadPoolExecutor"),
     (PY_CLASS, "advanced_alchemy.utils.dataclass.Empty"),
     (PY_CLASS, "jinja2.environment.Environment"),
     (PY_CLASS, "mako.lookup.TemplateLookup"),
@@ -142,6 +151,8 @@ nitpick_ignore = [
     (PY_CLASS, "SelectT"),
     (PY_CLASS, "T"),
     (PY_OBJ, "litestar.security.base.AuthType"),
+    (PY_CLASS, "FsspecFileSystem"),
+    (PY_CLASS, "FsspecAsyncFileSystem"),
     # investigate
     (PY_CLASS, "Environment"),
     (PY_CLASS, "P"),
@@ -240,8 +251,9 @@ nitpick_ignore_regex = [
     (PY_OBJ, r"litestar.security.jwt.auth.TokenT"),
     (PY_CLASS, "ExceptionToProblemDetailMapType"),
     (PY_CLASS, "litestar.security.jwt.token.JWTDecodeOptions"),
-    # (Kumzy) Drop the 4 next rows once this done. https://github.com/sphinx-doc/sphinx/issues/14089
-    (PY_RE, r"^Mapping\[(str|int)$"),
+    # (Kumzy) Drop the 5 next rows once this done. https://github.com/sphinx-doc/sphinx/issues/14089
+    (PY_RE, r"^(?:collections\.abc\.)?Mapping\[(str|int)$"),
+    (PY_RE, r"^(?:collections\.abc\.)?Sequence\[(dict\[str)$"),
     (PY_RE, r"^dict\[str$"),
     (PY_RE, r"^Literal\[.*$"),
     (PY_RE, r"^set\[~?typing\.Literal\[.*$"),
@@ -273,6 +285,43 @@ ignore_missing_refs = {
         "structlog.typing.WrappedLogger",
     },
 }
+
+
+def resolve_type_aliases(app: Sphinx, env: BuildEnvironment, node: pending_xref, contnode: Element) -> reference | None:
+    if node["refdomain"] == "py" and node["reftype"] == "class":
+        target = node["reftarget"]
+        target = re.sub(r"litestar\.types\.\w+\.", "litestar.types.", target)
+        return env.get_domain("py").resolve_xref(env, node["refdoc"], app.builder, "type", target, node, contnode)
+
+
+# fixes TypeAliasType resolving. drop when autodoc_use_legacy_class_based will be False
+class TypeAliasTypeDocumenter(ModuleLevelDocumenter):
+    objtype = "type"
+    directivetype = "type"
+    priority = DataDocumenter.priority + 10
+
+    option_spec = {
+        **ModuleLevelDocumenter.option_spec,
+        "canonical": directives.unchanged,
+    }
+
+    @classmethod
+    def can_document_member(cls, member: Any, membername: str, isattr: bool, parent: Any) -> bool:
+        return isinstance(member, TypeAliasType)
+
+    def add_directive_header(self, sig: str) -> None:
+        super().add_directive_header(sig)
+        self.add_line(f"   :canonical: {stringify_annotation(self.object.__value__)}", self.get_sourcename())
+
+    def get_object_members(self, want_all: bool) -> tuple[bool, list[Any]]:
+        return False, []
+
+    def get_doc(self) -> list[list[str]] | None:
+        doc = super().get_doc()
+        if doc and doc[0] and TypeAliasType.__doc__ and TypeAliasType.__doc__.startswith(doc[0][0]):
+            return None
+        return doc
+
 
 # Do not warn about broken links to the following:
 linkcheck_ignore = [
@@ -439,5 +488,7 @@ def delayed_setup(app: Sphinx) -> None:
 
 def setup(app: Sphinx) -> dict[str, bool]:
     app.connect("builder-inited", delayed_setup, priority=0)
+    app.connect("missing-reference", resolve_type_aliases)
+    app.add_autodocumenter(TypeAliasTypeDocumenter)
     app.setup_extension("litestar_sphinx_theme")
     return {"parallel_read_safe": True, "parallel_write_safe": True}
