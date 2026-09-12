@@ -32,10 +32,11 @@ from litestar.typing import FieldDefinition
 from litestar.utils import get_enum_string_value, get_name
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterable, Iterator
 
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.datastructures.cookie import Cookie
+    from litestar.datastructures.response_header import ResponseHeader
     from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.openapi.spec.responses import Responses
 
@@ -209,11 +210,8 @@ class ResponseFactory:
             },
         )
 
-    def set_success_response_headers(self, response: OpenAPIResponse) -> None:
-        """Set the schema for success response headers, if any."""
-
-        if response.headers is None:
-            response.headers = {}
+    def create_headers(self, response_headers: Iterable[ResponseHeader]) -> dict[str, OpenAPIHeader | Reference]:
+        """Build the OpenAPI header schemas for a collection of ResponseHeader instances."""
 
         if not self.schema_creator.generate_examples:
             schema_creator = self.schema_creator
@@ -222,7 +220,8 @@ class ResponseFactory:
                 self.context, generate_examples=False, signature_namespace=self.route_handler.signature_namespace
             )
 
-        for response_header in self.route_handler.response_headers:
+        headers: dict[str, OpenAPIHeader | Reference] = {}
+        for response_header in response_headers:
             header = OpenAPIHeader()
             for attribute_name, attribute_value in (
                 (k, v) for k, v in asdict(response_header).items() if v is not None
@@ -234,7 +233,17 @@ class ResponseFactory:
                 elif attribute_name != "documentation_only":
                     setattr(header, attribute_name, attribute_value)
 
-            response.headers[response_header.name] = header
+            headers[response_header.name] = header
+
+        return headers
+
+    def set_success_response_headers(self, response: OpenAPIResponse) -> None:
+        """Set the schema for success response headers, if any."""
+
+        if response.headers is None:
+            response.headers = {}
+
+        response.headers.update(self.create_headers(self.route_handler.response_headers))
 
         if cookies := self.route_handler.response_cookies:
             response.headers["Set-Cookie"] = OpenAPIHeader(
@@ -275,11 +284,14 @@ class ResponseFactory:
             else:
                 content = None
 
+            headers = self.create_headers(additional_response.headers) if additional_response.headers else None
+
             yield (
                 str(status_code),
                 OpenAPIResponse(
                     description=additional_response.description,
                     content=content,
+                    headers=headers,
                 ),
             )
 
