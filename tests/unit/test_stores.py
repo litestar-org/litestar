@@ -118,6 +118,19 @@ async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | tim
 
 
 @pytest.mark.flaky(reruns=5)
+@pytest.mark.xdist_group("redis")
+async def test_get_renew_for_timedelta_uses_total_seconds(redis_store: RedisStore) -> None:
+    """timedelta renew_for should use total_seconds(), not .seconds attribute."""
+    await redis_store.set("td_test", b"value", expires_in=2)
+    # timedelta(minutes=1, seconds=30) = 90 total seconds
+    result = await redis_store.get("td_test", renew_for=timedelta(minutes=1, seconds=30))
+    assert result == b"value"
+
+    ttl = await redis_store.expires_in("td_test")
+    assert ttl is not None and ttl > 80  # should be ~90s
+
+
+@pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
 @pytest.mark.xdist_group("valkey")
 async def test_get_and_renew_valkey(valkey_store: ValkeyStore, renew_for: int | timedelta) -> None:
