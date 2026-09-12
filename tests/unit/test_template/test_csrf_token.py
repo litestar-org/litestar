@@ -6,7 +6,7 @@ import pytest
 
 from litestar import MediaType, get
 from litestar.config.csrf import CSRFConfig
-from litestar.middleware.csrf import generate_csrf_token
+from litestar.middleware._internal.csrf import generate_csrf_token
 from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.plugins.mako import MakoTemplateEngine
 from litestar.plugins.minijinja import MiniJinjaTemplateEngine
