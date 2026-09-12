@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from litestar.connection import ASGIConnection
 from litestar.enums import HttpMethod, ScopeType
-from litestar.middleware._utils import (
-    build_exclude_path_pattern,
-    should_bypass_middleware,
-)
+from litestar.middleware.base import ASGIMiddleware
 
 __all__ = ("AbstractAuthenticationMiddleware", "AuthenticationResult")
 
@@ -32,64 +29,68 @@ class AuthenticationResult:
     """The auth value, this can for example be a JWT token."""
 
 
-class AbstractAuthenticationMiddleware(ABC):
+class AbstractAuthenticationMiddleware(ASGIMiddleware):
     """Abstract AuthenticationMiddleware that allows users to create their own AuthenticationMiddleware by extending it
     and overriding :meth:`AbstractAuthenticationMiddleware.authenticate_request`.
     """
 
-    __slots__ = (
-        "app",
-        "exclude",
-        "exclude_http_methods",
-        "exclude_opt_key",
-        "scopes",
-    )
+    exclude_opt_key: str | None = "exclude_from_auth"
+    """An identifier to use on routes to disable authentication for a particular route."""
+    exclude_http_methods: Sequence[Method] = (HttpMethod.OPTIONS,)
+    """A sequence of http methods that do not require authentication."""
 
     def __init__(
         self,
-        app: ASGIApp,
+        *,
         exclude: str | list[str] | None = None,
-        exclude_from_auth_key: str = "exclude_from_auth",
+        exclude_from_auth_key: str | None = None,
         exclude_http_methods: Sequence[Method] | None = None,
         scopes: Scopes | None = None,
     ) -> None:
         """Initialize ``AbstractAuthenticationMiddleware``.
 
+        Arguments that are not given fall back to the corresponding class attribute.
+
         Args:
-            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
             exclude: A pattern or list of patterns to skip in the authentication middleware.
             exclude_from_auth_key: An identifier to use on routes to disable authentication for a particular route.
             exclude_http_methods: A sequence of http methods that do not require authentication.
             scopes: ASGI scopes processed by the authentication middleware.
         """
-        self.app = app
-        self.exclude = build_exclude_path_pattern(exclude=exclude, middleware_cls=type(self))
-        self.exclude_http_methods = (HttpMethod.OPTIONS,) if exclude_http_methods is None else exclude_http_methods
-        self.exclude_opt_key = exclude_from_auth_key
-        self.scopes = scopes or {ScopeType.HTTP, ScopeType.WEBSOCKET}
+        if exclude is not None:
+            self.exclude_path_pattern = (tuple(exclude) if isinstance(exclude, list) else exclude) or None
+        if exclude_http_methods is not None:
+            self.exclude_http_methods = exclude_http_methods
+        if exclude_from_auth_key is not None:
+            self.exclude_opt_key = exclude_from_auth_key
+        scope_types = set(scopes or self.scopes) | {ScopeType.ASGI}
+        self.scopes = tuple(scope_types)
+        if scope_types != {ScopeType.HTTP, ScopeType.WEBSOCKET, ScopeType.ASGI}:
+            self._scope_bypass_hook = self.should_bypass_for_scope
+            self.should_bypass_for_scope = self._should_bypass_for_scope
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI callable.
+    def _should_bypass_for_scope(self, scope: Scope) -> bool:
+        if scope["type"] not in self.scopes:
+            return True
+        return self._scope_bypass_hook is not None and self._scope_bypass_hook(scope)
+
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+        """Handle ASGI call.
 
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.
             send: The ASGI send function.
+            next_app: The next ASGI application in the middleware stack to call.
 
         Returns:
             None
         """
-        if not should_bypass_middleware(
-            exclude_http_methods=self.exclude_http_methods,
-            exclude_opt_key=self.exclude_opt_key,
-            exclude_path_pattern=self.exclude,
-            scope=scope,
-            scopes=self.scopes,
-        ):
+        if scope.get("method") not in self.exclude_http_methods:
             auth_result = await self.authenticate_request(ASGIConnection(scope))
             scope["user"] = auth_result.user
             scope["auth"] = auth_result.auth
-        await self.app(scope, receive, send)
+        await next_app(scope, receive, send)
 
     @abstractmethod
     async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:
