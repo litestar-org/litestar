@@ -12,12 +12,14 @@ from litestar.middleware.rate_limit import (
     CacheObject,
     DurationUnit,
     RateLimitConfig,
+    RateLimitMiddleware,
 )
 from litestar.response.base import ASGIResponse
 from litestar.serialization import decode_json, encode_json
 from litestar.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 from litestar.stores.base import Store
 from litestar.testing import TestClient, create_test_client
+from litestar.types import Send
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -73,6 +75,117 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
 
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
+
+
+@pytest.mark.parametrize("rate_limit", [("second", 2), [("second", 2)]])
+def test_single_rate_limit_input_is_backwards_compatible(
+    rate_limit: tuple[DurationUnit, int] | list[tuple[DurationUnit, int]],
+) -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=rate_limit)
+
+    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+        assert client.get("/").status_code == HTTP_200_OK
+        assert client.get("/").status_code == HTTP_200_OK
+        assert client.get("/").status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+def test_single_rate_limit_preserves_middleware_override_signatures() -> None:
+    class CustomRateLimitMiddleware(RateLimitMiddleware):
+        async def retrieve_cached_history(self, key: str, store: Store) -> CacheObject:
+            return await super().retrieve_cached_history(key=key, store=store)
+
+        async def set_cached_history(self, key: str, cache_object: CacheObject, store: Store) -> None:
+            await super().set_cached_history(key=key, cache_object=cache_object, store=store)
+
+        def create_response_headers(self, cache_object: CacheObject) -> dict[str, str]:
+            return super().create_response_headers(cache_object=cache_object)
+
+        def create_send_wrapper(self, send: Send, cache_object: CacheObject) -> Send:
+            return super().create_send_wrapper(send=send, cache_object=cache_object)
+
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=("second", 1), middleware_class=CustomRateLimitMiddleware)
+
+    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+        assert client.get("/").status_code == HTTP_200_OK
+        assert client.get("/").status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+@travel(datetime.utcnow, tick=False)
+async def test_multiple_rate_limits_use_independent_windows() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=[("second", 2), ("minute", 3)])
+    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
+    store = app.stores.get("rate_limit")
+
+    with TestClient(app=app) as client:
+        first_response = client.get("/")
+        assert first_response.status_code == HTTP_200_OK
+        assert first_response.headers[config.rate_limit_policy_header_key] == "2; w=1, 3; w=60"
+        assert first_response.headers[config.rate_limit_limit_header_key] == "2"
+        assert first_response.headers[config.rate_limit_remaining_header_key] == "1"
+
+        assert client.get("/").status_code == HTTP_200_OK
+        assert client.get("/").status_code == HTTP_429_TOO_MANY_REQUESTS
+
+        assert await store.exists("RateLimitMiddleware::testclient::second")
+        assert await store.exists("RateLimitMiddleware::testclient::minute")
+
+
+@travel(datetime.utcnow, tick=False)
+def test_multiple_rate_limits_reject_on_longer_window() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=[("second", 5), ("minute", 3)])
+
+    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+        assert client.get("/").status_code == HTTP_200_OK
+        assert client.get("/").status_code == HTTP_200_OK
+        assert client.get("/").status_code == HTTP_200_OK
+
+        response = client.get("/")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+        assert response.headers[config.rate_limit_policy_header_key] == "5; w=1, 3; w=60"
+        assert response.headers[config.rate_limit_limit_header_key] == "3"
+        assert response.headers[config.rate_limit_remaining_header_key] == "0"
+        assert response.headers[config.rate_limit_reset_header_key] == "60"
+
+
+@travel(datetime.utcnow, tick=False)
+async def test_rejected_request_does_not_increment_other_windows() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=[("second", 10), ("minute", 1)])
+    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
+    store = app.stores.get("rate_limit")
+
+    with TestClient(app=app) as client:
+        assert client.get("/").status_code == HTTP_200_OK
+        assert client.get("/").status_code == HTTP_429_TOO_MANY_REQUESTS
+
+        cached_value = await store.get("RateLimitMiddleware::testclient::second")
+        assert cached_value
+        cache_object = CacheObject(**decode_json(value=cached_value))
+        assert len(cache_object.history) == 1
+
+
+def test_empty_rate_limits_are_rejected() -> None:
+    with pytest.raises(ValueError, match="at least one"):
+        RateLimitConfig(rate_limit=[])
 
 
 async def test_non_default_store(memory_store: Store) -> None:
