@@ -338,6 +338,8 @@ def test_dto_data_create_instance_rebuilds_optional_nested_model(use_experimenta
 
 
 def test_dto_data_create_instance_rebuilds_optional_nested_model_none(use_experimental_dto_backend: bool) -> None:
+    """None in Optional[Model] must stay None after create_instance()."""
+
     @post(
         dto=DataclassDTO[
             Annotated[UnionTopHolder, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]
