@@ -231,6 +231,26 @@ class NestedBasket:
     items: list[BasketItem]
 
 
+@dataclass
+class NestedMappingBasket:
+    items: dict[str, BasketItem]
+
+
+@dataclass
+class UnionLeaf:
+    name: str
+
+
+@dataclass
+class UnionTopHolder:
+    inner: Optional[UnionLeaf]
+
+
+@dataclass
+class UnionListHolder:
+    items: list[Optional[UnionLeaf]]
+
+
 def test_dto_data_injection_with_nested_model(use_experimental_dto_backend: bool) -> None:
     @post(
         dto=DataclassDTO[
@@ -272,6 +292,85 @@ def test_dto_data_nested_collection_as_builtins(use_experimental_dto_backend: bo
         resp = client.post("/", json={"items": [{"name": "a"}, {"name": "b"}]})
         assert resp.status_code == 201
         assert resp.json() == {"items": [{"name": "a"}, {"name": "b"}]}
+
+
+def test_dto_data_nested_mapping_as_builtins(use_experimental_dto_backend: bool) -> None:
+    """Nested mapping values must remain builtins until create_instance()."""
+
+    @post(
+        dto=DataclassDTO[
+            Annotated[NestedMappingBasket, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]
+        ],
+        return_dto=None,
+    )
+    def handler(data: DTOData[NestedMappingBasket]) -> dict[str, Any]:
+        builtins = cast("dict[str, Any]", data.as_builtins())
+        assert builtins == {"items": {"k": {"name": "a"}}}
+        instance = data.create_instance()
+        assert isinstance(instance.items["k"], BasketItem)
+        assert instance.items["k"].name == "a"
+        return builtins
+
+    with create_test_client(route_handlers=[handler]) as client:
+        resp = client.post("/", json={"items": {"k": {"name": "a"}}})
+        assert resp.status_code == 201
+        assert resp.json() == {"items": {"k": {"name": "a"}}}
+
+
+def test_dto_data_create_instance_rebuilds_optional_nested_model(use_experimental_dto_backend: bool) -> None:
+    """create_instance() must rebuild a single nested union member from builtins."""
+
+    @post(
+        dto=DataclassDTO[
+            Annotated[UnionTopHolder, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]
+        ],
+        return_dto=None,
+        sync_to_thread=False,
+    )
+    def handler(data: DTOData[UnionTopHolder]) -> dict[str, Any]:
+        instance = data.create_instance()
+        assert isinstance(instance.inner, UnionLeaf), f"got {type(instance.inner).__name__}"
+        assert instance.inner.name == "a"
+        return {"ok": True}
+
+    with create_test_client(route_handlers=[handler]) as client:
+        assert client.post("/", json={"inner": {"name": "a"}}).status_code == 201
+
+
+def test_dto_data_create_instance_rebuilds_optional_nested_model_none(use_experimental_dto_backend: bool) -> None:
+    @post(
+        dto=DataclassDTO[
+            Annotated[UnionTopHolder, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]
+        ],
+        return_dto=None,
+        sync_to_thread=False,
+    )
+    def handler(data: DTOData[UnionTopHolder]) -> dict[str, Any]:
+        instance = data.create_instance()
+        assert instance.inner is None
+        return {"ok": True}
+
+    with create_test_client(route_handlers=[handler]) as client:
+        assert client.post("/", json={"inner": None}).status_code == 201
+
+
+def test_dto_data_create_instance_rebuilds_optional_nested_model_in_list(use_experimental_dto_backend: bool) -> None:
+    @post(
+        dto=DataclassDTO[
+            Annotated[UnionListHolder, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]
+        ],
+        return_dto=None,
+        sync_to_thread=False,
+    )
+    def handler(data: DTOData[UnionListHolder]) -> dict[str, Any]:
+        instance = data.create_instance()
+        assert isinstance(instance.items[0], UnionLeaf)
+        assert instance.items[0].name == "a"
+        assert instance.items[1] is None
+        return {"ok": True}
+
+    with create_test_client(route_handlers=[handler]) as client:
+        assert client.post("/", json={"items": [{"name": "a"}, None]}).status_code == 201
 
 
 def test_dto_data_create_instance_nested_kwargs(use_experimental_dto_backend: bool) -> None:
