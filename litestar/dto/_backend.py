@@ -779,14 +779,27 @@ def _transfer_nested_union_type_data(
     attribute_accessor: Callable[[object, str], Any],
     nested_as_dict: bool,
 ) -> Any:
+    nested_member_count = sum(
+        1
+        for inner_type in transfer_type.inner_types
+        if not isinstance(inner_type, CompositeType) and inner_type.nested_field_info
+    )
+    # DTOData keeps nested models as mappings until create_instance(). For a
+    # single nested union member (e.g. Optional[Model]) that mapping is
+    # unambiguous; Union[ModelA, ModelB] stays on the isinstance(model) path.
+    allow_mapping_source = (
+        is_data_field and not nested_as_dict and nested_member_count == 1 and isinstance(source_value, Mapping)
+    )
+
     for inner_type in transfer_type.inner_types:
         if isinstance(inner_type, CompositeType):
             raise RuntimeError("Composite inner types not (yet) supported for nested unions.")
 
-        if inner_type.nested_field_info and isinstance(
-            source_value,
-            inner_type.nested_field_info.model if is_data_field else inner_type.field_definition.annotation,
-        ):
+        if not inner_type.nested_field_info:
+            continue
+
+        constraint = inner_type.nested_field_info.model if is_data_field else inner_type.field_definition.annotation
+        if isinstance(source_value, constraint) or allow_mapping_source:
             return _transfer_instance_data(
                 destination_type=_nested_destination_type(
                     nested_as_dict=nested_as_dict,
