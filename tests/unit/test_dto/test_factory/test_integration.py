@@ -321,6 +321,8 @@ def test_dto_data_create_instance_rebuilds_optional_nested_model() -> None:
 
 
 def test_dto_data_create_instance_rebuilds_optional_nested_model_none() -> None:
+    """None in Optional[Model] must stay None after create_instance()."""
+
     @post(
         dto=DataclassDTO[UnionTopHolder],
         return_dto=None,
