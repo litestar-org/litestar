@@ -552,6 +552,9 @@ class DTOBackend:
             field_definition=field_definition,
             inner_types=inner_types,
             has_nested=any(t.has_nested for t in inner_types),
+            nested_member_count=sum(
+                1 for inner_type in inner_types if isinstance(inner_type, SimpleType) and inner_type.nested_field_info
+            ),
         )
 
 
@@ -779,16 +782,16 @@ def _transfer_nested_union_type_data(
     attribute_accessor: Callable[[object, str], Any],
     nested_as_dict: bool,
 ) -> Any:
-    nested_member_count = sum(
-        1
-        for inner_type in transfer_type.inner_types
-        if not isinstance(inner_type, CompositeType) and inner_type.nested_field_info
-    )
-    # DTOData keeps nested models as mappings until create_instance(). For a
-    # single nested union member (e.g. Optional[Model]) that mapping is
-    # unambiguous; Union[ModelA, ModelB] stays on the isinstance(model) path.
+    # DTOData keeps nested models as mappings until create_instance(). A mapping
+    # can be rebuilt into a model only when the union has a single nested member
+    # (e.g. Optional[Model] or Union[Model, str]), so the target type is unambiguous.
+    # Untagged unions of multiple nested models (e.g. Union[ModelA, ModelB]) are
+    # rejected by msgspec before this transfer runs.
     allow_mapping_source = (
-        is_data_field and not nested_as_dict and nested_member_count == 1 and isinstance(source_value, Mapping)
+        is_data_field
+        and not nested_as_dict
+        and transfer_type.nested_member_count == 1
+        and isinstance(source_value, Mapping)
     )
 
     for inner_type in transfer_type.inner_types:
