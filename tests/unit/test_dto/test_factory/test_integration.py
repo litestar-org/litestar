@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import TYPE_CHECKING, Annotated, Generic, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Annotated, Generic, Optional, TypeVar, Union, cast
 from unittest.mock import MagicMock
 from uuid import UUID
 
@@ -251,6 +251,11 @@ class UnionListHolder:
     items: list[Optional[UnionLeaf]]
 
 
+@dataclass
+class UnionStrHolder:
+    inner: Union[UnionLeaf, str]
+
+
 def test_dto_data_injection_with_nested_model(use_experimental_dto_backend: bool) -> None:
     @post(
         dto=DataclassDTO[
@@ -280,10 +285,10 @@ def test_dto_data_nested_collection_as_builtins(use_experimental_dto_backend: bo
         dto=DataclassDTO[Annotated[NestedBasket, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
         return_dto=None,
     )
-    def handler(data: DTOData[NestedBasket]) -> dict[str, Any]:
-        builtins = cast("dict[str, Any]", data.as_builtins())
+    def handler(dto_data: DTOData[NestedBasket]) -> dict[str, Any]:
+        builtins = cast("dict[str, Any]", dto_data.as_builtins())
         assert builtins == {"items": [{"name": "a"}, {"name": "b"}]}
-        instance = data.create_instance()
+        instance = dto_data.create_instance()
         assert isinstance(instance.items[0], BasketItem)
         assert instance.items[0].name == "a"
         return builtins
@@ -354,6 +359,28 @@ def test_dto_data_create_instance_rebuilds_optional_nested_model_none(use_experi
 
     with create_test_client(route_handlers=[handler]) as client:
         assert client.post("/", json={"inner": None}).status_code == 201
+
+
+def test_dto_data_create_instance_rebuilds_model_in_union_with_scalar(
+    use_experimental_dto_backend: bool,
+) -> None:
+    @post(
+        dto=DataclassDTO[
+            Annotated[
+                UnionStrHolder,
+                DTOConfig(experimental_codegen_backend=use_experimental_dto_backend),
+            ]
+        ],
+        return_dto=None,
+        sync_to_thread=False,
+    )
+    def handler(data: DTOData[UnionStrHolder]) -> dict[str, Any]:
+        assert data.as_builtins() == {"inner": {"name": "a"}}
+        assert isinstance(data.create_instance().inner, UnionLeaf)
+        return {"ok": True}
+
+    with create_test_client(route_handlers=[handler]) as client:
+        assert client.post("/", json={"inner": {"name": "a"}}).status_code == 201
 
 
 def test_dto_data_create_instance_rebuilds_optional_nested_model_in_list(use_experimental_dto_backend: bool) -> None:

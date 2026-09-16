@@ -115,7 +115,7 @@
         :issue: 3620
 
         ``DTOData`` is documented to keep payload data as builtins and only construct
-        the domain model when ``create_instance()`` is called. Nested models inside
+        the domain model when ``create_instance()`` is called. Nested models inside the
         collections and mappings were still instantiated during decode, so Pydantic
         constraints on nested types ran before the handler. Nested values now remain
         dictionaries until ``create_instance()``, matching top-level ``DTOData``
