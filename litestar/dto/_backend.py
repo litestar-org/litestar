@@ -542,6 +542,9 @@ class DTOBackend:
             field_definition=field_definition,
             inner_types=inner_types,
             has_nested=any(t.has_nested for t in inner_types),
+            nested_member_count=sum(
+                1 for inner_type in inner_types if isinstance(inner_type, SimpleType) and inner_type.nested_field_info
+            ),
         )
 
 

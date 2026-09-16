@@ -58,9 +58,11 @@ class CompositeType(TransferType):
 class UnionType(CompositeType):
     """Type for representing union types for data transfer."""
 
-    __slots__ = ("inner_types",)
+    __slots__ = ("inner_types", "nested_member_count")
 
     inner_types: tuple[CompositeType | SimpleType, ...]
+    nested_member_count: int
+    """Number of inner types that wrap a nested model. Computed once at transfer-type creation."""
 
 
 @dataclass(frozen=True)
