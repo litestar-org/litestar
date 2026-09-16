@@ -254,7 +254,7 @@ def test_with_generic_class() -> None:
                         "operationId": "FooStrHandlerFooStr",
                         "responses": {
                             "200": {
-                                "description": "Request fulfilled, document follows",
+                                "description": "OK",
                                 "headers": {},
                                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo_str_"}}},
                             }
@@ -268,7 +268,7 @@ def test_with_generic_class() -> None:
                         "operationId": "FooIntHandlerFooInt",
                         "responses": {
                             "200": {
-                                "description": "Request fulfilled, document follows",
+                                "description": "OK",
                                 "headers": {},
                                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo_int_"}}},
                             }
