@@ -584,15 +584,12 @@ class TransferFunctionFactory:
         assignment_target: str,
         nested_as_dict: bool,
     ) -> None:
-        nested_member_count = sum(
-            1
-            for inner_type in transfer_type.inner_types
-            if isinstance(inner_type, SimpleType) and inner_type.nested_field_info
-        )
-        # DTOData keeps nested models as mappings until create_instance(). For a
-        # single nested union member (e.g. Optional[Model]) that mapping is
-        # unambiguous; Union[ModelA, ModelB] stays on the isinstance(model) path.
-        allow_mapping_source = self.is_data_field and not nested_as_dict and nested_member_count == 1
+        # DTOData keeps nested models as mappings until create_instance(). A mapping
+        # can be rebuilt into a model only when the union has a single nested member
+        # (e.g. Optional[Model] or Union[Model, str]), so the target type is unambiguous.
+        # Untagged unions of multiple nested models (e.g. Union[ModelA, ModelB]) are
+        # rejected by msgspec before this transfer runs.
+        allow_mapping_source = self.is_data_field and not nested_as_dict and transfer_type.nested_member_count == 1
 
         def _handle_transfer_instance(simple_type_: SimpleType, conditional_: str) -> None:
             if simple_type_.field_definition.is_none_type:
@@ -623,10 +620,13 @@ class TransferFunctionFactory:
 
             constraint_type_name = self._add_to_fn_globals("constraint_type", constraint_type)
             destination_type_name = self._add_to_fn_globals("destination_type", destination_type)
+            isinstance_expr = self._nested_union_isinstance_expr(
+                source_value_name,
+                constraint_type_name,
+                allow_mapping_source and bool(simple_type_.nested_field_info),
+            )
 
-            with self._start_block(
-                f"{conditional_} {self._nested_union_isinstance_expr(source_value_name, constraint_type_name, allow_mapping_source and bool(simple_type_.nested_field_info))}:"
-            ):
+            with self._start_block(f"{conditional_} {isinstance_expr}:"):
                 if field_definitions:
                     self._create_transfer_instance_data(
                         destination_type_name=destination_type_name,
