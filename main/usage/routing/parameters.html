@@ -695,7 +695,7 @@ missing from the request, the handler is called with the default:</p>
 </span></pre></div>
 </div>
 </div>
-<p>Marking a parameter optional means the type itself permits <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>:</p>
+<p>Marking a parameter optional means the type itself permits <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Defining an optional query parameter</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -766,7 +766,7 @@ value via a parameter of the same name, declared with <a class="reference intern
 <p>There are two components to declaring a path parameter:</p>
 <ol class="arabic simple">
 <li><p>In the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;get()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.14)"><span class="xref std std-term">decorator</span></a>, the path component
-declares both the parameter’s name (<code class="docutils literal notranslate"><span class="pre">user_id</span></code>) and type (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>)</p></li>
+declares both the parameter’s name (<code class="docutils literal notranslate"><span class="pre">user_id</span></code>) and type (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>)</p></li>
 <li><p>In the handler signature, <code class="docutils literal notranslate"><span class="pre">user_id</span></code> is declared as
 <a class="reference internal" href="../../reference/params.html#litestar.params.FromPath" title="litestar.params.FromPath"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromPath[int]</span></code></a>, which tells Litestar to inject the matching
 path value</p></li>
@@ -795,10 +795,10 @@ and added to the OpenAPI schema.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">date</span></code>: Accepts date strings and time stamps.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code>: Accepts date-time strings and time stamps.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">decimal</span></code>: Accepts decimal values and floats.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>: Accepts ints and floats.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>: Accepts ints and floats.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>: Accepts ints and floats.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>: Accepts ints and floats.</p></li>
 <li><p><a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.params.path" title="litestar.app.Litestar.params.path"><code class="xref py py-class docutils literal notranslate"><span class="pre">path</span></code></a>: Accepts valid POSIX paths.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>: Accepts all string values.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>: Accepts all string values.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: Accepts time strings with optional timezone compatible with standard (Pydantic/Msgspec) datetime formats.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">timedelta</span></code>: Accepts duration strings compatible with the standard (Pydantic/Msgspec) timedelta formats.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">uuid</span></code>: Accepts all uuid values.</p></li>
@@ -949,7 +949,7 @@ Litestar coerces that raw value into the inner type of the marker (<code class="
 </div>
 </div>
 <p>Path parameters additionally support coercion via the path-slot type itself. The handler-side type does not need to
-match the slot type one-to-one — if the slot captures an <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> and the handler asks for a
+match the slot type one-to-one — if the slot captures an <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> and the handler asks for a
 <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>, Litestar applies the second conversion:</p>
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text">Coercing a path parameter into a different type</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
@@ -1262,7 +1262,7 @@ in 3.0.</p>
 </div>
 <p>The <a class="reference internal" href="../../reference/params.html#litestar.params.Parameter" title="litestar.params.Parameter"><code class="xref py py-func docutils literal notranslate"><span class="pre">Parameter()</span></code></a> function itself is <strong>not</strong> removed and can still be used to attach pure metadata
 (<code class="docutils literal notranslate"><span class="pre">description</span></code>, <code class="docutils literal notranslate"><span class="pre">gt</span></code>, etc.) when wrapped in <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>. Only its <code class="docutils literal notranslate"><span class="pre">header</span></code>, <code class="docutils literal notranslate"><span class="pre">cookie</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">query</span></code> keyword arguments are deprecated — passing any of those emits a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#DeprecationWarning" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> independently of
+<code class="docutils literal notranslate"><span class="pre">query</span></code> keyword arguments are deprecated — passing any of those emits a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#DeprecationWarning" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> independently of
 the handler-level warning.</p>
 </section>
 </section>

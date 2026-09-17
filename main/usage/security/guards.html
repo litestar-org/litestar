@@ -625,7 +625,7 @@ on all layers of the app - the Litestar instance, routers, controllers, and indi
 <li><p>Are you aiming to secure all routes managed by a specific router?</p></li>
 <li><p>Or do you need to enforce access control across the entire application?</p></li>
 </ul>
-<p>As you can see in the above examples - <code class="docutils literal notranslate"><span class="pre">guards</span></code> is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>. This means you can add <strong>multiple</strong> guards at
+<p>As you can see in the above examples - <code class="docutils literal notranslate"><span class="pre">guards</span></code> is a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>. This means you can add <strong>multiple</strong> guards at
 every layer. Unlike <a class="reference internal" href="../dependency-injection.html"><span class="doc">dependencies</span></a> , guards do not override each other but are
 rather <em>cumulative</em>. This means that you can define guards on different layers of your app, and they will combine.</p>
 <div class="admonition caution">

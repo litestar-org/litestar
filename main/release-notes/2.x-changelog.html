@@ -985,7 +985,7 @@ they’re not subtypes of their respective bases anymore.</p>
 </div>
 </dd>
 <dt>Fix OpenAPI schema generation for Pydantic private attributes<a class="headerlink reference internal" href="#2.6.2-fix openapi schema generation for pydantic private attributes" id="2.6.2-fix openapi schema generation for pydantic private attributes">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a bug that caused a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NameError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NameError</span></code></a> when trying to resolve forward
+<p>Fix a bug that caused a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#NameError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NameError</span></code></a> when trying to resolve forward
 references in Pydantic private fields.</p>
 <p>Although private fields were respected excluded from the schema, it was still
 attempted to extract their type annotation. This was fixed by not relying on
@@ -1262,7 +1262,7 @@ backport of <a class="reference external" href="https://docs.python.org/3/librar
 <h3>Bugfixes<a class="headerlink" href="#2.5.1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix OpenAPI schema generation for Union of multiple <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code>s and <code class="docutils literal notranslate"><span class="pre">None</span></code><a class="headerlink reference internal" href="#2.5.1-fix openapi schema generation for union of multiple" id="2.5.1-fix openapi schema generation for union of multiple">#</a></dt><dd><div class="changelog-change docutils container">
-<p>The following code would raise a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a></p>
+<p>The following code would raise a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">msgspec</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
@@ -1482,7 +1482,7 @@ temporary file has been rolled to disk</p></li>
 <p>Using a method on
 <code class="docutils literal notranslate"><span class="pre">Request.logger</span></code> when not
 setting a <code class="docutils literal notranslate"><span class="pre">logging_config</span></code> on the application would result in a non-descriptive
-<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a>. An <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> with an explanation is
+<a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a>. An <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> with an explanation is
 now raised instead.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2919">https://github.com/litestar-org/litestar/pull/2919</a></span></p>
 </div>
@@ -1527,7 +1527,7 @@ of them having the same value for operation ID.</p>
 </div>
 </dd>
 <dt>Fix OpenAPI schema generation for recursive models<a class="headerlink reference internal" href="#2.4.4-fix openapi schema generation for recursive models" id="2.4.4-fix openapi schema generation for recursive models">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix an issue that would lead to a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RecursionError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RecursionError</span></code></a> when including nested
+<p>Fix an issue that would lead to a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RecursionError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RecursionError</span></code></a> when including nested
 models in the OpenAPI schema.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/2429">https://github.com/litestar-org/litestar/issues/2429</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2869">https://github.com/litestar-org/litestar/pull/2869</a></span></p>
 </div>
@@ -1631,7 +1631,7 @@ models.</p>
 <h3>Bugfixes<a class="headerlink" href="#2.4.1-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
 <dt>Fix circular import when importing from <code class="docutils literal notranslate"><span class="pre">litestar.security.jwt</span></code><a class="headerlink reference internal" href="#2.4.1-fix circular import when importing from" id="2.4.1-fix circular import when importing from">#</a></dt><dd><div class="changelog-change docutils container">
-<p>An <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a> was raised when trying to import from <code class="docutils literal notranslate"><span class="pre">litestar.security.jwt</span></code>. This was fixed
+<p>An <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ImportError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a> was raised when trying to import from <code class="docutils literal notranslate"><span class="pre">litestar.security.jwt</span></code>. This was fixed
 by removing the imports from the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib.jwt</span></code> within <code class="docutils literal notranslate"><span class="pre">litesetar.security.jwt</span></code>.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/2782">https://github.com/litestar-org/litestar/issues/2782</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2784">https://github.com/litestar-org/litestar/pull/2784</a></span></p>
 </div>
@@ -1796,7 +1796,7 @@ serialize correctly.</p>
 </dd>
 <dt>Fix inconsistent sequence union parameter errors<a class="headerlink reference internal" href="#2.4.0-fix inconsistent sequence union parameter errors" id="2.4.0-fix inconsistent sequence union parameter errors">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug where unions of collection types would result in different errors
-depending on whether the union included <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> or not.</p>
+depending on whether the union included <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> or not.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/2600">https://github.com/litestar-org/litestar/issues/2600</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2776">https://github.com/litestar-org/litestar/pull/2776</a></span></p>
 </div>
 </dd>
@@ -1850,7 +1850,7 @@ static files host was reused for a route handler with a different HTTP method.</
 <dl>
 <dt>CLI: Fix not providing SSL certfiles breaks uvicorn command when using reload or multiple workers<a class="headerlink reference internal" href="#2.3.1-cli: fix not providing ssl certfiles breaks uvicorn command when using reload or multiple workers" id="2.3.1-cli: fix not providing ssl certfiles breaks uvicorn command when using reload or multiple workers">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix an issue where not providing the <code class="docutils literal notranslate"><span class="pre">--ssl-certfile</span></code> and <code class="docutils literal notranslate"><span class="pre">--ssl-keyfile</span></code>
-options to the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> command would cause a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a>
+options to the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> command would cause a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#FileNotFoundError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a>
 in uvicorn, when used together with the <code class="docutils literal notranslate"><span class="pre">--reload</span></code>, <code class="docutils literal notranslate"><span class="pre">--web-concurrency</span></code>
 options.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/2613">https://github.com/litestar-org/litestar/issues/2613</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2616">https://github.com/litestar-org/litestar/pull/2616</a></span></p>
@@ -2265,9 +2265,9 @@ fragile.</p>
 <dl>
 <dt>Fix <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code> raised by <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code><a class="headerlink reference internal" href="#2.1.1-fix" id="2.1.1-fix">#</a></dt><dd><div class="changelog-change docutils container">
 <p><a class="reference internal" href="../reference/response/index.html#litestar.response.Response.to_asgi_response" title="litestar.response.Response.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a> was passing a
-non-<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> default value (<code class="docutils literal notranslate"><span class="pre">[]</span></code>) to <code class="docutils literal notranslate"><span class="pre">ASGIResponse</span></code> for
-<code class="docutils literal notranslate"><span class="pre">encoded_headers</span></code>, resulting in a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#DeprecationWarning" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> being raised.
-This was fixed by leaving the default value as <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+non-<a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> default value (<code class="docutils literal notranslate"><span class="pre">[]</span></code>) to <code class="docutils literal notranslate"><span class="pre">ASGIResponse</span></code> for
+<code class="docutils literal notranslate"><span class="pre">encoded_headers</span></code>, resulting in a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#DeprecationWarning" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> being raised.
+This was fixed by leaving the default value as <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2364">https://github.com/litestar-org/litestar/pull/2364</a></span></p>
 </div>
 </dd>
@@ -2552,7 +2552,7 @@ misconfiguration of the random seeding.</p>
 </div>
 </dd>
 <dt>SQLAlchemy repository: Handling of dialects not supporting JSON<a class="headerlink reference internal" href="#2.0.0-sqlalchemy repository: handling of dialects not supporting json" id="2.0.0-sqlalchemy repository: handling of dialects not supporting json">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a bug where SQLAlchemy would raise a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> when using a dialect
+<p>Fix a bug where SQLAlchemy would raise a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> when using a dialect
 that does not support JSON with the SQLAlchemy repositories.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/2137">https://github.com/litestar-org/litestar/issues/2137</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/2139">https://github.com/litestar-org/litestar/pull/2139</a></span></p>
 </div>
@@ -2771,7 +2771,7 @@ be inferred from the mapped object.</p>
 <p>For columns, the <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedColumn.type" title="(in SQLAlchemy v2.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a>‘s
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/type_api.html#sqlalchemy.types.TypeEngine.python_type" title="(in SQLAlchemy v2.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">python_type</span></code></a> will be used as the type of the
 column, and the <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedColumn.nullable" title="(in SQLAlchemy v2.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">nullable</span></code></a>
-property to determine if the field should have a <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> union.</p>
+property to determine if the field should have a <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> union.</p>
 <p>For relationships, where the <code class="docutils literal notranslate"><span class="pre">RelationshipProperty.direction</span></code> is
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.RelationshipDirection.ONETOMANY" title="(in SQLAlchemy v2.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ONETOMANY</span></code></a> or
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.RelationshipDirection.MANYTOMANY" title="(in SQLAlchemy v2.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MANYTOMANY</span></code></a>,
@@ -2779,7 +2779,7 @@ property to determine if the field should have a <a class="reference external" h
 <code class="docutils literal notranslate"><span class="pre">RelationshipProperty.mapper.class_</span></code> are used to construct an annotation for
 the collection.</p>
 <p>For one-to-one relationships, <code class="docutils literal notranslate"><span class="pre">RelationshipProperty.mapper.class_</span></code> is used to
-get the type annotation, and will be made a union with <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> if all of the
+get the type annotation, and will be made a union with <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> if all of the
 foreign key columns are nullable.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/1853">https://github.com/litestar-org/litestar/issues/1853</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1879">https://github.com/litestar-org/litestar/pull/1879</a></span></p>
 </div>
@@ -2803,7 +2803,7 @@ will take precedence.</p>
 <dt>SQLAlchemy repository: <code class="docutils literal notranslate"><span class="pre">auto_commit</span></code>, <code class="docutils literal notranslate"><span class="pre">auto_expunge</span></code> and <code class="docutils literal notranslate"><span class="pre">auto_refresh</span></code> options<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemy repository:" id="2.0.0beta3-sqlalchemy repository:">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Three new parameters have been added to the repository and various methods:</p>
 <dl>
-<dt><code class="docutils literal notranslate"><span class="pre">auto_commit</span></code></dt><dd><p>When this <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the session will
+<dt><code class="docutils literal notranslate"><span class="pre">auto_commit</span></code></dt><dd><p>When this <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the session will
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/session_api.html#sqlalchemy.orm.Session.commit" title="(in SQLAlchemy v2.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">commit()</span></code></a> instead of
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/session_api.html#sqlalchemy.orm.Session.flush" title="(in SQLAlchemy v2.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flush()</span></code></a> before returning.</p>
 <p>Available in:</p>
@@ -2819,7 +2819,7 @@ will take precedence.</p>
 </ul>
 <p>(and their sync equivalents)</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">auto_refresh</span></code></dt><dd><p>When <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the session will execute
+<dt><code class="docutils literal notranslate"><span class="pre">auto_refresh</span></code></dt><dd><p>When <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the session will execute
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/session_api.html#sqlalchemy.orm.Session.refresh" title="(in SQLAlchemy v2.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">refresh()</span></code></a> objects before returning.</p>
 <p>Available in:</p>
 <ul class="simple">
@@ -2830,7 +2830,7 @@ will take precedence.</p>
 </ul>
 <p>(and their sync equivalents)</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">auto_expunge</span></code></dt><dd><p>When this is <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the session will execute
+<dt><code class="docutils literal notranslate"><span class="pre">auto_expunge</span></code></dt><dd><p>When this is <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, the session will execute
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/session_api.html#sqlalchemy.orm.Session.expunge" title="(in SQLAlchemy v2.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expunge()</span></code></a> all objects before returning.</p>
 <p>Available in:</p>
 <ul class="simple">
@@ -3025,7 +3025,7 @@ timeout for all requests.</p>
 </div>
 </dd>
 <dt>SQLAlchemy DTO: Explicit error messages when type annotations for a column are missing<a class="headerlink reference internal" href="#2.0.0beta2-sqlalchemy dto: explicit error messages when type annotations for a column are missing" id="2.0.0beta2-sqlalchemy dto: explicit error messages when type annotations for a column are missing">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Replace the nondescript <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> raised when a SQLAlchemy DTO is
+<p>Replace the nondescript <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#KeyError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> raised when a SQLAlchemy DTO is
 constructed from a model that is missing a type annotation for an included
 column with an <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a>, including an explicit error
 message, pointing at the potential cause.</p>
@@ -3187,7 +3187,7 @@ and <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/ex
 <dt>DTOs: Transfer to generic collection types<a class="headerlink reference internal" href="#2.0.0beta1-dtos: transfer to generic collection types" id="2.0.0beta1-dtos: transfer to generic collection types">#</a></dt><dd><div class="changelog-change docutils container">
 <p>DTOs can now be wrapped in generic collection types such as
 <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Sequence</span></code></a>. These will be substituted with a concrete and
-instantiable type at run time, e.g. in the case of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>.</p>
+instantiable type at run time, e.g. in the case of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/1763">https://github.com/litestar-org/litestar/issues/1763</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1764">https://github.com/litestar-org/litestar/pull/1764</a></span></p>
 </div>
 </dd>
@@ -3251,7 +3251,7 @@ consistent with config of Jinja template engine.</p>
 <p>The <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a> has been added to the
 signature namespace, fixing an issue where using
 <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">annotations</span></code> or stringized annotations would lead to
-a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NameError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NameError</span></code></a>, if the plugin was not added to the signatured namespace
+a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#NameError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NameError</span></code></a>, if the plugin was not added to the signatured namespace
 manually.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/1691">https://github.com/litestar-org/litestar/issues/1691</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1719">https://github.com/litestar-org/litestar/pull/1719</a></span></p>
 </div>
@@ -3286,7 +3286,7 @@ being used with custom dependencies (that is, injection of things other than
 </dd>
 <dt>OpenAPI schema for <code class="docutils literal notranslate"><span class="pre">Dict[K,</span> <span class="pre">V]</span></code> ignores generic<a class="headerlink reference internal" href="#2.0.0beta1-openapi schema for" id="2.0.0beta1-openapi schema for">#</a></dt><dd><div class="changelog-change docutils container">
 <p>An issue with the OpenAPI schema generation was fixed that would lead to generic
-arguments to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> being ignored.</p>
+arguments to <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> being ignored.</p>
 <p>An type like <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">int]</span></code> now correctly renders as
 <code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;object&quot;,</span> <span class="pre">&quot;additionalProperties&quot;:</span> <span class="pre">{</span> <span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;integer&quot;</span> <span class="pre">}}</span></code>.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/1795">https://github.com/litestar-org/litestar/issues/1795</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1828">https://github.com/litestar-org/litestar/pull/1828</a></span></p>
@@ -3970,7 +3970,7 @@ may be released as a standalone package.</p>
 </div>
 </dd>
 <dt>Change <code class="docutils literal notranslate"><span class="pre">MissingDependencyException</span></code> to be a subclass of <code class="docutils literal notranslate"><span class="pre">ImportError</span></code><a class="headerlink reference internal" href="#2.0.0alpha5-change" id="2.0.0alpha5-change">#</a></dt><dd><div class="changelog-change docutils container">
-<p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.MissingDependencyException" title="litestar.exceptions.MissingDependencyException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a> is now a subclass of <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a>, to make handling cases where both
+<p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.MissingDependencyException" title="litestar.exceptions.MissingDependencyException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a> is now a subclass of <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ImportError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a>, to make handling cases where both
 of them might be raised easier.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1557">https://github.com/litestar-org/litestar/pull/1557</a></span></p>
 </div>
@@ -4042,7 +4042,7 @@ now supports setting arbitrary media types.</p>
 </div>
 </dd>
 <dt>Fix global namespace for type resolution<a class="headerlink reference internal" href="#2.0.0alpha4-fix global namespace for type resolution" id="2.0.0alpha4-fix global namespace for type resolution">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fix a bug where certain annotations would cause a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NameError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NameError</span></code></a></p>
+<p>Fix a bug where certain annotations would cause a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#NameError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NameError</span></code></a></p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/1472">https://github.com/litestar-org/litestar/issues/1472</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1477">https://github.com/litestar-org/litestar/pull/1477</a></span></p>
 </div>
 </dd>
@@ -4130,7 +4130,7 @@ of incoming and outgoing data analogous to route handlers and OOP based event di
 <dl>
 <dt>SQLAlchemy 1 plugin mutates app state destructively<a class="headerlink reference internal" href="#2.0.0alpha3-sqlalchemy 1 plugin mutates app state destructively" id="2.0.0alpha3-sqlalchemy 1 plugin mutates app state destructively">#</a></dt><dd><div class="changelog-change docutils container">
 <p>When using the SQLAlchemy 1 plugin, repeatedly running through the application lifecycle (as done when testing
-an application not provided by a factory function), would result in a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> on the second pass.</p>
+an application not provided by a factory function), would result in a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#KeyError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> on the second pass.</p>
 <p>This was caused be the plugin’s <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> handler deleting the <code class="docutils literal notranslate"><span class="pre">engine_app_state_key</span></code> from the
 application’s state on application shutdown, but only adding it on application init.</p>
 <p>This was fixed by adding performing the necessary setup actions on application startup rather than init.</p>

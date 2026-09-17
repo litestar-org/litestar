@@ -588,7 +588,7 @@ receives the name from the path parameter and returns a <code class="docutils li
 <p>Finally, we create an application instance and register the route handler with it.</p>
 <p>In Litestar, this pattern works “out-of-the-box” - that is, returning <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclass</span></code></a>
 instances from handlers is natively supported. Litestar will take that dataclass instance, and transform it into
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> that can be sent over the network.</p>
+<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> that can be sent over the network.</p>
 <p>Lets run it and see for ourselves!</p>
 <p>Save the above script as <code class="docutils literal notranslate"><span class="pre">app.py</span></code>, run it using the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> command, and then visit
 <a class="reference external" href="http://localhost:8000/person/peter">http://localhost:8000/person/peter</a> in your browser. You should see the
