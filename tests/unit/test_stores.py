@@ -7,7 +7,7 @@ import string
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -115,6 +115,37 @@ async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | tim
     stored_value = await redis_store.get("foo")
 
     assert stored_value is not None
+
+
+async def test_get_renew_prefers_getex_when_supported() -> None:
+    redis = AsyncMock()
+    redis.getex = AsyncMock(return_value=b"bar")
+    redis.execute_command = AsyncMock(return_value=None)
+    redis.register_script = MagicMock(return_value=AsyncMock(return_value=b"bar"))
+
+    store = RedisStore(redis=redis)
+
+    result = await store.get("foo", renew_for=10)
+
+    assert result == b"bar"
+    redis.getex.assert_awaited_once_with(name="LITESTAR:foo", ex=10)
+    store._get_and_renew_script.assert_not_called()  # type: ignore[attr-defined]
+
+
+async def test_get_renew_falls_back_to_lua_without_getex() -> None:
+    redis = AsyncMock()
+    redis.getex = AsyncMock(return_value=b"bar")
+    redis.execute_command = AsyncMock(side_effect=Exception("unknown command 'GETEX'"))
+    script = AsyncMock(return_value=b"bar")
+    redis.register_script = MagicMock(return_value=script)
+
+    store = RedisStore(redis=redis)
+
+    result = await store.get("foo", renew_for=10)
+
+    assert result == b"bar"
+    redis.getex.assert_not_called()
+    script.assert_awaited_once_with(keys=["LITESTAR:foo"], args=[10])
 
 
 @pytest.mark.flaky(reruns=5)
