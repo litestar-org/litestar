@@ -449,6 +449,43 @@ def test_jwt_auth_openapi() -> None:
     }
 
 
+def test_jwt_cookie_auth_openapi() -> None:
+    jwt_auth = JWTCookieAuth[Any](token_secret=secrets.token_hex(), retrieve_user_handler=lambda _: None)  # type: ignore[arg-type, misc]
+    assert jwt_auth.openapi_components.to_schema() == {
+        "schemas": {},
+        "securitySchemes": {
+            "BearerToken": {
+                "type": "http",
+                "description": "JWT cookie-based authentication and authorization.",
+                "scheme": "Bearer",
+                "bearerFormat": "JWT",
+            }
+        },
+    }
+    assert jwt_auth.security_requirement == {"BearerToken": []}
+    app = Litestar(on_app_init=[jwt_auth.on_app_init])
+
+    assert app.openapi_schema
+    assert app.openapi_schema.to_schema() == {
+        "openapi": "3.1.0",
+        "info": {"title": "Litestar API", "version": "1.0.0"},
+        "servers": [{"url": "/"}],
+        "paths": {},
+        "components": {
+            "schemas": {},
+            "securitySchemes": {
+                "BearerToken": {
+                    "type": "http",
+                    "description": "JWT cookie-based authentication and authorization.",
+                    "scheme": "Bearer",
+                    "bearerFormat": "JWT",
+                }
+            },
+        },
+        "security": [{"BearerToken": []}],
+    }
+
+
 async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> None:
     user = UserFactory.build()
 
