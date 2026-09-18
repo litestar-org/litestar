@@ -84,8 +84,9 @@ class RedisStore(NamespacedStore):
         """Return whether the connected Redis server supports the ``GETEX`` command (6.2+)."""
         if self._getex_supported is None:
             try:
-                # GETEX on a missing key is a no-op returning None on Redis >= 6.2
-                await self._redis.execute_command("GETEX", "litestar:store:getex_probe", "EX", 1)
+                # GETEX on a missing key is a no-op returning None on Redis >= 6.2;
+                # older servers raise (unknown command).
+                await self._redis.getex("litestar:store:getex_probe")
             except Exception:  # noqa: BLE001
                 self._getex_supported = False
             else:

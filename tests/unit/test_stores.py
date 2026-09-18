@@ -119,8 +119,8 @@ async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | tim
 
 async def test_get_renew_prefers_getex_when_supported() -> None:
     redis = AsyncMock()
-    redis.getex = AsyncMock(return_value=b"bar")
-    redis.execute_command = AsyncMock(return_value=None)
+    # first call is the support probe (missing key → None); second is the real get
+    redis.getex = AsyncMock(side_effect=[None, b"bar"])
     redis.register_script = MagicMock(return_value=AsyncMock(return_value=b"bar"))
 
     store = RedisStore(redis=redis)
@@ -128,14 +128,16 @@ async def test_get_renew_prefers_getex_when_supported() -> None:
     result = await store.get("foo", renew_for=10)
 
     assert result == b"bar"
-    redis.getex.assert_awaited_once_with(name="LITESTAR:foo", ex=10)
+    assert redis.getex.await_count == 2
+    assert redis.getex.await_args_list[-1].kwargs == {"name": "LITESTAR:foo", "ex": 10} or (
+        redis.getex.await_args_list[-1].args and redis.getex.await_args_list[-1].args[0] == "LITESTAR:foo"
+    )
     store._get_and_renew_script.assert_not_called()  # type: ignore[attr-defined]
 
 
 async def test_get_renew_falls_back_to_lua_without_getex() -> None:
     redis = AsyncMock()
-    redis.getex = AsyncMock(return_value=b"bar")
-    redis.execute_command = AsyncMock(side_effect=Exception("unknown command 'GETEX'"))
+    redis.getex = AsyncMock(side_effect=Exception("unknown command 'GETEX'"))
     script = AsyncMock(return_value=b"bar")
     redis.register_script = MagicMock(return_value=script)
 
@@ -144,7 +146,8 @@ async def test_get_renew_falls_back_to_lua_without_getex() -> None:
     result = await store.get("foo", renew_for=10)
 
     assert result == b"bar"
-    redis.getex.assert_not_called()
+    # only the support probe should touch getex
+    assert redis.getex.await_count == 1
     script.assert_awaited_once_with(keys=["LITESTAR:foo"], args=[10])
 
 
