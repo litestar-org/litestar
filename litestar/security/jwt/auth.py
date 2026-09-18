@@ -470,8 +470,6 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="http",
                     scheme="Bearer",
-                    name=self.key,
-                    security_scheme_in="cookie",
                     bearer_format="JWT",
                     description=self.description,
                 )
