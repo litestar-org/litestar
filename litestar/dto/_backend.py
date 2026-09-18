@@ -6,16 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Collection, Mapping, Set
 from dataclasses import replace
-from typing import (
-    TYPE_CHECKING,
-    Annotated,
-    Any,
-    ClassVar,
-    Final,
-    Protocol,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, Final, Protocol, Union, cast, get_args, get_origin
 
 import msgspec
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
@@ -37,6 +28,7 @@ from litestar.enums import RequestEncodingType
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
+from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.typing import FieldDefinition
 from litestar.utils import unique_name_for_scope
 
@@ -837,7 +829,13 @@ def _create_struct_for_field_definitions(
 
         if field_definition.passthrough_constraints:
             if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
-                field_type = Annotated[field_type, field_meta]
+                field_types = get_args(field_type)
+                non_none = [t for t in field_types if t not in (NoneType, msgspec.UnsetType)]
+                if get_origin(field_type) in UnionTypes and len(non_none) == 1:
+                    constrained = non_none[0]
+                    field_type = Union[tuple(Annotated[t, field_meta] if t is constrained else t for t in field_types)]
+                else:
+                    field_type = Annotated[field_type, field_meta]
         elif field_definition.kwarg_definition:
             field_type = Annotated[field_type, field_definition.kwarg_definition]
 
