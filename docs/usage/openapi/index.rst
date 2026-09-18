@@ -20,7 +20,26 @@ configuration globally to setting
 :ref:`specific kwargs on route <usage/openapi/schema_generation:Configuring schema generation on a route handler>`
 handler decorators.
 
+Default OpenAPI schema files
+----------------------------
+
+When ``openapi_config`` is enabled, Litestar serves documentation UIs **and** the raw OpenAPI document
+from the configured base path (default ``/schema``).
+
+With the default configuration you can always fetch:
+
+- ``/schema/openapi.json`` — the OpenAPI document as JSON
+
+Some render plugins also expose YAML (or ``.yml``) variants when they register those paths, for example
+``/schema/openapi.yaml``. Check the plugin documentation or ``openapi_config.render_plugins`` for the exact
+paths in your app.
+
+The UI root (for example ``/schema/`` when a default UI plugin is configured) is separate from the schema file
+endpoints above. If you mount the app under an ASGI ``root_path`` and leave ``servers`` at the default ``/``,
+Litestar will use that ``root_path`` as the OpenAPI server URL when the schema is served.
+
 .. toctree::
 
     schema_generation
     ui_plugins
+
