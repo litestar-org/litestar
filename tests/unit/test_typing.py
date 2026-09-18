@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass
-from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Callable, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union
 
 import msgspec
 import pytest
@@ -24,7 +24,15 @@ try:
 except ImportError:
     TypeAliasType = TeTypeAliasType
 
-from litestar.params import KwargDefinition, ParameterKwarg
+from litestar.params import (
+    CookieParameter,
+    HeaderParameter,
+    KwargDefinition,
+    Parameter,
+    ParameterKwarg,
+    PathParameter,
+    QueryParameter,
+)
 from litestar.typing import FieldDefinition
 from tests.unit.test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
@@ -483,3 +491,45 @@ def test_kwarg_definition_as_default_raises() -> None:
         ImproperlyConfiguredException, match="Usage of parameter defaults to declare metadata is no longer supported."
     ):
         FieldDefinition.from_annotation(int, default=ParameterKwarg())
+
+
+@pytest.mark.parametrize(
+    ("default", "expected"),
+    (
+        (QueryParameter(), "FromQuery"),
+        (PathParameter(), "FromPath"),
+        (HeaderParameter(), "FromHeader"),
+        (CookieParameter(), "FromCookie"),
+    ),
+)
+def test_kwarg_definition_as_default_suggests_dedicated_alias(default: ParameterKwarg, expected: str) -> None:
+    with pytest.raises(ImproperlyConfiguredException, match=f"Use '{expected}' instead"):
+        FieldDefinition.from_annotation(int, default=default)
+
+
+@pytest.mark.parametrize(
+    ("make_default", "expected"),
+    (
+        (lambda: Parameter(query="query_param"), "FromQuery"),
+        (lambda: Parameter(header="X-Header"), "FromHeader"),
+        (lambda: Parameter(cookie="cookie_param"), "FromCookie"),
+    ),
+)
+def test_kwarg_definition_as_default_with_explicit_source_suggests_dedicated_alias(
+    make_default: Callable[[], ParameterKwarg], expected: str
+) -> None:
+    with pytest.warns(DeprecationWarning):
+        default = make_default()
+
+    with pytest.raises(ImproperlyConfiguredException, match=f"Use '{expected}' instead"):
+        FieldDefinition.from_annotation(int, default=default)
+
+
+def test_kwarg_definition_as_default_without_explicit_source_suggests_parameter() -> None:
+    """``Parameter()`` does not record where the value comes from, so no dedicated alias can be named.
+
+    ``ParameterKwarg.param_type`` defaults to ``ParamType.QUERY``, which made a path parameter - whose
+    type is decided by the route path rather than by the annotation - suggest ``FromQuery``.
+    """
+    with pytest.raises(ImproperlyConfiguredException, match=r"Use 'Annotated\[<type>, Parameter\(\.\.\.\)\]' instead"):
+        FieldDefinition.from_annotation(int, default=Parameter(description="a description"))
