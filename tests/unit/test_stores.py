@@ -7,7 +7,7 @@ import string
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -115,6 +115,40 @@ async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | tim
     stored_value = await redis_store.get("foo")
 
     assert stored_value is not None
+
+
+async def test_get_renew_prefers_getex_when_supported() -> None:
+    redis = AsyncMock()
+    # first call is the support probe (missing key → None); second is the real get
+    redis.getex = AsyncMock(side_effect=[None, b"bar"])
+    redis.register_script = MagicMock(return_value=AsyncMock(return_value=b"bar"))
+
+    store = RedisStore(redis=redis)
+
+    result = await store.get("foo", renew_for=10)
+
+    assert result == b"bar"
+    assert redis.getex.await_count == 2
+    assert redis.getex.await_args_list[-1].kwargs == {"name": "LITESTAR:foo", "ex": 10} or (
+        redis.getex.await_args_list[-1].args and redis.getex.await_args_list[-1].args[0] == "LITESTAR:foo"
+    )
+    store._get_and_renew_script.assert_not_called()  # type: ignore[attr-defined]
+
+
+async def test_get_renew_falls_back_to_lua_without_getex() -> None:
+    redis = AsyncMock()
+    redis.getex = AsyncMock(side_effect=Exception("unknown command 'GETEX'"))
+    script = AsyncMock(return_value=b"bar")
+    redis.register_script = MagicMock(return_value=script)
+
+    store = RedisStore(redis=redis)
+
+    result = await store.get("foo", renew_for=10)
+
+    assert result == b"bar"
+    # only the support probe should touch getex
+    assert redis.getex.await_count == 1
+    script.assert_awaited_once_with(keys=["LITESTAR:foo"], args=[10])
 
 
 @pytest.mark.flaky(reruns=5)
