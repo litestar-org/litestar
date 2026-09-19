@@ -105,7 +105,7 @@ def test_create_error_responses() -> None:
     )
 
     assert pet_exc_response[0] == str(PetException.status_code)
-    assert pet_exc_response[1].description == HTTPStatus(PetException.status_code).description
+    assert pet_exc_response[1].description == HTTPStatus(PetException.status_code).phrase
     assert pet_exc_response[1].content
     assert pet_exc_response[1].content[MediaType.JSON]
     pet_exc_response_schema = pet_exc_response[1].content[MediaType.JSON].schema
@@ -118,9 +118,7 @@ def test_create_error_responses() -> None:
     assert not pet_exc_response_schema.one_of
 
     assert permission_denied_exc_response[0] == str(PermissionDeniedException.status_code)
-    assert (
-        permission_denied_exc_response[1].description == HTTPStatus(PermissionDeniedException.status_code).description
-    )
+    assert permission_denied_exc_response[1].description == HTTPStatus(PermissionDeniedException.status_code).phrase
     assert permission_denied_exc_response[1].content
     assert permission_denied_exc_response[1].content[MediaType.JSON]
     schema = permission_denied_exc_response[1].content[MediaType.JSON].schema
@@ -134,7 +132,7 @@ def test_create_error_responses() -> None:
     assert not schema.one_of
 
     assert validation_exc_response[0] == str(ValidationException.status_code)
-    assert validation_exc_response[1].description == HTTPStatus(ValidationException.status_code).description
+    assert validation_exc_response[1].description == HTTPStatus(ValidationException.status_code).phrase
     assert validation_exc_response[1].content
     assert validation_exc_response[1].content[MediaType.JSON]
 
@@ -379,7 +377,7 @@ def test_create_success_response_template(create_factory: CreateFactoryFixture) 
 
     handler = get_registered_route_handler(template_handler, "test")
     response = create_factory(handler, True).create_success_response()
-    assert response.description == "Request fulfilled, document follows"
+    assert response.description == "OK"
     assert response.content
     assert response.content[MediaType.HTML.value]
 
