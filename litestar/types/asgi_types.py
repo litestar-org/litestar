@@ -29,8 +29,6 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from __future__ import annotations
-
 from collections.abc import Awaitable, Callable, Iterable
 from typing import (
     TYPE_CHECKING,
@@ -41,7 +39,9 @@ from typing import (
     Union,
 )
 
-from litestar.enums import HttpMethod
+from typing_extensions import TypeAliasType
+
+from litestar.enums import HttpMethod, ScopeType
 
 __all__ = (
     "ASGIApp",
@@ -91,18 +91,18 @@ __all__ = (
 )
 
 if TYPE_CHECKING:
-    from typing import TypeAlias
-
     from litestar.app import Litestar
-    from litestar.enums import ScopeType
     from litestar.types.empty import EmptyType
 
     from .internal_types import RouteHandlerType
     from .serialization import DataContainerType
 
-HttpMethodName: TypeAlias = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
-Method: TypeAlias = Union[HttpMethodName, HttpMethod]
-ScopeSession: TypeAlias = "EmptyType | dict[str, Any] | DataContainerType | None"
+HttpMethodName = TypeAliasType(
+    "HttpMethodName", Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
+)
+Method = TypeAliasType("Method", Union[HttpMethodName, HttpMethod])
+ScopeSession = TypeAliasType("ScopeSession", "EmptyType | dict[str, Any] | DataContainerType | None")
+RawHeaders = TypeAliasType("RawHeaders", Iterable[tuple[bytes, bytes]])
 
 
 class ASGIVersion(TypedDict):
@@ -121,8 +121,8 @@ class HeaderScope(TypedDict):
 class BaseScope(HeaderScope):
     """Base ASGI-scope."""
 
-    app: Litestar  # deprecated
-    litestar_app: Litestar
+    app: "Litestar"  # deprecated
+    litestar_app: "Litestar"
     asgi: ASGIVersion
     auth: Any
     client: tuple[str, int] | None
@@ -134,7 +134,7 @@ class BaseScope(HeaderScope):
     query_string: bytes
     raw_path: bytes
     root_path: str
-    route_handler: RouteHandlerType
+    route_handler: "RouteHandlerType"
     scheme: str
     server: tuple[str, int | None] | None
     session: ScopeSession
@@ -159,10 +159,10 @@ class WebSocketScope(BaseScope):
 class LifeSpanScope(TypedDict):
     """Lifespan-ASGI-scope."""
 
-    app: Litestar
+    app: "Litestar"
     asgi: ASGIVersion
     type: Literal["lifespan"]
-    litestar_app: NotRequired[Litestar]
+    litestar_app: NotRequired["Litestar"]
     state: NotRequired[dict[str, Any]]
 
 
@@ -300,46 +300,63 @@ class LifeSpanShutdownFailedEvent(TypedDict):
     message: str
 
 
-HTTPReceiveMessage: TypeAlias = Union[
-    HTTPRequestEvent,
-    HTTPDisconnectEvent,
-]
-WebSocketReceiveMessage: TypeAlias = Union[
-    WebSocketConnectEvent,
-    WebSocketReceiveEvent,
-    WebSocketDisconnectEvent,
-]
-LifeSpanReceiveMessage: TypeAlias = Union[
-    LifeSpanStartupEvent,
-    LifeSpanShutdownEvent,
-]
-HTTPSendMessage: TypeAlias = Union[
-    HTTPResponseStartEvent,
-    HTTPResponseBodyEvent,
-    HTTPServerPushEvent,
-    HTTPDisconnectEvent,
-]
-WebSocketSendMessage: TypeAlias = Union[
-    WebSocketAcceptEvent,
-    WebSocketSendEvent,
-    WebSocketResponseStartEvent,
-    WebSocketResponseBodyEvent,
-    WebSocketCloseEvent,
-]
-LifeSpanSendMessage: TypeAlias = Union[
-    LifeSpanStartupCompleteEvent,
-    LifeSpanStartupFailedEvent,
-    LifeSpanShutdownCompleteEvent,
-    LifeSpanShutdownFailedEvent,
-]
-LifeSpanReceive: TypeAlias = Callable[..., Awaitable[LifeSpanReceiveMessage]]
-LifeSpanSend: TypeAlias = Callable[[LifeSpanSendMessage], Awaitable[None]]
-Message: TypeAlias = Union[HTTPSendMessage, WebSocketSendMessage]
-ReceiveMessage: TypeAlias = Union[HTTPReceiveMessage, WebSocketReceiveMessage]
-Scope: TypeAlias = Union[HTTPScope, WebSocketScope]
-Receive: TypeAlias = Callable[..., Awaitable[Union[HTTPReceiveMessage, WebSocketReceiveMessage]]]
-Send: TypeAlias = Callable[[Message], Awaitable[None]]
-ASGIApp: TypeAlias = Callable[[Scope, Receive, Send], Awaitable[None]]
-RawHeaders: TypeAlias = Iterable[tuple[bytes, bytes]]
-RawHeadersList: TypeAlias = list[tuple[bytes, bytes]]
-WebSocketMode: TypeAlias = Literal["text", "binary"]
+HTTPReceiveMessage = TypeAliasType(
+    "HTTPReceiveMessage",
+    Union[
+        HTTPRequestEvent,
+        HTTPDisconnectEvent,
+    ],
+)
+WebSocketReceiveMessage = TypeAliasType(
+    "WebSocketReceiveMessage",
+    Union[
+        WebSocketConnectEvent,
+        WebSocketReceiveEvent,
+        WebSocketDisconnectEvent,
+    ],
+)
+LifeSpanReceiveMessage = TypeAliasType(
+    "LifeSpanReceiveMessage",
+    Union[
+        LifeSpanStartupEvent,
+        LifeSpanShutdownEvent,
+    ],
+)
+HTTPSendMessage = TypeAliasType(
+    "HTTPSendMessage",
+    Union[
+        HTTPResponseStartEvent,
+        HTTPResponseBodyEvent,
+        HTTPServerPushEvent,
+        HTTPDisconnectEvent,
+    ],
+)
+WebSocketSendMessage = TypeAliasType(
+    "WebSocketSendMessage",
+    Union[
+        WebSocketAcceptEvent,
+        WebSocketSendEvent,
+        WebSocketResponseStartEvent,
+        WebSocketResponseBodyEvent,
+        WebSocketCloseEvent,
+    ],
+)
+LifeSpanSendMessage = TypeAliasType(
+    "LifeSpanSendMessage",
+    Union[
+        LifeSpanStartupCompleteEvent,
+        LifeSpanStartupFailedEvent,
+        LifeSpanShutdownCompleteEvent,
+        LifeSpanShutdownFailedEvent,
+    ],
+)
+LifeSpanReceive = TypeAliasType("LifeSpanReceive", Callable[..., Awaitable[LifeSpanReceiveMessage]])
+LifeSpanSend = TypeAliasType("LifeSpanSend", Callable[[LifeSpanSendMessage], Awaitable[None]])
+Message = TypeAliasType("Message", Union[HTTPSendMessage, WebSocketSendMessage])
+ReceiveMessage = TypeAliasType("ReceiveMessage", Union[HTTPReceiveMessage, WebSocketReceiveMessage])
+Scope = TypeAliasType("Scope", Union[HTTPScope, WebSocketScope])
+Receive = TypeAliasType("Receive", Callable[..., Awaitable[Union[HTTPReceiveMessage, WebSocketReceiveMessage]]])
+Send = TypeAliasType("Send", Callable[[Message], Awaitable[None]])
+ASGIApp = TypeAliasType("ASGIApp", Callable[[Scope, Receive, Send], Awaitable[None]])
+RawHeadersList = TypeAliasType("RawHeadersList", list[tuple[bytes, bytes]])
+WebSocketMode = TypeAliasType("WebSocketMode", Literal["text", "binary"])

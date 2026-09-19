@@ -1,11 +1,13 @@
-from __future__ import annotations
-
 import warnings
 from collections.abc import Hashable, Sequence
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, TypeVar
+from typing import Annotated, Any, ClassVar, TypeAlias, TypeVar
 
 from litestar.enums import ParamType, RequestEncodingType
+from litestar.openapi.spec.example import Example
+from litestar.openapi.spec.external_documentation import (
+    ExternalDocumentation,
+)
 from litestar.types import Empty
 
 __all__ = (
@@ -29,12 +31,6 @@ __all__ = (
     "SkipValidationMarker",
     "URLEncodedBody",
 )
-
-if TYPE_CHECKING:
-    from litestar.openapi.spec.example import Example
-    from litestar.openapi.spec.external_documentation import (
-        ExternalDocumentation,
-    )
 
 
 T = TypeVar("T")
