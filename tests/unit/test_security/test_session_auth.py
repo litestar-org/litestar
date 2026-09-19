@@ -15,6 +15,7 @@ from litestar.middleware.session.server_side import (
     ServerSideSessionConfig,
 )
 from litestar.security.session_auth import SessionAuth
+from litestar.security.session_auth.middleware import SessionAuthMiddleware
 from litestar.testing import create_test_client
 from tests.models import User, UserFactory
 
@@ -99,6 +100,56 @@ def test_session_backend_exclusions_apply_under_session_auth(
     ) as client:
         assert client.get("/excluded").json() == {"has_session": False}
         assert client.get("/opt-out").json() == {"has_session": False}
+
+
+def test_unauthorized_response_clears_session_cookie(session_backend_config_memory: ServerSideSessionConfig) -> None:
+    session_auth = SessionAuth[Any, ServerSideSessionBackend](
+        retrieve_user_handler=retrieve_user_handler,
+        exclude=["login"],
+        session_backend_config=session_backend_config_memory,
+    )
+
+    @post("/login")
+    def login_handler(request: "Request[Any, Any, Any]") -> None:
+        request.set_session({"id": str(uuid4())})
+
+    @get("/user")
+    def get_user_handler(request: "Request[User, Any, Any]") -> User:
+        return request.user
+
+    with create_test_client(
+        route_handlers=[login_handler, get_user_handler], on_app_init=[session_auth.on_app_init]
+    ) as client:
+        client.post("/login")
+        assert client.cookies.get("session")
+        response = client.get("/user")
+        assert response.status_code == HTTP_401_UNAUTHORIZED
+        assert "session=null" in response.headers["set-cookie"]
+
+
+def test_middleware_accepts_sync_retrieve_user_handler(session_backend_config_memory: ServerSideSessionConfig) -> None:
+    auth_middleware = SessionAuthMiddleware(
+        exclude=["login"],
+        exclude_http_methods=None,
+        exclude_opt_key="exclude_from_auth",
+        retrieve_user_handler=retrieve_user_handler,
+        scopes=None,
+    )
+
+    @post("/login")
+    def login_handler(request: "Request[Any, Any, Any]", data: User) -> None:
+        request.set_session(msgspec.to_builtins(data))
+
+    @get("/user")
+    def get_user_handler(request: "Request[User, Any, Any]") -> User:
+        return request.user
+
+    with create_test_client(
+        route_handlers=[login_handler, get_user_handler],
+        middleware=[session_backend_config_memory.middleware, auth_middleware],
+    ) as client:
+        client.post("/login", json={"id": str(user_instance.id), "name": user_instance.name})
+        assert client.get("/user").status_code == HTTP_200_OK
 
 
 def test_session_auth_openapi(session_backend_config_memory: "ServerSideSessionConfig") -> None:
