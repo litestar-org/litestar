@@ -17,7 +17,7 @@ from time_machine import Traveller
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
-from litestar.stores.redis import RedisStore
+from litestar.stores.redis import RedisStore, _KeysStrategy
 from litestar.stores.registry import StoreRegistry
 from litestar.stores.valkey import ValkeyStore
 
@@ -102,7 +102,7 @@ async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_da
 
 
 @pytest.mark.flaky(reruns=5)
-@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
+@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10), timedelta(days=1)])
 @pytest.mark.xdist_group("redis")
 async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | timedelta) -> None:
     # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
@@ -337,7 +337,8 @@ async def test_valkey_delete_all_no_namespace_raises(valkey_client: Valkey) -> N
 @pytest.mark.xdist_group("redis")
 def test_redis_namespaced_key(redis_store: RedisStore) -> None:
     assert redis_store.namespace == "LITESTAR"
-    assert redis_store._make_key("foo") == "LITESTAR:foo"
+    assert isinstance(redis_store._strategy, _KeysStrategy)
+    assert redis_store._strategy._make_key("foo") == "LITESTAR:foo"
 
 
 @pytest.mark.xdist_group("valkey")
