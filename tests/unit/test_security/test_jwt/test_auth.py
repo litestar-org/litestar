@@ -840,10 +840,10 @@ async def test_jwt_auth_require_claims(
 @pytest.mark.parametrize(
     "token_expiration, verify_expiry, expected_status_code",
     [
-        pytest.param((datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), True, 200, id="valid-verify"),
-        pytest.param((datetime.now(tz=UTC) + timedelta(days=1)).timestamp(), False, 200, id="valid-no_verify"),
-        pytest.param((datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"),
-        pytest.param((datetime.now(tz=UTC) - timedelta(days=1)).timestamp(), True, 401, id="invalid-verify"),
+        pytest.param(datetime.now(tz=UTC) + timedelta(days=1), True, 200, id="valid-verify"),
+        pytest.param(datetime.now(tz=UTC) + timedelta(days=1), False, 200, id="valid-no_verify"),
+        pytest.param(datetime.now(tz=UTC) - timedelta(days=1), False, 200, id="invalid-no_verify"),
+        pytest.param(datetime.now(tz=UTC) - timedelta(days=1), True, 401, id="invalid-verify"),
     ],
 )
 async def test_jwt_auth_verify_exp(
@@ -854,10 +854,10 @@ async def test_jwt_auth_verify_exp(
 ) -> None:
     @dataclasses.dataclass
     class CustomToken(Token):
-        def __post_init__(self) -> None:
+        def validate_issued_claims(self) -> None:
             pass
 
-    jwt_auth, client = create_jwt_app(verify_expiry=verify_expiry, token_cls=CustomToken)
+    jwt_auth, client = create_jwt_app(verify_expiry=verify_expiry)
 
     header = jwt_auth.format_auth_header(
         CustomToken(

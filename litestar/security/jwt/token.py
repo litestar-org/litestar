@@ -3,8 +3,8 @@ from __future__ import annotations
 import dataclasses
 from collections.abc import Sequence  # noqa: TC003
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any, Final, TypedDict
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import jwt
 import msgspec
@@ -18,8 +18,6 @@ __all__ = (
     "JWTDecodeOptions",
     "Token",
 )
-
-_LEEWAY_EXTRA_KEY: Final = "__leeway__"
 
 
 def _normalize_datetime(value: datetime) -> datetime:
@@ -68,26 +66,24 @@ class Token:
     """Extra fields that were found on the JWT token."""
 
     def __post_init__(self) -> None:
-        leeway = self.extras.pop(_LEEWAY_EXTRA_KEY, 0)
-
         if len(self.sub) < 1:
             raise ImproperlyConfiguredException("sub must be a string with a length greater than 0")
 
-        if isinstance(self.exp, datetime) and (
-            ((exp := _normalize_datetime(self.exp)) + timedelta(seconds=leeway)).timestamp()
-            >= _normalize_datetime(datetime.now(UTC)).timestamp()
-        ):
-            self.exp = exp
-        else:
-            raise ImproperlyConfiguredException(f"exp value must be a datetime in the future, leeway is {leeway}")
+        if not isinstance(self.exp, datetime):
+            raise ImproperlyConfiguredException("exp must be a datetime instance")
+        if not isinstance(self.iat, datetime):
+            raise ImproperlyConfiguredException("iat must be a datetime instance")
 
-        if isinstance(self.iat, datetime) and (
-            ((iat := _normalize_datetime(self.iat)) - timedelta(seconds=leeway)).timestamp()
-            <= _normalize_datetime(datetime.now(UTC)).timestamp()
-        ):
-            self.iat = iat
-        else:
-            raise ImproperlyConfiguredException(f"iat must be a current or past time, leeway is {leeway}")
+        self.exp = _normalize_datetime(self.exp)
+        self.iat = _normalize_datetime(self.iat)
+
+    def validate_issued_claims(self) -> None:
+        """Verify token is fit to be issued."""
+        now = _normalize_datetime(datetime.now(UTC)).timestamp()
+        if isinstance(self.exp, datetime) and self.exp.timestamp() < now:
+            raise ImproperlyConfiguredException("exp value must be a datetime in the future")
+        if isinstance(self.iat, datetime) and self.iat.timestamp() > now:
+            raise ImproperlyConfiguredException("iat must be a current or past time")
 
     @classmethod
     def decode_payload(
@@ -194,11 +190,6 @@ class Token:
             extras = payload.setdefault("extras", {})
             for key in extra_fields:
                 extras[key] = payload.pop(key)
-
-            if _LEEWAY_EXTRA_KEY in extras:
-                raise ImproperlyConfiguredException(f"{_LEEWAY_EXTRA_KEY} is a reserved key and cannot be set")
-
-            extras[_LEEWAY_EXTRA_KEY] = leeway
             return msgspec.convert(payload, cls, strict=False)
         except (
             KeyError,
@@ -240,8 +231,10 @@ class Token:
             An encoded token string.
 
         Raises:
-            ImproperlyConfiguredException: If encoding fails.
+            ImproperlyConfiguredException: If the token is not fit to be issued, or if
+                encoding fails.
         """
+        self.validate_issued_claims()
         try:
             return jwt.encode(
                 payload={k: v for k, v in asdict(self).items() if v is not None},
