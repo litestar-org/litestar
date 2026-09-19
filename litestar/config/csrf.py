@@ -34,7 +34,7 @@ class CSRFConfig:
     """The value to set in the ``SameSite`` attribute of the cookie."""
     cookie_domain: str | None = field(default=None)
     """Specifies which hosts can receive the cookie."""
-    safe_methods: set[Method] = field(default_factory=lambda: {"GET", "HEAD", "OPTIONS"})
+    safe_methods: set[Method] = field(default_factory=lambda: {"GET", "HEAD", "OPTIONS", "QUERY"})
     """A set of "safe methods" that can set the cookie."""
     exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the CSRF middleware."""
