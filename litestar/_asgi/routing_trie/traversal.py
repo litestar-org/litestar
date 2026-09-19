@@ -38,25 +38,48 @@ def traverse_route_map(
     path_params: list[str] = []
     path_components = [p for p in path.split("/") if p]
 
+    # a path-type node (e.g. '{path:path}') can share its trie node with a more specific,
+    # statically-suffixed route registered under the same parameter position (e.g.
+    # '{slug:str}/hello'), since both collapse onto the same PathParameterSentinel child.
+    # when that happens we prefer the more specific branch and only fall back to
+    # consuming the remainder as the catch-all if the specific branch does not resolve.
+    catch_all_node: RouteTrieNode | None = None
+    catch_all_index = 0
+    catch_all_path_params_len = 0
+    dead_end = False
+
     for i, component in enumerate(path_components):
         if component in current_node.child_keys:
             current_node = current_node.children[component]
             continue
 
-        if current_node.is_path_param_node:
-            current_node = current_node.children[PathParameterSentinel]
+        if not current_node.is_path_param_node:
+            dead_end = True
+            break
 
-            if current_node.is_path_type:
+        current_node = current_node.children[PathParameterSentinel]
+
+        if current_node.is_path_type:
+            if not current_node.child_keys:
                 path_params.append(normalize_path("/".join(path_components[i:])))
                 break
 
-            path_params.append(component)
-            continue
+            catch_all_node = current_node
+            catch_all_index = i
+            catch_all_path_params_len = len(path_params)
 
-        raise NotFoundException()
+        path_params.append(component)
 
-    if not current_node.asgi_handlers:
-        raise NotFoundException()
+    if dead_end or current_node is catch_all_node or not current_node.asgi_handlers:
+        if catch_all_node is None:
+            raise NotFoundException()
+
+        current_node = catch_all_node
+        del path_params[catch_all_path_params_len:]
+        path_params.append(normalize_path("/".join(path_components[catch_all_index:])))
+
+        if not current_node.asgi_handlers:
+            raise NotFoundException()
 
     return current_node, path_params, path
 
