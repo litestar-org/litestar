@@ -31,6 +31,7 @@ class ScopeState:
         "body",
         "content_type",
         "cookies",
+        "correlation_id",
         "csrf_token",
         "dependency_cache",
         "do_cache",
@@ -55,6 +56,7 @@ class ScopeState:
         self.body = Empty
         self.content_type = Empty
         self.cookies = Empty
+        self.correlation_id = Empty
         self.csrf_token = Empty
         self.dependency_cache = Empty
         self.do_cache = Empty
@@ -77,6 +79,7 @@ class ScopeState:
     body: bytes | EmptyType
     content_type: tuple[str, dict[str, str]] | EmptyType
     cookies: dict[str, str] | EmptyType
+    correlation_id: str | EmptyType
     csrf_token: str | EmptyType
     dependency_cache: dict[str, Any] | EmptyType
     do_cache: bool | EmptyType

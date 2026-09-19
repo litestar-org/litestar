@@ -10,6 +10,7 @@ middleware
     allowed_hosts
     authentication
     compression
+    correlation
     csrf
     logging
     rate_limit
