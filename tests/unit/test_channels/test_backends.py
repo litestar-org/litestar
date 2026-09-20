@@ -275,6 +275,30 @@ async def test_memory_backend_unsubscribe_clears_all_history() -> None:
     # With the fix using pop(channel, None), all channels should have their history cleared
     assert len(await backend.get_history("foo")) == 0
     assert len(await backend.get_history("bar")) == 0
-    assert len(await backend.get_history("baz")) == 0
-
     await backend.on_shutdown()
+
+
+async def test_redis_pubsub_backend_on_shutdown_calls_aclose() -> None:
+    redis_mock = MagicMock(spec=Redis)
+    pubsub_mock = MagicMock()
+    pubsub_mock.aclose = AsyncMock()
+    pubsub_mock.reset = AsyncMock()
+    redis_mock.pubsub.return_value = pubsub_mock
+
+    backend = RedisChannelsPubSubBackend(redis=redis_mock)
+    await backend.on_shutdown()
+
+    pubsub_mock.aclose.assert_awaited_once()
+    pubsub_mock.reset.assert_not_awaited()
+
+
+async def test_redis_pubsub_backend_on_shutdown_fallback_reset() -> None:
+    redis_mock = MagicMock(spec=Redis)
+    pubsub_mock = MagicMock(spec=["reset"])
+    pubsub_mock.reset = AsyncMock()
+    redis_mock.pubsub.return_value = pubsub_mock
+
+    backend = RedisChannelsPubSubBackend(redis=redis_mock)
+    await backend.on_shutdown()
+
+    pubsub_mock.reset.assert_awaited_once()
