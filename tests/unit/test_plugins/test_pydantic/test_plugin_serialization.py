@@ -13,7 +13,7 @@ from pydantic_extra_types.color import Color as ColorV2
 from pydantic_extra_types.payment import PaymentCardNumber
 
 from litestar.exceptions import SerializationException
-from litestar.plugins.pydantic import PydanticInitPlugin, _model_dump, _model_dump_json
+from litestar.plugins.pydantic import PydanticInitPlugin, _model_dump_json
 from litestar.serialization import (
     decode_json,
     decode_msgpack,
@@ -170,7 +170,7 @@ def test_default_serializer(model: ModelV2, attribute_name: str, expected: Any) 
 
 def test_serialization_of_model_instance(model: ModelV2) -> None:
     assert serializer(getattr(model, "conbytes")) == b"hello"
-    assert serializer(model) == _model_dump(model)
+    assert bytes(serializer(model)) == _model_dump_json(model).encode()
 
 
 @pytest.mark.parametrize("prefer_alias", [False, True])
@@ -182,6 +182,31 @@ def test_pydantic_json_compatibility(model: ModelV2, prefer_alias: bool, pydanti
     encoded_result = json.loads(encoded_json)
 
     assert raw_result == encoded_result
+
+
+@pytest.mark.parametrize(
+    "plugin_kwargs",
+    [
+        {"exclude": {"a"}},
+        {"exclude_defaults": True},
+        {"exclude_none": True},
+        {"exclude_unset": True},
+        {"include": {"a"}},
+        {"prefer_alias": True},
+        {"round_trip": True},
+    ],
+)
+def test_encoder_plugin_kwargs(plugin_kwargs: dict[str, Any]) -> None:
+    class Model(pydantic_v2.BaseModel):
+        a: int
+        b: str | None = None
+        c: str = pydantic_v2.Field(default="c", serialization_alias="C")
+        d: pydantic_v2.Json[list[int]] = [1]
+
+    dump_kwargs = {("by_alias" if k == "prefer_alias" else k): v for k, v in plugin_kwargs.items()}
+    encoded = encode_json(Model(a=1), get_serializer(PydanticInitPlugin.encoders(**plugin_kwargs)))
+    assert encoded == encode_json(Model(a=1).model_dump(mode="json", **dump_kwargs))
+    assert encoded != encode_json(Model(a=1).model_dump(mode="json"))
 
 
 @pytest.mark.parametrize("encoder", [encode_json, encode_msgpack])
