@@ -11,6 +11,7 @@ from msgspec import Meta, Struct, field
 from litestar import Litestar, post
 from litestar.dto import DTOField, Mark, MsgspecDTO, dto_field
 from litestar.dto.data_structures import DTOFieldDefinition
+from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -228,3 +229,33 @@ def test_msgspec_dto_with_classvar() -> None:
     # Only the regular field should be included, not the ClassVar
     assert len(field_defs) == 1
     assert field_defs[0].name == "regular_field"
+
+
+def test_msgspec_dto_constraint_on_optional_field() -> None:
+    """Regression test for https://github.com/litestar-org/litestar/issues/5025
+
+    Applying a msgspec constraint (e.g. ``min_length``) to an ``Optional`` field used to raise a ``TypeError`` at
+    decode time, because the constraint was applied to the outer ``Optional`` union rather than the inner type.
+    """
+
+    class Model(Struct):
+        text: Annotated[str, Meta(min_length=1)] | None = None
+
+    class ModelDTO(MsgspecDTO[Model]):
+        pass
+
+    @post(dto=ModelDTO, signature_types=[Model])
+    def handler(data: Model) -> Model:
+        return data
+
+    with create_test_client(route_handlers=handler) as client:
+        valid_response = client.post("/", json={"text": "hello"})
+        assert valid_response.status_code == 201
+        assert valid_response.json() == {"text": "hello"}
+
+        none_response = client.post("/", json={"text": None})
+        assert none_response.status_code == 201
+        assert none_response.json() == {"text": None}
+
+        invalid_response = client.post("/", json={"text": ""})
+        assert invalid_response.status_code == 400
