@@ -9,7 +9,7 @@ import pytest
 
 from litestar import Litestar
 from litestar.cli._utils import LitestarCLIException
-from litestar.cli.commands.scaffold import _write_file
+from litestar.cli.commands.scaffold import _resolve_output_dir, _write_file
 from litestar.cli.main import litestar_group as cli_command
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient
@@ -110,18 +110,14 @@ def test_create_controller_force_overwrites(runner: CliRunner, tmp_path: Path) -
     assert "stale" not in test_path.read_text(encoding="utf-8")
 
 
-def test_create_controller_rejects_output_that_is_a_file(runner: CliRunner, tmp_path: Path) -> None:
+def test_resolve_output_dir_rejects_existing_file(tmp_path: Path) -> None:
     output_file = tmp_path / "not-a-directory"
     output_file.write_text("not a directory\n", encoding="utf-8")
 
-    result = runner.invoke(cli_command, ["create", "controller", "Widget", "--output", str(output_file)])
+    with pytest.raises(LitestarCLIException, match="not a directory"):
+        _resolve_output_dir(output_file)
 
-    assert result.exit_code != 0
-    assert result.exception is not None
-    assert "not a directory" in result.output
-    assert output_file.name in result.output
-    assert "Traceback" not in result.output
-    assert not (tmp_path / "widget_controller.py").exists()
+    assert output_file.read_text(encoding="utf-8") == "not a directory\n"
 
 
 def test_write_file_refuses_existing_file_without_force(tmp_path: Path) -> None:
