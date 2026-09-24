@@ -11,7 +11,6 @@ from litestar.types import Empty, TypeDecodersSequence
 from litestar.utils import ensure_async_callable
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.predicates import is_async_callable
-from litestar.utils.signature import ParsedSignature
 from litestar.utils.warnings import (
     warn_implicit_sync_to_thread,
     warn_sync_to_thread_with_async_callable,
@@ -22,6 +21,7 @@ if TYPE_CHECKING:
     from litestar._signature import SignatureModel
     from litestar.dto import AbstractDTO
     from litestar.types import AnyCallable
+    from litestar.utils.signature import ParsedSignature
 
 
 __all__ = (
@@ -142,6 +142,8 @@ class Provide:
         type_decoders: TypeDecodersSequence,
     ) -> None:
         if self._parsed_fn_signature is None:
+            from litestar.utils.signature import ParsedSignature
+
             dependency = unwrap_partial(self.dependency)
             plugin = next(
                 (p for p in plugins.di if isinstance(p, DIPlugin) and p.has_typed_init(dependency)),
