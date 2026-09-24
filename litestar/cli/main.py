@@ -12,7 +12,7 @@ except ImportError:
 from click import Path as ClickPath
 
 from ._utils import LitestarEnv, LitestarExtensionGroup
-from .commands import core, schema, sessions
+from .commands import core, scaffold, schema, sessions
 
 __all__ = ("litestar_group",)
 
@@ -54,3 +54,4 @@ litestar_group.add_command(core.routes_command)  # pyright: ignore[reportArgumen
 litestar_group.add_command(core.version_command)  # pyright: ignore[reportArgumentType]
 litestar_group.add_command(sessions.sessions_group)
 litestar_group.add_command(schema.schema_group)
+litestar_group.add_command(scaffold.create_group)

@@ -205,6 +205,51 @@ This makes them suitable for tasks that should happen exactly once, like initial
         return Litestar(route_handlers=[], plugins=[StartupPrintPlugin()])
 
 
+Scaffolding a controller
+------------------------
+
+``litestar create controller`` writes a new :class:`~.controller.Controller` subclass and a
+matching test that exercises the example route with :class:`~.testing.TestClient`.
+
+.. code-block:: shell
+    :caption: Create a Widget controller in the current directory
+
+    litestar create controller Widget
+
+This writes ``widget_controller.py``:
+
+.. code-block:: python
+    :caption: Generated controller
+
+    from litestar import Controller, get
+
+
+    class WidgetController(Controller):
+        """Example controller scaffolded by ``litestar create controller``."""
+
+        path = "/widget"
+
+        @get()
+        async def get_widget(self) -> dict[str, str]:
+            """Return an example response."""
+            return {"message": "Hello from WidgetController"}
+
+and ``test_widget_controller.py``, which mounts ``WidgetController`` on a :class:`~.app.Litestar`
+app and asserts the example route responds with HTTP 200.
+
+Options:
+
+- ``--output`` / ``-o`` — directory to write the files into. Defaults to the current working directory.
+- ``--path`` — base route path for the controller. Defaults to ``/<name-lower>`` (``Widget`` becomes ``/widget``).
+- ``--force`` — overwrite ``<name>_controller.py`` and ``test_<name>_controller.py`` if they already exist.
+  Without ``--force``, an existing file raises an error and nothing is overwritten.
+
+.. code-block:: shell
+    :caption: Write the controller somewhere else, on a custom path
+
+    litestar create controller Widget --output src/myapp --path /widgets
+
+
 CLI Reference
 -------------
 
