@@ -5,7 +5,11 @@ import importlib.util
 import sys
 from typing import TYPE_CHECKING
 
+import pytest
+
 from litestar import Litestar
+from litestar.cli._utils import LitestarCLIException
+from litestar.cli.commands.scaffold import _write_file
 from litestar.cli.main import litestar_group as cli_command
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient
@@ -104,3 +108,27 @@ def test_create_controller_force_overwrites(runner: CliRunner, tmp_path: Path) -
     assert "stale" not in controller_path.read_text(encoding="utf-8")
     assert "class WidgetController(Controller):" in controller_path.read_text(encoding="utf-8")
     assert "stale" not in test_path.read_text(encoding="utf-8")
+
+
+def test_create_controller_rejects_output_that_is_a_file(runner: CliRunner, tmp_path: Path) -> None:
+    output_file = tmp_path / "not-a-directory"
+    output_file.write_text("not a directory\n", encoding="utf-8")
+
+    result = runner.invoke(cli_command, ["create", "controller", "Widget", "--output", str(output_file)])
+
+    assert result.exit_code != 0
+    assert result.exception is not None
+    assert "not a directory" in result.output
+    assert output_file.name in result.output
+    assert "Traceback" not in result.output
+    assert not (tmp_path / "widget_controller.py").exists()
+
+
+def test_write_file_refuses_existing_file_without_force(tmp_path: Path) -> None:
+    target = tmp_path / "existing.py"
+    target.write_text("keep\n", encoding="utf-8")
+
+    with pytest.raises(LitestarCLIException, match="already exists"):
+        _write_file(target, "replaced\n", force=False)
+
+    assert target.read_text(encoding="utf-8") == "keep\n"
