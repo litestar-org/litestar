@@ -842,82 +842,85 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="306">    <span class="k">def</span><span class="w"> </span><span class="nf">get_property_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]:</span>
 </span><span data-line="307">        <span class="k">return</span> <span class="p">{</span>
 </span><span data-line="308">            <span class="n">name</span><span class="p">:</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-</span><span data-line="309">                <span class="n">ParsedSignature</span><span class="o">.</span><span class="n">from_fn</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">fget</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_model_namespace</span><span class="p">(</span><span class="n">model_type</span><span class="p">))</span><span class="o">.</span><span class="n">return_type</span><span class="p">,</span>
-</span><span data-line="310">                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-</span><span data-line="311">            <span class="p">)</span>
-</span><span data-line="312">            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-</span><span data-line="313">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="nb">property</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr</span><span class="o">.</span><span class="n">fget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="314">        <span class="p">}</span>
-</span><span data-line="315">
+</span><span data-line="309">                <span class="n">ParsedSignature</span><span class="o">.</span><span class="n">from_property</span><span class="p">(</span>
+</span><span data-line="310">                    <span class="n">attr</span><span class="p">,</span>
+</span><span data-line="311">                    <span class="bp">cls</span><span class="o">.</span><span class="n">get_model_namespace</span><span class="p">(</span><span class="n">model_type</span><span class="p">),</span>
+</span><span data-line="312">                <span class="p">)</span><span class="o">.</span><span class="n">return_type</span><span class="p">,</span>
+</span><span data-line="313">                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="314">            <span class="p">)</span>
+</span><span data-line="315">            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span data-line="316">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="nb">property</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr</span><span class="o">.</span><span class="n">fget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="317">        <span class="p">}</span>
+</span><span data-line="318">
 <div class="viewcode-block" id="AbstractDTO.get_model_type_hints">
 <a class="viewcode-back" href="../../../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_model_type_hints">[docs]</a>
-</span><span data-line="316">    <span class="nd">@staticmethod</span>
-</span><span data-line="317">    <span class="k">def</span><span class="w"> </span><span class="nf">get_model_type_hints</span><span class="p">(</span>
-</span><span data-line="318">        <span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="319">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]:</span>
-</span><span data-line="320"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve type annotations for ``model_type``.</span>
-</span><span data-line="321">
-</span><span data-line="322"><span class="sd">        Args:</span>
-</span><span data-line="323"><span class="sd">            model_type: Any type-annotated class.</span>
-</span><span data-line="324"><span class="sd">            namespace: Optional namespace to use for resolving type hints.</span>
-</span><span data-line="325">
-</span><span data-line="326"><span class="sd">        Returns:</span>
-</span><span data-line="327"><span class="sd">            Parsed type hints for ``model_type`` resolved within the scope of its module.</span>
-</span><span data-line="328"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="329">        <span class="n">namespace</span> <span class="o">=</span> <span class="n">AbstractDTO</span><span class="o">.</span><span class="n">get_model_namespace</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="n">namespace</span><span class="p">)</span>
-</span><span data-line="330">
-</span><span data-line="331">        <span class="k">return</span> <span class="p">{</span>
-</span><span data-line="332">            <span class="n">k</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_kwarg</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
-</span><span data-line="333">            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="n">localns</span><span class="o">=</span><span class="n">namespace</span><span class="p">,</span> <span class="n">include_extras</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-</span><span data-line="334">        <span class="p">}</span></div>
+</span><span data-line="319">    <span class="nd">@staticmethod</span>
+</span><span data-line="320">    <span class="k">def</span><span class="w"> </span><span class="nf">get_model_type_hints</span><span class="p">(</span>
+</span><span data-line="321">        <span class="n">model_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="322">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]:</span>
+</span><span data-line="323"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve type annotations for ``model_type``.</span>
+</span><span data-line="324">
+</span><span data-line="325"><span class="sd">        Args:</span>
+</span><span data-line="326"><span class="sd">            model_type: Any type-annotated class.</span>
+</span><span data-line="327"><span class="sd">            namespace: Optional namespace to use for resolving type hints.</span>
+</span><span data-line="328">
+</span><span data-line="329"><span class="sd">        Returns:</span>
+</span><span data-line="330"><span class="sd">            Parsed type hints for ``model_type`` resolved within the scope of its module.</span>
+</span><span data-line="331"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="332">        <span class="n">namespace</span> <span class="o">=</span> <span class="n">AbstractDTO</span><span class="o">.</span><span class="n">get_model_namespace</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="n">namespace</span><span class="p">)</span>
+</span><span data-line="333">
+</span><span data-line="334">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="335">            <span class="n">k</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_kwarg</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+</span><span data-line="336">            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="n">model_type</span><span class="p">,</span> <span class="n">localns</span><span class="o">=</span><span class="n">namespace</span><span class="p">,</span> <span class="n">include_extras</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span data-line="337">        <span class="p">}</span></div>
 
-</span><span data-line="335">
+</span><span data-line="338">
 <div class="viewcode-block" id="AbstractDTO.get_dto_config_from_annotated_type">
 <a class="viewcode-back" href="../../../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type">[docs]</a>
-</span><span data-line="336">    <span class="nd">@staticmethod</span>
-</span><span data-line="337">    <span class="k">def</span><span class="w"> </span><span class="nf">get_dto_config_from_annotated_type</span><span class="p">(</span><span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DTOConfig</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="338"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract data type and config instances from ``Annotated`` annotation.</span>
-</span><span data-line="339">
-</span><span data-line="340"><span class="sd">        Args:</span>
-</span><span data-line="341"><span class="sd">            field_definition: A parsed type annotation that represents the annotation used to narrow the DTO type.</span>
+</span><span data-line="339">    <span class="nd">@staticmethod</span>
+</span><span data-line="340">    <span class="k">def</span><span class="w"> </span><span class="nf">get_dto_config_from_annotated_type</span><span class="p">(</span><span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DTOConfig</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="341"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract data type and config instances from ``Annotated`` annotation.</span>
 </span><span data-line="342">
-</span><span data-line="343"><span class="sd">        Returns:</span>
-</span><span data-line="344"><span class="sd">            The type and config object extracted from the annotation.</span>
-</span><span data-line="345"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="346">        <span class="k">return</span> <span class="nb">next</span><span class="p">((</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">metadata</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span></div>
+</span><span data-line="343"><span class="sd">        Args:</span>
+</span><span data-line="344"><span class="sd">            field_definition: A parsed type annotation that represents the annotation used to narrow the DTO type.</span>
+</span><span data-line="345">
+</span><span data-line="346"><span class="sd">        Returns:</span>
+</span><span data-line="347"><span class="sd">            The type and config object extracted from the annotation.</span>
+</span><span data-line="348"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="349">        <span class="k">return</span> <span class="nb">next</span><span class="p">((</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">metadata</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span></div>
 
-</span><span data-line="347">
+</span><span data-line="350">
 <div class="viewcode-block" id="AbstractDTO.resolve_model_type">
 <a class="viewcode-back" href="../../../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.resolve_model_type">[docs]</a>
-</span><span data-line="348">    <span class="nd">@classmethod</span>
-</span><span data-line="349">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_model_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
-</span><span data-line="350"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the data model type from a parsed type.</span>
-</span><span data-line="351">
-</span><span data-line="352"><span class="sd">        Args:</span>
-</span><span data-line="353"><span class="sd">            field_definition: A parsed type annotation that represents the annotation used to narrow the DTO type.</span>
+</span><span data-line="351">    <span class="nd">@classmethod</span>
+</span><span data-line="352">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_model_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
+</span><span data-line="353"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the data model type from a parsed type.</span>
 </span><span data-line="354">
-</span><span data-line="355"><span class="sd">        Returns:</span>
-</span><span data-line="356"><span class="sd">            A :class:`FieldDefinition &lt;.typing.FieldDefinition&gt;` that represents the data model type.</span>
-</span><span data-line="357"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="358">        <span class="k">if</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_optional</span><span class="p">:</span>
-</span><span data-line="359">            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">resolve_model_type</span><span class="p">(</span>
-</span><span data-line="360">                <span class="nb">next</span><span class="p">(</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">NoneType</span><span class="p">))</span>
-</span><span data-line="361">            <span class="p">)</span>
-</span><span data-line="362">
-</span><span data-line="363">        <span class="k">if</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">DTOData</span><span class="p">):</span>
-</span><span data-line="364">            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">resolve_model_type</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span data-line="355"><span class="sd">        Args:</span>
+</span><span data-line="356"><span class="sd">            field_definition: A parsed type annotation that represents the annotation used to narrow the DTO type.</span>
+</span><span data-line="357">
+</span><span data-line="358"><span class="sd">        Returns:</span>
+</span><span data-line="359"><span class="sd">            A :class:`FieldDefinition &lt;.typing.FieldDefinition&gt;` that represents the data model type.</span>
+</span><span data-line="360"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="361">        <span class="k">if</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_optional</span><span class="p">:</span>
+</span><span data-line="362">            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">resolve_model_type</span><span class="p">(</span>
+</span><span data-line="363">                <span class="nb">next</span><span class="p">(</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">NoneType</span><span class="p">))</span>
+</span><span data-line="364">            <span class="p">)</span>
 </span><span data-line="365">
-</span><span data-line="366">        <span class="k">if</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_collection</span><span class="p">:</span>
-</span><span data-line="367">            <span class="k">if</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_mapping</span><span class="p">:</span>
-</span><span data-line="368">                <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">resolve_model_type</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</span><span data-line="369">
-</span><span data-line="370">            <span class="k">if</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_tuple</span><span class="p">:</span>
-</span><span data-line="371">                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">t</span> <span class="ow">is</span> <span class="bp">Ellipsis</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
-</span><span data-line="372">                    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">resolve_model_type</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</span><span data-line="373">            <span class="k">elif</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_non_string_collection</span><span class="p">:</span>
-</span><span data-line="374">                <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">resolve_model_type</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</span><span data-line="375">
-</span><span data-line="376">        <span class="k">return</span> <span class="n">field_definition</span></div>
+</span><span data-line="366">        <span class="k">if</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">DTOData</span><span class="p">):</span>
+</span><span data-line="367">            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">resolve_model_type</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span data-line="368">
+</span><span data-line="369">        <span class="k">if</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_collection</span><span class="p">:</span>
+</span><span data-line="370">            <span class="k">if</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_mapping</span><span class="p">:</span>
+</span><span data-line="371">                <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">resolve_model_type</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span data-line="372">
+</span><span data-line="373">            <span class="k">if</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_tuple</span><span class="p">:</span>
+</span><span data-line="374">                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">t</span> <span class="ow">is</span> <span class="bp">Ellipsis</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
+</span><span data-line="375">                    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">resolve_model_type</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span data-line="376">            <span class="k">elif</span> <span class="n">field_definition</span><span class="o">.</span><span class="n">is_non_string_collection</span><span class="p">:</span>
+</span><span data-line="377">                <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">resolve_model_type</span><span class="p">(</span><span class="n">field_definition</span><span class="o">.</span><span class="n">inner_types</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span data-line="378">
+</span><span data-line="379">        <span class="k">return</span> <span class="n">field_definition</span></div>
 </div>
 
 </span></pre></div>
