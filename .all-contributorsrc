@@ -2022,6 +2022,17 @@
         "test",
         "doc"
       ]
+    },
+    {
+      "login": "temrjan",
+      "name": "Temrjan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/238274924?v=4",
+      "profile": "https://temrjan.com/en/",
+      "contributions": [
+        "code",
+        "bug",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
