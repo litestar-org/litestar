@@ -129,6 +129,20 @@ def test_routes_with_different_paths_should_generate_unique_operation_ids(
     assert schema_v1.get.operation_id != schema_v2.get.operation_id
 
 
+def test_default_operation_id_creator_does_not_collide_on_component_substring() -> None:
+    handler = MagicMock()
+    handler.handler_name = "get_handler"
+    handler.http_methods = ["GET"]
+
+    # "user" is a substring of the already-accumulated "Users", but it is a distinct,
+    # additional path component and must not be dropped from the generated id.
+    id_for_users = default_operation_id_creator(handler, "GET", ["users"])
+    id_for_users_user = default_operation_id_creator(handler, "GET", ["users", "user"])
+
+    assert id_for_users != id_for_users_user
+    assert id_for_users_user == "UsersUserGetHandler"
+
+
 def test_create_path_item_use_handler_docstring_false(
     http_route: HTTPRoute, create_factory: CreateFactoryFixture
 ) -> None:
