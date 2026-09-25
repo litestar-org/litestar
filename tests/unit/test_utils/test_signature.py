@@ -234,3 +234,14 @@ def test_using_generics_in_controller_annotations(annotation_type: type, expecte
     signature = (controller_object.get_route_handlers()[0]).merge(controller_object.as_router()).parsed_fn_signature
     actual = {"data": signature.parameters["data"].annotation, "return": signature.return_type.annotation}
     assert actual == expected
+
+
+def test_from_property() -> None:
+    class Foo:
+        @property
+        def bar(self) -> None:
+            return None
+
+    sig = ParsedSignature.from_property(Foo.bar, {})  # type: ignore[arg-type]
+    assert sig.return_type.type_ is type(None)
+    assert not sig.parameters
