@@ -202,13 +202,16 @@ class URL:
 
     def with_replacements(
         self,
-        scheme: str = "",
-        netloc: str = "",
-        path: str = "",
+        scheme: str | EmptyType = Empty,
+        netloc: str | EmptyType = Empty,
+        path: str | EmptyType = Empty,
         query: str | MultiDict | None | EmptyType = Empty,
-        fragment: str = "",
+        fragment: str | EmptyType = Empty,
     ) -> Self:
         """Create a new URL, replacing the given components.
+
+        A component that is not passed keeps its current value. Passing an empty
+        string clears it.
 
         Args:
             scheme: URL scheme
@@ -226,11 +229,11 @@ class URL:
         query = (query if query is not Empty else self.query) or ""
 
         return type(self).from_components(
-            scheme=scheme or self.scheme,
-            netloc=netloc or self.netloc,
-            path=path or self.path,
+            scheme=scheme if scheme is not Empty else self.scheme,
+            netloc=netloc if netloc is not Empty else self.netloc,
+            path=path if path is not Empty else self.path,
             query=query,
-            fragment=fragment or self.fragment,
+            fragment=fragment if fragment is not Empty else self.fragment,
         )
 
     @property
