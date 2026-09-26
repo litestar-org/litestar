@@ -1,6 +1,5 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
 
 import dataclasses
 from collections import abc
@@ -149,7 +148,7 @@ class FieldDefinition:
 
     This is to serve safely rebuilding a generic outer type with different args at runtime.
     """
-    inner_types: tuple[FieldDefinition, ...]
+    inner_types: tuple["FieldDefinition", ...]
     """The type's generic args parsed as ``FieldDefinition``, if applicable."""
     default: Any
     """Default value of the field."""
@@ -341,7 +340,7 @@ class FieldDefinition:
         return self.is_collection and not self.is_subclass_of((str, bytes))
 
     @property
-    def bound_types(self) -> tuple[FieldDefinition, ...] | None:
+    def bound_types(self) -> tuple["FieldDefinition", ...] | None:
         """A tuple of bound types - if the annotation is a TypeVar with bound types, otherwise None."""
         if self.is_type_var and (bound := getattr(self.annotation, "__bound__", None)):
             if is_union(bound):
@@ -350,7 +349,7 @@ class FieldDefinition:
         return None
 
     @property
-    def generic_types(self) -> tuple[FieldDefinition, ...] | None:
+    def generic_types(self) -> tuple["FieldDefinition", ...] | None:
         """A tuple of generic types passed into the annotation - if its generic."""
         if not (bases := getattr(self.annotation, "__orig_bases__", None)):
             return None
@@ -447,7 +446,7 @@ class FieldDefinition:
         return get_type_hints(self.annotation, include_extras=include_extras, localns=localns)
 
     @classmethod
-    def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
+    def from_annotation(cls, annotation: Any, **kwargs: Any) -> "FieldDefinition":
         """Initialize FieldDefinition.
 
         Args:
@@ -523,10 +522,10 @@ class FieldDefinition:
         annotation: Any,
         name: str,
         default: Any = Empty,
-        inner_types: tuple[FieldDefinition, ...] | None = None,
+        inner_types: tuple["FieldDefinition", ...] | None = None,
         kwarg_definition: KwargDefinition | None = None,
         extra: dict[str, Any] | None = None,
-    ) -> FieldDefinition:
+    ) -> "FieldDefinition":
         """Create a new FieldDefinition instance.
 
         Args:
@@ -557,7 +556,7 @@ class FieldDefinition:
         )
 
     @classmethod
-    def from_parameter(cls, parameter: Parameter, fn_type_hints: dict[str, Any]) -> FieldDefinition:
+    def from_parameter(cls, parameter: Parameter, fn_type_hints: dict[str, Any]) -> "FieldDefinition":
         """Initialize ParsedSignatureParameter.
 
         Args:
@@ -596,7 +595,7 @@ class FieldDefinition:
             default=Empty if parameter.default is Signature.empty else parameter.default,
         )
 
-    def match_predicate_recursively(self, predicate: Callable[[FieldDefinition], bool]) -> bool:
+    def match_predicate_recursively(self, predicate: Callable[["FieldDefinition"], bool]) -> bool:
         """Recursively test the passed in predicate against the field and any of its inner fields.
 
         Args:

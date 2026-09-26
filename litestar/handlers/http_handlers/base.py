@@ -1,17 +1,22 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
 
 import contextlib
+from collections.abc import Awaitable, Callable, Iterable, Mapping, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, TypedDict, cast
+from typing import TYPE_CHECKING, Any, AnyStr, TypedDict, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
+from litestar._kwargs import KwargsModel
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
+from litestar.background_tasks import BackgroundTask, BackgroundTasks
+from litestar.config.response_cache import CACHE_FOREVER
 from litestar.connection import Request
 from litestar.datastructures import CacheControlHeader, ETag, FormMultiDict, Header
+from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.response_header import ResponseHeader
+from litestar.dto import AbstractDTO
 from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import (
     ClientException,
@@ -28,9 +33,11 @@ from litestar.handlers.http_handlers._utils import (
     is_empty_response_annotation,
     normalize_http_method,
 )
-from litestar.openapi.spec import Operation
+from litestar.openapi.datastructures import ResponseSpec
+from litestar.openapi.spec import Operation, SecurityRequirement
 from litestar.response import File, Response
 from litestar.response.file import ASGIFileResponse
+from litestar.routes import BaseRoute
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
     AfterRequestHookHandler,
@@ -54,6 +61,12 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
+from litestar.types.callable_types import (
+    AsyncAnyCallable,
+    OperationIDCreator,
+)
+from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
+from litestar.typing import FieldDefinition
 from litestar.utils import deprecated as litestar_deprecated
 from litestar.utils import ensure_async_callable
 from litestar.utils.empty import value_or_default
@@ -62,27 +75,12 @@ from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Callable, Iterable, Mapping, Sequence
-    from typing import Any
-
     from litestar import Litestar, Router
-    from litestar._kwargs import KwargsModel
-    from litestar.background_tasks import BackgroundTask, BackgroundTasks
-    from litestar.config.response_cache import CACHE_FOREVER
-    from litestar.datastructures.cookie import Cookie
-    from litestar.dto import AbstractDTO
-    from litestar.openapi.datastructures import ResponseSpec
-    from litestar.openapi.spec import SecurityRequirement
-    from litestar.routes import BaseRoute
     from litestar.types.callable_types import (
         AsyncAfterRequestHookHandler,
         AsyncAfterResponseHookHandler,
-        AsyncAnyCallable,
         AsyncBeforeRequestHookHandler,
-        OperationIDCreator,
     )
-    from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
-    from litestar.typing import FieldDefinition
 
 __all__ = ("HTTPRouteHandler",)
 
@@ -340,7 +338,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
 
-    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+    def _get_merge_opts(self, others: tuple["Router", ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
 
         # these only exist on the handler, and therefore don't need merging
@@ -533,7 +531,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     def request_max_body_size(self) -> int | None:
         return value_or_default(self._request_max_body_size, None)  # pyright: ignore[reportReturnType]
 
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+    def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
         super().on_registration(route=route, app=app)
 
         if self._request_max_body_size is Empty:

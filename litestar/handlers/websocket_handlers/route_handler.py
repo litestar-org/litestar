@@ -1,23 +1,20 @@
-from __future__ import annotations
-
+from collections.abc import Callable, Mapping, Sequence
 from typing import TYPE_CHECKING, Any
 
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
-from litestar.types import AsyncAnyCallable, Empty, ParametersMap
+from litestar.routes import BaseRoute
+from litestar.types import AsyncAnyCallable, Dependencies, Empty, ExceptionHandler, Guard, Middleware, ParametersMap
 from litestar.types.builtin_types import NoneType
 from litestar.utils import deprecated
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Mapping, Sequence
-
     from litestar import Litestar, Router
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
-    from litestar.routes import BaseRoute
-    from litestar.types import Dependencies, EmptyType, ExceptionHandler, Guard, Middleware
+    from litestar.types import EmptyType
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
@@ -79,7 +76,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+    def _get_merge_opts(self, others: tuple["Router", ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
         merge_opts["websocket_class"] = self._websocket_class or next(
             (o.websocket_class for o in others if o.websocket_class), None
@@ -121,7 +118,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException(f"{self}: WebSocket handler functions must be asynchronous")
 
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+    def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
         super().on_registration(route=route, app=app)
         self._kwargs_model = self._create_kwargs_model(path_parameters=route.path_parameters)
 
