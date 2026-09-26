@@ -301,9 +301,10 @@ Built-in middleware migrated to ``ASGIMiddleware``
 
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``CORSMiddleware``, ``ResponseCacheMiddleware`` and ``SessionMiddleware`` have made this
-move. ``ResponseCacheMiddleware`` has also been moved into
-``litestar.middleware._internal``, removing it from the public API.
+``CORSMiddleware``, ``ResponseCacheMiddleware``, ``SessionMiddleware`` and
+:class:`~litestar.middleware.authentication.AbstractAuthenticationMiddleware` with its
+JWT and session subclasses have made this move. ``ResponseCacheMiddleware`` has also been
+moved into ``litestar.middleware._internal``, removing it from the public API.
 
 These classes are constructed by Litestar itself from their configuration objects, so
 applications that only configure them - for CORS, via
@@ -321,6 +322,28 @@ returns a ``SessionMiddleware`` instance instead of a ``DefineMiddleware``, so
 configurations are now matched against the **handler's path template** (e.g.
 ``/user/{user_id:int}``) at startup, instead of the request path (e.g. ``/user/1``) at
 runtime; unanchored patterns should be anchored.
+
+Custom authentication middleware built on ``AbstractAuthenticationMiddleware`` keeps
+implementing ``authenticate_request``, but is now registered as an instance instead of
+through ``DefineMiddleware``, and the ``app`` argument is gone from the constructor:
+
+.. code-block:: python
+
+    # before
+    middleware = DefineMiddleware(MyAuthenticationMiddleware, exclude="schema")
+
+    # after
+    middleware = MyAuthenticationMiddleware(exclude="schema")
+
+The ``middleware`` property of :class:`~litestar.security.jwt.JWTAuth`,
+:class:`~litestar.security.jwt.JWTCookieAuth`,
+:class:`~litestar.security.jwt.OAuth2PasswordBearerAuth` and
+:class:`~litestar.security.session_auth.SessionAuth` returns a middleware instance.
+``SessionAuth.on_app_init`` now installs the session middleware and the authentication
+middleware as two application-level middleware; ``SessionAuth.middleware`` returns the
+authentication middleware only. The ``exclude`` patterns of these configurations are
+matched against the **handler's path template** (e.g. ``/user/{user_id:int}``) at startup,
+instead of the request path (e.g. ``/user/1``) at runtime.
 
 Code that composed one of them directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and

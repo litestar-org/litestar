@@ -3,17 +3,17 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Generic, cast
 
-from litestar.middleware.base import DefineMiddleware
 from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackendT
 from litestar.openapi.spec import Components, SecurityRequirement, SecurityScheme
 from litestar.security.base import AbstractSecurityConfig, UserType
-from litestar.security.session_auth.middleware import MiddlewareWrapper, SessionAuthMiddleware
+from litestar.security.session_auth.middleware import SessionAuthMiddleware
 
 __all__ = ("SessionAuth",)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Sequence
 
+    from litestar.config.app import AppConfig
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
     from litestar.types import ControllerRouterHandler, Guard, Method, Scopes, SyncOrAsyncUnion, TypeEncodersMap
@@ -63,27 +63,48 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
 
+    def on_app_init(self, app_config: AppConfig) -> AppConfig:
+        """Handle app init by injecting the session middleware, the authentication middleware, guards etc. into the app.
+
+        Args:
+            app_config: An instance of :class:`AppConfig <.config.app.AppConfig>`
+
+        Returns:
+            The :class:`AppConfig <.config.app.AppConfig>`.
+        """
+        app_config = super().on_app_init(app_config)
+        app_config.middleware.insert(0, self.session_backend_config.middleware)
+        return app_config
+
     @property
-    def middleware(self) -> DefineMiddleware:
+    def middleware(self) -> SessionAuthMiddleware:
         """Use this property to insert the config into a middleware list on one of the application layers.
+
+        The session middleware itself is not included: it has to be installed on the application, before this
+        middleware, which :meth:`on_app_init` does.
 
         Examples:
             .. code-block:: python
 
                 from typing import Any
-                from os import urandom
 
                 from litestar import Litestar, Request, get
-                from litestar_session import SessionAuth
+                from litestar.connection import ASGIConnection
+                from litestar.middleware.session.server_side import ServerSideSessionConfig
+                from litestar.security.session_auth import SessionAuth
 
 
-                async def retrieve_user_from_session(session: dict[str, Any]) -> Any:
+                async def retrieve_user_from_session(
+                    session: dict[str, Any], connection: ASGIConnection
+                ) -> Any:
                     # implement logic here to retrieve a ``user`` datum given the session dictionary
                     ...
 
 
-                session_auth_config = SessionAuth(
-                    secret=urandom(16), retrieve_user_handler=retrieve_user_from_session
+                session_config = ServerSideSessionConfig()
+                session_auth = SessionAuth(
+                    session_backend_config=session_config,
+                    retrieve_user_handler=retrieve_user_from_session,
                 )
 
 
@@ -91,13 +112,22 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
                 def my_handler(request: Request) -> None: ...
 
 
-                app = Litestar(route_handlers=[my_handler], middleware=[session_auth_config.middleware])
+                app = Litestar(
+                    route_handlers=[my_handler],
+                    middleware=[session_config.middleware, session_auth.middleware],
+                )
 
 
         Returns:
-            An instance of DefineMiddleware including ``self`` as the config kwarg value.
+            An instance of the config's ``authentication_middleware_class``.
         """
-        return DefineMiddleware(MiddlewareWrapper, config=self)
+        return self.authentication_middleware_class(
+            exclude=self.exclude,
+            exclude_http_methods=self.exclude_http_methods,
+            exclude_opt_key=self.exclude_opt_key,
+            retrieve_user_handler=self.retrieve_user_handler,
+            scopes=self.scopes,
+        )
 
     @property
     def session_backend(self) -> BaseSessionBackendT:
