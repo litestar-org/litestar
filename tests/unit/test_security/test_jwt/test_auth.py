@@ -455,10 +455,10 @@ def test_jwt_cookie_auth_openapi() -> None:
         "schemas": {},
         "securitySchemes": {
             "BearerToken": {
-                "type": "http",
+                "type": "apiKey",
                 "description": "JWT cookie-based authentication and authorization.",
-                "scheme": "Bearer",
-                "bearerFormat": "JWT",
+                "name": "token",
+                "in": "cookie",
             }
         },
     }
@@ -475,10 +475,10 @@ def test_jwt_cookie_auth_openapi() -> None:
             "schemas": {},
             "securitySchemes": {
                 "BearerToken": {
-                    "type": "http",
+                    "type": "apiKey",
                     "description": "JWT cookie-based authentication and authorization.",
-                    "scheme": "Bearer",
-                    "bearerFormat": "JWT",
+                    "name": "token",
+                    "in": "cookie",
                 }
             },
         },
