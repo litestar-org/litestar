@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Annotated, Literal, Optional, cast
+from typing import TYPE_CHECKING, Annotated, Any, Literal, Optional, cast
 
 import pydantic as pydantic_v2
 import pytest
-from pydantic import AwareDatetime
+from pydantic import AwareDatetime, Field, ValidationError
 
 from litestar import Litestar, Request, post
-from litestar.dto import DTOConfig
+from litestar.dto import DTOConfig, DTOData
 from litestar.plugins.pydantic import PydanticDTO, _model_dump, _model_dump_json
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import create_test_client
@@ -150,3 +150,52 @@ def test_forbid_unknown_fields_if_forbid_extra_is_set_v2(
     assert dto.config.forbid_unknown_fields is expected_dto_config_option
     # ensure the config is merged
     assert dto.config.experimental_codegen_backend is use_experimental_dto_backend
+
+
+def test_pydantic_dto_data_defers_nested_collection_validation(use_experimental_dto_backend: bool) -> None:
+    """Nested Pydantic constraints must not run until create_instance().
+
+    Regression test for https://github.com/litestar-org/litestar/issues/3620
+    """
+
+    class NestedItem(pydantic_v2.BaseModel):
+        value: str | None = None
+
+    class Child(pydantic_v2.BaseModel):
+        name: str | None = None
+        items: list[NestedItem] = Field(default_factory=list, max_length=1)
+
+    class Parent(pydantic_v2.BaseModel):
+        title: str | None = None
+        children: list[Child] = Field(default_factory=list, max_length=1)
+
+    class WriteParentDto(PydanticDTO[Parent]):
+        config = DTOConfig(
+            rename_strategy="camel",
+            max_nested_depth=3,
+            experimental_codegen_backend=use_experimental_dto_backend,
+        )
+
+    @post(path="/", dto=WriteParentDto, signature_types=[Parent])
+    async def handler(data: DTOData[Parent]) -> dict[str, Any]:
+        builtins = data.as_builtins()
+        assert isinstance(builtins["children"][0], dict)
+        assert isinstance(builtins["children"][0]["items"][0], dict)
+        with pytest.raises(ValidationError, match="too_long"):
+            data.create_instance()
+        return {"decoded": True}
+
+    payload = {
+        "title": None,
+        "children": [
+            {
+                "name": None,
+                "items": [{"value": None}, {"value": None}],
+            }
+        ],
+    }
+
+    with create_test_client([handler]) as client:
+        response = client.post("/", json=payload)
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() == {"decoded": True}
