@@ -6,6 +6,56 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Migrate ``PrometheusMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 5006
+        :issue: 4009
+        :breaking:
+
+        ``PrometheusMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases.
+
+        Since the middleware is now directly constructible, the
+        :class:`~litestar.plugins.prometheus.PrometheusConfig` configuration object is
+        obsolete and its ``middleware`` property is deprecated; it will be removed in
+        ``4.0``. Pass a configured ``PrometheusMiddleware`` instance to the middleware
+        list instead:
+
+        .. code-block:: python
+
+            # before
+            config = PrometheusConfig(app_name="my-app", group_path=True)
+            app = Litestar(..., middleware=[config.middleware])
+
+            # after
+            app = Litestar(
+                ...,
+                middleware=[PrometheusMiddleware(app_name="my-app", group_path=True)],
+            )
+
+        Subclasses of ``PrometheusMiddleware`` must rename ``__call__`` to ``handle``,
+        which receives the next ASGI app as an additional ``next_app`` argument in place
+        of ``self.app``, and read settings from the corresponding instance attributes
+        instead of the removed private ``self._config``.
+
+        Two behavioural changes for excluded routes:
+
+        - :attr:`~litestar.plugins.prometheus.PrometheusConfig.exclude` patterns are
+          now matched against the **handler's path template** (e.g.
+          ``/user/{user_id:int}``) at startup, instead of the request path (e.g.
+          ``/user/1``) at runtime. Patterns targeting literal handler paths keep
+          working; patterns written to match expanded path parameters must be rewritten
+          against the template. For mounted ASGI apps, patterns match the mount path
+          only, not sub-paths, and a handler registered on multiple paths is excluded as
+          a whole when any of its paths matches.
+        - Handlers excluded via ``exclude`` or ``exclude_opt_key`` now bypass the
+          middleware entirely at startup rather than per request.
+
+        Mounted ASGI apps stay wrapped regardless of the configured ``scopes``, with
+        their connections filtered by scope type at runtime, so restricting the
+        middleware to e.g. ``{"websocket"}`` also holds for connections through mounts.
+
     .. change:: Migrate ``RateLimitMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 5005
