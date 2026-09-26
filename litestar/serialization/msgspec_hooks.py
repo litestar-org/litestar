@@ -95,9 +95,7 @@ def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], A
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
-def default_deserializer(
-    target_type: Any, value: Any, type_decoders: TypeDecodersSequence | None = None
-) -> Any:  # pragma: no cover
+def default_deserializer(target_type: Any, value: Any, type_decoders: TypeDecodersSequence | None = None) -> Any:
     """Transform values non-natively supported by ``msgspec``
 
     Args:
