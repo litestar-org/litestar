@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import asyncpg
-import httpx
+import httpx2
 import pytest
 from redis.asyncio import Redis as AsyncRedis
 from redis.exceptions import ConnectionError as RedisConnectionError
@@ -169,10 +169,10 @@ async def postgres_service(docker_services: DockerServiceRegistry) -> None:
 async def nginx_service(docker_services: DockerServiceRegistry) -> None:
     async def nginx_response(host: str) -> bool:
         try:
-            async with httpx.AsyncClient() as client:
+            async with httpx2.AsyncClient() as client:
                 res = await client.get(f"http://{host}:8187/hello.txt")
                 return res.status_code == 200
-        except httpx.HTTPError:
+        except httpx2.HTTPError:
             return False
 
     await docker_services.start("nginx", check=nginx_response)
