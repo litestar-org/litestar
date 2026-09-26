@@ -19,4 +19,5 @@ See :doc:`the documentation regarding these </usage/middleware/builtin-middlewar
 
     using-middleware
     builtin-middleware
+    correlation
     creating-middleware
