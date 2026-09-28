@@ -413,6 +413,16 @@ class KwargsModel:
             expected_reserved_kwargs.update(dependency_kwargs_model.expected_reserved_kwargs)
             sequence_query_parameter_names.update(dependency_kwargs_model.sequence_query_parameter_names)
 
+        cls._validate_parameter_sources(
+            {
+                "path": expected_path_parameters,
+                "query": expected_query_parameters,
+                "cookie": expected_cookie_parameters,
+                "header": expected_header_parameters,
+            },
+            ctx,
+        )
+
         if handler_data_field := field_definitions.get("data"):
             expected_data_field_defs.append(handler_data_field)
 
@@ -532,6 +542,35 @@ class KwargsModel:
             if ctx is not None:
                 msg = ctx.format(msg)
             raise ImproperlyConfiguredException(msg)
+
+    @classmethod
+    def _validate_parameter_sources(
+        cls,
+        parameter_sets: dict[str, set[ParameterDefinition]],
+        ctx: HandlerContext | None,
+    ) -> None:
+        """Validate that every parameter name is read from a single request parameter.
+
+        Parameters are injected by name, so if e.g. two dependencies both declare ``field`` but read it from different
+        query parameters, one value would silently overwrite the other.
+        """
+        sources: dict[str, set[tuple[str, str]]] = {}
+        for location, parameters in parameter_sets.items():
+            for param in parameters:
+                alias = param.field_alias.lower() if param.param_type == ParamType.HEADER else param.field_alias
+                sources.setdefault(param.field_name, set()).add((location, alias))
+
+        for field_name, field_sources in sources.items():
+            if len(field_sources) > 1:
+                sources_repr = ", ".join(f"{location} {alias!r}" for location, alias in sorted(field_sources))
+                msg = (
+                    f"Kwarg resolution ambiguity detected for {field_name!r}: it is read from more than one request "
+                    f"parameter ({sources_repr}). Make sure parameters with the same name are read from the same "
+                    "request parameter, or give them distinct names."
+                )
+                if ctx is not None:
+                    msg = ctx.format(msg)
+                raise ImproperlyConfiguredException(msg)
 
     @classmethod
     def _validate_raw_kwargs(
