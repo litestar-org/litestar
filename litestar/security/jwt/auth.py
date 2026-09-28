@@ -410,7 +410,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """
     default_token_expiration: timedelta = field(default_factory=lambda: timedelta(days=1))
     """The default value for token expiration."""
-    openapi_security_scheme_name: str = field(default="BearerToken")
+    openapi_security_scheme_name: str = field(default="CookieToken")
     """The value to use for the OpenAPI security scheme and security requirements."""
     key: str = field(default="token")
     """Key for the cookie."""

@@ -454,7 +454,7 @@ def test_jwt_cookie_auth_openapi() -> None:
     assert jwt_auth.openapi_components.to_schema() == {
         "schemas": {},
         "securitySchemes": {
-            "BearerToken": {
+            "CookieToken": {
                 "type": "apiKey",
                 "description": "JWT cookie-based authentication and authorization.",
                 "name": "token",
@@ -462,7 +462,7 @@ def test_jwt_cookie_auth_openapi() -> None:
             }
         },
     }
-    assert jwt_auth.security_requirement == {"BearerToken": []}
+    assert jwt_auth.security_requirement == {"CookieToken": []}
     app = Litestar(on_app_init=[jwt_auth.on_app_init])
 
     assert app.openapi_schema
@@ -474,7 +474,7 @@ def test_jwt_cookie_auth_openapi() -> None:
         "components": {
             "schemas": {},
             "securitySchemes": {
-                "BearerToken": {
+                "CookieToken": {
                     "type": "apiKey",
                     "description": "JWT cookie-based authentication and authorization.",
                     "name": "token",
@@ -482,7 +482,7 @@ def test_jwt_cookie_auth_openapi() -> None:
                 }
             },
         },
-        "security": [{"BearerToken": []}],
+        "security": [{"CookieToken": []}],
     }
 
 
