@@ -486,6 +486,12 @@ def test_jwt_cookie_auth_openapi() -> None:
     }
 
 
+def test_jwt_cookie_auth_login_auth_header() -> None:
+    jwt_auth = JWTCookieAuth[Any](token_secret=secrets.token_hex(), retrieve_user_handler=lambda _: None)  # type: ignore[arg-type, misc]
+    assert jwt_auth.format_auth_header("abc") == "Bearer abc"
+    assert jwt_auth.login("user").headers["Authorization"].startswith("Bearer ")
+
+
 async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> None:
     user = UserFactory.build()
 
