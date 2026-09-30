@@ -161,6 +161,32 @@ def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
 
 
 @pytest.mark.parametrize(
+    "renderer",
+    [
+        structlog.processors.KeyValueRenderer(),
+        structlog.processors.LogfmtRenderer(),
+        structlog.dev.ConsoleRenderer(colors=False),
+    ],
+)
+def test_structlog_config_str_renderer_without_tty(
+    renderer: structlog.types.Processor, capsys: CaptureFixture, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from sys import stderr
+
+    monkeypatch.setattr(stderr, "isatty", lambda: False)
+    logging_config = StructLoggingConfig(processors=[renderer])
+    assert isinstance(logging_config.logger_factory, structlog.WriteLoggerFactory)
+
+    with create_test_client([], logging_config=logging_config) as client:
+        client.app.logger.info("message", key="value")
+
+        log_messages = capsys.readouterr().out.splitlines()
+        assert len(log_messages) == 1
+        assert "message" in log_messages[0]
+        assert "value" in log_messages[0]
+
+
+@pytest.mark.parametrize(
     "isatty, pretty_print_tty, expected_as_json",
     [
         (True, True, False),

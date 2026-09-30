@@ -456,6 +456,23 @@ def default_logger_factory(as_json: bool = True) -> Callable[..., WrappedLogger]
         return None
 
 
+def _ends_with_str_renderer(processors: list[Processor] | None) -> bool:  # pyright: ignore
+    """Check whether the last processor is a structlog renderer known to produce ``str`` output.
+
+    Such renderers cannot be combined with a ``BytesLoggerFactory``.
+    """
+    if not processors:
+        return False
+    try:
+        import structlog
+    except ImportError:  # pragma: no cover
+        return False
+    return isinstance(
+        processors[-1],
+        (structlog.dev.ConsoleRenderer, structlog.processors.KeyValueRenderer, structlog.processors.LogfmtRenderer),
+    )
+
+
 @dataclass
 class StructLoggingConfig(BaseLoggingConfig):
     """Configuration class for structlog.
@@ -498,7 +515,9 @@ class StructLoggingConfig(BaseLoggingConfig):
         if self.processors is None:
             self.processors = default_structlog_processors(as_json=self.as_json())
         if self.logger_factory is None:
-            self.logger_factory = default_logger_factory(as_json=self.as_json())
+            self.logger_factory = default_logger_factory(
+                as_json=self.as_json() and not _ends_with_str_renderer(self.processors)
+            )
         if self.log_exceptions != "never" and self.exception_logging_handler is None:
             self.exception_logging_handler = _default_exception_logging_handler_factory(
                 is_struct_logger=True, traceback_line_limit=self.traceback_line_limit
