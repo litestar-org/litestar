@@ -7,7 +7,7 @@ import pytest
 import structlog
 from pytest import CaptureFixture
 from structlog import BytesLoggerFactory, get_logger
-from structlog.processors import JSONRenderer
+from structlog.processors import JSONRenderer, KeyValueRenderer
 from structlog.types import BindableLogger, WrappedLogger
 
 from litestar import get
@@ -158,6 +158,25 @@ def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
             {"key": "value1", "event": "message1"},
             {"key": "value2", "event": "message2"},
         ]
+
+
+def test_structlog_config_text_renderer_without_tty(capsys: CaptureFixture) -> None:
+    logging_config = StructLoggingConfig(processors=[KeyValueRenderer()])
+
+    with create_test_client([], logging_config=logging_config) as client:
+        client.app.logger.info("message", key="value")
+
+    assert capsys.readouterr().out.strip() == "key='value' event='message'"
+
+
+def test_structlog_config_byte_renderer_with_tty(capsys: CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(sys.stderr, "isatty", lambda: True)
+    logging_config = StructLoggingConfig(processors=[JSONRenderer(serializer=default_json_serializer)])
+
+    with create_test_client([], logging_config=logging_config) as client:
+        client.app.logger.info("message", key="value")
+
+    assert decode_json(capsys.readouterr().out) == {"key": "value", "event": "message"}
 
 
 @pytest.mark.parametrize(

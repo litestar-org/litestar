@@ -374,6 +374,14 @@ def stdlib_json_serializer(value: EventDict, **_: Any) -> str:  # pragma: no cov
     return _msgspec_json_encoder.encode(value).decode("utf-8")
 
 
+def _ensure_bytes(_: WrappedLogger, __: str, value: Any) -> Any:
+    return value.encode("utf-8") if isinstance(value, str) else value
+
+
+def _ensure_str(_: WrappedLogger, __: str, value: Any) -> Any:
+    return value.decode("utf-8") if isinstance(value, bytes) else value
+
+
 def default_structlog_processors(
     as_json: bool = True, json_serializer: Callable[[Any], Any] = default_json_serializer
 ) -> list[Processor]:  # pyright: ignore
@@ -495,10 +503,13 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Pretty print log output when run from an interactive terminal."""
 
     def __post_init__(self) -> None:
+        as_json = self.as_json()
         if self.processors is None:
-            self.processors = default_structlog_processors(as_json=self.as_json())
+            self.processors = default_structlog_processors(as_json=as_json)
+        elif self.logger_factory is None:
+            self.processors = [*self.processors, _ensure_bytes if as_json else _ensure_str]
         if self.logger_factory is None:
-            self.logger_factory = default_logger_factory(as_json=self.as_json())
+            self.logger_factory = default_logger_factory(as_json=as_json)
         if self.log_exceptions != "never" and self.exception_logging_handler is None:
             self.exception_logging_handler = _default_exception_logging_handler_factory(
                 is_struct_logger=True, traceback_line_limit=self.traceback_line_limit
@@ -511,7 +522,7 @@ class StructLoggingConfig(BaseLoggingConfig):
                     formatters={
                         "standard": {
                             "()": structlog.stdlib.ProcessorFormatter,
-                            "processors": default_structlog_standard_lib_processors(as_json=self.as_json()),
+                            "processors": default_structlog_standard_lib_processors(as_json=as_json),
                         }
                     }
                 )
