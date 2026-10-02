@@ -179,6 +179,35 @@ Defining stores hierarchically like this still allows to easily clear everything
 :meth:`delete_all <.base.Store.delete_all>` on the root store.
 
 
+Storage layout of the ``RedisStore``
+++++++++++++++++++++++++++++++++++++
+
+:class:`RedisStore <.redis.RedisStore>` supports two storage layouts, controlled by the ``strategy`` parameter.
+With ``strategy="keys"``, every value is stored as its own Redis key, named ``<namespace>:<key>``. With
+``strategy="hash"``, all values within a namespace are stored as fields of a single Redis hash, keyed by the
+namespace itself, using per-field expiration; this requires Redis 7.4 or newer.
+:meth:`RedisStore.delete_all <.redis.RedisStore.delete_all>` on a ``"hash"`` namespace unlinks the namespace hash in
+a single operation and only scans for child-namespace hashes, instead of for every stored key.
+
+By default (``strategy=None``), the layout is chosen automatically: the server version is detected on first use,
+and ``"hash"`` is selected for Redis 7.4 and newer, falling back to ``"keys"`` otherwise. Explicitly passing ``strategy="keys"`` or ``strategy="hash"`` is always honoured as-is. Child stores
+created via :meth:`with_namespace <.redis.RedisStore.with_namespace>` inherit their parent's strategy, and
+``strategy="hash"`` requires a namespace to be set.
+
+.. code-block:: python
+
+    from litestar.stores.redis import RedisStore
+
+    store = RedisStore.with_client(strategy="hash")
+
+.. warning::
+    The ``"keys"`` and ``"hash"`` layouts do not share data; values written under one strategy are not visible
+    through the other. When upgrading a deployment running Redis 7.4 or newer, pass ``strategy="keys"``
+    explicitly to keep reading data written before the upgrade, since the default would otherwise switch to the
+    ``"hash"`` layout. Under the ``"hash"`` layout a whole namespace is a single Redis key, so all of its data
+    lives in one cluster slot and one memory object.
+
+
 Managing stores with the registry
 ---------------------------------
 
