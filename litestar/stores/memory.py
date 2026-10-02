@@ -104,7 +104,9 @@ class MemoryStore(Store):
 
     async def exists(self, key: str) -> bool:
         """Check if a given ``key`` exists."""
-        return key in self._store
+        # compare against None rather than truth-testing, so a stored empty value
+        # is still reported as existing
+        return await self.get(key) is not None
 
     async def expires_in(self, key: str) -> int | None:
         """Get the time in seconds ``key`` expires in. If no such ``key`` exists or no
