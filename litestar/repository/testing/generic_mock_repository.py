@@ -80,8 +80,8 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         now = now or self._now()
         if self._model_has_updated_at:
             data.updated_at = now  # type:ignore[attr-defined]
-            if do_created:
-                data.created_at = now  # type:ignore[attr-defined]
+        if do_created and self._model_has_created_at:
+            data.created_at = now  # type:ignore[attr-defined]
         return data
 
     async def add(self, data: ModelT) -> ModelT:
@@ -112,7 +112,8 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             The added instance.
         """
         now = self._now()
-        for data_row in data:
+        rows = list(data)
+        for data_row in rows:
             if self.allow_ids_on_add is False and self.get_id_attribute_value(data_row) is not None:
                 raise ConflictError("`add()` received identified item.")
 
@@ -120,8 +121,8 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             if self.allow_ids_on_add is False:
                 id_ = self._id_factory()
                 self.set_id_attribute_value(id_, data_row)
-                self.collection[data_row.id] = data_row
-        return list(data)
+            self.collection[data_row.id] = data_row
+        return rows
 
     async def delete(self, item_id: Any) -> ModelT:
         """Delete instance identified by ``item_id``.
@@ -135,10 +136,9 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         Raises:
             NotFoundError: If no instance found identified by ``item_id``.
         """
-        try:
-            return self._find_or_raise_not_found(item_id)
-        finally:
-            del self.collection[item_id]
+        item = self._find_or_raise_not_found(item_id)
+        del self.collection[item_id]
+        return item
 
     async def delete_many(self, item_ids: list[Any]) -> list[ModelT]:
         """Delete instances identified by list of identifiers ``item_ids``.
@@ -292,9 +292,9 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         """
         items = [self._find_or_raise_not_found(self.get_id_attribute_value(row)) for row in data]
         now = self._now()
-        for item in items:
-            self._update_audit_attributes(item, do_created=False, now=now)
-            for key, val in model_items(item):
+        for item, row in zip(items, data, strict=True):
+            self._update_audit_attributes(row, do_created=False, now=now)
+            for key, val in model_items(row):
                 setattr(item, key, val)
         return items
 
@@ -460,8 +460,8 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         now = now or self._now()
         if self._model_has_updated_at:
             data.updated_at = now  # type:ignore[attr-defined]
-            if do_created:
-                data.created_at = now  # type:ignore[attr-defined]
+        if do_created and self._model_has_created_at:
+            data.created_at = now  # type:ignore[attr-defined]
         return data
 
     def add(self, data: ModelT) -> ModelT:
@@ -492,7 +492,8 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             The added instance.
         """
         now = self._now()
-        for data_row in data:
+        rows = list(data)
+        for data_row in rows:
             if self.allow_ids_on_add is False and self.get_id_attribute_value(data_row) is not None:
                 raise ConflictError("`add()` received identified item.")
 
@@ -500,8 +501,8 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             if self.allow_ids_on_add is False:
                 id_ = self._id_factory()
                 self.set_id_attribute_value(id_, data_row)
-                self.collection[data_row.id] = data_row
-        return list(data)
+            self.collection[data_row.id] = data_row
+        return rows
 
     def delete(self, item_id: Any) -> ModelT:
         """Delete instance identified by ``item_id``.
@@ -515,10 +516,9 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         Raises:
             NotFoundError: If no instance found identified by ``item_id``.
         """
-        try:
-            return self._find_or_raise_not_found(item_id)
-        finally:
-            del self.collection[item_id]
+        item = self._find_or_raise_not_found(item_id)
+        del self.collection[item_id]
+        return item
 
     def delete_many(self, item_ids: list[Any]) -> list[ModelT]:
         """Delete instances identified by list of identifiers ``item_ids``.
@@ -670,9 +670,9 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         """
         items = [self._find_or_raise_not_found(self.get_id_attribute_value(row)) for row in data]
         now = self._now()
-        for item in items:
-            self._update_audit_attributes(item, do_created=False, now=now)
-            for key, val in model_items(item):
+        for item, row in zip(items, data, strict=True):
+            self._update_audit_attributes(row, do_created=False, now=now)
+            for key, val in model_items(row):
                 setattr(item, key, val)
         return items
 
