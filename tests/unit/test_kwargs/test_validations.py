@@ -163,3 +163,79 @@ def test_skip_validation_dependency() -> None:
         client.get("/")
 
     mock.assert_called_once_with("1")
+
+
+@pytest.mark.parametrize(
+    "first_param, second_param",
+    [
+        (QueryParameter(name="field_a"), QueryParameter(name="field_b")),
+        (HeaderParameter(name="field-a"), HeaderParameter(name="field-b")),
+        (CookieParameter(name="field_a"), CookieParameter(name="field_b")),
+        (QueryParameter(name="field"), HeaderParameter(name="field")),
+    ],
+)
+def test_dependencies_with_same_param_name_but_different_source_raises(first_param: Any, second_param: Any) -> None:
+    def provide_a(field: Annotated[str, first_param]) -> str:
+        return field
+
+    def provide_b(field: Annotated[str, second_param]) -> str:
+        return field
+
+    @get(
+        "/", dependencies={"a": Provide(provide_a, sync_to_thread=False), "b": Provide(provide_b, sync_to_thread=False)}
+    )
+    def handler(a: NamedDependency[str], b: NamedDependency[str]) -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException, match="'field'"):
+        Litestar([handler])
+
+
+def test_handler_and_dependency_param_with_same_name_but_different_source_raises() -> None:
+    def provide_a(field: Annotated[str, QueryParameter(name="field_a")]) -> str:
+        return field
+
+    @get("/", dependencies={"a": Provide(provide_a, sync_to_thread=False)})
+    def handler(a: NamedDependency[str], field: Annotated[str, QueryParameter(name="field_b")]) -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException, match="'field'"):
+        Litestar([handler])
+
+
+def test_dependency_param_overriding_layered_param_with_different_source_raises() -> None:
+    def provide_a(field: Annotated[str, QueryParameter(name="field_a")]) -> str:
+        return field
+
+    @get("/", dependencies={"a": Provide(provide_a, sync_to_thread=False)})
+    def handler(a: NamedDependency[str]) -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException, match="'field'"):
+        Litestar([handler], parameters={"field": QueryParameter(annotation=str, name="field_b", required=False)})
+
+
+@pytest.mark.parametrize(
+    "first_param, second_param, request_kwargs",
+    [
+        (QueryParameter(name="field"), QueryParameter(name="field"), {"params": {"field": "x"}}),
+        (HeaderParameter(name="X-Field"), HeaderParameter(name="x-field"), {"headers": {"x-field": "x"}}),
+    ],
+)
+def test_dependencies_sharing_the_same_param_do_not_raise(
+    first_param: Any, second_param: Any, request_kwargs: dict[str, Any]
+) -> None:
+    def provide_a(field: Annotated[str, first_param]) -> str:
+        return f"a-{field}"
+
+    def provide_b(field: Annotated[str, second_param]) -> str:
+        return f"b-{field}"
+
+    @get(
+        "/", dependencies={"a": Provide(provide_a, sync_to_thread=False), "b": Provide(provide_b, sync_to_thread=False)}
+    )
+    def handler(a: NamedDependency[str], b: NamedDependency[str]) -> list[str]:
+        return [a, b]
+
+    with create_test_client([handler]) as client:
+        assert client.get("/", **request_kwargs).json() == ["a-x", "b-x"]
