@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from litestar.di import Provide
     from litestar.enums import MediaType, OpenAPIMediaType
     from litestar.middleware.authentication import AbstractAuthenticationMiddleware
-    from litestar.middleware.base import DefineMiddleware
     from litestar.openapi.spec import Components, SecurityRequirement
     from litestar.types import (
         ControllerRouterHandler,
@@ -173,11 +172,10 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
 
     @property
     @abstractmethod
-    def middleware(self) -> DefineMiddleware:
-        """Create an instance of the config's ``authentication_middleware_class`` attribute and any required kwargs,
-        wrapping it in Litestar's ``DefineMiddleware``.
+    def middleware(self) -> AbstractAuthenticationMiddleware:
+        """Create an instance of the config's ``authentication_middleware_class`` attribute with any required kwargs.
 
         Returns:
-            An instance of :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>`.
+            An instance of the config's ``authentication_middleware_class``.
         """
         raise NotImplementedError

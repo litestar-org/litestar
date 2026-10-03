@@ -9,7 +9,6 @@ from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.exceptions import NotAuthorizedException, NotFoundException
 from litestar.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
-from litestar.middleware.base import DefineMiddleware
 
 API_KEY_HEADER = "X-API-KEY"
 
@@ -59,7 +58,7 @@ async def my_ws_handler(socket: WebSocket[MyUser, MyToken, State]) -> None:
     assert isinstance(auth, MyToken)
 
 
-@get(path="/", exclude_from_auth=True)
+@get(path="/index", exclude_from_auth=True)
 async def site_index() -> Response:
     """Site index"""
     exists = await anyio.Path("index.html").exists()
@@ -78,8 +77,8 @@ async def my_dependency(request: Request[MyUser, MyToken, State]) -> Any:
 
 
 # you can optionally exclude certain paths from authentication.
-# the following excludes all routes mounted at or under `/schema*`
-auth_mw = DefineMiddleware(CustomAuthenticationMiddleware, exclude="schema")
+# the following excludes all routes whose path starts with `/schema`
+auth_mw = CustomAuthenticationMiddleware(exclude="^/schema")
 
 app = Litestar(
     route_handlers=[site_index, my_http_handler, my_ws_handler],

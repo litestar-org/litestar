@@ -151,7 +151,7 @@ def test_abstract_security_config_setting_openapi_components(
     openapi_config: Optional["OpenAPIConfig"], expected: dict, session_backend_config_memory: ServerSideSessionConfig
 ) -> None:
     security_config = SessionAuth[Any, ServerSideSessionBackend](
-        retrieve_user_handler=retrieve_user_handler, exclude=["/"], session_backend_config=session_backend_config_memory
+        retrieve_user_handler=retrieve_user_handler, session_backend_config=session_backend_config_memory
     )
     with create_test_client([], on_app_init=[security_config.on_app_init], openapi_config=openapi_config) as client:
         if openapi_config is not None:
@@ -178,7 +178,7 @@ def test_abstract_security_config_setting_openapi_security_requirements(
     openapi_config: Optional[OpenAPIConfig], expected: list, session_backend_config_memory: ServerSideSessionConfig
 ) -> None:
     security_config = SessionAuth[Any, ServerSideSessionBackend](
-        retrieve_user_handler=retrieve_user_handler, exclude=["/"], session_backend_config=session_backend_config_memory
+        retrieve_user_handler=retrieve_user_handler, session_backend_config=session_backend_config_memory
     )
 
     with create_test_client([], on_app_init=[security_config.on_app_init], openapi_config=openapi_config) as client:

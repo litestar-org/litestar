@@ -3,7 +3,7 @@ Implementing Custom Authentication
 ==================================
 
 Litestar exports :class:`~.middleware.authentication.AbstractAuthenticationMiddleware`, which is an
-:term:`abstract base class` (ABC) that implements the :class:`~.middleware.base.MiddlewareProtocol`.
+:term:`abstract base class` (ABC) built on :class:`~.middleware.ASGIMiddleware`.
 To add authentication to your app using this class as a basis, subclass it and implement the abstract method
 :meth:`~.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request`:
 
@@ -48,7 +48,7 @@ We start off by creating a user model. It can be implemented using msgspec, Pyda
 For the sake of this example here let us say it is a dataclass:
 
 .. literalinclude:: /examples/security/using_abstract_authentication_middleware.py
-    :lines: 19-26
+    :lines: 18-25
     :language: python
     :caption: user and token models
 
@@ -56,7 +56,7 @@ For the sake of this example here let us say it is a dataclass:
 We can now create our authentication middleware:
 
 .. literalinclude:: /examples/security/using_abstract_authentication_middleware.py
-    :lines:  29-43
+    :lines: 28-42
     :language: python
     :caption: authentication_middleware.py
 
@@ -65,7 +65,7 @@ Finally, we need to pass our middleware to the Litestar constructor:
 
 
 .. literalinclude:: /examples/security/using_abstract_authentication_middleware.py
-    :lines: 80-88
+    :lines: 79-87
     :language: python
     :caption: main.py
 
@@ -74,14 +74,14 @@ That is it. ``CustomAuthenticationMiddleware`` will now run for every request, a
 http route handler in the following way:
 
 .. literalinclude:: /examples/security/using_abstract_authentication_middleware.py
-    :lines: 46-51
+    :lines: 45-50
     :language: python
     :caption: Accessing the user and auth in a http route handler with ``CustomAuthenticationMiddleware``
 
 Or for a websocket route:
 
 .. literalinclude:: /examples/security/using_abstract_authentication_middleware.py
-    :lines: 54-59
+    :lines: 53-58
     :language: python
     :caption: Accessing the user and auth in a websocket route handler with ``CustomAuthenticationMiddleware``
 
@@ -90,13 +90,13 @@ And if you would like to exclude individual routes outside those configured:
 
 
 .. literalinclude:: /examples/security/using_abstract_authentication_middleware.py
-    :lines: 62-70
+    :lines: 61-69
     :language: python
     :caption: Excluding individual routes from ``CustomAuthenticationMiddleware``
 
 And of course use the same kind of mechanism for dependencies:
 
 .. literalinclude:: /examples/security/using_abstract_authentication_middleware.py
-    :lines: 73-77
+    :lines: 72-76
     :language: python
     :caption: Using ``CustomAuthenticationMiddleware`` in a dependency
