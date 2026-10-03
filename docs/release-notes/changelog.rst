@@ -6,6 +6,20 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix invalid OpenAPI security scheme for ``JWTCookieAuth``
+        :type: bugfix
+        :pr: 5079
+        :breaking:
+
+        ``JWTCookieAuth`` generated an OpenAPI security scheme that mixed ``http``
+        fields (``scheme``, ``bearerFormat``) with ``apiKey`` fields (``name``, ``in``),
+        which is invalid. It is now documented as ``type: apiKey`` with ``in: cookie``
+        and ``name`` set to ``JWTCookieAuth.key``.
+
+        The default ``openapi_security_scheme_name`` changed from ``BearerToken`` to
+        ``CookieToken``. Set ``openapi_security_scheme_name="BearerToken"`` to keep
+        the previous name.
+
     .. change:: Add support for ``leeway`` parameter in JWT security backends
         :type: feature
         :pr: 5037
