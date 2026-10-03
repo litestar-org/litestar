@@ -333,7 +333,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_description = response_description
         self.summary = summary
         self.tags = frozenset(tags) if tags else frozenset()
-        self.security = tuple(security) if security else ()
+        self.security = tuple(security) if security is not None else None
         self.responses = responses
         # memoized attributes, defaulted to Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
@@ -374,7 +374,14 @@ class HTTPRouteHandler(BaseRouteHandler):
             merge_opts["etag"] = merge_opts.get("etag") or other.etag
             merge_opts["response_cookies"] = (*merge_opts.get("response_cookies", ()), *other.response_cookies)
             merge_opts["response_headers"] = (*other.response_headers, *merge_opts.get("response_headers", ()))
-            merge_opts["security"] = (*other.security, *merge_opts.get("security", ()))
+            if other is self:
+                # only the handler itself can express "explicitly no security" (security=());
+                # ancestor layers (Router/Controller/app) always store a list, so an empty
+                # value there is indistinguishable from "not set" and must not force an override.
+                if other.security is not None:
+                    merge_opts["security"] = (*other.security, *merge_opts.get("security", ()))
+            elif other.security:
+                merge_opts["security"] = (*other.security, *merge_opts.get("security", ()))
             merge_opts["tags"] = (*other.tags, *merge_opts.get("tags", ()))
 
             # these are all properties which return a safe default if the corresponding
@@ -515,7 +522,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             list[SecurityRequirement]: The resolved security property.
         """
-        return self.security
+        return self.security if self.security is not None else ()
 
     @litestar_deprecated("3.0", removal_in="4.0", alternative=".tags attribute")
     def resolve_tags(self) -> frozenset[str]:

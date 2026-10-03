@@ -140,6 +140,38 @@ def test_resolve_security() -> None:
     assert resolved_handler.resolve_security() == resolved_handler.security  # type: ignore[attr-defined]
 
 
+def test_security_unset_on_every_layer_resolves_to_none() -> None:
+    """When no ownership layer declares ``security``, the resolved handler's ``.security`` should be ``None``
+    (distinct from an explicitly empty sequence), so the OpenAPI schema generator can tell "not configured" apart
+    from "explicitly no security" and correctly fall back to the document-level default.
+    """
+
+    @get()
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+    resolved_handler = app.route_handler_method_map["/"]["GET"]
+    assert resolved_handler.security is None  # type: ignore[attr-defined]
+    # the deprecated public accessor still guarantees a tuple, never None
+    assert resolved_handler.resolve_security() == ()  # type: ignore[attr-defined]
+
+
+def test_security_explicit_empty_on_handler_resolves_to_empty_tuple() -> None:
+    """A route handler explicitly declaring ``security=[]``, with no ownership layer contributing any requirement,
+    should resolve to an empty tuple rather than ``None``, so it can be distinguished from "unset" by the schema
+    generator and documented as explicitly requiring no security.
+    """
+
+    @get(security=[])
+    async def handler() -> None:
+        pass
+
+    app = Litestar(route_handlers=[handler])
+    resolved_handler = app.route_handler_method_map["/"]["GET"]
+    assert resolved_handler.security == ()  # type: ignore[attr-defined]
+
+
 def test_resolve_tags() -> None:
     @get(tags=["foo"])
     async def handler() -> None:
