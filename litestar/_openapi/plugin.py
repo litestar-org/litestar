@@ -165,7 +165,17 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
 
             @get(paths, media_type=plugin_.media_type, sync_to_thread=False, name=handler_name)
             def _handler(request: Request) -> bytes:
-                return plugin_.render(request, self.provide_openapi_schema())
+                schema = self.provide_openapi_schema()
+                # If servers haven't been explicitly set and root_path is present in the
+                # ASGI scope, use it as the default server URL. This handles the case where
+                # the app is deployed behind a reverse proxy with a path prefix.
+                if (
+                    schema.get("servers") == [{"url": "/"}]
+                    and (root_path := request.scope.get("root_path"))
+                    and root_path
+                ):
+                    schema = {**schema, "servers": [{"url": root_path}]}
+                return plugin_.render(request, schema)
 
             return _handler
 
