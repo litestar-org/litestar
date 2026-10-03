@@ -19,6 +19,23 @@
         Custom token classes overriding either method must accept it and forward to
         ``super()``, otherwise decoding raises ``TypeError``.
 
+    .. change:: Add configurable namespace storage strategies to ``RedisStore``
+        :type: feature
+        :issue: 4992
+
+        ``RedisStore`` now supports a ``namespace_strategy`` argument:
+        ``"keys"`` (the default, preserving the existing key layout), ``"hash"``,
+        which stores each namespace in a single Redis hash named after the
+        namespace, with independently expiring fields on Redis 7.4 and later,
+        and ``"auto"``, which uses the hash layout when the server supports field
+        expiration and falls back to the key layout otherwise.
+
+        The Redis optional dependency now requires redis-py 6.1.0 or newer so
+        Redis 8 deployments can use the native ``HSETEX`` and ``HGETEX`` commands.
+
+        The two layouts are not migrated automatically; changing strategies (or
+        upgrading Redis) can change where existing data is stored.
+
     .. change:: Fix ``TypeError`` when generating a schema for a union of enums
         :type: bugfix
         :pr: 4997
