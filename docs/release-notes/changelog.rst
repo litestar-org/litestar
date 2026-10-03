@@ -6,6 +6,18 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Faster serialization of responses containing Pydantic models
+        :type: feature
+
+        Pydantic models are now serialized to JSON by Pydantic directly and embedded
+        as :class:`msgspec.Raw`, instead of being converted into a ``dict`` that msgspec
+        has to traverse a second time.
+
+        The JSON output is unchanged, except that models with a ``ser_json_inf_nan``
+        config now have this setting respected, where ``inf`` / ``nan`` were previously
+        always encoded as ``null``, and that keys colliding after serialization (e.g. a
+        ``serialization_alias`` equal to another field's name) are no longer deduplicated.
+
     .. change:: Add support for ``leeway`` parameter in JWT security backends
         :type: feature
         :pr: 5037
