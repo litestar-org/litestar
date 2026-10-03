@@ -21,6 +21,7 @@ class HttpMethod(StrEnum):
     PATCH = "PATCH"
     POST = "POST"
     PUT = "PUT"
+    QUERY = "QUERY"
     TRACE = "TRACE"
 
 

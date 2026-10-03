@@ -224,7 +224,7 @@ def test_handler_excluded_from_schema(create_factory: CreateFactoryFixture) -> N
     assert schema.delete is None
 
 
-@pytest.mark.parametrize("method", HttpMethod)
+@pytest.mark.parametrize("method", [method for method in HttpMethod if method is not HttpMethod.QUERY])
 def test_merge_path_item_operations_operation_set_on_both_raises(method: HttpMethod) -> None:
     with pytest.raises(ValueError, match="Cannot merge operation"):
         merge_path_item_operations(
@@ -243,6 +243,7 @@ def test_merge_path_item_operations_operation_set_on_both_raises(method: HttpMet
         not in [
             *HttpMethod,
             "TRACE",  # remove once https://github.com/litestar-org/litestar/pull/3294 is merged
+            "QUERY",  # remove when OpenAPI 3.2 path items are supported
         ]
     ],
 )
