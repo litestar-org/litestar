@@ -786,8 +786,8 @@ WebSocket route handlers that publish incoming events to subscribed clients.
 Testing
 -------
 
-Both frameworks ship an ``httpx``-based ``TestClient``. The Litestar one is
-:class:`~litestar.testing.TestClient`. For unit testing, Litestar also provides
+Both frameworks ship a ``TestClient``. The Litestar one is
+:class:`~litestar.testing.TestClient`, based on ``httpx2``. For unit testing, Litestar also provides
 :func:`~litestar.testing.create_test_client` and
 :func:`~litestar.testing.create_async_test_client`, which take the same
 arguments as :class:`Litestar` and return a configured client.
