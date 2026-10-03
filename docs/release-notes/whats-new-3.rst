@@ -302,11 +302,11 @@ Built-in middleware migrated to ``ASGIMiddleware``
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
 ``CORSMiddleware``, ``ResponseCacheMiddleware``, ``CSRFMiddleware``,
-``CompressionMiddleware``, ``AllowedHostsMiddleware`` and ``RateLimitMiddleware`` have
-made this move. ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved
-into ``litestar.middleware._internal``, removing them from the public API; for CSRF this
-includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
-``generate_csrf_hash`` helpers.
+``CompressionMiddleware``, ``AllowedHostsMiddleware``, ``RateLimitMiddleware`` and
+``PrometheusMiddleware`` have made this move. ``ResponseCacheMiddleware`` and
+``CSRFMiddleware`` have also been moved into ``litestar.middleware._internal``, removing
+them from the public API; for CSRF this includes the ``litestar.middleware.csrf`` module
+and its ``generate_csrf_token`` / ``generate_csrf_hash`` helpers.
 
 These classes are constructed by Litestar itself from their configuration objects (for
 CSRF, via a ``from_config`` classmethod on the middleware), so applications that only
@@ -364,13 +364,15 @@ attribute of each layer.
 Subclasses must also rename ``__call__`` to ``handle``, which receives the next ASGI app
 as an additional ``next_app`` argument in place of ``self.app``.
 
-For rate limiting, :class:`~litestar.middleware.rate_limit.RateLimitMiddleware` is now
-directly constructible, making the
-:class:`~litestar.middleware.rate_limit.RateLimitConfig` object obsolete: its
-``middleware`` property is deprecated and will be removed in ``4.0``. Pass a configured
-middleware instance to the middleware list instead, e.g.
+For rate limiting and Prometheus metrics,
+:class:`~litestar.middleware.rate_limit.RateLimitMiddleware` and
+:class:`~litestar.plugins.prometheus.PrometheusMiddleware` are now directly
+constructible, making the :class:`~litestar.middleware.rate_limit.RateLimitConfig` and
+:class:`~litestar.plugins.prometheus.PrometheusConfig` objects obsolete: their
+``middleware`` properties are deprecated and will be removed in ``4.0``. Pass a
+configured middleware instance to the middleware list instead, e.g.
 ``middleware=[RateLimitMiddleware(rate_limit=("minute", 10))]``. The ``exclude``
-patterns are now matched against the **handler's path template** (e.g.
+patterns of both middleware are now matched against the **handler's path template** (e.g.
 ``/user/{user_id:int}``) at startup, instead of the request path (e.g. ``/user/1``) at
 runtime, and handlers excluded via ``exclude`` or ``exclude_opt_key`` bypass the
 middleware entirely at startup rather than per request.
