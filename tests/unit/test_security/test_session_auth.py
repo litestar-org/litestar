@@ -75,6 +75,32 @@ def test_authentication(session_backend_config_memory: ServerSideSessionConfig) 
         assert response.status_code == HTTP_401_UNAUTHORIZED, response.json()
 
 
+def test_session_backend_exclusions_apply_under_session_auth(
+    session_backend_config_memory: ServerSideSessionConfig,
+) -> None:
+    session_backend_config_memory.exclude = ["/excluded"]
+    session_backend_config_memory.exclude_opt_key = "no_session"
+    session_auth = SessionAuth[Any, ServerSideSessionBackend](
+        retrieve_user_handler=retrieve_user_handler,
+        exclude=["/excluded", "/opt-out"],
+        session_backend_config=session_backend_config_memory,
+    )
+
+    @get("/excluded")
+    def excluded_handler(request: Request) -> dict[str, bool]:
+        return {"has_session": "session" in request.scope}
+
+    @get("/opt-out", no_session=True)
+    def opt_out_handler(request: Request) -> dict[str, bool]:
+        return {"has_session": "session" in request.scope}
+
+    with create_test_client(
+        route_handlers=[excluded_handler, opt_out_handler], on_app_init=[session_auth.on_app_init]
+    ) as client:
+        assert client.get("/excluded").json() == {"has_session": False}
+        assert client.get("/opt-out").json() == {"has_session": False}
+
+
 def test_session_auth_openapi(session_backend_config_memory: "ServerSideSessionConfig") -> None:
     session_auth = SessionAuth[Any, ServerSideSessionBackend](
         retrieve_user_handler=retrieve_user_handler,

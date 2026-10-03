@@ -51,8 +51,8 @@ class FlashPlugin(InitPlugin):
             The application configuration with the message callable registered.
         """
         for mw in app_config.middleware:
-            if isinstance(mw, DefineMiddleware) and is_class_and_subclass(
-                mw.middleware, (MiddlewareWrapper, SessionMiddleware)
+            if isinstance(mw, SessionMiddleware) or (
+                isinstance(mw, DefineMiddleware) and is_class_and_subclass(mw.middleware, MiddlewareWrapper)
             ):
                 break
         else:

@@ -301,8 +301,8 @@ Built-in middleware migrated to ``ASGIMiddleware``
 
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``CORSMiddleware`` and ``ResponseCacheMiddleware`` have made this move.
-``ResponseCacheMiddleware`` has also been moved into
+``CORSMiddleware``, ``ResponseCacheMiddleware`` and ``SessionMiddleware`` have made this
+move. ``ResponseCacheMiddleware`` has also been moved into
 ``litestar.middleware._internal``, removing it from the public API.
 
 These classes are constructed by Litestar itself from their configuration objects, so
@@ -310,6 +310,17 @@ applications that only configure them - for CORS, via
 :class:`~litestar.config.cors.CORSConfig`, and for response caching, via
 :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
 ``cache`` argument - are unaffected.
+
+``SessionMiddleware`` keeps its backend-based constructor (minus the ``app`` argument),
+since the session backends remain a public extension point that receives the
+configuration unchanged. The ``middleware`` property of the session configurations now
+returns a ``SessionMiddleware`` instance instead of a ``DefineMiddleware``, so
+``middleware=[session_config.middleware]`` keeps working, while code reaching into
+``session_config.middleware.kwargs["backend"]`` must use
+``session_config.middleware.backend`` instead. The ``exclude`` patterns of the session
+configurations are now matched against the **handler's path template** (e.g.
+``/user/{user_id:int}``) at startup, instead of the request path (e.g. ``/user/1``) at
+runtime; unanchored patterns should be anchored.
 
 Code that composed one of them directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and
