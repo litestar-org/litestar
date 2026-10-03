@@ -9,6 +9,7 @@ from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.handlers import get
 from litestar.openapi.plugins import JsonRenderPlugin
+from litestar.openapi.spec import Server
 from litestar.plugins import InitPlugin
 from litestar.plugins.base import ReceiveRoutePlugin
 from litestar.response import Response
@@ -106,6 +107,23 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
             self._openapi_schema = self.provide_openapi().to_schema()
         return self._openapi_schema
 
+    @staticmethod
+    def _servers_are_default(servers: list[Server] | None) -> bool:
+        if not servers:
+            return True
+        return len(servers) == 1 and servers[0].url == "/" and servers[0].variables is None
+
+    def _apply_root_path_to_servers(self, root_path: str) -> None:
+        """Use ASGI ``root_path`` as the OpenAPI server URL when servers are still default."""
+        if not root_path or root_path == "/":
+            return
+        config = self.openapi_config
+        if not self._servers_are_default(config.servers):
+            return
+        config.servers = [Server(url=root_path)]
+        self._openapi = None
+        self._openapi_schema = None
+
     def create_openapi_router(self) -> Router:
         """Create a router for serving OpenAPI documentation and schema files.
 
@@ -165,6 +183,9 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
 
             @get(paths, media_type=plugin_.media_type, sync_to_thread=False, name=handler_name)
             def _handler(request: Request) -> bytes:
+                root_path = request.scope.get("app_root_path") or request.scope.get("root_path") or ""
+                if isinstance(root_path, str):
+                    self._apply_root_path_to_servers(root_path)
                 return plugin_.render(request, self.provide_openapi_schema())
 
             return _handler

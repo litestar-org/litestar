@@ -74,7 +74,12 @@ class OpenAPIConfig:
     Should be an instance of :class:`Components <litestar.openapi.spec.components.Components>` or a list thereof.
     """
     servers: list[Server] = field(default_factory=lambda: [Server(url="/")])
-    """A list of :class:`Server <litestar.openapi.spec.server.Server>` instances."""
+    """A list of :class:`Server <litestar.openapi.spec.server.Server>` instances.
+
+    If left as the default single ``/`` server, Litestar will replace it with the ASGI
+    ``root_path`` when a schema endpoint is served under a mount path (for example
+    ``uvicorn ... root_path="/api"``).
+    """
     summary: str | None = field(default=None)
     """A summary text."""
     tags: list[Tag] | None = field(default=None)
