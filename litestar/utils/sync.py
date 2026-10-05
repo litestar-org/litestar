@@ -4,6 +4,7 @@ from collections.abc import AsyncGenerator, Awaitable, Callable, Iterable, Itera
 from typing import (
     Generic,
     TypeVar,
+    cast,
     overload,
 )
 
@@ -17,15 +18,6 @@ __all__ = ("AsyncCallable", "AsyncIteratorWrapper", "ensure_async_callable", "is
 
 P = ParamSpec("P")
 T = TypeVar("T")
-
-
-class _IteratorExhaustedError(Exception):
-    """Signal that the wrapped iterator is exhausted.
-
-    :exc:`StopIteration` cannot be propagated out of a worker thread, so it is translated into this exception. It
-    must not be a builtin type such as :exc:`ValueError`, since the wrapped iterator is user code and could raise
-    that itself.
-    """
 
 
 @overload
@@ -73,18 +65,19 @@ class AsyncIteratorWrapper(Generic[T]):
         self.iterator = iterator if isinstance(iterator, Iterator) else iter(iterator)
         self.generator = self._async_generator()
 
-    def _call_next(self) -> T:
-        try:
-            return next(self.iterator)
-        except StopIteration as e:
-            raise _IteratorExhaustedError from e
+    def _call_next(self) -> T | AsyncIteratorWrapper[T]:
+        # 'StopIteration' can't be propagated out of a worker thread, so instead of
+        # raising anything to signal exhaustion, return 'self' as a sentinel. It can't
+        # be confused with a value of the wrapped iterator, and any exception it raises
+        # itself is propagated unchanged
+        return next(self.iterator, self)
 
     async def _async_generator(self) -> AsyncGenerator[T, None]:
         while True:
-            try:
-                yield await sync_to_thread(self._call_next)
-            except _IteratorExhaustedError:
+            value = await sync_to_thread(self._call_next)
+            if value is self:
                 return
+            yield cast("T", value)
 
     def __aiter__(self) -> AsyncIteratorWrapper[T]:
         return self
