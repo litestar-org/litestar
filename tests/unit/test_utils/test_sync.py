@@ -2,7 +2,7 @@ from collections.abc import Iterator
 
 import pytest
 
-from litestar.utils.sync import AsyncIteratorWrapper, ensure_async_callable
+from litestar.utils.sync import AsyncIteratorWrapper, IteratorExhaustedError, ensure_async_callable
 
 
 async def test_function_wrapper_wraps_method_correctly() -> None:
@@ -147,3 +147,11 @@ async def test_async_iterator_wrapper_propagates_exceptions_from_wrapped_iterato
             received.append(value)
 
     assert received == [1]
+
+
+def test_async_iterator_wrapper_call_next_raises_iterator_exhausted_error() -> None:
+    wrapper = AsyncIteratorWrapper([1])
+
+    assert wrapper._call_next() == 1
+    with pytest.raises(IteratorExhaustedError):
+        wrapper._call_next()
