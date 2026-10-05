@@ -126,3 +126,24 @@ async def test_async_iterator_wrapper_propagates_value_error_from_wrapped_iterat
             received.append(value)
 
     assert received == [1, 2]
+
+
+@pytest.mark.parametrize("values", [[], [None], [0, "", False, None, b"", []]])
+async def test_async_iterator_wrapper_does_not_mistake_values_for_exhaustion(values: list) -> None:
+    assert [v async for v in AsyncIteratorWrapper(values)] == values
+
+
+@pytest.mark.parametrize("exc_type", [RuntimeError, KeyError])
+async def test_async_iterator_wrapper_propagates_exceptions_from_wrapped_iterator(
+    exc_type: type[BaseException],
+) -> None:
+    def gen() -> Iterator[int]:
+        yield 1
+        raise exc_type()
+
+    received = []
+    with pytest.raises(exc_type):
+        async for value in AsyncIteratorWrapper(gen()):
+            received.append(value)
+
+    assert received == [1]
