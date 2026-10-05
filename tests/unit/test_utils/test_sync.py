@@ -1,4 +1,8 @@
-from litestar.utils.sync import ensure_async_callable
+from collections.abc import Iterator
+
+import pytest
+
+from litestar.utils.sync import AsyncIteratorWrapper, ensure_async_callable
 
 
 async def test_function_wrapper_wraps_method_correctly() -> None:
@@ -103,3 +107,22 @@ async def test_function_wrapper_wraps_async_class_correctly() -> None:
 
     await wrapped_class(new_value=10)
     assert instance.value == 10
+
+
+async def test_async_iterator_wrapper_yields_all_values() -> None:
+    assert [v async for v in AsyncIteratorWrapper([1, 2, 3])] == [1, 2, 3]
+
+
+async def test_async_iterator_wrapper_propagates_value_error_from_wrapped_iterator() -> None:
+    # a ``ValueError`` raised by the wrapped iterator must not be mistaken for exhaustion
+    def gen() -> Iterator[int]:
+        yield 1
+        yield 2
+        raise ValueError("boom")
+
+    received = []
+    with pytest.raises(ValueError, match="boom"):
+        async for value in AsyncIteratorWrapper(gen()):
+            received.append(value)
+
+    assert received == [1, 2]

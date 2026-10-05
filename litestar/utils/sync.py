@@ -19,6 +19,15 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
+class _IteratorExhaustedError(Exception):
+    """Signal that the wrapped iterator is exhausted.
+
+    :exc:`StopIteration` cannot be propagated out of a worker thread, so it is translated into this exception. It
+    must not be a builtin type such as :exc:`ValueError`, since the wrapped iterator is user code and could raise
+    that itself.
+    """
+
+
 @overload
 def ensure_async_callable(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]: ...
 
@@ -68,13 +77,13 @@ class AsyncIteratorWrapper(Generic[T]):
         try:
             return next(self.iterator)
         except StopIteration as e:
-            raise ValueError from e
+            raise _IteratorExhaustedError from e
 
     async def _async_generator(self) -> AsyncGenerator[T, None]:
         while True:
             try:
                 yield await sync_to_thread(self._call_next)
-            except ValueError:
+            except _IteratorExhaustedError:
                 return
 
     def __aiter__(self) -> AsyncIteratorWrapper[T]:
