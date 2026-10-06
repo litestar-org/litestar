@@ -6,6 +6,8 @@ from collections import defaultdict
 from functools import lru_cache, partial
 from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
+import msgspec
+
 from litestar._multipart import parse_multipart_form
 from litestar._parsers import (
     parse_query_string,
@@ -58,6 +60,18 @@ class ParamMappings(NamedTuple):
     alias_and_key_tuples: list[tuple[str, str]]
     alias_defaults: dict[str, Any]
     alias_to_param: dict[str, ParameterDefinition]
+
+
+@lru_cache(1024)
+def _get_msgspec_field_encode_names(annotation: Any) -> dict[str, str]:
+    try:
+        return {
+            field.name: field.encode_name
+            for field in msgspec.structs.fields(annotation)
+            if field.name != field.encode_name
+        }
+    except TypeError:
+        return {}
 
 
 def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMappings:
@@ -371,12 +385,14 @@ async def _extract_multipart(
     if data_dto:
         return data_dto(connection).decode_builtins(form_values)
 
+    msgspec_field_encode_names = _get_msgspec_field_encode_names(field_definition.annotation)
     for name, tp in field_definition.get_type_hints().items():
-        value = form_values.get(name)
+        form_field_name = msgspec_field_encode_names.get(name, name)
+        value = form_values.get(form_field_name)
         if value == "" and is_optional_union(tp):
             inner: Any = make_non_optional_union(tp)
             if isinstance(inner, type) and issubclass(inner, UploadFile):
-                form_values[name] = None  # pyright: ignore[reportArgumentType]
+                form_values[form_field_name] = None  # pyright: ignore[reportArgumentType]
                 continue
         if (
             value is not None
@@ -386,7 +402,7 @@ async def _extract_multipart(
                 or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
             )
         ):
-            form_values[name] = [value]  # pyright: ignore[reportArgumentType]
+            form_values[form_field_name] = [value]  # pyright: ignore[reportArgumentType]
     return form_values
 
 
