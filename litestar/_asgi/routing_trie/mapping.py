@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from litestar._asgi.routing_trie.types import (
     ASGIHandlerTuple,
@@ -9,6 +9,7 @@ from litestar._asgi.routing_trie.types import (
     create_node,
 )
 from litestar._asgi.utils import wrap_in_exception_handler
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.internal_types import PathParameterDefinition
 
 __all__ = ("add_mount_route", "add_route_to_trie", "build_route_middleware_stack", "configure_node")
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
     from litestar._asgi.routing_trie.types import RouteTrieNode
     from litestar.app import Litestar
     from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-    from litestar.types import ASGIApp, RouteHandlerType
+    from litestar.types import ASGIApp, Method, RouteHandlerType
 
 
 def add_mount_route(
@@ -122,6 +123,49 @@ def add_route_to_trie(
     return current_node
 
 
+def _validate_node_is_not_taken(
+    node: RouteTrieNode,
+    route: HTTPRoute | WebSocketRoute | ASGIRoute,
+    key: Method | Literal["websocket", "asgi"],
+) -> None:
+    """Ensure that ``route`` does not shadow a route that is already registered on ``node``.
+
+    Routing does not take the name or the type of path parameters into account, so paths such as ``/{id:int}`` and
+    ``/{id:str}`` resolve to the very same trie node. Registering both of them would silently make the one registered
+    first unreachable.
+
+    Args:
+        node: The trie node being configured.
+        route: The route that is being added.
+        key: The key under which the route's handler is about to be stored on the node.
+
+    Raises:
+        ImproperlyConfiguredException: If a different route has already been registered on the node under ``key``.
+
+    Returns:
+        None
+    """
+    # an 'OPTIONS' handler is generated for every path that does not define one itself, so handlers stored under this
+    # key collide whenever two paths share a node, without any user defined handler being shadowed
+    if key == "OPTIONS":
+        return
+
+    if (existing := node.asgi_handlers.get(key)) is None:
+        return
+
+    # a node is uniquely identified by its path components and its path parameter definitions, so equal definitions
+    # mean that the very same route is being registered again, e.g. when the trie is reconstructed after handlers
+    # have been registered on an already created app
+    if node.path_parameters.get(key) == tuple(route.path_parameters.values()):
+        return
+
+    raise ImproperlyConfiguredException(
+        f"Path '{route.path}' conflicts with the path registered for route handler '{existing.handler}'. Routing "
+        "does not take the name or type of path parameters into account, so paths that only differ in their path "
+        "parameters are considered equal."
+    )
+
+
 def configure_node(
     app: Litestar,
     route: HTTPRoute | WebSocketRoute | ASGIRoute,
@@ -145,6 +189,7 @@ def configure_node(
 
     if isinstance(route, HTTPRoute):
         for method, handler in route.route_handler_map.items():
+            _validate_node_is_not_taken(node=node, route=route, key=method)
             node.asgi_handlers[method] = ASGIHandlerTuple(
                 asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=handler),
                 handler=handler,
@@ -152,6 +197,7 @@ def configure_node(
             node.path_parameters[method] = tuple(route.path_parameters.values())
 
     elif isinstance(route, WebSocketRoute):
+        _validate_node_is_not_taken(node=node, route=route, key="websocket")
         node.asgi_handlers["websocket"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),
             handler=route.route_handler,
@@ -159,6 +205,7 @@ def configure_node(
         node.path_parameters["websocket"] = tuple(route.path_parameters.values())
 
     else:
+        _validate_node_is_not_taken(node=node, route=route, key="asgi")
         node.asgi_handlers["asgi"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),
             handler=route.route_handler,
