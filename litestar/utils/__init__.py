@@ -22,11 +22,12 @@ from .scope import (
     get_serializer_from_scope,
 )
 from .sequence import find_index, unique
-from .sync import AsyncIteratorWrapper, ensure_async_callable
+from .sync import AsyncIteratorWrapper, IteratorExhaustedError, ensure_async_callable
 from .typing import get_origin_or_inner_type, make_non_optional_union
 
 __all__ = (
     "AsyncIteratorWrapper",
+    "IteratorExhaustedError",
     "deprecated",
     "ensure_async_callable",
     "envflag",

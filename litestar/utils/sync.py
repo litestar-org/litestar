@@ -12,7 +12,13 @@ from typing_extensions import ParamSpec
 from litestar.concurrency import sync_to_thread
 from litestar.utils.predicates import is_async_callable
 
-__all__ = ("AsyncCallable", "AsyncIteratorWrapper", "ensure_async_callable", "is_async_callable")
+__all__ = (
+    "AsyncCallable",
+    "AsyncIteratorWrapper",
+    "IteratorExhaustedError",
+    "ensure_async_callable",
+    "is_async_callable",
+)
 
 
 P = ParamSpec("P")
@@ -50,6 +56,15 @@ class AsyncCallable:
         return sync_to_thread(self.func, *args, **kwargs)  # type: ignore[arg-type]
 
 
+class IteratorExhaustedError(Exception):
+    """Signal that the iterator wrapped by :class:`AsyncIteratorWrapper` is exhausted.
+
+    :exc:`StopIteration` cannot be propagated into async code through the future that receives the result of the
+    worker thread, so it is translated into this exception. A dedicated type is used rather than a builtin such as
+    :exc:`ValueError`, since the wrapped iterator could raise that itself.
+    """
+
+
 class AsyncIteratorWrapper(Generic[T]):
     """Asynchronous generator, wrapping an iterable or iterator."""
 
@@ -68,13 +83,13 @@ class AsyncIteratorWrapper(Generic[T]):
         try:
             return next(self.iterator)
         except StopIteration as e:
-            raise ValueError from e
+            raise IteratorExhaustedError from e
 
     async def _async_generator(self) -> AsyncGenerator[T, None]:
         while True:
             try:
                 yield await sync_to_thread(self._call_next)
-            except ValueError:
+            except IteratorExhaustedError:
                 return
 
     def __aiter__(self) -> AsyncIteratorWrapper[T]:
