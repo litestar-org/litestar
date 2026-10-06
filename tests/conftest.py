@@ -82,8 +82,18 @@ def mock_asgi_app() -> ASGIApp:
 
 
 @pytest.fixture()
-def redis_store(redis_client: AsyncRedis) -> RedisStore:
-    return RedisStore(redis=redis_client)
+def redis_store_keys(redis_client: AsyncRedis) -> RedisStore:
+    return RedisStore(redis=redis_client, strategy="keys")
+
+
+@pytest.fixture()
+def redis_store_hash(redis_client: AsyncRedis) -> RedisStore:
+    return RedisStore(redis=redis_client, strategy="hash")
+
+
+@pytest.fixture(params=["keys", "hash"])
+def redis_store(request: FixtureRequest, redis_client: AsyncRedis) -> RedisStore:
+    return RedisStore(redis=redis_client, strategy=request.param)
 
 
 @pytest.fixture()
@@ -115,7 +125,8 @@ def file_store_create_directories_flag_false(tmp_path: Path) -> FileStore:
 
 @pytest.fixture(
     params=[
-        pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("redis_store_keys", id="redis_store[keys]", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("redis_store_hash", id="redis_store[hash]", marks=pytest.mark.xdist_group("redis")),
         pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
         "memory_store",
         "file_store",
