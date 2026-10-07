@@ -105,12 +105,10 @@ def test_exp_validation(exp: datetime) -> None:
         # this does not work on windows. see https://bugs.python.org/issue29097
         pytest.skip("Skipping because .timestamp is weird on windows sometimes")
 
+    token = Token(sub="123", exp=exp, iat=(datetime.now() - timedelta(seconds=30)))
+
     with pytest.raises(ImproperlyConfiguredException):
-        Token(
-            sub="123",
-            exp=exp,
-            iat=(datetime.now() - timedelta(seconds=30)),
-        )
+        token.encode(secret=secrets.token_hex(), algorithm="HS256")
 
 
 @given(iat=datetimes(min_value=datetime.now() + timedelta(days=1)))
@@ -119,12 +117,10 @@ def test_iat_validation(iat: datetime) -> None:
         # this does not work on windows. see https://bugs.python.org/issue29097
         pytest.skip("Skipping because .timestamp is weird on windows sometimes")
 
+    token = Token(sub="123", iat=iat, exp=(iat + timedelta(seconds=120)))
+
     with pytest.raises(ImproperlyConfiguredException):
-        Token(
-            sub="123",
-            iat=iat,
-            exp=(iat + timedelta(seconds=120)),
-        )
+        token.encode(secret=secrets.token_hex(), algorithm="HS256")
 
 
 def test_sub_validation() -> None:
@@ -369,40 +365,33 @@ def test_leeway_iat() -> None:
         Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
 
 
-@pytest.mark.parametrize(
-    "reserved_claim",
-    [
-        pytest.param({"__leeway__": 9999}, id="claim"),
-        pytest.param({"extras": {"__leeway__": 9999}}, id="extras"),
-    ],
-)
-def test_leeway_with_extras(reserved_claim: dict[str, Any]) -> None:
+def test_verify_exp() -> None:
     token_secret = secrets.token_hex()
     raw_token = {
         "sub": secrets.token_hex(),
         "iat": (datetime.now(UTC) - timedelta(seconds=30)),
-        "exp": (datetime.now(UTC) + timedelta(seconds=30)),
-        **reserved_claim,
+        "exp": (datetime.now(UTC) - timedelta(seconds=30)),
     }
     encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
+    token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256", verify_exp=False)
+    assert token.sub == raw_token["sub"]
 
-    with pytest.raises(NotAuthorizedException) as exc_info:
-        Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256", leeway=_LEEWAY)
-
-    assert isinstance(exc_info.value.__cause__, ImproperlyConfiguredException)
-    assert "is a reserved key" in str(exc_info.value.__cause__)
+    with pytest.raises(NotAuthorizedException):
+        Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
 
 
-def test_leeway_is_not_encoded_into_extras() -> None:
-    token_secret = secrets.token_hex()
-    token = Token(
-        sub=secrets.token_hex(),
-        exp=(datetime.now(UTC) + timedelta(seconds=30)),
-        extras={"__leeway__": _LEEWAY},
-    )
-    assert token.extras == {}
+def test_datetime_claim_type_validation() -> None:
+    now = datetime.now()
 
-    encoded_token = token.encode(token_secret, "HS256")
-    payload = jwt.decode(encoded_token, token_secret, algorithms=["HS256"])
-    assert "__leeway__" not in payload.get("extras", {})
-    assert Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256").extras == {}
+    with pytest.raises(ImproperlyConfiguredException, match="exp must be a datetime instance"):
+        Token(
+            sub="123",
+            exp=(now + timedelta(seconds=120)).timestamp(),  # type: ignore[arg-type]
+        )
+
+    with pytest.raises(ImproperlyConfiguredException, match="iat must be a datetime instance"):
+        Token(
+            sub="123",
+            exp=(now + timedelta(seconds=120)),
+            iat=(now - timedelta(seconds=30)).timestamp(),  # type: ignore[arg-type]
+        )
