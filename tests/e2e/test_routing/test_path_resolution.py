@@ -255,6 +255,67 @@ def test_support_for_path_type_parameters() -> None:
         assert response.status_code == HTTP_200_OK
 
 
+@pytest.mark.parametrize("reverse_registration", [False, True])
+def test_specific_route_matches_before_path_type_catchall(reverse_registration: bool) -> None:
+    # https://github.com/litestar-org/litestar/issues/4991
+    @get("/{slug:str}/hello", media_type=MediaType.TEXT)
+    def slug_handler(slug: FromPath[str]) -> str:
+        return slug
+
+    @get("/{path:path}", media_type=MediaType.TEXT)
+    def catchall_handler(path: FromPath[Path]) -> str:
+        return path.as_posix()
+
+    handlers = [catchall_handler, slug_handler] if reverse_registration else [slug_handler, catchall_handler]
+
+    with create_test_client(handlers) as client:
+        specific_response = client.get("/foo/hello")
+        assert specific_response.status_code == HTTP_200_OK
+        assert specific_response.text == "foo"
+
+        catchall_response = client.get("/foo/bar/baz")
+        assert catchall_response.status_code == HTTP_200_OK
+        assert catchall_response.text == "/foo/bar/baz"
+
+        single_segment_response = client.get("/foo")
+        assert single_segment_response.status_code == HTTP_200_OK
+        assert single_segment_response.text == "/foo"
+
+
+def test_specific_route_with_deeper_static_suffix_matches_before_path_type_catchall() -> None:
+    # https://github.com/litestar-org/litestar/issues/4991
+    @get("/{slug:str}/hello/world", media_type=MediaType.TEXT)
+    def slug_handler(slug: FromPath[str]) -> str:
+        return slug
+
+    @get("/{path:path}", media_type=MediaType.TEXT)
+    def catchall_handler(path: FromPath[Path]) -> str:
+        return path.as_posix()
+
+    with create_test_client([slug_handler, catchall_handler]) as client:
+        specific_response = client.get("/foo/hello/world")
+        assert specific_response.status_code == HTTP_200_OK
+        assert specific_response.text == "foo"
+
+        catchall_response = client.get("/foo/hello/other")
+        assert catchall_response.status_code == HTTP_200_OK
+        assert catchall_response.text == "/foo/hello/other"
+
+        catchall_response_2 = client.get("/foo/bar/baz")
+        assert catchall_response_2.status_code == HTTP_200_OK
+        assert catchall_response_2.text == "/foo/bar/baz"
+
+
+def test_path_type_node_without_handlers_is_not_found() -> None:
+    # https://github.com/litestar-org/litestar/issues/4991
+    @get("/{path:path}/foo", media_type=MediaType.TEXT)
+    def handler(path: FromPath[Path]) -> str:
+        return path.as_posix()
+
+    with create_test_client([handler]) as client:
+        assert client.get("/a/b").status_code == HTTP_404_NOT_FOUND
+
+
 def test_base_path_param_resolution() -> None:
     # https://github.com/litestar-org/litestar/issues/1830
     @get("/{name:str}")
