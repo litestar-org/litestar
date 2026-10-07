@@ -1139,3 +1139,22 @@ def test_union_of_enums() -> None:
     assert len(schema.one_of) == 2
     components = creator.schema_registry.generate_components_schemas()
     assert {tuple(v.enum or ()) for v in components.values()} == {("red",), ("small",)}
+
+
+def test_reference_result_keeps_kwarg_metadata_on_first_use_without_mutating_component() -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    first = creator.for_field_definition(
+        FieldDefinition.from_kwarg(
+            name="b", annotation=DataclassPerson, kwarg_definition=Parameter(description="first use")
+        )
+    )
+    second = creator.for_field_definition(FieldDefinition.from_kwarg(name="a", annotation=DataclassPerson))
+
+    assert isinstance(first, Schema)
+    assert first.description == "first use"
+    assert first.all_of is not None
+    assert isinstance(first.all_of[0], Reference)
+    assert isinstance(second, Reference)
+
+    components = creator.schema_registry.generate_components_schemas()
+    assert components["DataclassPerson"].description is None

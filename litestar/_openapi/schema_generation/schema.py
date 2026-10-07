@@ -662,10 +662,16 @@ class SchemaCreator:
                         setattr(schema, schema_key, value)
 
     def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
+        ref = (
+            self.schema_registry.get_reference_for_field_definition(field)
+            if (schema.title and schema.type == OpenAPIType.OBJECT and not field.is_union)
+            else None
+        )
         if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
             schema.const = field.default
 
-        self._apply_kwarg_definition_metadata(field, schema)
+        if ref is None or isinstance(field.kwarg_definition, BodyKwarg):
+            self._apply_kwarg_definition_metadata(field, schema)
 
         if isinstance(field.kwarg_definition, KwargDefinition) and (extra := field.kwarg_definition.schema_extra):
             field_aliases = schema.field_aliases()
@@ -685,9 +691,7 @@ class SchemaCreator:
 
             schema.examples = get_json_schema_formatted_examples(create_examples_for_field(field))
 
-        if schema.title and schema.type == OpenAPIType.OBJECT:
-            return self.schema_registry.get_reference_for_field_definition(field) or schema
-        return schema
+        return ref or schema
 
     def create_component_schema(
         self,

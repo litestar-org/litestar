@@ -607,3 +607,34 @@ def test_create_for_computed_field(prefer_alias: bool) -> None:
     assert property_two.description == "a description"
     assert property_two.title == "a title"
     assert property_two.read_only
+
+
+def test_handler_order_does_not_mutate_shared_component_schema() -> None:
+    class Item(pydantic_v2.BaseModel):
+        id: int
+
+    class WrappedItem(pydantic_v2.BaseModel):
+        item: Item = pydantic_v2.Field(description="Description of this field, not the Item model")
+
+    @get("/plain")
+    async def plain() -> Item:
+        return Item(id=1)
+
+    @get("/wrapped")
+    async def wrapped() -> WrappedItem:
+        return WrappedItem(item=Item(id=1))
+
+    schemas = []
+    for handlers in ([plain, wrapped], [wrapped, plain]):
+        app = Litestar(
+            route_handlers=handlers,
+            openapi_config=OpenAPIConfig(title="Repro", version="1.0.0", create_examples=False),
+        )
+        schema = app.openapi_schema.to_schema()
+        schemas.append(schema)
+
+    assert schemas[0] == schemas[1]
+    item_key = next(
+        k for k in schemas[0]["components"]["schemas"] if k.endswith("Item") and not k.endswith("WrappedItem")
+    )
+    assert schemas[0]["components"]["schemas"][item_key].get("description") is None
