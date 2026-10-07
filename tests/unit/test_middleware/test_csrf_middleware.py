@@ -6,7 +6,7 @@ from typing import Any, Optional
 import pytest
 from bs4 import BeautifulSoup
 
-from litestar import MediaType, WebSocket, delete, get, patch, post, put, websocket
+from litestar import MediaType, WebSocket, delete, get, patch, post, put, query, websocket
 from litestar.config.csrf import CSRFConfig
 from litestar.handlers import HTTPRouteHandler
 from litestar.params import URLEncodedBody
@@ -45,6 +45,11 @@ def delete_handler() -> HTTPRouteHandler:
 @pytest.fixture
 def patch_handler() -> HTTPRouteHandler:
     return patch()(handler_fn)
+
+
+@pytest.fixture
+def query_handler() -> HTTPRouteHandler:
+    return query()(handler_fn)
 
 
 def test_csrf_successful_flow(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
@@ -94,6 +99,19 @@ def test_unsafe_method_fails_without_csrf_header(
         response = client.request(method, "/")
         assert response.status_code == HTTP_403_FORBIDDEN
         assert response.json() == {"detail": "CSRF token verification failed", "status_code": 403}
+
+
+def test_query_method_is_safe_by_default(get_handler: HTTPRouteHandler, query_handler: HTTPRouteHandler) -> None:
+    with create_test_client(
+        route_handlers=[get_handler, query_handler],
+        csrf_config=CSRFConfig(secret="secret"),
+        openapi_config=None,
+    ) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.request("QUERY", "/")
+        assert response.status_code == HTTP_200_OK
 
 
 def test_invalid_csrf_token(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
