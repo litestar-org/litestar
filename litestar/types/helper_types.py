@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from collections.abc import AsyncIterable, AsyncIterator, Awaitable, Iterable, Iterator, Sequence
 from functools import partial
 from typing import (
@@ -10,9 +8,9 @@ from typing import (
     Union,
 )
 
-if TYPE_CHECKING:
-    from typing import TypeAlias
+from typing_extensions import TypeAliasType
 
+if TYPE_CHECKING:
     from litestar.response.sse import ServerSentEventMessage
 
 
@@ -20,21 +18,23 @@ T = TypeVar("T")
 
 __all__ = ("AnyIOBackend", "MaybePartial", "OptionalSequence", "SSEData", "StreamType", "SyncOrAsyncUnion")
 
-OptionalSequence: TypeAlias = Sequence[T] | None
+OptionalSequence = TypeAliasType("OptionalSequence", Sequence[T] | None, type_params=(T,))
 """Types 'T' as union of Sequence[T] and None."""
 
-SyncOrAsyncUnion: TypeAlias = Union[T, Awaitable[T]]
+SyncOrAsyncUnion = TypeAliasType("SyncOrAsyncUnion", Union[T, Awaitable[T]], type_params=(T,))
 """Types 'T' as a union of T and awaitable T."""
 
 
-AnyIOBackend: TypeAlias = Literal["asyncio", "trio"]
+AnyIOBackend = TypeAliasType("AnyIOBackend", Literal["asyncio", "trio"])
 """Anyio backend names."""
 
-StreamType: TypeAlias = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]
+StreamType = TypeAliasType(
+    "StreamType", Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]], type_params=(T,)
+)
 """A stream type."""
 
-MaybePartial: TypeAlias = Union[T, partial]
+MaybePartial = TypeAliasType("MaybePartial", Union[T, partial], type_params=(T,))
 """A potentially partial callable."""
 
-SSEData: TypeAlias = Union[int, str, bytes, dict[str, Any], "ServerSentEventMessage"]
+SSEData = TypeAliasType("SSEData", Union[int, str, bytes, dict[str, Any], "ServerSentEventMessage"])
 """A type alias for SSE data."""

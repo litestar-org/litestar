@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import MISSING
 from inspect import Signature
 from typing import Final
