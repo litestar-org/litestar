@@ -214,7 +214,7 @@ The above will result in an OpenAPI schema object that looks like this:
                    "operationId": "Retrieve Id Handler",
                    "responses": {
                        "200": {
-                           "description": "Request fulfilled, document follows",
+                           "description": "OK",
                            "headers": {},
                            "content": {
                                "application/json": {
