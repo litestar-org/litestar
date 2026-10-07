@@ -59,14 +59,18 @@ def test_url_from_components(component: str, value: str) -> None:
     "component,replacement,expected",
     [
         ("scheme", "http", "http"),
+        ("scheme", "", ""),
         ("netloc", "example.com", "example.com"),
+        ("netloc", "", ""),
         ("path", "/foo", "/foo"),
+        ("path", "", ""),
         ("query", None, ""),
         ("query", "", ""),
         ("query", MultiDict({}), ""),
         ("query", "foo=baz", "foo=baz"),
         ("query", MultiDict({"foo": "baz"}), "foo=baz"),
         ("fragment", "anchor2", "anchor2"),
+        ("fragment", "", ""),
     ],
 )
 def test_url_with_replacements(component: str, replacement: str, expected: str) -> None:
@@ -108,6 +112,12 @@ def test_url_from_scope_with_host(create_scope: Callable[..., "Scope"]) -> None:
     url = URL.from_scope(scope)
 
     assert url.netloc == "testserver.local:42"
+
+
+def test_url_with_replacements_keeps_components_not_passed() -> None:
+    url = URL("https://example.org/foo/bar?foo=bar#anchor")
+    assert url.with_replacements() == url
+    assert str(url.with_replacements(fragment="")) == "https://example.org/foo/bar?foo=bar"
 
 
 def test_url_eq() -> None:
