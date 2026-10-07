@@ -2,7 +2,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Optional
 
-import httpx
+import httpx2
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
@@ -326,7 +326,7 @@ app = Litestar(route_handlers=[handler])
 
     run_server(app, server_command)
 
-    assert httpx.get("http://127.0.0.1:9999/handler").json() == ["/handler", "/test"]
+    assert httpx2.get("http://127.0.0.1:9999/handler").json() == ["/handler", "/test"]
 
 
 @pytest.mark.parametrize(
@@ -359,8 +359,8 @@ app = Litestar(route_handlers=[pathfinder], debug=True)
 
     run_server(app, server_command)
 
-    assert httpx.get("http://127.0.0.1:9999/").text == "None"
-    assert httpx.get("http://127.0.0.1:9999/something").text == "/something"
+    assert httpx2.get("http://127.0.0.1:9999/").text == "None"
+    assert httpx2.get("http://127.0.0.1:9999/something").text == "/something"
 
 
 @pytest.mark.parametrize(

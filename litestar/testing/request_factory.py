@@ -7,8 +7,8 @@ from functools import partial
 from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urlencode
 
-from httpx._content import encode_json as httpx_encode_json
-from httpx._content import encode_multipart_data, encode_urlencoded_data
+from httpx2._content import encode_json as httpx_encode_json
+from httpx2._content import encode_multipart_data, encode_urlencoded_data
 
 from litestar import delete, patch, post, put
 from litestar.app import Litestar
@@ -22,7 +22,7 @@ from litestar.utils import get_serializer_from_scope
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
-    from httpx._types import FileTypes
+    from httpx2._types import FileTypes
 
     from litestar.datastructures.cookie import Cookie
     from litestar.handlers.http_handlers import HTTPRouteHandler
