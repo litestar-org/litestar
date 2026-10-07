@@ -7,7 +7,7 @@ import string
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -269,10 +269,11 @@ async def test_redis_get_renew_for_timedelta(mock_redis_cls: Mock) -> None:
     """Test that renew_for with timedelta correctly calculates total seconds."""
     mock_redis = MagicMock()
     store = RedisStore(redis=mock_redis)
-    mock_script = MagicMock()
+    mock_script = AsyncMock(return_value=b"data")
     store._get_and_renew_script = mock_script
 
-    await store.get("foo", renew_for=timedelta(days=1, seconds=30))
+    val = await store.get("foo", renew_for=timedelta(days=1, seconds=30))
+    assert val == b"data"
     mock_script.assert_called_once_with(keys=["LITESTAR:foo"], args=[86430])
 
 
