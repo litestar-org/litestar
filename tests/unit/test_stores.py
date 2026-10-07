@@ -264,13 +264,16 @@ async def test_redis_set_with_keep_ttl(redis_store: RedisStore) -> None:
     assert await redis_store.get("foo") == b"updated"
 
 
-@pytest.mark.xdist_group("redis")
-async def test_redis_get_renew_for_timedelta(redis_store: RedisStore) -> None:
+@patch("litestar.stores.redis.Redis")
+async def test_redis_get_renew_for_timedelta(mock_redis_cls: Mock) -> None:
     """Test that renew_for with timedelta correctly calculates total seconds."""
+    mock_redis = MagicMock()
+    store = RedisStore(redis=mock_redis)
     mock_script = MagicMock()
-    with patch.object(redis_store, "_get_and_renew_script", mock_script):
-        await redis_store.get("foo", renew_for=timedelta(days=1, seconds=30))
-        mock_script.assert_called_once_with(keys=["LITESTAR:foo"], args=[86430])
+    store._get_and_renew_script = mock_script
+
+    await store.get("foo", renew_for=timedelta(days=1, seconds=30))
+    mock_script.assert_called_once_with(keys=["LITESTAR:foo"], args=[86430])
 
 
 @patch("litestar.stores.valkey.Valkey")
