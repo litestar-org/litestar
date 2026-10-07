@@ -509,6 +509,26 @@ def test_additional_responses_with_custom_examples(create_factory: CreateFactory
         next(responses)
 
 
+def test_additional_response_headers() -> None:
+    @get(
+        "/",
+        responses={
+            429: ResponseSpec(
+                data_container=None,
+                description="Too many requests",
+                headers=[ResponseHeader(name="Retry-After", description="Seconds to wait", value="30")],
+            ),
+            400: ResponseSpec(data_container=None),  # no headers -> None branch
+        },
+    )
+    async def handler() -> None: ...
+
+    schema = Litestar([handler]).openapi_schema.to_schema()
+    responses = schema["paths"]["/"]["get"]["responses"]
+    assert responses["429"]["headers"]["Retry-After"]["description"] == "Seconds to wait"
+    assert "headers" not in responses["400"]
+
+
 def test_additional_responses_with_custom_example_ids(create_factory: CreateFactoryFixture) -> None:
     """Test that custom example IDs are used when provided in the Example object."""
 
