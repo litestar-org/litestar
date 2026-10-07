@@ -30,7 +30,7 @@ from litestar.params import (
 from litestar.routes import BaseRoute
 from litestar.testing import create_test_client
 from litestar.utils import find_index
-from tests.unit.test_openapi.utils import Gender, LuckyNumber
+from tests.unit.test_openapi.utils import Gender
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
@@ -85,7 +85,8 @@ def test_create_parameters(person_controller: type[Controller]) -> None:
     assert page_size.required
     assert page_size.description == "Page Size Description"
     assert page_size.examples
-    assert page_size.schema.examples == [1]
+    # examples are documented at the parameter level, so they are not duplicated on the schema
+    assert page_size.schema.examples is None
 
     assert name.param_in == ParamType.QUERY
     assert name.name == "name"
@@ -124,7 +125,6 @@ def test_create_parameters(person_controller: type[Controller]) -> None:
             ),
             Schema(type=OpenAPIType.NULL),
         ],
-        examples=[Gender.MALE, [Gender.MALE, Gender.OTHER]],
     )
     assert not gender.required
 
@@ -148,7 +148,6 @@ def test_create_parameters(person_controller: type[Controller]) -> None:
             Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_LuckyNumber"),
             Schema(type=OpenAPIType.NULL),
         ],
-        examples=[LuckyNumber.SEVEN],
     )
     assert not lucky_number.required
 
@@ -344,6 +343,23 @@ def test_parameter_examples() -> None:
         assert response.json()["paths"]["/"]["get"]["parameters"][0]["examples"] == {
             "text-example-1": {"summary": "example summary", "value": "example value"}
         }
+
+
+def test_parameter_examples_not_duplicated_on_schema() -> None:
+    # https://github.com/litestar-org/litestar/issues/3057
+    # examples given via ``Parameter(examples=[...])`` are documented at the parameter
+    # level, so they should not be duplicated on the parameter's schema
+    @get(path="/{path_arg:str}")
+    async def index(path_arg: Annotated[str, QueryParameter(examples=[Example(value="example value")])]) -> str:
+        return path_arg
+
+    with create_test_client(
+        route_handlers=[index], openapi_config=OpenAPIConfig(title="Test API", version="1.0.0")
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        parameter = response.json()["paths"]["/{path_arg}"]["get"]["parameters"][0]
+        assert parameter["examples"] == {"path_arg-example-1": {"value": "example value"}}
+        assert "examples" not in parameter["schema"]
 
 
 def test_parameter_schema_extra() -> None:
