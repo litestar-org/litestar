@@ -75,7 +75,7 @@ class ReleaseInfo:
         return f"https://github.com/litestar-org/litestar/compare/{self.base}...{self.release_tag}"
 
 
-def _pr_number_from_commit(comp: Comp) -> int:
+def _pr_number_from_commit(comp: Comp) -> int | None:
     # this is an ugly hack, but it appears to actually be the most reliably way to
     # extract the most "reliable" way to extract the info we want from GH ¯\_(ツ)_/¯
     message_head = comp.commit.message.split("\n\n")[0]
@@ -166,7 +166,7 @@ class _Thing:
         res = await self._api_client.get(f"/compare/{self._base}...{self._release_branch}")
         res.raise_for_status()
         compares = msgspec.convert(res.json()["commits"], list[Comp])
-        pr_numbers = list(filter(None, (_pr_number_from_commit(c) for c in compares)))
+        pr_numbers = [n for n in (_pr_number_from_commit(c) for c in compares) if n is not None]
         pulls = await asyncio.gather(*map(self._get_pr_info_for_pr, pr_numbers))
 
         prs = defaultdict(list)
