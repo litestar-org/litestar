@@ -4,6 +4,7 @@ from contextlib import suppress
 from functools import partial
 from typing import TYPE_CHECKING, Any, TypeGuard, TypeVar, cast
 
+import msgspec
 import pydantic
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
@@ -123,15 +124,17 @@ class PydanticInitPlugin(InitPlugin):
         round_trip: bool = False,
     ) -> dict[Any, Callable[[Any], Any]]:
         encoders: dict[Any, Callable[[Any], Any]] = {
-            pydantic.BaseModel: lambda model: model.model_dump(  # pyright: ignore[reportOptionalMemberAccess]
-                by_alias=prefer_alias,
-                exclude=exclude,
-                exclude_defaults=exclude_defaults,
-                exclude_none=exclude_none,
-                exclude_unset=exclude_unset,
-                include=include,
-                mode="json",
-                round_trip=round_trip,
+            pydantic.BaseModel: lambda model: msgspec.Raw(  # pyright: ignore[reportOptionalMemberAccess]
+                model.__pydantic_serializer__.to_json(
+                    model,
+                    by_alias=prefer_alias,
+                    exclude=exclude,
+                    exclude_defaults=exclude_defaults,
+                    exclude_none=exclude_none,
+                    exclude_unset=exclude_unset,
+                    include=include,
+                    round_trip=round_trip,
+                )
             ),
             pydantic.types.SecretStr: lambda val: "**********" if val else "",  # pyright: ignore[reportOptionalMemberAccess]
             pydantic.types.SecretBytes: lambda val: "**********" if val else "",  # pyright: ignore[reportOptionalMemberAccess]
