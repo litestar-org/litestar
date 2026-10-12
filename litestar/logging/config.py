@@ -440,7 +440,7 @@ def default_structlog_standard_lib_processors(as_json: bool = True) -> list[Proc
         return []
 
 
-def _final_renderer_emits_bytes(processors: list[Processor]) -> bool | None:  # pyright: ignore
+def _final_renderer_emits_bytes(processors: list[Processor]) -> bool | None:
     """Detect whether the last processor (the renderer) emits ``bytes`` or ``str``.
 
     The logger factory must match the renderer's output type: ``BytesLoggerFactory``
