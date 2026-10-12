@@ -469,7 +469,7 @@ def _final_renderer_emits_bytes(processors: list[Processor]) -> bool | None:
 
 def default_logger_factory(
     as_json: bool = True, processors: list[Processor] | None = None
-) -> Callable[..., WrappedLogger] | None:  # pyright: ignore
+) -> Callable[..., WrappedLogger] | None:
     """Set the default logger factory for structlog.
 
     When ``processors`` is supplied, the factory is chosen to match the output type of the
