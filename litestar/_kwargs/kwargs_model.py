@@ -206,7 +206,6 @@ class KwargsModel:
     @classmethod
     def _get_param_definitions(
         cls,
-        path_parameters: set[str],
         layered_parameters: dict[str, FieldDefinition],
         dependencies: dict[str, Provide],
         field_definitions: dict[str, FieldDefinition],
@@ -214,7 +213,6 @@ class KwargsModel:
         """Get parameter_definitions for the construction of KwargsModel instance.
 
         Args:
-            path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
             dependencies: A string keyed dictionary mapping dependency providers.
             field_definitions: The SignatureModel fields.
@@ -234,7 +232,6 @@ class KwargsModel:
                 create_parameter_definition(
                     field_definition=field_definition,
                     field_name=field_name,
-                    path_parameters=path_parameters,
                 )
                 for field_name, field_definition in layered_parameters.items()
                 if field_name not in ignored_keys and field_name not in field_definitions
@@ -243,7 +240,6 @@ class KwargsModel:
                 create_parameter_definition(
                     field_definition=field_definition,
                     field_name=field_name,
-                    path_parameters=path_parameters,
                 )
                 for field_name, field_definition in field_definitions.items()
                 if field_name not in ignored_keys and field_name not in layered_parameters
@@ -268,7 +264,6 @@ class KwargsModel:
                         extra=field.extra,
                     ),
                     field_name=field_name,
-                    path_parameters=path_parameters,
                 )
             )
 
@@ -312,11 +307,23 @@ class KwargsModel:
         )
 
         param_definitions, expected_dependencies = cls._get_param_definitions(
-            path_parameters=path_parameters,
             layered_parameters=layered_parameters,
             dependencies=dependencies,
             field_definitions=field_definitions,
         )
+
+        for field_name, field_definition in field_definitions.items():
+            if (
+                field_name in path_parameters
+                and not field_definition.is_di_field
+                and not field_definition.declares_parameter_location
+            ):
+                msg = (
+                    f"Parameter {field_name!r} has the name of path parameter {field_name!r} but is not "
+                    f"marked as a path parameter. Path parameters must be declared as "
+                    f"'{field_name}: FromPath[<type>]'"
+                )
+                raise ImproperlyConfiguredException(ctx.format(msg) if ctx is not None else msg)
 
         for dep_field_name in dependencies:
             dep_field_def = field_definitions.get(dep_field_name)
@@ -545,6 +552,7 @@ class KwargsModel:
         places.
         """
         dependency_keys = set(dependencies.keys())
+        layered_parameter_names = set(layered_parameters.keys())
 
         parameter_names = {
             *(
@@ -556,12 +564,12 @@ class KwargsModel:
                     and f.kwarg_definition.name is not None
                 )
             ),
-            *list(layered_parameters.keys()),
+            *layered_parameter_names,
         }
 
         intersection = (
             path_parameters.intersection(dependency_keys)
-            or path_parameters.intersection(parameter_names)
+            or path_parameters.intersection(layered_parameter_names)
             or dependency_keys.intersection(parameter_names)
         )
         if intersection:
@@ -607,7 +615,6 @@ def _warn_deprecated_param_style(
             ParamType.QUERY: "FromQuery",
             ParamType.HEADER: "FromHeader",
             ParamType.COOKIE: "FromCookie",
-            ParamType.PATH: "FromPath",
         }
         short_alternative = alternatives[param_type]
         param_type_name = param_type.name.lower()

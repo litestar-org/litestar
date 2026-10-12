@@ -10,7 +10,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.parameter import Parameter
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
-from litestar.params import ParameterKwarg
+from litestar.params import ParameterKwarg, PathParameter
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
@@ -50,14 +50,7 @@ class ParameterCollection:
         """
 
         if (parameter.name, parameter.param_in) not in self._parameters:
-            # because we are defining routes as unique per path, we have to handle here a situation when there is an optional
-            # path parameter. e.g. get(path=["/", "/{param:str}"]). When parsing the parameter for path, the route handler
-            # would still have a kwarg called param:
-            # def handler(param: str | None) -> ...
-            if parameter.param_in != ParamType.QUERY or all(
-                f"{{{parameter.name}:" not in path for path in self.route_handler.paths
-            ):
-                self._parameters[(parameter.name, parameter.param_in)] = parameter
+            self._parameters[(parameter.name, parameter.param_in)] = parameter
             return
 
         pre_existing = self._parameters[(parameter.name, parameter.param_in)]
@@ -113,11 +106,7 @@ class ParameterFactory:
             field_definition.kwarg_definition if isinstance(field_definition.kwarg_definition, ParameterKwarg) else None
         )
 
-        if parameter_name in self.path_parameters:
-            param_in = ParamType.PATH
-            is_required = True
-            result = self.schema_creator.for_field_definition(field_definition)
-        elif kwarg_definition is not None:
+        if kwarg_definition is not None:
             param_in = kwarg_definition.param_type
             is_required = field_definition.is_required
             parameter_name = kwarg_definition.name or parameter_name
@@ -229,32 +218,36 @@ class ParameterFactory:
         # not all path parameters have to be consumed by the handler. Because even not
         # consumed path parameters must still be specified, we create stub parameters
         # for the unconsumed ones so a correct OpenAPI schema can be generated.
-        # A handler field is considered to consume a path parameter either by sharing its
-        # name, or by aliasing it via ``PathParameter(name=...)`` /
-        # ``Annotated[T, PathParameter(name=...)]``.
-        consumed_via_field_name = handler_fields.keys() & self.path_parameters.keys()
-        consumed_via_alias = {
-            field.kwarg_definition.name
-            for field in handler_fields.values()
-            if isinstance(field.kwarg_definition, ParameterKwarg)
-            and field.kwarg_definition.param_type == ParamType.PATH
-            and field.kwarg_definition.name in self.path_parameters
+        # A field consumes a path parameter if it is marked as a path parameter, under
+        # its own name or the alias given via ``PathParameter(name=...)``.
+        consumed = _consumed_path_parameters(handler_fields) | {
+            name
+            for dependency in self.dependency_providers.values()
+            for name in _consumed_path_parameters(dependency.parsed_fn_signature.parameters)
         }
-        dependency_fields = {
-            name for dep in self.dependency_providers.values() for name in dep.parsed_fn_signature.parameters
+        unconsumed_path_parameters = set(self.path_parameters) - consumed
+        # a stub is keyed apart from the handler's fields, which may use the same name
+        # for a parameter read from another location
+        stubs = {
+            f"path:{param_name}": FieldDefinition.from_kwarg(
+                self.path_parameters[param_name].type,
+                name=param_name,
+                kwarg_definition=PathParameter(name=param_name),
+            )
+            for param_name in unconsumed_path_parameters
         }
-        unconsumed_path_parameters = (
-            set(self.path_parameters) - consumed_via_field_name - consumed_via_alias - dependency_fields
-        )
-        handler_fields.update(
-            {
-                param_name: FieldDefinition.from_kwarg(self.path_parameters[param_name].type, name=param_name)
-                for param_name in unconsumed_path_parameters
-            }
-        )
 
-        self.create_parameters_for_field_definitions(handler_fields)
+        self.create_parameters_for_field_definitions({**handler_fields, **stubs})
         return self.parameters.list()
+
+
+def _consumed_path_parameters(fields: dict[str, FieldDefinition]) -> set[str]:
+    """Return the names of the path parameters ``fields`` are marked to read."""
+    return {
+        field.kwarg_definition.name or field_name
+        for field_name, field in fields.items()
+        if isinstance(field.kwarg_definition, ParameterKwarg) and field.kwarg_definition.param_type == ParamType.PATH
+    }
 
 
 def create_parameters_for_handler(

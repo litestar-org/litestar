@@ -6,6 +6,7 @@ import asyncio
 from collections.abc import AsyncIterator
 
 from litestar import Litestar, get, post
+from litestar.params import FromPath
 from litestar.response import ServerSentEvent
 
 
@@ -16,7 +17,7 @@ async def create_log_entry(message: str) -> None:
 
 
 @get("/notify/{topic:str}")
-async def get_notified(topic: str) -> ServerSentEvent:
+async def get_notified(topic: FromPath[str]) -> ServerSentEvent:
     async def generator() -> AsyncIterator[str]:
         yield topic
         while True:

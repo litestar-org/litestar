@@ -562,6 +562,39 @@ def test_nullable_query_param_required(annotation: Any, default: Any, expected_r
         assert param.required is expected_required
 
 
+@pytest.mark.parametrize(
+    "annotation, param_in",
+    [(FromQuery[str], ParamType.QUERY), (FromHeader[str], ParamType.HEADER), (FromCookie[str], ParamType.COOKIE)],
+)
+def test_marker_named_like_path_param_documented_at_own_location(annotation: Any, param_in: ParamType) -> None:
+    @get("/{value:str}", sync_to_thread=False)
+    def handler(value: annotation) -> None:  # pyright: ignore
+        return None
+
+    parameters = _create_parameters(app=Litestar(route_handlers=[handler]), path="/{value}")
+
+    assert {(parameter.name, parameter.param_in) for parameter in parameters} == {
+        ("value", param_in),
+        ("value", ParamType.PATH),
+    }
+
+
+def test_dependency_marker_named_like_path_param_documented_at_own_location() -> None:
+    async def provide_value(value: FromQuery[str]) -> str:
+        return value
+
+    @get("/{value:str}", dependencies={"provided": provide_value}, sync_to_thread=False)
+    def handler(provided: NamedDependency[str]) -> str:
+        return provided
+
+    parameters = _create_parameters(app=Litestar(route_handlers=[handler]), path="/{value}")
+
+    assert {(parameter.name, parameter.param_in) for parameter in parameters} == {
+        ("value", ParamType.QUERY),
+        ("value", ParamType.PATH),
+    }
+
+
 def test_explicit_path_param_excluded_from_routes_without_placeholder() -> None:
     """A handler annotated with FromPath but registered against multiple paths must
     only advertise the path parameter on routes whose URL actually contains the

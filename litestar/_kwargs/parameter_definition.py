@@ -26,14 +26,12 @@ class ParameterDefinition(NamedTuple):
 def create_parameter_definition(
     field_definition: FieldDefinition,
     field_name: str,
-    path_parameters: set[str],
 ) -> ParameterDefinition:
     """Create a ParameterDefinition for the given FieldDefinition.
 
     Args:
         field_definition: FieldDefinition instance.
         field_name: The field's name.
-        path_parameters: A set of path parameter names.
 
     Returns:
         A ParameterDefinition tuple.
@@ -53,10 +51,6 @@ def create_parameter_definition(
             legacy_style = "annotated"
         else:
             legacy_style = None
-
-    if field_name in path_parameters:
-        field_alias = (kwarg_definition.name or field_name) if kwarg_definition is not None else field_name
-        param_type = ParamType.PATH
 
     if field_definition.is_di_field:
         param_type = ParamType.DEPENDENCY

@@ -249,6 +249,20 @@ class FieldDefinition:
         return isinstance(self.kwarg_definition, ParameterKwarg)
 
     @property
+    def declares_parameter_location(self) -> bool:
+        """Check if the field's ParameterKwarg declares where the parameter is read from.
+
+        A location is declared by a location-specific kwarg, such as 'QueryParameter' or
+        'FromPath[]', or by the deprecated 'query', 'header' and 'cookie' arguments.
+        """
+        kwarg_definition = self.kwarg_definition
+        if not isinstance(kwarg_definition, ParameterKwarg):
+            return False
+        return type(kwarg_definition) is not ParameterKwarg or any(
+            (kwarg_definition.query, kwarg_definition.header, kwarg_definition.cookie)
+        )
+
+    @property
     def is_non_marker_parameter_field(self) -> bool:
         """Check if the field type is a ParameterKwarg that's not a marker only.
 
