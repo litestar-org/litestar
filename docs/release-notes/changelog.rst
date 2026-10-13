@@ -39,7 +39,7 @@
 
     .. change:: Only read parameters marked as path parameters from the path
         :type: bugfix
-        :pr: 0000
+        :pr: 5128
         :breaking:
 
         A parameter whose name matched a path segment was read from the path even when it
