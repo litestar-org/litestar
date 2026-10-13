@@ -21,6 +21,7 @@ __all__ = (
     "MsgPackBody",
     "MultipartBody",
     "ParameterKwarg",
+    "ParameterMarker",
     "PathParameter",
     "QueryParameter",
     "SkipValidation",
@@ -39,7 +40,10 @@ T = TypeVar("T")
 
 
 class ParameterMarker:
-    pass
+    """Base class of the annotation metadata that marks how Litestar handles a parameter:
+    parameter and body kwargs such as :class:`QueryParameter` and :class:`BodyKwarg`, the
+    marker :data:`~litestar.di.NamedDependency` carries, and :class:`SkipValidationMarker`.
+    """
 
 
 @dataclass(frozen=True)

@@ -1,5 +1,3 @@
-"""Every docs example builds: a change to Litestar must not break an example the tests do not run."""
-
 from __future__ import annotations
 
 import json
