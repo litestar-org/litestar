@@ -843,7 +843,7 @@ Binary mode</label><div class="sd-tab-content docutils">
 <p><a class="reference internal" href="dependency-injection.html"><span class="doc">Dependency Injection</span></a> is available and generally works the same as in regular
 route handlers:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">some_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -851,7 +851,7 @@ route handlers:</p>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">some_dependency</span><span class="p">)})</span>
-</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">some</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">some</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="11">    <span class="k">return</span> <span class="n">data</span> <span class="o">+</span> <span class="n">some</span>
 </span><span data-line="12">
 </span><span data-line="13">
@@ -871,7 +871,7 @@ the <code class="docutils literal notranslate"><span class="pre">yield</span></c
 </span><span data-line="3">
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 </span><span data-line="7">
 </span><span data-line="8">
 </span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">Message</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
@@ -889,7 +889,7 @@ the <code class="docutils literal notranslate"><span class="pre">yield</span></c
 </span><span data-line="21">
 </span><span data-line="22">
 </span><span data-line="23"><span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;client_count&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">socket_client_count</span><span class="p">)})</span>
-</span><span data-line="24"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
+</span><span data-line="24"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_count</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
 </span><span data-line="25">    <span class="k">return</span> <span class="n">Message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">client_count</span><span class="o">=</span><span class="n">client_count</span><span class="p">)</span>
 </span><span data-line="26">
 </span><span data-line="27">
@@ -1135,28 +1135,29 @@ Python 3.11+</label><div class="sd-tab-content docutils">
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
-</span><span data-line="7">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping_external_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span data-line="10">    <span class="k">return</span> <span class="mf">1.0</span>
-</span><span data-line="11">
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping_external_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="mf">1.0</span>
 </span><span data-line="12">
-</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acquire_lock</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="14">    <span class="k">async</span> <span class="k">with</span> <span class="n">RESOURCE_LOCK</span><span class="p">:</span>
-</span><span data-line="15">        <span class="k">yield</span>
-</span><span data-line="16">
+</span><span data-line="13">
+</span><span data-line="14"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acquire_lock</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="15">    <span class="k">async</span> <span class="k">with</span> <span class="n">RESOURCE_LOCK</span><span class="p">:</span>
+</span><span data-line="16">        <span class="k">yield</span>
 </span><span data-line="17">
-</span><span data-line="18"><span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="19"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">(</span><span class="n">lock</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="20">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span data-line="21">        <span class="n">alive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ping_external_resource</span><span class="p">()</span>
-</span><span data-line="22">        <span class="k">yield</span> <span class="n">alive</span>
-</span><span data-line="23">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="24">
+</span><span data-line="18">
+</span><span data-line="19"><span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="20"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">(</span><span class="n">lock</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="21">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="22">        <span class="n">alive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ping_external_resource</span><span class="p">()</span>
+</span><span data-line="23">        <span class="k">yield</span> <span class="n">alive</span>
+</span><span data-line="24">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </span><span data-line="25">
-</span><span data-line="26"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lock&quot;</span><span class="p">:</span> <span class="n">acquire_lock</span><span class="p">})</span>
+</span><span data-line="26">
+</span><span data-line="27"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lock&quot;</span><span class="p">:</span> <span class="n">acquire_lock</span><span class="p">})</span>
 </span></pre></div>
 </div>
 </div>
@@ -1170,28 +1171,29 @@ Python 3.13+</label><div class="sd-tab-content docutils">
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
-</span><span data-line="7">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping_external_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span data-line="10">    <span class="k">return</span> <span class="mf">1.0</span>
-</span><span data-line="11">
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping_external_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="mf">1.0</span>
 </span><span data-line="12">
-</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acquire_lock</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="14">    <span class="k">async</span> <span class="k">with</span> <span class="n">RESOURCE_LOCK</span><span class="p">:</span>
-</span><span data-line="15">        <span class="k">yield</span>
-</span><span data-line="16">
+</span><span data-line="13">
+</span><span data-line="14"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acquire_lock</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="15">    <span class="k">async</span> <span class="k">with</span> <span class="n">RESOURCE_LOCK</span><span class="p">:</span>
+</span><span data-line="16">        <span class="k">yield</span>
 </span><span data-line="17">
-</span><span data-line="18"><span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="19"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">(</span><span class="n">lock</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-</span><span data-line="20">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span data-line="21">        <span class="n">alive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ping_external_resource</span><span class="p">()</span>
-</span><span data-line="22">        <span class="k">yield</span> <span class="n">alive</span>
-</span><span data-line="23">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="24">
+</span><span data-line="18">
+</span><span data-line="19"><span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="20"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">(</span><span class="n">lock</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+</span><span data-line="21">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span data-line="22">        <span class="n">alive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ping_external_resource</span><span class="p">()</span>
+</span><span data-line="23">        <span class="k">yield</span> <span class="n">alive</span>
+</span><span data-line="24">        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </span><span data-line="25">
-</span><span data-line="26"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lock&quot;</span><span class="p">:</span> <span class="n">acquire_lock</span><span class="p">})</span>
+</span><span data-line="26">
+</span><span data-line="27"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lock&quot;</span><span class="p">:</span> <span class="n">acquire_lock</span><span class="p">})</span>
 </span></pre></div>
 </div>
 </div>

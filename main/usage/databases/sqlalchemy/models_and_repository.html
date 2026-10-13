@@ -705,7 +705,7 @@ your controllers and function based routes.</p>
 </span><span data-line="19">
 </span><span data-line="20"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="21"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span>
-</span><span data-line="22"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="22"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 </span><span data-line="23"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="24"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">OffsetPagination</span>
 </span><span data-line="25"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
@@ -765,14 +765,14 @@ your controllers and function based routes.</p>
 </span><span data-line="79">    <span class="n">model_type</span> <span class="o">=</span> <span class="n">AuthorModel</span>
 </span><span data-line="80">
 </span><span data-line="81">
-</span><span data-line="82"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+</span><span data-line="82"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
 </span><span data-line="83"><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
 </span><span data-line="84">    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 </span><span data-line="85">
 </span><span data-line="86">
 </span><span data-line="87"><span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
 </span><span data-line="88"><span class="c1"># specific SQL options such as join details</span>
-</span><span data-line="89"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+</span><span data-line="89"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
 </span><span data-line="90"><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides a simple example demonstrating how to override the join options for the repository.&quot;&quot;&quot;</span>
 </span><span data-line="91">    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span>
 </span><span data-line="92">        <span class="n">statement</span><span class="o">=</span><span class="n">select</span><span class="p">(</span><span class="n">AuthorModel</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">selectinload</span><span class="p">(</span><span class="n">AuthorModel</span><span class="o">.</span><span class="n">books</span><span class="p">)),</span>
@@ -806,8 +806,8 @@ your controllers and function based routes.</p>
 </span><span data-line="120">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
 </span><span data-line="121">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_authors</span><span class="p">(</span>
 </span><span data-line="122">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="123">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="124">        <span class="n">limit_offset</span><span class="p">:</span> <span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">,</span>
+</span><span data-line="123">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
+</span><span data-line="124">        <span class="n">limit_offset</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">filters</span><span class="o">.</span><span class="n">LimitOffset</span><span class="p">],</span>
 </span><span data-line="125">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
 </span><span data-line="126"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List authors.&quot;&quot;&quot;</span>
 </span><span data-line="127">        <span class="n">results</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">limit_offset</span><span class="p">)</span>
@@ -822,7 +822,7 @@ your controllers and function based routes.</p>
 </span><span data-line="136">    <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
 </span><span data-line="137">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">(</span>
 </span><span data-line="138">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="139">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="139">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
 </span><span data-line="140">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorCreate</span><span class="p">,</span>
 </span><span data-line="141">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span><span data-line="142"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
@@ -836,7 +836,7 @@ your controllers and function based routes.</p>
 </span><span data-line="150">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)})</span>
 </span><span data-line="151">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
 </span><span data-line="152">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="153">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="153">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
 </span><span data-line="154">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
 </span><span data-line="155">            <span class="n">UUID</span><span class="p">,</span>
 </span><span data-line="156">            <span class="n">PathParameter</span><span class="p">(</span>
@@ -855,7 +855,7 @@ your controllers and function based routes.</p>
 </span><span data-line="169">    <span class="p">)</span>
 </span><span data-line="170">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
 </span><span data-line="171">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="172">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="172">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
 </span><span data-line="173">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
 </span><span data-line="174">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
 </span><span data-line="175">            <span class="n">UUID</span><span class="p">,</span>
@@ -875,7 +875,7 @@ your controllers and function based routes.</p>
 </span><span data-line="189">    <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">)</span>
 </span><span data-line="190">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_author</span><span class="p">(</span>
 </span><span data-line="191">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="192">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="192">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
 </span><span data-line="193">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
 </span><span data-line="194">            <span class="n">UUID</span><span class="p">,</span>
 </span><span data-line="195">            <span class="n">PathParameter</span><span class="p">(</span>
@@ -934,7 +934,7 @@ your controllers and function based routes.</p>
 </span><span data-line="18">
 </span><span data-line="19"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="20"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span>
-</span><span data-line="21"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="21"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 </span><span data-line="22"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="23"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">OffsetPagination</span>
 </span><span data-line="24"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
@@ -994,14 +994,14 @@ your controllers and function based routes.</p>
 </span><span data-line="78">    <span class="n">model_type</span> <span class="o">=</span> <span class="n">AuthorModel</span>
 </span><span data-line="79">
 </span><span data-line="80">
-</span><span data-line="81"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+</span><span data-line="81"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_authors_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Session</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
 </span><span data-line="82"><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides the default Authors repository.&quot;&quot;&quot;</span>
 </span><span data-line="83">    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">db_session</span><span class="p">)</span>
 </span><span data-line="84">
 </span><span data-line="85">
 </span><span data-line="86"><span class="c1"># we can optionally override the default `select` used for the repository to pass in</span>
 </span><span data-line="87"><span class="c1"># specific SQL options such as join details</span>
-</span><span data-line="88"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
+</span><span data-line="88"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_author_details_repo</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Session</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AuthorRepository</span><span class="p">:</span>
 </span><span data-line="89"><span class="w">    </span><span class="sd">&quot;&quot;&quot;This provides a simple example demonstrating how to override the join options</span>
 </span><span data-line="90"><span class="sd">    for the repository.&quot;&quot;&quot;</span>
 </span><span data-line="91">    <span class="k">return</span> <span class="n">AuthorRepository</span><span class="p">(</span>
@@ -1036,8 +1036,8 @@ your controllers and function based routes.</p>
 </span><span data-line="120">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
 </span><span data-line="121">    <span class="k">def</span><span class="w"> </span><span class="nf">list_authors</span><span class="p">(</span>
 </span><span data-line="122">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="123">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
-</span><span data-line="124">        <span class="n">limit_offset</span><span class="p">:</span> <span class="n">LimitOffset</span><span class="p">,</span>
+</span><span data-line="123">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
+</span><span data-line="124">        <span class="n">limit_offset</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">LimitOffset</span><span class="p">],</span>
 </span><span data-line="125">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Author</span><span class="p">]:</span>
 </span><span data-line="126"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List authors.&quot;&quot;&quot;</span>
 </span><span data-line="127">        <span class="n">results</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">limit_offset</span><span class="p">)</span>
@@ -1052,7 +1052,7 @@ your controllers and function based routes.</p>
 </span><span data-line="136">    <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
 </span><span data-line="137">    <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">(</span>
 </span><span data-line="138">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="139">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="139">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
 </span><span data-line="140">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorCreate</span><span class="p">,</span>
 </span><span data-line="141">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span><span data-line="142"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
@@ -1069,7 +1069,7 @@ your controllers and function based routes.</p>
 </span><span data-line="153">    <span class="p">)</span>
 </span><span data-line="154">    <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
 </span><span data-line="155">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="156">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="156">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
 </span><span data-line="157">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
 </span><span data-line="158">            <span class="n">UUID</span><span class="p">,</span>
 </span><span data-line="159">            <span class="n">PathParameter</span><span class="p">(</span>
@@ -1088,7 +1088,7 @@ your controllers and function based routes.</p>
 </span><span data-line="172">    <span class="p">)</span>
 </span><span data-line="173">    <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
 </span><span data-line="174">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="175">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="175">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
 </span><span data-line="176">        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
 </span><span data-line="177">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
 </span><span data-line="178">            <span class="n">UUID</span><span class="p">,</span>
@@ -1108,7 +1108,7 @@ your controllers and function based routes.</p>
 </span><span data-line="192">    <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">)</span>
 </span><span data-line="193">    <span class="k">def</span><span class="w"> </span><span class="nf">delete_author</span><span class="p">(</span>
 </span><span data-line="194">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="195">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">AuthorRepository</span><span class="p">,</span>
+</span><span data-line="195">        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
 </span><span data-line="196">        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
 </span><span data-line="197">            <span class="n">UUID</span><span class="p">,</span>
 </span><span data-line="198">            <span class="n">PathParameter</span><span class="p">(</span>

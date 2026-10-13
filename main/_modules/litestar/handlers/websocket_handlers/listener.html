@@ -687,7 +687,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="179"><span class="sd">            type_encoders: A mapping of types to callables that transform them into types supported for serialization.</span>
 </span><span data-line="180"><span class="sd">            websocket_class: A custom subclass of :class:`WebSocket &lt;.connection.WebSocket&gt;` to be used as route handler&#39;s</span>
 </span><span data-line="181"><span class="sd">                default websocket class.</span>
-</span><span data-line="182"><span class="sd">            parameters: A mapping of :func:`Parameter &lt;.params.Parameter&gt;` definitions</span>
+</span><span data-line="182"><span class="sd">            parameters: A mapping of :func:`Parameter &lt;.params.ParameterKwarg&gt;` definitions</span>
 </span><span data-line="183"><span class="sd">            **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
 </span><span data-line="184"><span class="sd">        &quot;&quot;&quot;</span>
 </span><span data-line="185">        <span class="k">if</span> <span class="n">connection_lifespan</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="n">on_accept</span><span class="p">,</span> <span class="n">on_disconnect</span><span class="p">,</span> <span class="n">connection_accept_handler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">WebSocket</span><span class="o">.</span><span class="n">accept</span><span class="p">]):</span>

@@ -468,7 +468,6 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#openapi-metadata">OpenAPI metadata</a></li>
 <li><a class="reference internal" href="#customizing-enum-schemas">Customizing enum schemas</a></li>
 <li><a class="reference internal" href="#layered-parameters">Layered Parameters</a></li>
-<li><a class="reference internal" href="#deprecated-declaration-styles">Deprecated declaration styles</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -1221,49 +1220,6 @@ particular route.</p></li>
 (<code class="docutils literal notranslate"><span class="pre">FromQuery[str]</span></code>), and <code class="docutils literal notranslate"><span class="pre">path_param</span></code> is a <a class="reference internal" href="#path-parameters"><span class="std std-ref">path parameter</span></a>
 (<code class="docutils literal notranslate"><span class="pre">FromPath[int]</span></code>).</p></li>
 </ul>
-</section>
-<section id="deprecated-declaration-styles">
-<span id="deprecated-parameter-styles"></span><h2>Deprecated declaration styles<a class="headerlink" href="#deprecated-declaration-styles" title="Link to this heading">¶</a></h2>
-<p>Earlier 2.x releases accepted several other ways of declaring handler parameters. These continue to work for the
-remainder of the 2.x line, but they now emit a <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.LitestarDeprecationWarning" title="litestar.exceptions.LitestarDeprecationWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarDeprecationWarning</span></code></a> and will be removed
-in 3.0.</p>
-<div class="table-wrapper colwidths-given docutils container">
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 45.0%" />
-<col style="width: 55.0%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Deprecated</p></th>
-<th class="head"><p>Use instead</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">h(name:</span> <span class="pre">str)</span></code> <em>(implicit query parameter)</em></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">h(name:</span> <span class="pre">FromQuery[str])</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">h(user_id:</span> <span class="pre">int)</span></code> <em>(implicit path parameter)</em></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">h(user_id:</span> <span class="pre">FromPath[int])</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Annotated[str,</span> <span class="pre">Parameter(query=&quot;alias&quot;)]</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Annotated[str,</span> <span class="pre">QueryParameter(name=&quot;alias&quot;)]</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Annotated[str,</span> <span class="pre">Parameter(header=&quot;X-API-KEY&quot;)]</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Annotated[str,</span> <span class="pre">HeaderParameter(name=&quot;X-API-KEY&quot;)]</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Annotated[str,</span> <span class="pre">Parameter(cookie=&quot;session&quot;)]</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Annotated[str,</span> <span class="pre">CookieParameter(name=&quot;session&quot;)]</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">Parameter(...)</span></code> <em>(default-value style)</em></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">name:</span> <span class="pre">Annotated[str,</span> <span class="pre">QueryParameter(...)]</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>The <a class="reference internal" href="../../reference/params.html#litestar.params.Parameter" title="litestar.params.Parameter"><code class="xref py py-func docutils literal notranslate"><span class="pre">Parameter()</span></code></a> function itself is <strong>not</strong> removed and can still be used to attach pure metadata
-(<code class="docutils literal notranslate"><span class="pre">description</span></code>, <code class="docutils literal notranslate"><span class="pre">gt</span></code>, etc.) when wrapped in <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>. Only its <code class="docutils literal notranslate"><span class="pre">header</span></code>, <code class="docutils literal notranslate"><span class="pre">cookie</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">query</span></code> keyword arguments are deprecated — passing any of those emits a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#DeprecationWarning" title="(in Python v3.15)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> independently of
-the handler-level warning.</p>
 </section>
 </section>
 

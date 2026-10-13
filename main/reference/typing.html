@@ -470,9 +470,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_any"><code class="docutils literal notranslate">is_any</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_generic"><code class="docutils literal notranslate">is_generic</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_simple_type"><code class="docutils literal notranslate">is_simple_type</span></code></a></li>
-<li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_parameter_field"><code class="docutils literal notranslate">is_parameter_field</span></code></a></li>
-<li><a class="reference internal" href="#litestar.typing.FieldDefinition.declares_parameter_location"><code class="docutils literal notranslate">declares_parameter_location</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_non_marker_parameter_field"><code class="docutils literal notranslate">is_non_marker_parameter_field</span></code></a></li>
+<li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_marker_field"><code class="docutils literal notranslate">is_marker_field</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_const"><code class="docutils literal notranslate">is_const</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_required"><code class="docutils literal notranslate">is_required</span></code></a></li>
 <li><a class="reference internal" href="#litestar.typing.FieldDefinition.is_annotated"><code class="docutils literal notranslate">is_annotated</span></code></a></li>
@@ -738,25 +737,19 @@ data-aria-dark="Switch to auto color mode">
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="litestar.typing.FieldDefinition.is_parameter_field">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_parameter_field</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#litestar.typing.FieldDefinition.is_parameter_field" title="Link to this definition">¶</a></dt>
-<dd><p>Check if the field type is a parameter kwarg value.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.typing.FieldDefinition.declares_parameter_location">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">declares_parameter_location</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#litestar.typing.FieldDefinition.declares_parameter_location" title="Link to this definition">¶</a></dt>
-<dd><p>Check if the field’s ParameterKwarg declares where the parameter is read from.</p>
-<p>A location is declared by a location-specific kwarg, such as ‘QueryParameter’ or
-‘FromPath[]’, or by the deprecated ‘query’, ‘header’ and ‘cookie’ arguments.</p>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="litestar.typing.FieldDefinition.is_non_marker_parameter_field">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_non_marker_parameter_field</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#litestar.typing.FieldDefinition.is_non_marker_parameter_field" title="Link to this definition">¶</a></dt>
 <dd><p>Check if the field type is a ParameterKwarg that’s not a marker only.</p>
 <p>A marker is considered an instance of ‘ParameterKwarg’ without any constraints
 applied, usually produced by ‘FromQuery[]’, ‘FromPath[]’, etc.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.typing.FieldDefinition.is_marker_field">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_marker_field</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#litestar.typing.FieldDefinition.is_marker_field" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the field declares its source explicitly, either via a parameter /
+body marker (‘FromQuery[]’, ‘Body(…)’, etc.) or a dependency marker
+(‘NamedDependency[]’).</p>
 </dd></dl>
 
 <dl class="py property">
