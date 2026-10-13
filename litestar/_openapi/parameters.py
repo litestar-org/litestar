@@ -116,9 +116,7 @@ class ParameterFactory:
         else:
             # callers only pass fields that declare an HTTP parameter source; reaching this
             # means a dependency / body / undeclared field leaked through the caller's filter
-            raise ImproperlyConfiguredException(
-                f"Field {parameter_name!r} does not declare an HTTP parameter source"
-            )
+            raise ImproperlyConfiguredException(f"Field {parameter_name!r} does not declare an HTTP parameter source")
 
         if not result:
             result = self.schema_creator.for_field_definition(field_definition)
