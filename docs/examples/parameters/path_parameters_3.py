@@ -25,7 +25,7 @@ def get_product_version(
             description="Get a specific version spec from the available specs",
             examples=[Example(value=1)],
             external_docs=ExternalDocumentation(
-                url="https://mywebsite.com/documentation/product#versions",  # type: ignore[arg-type]
+                url="https://mywebsite.com/documentation/product#versions",
             ),
         ),
     ],

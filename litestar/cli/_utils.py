@@ -42,6 +42,8 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Iterable, Sequence
     from types import ModuleType
 
+    from click import Command as BaseCommand
+
     try:
         from rich_click import RichContext
     except ImportError:
@@ -154,7 +156,7 @@ class LitestarGroup(Group):  # pyright: ignore[reportGeneralTypeIssues]
     def __init__(
         self,
         name: str | None = None,
-        commands: dict[str, Command] | Sequence[Command] | None = None,
+        commands: dict[str, BaseCommand] | Sequence[BaseCommand] | None = None,
         **attrs: Any,
     ) -> None:
         """Init ``LitestarGroup``"""
@@ -168,7 +170,7 @@ class LitestarGroup(Group):  # pyright: ignore[reportGeneralTypeIssues]
         """
         if cmd.callback:
             cmd.callback = _inject_args(cmd.callback)
-        super().add_command(cmd)
+        super().add_command(cmd, name=name)
 
     def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:  # type: ignore[override]
         # For some reason, even when copying the overloads + signature from click 1:1, mypy goes haywire
@@ -199,7 +201,7 @@ class LitestarExtensionGroup(LitestarGroup):
     def __init__(
         self,
         name: str | None = None,
-        commands: dict[str, Command] | Sequence[Command] | None = None,
+        commands: dict[str, BaseCommand] | Sequence[BaseCommand] | None = None,
         **attrs: Any,
     ) -> None:
         """Init ``LitestarExtensionGroup``"""
@@ -232,7 +234,7 @@ class LitestarExtensionGroup(LitestarGroup):
 
         self._prepare_done = True
 
-    def make_context(  # type: ignore[override]
+    def make_context(
         self,
         info_name: str | None,
         args: list[str],

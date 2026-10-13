@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 from litestar import Litestar, get
+from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import RedocRenderPlugin, SwaggerRenderPlugin
@@ -92,3 +93,36 @@ def test_raises_exception_when_no_config_in_place() -> None:
 def test_default_plugin(plugins: "list[OpenAPIRenderPlugin]", exp: "type[OpenAPIRenderPlugin]") -> None:
     config = OpenAPIConfig(title="my title", version="1.0.0", render_plugins=plugins)
     assert isinstance(config.default_plugin, exp)
+
+
+def test_receive_route_invalidates_serialized_schema_cache() -> None:
+    @get("/initial")
+    async def initial() -> str:
+        return ""
+
+    app = Litestar([initial])
+    plugin = app.plugins.get(OpenAPIPlugin)
+    assert "/late" not in plugin.provide_openapi_schema()["paths"]
+
+    @get("/late")
+    async def late() -> str:
+        return ""
+
+    app.register(late)
+
+    assert "/late" in plugin.provide_openapi_schema()["paths"]
+
+
+def test_update_openapi_schema_rebuilds_schema() -> None:
+    app = Litestar([], openapi_config=OpenAPIConfig(title="initial", version="1.0.0"))
+    plugin = app.plugins.get(OpenAPIPlugin)
+    assert app.openapi_schema.info.title == "initial"
+
+    plugin.openapi_config.title = "Updated"
+    app.update_openapi_schema()
+
+    assert plugin._openapi is not None
+    assert plugin._openapi_schema is not None
+
+    assert app.openapi_schema.info.title == "Updated"
+    assert plugin.provide_openapi_schema()["info"]["title"] == "Updated"

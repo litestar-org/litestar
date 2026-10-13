@@ -16,9 +16,31 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``2.x``                                            | ``3.x``                                                                |
 +====================================================+========================================================================+
-| **SECTION**                                                                                                                 |
+| ``litestar.contrib.attrs``                         | ``litestar.plugins.attrs``                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| Put your changes here from v2                         | Put your changes here from v3                                       |
+| ``litestar.contrib.htmx``                          | ``litestar_htmx``                                                      |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.jinja``                         | ``litestar.plugins.jinja``                                             |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.jwt``                           | ``litestar.security.jwt``                                              |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.mako``                          | ``litestar.plugins.mako``                                              |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.minijinja``                     | ``litestar.plugins.minijinja``                                         |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.minijnja``                      | ``litestar.plugins.minijinja``                                         |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.opentelemetry``                 | ``litestar.plugins.opentelemetry``                                     |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.piccolo``                       | ``litestar_piccolo``                                                   |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.prometheus``                    | ``litestar.plugins.prometheus``                                        |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.pydantic``                      | ``litestar.plugins.pydantic``                                          |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.repository``                    | ``litestar.repository``                                                |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.sqlalchemy``                    | ``advanced_alchemy.extensions.litestar``                               |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
@@ -63,6 +85,25 @@ must explicitly set it:
         ...
 
 
+Path parameters must be marked
+------------------------------
+
+Only a parameter marked with :data:`~.params.FromPath` or :class:`~.params.PathParameter`
+is read from the path. In v2, a parameter whose name matched a path segment was read from
+the path even when it was marked as a query, header or cookie parameter. In v3 it is read
+from the location it is marked with:
+
+.. code-block:: python
+
+    @get("/{item_id:int}")
+    def my_handler(item_id: FromQuery[int]) -> ...:  # read from the query string
+        ...
+
+A parameter named like a path segment that declares no location, such as the deprecated
+``item_id: int``, raises :exc:`~.exceptions.ImproperlyConfiguredException` when the
+application is created. Declare it as ``item_id: FromPath[int]``.
+
+
 OpenAPI Controller Replaced by Plugins
 --------------------------------------
 
@@ -105,6 +146,16 @@ the root path (``/``), in which case that plugin will be used.
 
 For those previously using the ``root_schema_site`` attribute, the migration involves ensuring that the UI intended to
 be served at the ``/schema`` endpoint is the first plugin listed in the :attr:`OpenAPIConfig.render_plugins`.
+
+
+Removal of the RapiDoc OpenAPI UI plugin
+----------------------------------------
+
+The ``RapidocRenderPlugin`` has been removed due to lack of upstream maintenance.
+
+If you were using ``RapidocRenderPlugin``, migrate to one of the other bundled UI plugins
+via :attr:`OpenAPIConfig.render_plugins`, e.g. :class:`ScalarRenderPlugin` (the default),
+:class:`SwaggerRenderPlugin`, :class:`RedocRenderPlugin` or :class:`StoplightRenderPlugin`.
 
 
 Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
@@ -264,6 +315,56 @@ callable as its only argument and returns another ASGI callable:
     :doc:`/usage/middleware/index`
 
 
+Built-in middleware migrated to ``ASGIMiddleware``
+--------------------------------------------------
+
+Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
+``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
+``CORSMiddleware`` and ``ResponseCacheMiddleware`` have made this move.
+``ResponseCacheMiddleware`` has also been moved into
+``litestar.middleware._internal``, removing it from the public API.
+
+These classes are constructed by Litestar itself from their configuration objects, so
+applications that only configure them - for CORS, via
+:class:`~litestar.config.cors.CORSConfig`, and for response caching, via
+:class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
+``cache`` argument - are unaffected.
+
+Code that composed one of them directly into an ASGI stack must drop the ``app``
+argument, pass the settings as keyword arguments rather than a configuration object, and
+apply the instance to the next ASGI app:
+
+.. code-block:: python
+
+    # before
+    middleware = CORSMiddleware(app=next_app, config=cors_config)
+
+    # after
+    middleware = CORSMiddleware(
+        allow_origins=cors_config.allow_origins,
+        allow_methods=cors_config.allow_methods,
+        allow_headers=cors_config.allow_headers,
+        allow_credentials=cors_config.allow_credentials,
+        allow_origin_regex=cors_config.allow_origin_regex,
+        expose_headers=cors_config.expose_headers,
+        max_age=cors_config.max_age,
+    )
+    asgi_app = middleware(next_app)
+
+The settings are copied on construction, so mutating ``CORSConfig`` after the application
+has been created no longer affects the middleware.
+
+Because ``ASGIMiddleware.__call__`` returns a closure rather than the middleware
+instance, a middleware stack can no longer be introspected by walking the ``.app``
+attribute of each layer.
+
+Subclasses must also rename ``__call__`` to ``handle``, which receives the next ASGI app
+as an additional ``next_app`` argument in place of ``self.app``.
+
+.. seealso::
+    :ref:`asgi-middleware-migration`
+
+
 Removal of ``SerializationPluginProtocol``
 ------------------------------------------
 
@@ -304,6 +405,54 @@ OpenAPI schema as YAML has been moved from the default dependencies to the
 
 The `litestar-htmx <https://github.com/litestar-org/litestar-htmx/>`_ package powering
 the :doc:`HTMX plugin </usage/htmx>` has been moved to the ``litestar[htmx]`` extra.
+
+
+``click``, ``rich`` and ``rich-click`` packages removed from default dependencies
+---------------------------------------------------------------------------------
+
+The `click <https://click.palletsprojects.com/>`_, `rich <https://rich.readthedocs.io>`_
+and `rich-click <https://github.com/ewels/rich-click>`_ libraries powering the
+:doc:`CLI </usage/cli>` have been moved from the default dependencies to the
+``litestar[cli]`` package extra. They are also included in ``litestar[standard]`` and
+``litestar[full]``.
+
+Installing ``litestar`` on its own therefore no longer provides the ``litestar`` command.
+Invoking it without the extra raises a
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
+naming the extra to install:
+
+.. code-block:: shell
+    :caption: Install the CLI
+
+    pip install 'litestar[cli]'
+
+
+``httpx`` package removed from default dependencies
+----------------------------------------------------
+
+The `httpx <https://www.python-httpx.org/>`_ library, on which the
+:doc:`test clients </usage/testing>` are based, has been moved from the default
+dependencies to the ``litestar[testing]`` package extra. It is also included in
+``litestar[full]``.
+
+Importing anything from :mod:`litestar.testing` without the extra installed raises a
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
+naming the extra to install:
+
+.. code-block:: shell
+    :caption: Install the testing extra
+
+    pip install 'litestar[testing]'
+
+
+``rich-click>=1.9`` is now required by the CLI
+-----------------------------------------------
+
+The ``litestar[cli]`` extra now requires ``rich-click>=1.9``, which is needed for the
+themed :doc:`CLI </usage/cli>` output. Previously ``rich-click`` was capped at ``<1.9``,
+which silently disabled the theme, as the underlying option only exists from 1.9 onwards.
+
+This only affects applications that additionally pin ``rich-click<1.9`` themselves.
 
 
 Improved file system handling / fsspec integration

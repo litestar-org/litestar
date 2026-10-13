@@ -2,7 +2,7 @@ from litestar import Litestar, get
 from litestar.openapi.config import OpenAPIConfig
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def hello_world() -> dict[str, str]:
     return {"message": "Hello World"}
 

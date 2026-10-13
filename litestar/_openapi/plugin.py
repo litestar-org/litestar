@@ -90,6 +90,12 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         openapi.components.schemas = context.schema_registry.generate_components_schemas()
         return openapi
 
+    def invalidate_schema_cache(self) -> None:
+        if self._openapi_config is None:
+            raise ImproperlyConfiguredException("OpenAPIConfig not initialized")
+        self._openapi = None
+        self._openapi_schema = None
+
     def provide_openapi(self) -> OpenAPI:
         if not self._openapi:
             self._openapi = self._build_openapi()
@@ -202,4 +208,5 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         if any(route_handler.include_in_schema for route_handler in route.route_handler_map.values()):
             # Force recompute the schema if a new route is added
             self._openapi = None
+            self._openapi_schema = None
             self.included_routes[route.path] = route

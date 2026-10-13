@@ -148,12 +148,19 @@ def test_mutable_scope_headers_getall_multi_value(
 
 
 def test_mutable_scope_headers_getall_not_found_no_default(mutable_headers: MutableScopeHeaders) -> None:
-    with pytest.raises(KeyError):
+    with pytest.raises(KeyError, match="bar"):
         mutable_headers.getall("bar")
 
+    with pytest.raises(KeyError, match="bar"):
+        mutable_headers.getall("bar", None)
 
-def test_mutable_scope_headers_getall_not_found_default(mutable_headers: MutableScopeHeaders) -> None:
-    assert mutable_headers.getall("bar", ["default"]) == ["default"]
+
+@pytest.mark.parametrize("default", [[], ["one", "two"]])
+def test_mutable_scope_headers_getall_not_found_default(
+    mutable_headers: MutableScopeHeaders,
+    default: list[str],
+) -> None:
+    assert mutable_headers.getall("bar", default) == default
 
 
 def test_mutable_scope_headers_extend_header_value(

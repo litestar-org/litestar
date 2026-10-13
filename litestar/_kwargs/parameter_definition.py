@@ -42,7 +42,9 @@ def create_parameter_definition(
     )
 
     if kwarg_definition is None:
-        raise ImproperlyConfiguredException(f"Missing parameter declaration for field {field_name!r}")
+        # callers only pass fields that declare an HTTP parameter source; reaching this
+        # means a dependency / body / undeclared field leaked through the caller's filter
+        raise ImproperlyConfiguredException(f"Field {field_name!r} does not declare an HTTP parameter source")
 
     param_type = kwarg_definition.param_type
     field_alias = kwarg_definition.name or field_name

@@ -8,7 +8,7 @@ Request parameters are parts of the request that can be injected into a handler 
 or dependency. They allow type-coercion, validation, and will show up in the generated
 OpenAPI schema.
 
-There are for request parameter types supported, which can be specified in two different
+There are four request parameter types supported, which can be specified in two different
 forms:
 
 +--------+----------------------------+---------------------------------------------------------------------------+
@@ -270,7 +270,7 @@ A request to ``http://127.0.0.1:8000?camelCase=foo`` will be received as
 ``snake_case="foo"`` inside the handler.
 
 The same pattern applies to
-:class:`~.params.HeaderParameter`,:class:`~.params.CookieParameter` and
+:class:`~.params.HeaderParameter`, :class:`~.params.CookieParameter` and
 :class:`~.params.PathParameter`.
 
 

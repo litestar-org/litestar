@@ -27,7 +27,7 @@ them with a ``Content-Disposition: attachment`` instead:
 
 .. literalinclude:: /examples/static_files/send_as_attachment.py
     :language: python
-    :caption: Sending files as attachments using the the
+    :caption: Sending files as attachments using the
       :paramref:`~litestar.static_files.create_static_files_router.params.send_as_attachment` parameter
       of :func:`create_static_files_router`
 

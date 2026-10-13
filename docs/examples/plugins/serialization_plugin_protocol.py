@@ -34,7 +34,7 @@ class CompanySerializationPlugin(SerializationPlugin):
         assert isinstance(annotation, type)
         if (cached := self._type_dto_map.get(annotation)) is not None:
             return cached
-        dto_type: type[AbstractDTO] = DataclassDTO[annotation]
+        dto_type: type[AbstractDTO] = DataclassDTO[annotation]  # type: ignore[valid-type]
         self._type_dto_map[annotation] = dto_type
         return dto_type
 

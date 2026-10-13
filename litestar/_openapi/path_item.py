@@ -70,7 +70,11 @@ class PathItemFactory:
 
         if data_field is not None:
             request_body = create_request_body(
-                self.context, route_handler.handler_id, route_handler.data_dto, data_field
+                self.context,
+                route_handler.handler_id,
+                route_handler.data_dto,
+                data_field,
+                signature_namespace=route_handler.signature_namespace,
             )
 
         raises_validation_error = bool(data_field or self._path_item.parameters or parameters)

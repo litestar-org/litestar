@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
+from advanced_alchemy.extensions.litestar import SQLAlchemyDTO, SQLAlchemyDTOConfig
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, get
-from litestar.dto import DTOConfig
 from litestar.pagination import ClassicPagination
 
 from .my_lib import Base
@@ -17,7 +16,7 @@ class User(Base):
 
 
 class UserDTO(SQLAlchemyDTO[User]):
-    config = DTOConfig(exclude={"password", "created_at"})
+    config = SQLAlchemyDTOConfig(exclude={"password", "created_at"})
 
 
 @get("/users", dto=UserDTO, sync_to_thread=False)

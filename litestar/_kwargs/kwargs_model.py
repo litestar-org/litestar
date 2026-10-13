@@ -218,7 +218,6 @@ class KwargsModel:
     @classmethod
     def _get_param_definitions(
         cls,
-        path_parameters: set[str],
         layered_parameters: dict[str, FieldDefinition],
         dependencies: dict[str, Provide],
         field_definitions: dict[str, FieldDefinition],
@@ -226,7 +225,6 @@ class KwargsModel:
         """Get parameter_definitions for the construction of KwargsModel instance.
 
         Args:
-            path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
             dependencies: A string keyed dictionary mapping dependency providers.
             field_definitions: The SignatureModel fields.
@@ -334,7 +332,6 @@ class KwargsModel:
         )
 
         param_definitions, expected_dependencies = cls._get_param_definitions(
-            path_parameters=path_parameters,
             layered_parameters=layered_parameters,
             dependencies=dependencies,
             field_definitions=field_definitions,
@@ -532,6 +529,7 @@ class KwargsModel:
         places.
         """
         dependency_keys = set(dependencies.keys())
+        layered_parameter_names = set(layered_parameters.keys())
 
         parameter_names = {
             *(
@@ -543,12 +541,12 @@ class KwargsModel:
                     and f.kwarg_definition.name is not None
                 )
             ),
-            *list(layered_parameters.keys()),
+            *layered_parameter_names,
         }
 
         intersection = (
             path_parameters.intersection(dependency_keys)
-            or path_parameters.intersection(parameter_names)
+            or path_parameters.intersection(layered_parameter_names)
             or dependency_keys.intersection(parameter_names)
         )
         if intersection:

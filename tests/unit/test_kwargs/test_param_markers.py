@@ -1,6 +1,6 @@
 # pyright: reportUnnecessaryTypeIgnoreComment = false
 import dataclasses
-from typing import Annotated
+from typing import Annotated, Any
 
 import annotated_types
 import pytest
@@ -196,6 +196,81 @@ def test_annotated_metadata_does_not_shadow_path_param() -> None:
         res = client.get("/7")
         assert res.status_code == 200
         assert res.json() == 7
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    [
+        int,
+        # https://github.com/litestar-org/litestar/issues/4804
+        Annotated[int, "arbitrary metadata"],
+    ],
+)
+def test_parameter_without_location_named_like_path_param_raises(annotation: Any) -> None:
+    @get("/{foo:int}")
+    async def handler(foo: annotation) -> None:  # pyright: ignore
+        return None
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=r"handler='handler'\] Missing declaration for parameter 'foo'",
+    ):
+        Litestar([handler])
+
+
+def test_dependency_parameter_without_location_named_like_path_param_raises() -> None:
+    async def provide_foo(foo: int) -> int:
+        return foo
+
+    @get("/{foo:int}", dependencies={"provided": provide_foo})
+    async def handler(provided: NamedDependency[int]) -> int:
+        return provided
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=r"dependencies='provided'\] Missing declaration for parameter 'foo'",
+    ):
+        Litestar([handler])
+
+
+@pytest.mark.parametrize(
+    "annotation, request_kwargs",
+    [
+        (FromQuery[str], {"params": {"value": "from-request"}}),
+        (FromHeader[str], {"headers": {"value": "from-request"}}),
+        (FromCookie[str], {"headers": {"Cookie": "value=from-request"}}),
+    ],
+)
+def test_marker_named_like_path_param_reads_own_location(annotation: Any, request_kwargs: dict[str, Any]) -> None:
+    @get("/{value:str}")
+    async def handler(value: annotation) -> str:  # pyright: ignore
+        return value  # type: ignore[no-any-return]
+
+    with create_test_client([handler]) as client:
+        res = client.get("/from-path", **request_kwargs)
+        assert res.status_code == 200
+        assert res.text == "from-request"
+
+
+@pytest.mark.parametrize(
+    "annotation, request_kwargs",
+    [
+        (Annotated[str, QueryParameter(name="value")], {"params": {"value": "from-request"}}),
+        (Annotated[str, HeaderParameter(name="value")], {"headers": {"value": "from-request"}}),
+        (Annotated[str, CookieParameter(name="value")], {"headers": {"Cookie": "value=from-request"}}),
+    ],
+)
+def test_aliased_marker_named_like_path_param_reads_own_location(
+    annotation: Any, request_kwargs: dict[str, Any]
+) -> None:
+    @get("/{value:str}")
+    async def handler(value: annotation) -> str:  # pyright: ignore
+        return value  # type: ignore[no-any-return]
+
+    with create_test_client([handler]) as client:
+        res = client.get("/from-path", **request_kwargs)
+        assert res.status_code == 200
+        assert res.text == "from-request"
 
 
 def test_named_dependency_explicit_marker() -> None:

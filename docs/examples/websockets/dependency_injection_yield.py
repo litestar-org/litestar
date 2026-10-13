@@ -1,8 +1,9 @@
+from collections.abc import Iterator
 from typing import TypedDict
 
 from litestar import Litestar, websocket_listener
 from litestar.datastructures import State
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 
 
 class Message(TypedDict):
@@ -10,7 +11,7 @@ class Message(TypedDict):
     client_count: int
 
 
-def socket_client_count(state: State) -> int:
+def socket_client_count(state: State) -> Iterator[int]:
     if not hasattr(state, "count"):
         state.count = 0
 
@@ -20,7 +21,7 @@ def socket_client_count(state: State) -> int:
 
 
 @websocket_listener("/", dependencies={"client_count": Provide(socket_client_count)})
-async def handler(data: str, client_count: int) -> Message:
+async def handler(data: str, client_count: NamedDependency[int]) -> Message:
     return Message(message=data, client_count=client_count)
 
 

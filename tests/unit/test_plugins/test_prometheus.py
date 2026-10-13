@@ -10,6 +10,7 @@ from pytest_mock import MockerFixture
 
 from litestar import get, post, websocket_listener
 from litestar.exceptions import HTTPException, NotAuthorizedException, PermissionDeniedException
+from litestar.params import FromPath
 from litestar.plugins.prometheus import PrometheusConfig, PrometheusController, PrometheusMiddleware
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -97,6 +98,31 @@ def test_prometheus_exporter_metrics_with_http() -> None:
             """litestar_requests_in_progress{app_name="litestar",method="GET",path="/metrics",status_code="200"} 1.0"""
             in metrics
         )
+
+
+def test_prometheus_group_path_defaults_to_true() -> None:
+    assert PrometheusConfig().group_path is True
+
+
+def test_prometheus_group_path_default_uses_route_template_for_parameterized_routes() -> None:
+    config = create_config()
+
+    @get("/users/{user_id:int}")
+    def get_user(user_id: FromPath[int]) -> dict:
+        return {"user_id": user_id}
+
+    with create_test_client([get_user, PrometheusController], middleware=[config.middleware]) as client:
+        for user_id in range(1, 4):
+            client.get(f"/users/{user_id}")
+        metrics = client.get("/metrics").content.decode()
+
+        assert (
+            """litestar_requests_total{app_name="litestar",method="GET",path="/users/{user_id}",status_code="200"} 3.0"""
+            in metrics
+        )
+        assert 'path="/users/1"' not in metrics
+        assert 'path="/users/2"' not in metrics
+        assert 'path="/users/3"' not in metrics
 
 
 def test_prometheus_middleware_configurations() -> None:

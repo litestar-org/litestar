@@ -303,7 +303,7 @@ def test_spec_generation(cls: Any) -> None:
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
                 "id": {"type": "string"},
-                "optional": {"oneOf": [{"type": "string"}, {"type": "null"}]},
+                "optional": {"type": ["string", "null"]},
                 "complex": {
                     "type": "object",
                     "additionalProperties": {

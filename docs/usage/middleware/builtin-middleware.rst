@@ -271,7 +271,7 @@ The only required configuration kwarg is ``rate_limit``, which expects a tuple c
 Using behind a proxy
 ^^^^^^^^^^^^^^^^^^^^
 
-The default mode for uniquely identifiying client uses the client's address. When an
+The default mode for uniquely identifying client uses the client's address. When an
 application is running behind a proxy, that address will be the proxy's, not the "real"
 address of the end-user.
 

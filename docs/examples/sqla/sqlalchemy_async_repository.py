@@ -19,7 +19,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
 from litestar.controller import Controller
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import PathParameter, QueryParameter
@@ -38,7 +38,7 @@ class BaseModel(_BaseModel):
 # The `UUIDBase` class includes a `UUID` based primary key (`id`)
 class AuthorModel(base.UUIDBase):
     # we can optionally provide the table name instead of auto-generating it
-    __tablename__ = "author"  #  type: ignore[assignment]
+    __tablename__ = "author"
     name: Mapped[str]
     dob: Mapped[date | None]
     books: Mapped[list[BookModel]] = relationship(back_populates="author", lazy="noload")
@@ -48,7 +48,7 @@ class AuthorModel(base.UUIDBase):
 # additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
 # record created, and `updated_at` is the last time the record was modified.
 class BookModel(base.UUIDAuditBase):
-    __tablename__ = "book"  #  type: ignore[assignment]
+    __tablename__ = "book"
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
     author: Mapped[AuthorModel] = relationship(lazy="joined", innerjoin=True, viewonly=True)
@@ -79,14 +79,14 @@ class AuthorRepository(repository.SQLAlchemyAsyncRepository[AuthorModel]):
     model_type = AuthorModel
 
 
-async def provide_authors_repo(db_session: AsyncSession) -> AuthorRepository:
+async def provide_authors_repo(db_session: NamedDependency[AsyncSession]) -> AuthorRepository:
     """This provides the default Authors repository."""
     return AuthorRepository(session=db_session)
 
 
 # we can optionally override the default `select` used for the repository to pass in
 # specific SQL options such as join details
-async def provide_author_details_repo(db_session: AsyncSession) -> AuthorRepository:
+async def provide_author_details_repo(db_session: NamedDependency[AsyncSession]) -> AuthorRepository:
     """This provides a simple example demonstrating how to override the join options for the repository."""
     return AuthorRepository(
         statement=select(AuthorModel).options(selectinload(AuthorModel.books)),
@@ -120,8 +120,8 @@ class AuthorController(Controller):
     @get(path="/authors")
     async def list_authors(
         self,
-        authors_repo: AuthorRepository,
-        limit_offset: filters.LimitOffset,
+        authors_repo: NamedDependency[AuthorRepository],
+        limit_offset: NamedDependency[filters.LimitOffset],
     ) -> OffsetPagination[Author]:
         """List authors."""
         results, total = await authors_repo.list_and_count(limit_offset)
@@ -136,7 +136,7 @@ class AuthorController(Controller):
     @post(path="/authors")
     async def create_author(
         self,
-        authors_repo: AuthorRepository,
+        authors_repo: NamedDependency[AuthorRepository],
         data: AuthorCreate,
     ) -> Author:
         """Create a new author."""
@@ -150,7 +150,7 @@ class AuthorController(Controller):
     @get(path="/authors/{author_id:uuid}", dependencies={"authors_repo": Provide(provide_author_details_repo)})
     async def get_author(
         self,
-        authors_repo: AuthorRepository,
+        authors_repo: NamedDependency[AuthorRepository],
         author_id: Annotated[
             UUID,
             PathParameter(
@@ -169,7 +169,7 @@ class AuthorController(Controller):
     )
     async def update_author(
         self,
-        authors_repo: AuthorRepository,
+        authors_repo: NamedDependency[AuthorRepository],
         data: AuthorUpdate,
         author_id: Annotated[
             UUID,
@@ -189,7 +189,7 @@ class AuthorController(Controller):
     @delete(path="/authors/{author_id:uuid}")
     async def delete_author(
         self,
-        authors_repo: AuthorRepository,
+        authors_repo: NamedDependency[AuthorRepository],
         author_id: Annotated[
             UUID,
             PathParameter(

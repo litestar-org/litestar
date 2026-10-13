@@ -13,7 +13,7 @@ Methodology
 - Tests for the frameworks are written to make them as comparable as possible while
   completing the same tasks (you can see them
   `here <https://github.com/litestar-org/api-performance-tests/tree/main/frameworks>`__)
-- Each application is run using `uvicorn <https://www.uvicorn.org/>`__ with
+- Each application is run using `uvicorn <https://uvicorn.dev/>`__ with
   **one worker** and `uvloop <https://uvloop.readthedocs.io/>`__
 - Test data has been randomly generated and is being imported from a shared module
 - All frameworks are used with their "stock" configuration, i.e. without applying any

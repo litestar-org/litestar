@@ -264,7 +264,7 @@ def get_type_hints_with_generics_resolved(
         # Implies the generic types have not been specified in the annotation
         if type_hints is None:  # pragma: no cover
             type_hints = get_type_hints(annotation, globalns=globalns, localns=localns, include_extras=include_extras)
-        typevar_map = {p: p for p in annotation.__parameters__}
+        typevar_map = {p: p for p in getattr(annotation, "__parameters__", ())}
     else:
         if type_hints is None:  # pragma: no cover
             type_hints = get_type_hints(origin, globalns=globalns, localns=localns, include_extras=include_extras)

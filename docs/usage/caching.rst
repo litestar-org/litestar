@@ -19,7 +19,7 @@ enabled for the :attr:`~.config.response_cache.ResponseCacheConfig.default_expir
     ``None``, setting up the route handler with :paramref:`~litestar.handlers.HTTPRouteHandler.cache` set to ``True``
     will keep the response in cache indefinitely.
 
-Alternatively you can specify the number of seconds to cache the responses from the given handler like so:
+Alternatively you can specify the number of seconds to cache the responses for the given handler like so:
 
 .. literalinclude:: /examples/caching/cache.py
     :language: python

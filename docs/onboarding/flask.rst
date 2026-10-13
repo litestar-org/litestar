@@ -73,7 +73,7 @@ parameter matching the function parameter name, but you can also specify an alia
 
 .. note::
     The type defined in the path parameter does not have to match the function
-    parameter. The path parameter is what defines the inout type, and what's reflected
+    parameter. The path parameter is what defines the input type, and what's reflected
     in the OpenAPI schema. The function parameter is what will be validated against.
 
 .. tab-set::

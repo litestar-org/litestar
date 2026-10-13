@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from typing import Any
 
 from litestar import Litestar, Request
@@ -16,7 +17,7 @@ def custom_label_callable(request: Request[Any, Any, Any]) -> str:
     return "v2.0"
 
 
-extra_labels = {
+extra_labels: dict[str, str | Callable[[Request[Any, Any, Any]], str]] = {
     "version_no": custom_label_callable,
     "location": "earth",
 }
@@ -38,7 +39,7 @@ prometheus_config = PrometheusConfig(
     app_name="litestar-example",
     prefix="litestar",
     labels=extra_labels,
-    buckets=buckets,  # pyright: ignore[reportArgumentType]
+    buckets=buckets,
     exemplars=custom_exemplar,
     excluded_http_methods=["POST"],
 )

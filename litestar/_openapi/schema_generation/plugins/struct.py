@@ -24,7 +24,9 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
         return field.required or field.default_factory is Empty
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
-        type_hints = field_definition.get_type_hints(include_extras=True, resolve_generics=True)
+        type_hints = field_definition.get_type_hints(
+            include_extras=True, resolve_generics=True, namespace=schema_creator.signature_namespace
+        )
         struct_info: msgspec.inspect.StructType = msgspec.inspect.type_info(field_definition.type_)  # type: ignore[assignment]
         struct_fields = struct_info.fields
 
@@ -43,7 +45,7 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
 
         required = [field.encode_name for field in struct_fields if self._is_field_required(field=field)]
 
-        # Support tagged unions: https://msgspec.devstructs.html#tagged-unions
+        # Support tagged unions: https://msgspec.dev/structs#tagged-unions
         # These structs contain a tag_field and a tag. Since these fields are added
         # dynamically, they are not present within the regular struct fields and don't
         # have any type annotation associated with them, so we create a FieldDefinition

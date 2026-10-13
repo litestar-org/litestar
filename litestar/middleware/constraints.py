@@ -118,7 +118,7 @@ class MiddlewareConstraints:
             if self.unique is False:
                 raise MiddlewareConstraintError("Cannot set 'first=True' if 'unique=False'")
             if self.after:
-                raise MiddlewareConstraintError("Cannot set 'first=True' if if 'after' is not empty")
+                raise MiddlewareConstraintError("Cannot set 'first=True' if 'after' is not empty")
 
         if self.last:
             if self.unique is False:

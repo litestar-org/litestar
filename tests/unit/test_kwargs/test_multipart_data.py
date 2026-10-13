@@ -14,7 +14,11 @@ from litestar import Request, post
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.params import Body, MultipartBody
-from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from litestar.status_codes import (
+    HTTP_201_CREATED,
+    HTTP_400_BAD_REQUEST,
+    HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+)
 from litestar.testing import create_test_client
 
 from . import Form
@@ -472,7 +476,7 @@ def test_multipart_form_part_limit(limit: int) -> None:
         data = {str(i): "a" for i in range(limit)}
         data[str(limit + 1)] = "b"
         response = client.post("/", files=data)
-        assert response.status_code == HTTP_400_BAD_REQUEST
+        assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
 
 
 def test_multipart_form_part_limit_body_param_precedence() -> None:
@@ -494,7 +498,7 @@ def test_multipart_form_part_limit_body_param_precedence() -> None:
 
         data = {str(i): "a" for i in range(route_limit + 1)}
         response = client.post("/", files=data)
-        assert response.status_code == HTTP_400_BAD_REQUEST
+        assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
 
 
 @dataclass
@@ -690,3 +694,13 @@ def test_optional_upload_file_without_file_submitted() -> None:
         response = client.post("/", files={"file": ("test.txt", b"hello", "text/plain")})
         assert response.status_code == HTTP_201_CREATED
         assert response.text == "file"
+
+
+# https://github.com/litestar-org/litestar/issues/4638
+def test_missing_or_empty_boundary_parameter_returns_400() -> None:
+    with create_test_client(form_handler) as client:
+        response_1 = client.post("/form", content=b"", headers={"Content-Type": "multipart/form-data"})
+        assert response_1.status_code == HTTP_400_BAD_REQUEST
+
+        response_2 = client.post("/form", content=b"", headers={"Content-Type": "multipart/form-data; boundary="})
+        assert response_2.status_code == HTTP_400_BAD_REQUEST

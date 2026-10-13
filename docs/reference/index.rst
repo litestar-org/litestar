@@ -12,7 +12,6 @@ API reference
     cli
     config
     connection
-    contrib/index
     controller
     concurrency
     data_extractors

@@ -103,10 +103,10 @@ async def test_function_validation() -> None:
 
         Litestar([test_function_1])
 
-    with pytest.raises(ImproperlyConfiguredException, match="'data' kwarg is unsupported"):
+    with pytest.raises(ImproperlyConfiguredException, match="'data' kwarg is unsupported for 'GET' request handlers"):
 
         @get("/person")
-        def test_function_2(self, data: DataclassPerson) -> None:  # type: ignore[no-untyped-def]
+        def test_function_2(data: DataclassPerson) -> None:
             return None
 
         Litestar(route_handlers=[test_function_2])

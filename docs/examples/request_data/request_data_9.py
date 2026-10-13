@@ -6,7 +6,7 @@ from litestar.params import MultipartBody
 @post(path="/")
 async def handle_file_upload(
     data: MultipartBody[dict[str, UploadFile]],
-) -> dict[str, str]:
+) -> dict[str, int]:
     file_contents = {}
     for name, file in data.items():
         content = await file.read()

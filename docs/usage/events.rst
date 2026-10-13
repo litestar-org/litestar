@@ -35,7 +35,7 @@ Litestar supports a simple implementation of the event emitter / listener patter
         await user_repository.insert(data)
 
         # assuming we have now inserted a user, we want to send a welcome email.
-        # To do this in a none-blocking fashion, we will emit an event to a listener, which will send the email,
+        # To do this in a non-blocking fashion, we will emit an event to a listener, which will send the email,
         # using a different async block than the one where we are returning a response.
         request.app.emit("user_created", email=data.email)
 
@@ -124,7 +124,7 @@ The method :meth:`emit <litestar.events.BaseEventEmitterBackend.emit>` has the f
 
 
 
-This means that it expects a string for ``event_id`` following by any number of positional and keyword arguments. While
+This means that it expects a string for ``event_id`` followed by any number of positional and keyword arguments. While
 this is highly flexible, it also means you need to ensure the listeners for a given event can handle all the expected args
 and kwargs.
 
