@@ -1151,7 +1151,7 @@ Litestar</label><div class="sd-tab-content docutils">
 <p>Flask mixes explicit <code class="docutils literal notranslate"><span class="pre">jsonify</span></code> calls with inference from the return value.
 Litestar infers content encoding type from a handler’s return annotation. Structured
 types (<code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>, dataclasses, Pydantic models, msgspec <code class="docutils literal notranslate"><span class="pre">Struct</span></code>s, attrs
-classes, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.TypedDict</span></code></a>, etc.) default to JSON, <code class="docutils literal notranslate"><span class="pre">str</span></code> returns
+classes, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.TypedDict</span></code></a>, etc.) default to JSON, <code class="docutils literal notranslate"><span class="pre">str</span></code> returns
 <code class="docutils literal notranslate"><span class="pre">text/plain</span></code>. You can set a <code class="docutils literal notranslate"><span class="pre">media_type=</span></code> on the handler decorator to override these
 defaults.</p>
 <div class="sd-tab-set docutils">

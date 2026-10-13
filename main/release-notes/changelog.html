@@ -912,7 +912,7 @@ from this module should switch to using <code class="docutils literal notranslat
 </dd>
 <dt>Remove deprecated <code class="docutils literal notranslate"><span class="pre">TemplateContext</span></code><a class="headerlink reference internal" href="#3.0.0-remove deprecated" id="3.0.0-remove deprecated">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Remove the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.template.base.TemplateContext</span></code> type. Its usages should be replaced with
-<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Mapping</span></code></a>.</p>
+<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Mapping</span></code></a>.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4313">https://github.com/litestar-org/litestar/pull/4313</a></span></p>
 </div>
 </dd>
@@ -1047,6 +1047,17 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Only read parameters marked as path parameters from the path<a class="headerlink reference internal" href="#3.0.0-only read parameters marked as path parameters from the path" id="3.0.0-only read parameters marked as path parameters from the path">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>A parameter whose name matched a path segment was read from the path even when it
+was marked with <code class="docutils literal notranslate"><span class="pre">FromQuery</span></code>, <code class="docutils literal notranslate"><span class="pre">FromHeader</span></code>, <code class="docutils literal notranslate"><span class="pre">FromCookie</span></code> or the corresponding
+<code class="docutils literal notranslate"><span class="pre">Parameter</span></code> kwarg, and was documented as a path parameter. Such a parameter is
+now read from, and documented at, the location it is marked with.</p>
+<p>A parameter named like a path segment that declares no location, the deprecated
+inferred path parameter style, now raises <code class="docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code> when
+the application is created. Declare it with <code class="docutils literal notranslate"><span class="pre">FromPath</span></code>.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/0000">https://github.com/litestar-org/litestar/pull/0000</a></span></p>
+</div>
+</dd>
 <dt>Fix <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> when generating a schema for a union of enums<a class="headerlink reference internal" href="#3.0.0-fix" id="3.0.0-fix">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Annotating a handler with a union whose members are all enums (e.g.
 <code class="docutils literal notranslate"><span class="pre">Color</span> <span class="pre">|</span> <span class="pre">Size</span></code>) crashed schema generation with <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">issubclass()</span>

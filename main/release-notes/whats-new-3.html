@@ -451,6 +451,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#imports">Imports</a></li>
 <li><a class="reference internal" href="#removal-of-staticfileconfig">Removal of <code class="docutils literal notranslate"><span class="pre">StaticFileConfig</span></code></a></li>
 <li><a class="reference internal" href="#implicit-optional-default-parameters">Implicit Optional Default Parameters</a></li>
+<li><a class="reference internal" href="#path-parameters-must-be-marked">Path parameters must be marked</a></li>
 <li><a class="reference internal" href="#openapi-controller-replaced-by-plugins">OpenAPI Controller Replaced by Plugins</a><ul>
 <li><a class="reference internal" href="#elimination-of-openapicontroller-subclassing">Elimination of <code class="docutils literal notranslate"><span class="pre">OpenAPIController</span></code> Subclassing</a></li>
 <li><a class="reference internal" href="#changes-to-endpoint-configuration">Changes to Endpoint Configuration</a></li>
@@ -665,6 +666,21 @@ must explicitly set it:</p>
 </span></pre></div>
 </div>
 </section>
+<section id="path-parameters-must-be-marked">
+<h2>Path parameters must be marked<a class="headerlink" href="#path-parameters-must-be-marked" title="Link to this heading">¶</a></h2>
+<p>Only a parameter marked with <a class="reference internal" href="../reference/params.html#litestar.params.FromPath" title="litestar.params.FromPath"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromPath</span></code></a> or <a class="reference internal" href="../reference/params.html#litestar.params.PathParameter" title="litestar.params.PathParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathParameter</span></code></a>
+is read from the path. In v2, a parameter whose name matched a path segment was read from
+the path even when it was marked as a query, header or cookie parameter. In v3 it is read
+from the location it is marked with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{item_id:int}&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span><span class="n">item_id</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="o">...</span><span class="p">:</span>  <span class="c1"># read from the query string</span>
+</span><span data-line="3">    <span class="o">...</span>
+</span></pre></div>
+</div>
+<p>A parameter named like a path segment that declares no location, such as the deprecated
+<code class="docutils literal notranslate"><span class="pre">item_id:</span> <span class="pre">int</span></code>, raises <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> when the
+application is created. Declare it as <code class="docutils literal notranslate"><span class="pre">item_id:</span> <span class="pre">FromPath[int]</span></code>.</p>
+</section>
 <section id="openapi-controller-replaced-by-plugins">
 <h2>OpenAPI Controller Replaced by Plugins<a class="headerlink" href="#openapi-controller-replaced-by-plugins" title="Link to this heading">¶</a></h2>
 <p>In version 3.0, the OpenAPI controller pattern, deprecated in v2.8, has been removed in
@@ -804,14 +820,14 @@ methods and properties have been moved from <code class="docutils literal notran
 </section>
 <section id="removal-of-clipluginprotocol">
 <h2>Removal of  <code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code><a class="headerlink" href="#removal-of-clipluginprotocol" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a> <code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code> has been removed in favour
+<p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a> <code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code> has been removed in favour
 of the abstract <code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code>. The functionality and interface remain the same,
 the only difference being that plugins that wish to provide this functionality are now
 required to inherit from <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPlugin" title="litestar.plugins.CLIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a>.</p>
 </section>
 <section id="removal-of-openapischemapluginprotocol">
 <h2>Removal of <code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code><a class="headerlink" href="#removal-of-openapischemapluginprotocol" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a> <code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code> has been removed in favour
+<p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a> <code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code> has been removed in favour
 of the abstract <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin" title="litestar.plugins.OpenAPISchemaPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPlugin</span></code></a>. The functionality and
 interface remain the same, the only difference being that plugins that wish to provide
 this functionality are now required to inherit from
@@ -877,7 +893,7 @@ as an additional <code class="docutils literal notranslate"><span class="pre">ne
 </section>
 <section id="removal-of-serializationpluginprotocol">
 <h2>Removal of <code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code><a class="headerlink" href="#removal-of-serializationpluginprotocol" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a> <code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code> has been removed in favour
+<p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a> <code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code> has been removed in favour
 of the abstract <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.SerializationPlugin" title="litestar.plugins.SerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPlugin</span></code></a>. The functionality and
 interface remain the same, the only difference being that plugins that wish to provide
 this functionality are now required to inherit from

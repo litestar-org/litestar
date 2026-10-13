@@ -1187,23 +1187,24 @@ Python 3.11+</label><div class="sd-tab-content docutils">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSentEvent</span>
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSEData</span>
-</span><span data-line="10">
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSentEvent</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSEData</span>
 </span><span data-line="11">
-</span><span data-line="12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">SSEData</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="13">    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="14">    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-</span><span data-line="15">        <span class="k">yield</span> <span class="n">topic</span>
-</span><span data-line="16">        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span data-line="17">
+</span><span data-line="12">
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">SSEData</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="14">    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="15">    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+</span><span data-line="16">        <span class="k">yield</span> <span class="n">topic</span>
+</span><span data-line="17">        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
 </span><span data-line="18">
-</span><span data-line="19"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/notify/{topic:str}&quot;</span><span class="p">)</span>
-</span><span data-line="20"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_notified</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
-</span><span data-line="21">    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;Notifier&quot;</span><span class="p">)</span>
-</span><span data-line="22">
+</span><span data-line="19">
+</span><span data-line="20"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/notify/{topic:str}&quot;</span><span class="p">)</span>
+</span><span data-line="21"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_notified</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
+</span><span data-line="22">    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;Notifier&quot;</span><span class="p">)</span>
 </span><span data-line="23">
-</span><span data-line="24"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_notified</span><span class="p">])</span>
+</span><span data-line="24">
+</span><span data-line="25"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_notified</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -1217,23 +1218,24 @@ Python 3.13+</label><div class="sd-tab-content docutils">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSentEvent</span>
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSEData</span>
-</span><span data-line="10">
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSentEvent</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSEData</span>
 </span><span data-line="11">
-</span><span data-line="12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">SSEData</span><span class="p">]:</span>
-</span><span data-line="13">    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="14">    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-</span><span data-line="15">        <span class="k">yield</span> <span class="n">topic</span>
-</span><span data-line="16">        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span data-line="17">
+</span><span data-line="12">
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">SSEData</span><span class="p">]:</span>
+</span><span data-line="14">    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="15">    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+</span><span data-line="16">        <span class="k">yield</span> <span class="n">topic</span>
+</span><span data-line="17">        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
 </span><span data-line="18">
-</span><span data-line="19"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/notify/{topic:str}&quot;</span><span class="p">)</span>
-</span><span data-line="20"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_notified</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
-</span><span data-line="21">    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;Notifier&quot;</span><span class="p">)</span>
-</span><span data-line="22">
+</span><span data-line="19">
+</span><span data-line="20"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/notify/{topic:str}&quot;</span><span class="p">)</span>
+</span><span data-line="21"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_notified</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
+</span><span data-line="22">    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;Notifier&quot;</span><span class="p">)</span>
 </span><span data-line="23">
-</span><span data-line="24"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_notified</span><span class="p">])</span>
+</span><span data-line="24">
+</span><span data-line="25"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_notified</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
