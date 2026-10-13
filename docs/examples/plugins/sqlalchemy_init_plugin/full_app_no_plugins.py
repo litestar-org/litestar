@@ -10,7 +10,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from litestar import Litestar, get, post, put
 from litestar.datastructures import State
 from litestar.exceptions import ClientException, NotFoundException
-from litestar.params import FromPath
+from litestar.params import FromPath, FromQuery
 from litestar.status_codes import HTTP_409_CONFLICT
 
 TodoType = dict[str, Any]
@@ -69,7 +69,7 @@ async def get_todo_list(done: bool | None, session: AsyncSession) -> Sequence[To
 
 
 @get("/")
-async def get_list(state: State, done: bool | None = None) -> TodoCollectionType:
+async def get_list(state: State, done: FromQuery[bool | None] = None) -> TodoCollectionType:
     async with sessionmaker(bind=state.engine) as session:
         return [serialize_todo(todo) for todo in await get_todo_list(done, session)]
 

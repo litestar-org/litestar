@@ -114,8 +114,9 @@ class ParameterFactory:
                 is_required = True
                 result = self.schema_creator.for_field_definition(field_definition)
         else:
-            is_required = field_definition.is_required
-            param_in = ParamType.QUERY
+            # callers only pass fields that declare an HTTP parameter source; reaching this
+            # means a dependency / body / undeclared field leaked through the caller's filter
+            raise ImproperlyConfiguredException(f"Field {parameter_name!r} does not declare an HTTP parameter source")
 
         if not result:
             result = self.schema_creator.for_field_definition(field_definition)
@@ -128,7 +129,7 @@ class ParameterFactory:
             if reference is not None:
                 description = self.context.schema_registry.from_reference(reference).schema.description
 
-        examples_list = kwarg_definition.examples or [] if kwarg_definition else []
+        examples_list = kwarg_definition.examples or []
         examples = get_formatted_examples(field_definition, examples_list)
 
         return Parameter(
@@ -149,7 +150,7 @@ class ParameterFactory:
         """
         layer_field = self.layered_parameters[field_name]
 
-        field = field_definition if field_definition.is_parameter_field else layer_field
+        field = field_definition if field_definition.is_non_marker_parameter_field else layer_field
         default = layer_field.default if field_definition.has_default else field_definition.default
         annotation = field_definition.annotation if field_definition.annotation is not Empty else layer_field.annotation
 

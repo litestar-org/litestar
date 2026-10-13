@@ -6,9 +6,40 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Remove support for implicitly declared request parameters
+        :type: feature
+        :breaking:
+        :pr:
+
+        Remove the deprecated implicit request parameter declaration. All request
+        parameters must now be explicitly marked (e.g. with
+        :data:`~litestar.params.FromQuery`).
+
+        .. list-table::
+            :header-rows: 1
+            :widths: 45 55
+
+            * - Deprecated
+              - Use instead
+            * - ``def h(name: str)`` *(implicit query parameter)*
+              - ``def h(name: FromQuery[str])``
+            * - ``def h(user_id: int)`` *(implicit path parameter)*
+              - ``def h(user_id: FromPath[int])``
+            * - ``Annotated[str, Parameter(query="alias")]``
+              - ``Annotated[str, QueryParameter(name="alias")]``
+            * - ``Annotated[str, Parameter(header="X-API-KEY")]``
+              - ``Annotated[str, HeaderParameter(name="X-API-KEY")]``
+            * - ``Annotated[str, Parameter(cookie="session")]``
+              - ``Annotated[str, CookieParameter(name="session")]``
+            * - ``name: str = Parameter(...)`` *(default-value style)*
+              - ``name: Annotated[str, QueryParameter(...)]``
+
+        .. seealso::
+            :doc:`/usage/routing/parameters`
+
     .. change:: Only read parameters marked as path parameters from the path
         :type: bugfix
-        :pr: 0000
+        :pr: 5128
         :breaking:
 
         A parameter whose name matched a path segment was read from the path even when it

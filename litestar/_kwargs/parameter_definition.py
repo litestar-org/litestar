@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, NamedTuple
 
-from litestar.enums import ParamType
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import ParameterKwarg
 
 if TYPE_CHECKING:
+    from litestar.enums import ParamType
     from litestar.typing import FieldDefinition
+
 
 __all__ = ("ParameterDefinition", "create_parameter_definition", "merge_parameter_sets")
 
@@ -20,7 +22,6 @@ class ParameterDefinition(NamedTuple):
     is_required: bool
     is_sequence: bool
     param_type: ParamType
-    legacy_style: str | None = None
 
 
 def create_parameter_definition(
@@ -40,20 +41,13 @@ def create_parameter_definition(
         field_definition.kwarg_definition if isinstance(field_definition.kwarg_definition, ParameterKwarg) else None
     )
 
-    field_alias = kwarg_definition.query if kwarg_definition and kwarg_definition.query else field_name
-    param_type = ParamType.QUERY
-    legacy_style: str | None = "inferred"
+    if kwarg_definition is None:
+        # callers only pass fields that declare an HTTP parameter source; reaching this
+        # means a dependency / body / undeclared field leaked through the caller's filter
+        raise ImproperlyConfiguredException(f"Field {field_name!r} does not declare an HTTP parameter source")
 
-    if kwarg_definition is not None:
-        param_type = kwarg_definition.param_type
-        field_alias = kwarg_definition.name or field_name
-        if kwarg_definition.header or kwarg_definition.cookie or kwarg_definition.query:
-            legacy_style = "annotated"
-        else:
-            legacy_style = None
-
-    if field_definition.is_di_field:
-        param_type = ParamType.DEPENDENCY
+    param_type = kwarg_definition.param_type
+    field_alias = kwarg_definition.name or field_name
 
     return ParameterDefinition(
         param_type=param_type,
@@ -62,7 +56,6 @@ def create_parameter_definition(
         default=field_definition.default,
         is_required=field_definition.is_required and not field_definition.is_optional and not field_definition.is_any,
         is_sequence=field_definition.is_non_string_sequence,
-        legacy_style=legacy_style,
     )
 
 

@@ -6,12 +6,12 @@ import asyncio
 from collections.abc import AsyncIterator
 
 from litestar import Litestar, get, post
-from litestar.params import FromPath
+from litestar.params import FromPath, FromQuery
 from litestar.response import ServerSentEvent
 
 
 @post("/log")
-async def create_log_entry(message: str) -> None:
+async def create_log_entry(message: FromQuery[str]) -> None:
     # A print statement explicitly goes to buffer, logging may not
     print(f"Received log entry: {message}", flush=True)  # noqa: T201
 

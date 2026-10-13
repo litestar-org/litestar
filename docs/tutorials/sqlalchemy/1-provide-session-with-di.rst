@@ -11,7 +11,7 @@ handlers.
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_session_di.py
     :language: python
     :linenos:
-    :emphasize-lines: 49-59,84-85,89-91,96-97,105
+    :emphasize-lines: 50-60,85-88,92-94,99-102,110
 
 In the previous example, the database session is created within each HTTP route handler function. In this script we use
 dependency injection to decouple creation of the session from the route handlers.
@@ -22,14 +22,14 @@ session, begins a transaction, and handles any integrity errors that might raise
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 50-59
+    :lines: 51-60
 
 That function is declared as a dependency to the Litestar application, using the name ``transaction``.
 
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 103-107
+    :lines: 108-112
     :emphasize-lines: 3
 
 In the route handlers, the database session is injected by adding a parameter named ``transaction`` and marking it with
@@ -40,8 +40,8 @@ at runtime, matching the parameter name against the dependency key.
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 83-86
-    :emphasize-lines: 2
+    :lines: 84-89
+    :emphasize-lines: 2-4
 
 One final improvement in this script is exception handling. In the previous version, a
 :class:`litestar.exceptions.ClientException` is raised inside the ``add_item()`` handler if there's an integrity error
@@ -51,7 +51,7 @@ to occur inside the ``provide_transaction()`` function.
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_session_di.py
     :language: python
     :linenos:
-    :lines: 49-59
+    :lines: 50-60
     :emphasize-lines: 3,6-10
 
 This change broadens the scope of exception handling to any operation that uses the database session, not just the
@@ -70,7 +70,7 @@ session object:
         .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_session_di.py
             :language: python
             :linenos:
-            :lines: 83-107
+            :lines: 84-112
 
    .. tab-item:: Before
 
