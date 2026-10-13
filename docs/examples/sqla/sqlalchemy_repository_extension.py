@@ -21,6 +21,7 @@ from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
 from litestar.di import Provide
+from litestar.params import FromPath
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -159,7 +160,7 @@ async def get_blogs(
 
 @get(path="/{post_slug:str}")
 async def get_blog_details(
-    post_slug: str,
+    post_slug: FromPath[str],
     blog_post_repo: BlogPostRepository,
 ) -> BlogPostDTO:
     """Interact with SQLAlchemy engine and session."""
