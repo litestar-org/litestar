@@ -129,7 +129,7 @@ class ParameterFactory:
             if reference is not None:
                 description = self.context.schema_registry.from_reference(reference).schema.description
 
-        examples_list = kwarg_definition.examples or [] if kwarg_definition else []
+        examples_list = kwarg_definition.examples or []
         examples = get_formatted_examples(field_definition, examples_list)
 
         return Parameter(
