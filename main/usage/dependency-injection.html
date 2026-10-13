@@ -769,34 +769,35 @@ Python 3.11+</label><div class="sd-tab-content docutils">
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="n">STATE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="s2">&quot;closed&quot;</span><span class="p">}</span>
-</span><span data-line="7">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="n">STATE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="s2">&quot;closed&quot;</span><span class="p">}</span>
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">generator_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the connection state to open and close it after the handler returns.</span>
-</span><span data-line="11">
-</span><span data-line="12"><span class="sd">    If an error occurs, set `result` to `&quot;error&quot;`, else set it to `&quot;OK&quot;`.</span>
-</span><span data-line="13"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="14">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="15">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
-</span><span data-line="16">        <span class="k">yield</span> <span class="s2">&quot;hello&quot;</span>
-</span><span data-line="17">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
-</span><span data-line="18">    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="19">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
-</span><span data-line="20">    <span class="k">finally</span><span class="p">:</span>
-</span><span data-line="21">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;closed&quot;</span>
-</span><span data-line="22">
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">generator_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="11"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the connection state to open and close it after the handler returns.</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="sd">    If an error occurs, set `result` to `&quot;error&quot;`, else set it to `&quot;OK&quot;`.</span>
+</span><span data-line="14"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="15">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="16">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
+</span><span data-line="17">        <span class="k">yield</span> <span class="s2">&quot;hello&quot;</span>
+</span><span data-line="18">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
+</span><span data-line="19">    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="20">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
+</span><span data-line="21">    <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="22">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;closed&quot;</span>
 </span><span data-line="23">
-</span><span data-line="24"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{name:str}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">generator_function</span><span class="p">)})</span>
-</span><span data-line="25"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="26"><span class="w">    </span><span class="sd">&quot;&quot;&quot;If `name` is &quot;John&quot;, return a message, otherwise raise an error.&quot;&quot;&quot;</span>
-</span><span data-line="27">    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;John&quot;</span><span class="p">:</span>
-</span><span data-line="28">        <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
-</span><span data-line="29">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
-</span><span data-line="30">
+</span><span data-line="24">
+</span><span data-line="25"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{name:str}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">generator_function</span><span class="p">)})</span>
+</span><span data-line="26"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="27"><span class="w">    </span><span class="sd">&quot;&quot;&quot;If `name` is &quot;John&quot;, return a message, otherwise raise an error.&quot;&quot;&quot;</span>
+</span><span data-line="28">    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;John&quot;</span><span class="p">:</span>
+</span><span data-line="29">        <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
+</span><span data-line="30">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
 </span><span data-line="31">
-</span><span data-line="32"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span><span data-line="32">
+</span><span data-line="33"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -810,34 +811,35 @@ Python 3.13+</label><div class="sd-tab-content docutils">
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="n">STATE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="s2">&quot;closed&quot;</span><span class="p">}</span>
-</span><span data-line="7">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="n">STATE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="s2">&quot;closed&quot;</span><span class="p">}</span>
 </span><span data-line="8">
-</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">generator_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the connection state to open and close it after the handler returns.</span>
-</span><span data-line="11">
-</span><span data-line="12"><span class="sd">    If an error occurs, set `result` to `&quot;error&quot;`, else set it to `&quot;OK&quot;`.</span>
-</span><span data-line="13"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="14">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="15">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
-</span><span data-line="16">        <span class="k">yield</span> <span class="s2">&quot;hello&quot;</span>
-</span><span data-line="17">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
-</span><span data-line="18">    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="19">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
-</span><span data-line="20">    <span class="k">finally</span><span class="p">:</span>
-</span><span data-line="21">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;closed&quot;</span>
-</span><span data-line="22">
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">generator_function</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="11"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the connection state to open and close it after the handler returns.</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="sd">    If an error occurs, set `result` to `&quot;error&quot;`, else set it to `&quot;OK&quot;`.</span>
+</span><span data-line="14"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="15">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="16">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
+</span><span data-line="17">        <span class="k">yield</span> <span class="s2">&quot;hello&quot;</span>
+</span><span data-line="18">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span>
+</span><span data-line="19">    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="20">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
+</span><span data-line="21">    <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="22">        <span class="n">STATE</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;closed&quot;</span>
 </span><span data-line="23">
-</span><span data-line="24"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{name:str}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">generator_function</span><span class="p">)})</span>
-</span><span data-line="25"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="26"><span class="w">    </span><span class="sd">&quot;&quot;&quot;If `name` is &quot;John&quot;, return a message, otherwise raise an error.&quot;&quot;&quot;</span>
-</span><span data-line="27">    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;John&quot;</span><span class="p">:</span>
-</span><span data-line="28">        <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
-</span><span data-line="29">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
-</span><span data-line="30">
+</span><span data-line="24">
+</span><span data-line="25"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{name:str}&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">generator_function</span><span class="p">)})</span>
+</span><span data-line="26"><span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="27"><span class="w">    </span><span class="sd">&quot;&quot;&quot;If `name` is &quot;John&quot;, return a message, otherwise raise an error.&quot;&quot;&quot;</span>
+</span><span data-line="28">    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;John&quot;</span><span class="p">:</span>
+</span><span data-line="29">        <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
+</span><span data-line="30">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
 </span><span data-line="31">
-</span><span data-line="32"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span><span data-line="32">
+</span><span data-line="33"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
