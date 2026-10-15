@@ -2,6 +2,7 @@ import asyncio
 from collections.abc import AsyncGenerator
 
 from litestar import Litestar, websocket_stream
+from litestar.di import NamedDependency
 
 RESOURCE_LOCK = asyncio.Lock()
 
@@ -16,7 +17,7 @@ async def acquire_lock() -> AsyncGenerator[None, None]:
 
 
 @websocket_stream("/")
-async def ping(lock: asyncio.Lock) -> AsyncGenerator[float, None]:
+async def ping(lock: NamedDependency[asyncio.Lock]) -> AsyncGenerator[float, None]:
     while True:
         alive = await ping_external_resource()
         yield alive
