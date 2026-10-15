@@ -13,7 +13,7 @@ Slug Fields
 .. literalinclude:: /examples/sqla/sqlalchemy_repository_extension.py
     :language: python
     :caption: ``app.py``
-    :lines: 10-23, 33-34, 37-42, 101-102, 106-108
+    :lines: 10-23, 34-35, 38-43, 102-103, 107-109
     :linenos:
 
 In this example, we are using a ``BlogPost`` model to hold blog post titles and
@@ -34,7 +34,7 @@ to have the slugified value of "follow-the-yellow-brick-road".
 .. literalinclude:: /examples/sqla/sqlalchemy_repository_extension.py
     :language: python
     :caption: ``app.py``
-    :lines: 1-8, 14-23, 43-44, 46-100
+    :lines: 1-8, 14-23, 44-45, 47-101
     :linenos:
 
 Since the ``BlogPost.title`` field is not marked as unique, this means that we'll have
@@ -44,7 +44,7 @@ a random set of digits are appended to the end of the slug to make it unique.
 .. literalinclude:: /examples/sqla/sqlalchemy_repository_extension.py
     :language: python
     :caption: ``app.py``
-    :lines: 1-23, 27-32, 101-102, 106-126, 170-180
+    :lines: 1-23, 28-33, 102-103, 107-127, 171-181
     :linenos:
 
 We are all set to use this in our routes now.  First, we'll convert our incoming
@@ -66,5 +66,5 @@ Full Code
     .. literalinclude:: /examples/sqla/sqlalchemy_repository_extension.py
         :language: python
         :caption: ``app.py``
-        :emphasize-lines: 12, 37-42, 106-108, 177
+        :emphasize-lines: 12, 38-43, 107-109, 178
         :linenos:

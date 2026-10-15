@@ -9,7 +9,9 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get, post, put
 from litestar.datastructures import State
+from litestar.di import NamedDependency
 from litestar.exceptions import ClientException, NotFoundException
+from litestar.params import FromPath, FromQuery
 from litestar.status_codes import HTTP_409_CONFLICT
 
 
@@ -73,18 +75,20 @@ async def get_todo_list(done: bool | None, session: AsyncSession) -> list[TodoIt
 
 
 @get("/")
-async def get_list(transaction: AsyncSession, done: bool | None = None) -> list[TodoItem]:
+async def get_list(transaction: NamedDependency[AsyncSession], done: FromQuery[bool | None] = None) -> list[TodoItem]:
     return await get_todo_list(done, transaction)
 
 
 @post("/")
-async def add_item(data: TodoItem, transaction: AsyncSession) -> TodoItem:
+async def add_item(data: TodoItem, transaction: NamedDependency[AsyncSession]) -> TodoItem:
     transaction.add(data)
     return data
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: str, data: TodoItem, transaction: AsyncSession) -> TodoItem:
+async def update_item(
+    item_title: FromPath[str], data: TodoItem, transaction: NamedDependency[AsyncSession]
+) -> TodoItem:
     todo_item = await get_todo_by_title(item_title, transaction)
     todo_item.title = data.title
     todo_item.done = data.done

@@ -80,14 +80,6 @@ The pre-requisites for dependency injection are these:
 #. the dependency must be declared using the ``Provide`` class.
 #. the dependency must be in the *scope* of the handler function.
 
-.. deprecated:: 2.24
-    Previously, a dependency was injected into any parameter whose name matched a
-    dependency key in scope, with no marker required. Relying on this name-based
-    *inference* now emits a :class:`~.exceptions.LitestarDeprecationWarning` and will
-    stop working in Litestar 3.0. Mark the parameter with
-    :data:`~litestar.di.NamedDependency` instead (see
-    :ref:`usage/dependency-injection:Marking dependencies`).
-
 What is *scope* in this context? Dependencies are **isolated** to the context in which they are declared. Thus, in the
 above example, the ``local_dependency`` can only be accessed within the specific route handler on which it was declared;
 The ``controller_dependency`` is available only for route handlers on that specific controller; And the ``router
@@ -364,20 +356,6 @@ the injected value:
    @get("/", dependencies={"my_dep": my_dependency})
    def handler(my_dep: NamedDependency[int]) -> None: ...
 
-.. deprecated:: 2.24
-    Earlier versions *inferred* dependencies: any parameter whose name matched a
-    dependency key in scope was injected automatically, without a marker. Relying on
-    this now emits a :class:`~.exceptions.LitestarDeprecationWarning` and will stop
-    working in Litestar 3.0.
-
-    .. code-block:: python
-
-        # Deprecated: ``my_dep`` is injected only because its name matches the
-        # dependency key. Mark it with ``NamedDependency[int]`` instead.
-        @get("/", dependencies={"my_dep": Provide(my_dependency)})
-        def handler(my_dep: int) -> None: ...
-
-
 Exclude dependencies with default values from OpenAPI docs
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -395,15 +373,8 @@ By declaring the parameter to be a dependency, Litestar knows to exclude it from
 Early detection if a dependency isn't provided
 ++++++++++++++++++++++++++++++++++++++++++++++
 
-The other side of the same coin is when a dependency isn't provided, and no default is
-specified. Without the :data:`~litestar.di.NamedDependency` marker, the parameter is
-treated like any other unmarked handler kwarg, i.e. it raises a
-:class:`~.exceptions.LitestarDeprecationWarning` about a missing explicit parameter
-marker, and the route will then fail at request time because no matching query parameter
-was supplied.
-
-Adding :data:`~litestar.di.NamedDependency` makes the contract explicit and lets
-Litestar fail at application boot rather than at request time:
+A parameter marked with :data:`~litestar.di.NamedDependency` that has no default and no
+provided dependency makes the application fail at startup, not at request time:
 
 .. literalinclude:: /examples/dependency_injection/dependency_non_optional_not_provided.py
    :caption: Dependency not provided error
