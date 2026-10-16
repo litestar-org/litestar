@@ -20,10 +20,11 @@ from litestar import (
     post,
     put,
 )
+from litestar.datastructures import Headers
 from litestar.datastructures.state import ImmutableState, State
 from litestar.di import NamedDependency, Provide
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import Dependency, FromPath, FromQuery, JSONBody
+from litestar.params import Dependency, FromPath, FromQuery, JSONBody, QueryParams, RawBody, RequestCookies
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -293,6 +294,62 @@ def test_body(decorator: Any, http_method: Any, expected_status_code: Any) -> No
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
+
+
+def test_headers_annotated_as_headers() -> None:
+    @get("/")
+    def handler(request: Request, headers: Headers) -> None:
+        assert headers is request.headers
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_headers_annotated_differently_in_handler_and_dependency() -> None:
+    def provide_value(request: Request, headers: Headers) -> str:
+        assert headers is request.headers
+        return "value"
+
+    @get("/", dependencies={"value": Provide(provide_value, sync_to_thread=False)})
+    def handler(headers: Dict[str, str], value: NamedDependency[str]) -> None:
+        assert type(headers) is dict
+        assert headers["x-a"] == "1"
+
+    with create_test_client(handler) as client:
+        response = client.get("/", headers={"x-a": "1"})
+        assert response.status_code == HTTP_200_OK
+
+
+def test_query_annotated_as_query_params() -> None:
+    @get("/")
+    def handler(request: Request, query: QueryParams) -> None:
+        assert query == request.query_params
+        assert query.getall("a") == ["1", "2"]
+
+    with create_test_client(handler) as client:
+        response = client.get("/?a=1&a=2")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_cookies_annotated_as_request_cookies() -> None:
+    @get("/")
+    def handler(cookies: RequestCookies) -> None:
+        assert cookies == {"sid": "1"}
+
+    with create_test_client(handler) as client:
+        response = client.get("/", headers={"Cookie": "sid=1"})
+        assert response.status_code == HTTP_200_OK
+
+
+def test_body_annotated_as_raw_body() -> None:
+    @post("/")
+    async def handler(body: RawBody) -> None:
+        assert body == b"raw"
+
+    with create_test_client(handler) as client:
+        response = client.post("/", content=b"raw")
+        assert response.status_code == HTTP_201_CREATED
 
 
 def test_improper_use_of_state_kwarg() -> None:
