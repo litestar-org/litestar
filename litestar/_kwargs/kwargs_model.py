@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import warnings
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, get_origin
 
 from anyio import create_task_group
 
@@ -31,11 +31,14 @@ from litestar._kwargs.parameter_definition import (
     create_parameter_definition,
     merge_parameter_sets,
 )
+from litestar.connection import ASGIConnection, WebSocket
 from litestar.constants import RESERVED_KWARGS
+from litestar.datastructures.headers import Headers
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.exceptions.base_exceptions import LitestarDeprecationWarning
-from litestar.params import BodyKwarg, ParameterKwarg
+from litestar.params import BodyKwarg, ParameterKwarg, QueryParams, RawBody, RequestCookies
+from litestar.types import Scope
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_exception_group
 
@@ -45,7 +48,6 @@ __all__ = ("KwargsModel",)
 if TYPE_CHECKING:
     from litestar._kwargs.types import Extractor
     from litestar._signature import SignatureModel
-    from litestar.connection import ASGIConnection
     from litestar.di import Provide
     from litestar.dto import AbstractDTO
     from litestar.handlers import BaseRouteHandler
@@ -60,6 +62,7 @@ class HandlerContext:
     handler: str
     paths: list[str]
     dependencies: list[str] = dataclasses.field(default_factory=list)
+    connection_class: type[ASGIConnection] | None = None
 
     def format(self, msg: str) -> str:
         paths = ",".join(sorted(self.paths))
@@ -300,7 +303,11 @@ class KwargsModel:
         """
 
         if ctx is not None and not isinstance(ctx, HandlerContext):
-            ctx = HandlerContext(handler=ctx.name or ctx.handler_name, paths=sorted(ctx.paths))
+            ctx = HandlerContext(
+                handler=ctx.name or ctx.handler_name,
+                paths=sorted(ctx.paths),
+                connection_class=_resolve_connection_class(ctx),
+            )
 
         field_definitions = signature_model._fields
 
@@ -335,6 +342,10 @@ class KwargsModel:
                     category=LitestarDeprecationWarning,
                     stacklevel=2,
                 )
+
+        # 'state' is refused at parse time unless it's typed
+        for field_name in sorted((RESERVED_KWARGS - {"state"}).intersection(field_definitions)):
+            _warn_untyped_reserved_kwarg(field_name, field_definitions[field_name], ctx)
 
         expected_reserved_kwargs = {field_name for field_name in field_definitions if field_name in RESERVED_KWARGS}
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}
@@ -637,3 +648,82 @@ def _warn_deprecated_param_style(
         msg = ctx.format(msg)
 
     warnings.warn(msg, category=LitestarDeprecationWarning, stacklevel=stacklevel)
+
+
+_RESERVED_KWARG_TYPES: dict[str, Any] = {
+    "headers": Headers,
+    "query": QueryParams,
+    "cookies": RequestCookies,
+    "scope": Scope,
+    "body": RawBody,
+}
+
+# reserved kwargs with a connection attribute that handlers use instead
+_CONNECTION_ATTRIBUTES = {"headers": "headers", "query": "query_params", "cookies": "cookies", "scope": "scope"}
+
+
+def _resolve_connection_class(handler: BaseRouteHandler) -> type[ASGIConnection] | None:
+    from litestar.connection import Request
+    from litestar.handlers import HTTPRouteHandler, WebsocketRouteHandler
+
+    if isinstance(handler, HTTPRouteHandler):
+        # not 'resolve_request_class', which memoizes, while layers may still be changed after registration
+        return next(
+            (layer.request_class for layer in reversed(handler.ownership_layers) if layer.request_class is not None),
+            Request,
+        )
+    if isinstance(handler, WebsocketRouteHandler):
+        return handler.resolve_websocket_class()
+    return None
+
+
+def _type_repr(annotation: Any) -> str:
+    return annotation.__name__ if isinstance(annotation, type) else repr(annotation).replace("typing.", "")
+
+
+def _has_reserved_kwarg_type(name: str, field_definition: FieldDefinition, ctx: HandlerContext | None) -> bool:
+    """Whether a reserved kwarg is declared with the type Litestar 3 resolves it by"""
+    if name == "data":
+        return isinstance(field_definition.kwarg_definition, BodyKwarg)
+
+    annotation = field_definition.annotation
+    if name in _RESERVED_KWARG_TYPES:
+        expected = _RESERVED_KWARG_TYPES[name]
+        return annotation == expected if name == "scope" else annotation is expected
+
+    # 'request' and 'socket': the handler's connection class or a class it inherits from
+    origin = get_origin(annotation) or annotation
+    if not isinstance(origin, type):
+        return False
+    connection_class = ctx.connection_class if ctx is not None else None
+    return issubclass(origin, ASGIConnection) and (connection_class is None or issubclass(connection_class, origin))
+
+
+def _warn_untyped_reserved_kwarg(name: str, field_definition: FieldDefinition, ctx: HandlerContext | None) -> None:
+    if _has_reserved_kwarg_type(name, field_definition, ctx):
+        return
+
+    connection_class = ctx.connection_class if ctx is not None else None
+    in_handler = ctx is not None and not ctx.dependencies
+    declared = _type_repr(field_definition.annotation)
+    if name == "data":
+        msg = (
+            f"Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[{declared}]' or "
+            "another body marker instead"
+        )
+    elif name in _CONNECTION_ATTRIBUTES and in_handler and connection_class is not None:
+        variable = "socket" if issubclass(connection_class, WebSocket) else "request"
+        msg = (
+            f"Reserved kwarg {name!r} declared as {declared!r}. Use '{variable}.{_CONNECTION_ATTRIBUTES[name]}' instead"
+        )
+    else:
+        if name in _RESERVED_KWARG_TYPES:
+            expected = "Scope" if name == "scope" else _RESERVED_KWARG_TYPES[name].__name__
+        else:
+            expected = connection_class.__name__ if connection_class else "ASGIConnection"
+        msg = f"Reserved kwarg {name!r} declared as {declared!r}. Declare it as '{name}: {expected}' instead"
+
+    msg += ". Reserved kwargs without their type will stop working in Litestar 3.0"
+    if ctx is not None:
+        msg = ctx.format(msg)
+    warnings.warn(msg, category=LitestarDeprecationWarning, stacklevel=3)

@@ -1,5 +1,6 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 import re
+import warnings
 from typing import Any, Dict, List, Optional, Type, cast
 from unittest.mock import MagicMock, call
 
@@ -14,16 +15,19 @@ from litestar import (
     Litestar,
     MediaType,
     Request,
+    WebSocket,
     delete,
     get,
     patch,
     post,
     put,
+    websocket,
 )
+from litestar.connection import ASGIConnection
 from litestar.datastructures import Headers
 from litestar.datastructures.state import ImmutableState, State
 from litestar.di import NamedDependency, Provide
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
 from litestar.params import Dependency, FromPath, FromQuery, JSONBody, QueryParams, RawBody, RequestCookies
 from litestar.status_codes import (
     HTTP_200_OK,
@@ -39,6 +43,10 @@ from tests.models import DataclassPerson, DataclassPersonFactory
 class CustomState(State):
     called: bool
     msg: str
+
+
+class CustomRequest(Request):
+    pass
 
 
 def test_application_immutable_state_injection() -> None:
@@ -93,7 +101,16 @@ def test_data_using_model(decorator: Any, http_method: Any, expected_status_code
         def test_method(self, data: DataclassPerson) -> None:
             assert data == person_instance
 
-    with create_test_client(MyController) as client:
+    with pytest.warns(
+        LitestarDeprecationWarning,
+        match=re.escape(
+            "Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[DataclassPerson]' or another "
+            "body marker instead. Reserved kwargs without their type will stop working in Litestar 3.0"
+        ),
+    ):
+        client = create_test_client(MyController)
+
+    with client:
         response = client.request(http_method, test_path, json=msgspec.to_builtins(person_instance))
         assert response.status_code == expected_status_code
 
@@ -119,7 +136,13 @@ def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_st
         def test_method(self, data: List[DataclassPerson]) -> None:
             assert data == people
 
-    with create_test_client(MyController) as client:
+    with pytest.warns(
+        LitestarDeprecationWarning,
+        match=re.escape("Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[List["),
+    ):
+        client = create_test_client(MyController)
+
+    with client:
         response = client.request(http_method, test_path, json=msgspec.to_builtins(people))
         assert response.status_code == expected_status_code
 
@@ -216,7 +239,16 @@ def test_header_params(decorator: Any, http_method: Any, expected_status_code: A
             for key, value in request_headers.items():
                 assert headers[key] == value
 
-    with create_test_client(MyController) as client:
+    with pytest.warns(
+        LitestarDeprecationWarning,
+        match=re.escape(
+            "Reserved kwarg 'headers' declared as 'dict'. Use 'request.headers' instead. Reserved kwargs without "
+            "their type will stop working in Litestar 3.0"
+        ),
+    ):
+        client = create_test_client(MyController)
+
+    with client:
         response = client.request(http_method, test_path, headers=request_headers)
         assert response.status_code == expected_status_code
 
@@ -291,7 +323,16 @@ def test_body(decorator: Any, http_method: Any, expected_status_code: Any) -> No
         async def test_method(self, request: Request[Any, Any, Any], body: bytes) -> None:
             assert body == await request.body()
 
-    with create_test_client(MyController) as client:
+    with pytest.warns(
+        LitestarDeprecationWarning,
+        match=re.escape(
+            "Reserved kwarg 'body' declared as 'bytes'. Declare it as 'body: RawBody' instead. Reserved kwargs "
+            "without their type will stop working in Litestar 3.0"
+        ),
+    ):
+        client = create_test_client(MyController)
+
+    with client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
 
@@ -316,7 +357,10 @@ def test_headers_annotated_differently_in_handler_and_dependency() -> None:
         assert type(headers) is dict
         assert headers["x-a"] == "1"
 
-    with create_test_client(handler) as client:
+    with pytest.warns(LitestarDeprecationWarning, match="Reserved kwarg 'headers' declared as 'Dict"):
+        client = create_test_client(handler)
+
+    with client:
         response = client.get("/", headers={"x-a": "1"})
         assert response.status_code == HTTP_200_OK
 
@@ -350,6 +394,174 @@ def test_body_annotated_as_raw_body() -> None:
     with create_test_client(handler) as client:
         response = client.post("/", content=b"raw")
         assert response.status_code == HTTP_201_CREATED
+
+
+def test_untyped_reserved_kwargs_in_http_handler_warn() -> None:
+    @get("/")
+    async def handler(
+        headers: Dict[str, str], query: Dict[str, Any], cookies: Dict[str, str], scope: Dict[str, Any]
+    ) -> None: ...
+
+    with pytest.warns(LitestarDeprecationWarning) as record:
+        Litestar([handler])
+
+    assert [str(warning.message) for warning in record] == [
+        "[paths='/', handler='handler'] Reserved kwarg 'cookies' declared as 'Dict[str, str]'. Use "
+        "'request.cookies' instead. Reserved kwargs without their type will stop working in Litestar 3.0",
+        "[paths='/', handler='handler'] Reserved kwarg 'headers' declared as 'Dict[str, str]'. Use "
+        "'request.headers' instead. Reserved kwargs without their type will stop working in Litestar 3.0",
+        "[paths='/', handler='handler'] Reserved kwarg 'query' declared as 'Dict[str, Any]'. Use "
+        "'request.query_params' instead. Reserved kwargs without their type will stop working in Litestar 3.0",
+        "[paths='/', handler='handler'] Reserved kwarg 'scope' declared as 'Dict[str, Any]'. Use "
+        "'request.scope' instead. Reserved kwargs without their type will stop working in Litestar 3.0",
+    ]
+
+
+def test_untyped_reserved_kwargs_in_websocket_handler_warn() -> None:
+    @websocket("/")
+    async def handler(
+        socket: WebSocket,
+        headers: Dict[str, str],
+        query: Dict[str, Any],
+        cookies: Dict[str, str],
+        scope: Dict[str, Any],
+    ) -> None: ...
+
+    with pytest.warns(LitestarDeprecationWarning) as record:
+        Litestar([handler])
+
+    assert [str(warning.message) for warning in record] == [
+        "[paths='/', handler='handler'] Reserved kwarg 'cookies' declared as 'Dict[str, str]'. Use "
+        "'socket.cookies' instead. Reserved kwargs without their type will stop working in Litestar 3.0",
+        "[paths='/', handler='handler'] Reserved kwarg 'headers' declared as 'Dict[str, str]'. Use "
+        "'socket.headers' instead. Reserved kwargs without their type will stop working in Litestar 3.0",
+        "[paths='/', handler='handler'] Reserved kwarg 'query' declared as 'Dict[str, Any]'. Use "
+        "'socket.query_params' instead. Reserved kwargs without their type will stop working in Litestar 3.0",
+        "[paths='/', handler='handler'] Reserved kwarg 'scope' declared as 'Dict[str, Any]'. Use "
+        "'socket.scope' instead. Reserved kwargs without their type will stop working in Litestar 3.0",
+    ]
+
+
+def test_untyped_reserved_kwargs_in_dependency_warn() -> None:
+    async def provide_value(
+        headers: Dict[str, str],
+        query: Dict[str, Any],
+        cookies: Dict[str, str],
+        scope: Dict[str, Any],
+        body: bytes,
+        data: DataclassPerson,
+    ) -> str:
+        return "value"
+
+    @post("/", dependencies={"value": Provide(provide_value)})
+    async def handler(value: NamedDependency[str]) -> None: ...
+
+    with pytest.warns(LitestarDeprecationWarning) as record:
+        Litestar([handler])
+
+    assert [str(warning.message) for warning in record] == [
+        "[paths='/', handler='handler', dependencies='value'] Reserved kwarg 'body' declared as 'bytes'. Declare "
+        "it as 'body: RawBody' instead. Reserved kwargs without their type will stop working in Litestar 3.0",
+        "[paths='/', handler='handler', dependencies='value'] Reserved kwarg 'cookies' declared as "
+        "'Dict[str, str]'. Declare it as 'cookies: RequestCookies' instead. Reserved kwargs without their type "
+        "will stop working in Litestar 3.0",
+        "[paths='/', handler='handler', dependencies='value'] Reserved kwarg 'data' declared without a body "
+        "marker. Use 'data: JSONBody[DataclassPerson]' or another body marker instead. Reserved kwargs without "
+        "their type will stop working in Litestar 3.0",
+        "[paths='/', handler='handler', dependencies='value'] Reserved kwarg 'headers' declared as "
+        "'Dict[str, str]'. Declare it as 'headers: Headers' instead. Reserved kwargs without their type will "
+        "stop working in Litestar 3.0",
+        "[paths='/', handler='handler', dependencies='value'] Reserved kwarg 'query' declared as "
+        "'Dict[str, Any]'. Declare it as 'query: QueryParams' instead. Reserved kwargs without their type will "
+        "stop working in Litestar 3.0",
+        "[paths='/', handler='handler', dependencies='value'] Reserved kwarg 'scope' declared as "
+        "'Dict[str, Any]'. Declare it as 'scope: Scope' instead. Reserved kwargs without their type will stop "
+        "working in Litestar 3.0",
+    ]
+
+
+def test_typed_reserved_kwargs_do_not_warn() -> None:
+    async def provide_value(
+        request: Request,
+        headers: Headers,
+        query: QueryParams,
+        cookies: RequestCookies,
+        scope: Scope,
+        body: RawBody,
+        data: JSONBody[DataclassPerson],
+    ) -> str:
+        return "value"
+
+    @post("/", dependencies={"value": Provide(provide_value)})
+    async def handler(
+        request: Request,
+        headers: Headers,
+        query: QueryParams,
+        cookies: RequestCookies,
+        scope: Scope,
+        body: RawBody,
+        data: JSONBody[DataclassPerson],
+        value: NamedDependency[str],
+    ) -> None: ...
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        Litestar([handler])
+
+
+@pytest.mark.parametrize("annotation, declared", [(Any, "Any"), (Dict[str, Any], "Dict[str, Any]")])
+def test_request_kwarg_without_connection_type_warns(annotation: Any, declared: str) -> None:
+    @get("/")
+    async def handler(request: annotation) -> None: ...
+
+    with pytest.warns(
+        LitestarDeprecationWarning,
+        match=re.escape(f"Reserved kwarg 'request' declared as '{declared}'. Declare it as 'request: Request'"),
+    ):
+        Litestar([handler])
+
+
+def test_request_kwarg_typed_as_subclass_of_request_class_warns() -> None:
+    @get("/")
+    async def handler(request: CustomRequest) -> None: ...
+
+    with pytest.warns(
+        LitestarDeprecationWarning,
+        match=re.escape("Reserved kwarg 'request' declared as 'CustomRequest'. Declare it as 'request: Request'"),
+    ):
+        Litestar([handler])
+
+
+def test_request_kwarg_without_connection_type_names_custom_request_class() -> None:
+    @get("/")
+    async def handler(request: Any) -> None: ...
+
+    with pytest.warns(
+        LitestarDeprecationWarning,
+        match=re.escape("Reserved kwarg 'request' declared as 'Any'. Declare it as 'request: CustomRequest'"),
+    ):
+        Litestar([handler], request_class=CustomRequest)
+
+
+@pytest.mark.parametrize("annotation", [CustomRequest, Request, Request[Any, Any, Any], ASGIConnection])
+def test_request_kwarg_typed_as_request_class_or_its_base_does_not_warn(annotation: Any) -> None:
+    @get("/")
+    async def handler(request: annotation) -> None: ...
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        Litestar([handler], request_class=CustomRequest)
+
+
+def test_socket_kwarg_without_connection_type_warns() -> None:
+    @websocket("/")
+    async def handler(socket: Any) -> None: ...
+
+    with pytest.warns(
+        LitestarDeprecationWarning,
+        match=re.escape("Reserved kwarg 'socket' declared as 'Any'. Declare it as 'socket: WebSocket'"),
+    ):
+        Litestar([handler])
 
 
 def test_improper_use_of_state_kwarg() -> None:

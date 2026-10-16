@@ -108,6 +108,12 @@ Additionally, you can specify the following special :term:`kwargs <argument>`,
 * ``data``: the parsed request body, declared with a body marker such as :data:`~.params.JSONBody`. See
   :doc:`requests </usage/requests>`.
 
+.. deprecated:: 2.25.0
+    A reserved keyword argument declared without the type listed above, or with a different one, emits a
+    deprecation warning and will stop working in 3.0. In a route handler, the ``cookies``, ``headers``, ``query``
+    and ``scope`` values are also available as ``request.cookies``, ``request.headers``, ``request.query_params``
+    and ``request.scope`` (``socket.<attribute>`` in a websocket handler).
+
 .. tip::
     Note that if your parameters collide with any of the reserved
     :term:`keyword arguments <argument>` above, you can
