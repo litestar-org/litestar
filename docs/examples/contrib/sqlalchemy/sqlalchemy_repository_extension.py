@@ -14,6 +14,7 @@ from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
 from litestar.di import Provide
+from litestar.params import JSONBody
 from litestar.plugins.sqlalchemy import (
     AsyncSessionConfig,
     SQLAlchemyAsyncConfig,
@@ -170,7 +171,7 @@ async def get_blog_details(
 @post(path="/")
 async def create_blog(
     blog_post_repo: BlogPostRepository,
-    data: BlogPostCreate,
+    data: JSONBody[BlogPostCreate],
 ) -> BlogPostDTO:
     """Create a new blog post."""
     _data = data.model_dump(exclude_unset=True, by_alias=False, exclude_none=True)

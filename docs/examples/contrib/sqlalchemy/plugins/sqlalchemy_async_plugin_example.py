@@ -7,6 +7,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
 from litestar.di import NamedDependency
+from litestar.params import JSONBody
 from litestar.plugins.sqlalchemy import SQLAlchemyAsyncConfig, SQLAlchemyPlugin
 
 if TYPE_CHECKING:
@@ -23,7 +24,7 @@ class TodoItem(Base):
 
 
 @post("/")
-async def add_item(data: TodoItem, db_session: NamedDependency[AsyncSession]) -> Sequence[TodoItem]:
+async def add_item(data: JSONBody[TodoItem], db_session: NamedDependency[AsyncSession]) -> Sequence[TodoItem]:
     async with db_session.begin():
         db_session.add(data)
     return (await db_session.execute(select(TodoItem))).scalars().all()

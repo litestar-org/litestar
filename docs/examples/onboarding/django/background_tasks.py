@@ -2,6 +2,7 @@ import logging
 
 from litestar import Litestar, Response, post
 from litestar.background_tasks import BackgroundTask
+from litestar.params import JSONBody
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ async def send_welcome_email(address: str) -> None:
 
 
 @post("/signup")
-async def signup(data: dict[str, str]) -> Response[dict[str, str]]:
+async def signup(data: JSONBody[dict[str, str]]) -> Response[dict[str, str]]:
     return Response(
         {"status": "queued"},
         background=BackgroundTask(send_welcome_email, data["email"]),
