@@ -13,6 +13,7 @@ from litestar import Litestar, post
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.openapi.spec import OpenAPIType
 from litestar.openapi.spec.schema import Schema
+from litestar.params import JSONBody
 from litestar.plugins.pydantic import PydanticSchemaPlugin
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
@@ -146,7 +147,7 @@ def test_v1_constrained_str_with_default_factory_does_not_generate_title() -> No
         test_str: str = pydantic_v1.Field(default_factory=str, max_length=600)
 
     @post(path="/")
-    async def test(data: Model) -> str:
+    async def test(data: JSONBody[Model]) -> str:
         return "success"
 
     schema = Litestar(route_handlers=[test]).openapi_schema.to_schema()

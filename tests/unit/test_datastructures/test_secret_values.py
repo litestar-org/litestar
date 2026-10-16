@@ -8,7 +8,7 @@ from litestar import Litestar, get, post
 from litestar.datastructures.secret_values import SecretBytes, SecretString
 from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
-from litestar.params import FromQuery, HeaderParameter
+from litestar.params import FromQuery, HeaderParameter, JSONBody
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.testing import create_test_client
 
@@ -92,7 +92,7 @@ def test_decode_secret_string_on_model() -> None:
         secret: SecretString
 
     @post(signature_types=[Model])
-    async def post_secret(data: Model) -> None:
+    async def post_secret(data: JSONBody[Model]) -> None:
         assert data.secret.get_secret() == "super"
 
     with create_test_client([post_secret]) as client:
@@ -105,7 +105,7 @@ def test_decode_secret_bytes_on_model() -> None:
         secret: SecretBytes
 
     @post(signature_types=[Model])
-    async def post_secret(data: Model) -> None:
+    async def post_secret(data: JSONBody[Model]) -> None:
         assert data.secret.get_secret() == b"super"
 
     with create_test_client([post_secret]) as client:
@@ -118,7 +118,7 @@ def test_decode_secret_string_on_model_client_error(secret_type: type[SecretStri
     model = msgspec.defstruct(name="Model", fields=[("secret", secret_type)])
 
     @post(signature_namespace={"model": model})
-    async def post_secret(data: model) -> None:  # type: ignore[valid-type]
+    async def post_secret(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
         return None
 
     with create_test_client([post_secret]) as client:

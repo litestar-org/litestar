@@ -1,7 +1,7 @@
 from msgspec import Struct
 
 from litestar import post
-from litestar.params import MsgPackBody
+from litestar.params import JSONBody, MsgPackBody
 from litestar.serialization import encode_msgpack
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import create_test_client
@@ -11,7 +11,7 @@ def test_request_body_msgpack() -> None:
     test_data = {"name": "Moishe Zuchmir", "age": 30, "programmer": True}
 
     @post(path="/header")
-    def test_header(data: dict) -> None:
+    def test_header(data: JSONBody[dict]) -> None:
         assert isinstance(data, dict)
         assert data == test_data
 

@@ -8,13 +8,13 @@ from pytest_lazy_fixtures import lf
 
 from litestar import Controller, Litestar, Request, WebSocket
 from litestar.connection import ASGIConnection
-from litestar.datastructures import State
+from litestar.datastructures import MultiDict, State
 from litestar.di import NamedDependency, Provide
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
-from litestar.params import FromPath
+from litestar.params import FromPath, QueryParams
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import WebSocketMode
 
@@ -325,7 +325,7 @@ def test_lifespan_dependencies() -> None:
     mock = MagicMock()
 
     @asynccontextmanager
-    async def lifespan(name: FromPath[str], state: State, query: dict) -> AsyncGenerator[None, None]:
+    async def lifespan(name: FromPath[str], state: State, query: QueryParams) -> AsyncGenerator[None, None]:
         mock(name=name, state=state, query=query)
         yield
 
@@ -338,7 +338,7 @@ def test_lifespan_dependencies() -> None:
 
     assert mock.call_args_list[0].kwargs["name"] == "foo"
     assert isinstance(mock.call_args_list[0].kwargs["state"], State)
-    assert isinstance(mock.call_args_list[0].kwargs["query"], dict)
+    assert isinstance(mock.call_args_list[0].kwargs["query"], MultiDict)
 
 
 def test_hook_dependencies() -> None:
@@ -348,10 +348,10 @@ def test_hook_dependencies() -> None:
     def some_dependency() -> str:
         return "hello"
 
-    def on_accept(name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:
+    def on_accept(name: FromPath[str], state: State, query: QueryParams, some: NamedDependency[str]) -> None:
         on_accept_mock(name=name, state=state, query=query, some=some)
 
-    def on_disconnect(name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:
+    def on_disconnect(name: FromPath[str], state: State, query: QueryParams, some: NamedDependency[str]) -> None:
         on_disconnect_mock(name=name, state=state, query=query, some=some)
 
     @websocket_listener("/{name: str}", on_accept=on_accept, on_disconnect=on_disconnect)
@@ -367,13 +367,13 @@ def test_hook_dependencies() -> None:
     assert on_accept_kwargs["name"] == "foo"
     assert on_accept_kwargs["some"] == "hello"
     assert isinstance(on_accept_kwargs["state"], State)
-    assert isinstance(on_accept_kwargs["query"], dict)
+    assert isinstance(on_accept_kwargs["query"], MultiDict)
 
     on_disconnect_kwargs = on_disconnect_mock.call_args_list[0].kwargs
     assert on_disconnect_kwargs["name"] == "foo"
     assert on_disconnect_kwargs["some"] == "hello"
     assert isinstance(on_disconnect_kwargs["state"], State)
-    assert isinstance(on_disconnect_kwargs["query"], dict)
+    assert isinstance(on_disconnect_kwargs["query"], MultiDict)
 
 
 def test_websocket_listener_class_hook_dependencies() -> None:
@@ -386,10 +386,12 @@ def test_websocket_listener_class_hook_dependencies() -> None:
     class Listener(WebsocketListener):
         path = "/{name: str}"
 
-        def on_accept(self, name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:  # pyright: ignore
+        def on_accept(self, name: FromPath[str], state: State, query: QueryParams, some: NamedDependency[str]) -> None:  # pyright: ignore
             on_accept_mock(name=name, state=state, query=query, some=some)
 
-        def on_disconnect(self, name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:  # pyright: ignore
+        def on_disconnect(  # pyright: ignore
+            self, name: FromPath[str], state: State, query: QueryParams, some: NamedDependency[str]
+        ) -> None:
             on_disconnect_mock(name=name, state=state, query=query, some=some)
 
         def on_receive(self, data: bytes) -> None:  # pyright: ignore
@@ -404,13 +406,13 @@ def test_websocket_listener_class_hook_dependencies() -> None:
     assert on_accept_kwargs["name"] == "foo"
     assert on_accept_kwargs["some"] == "hello"
     assert isinstance(on_accept_kwargs["state"], State)
-    assert isinstance(on_accept_kwargs["query"], dict)
+    assert isinstance(on_accept_kwargs["query"], MultiDict)
 
     on_disconnect_kwargs = on_disconnect_mock.call_args_list[0].kwargs
     assert on_disconnect_kwargs["name"] == "foo"
     assert on_disconnect_kwargs["some"] == "hello"
     assert isinstance(on_disconnect_kwargs["state"], State)
-    assert isinstance(on_disconnect_kwargs["query"], dict)
+    assert isinstance(on_disconnect_kwargs["query"], MultiDict)
 
 
 @pytest.mark.parametrize("hook_name", ["on_accept", "on_disconnect", "connection_accept_handler"])

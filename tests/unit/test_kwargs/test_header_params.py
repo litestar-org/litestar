@@ -4,7 +4,7 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar import get, post
-from litestar.params import HeaderParameter, ParameterKwarg
+from litestar.params import HeaderParameter, JSONBody, ParameterKwarg
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -43,7 +43,7 @@ def test_header_params(
 def test_header_param_with_post() -> None:
     # https://github.com/litestar-org/litestar/issues/3734
     @post()
-    async def handler(data: str, secret: Annotated[str, HeaderParameter(name="x-secret")]) -> None:
+    async def handler(data: JSONBody[str], secret: Annotated[str, HeaderParameter(name="x-secret")]) -> None:
         return None
 
     with create_test_client([handler], raise_server_exceptions=True) as client:

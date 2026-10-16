@@ -127,7 +127,7 @@ def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_st
 @pytest.mark.parametrize("media_type", [MediaType.JSON, MediaType.MESSAGEPACK])
 def test_request_with_invalid_data(media_type: MediaType) -> None:
     @post()
-    def test_handler(data: Any) -> Any:
+    def test_handler(data: JSONBody[Any]) -> Any:
         return data
 
     with create_test_client(test_handler) as client:
@@ -402,7 +402,7 @@ def test_data_kwarg_in_dependency(decorator: Any, http_method: Any, expected_sta
     """
     test_path = "/person"
 
-    async def dependency_with_data(data: DataclassPerson) -> str:
+    async def dependency_with_data(data: JSONBody[DataclassPerson]) -> str:
         assert isinstance(data, DataclassPerson)
         return f"{data.first_name} {data.last_name}"
 
@@ -410,7 +410,7 @@ def test_data_kwarg_in_dependency(decorator: Any, http_method: Any, expected_sta
         path = test_path
 
         @decorator(dependencies={"person_name": Provide(dependency_with_data)})
-        async def test_method(self, data: DataclassPerson, person_name: Annotated[str, Dependency()]) -> None:
+        async def test_method(self, data: JSONBody[DataclassPerson], person_name: Annotated[str, Dependency()]) -> None:
             assert data == person_instance
             assert person_name == f"{person_instance.first_name} {person_instance.last_name}"
 

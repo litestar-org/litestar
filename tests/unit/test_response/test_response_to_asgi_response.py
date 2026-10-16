@@ -16,6 +16,7 @@ from litestar._signature import SignatureModel
 from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import Cookie, ResponseHeader
+from litestar.params import JSONBody
 from litestar.response import ServerSentEvent
 from litestar.response.base import ASGIResponse
 from litestar.response.file import ASGIFileResponse, File
@@ -74,7 +75,7 @@ class MyAsyncIterator(AsyncIteratorWrapper[str]):
 
 async def test_to_response_async_await(anyio_backend: str) -> None:
     @route(http_method=HttpMethod.POST, path="/person")
-    async def handler(data: DataclassPerson) -> DataclassPerson:
+    async def handler(data: JSONBody[DataclassPerson]) -> DataclassPerson:
         assert isinstance(data, DataclassPerson)
         return data
 

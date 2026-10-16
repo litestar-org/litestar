@@ -10,7 +10,7 @@ from litestar._signature import SignatureModel
 from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
-from litestar.params import CookieParameter, FromQuery, HeaderParameter, PathParameter, QueryParameter
+from litestar.params import CookieParameter, FromQuery, HeaderParameter, JSONBody, PathParameter, QueryParameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, create_test_client
 from litestar.utils.signature import ParsedSignature
@@ -135,7 +135,7 @@ def test_validation_error_exception_key() -> None:
         other_child: OtherChild
 
     @get("/")
-    def handler(data: Parent) -> None:
+    def handler(data: JSONBody[Parent]) -> None:
         pass
 
     model = SignatureModel.create(
@@ -172,7 +172,7 @@ def test_invalid_input_attrs() -> None:
 
     @post("/")
     def test(
-        data: Parent,
+        data: JSONBody[Parent],
         int_param: FromQuery[int],
         int_header: Annotated[int, HeaderParameter(name="X-SOME-INT")],
         int_cookie: Annotated[int, CookieParameter(name="int-cookie")],
@@ -217,7 +217,7 @@ def test_invalid_input_dataclass() -> None:
 
     @post("/")
     def test(
-        data: Parent,
+        data: JSONBody[Parent],
         int_param: FromQuery[int],
         length_param: Annotated[str, QueryParameter(min_length=2)],
         int_header: Annotated[int, HeaderParameter(name="X-SOME-INT")],
@@ -261,7 +261,7 @@ def test_invalid_input_typed_dict() -> None:
 
     @post("/")
     def test(
-        data: Parent,
+        data: JSONBody[Parent],
         int_param: FromQuery[int],
         length_param: Annotated[str, QueryParameter(min_length=2)],
         int_header: Annotated[int, HeaderParameter(name="X-SOME-INT")],

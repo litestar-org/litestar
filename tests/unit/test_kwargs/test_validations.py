@@ -13,6 +13,7 @@ from litestar.params import (
     CookieParameter,
     FromQuery,
     HeaderParameter,
+    JSONBody,
     MultipartBody,
     QueryParameter,
     SkipValidation,
@@ -90,7 +91,7 @@ def multi_part_dependency(data: MultipartBody[Dict[str, Any]]) -> Dict[str, Any]
     return data
 
 
-def json_dependency(data: Dict[str, Any]) -> Dict[str, Any]:
+def json_dependency(data: JSONBody[Dict[str, Any]]) -> Dict[str, Any]:
     assert data
     return data
 
@@ -105,7 +106,7 @@ def json_dependency(data: Dict[str, Any]) -> Dict[str, Any]:
 )
 def test_dependency_data_kwarg_validation_success_scenarios(body_annotation: Any, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency)})
-    def handler(first: NamedDependency[Dict[str, Any]], data: body_annotation) -> None:
+    def handler(first: NamedDependency[Dict[str, Any]], data: JSONBody[body_annotation]) -> None:
         pass
 
     Litestar(route_handlers=[handler])
@@ -124,7 +125,7 @@ def test_dependency_data_kwarg_validation_success_scenarios(body_annotation: Any
 )
 def test_dependency_data_kwarg_validation_failure_scenarios(body_annotation: BodyKwarg, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency, sync_to_thread=False)})
-    def handler(first: NamedDependency[Dict[str, Any]], data: body_annotation) -> None:  # type: ignore[valid-type]
+    def handler(first: NamedDependency[Dict[str, Any]], data: JSONBody[body_annotation]) -> None:  # type: ignore[valid-type]
         assert first
         assert data
 
