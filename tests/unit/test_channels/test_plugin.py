@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import asyncio
 from secrets import token_hex
-from typing import cast
-from unittest.mock import AsyncMock, MagicMock
+from typing import TYPE_CHECKING, cast
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -20,6 +20,9 @@ from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import AsyncTestClient, TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
 from tests.unit.test_channels.util import get_from_stream
+
+if TYPE_CHECKING:
+    from _pytest.logging import LogCaptureFixture
 
 
 @pytest.fixture(
@@ -451,3 +454,29 @@ async def test_startup_shutdown_cycle(memory_backend: MemoryChannelsBackend) -> 
     assert messages == [b"final_message"]
 
     await plugin._on_shutdown()
+
+
+async def test_deadlock_on_shutdown(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(arbitrary_channels_allowed=True, backend=memory_backend)
+    await plugin._on_startup()
+    with patch.object(memory_backend, "publish", side_effect=Exception("network error")):
+        plugin.publish("test", "test")
+        await asyncio.wait_for(plugin._on_shutdown(), timeout=1)
+
+
+async def test_single_exception_does_not_break_pub_worker(
+    memory_backend: MemoryChannelsBackend, caplog: LogCaptureFixture
+) -> None:
+    plugin = ChannelsPlugin(arbitrary_channels_allowed=True, backend=memory_backend)
+    await plugin._on_startup()
+    with patch.object(memory_backend, "publish", side_effect=Exception("network error")):
+        plugin.publish("test", "test")
+        if plugin._pub_queue:
+            await asyncio.wait_for(plugin._pub_queue.join(), timeout=1)
+    sub = await plugin.subscribe("42")
+    plugin.publish("42", "42")
+    await asyncio.wait_for(sub._queue.get(), timeout=1)
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "ERROR"
+    assert "Error while publishing event:" in caplog.text
+    assert "network error" in caplog.text
