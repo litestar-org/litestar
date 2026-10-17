@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from litestar import Litestar, post
+from litestar.params import JSONBody
 from litestar.plugins.problem_details import ProblemDetailsConfig, ProblemDetailsException, ProblemDetailsPlugin
 
 
@@ -11,7 +12,7 @@ class PurchaseItem:
 
 
 @post("/purchase")
-async def purchase(data: PurchaseItem) -> None:
+async def purchase(data: JSONBody[PurchaseItem]) -> None:
     # Logic to check if the user has enough credit to buy the item.
     # We assume the user does not have enough credit.
 

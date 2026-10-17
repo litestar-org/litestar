@@ -7,6 +7,7 @@ from litestar import Controller, Litestar, Router, get, post
 from litestar.connection import ASGIConnection
 from litestar.exceptions import PermissionDeniedException
 from litestar.handlers.base import BaseRouteHandler
+from litestar.params import JSONBody
 
 
 class UserRole(StrEnum):
@@ -30,7 +31,7 @@ def admin_user_guard(connection: ASGIConnection, _: BaseRouteHandler) -> None:
 
 
 @post(path="/user", guards=[admin_user_guard], sync_to_thread=False)
-def create_user(data: User) -> User:
+def create_user(data: JSONBody[User]) -> User:
     raise NotImplementedError
 
 

@@ -14,7 +14,7 @@ from litestar.dto import AbstractDTO
 from litestar.handlers import BaseRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import RequestBody
-from litestar.params import Body, MultipartBody
+from litestar.params import Body, JSONBody, MultipartBody
 from litestar.typing import FieldDefinition
 
 
@@ -166,7 +166,7 @@ def test_request_body_generation_with_dto(create_request: RequestBodyFactory) ->
     mock_dto = MagicMock(spec=AbstractDTO)
 
     @post(path="/form-upload", dto=mock_dto)
-    async def handler(data: dict[str, Any]) -> None:
+    async def handler(data: JSONBody[dict[str, Any]]) -> None:
         return None
 
     app = Litestar(route_handlers=[handler])
@@ -185,7 +185,7 @@ def test_unwrap_read_only() -> None:
 
     @post("/")
     async def handler(
-        data: SchemaDict,
+        data: JSONBody[SchemaDict],
     ) -> SchemaDict:
         return {"id": data["id"], "email": "new@example.com"}
 
@@ -235,7 +235,7 @@ def test_optional_data_request_body_is_not_required() -> None:
         name: str
 
     @post(path="/optional-data")
-    async def handler(data: Payload | None = None) -> None:
+    async def handler(data: JSONBody[Payload | None] = None) -> None:
         return None
 
     app = Litestar([handler])
@@ -250,7 +250,7 @@ def test_data_request_body_is_required() -> None:
         name: str
 
     @post(path="/data")
-    async def handler(data: Payload) -> None:
+    async def handler(data: JSONBody[Payload]) -> None:
         return None
 
     app = Litestar([handler])

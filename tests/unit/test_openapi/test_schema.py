@@ -49,6 +49,7 @@ from litestar.params import (
     FromPath,
     FromQuery,
     HeaderParameter,
+    JSONBody,
     KwargDefinition,
     ParameterKwarg,
     PathParameter,
@@ -108,7 +109,7 @@ def test_override_schema_component_key() -> None:
 
     @post("/")
     def handler(
-        data: Data,
+        data: JSONBody[Data],
     ) -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 
@@ -153,7 +154,7 @@ def test_override_schema_component_key_raise_if_keys_are_not_unique() -> None:
 
     @post("/")
     def handler(
-        data: Data,
+        data: JSONBody[Data],
     ) -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 

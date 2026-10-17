@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Hashable, Sequence
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING, Annotated, Any, ClassVar, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, NewType, TypeAlias, TypeVar
 
+from litestar.datastructures.multi_dicts import MultiDict
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.types import Empty
 
@@ -24,6 +25,10 @@ __all__ = (
     "ParameterMarker",
     "PathParameter",
     "QueryParameter",
+    "QueryParams",
+    "RawBody",
+    "RequestBody",
+    "RequestCookies",
     "SkipValidation",
     "SkipValidationMarker",
     "URLEncodedBody",
@@ -282,6 +287,30 @@ MultipartBody: TypeAlias = Annotated[T, BodyKwarg(media_type=RequestEncodingType
 
 URLEncodedBody: TypeAlias = Annotated[T, BodyKwarg(media_type=RequestEncodingType.URL_ENCODED)]
 """Declare a 'application/x-www-form-urlencoded' request body"""
+
+RequestBody: TypeAlias = Annotated[T, BodyKwarg()]
+"""Declare a request body of the default media type, 'application/json'
+
+.. versionadded:: 2.25.0
+"""
+
+RawBody = NewType("RawBody", bytes)
+"""The raw request body, for the ``body`` parameter
+
+.. versionadded:: 2.25.0
+"""
+
+QueryParams = NewType("QueryParams", MultiDict[Any])
+"""All query parameters of the request, for the ``query`` parameter
+
+.. versionadded:: 2.25.0
+"""
+
+RequestCookies = NewType("RequestCookies", dict[str, str])
+"""All cookies of the request, for the ``cookies`` parameter
+
+.. versionadded:: 2.25.0
+"""
 
 
 def Body(
