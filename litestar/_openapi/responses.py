@@ -121,10 +121,14 @@ class ResponseFactory:
             Redirect: "Redirect Response",
             File: "File Download",
         }
+        status_phrase = ""
+        with contextlib.suppress(Exception):
+            status_phrase = HTTPStatus(self.route_handler.status_code).phrase
+
         return (
             self.route_handler.response_description
             or default_descriptions.get(self.field_definition.annotation)
-            or HTTPStatus(self.route_handler.status_code).description
+            or status_phrase
         )
 
     def create_success_response(self) -> OpenAPIResponse:
@@ -327,7 +331,7 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
 
         if not group_description:
             with contextlib.suppress(Exception):
-                group_description = HTTPStatus(status_code).description
+                group_description = HTTPStatus(status_code).phrase
 
         yield (
             str(status_code),
