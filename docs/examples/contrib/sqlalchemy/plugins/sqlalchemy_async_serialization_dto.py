@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
+from litestar.params import JSONBody
 from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 if TYPE_CHECKING:
@@ -21,7 +22,7 @@ class TodoItem(Base):
 
 
 @post("/", dto=SQLAlchemyDTO[TodoItem])
-async def add_item(data: TodoItem) -> List[TodoItem]:
+async def add_item(data: JSONBody[TodoItem]) -> List[TodoItem]:
     return [data]
 
 

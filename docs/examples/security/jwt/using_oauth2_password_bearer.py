@@ -8,6 +8,7 @@ from pydantic import BaseModel, EmailStr
 from litestar import Litestar, Request, Response, get, post
 from litestar.connection import ASGIConnection
 from litestar.openapi.config import OpenAPIConfig
+from litestar.params import JSONBody
 from litestar.security.jwt import OAuth2Login, OAuth2PasswordBearerAuth, Token
 
 
@@ -47,7 +48,7 @@ oauth2_auth = OAuth2PasswordBearerAuth[User](
 
 # Given an instance of 'OAuth2PasswordBearerAuth' we can create a login handler function:
 @post("/login")
-async def login_handler(request: "Request[Any, Any, Any]", data: "User") -> "Response[OAuth2Login]":
+async def login_handler(request: "Request[Any, Any, Any]", data: "JSONBody[User]") -> "Response[OAuth2Login]":
     MOCK_DB[str(data.id)] = data
     # if we do not define a response body, the login process will return a standard OAuth2 login response.  Note the `Response[OAuth2Login]` return type.
 
@@ -57,7 +58,7 @@ async def login_handler(request: "Request[Any, Any, Any]", data: "User") -> "Res
 
 
 @post("/login_custom")
-async def login_custom_response_handler(data: "User") -> "Response[User]":
+async def login_custom_response_handler(data: "JSONBody[User]") -> "Response[User]":
     MOCK_DB[str(data.id)] = data
 
     # you can do whatever you want to update the response instance here

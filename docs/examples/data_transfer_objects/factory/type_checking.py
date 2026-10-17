@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from litestar import Litestar, post
 from litestar.dto import dto_field
+from litestar.params import JSONBody
 from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 from .my_lib import Base
@@ -23,7 +24,7 @@ UserDTO = SQLAlchemyDTO[User]
 
 
 @post("/users", dto=UserDTO)
-def create_user(data: Foo) -> Foo:
+def create_user(data: JSONBody[Foo]) -> Foo:
     return data
 
 

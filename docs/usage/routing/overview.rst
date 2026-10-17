@@ -141,6 +141,7 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
         from litestar.controller import Controller
         from litestar.dto import DTOConfig, DTOData
         from litestar.handlers import get, post, patch, delete
+        from litestar.params import JSONBody
         from pydantic import BaseModel, UUID4
 
 
@@ -157,14 +158,14 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
            path = "/user-order"
 
            @post()
-           async def create_user_order(self, data: UserOrder) -> UserOrder: ...
+           async def create_user_order(self, data: JSONBody[UserOrder]) -> UserOrder: ...
 
            @get(path="/{order_id:uuid}")
            async def retrieve_user_order(self, order_id: UUID4) -> UserOrder: ...
 
            @patch(path="/{order_id:uuid}", dto=PartialUserOrderDTO)
            async def update_user_order(
-               self, order_id: UUID4, data: DTOData[PartialUserOrderDTO]
+               self, order_id: UUID4, data: JSONBody[DTOData[PartialUserOrderDTO]]
            ) -> UserOrder: ...
 
            @delete(path="/{order_id:uuid}")

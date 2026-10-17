@@ -92,17 +92,27 @@ The following sources can be accessed using annotated function :term:`kwargs <ar
 - :doc:`injected dependencies </usage/dependency-injection>`
 
 Additionally, you can specify the following special :term:`kwargs <argument>`,
-(known as "reserved keywords arguments"):
+(known as "reserved keywords arguments"), each declared with its type:
 
-* ``cookies``: injects the request :class:`cookies <.datastructures.cookie.Cookie>` as a parsed
-  :class:`dictionary <dict>`.
-* ``headers``: injects the request headers as a parsed :class:`dictionary <dict>`.
-* ``query`` : injects the request ``query_params`` as a parsed :class:`dictionary <dict>`.
-* ``request``: injects the :class:`Request <.connection.Request>` instance. Available only for `HTTP route handlers`_
-* ``scope`` : injects the ASGI scope :class:`dictionary <dict>`.
-* ``socket``: injects the :class:`WebSocket <.connection.WebSocket>` instance. Available only for `websocket route handlers`_
-* ``state`` : injects a copy of the application :class:`State <.datastructures.state.State>`.
-* ``body`` : the raw request body. Available only for `HTTP route handlers`_
+* ``cookies: RequestCookies``: injects the request cookies as a :class:`dictionary <dict>`.
+  See :data:`~.params.RequestCookies`.
+* ``headers: Headers``: injects the request :class:`~.datastructures.headers.Headers`.
+* ``query: QueryParams``: injects the request ``query_params``. See :data:`~.params.QueryParams`.
+* ``request: Request``: injects the :class:`Request <.connection.Request>` instance. Available only for
+  `HTTP route handlers`_. With a custom request class, use that class or one it inherits from.
+* ``scope: Scope``: injects the ASGI scope :class:`dictionary <dict>`.
+* ``socket: WebSocket``: injects the :class:`WebSocket <.connection.WebSocket>` instance. Available only for
+  `websocket route handlers`_. With a custom websocket class, use that class or one it inherits from.
+* ``state: State``: injects a copy of the application :class:`State <.datastructures.state.State>`.
+* ``body: RawBody``: the raw request body. Available only for `HTTP route handlers`_. See :data:`~.params.RawBody`.
+* ``data``: the parsed request body, declared with a body marker such as :data:`~.params.JSONBody`. See
+  :doc:`requests </usage/requests>`.
+
+.. deprecated:: 2.25.0
+    A reserved keyword argument declared without the type listed above, or with a different one, emits a
+    deprecation warning and will stop working in 3.0. In a route handler, the ``cookies``, ``headers``, ``query``
+    and ``scope`` values are also available as ``request.cookies``, ``request.headers``, ``request.query_params``
+    and ``request.scope`` (``socket.<attribute>`` in a websocket handler).
 
 .. tip::
     Note that if your parameters collide with any of the reserved
@@ -114,18 +124,18 @@ For example:
 .. code-block:: python
     :caption: Providing an alternative name for a reserved keyword argument
 
-    from typing import Any, Dict
     from litestar import Request, get
     from litestar.datastructures import Headers, State
+    from litestar.params import QueryParams, RequestCookies
 
 
     @get(path="/")
     async def my_request_handler(
        state: State,
        request: Request,
-       headers: Dict[str, str],
-       query: Dict[str, Any],
-       cookies: Dict[str, Any],
+       headers: Headers,
+       query: QueryParams,
+       cookies: RequestCookies,
     ) -> None: ...
 
 .. tip:: You can define a custom typing for your application state and then use it as a type instead of just using the
@@ -203,7 +213,7 @@ These are used exactly like :func:`@route() <.handlers.route>` with the sole exc
 
         from litestar import delete, get, patch, post, put, head
         from litestar.dto import DTOConfig, DTOData
-        from litestar.params import FromPath
+        from litestar.params import FromPath, JSONBody
         from litestar.plugins.pydantic import PydanticDTO
 
         from pydantic import BaseModel
@@ -221,7 +231,7 @@ These are used exactly like :func:`@route() <.handlers.route>` with the sole exc
 
 
         @post(path="/resources")
-        async def create_resource(data: Resource) -> Resource: ...
+        async def create_resource(data: JSONBody[Resource]) -> Resource: ...
 
 
         @get(path="/resources/{pk:int}")
@@ -233,12 +243,12 @@ These are used exactly like :func:`@route() <.handlers.route>` with the sole exc
 
 
         @put(path="/resources/{pk:int}")
-        async def update_resource(data: Resource, pk: FromPath[int]) -> Resource: ...
+        async def update_resource(data: JSONBody[Resource], pk: FromPath[int]) -> Resource: ...
 
 
         @patch(path="/resources/{pk:int}", dto=PartialResourceDTO)
         async def partially_update_resource(
-           data: DTOData[PartialResourceDTO], pk: FromPath[int]
+           data: JSONBody[DTOData[PartialResourceDTO]], pk: FromPath[int]
         ) -> Resource: ...
 
 
@@ -569,6 +579,7 @@ For example, the name ``Model`` is *not* available at runtime in the following s
     from typing import TYPE_CHECKING
 
     from litestar import Controller, post
+    from litestar.params import JSONBody
 
     if TYPE_CHECKING:
         from domain import Model
@@ -576,7 +587,7 @@ For example, the name ``Model`` is *not* available at runtime in the following s
 
     class MyController(Controller):
         @post()
-        def create_item(data: Model) -> Model:
+        def create_item(data: JSONBody[Model]) -> Model:
             return data
 
 In this example, Litestar will be unable to generate the signature model because the type ``Model`` does not exist in

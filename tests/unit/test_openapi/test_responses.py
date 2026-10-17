@@ -30,6 +30,7 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.datastructures import ResponseSpec
 from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, OpenAPIResponse, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
+from litestar.params import JSONBody
 from litestar.response import File, Redirect, Stream, Template
 from litestar.routes import HTTPRoute
 from litestar.status_codes import (
@@ -555,7 +556,7 @@ def test_response_generation_with_dto(create_factory: CreateFactoryFixture) -> N
     mock_dto.create_openapi_schema.return_value = Schema()
 
     @post(path="/form-upload", return_dto=mock_dto)  # pyright: ignore
-    async def handler(data: Dict[str, Any]) -> Dict[str, Any]:
+    async def handler(data: JSONBody[Dict[str, Any]]) -> Dict[str, Any]:
         return data
 
     Litestar(route_handlers=[handler])

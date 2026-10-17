@@ -24,7 +24,7 @@ from litestar.exceptions import SerializationException
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
-from litestar.params import KwargDefinition
+from litestar.params import JSONBody, KwargDefinition
 from litestar.serialization import encode_json
 from litestar.testing import RequestFactory
 from litestar.typing import FieldDefinition
@@ -206,7 +206,7 @@ def test_backend_populate_data_from_builtins(
 
 def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
     @post("/", dto=dto_factory, name="test")
-    def handler(data: DC) -> DC:
+    def handler(data: JSONBody[DC]) -> DC:
         return data
 
     app = Litestar(route_handlers=[handler])

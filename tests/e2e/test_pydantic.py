@@ -5,6 +5,7 @@ import pytest
 from pydantic import v1 as pydantic_v1
 
 from litestar import get, post
+from litestar.params import JSONBody
 from litestar.testing import create_test_client
 
 
@@ -37,7 +38,7 @@ def test_pydantic_v1_model_with_field_default() -> None:
         test_str: str = pydantic_v1.Field(default="some_default", max_length=100)
 
     @post(path="/test")
-    async def test(data: TestDto) -> str:
+    async def test(data: JSONBody[TestDto]) -> str:
         return "success"
 
     with create_test_client(route_handlers=[test]) as client:

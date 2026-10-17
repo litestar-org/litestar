@@ -30,6 +30,7 @@ from litestar._signature.utils import (
     _normalize_annotation,
     _validate_signature_dependencies,
 )
+from litestar.datastructures.headers import Headers
 from litestar.datastructures.state import ImmutableState
 from litestar.datastructures.url import URL
 from litestar.dto import AbstractDTO, DTOData
@@ -109,6 +110,7 @@ class SignatureModel(Struct):
     _data_dto: ClassVar[Optional[Type[AbstractDTO]]]  # noqa: UP045
     _dependency_name_set: ClassVar[Set[str]]
     _fields: ClassVar[Dict[str, FieldDefinition]]
+    _headers_from_connection: ClassVar[bool]
     _return_annotation: ClassVar[Any]
 
     @classmethod
@@ -200,6 +202,9 @@ class SignatureModel(Struct):
         """
         messages: list[ErrorMessage] = []
         deserializer = partial(_deserializer, default_deserializer=connection.route_handler.default_deserializer)
+        if cls._headers_from_connection:
+            # the extracted 'headers' value is a dict, which the other annotations of 'headers' expect
+            kwargs = {**kwargs, "headers": connection.headers}
         try:
             return convert(kwargs, cls, strict=False, dec_hook=deserializer, str_keys=True).to_dict()
         except ExtendedMsgSpecValidationError as e:
@@ -242,6 +247,7 @@ class SignatureModel(Struct):
         )
 
         struct_fields: list[tuple[str, Any, Any]] = []
+        headers_field = parsed_signature.parameters.get("headers")
 
         for field_definition in parsed_signature.parameters.values():
             meta_data: Meta | None = None
@@ -282,6 +288,7 @@ class SignatureModel(Struct):
                 "_return_annotation": parsed_signature.return_type.annotation,
                 "_dependency_name_set": dependency_names,
                 "_fields": parsed_signature.parameters,
+                "_headers_from_connection": headers_field is not None and headers_field.annotation is Headers,
                 "_data_dto": data_dto,
             },
             kw_only=True,

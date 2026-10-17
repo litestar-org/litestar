@@ -22,6 +22,7 @@ from litestar import WebSocket, get, websocket
 from litestar.config.app import AppConfig
 from litestar.enums import ScopeType
 from litestar.exceptions import http_exceptions
+from litestar.params import JSONBody
 from litestar.plugins.opentelemetry import OpenTelemetryConfig, OpenTelemetryPlugin
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -394,7 +395,7 @@ def test_client_request_hook_receives_three_params(
     )
 
     @post("/")
-    async def handler(data: dict) -> dict:
+    async def handler(data: JSONBody[dict]) -> dict:
         return data
 
     with create_test_client(handler, plugins=[OpenTelemetryPlugin(config)]) as client:

@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 
 from litestar import Litestar, post
 from litestar.dto import DataclassDTO, DTOConfig
+from litestar.params import JSONBody
 
 
 @dataclass
@@ -25,7 +26,7 @@ class UserWriteDTO(DataclassDTO[User]):
 # we don't need a return DTO as we are returning a dataclass, and Litestar already knows
 # how to serialize dataclasses.
 @post("/users", dto=UserWriteDTO, return_dto=None, sync_to_thread=False)
-def create_user(data: User) -> User:
+def create_user(data: JSONBody[User]) -> User:
     """Create an user."""
     return data
 

@@ -7,6 +7,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get, post
 from litestar.dto import DTOConfig
+from litestar.params import JSONBody
 from litestar.plugins.sqlalchemy import (
     AsyncSessionConfig,
     SQLAlchemyAsyncConfig,
@@ -30,7 +31,7 @@ ReadItemDTO = SQLAlchemyDTO[Item]
 
 
 @post("/items", dto=WriteItemDTO, return_dto=ReadItemDTO)
-async def create_item(data: Item, db_session: AsyncSession) -> Item:
+async def create_item(data: JSONBody[Item], db_session: AsyncSession) -> Item:
     async with db_session.begin():
         db_session.add(data)
     return data
