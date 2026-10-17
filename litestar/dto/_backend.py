@@ -967,7 +967,20 @@ def _create_transfer_model_tuple_type(transfer_type: TupleType) -> Any:
 
 
 def _create_transfer_model_union_type(transfer_type: UnionType) -> Any:
-    inner_types = tuple(_create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
+    inner_types = tuple(
+        _create_transfer_model_type_annotation(inner_type)
+        # A union arm's ``Annotated`` metadata (e.g. ``msgspec.Meta`` constraints) cannot be
+        # expressed as a field-level constraint, so it must be kept on the type itself.
+        # Nested models are excluded because their annotation must be replaced by the
+        # generated transfer model.
+        if not (
+            isinstance(inner_type, SimpleType)
+            and inner_type.nested_field_info is None
+            and inner_type.field_definition.metadata
+        )
+        else inner_type.field_definition.raw
+        for inner_type in transfer_type.inner_types
+    )
     return transfer_type.field_definition.safe_generic_origin[inner_types]
 
 

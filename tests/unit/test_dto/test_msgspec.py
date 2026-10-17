@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import itertools
 from dataclasses import replace
-from typing import TYPE_CHECKING, Annotated, ClassVar
+from typing import TYPE_CHECKING, Annotated, ClassVar, Union
 from unittest.mock import ANY
 
 import pytest
@@ -11,6 +11,8 @@ from msgspec import Meta, Struct, field
 from litestar import Litestar, post
 from litestar.dto import DTOField, Mark, MsgspecDTO, dto_field
 from litestar.dto.data_structures import DTOFieldDefinition
+from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from litestar.testing import TestClient
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -228,3 +230,26 @@ def test_msgspec_dto_with_classvar() -> None:
     # Only the regular field should be included, not the ClassVar
     assert len(field_defs) == 1
     assert field_defs[0].name == "regular_field"
+
+
+class UnionArmConstraintBody(Struct):
+    text: Union[Annotated[str, Meta(description="only-str", min_length=5)], int]
+
+
+async def union_arm_constraint_handler(data: UnionArmConstraintBody) -> Union[str, int]:
+    return data.text
+
+
+def test_msgspec_dto_preserves_union_arm_constraints() -> None:
+    """Regression test for https://github.com/litestar-org/litestar/issues/5031.
+
+    Constraints declared via ``msgspec.Meta`` on a union arm must survive
+    transfer-model generation: the ``str`` arm keeps ``min_length=5`` while
+    the ``int`` arm stays unconstrained.
+    """
+    app = Litestar(route_handlers=[post("/", dto=MsgspecDTO[UnionArmConstraintBody])(union_arm_constraint_handler)])
+
+    with TestClient(app) as client:
+        assert client.post("/", json={"text": 1}).status_code == HTTP_201_CREATED
+        assert client.post("/", json={"text": "12345"}).status_code == HTTP_201_CREATED
+        assert client.post("/", json={"text": "12"}).status_code == HTTP_400_BAD_REQUEST
