@@ -59,6 +59,8 @@ class CORSMiddleware(ASGIMiddleware):
         self.is_allow_all_origins = "*" in self.allow_origins
         self.is_allow_all_methods = "*" in self.allow_methods
         self.is_allow_all_headers = "*" in self.allow_headers
+        self.allow_headers_value = ", ".join(sorted(set(self.allow_headers)))
+        self.allow_methods_value = ", ".join(sorted(set(self.allow_methods)))
         self.allowed_origins_regex = _build_allowed_origins_regex(
             allow_origins=self.allow_origins,
             allow_origin_regex=self.allow_origin_regex,
@@ -141,9 +143,9 @@ class CORSMiddleware(ASGIMiddleware):
                     headers["Access-Control-Allow-Origin"] = origin
                     headers["Vary"] = "Origin"
 
-                headers["Access-Control-Allow-Headers"] = ", ".join(sorted(set(self.allow_headers)))
+                headers["Access-Control-Allow-Headers"] = self.allow_headers_value
 
-                headers["Access-Control-Allow-Methods"] = ", ".join(sorted(set(self.allow_methods)))
+                headers["Access-Control-Allow-Methods"] = self.allow_methods_value
 
             await send(message)
 
