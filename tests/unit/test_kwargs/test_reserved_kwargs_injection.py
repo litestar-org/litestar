@@ -368,7 +368,7 @@ def test_headers_annotated_differently_in_handler_and_dependency() -> None:
 def test_query_annotated_as_query_params() -> None:
     @get("/")
     def handler(request: Request, query: QueryParams) -> None:
-        assert query == request.query_params
+        assert query.dict() == request.query_params.dict()
         assert query.getall("a") == ["1", "2"]
 
     with create_test_client(handler) as client:
