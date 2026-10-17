@@ -8,6 +8,7 @@ from litestar.middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
 )
+from litestar.middleware.session.base import SessionMiddleware
 from litestar.types import Empty, Method, Scopes
 
 __all__ = ("MiddlewareWrapper", "SessionAuthMiddleware")
@@ -57,9 +58,11 @@ class MiddlewareWrapper:
                 retrieve_user_handler=self.config.retrieve_user_handler,  # type: ignore[arg-type]
             )
             exception_middleware = ExceptionHandlerMiddleware(app=auth_middleware)
-            self.app = self.config.session_backend_config.middleware.middleware(
-                app=exception_middleware,
-                backend=self.config.session_backend,
+            session_middleware = SessionMiddleware(backend=self.config.session_backend)
+            self.app = (
+                exception_middleware
+                if session_middleware.should_bypass_for_handler(scope["route_handler"])
+                else session_middleware(exception_middleware)
             )
             self.has_wrapped_middleware = True
         await self.app(scope, receive, send)
