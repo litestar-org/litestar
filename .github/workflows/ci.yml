@@ -149,17 +149,14 @@ jobs:
   test_integration:
     name: Test server integration
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        uvicorn-version: ["uvicorn<0.27.0", "uvicorn>=0.27.0"]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up python 3.11
+      - name: Set up python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: 3.14
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -169,16 +166,11 @@ jobs:
       - name: Install Build Dependencies
         run: sudo apt-get install build-essential libpq-dev python3-dev -y
 
-      - name: Install dependencies
-        run: |
-          uv sync
-          uv pip install -U "${{ matrix.uvicorn-version }}"
-
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
-        run: uv run --no-sync pytest tests -m server_integration
+        run: uv run pytest tests -m server_integration
 
   test-platform-compat:
     if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'test platform compat')
