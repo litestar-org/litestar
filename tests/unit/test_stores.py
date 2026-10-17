@@ -7,7 +7,7 @@ import string
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -115,6 +115,68 @@ async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | tim
     stored_value = await redis_store.get("foo")
 
     assert stored_value is not None
+
+
+@pytest.mark.flaky(reruns=5)
+@pytest.mark.xdist_group("redis")
+async def test_get_renew_for_timedelta_uses_total_seconds(redis_store: RedisStore) -> None:
+    """timedelta renew_for must use total_seconds(), not .seconds (which ignores days/minutes)."""
+    await redis_store.set("td_test", b"value", expires_in=2)
+    # timedelta(minutes=1, seconds=30) = 90 total seconds; .seconds would also give 90 here
+    # but timedelta(days=1) = 86400 total seconds while .seconds == 0
+    result = await redis_store.get("td_test", renew_for=timedelta(days=1))
+    assert result == b"value"
+
+    ttl = await redis_store.expires_in("td_test")
+    assert ttl is not None and ttl > 80000  # should be ~86400s, not 0
+
+
+async def test_get_renew_uses_getex_when_supported() -> None:
+    """On Redis >= 6.2, get() with renew_for should use GETEX (single round-trip)."""
+    redis = AsyncMock()
+    # probe returns None (missing key, no error) → GETEX supported
+    # second call is the real get with renew
+    redis.getex = AsyncMock(side_effect=[None, b"bar"])
+    redis.register_script = MagicMock(return_value=AsyncMock(return_value=b"bar"))
+
+    store = RedisStore(redis=redis)
+    result = await store.get("foo", renew_for=10)
+
+    assert result == b"bar"
+    assert redis.getex.await_count == 2
+    # Lua script should NOT have been called
+    store._get_and_renew_script.assert_not_called()  # type: ignore[attr-defined]
+
+
+async def test_get_renew_falls_back_to_lua_on_old_redis() -> None:
+    """On Redis < 6.2, GETEX raises; get() should fall back to the Lua script."""
+    redis = AsyncMock()
+    redis.getex = AsyncMock(side_effect=Exception("ERR unknown command 'GETEX'"))
+    script = AsyncMock(return_value=b"bar")
+    redis.register_script = MagicMock(return_value=script)
+
+    store = RedisStore(redis=redis)
+    result = await store.get("foo", renew_for=10)
+
+    assert result == b"bar"
+    # probe is the only GETEX call; real renewal uses Lua
+    assert redis.getex.await_count == 1
+    script.assert_awaited_once_with(keys=["LITESTAR:foo"], args=[10])
+
+
+async def test_get_renew_timedelta_total_seconds_unit() -> None:
+    """timedelta with days must use total_seconds(), not .seconds (which would be 0 for a 1-day delta)."""
+    redis = AsyncMock()
+    redis.getex = AsyncMock(side_effect=[None, b"val"])
+    redis.register_script = MagicMock(return_value=AsyncMock())
+
+    store = RedisStore(redis=redis)
+    await store.get("k", renew_for=timedelta(days=1))
+
+    # second getex call carries ex=86400, not ex=0
+    call_kwargs = redis.getex.await_args_list[1]
+    ex_value = call_kwargs.kwargs.get("ex") or (call_kwargs.args[1] if len(call_kwargs.args) > 1 else None)
+    assert ex_value == 86400
 
 
 @pytest.mark.flaky(reruns=5)
