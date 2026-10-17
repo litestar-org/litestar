@@ -678,3 +678,48 @@ class Outer:
             wrapper_attribute_name=None,
             is_data_field=True,
         )
+
+
+@pytest.mark.parametrize(
+    "field_type,invalid,valid",
+    [
+        ("Union[Annotated[str, msgspec.Meta(min_length=5)], int]", "abc", "abcdef"),
+        ("list[Annotated[str, msgspec.Meta(min_length=5)]]", ["abc"], ["abcdef"]),
+        ("dict[str, Annotated[str, msgspec.Meta(min_length=5)]]", {"a": "abc"}, {"a": "abcdef"}),
+    ],
+    ids=["union-member", "collection-member", "mapping-value-member"],
+)
+def test_transfer_member_msgspec_meta_constraints_enforced(
+    asgi_connection: Request[Any, Any, Any],
+    create_module: Callable[[str], ModuleType],
+    backend_cls: type[DTOBackend],
+    field_type: str,
+    invalid: Any,
+    valid: Any,
+) -> None:
+    # https://github.com/litestar-org/litestar/issues/5031
+    # A msgspec.Meta constraint declared on a *member* of a union, collection or mapping
+    # (rather than on the field's own outer type) was silently dropped when building the
+    # DTO transfer model, so a value violating it was accepted instead of rejected.
+    module = create_module(f"""
+from typing import Annotated, Union
+import msgspec
+
+class Outer(msgspec.Struct):
+    some_field: {field_type}
+""")
+
+    backend = backend_cls(
+        handler_id="test",
+        dto_factory=MsgspecDTO[module.Outer],  # type: ignore[name-defined]
+        field_definition=TransferDTOFieldDefinition.from_annotation(module.Outer),
+        model_type=module.Outer,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+
+    with pytest.raises(msgspec.ValidationError, match="length >= 5"):
+        backend.populate_data_from_builtins({"some_field": invalid}, asgi_connection)
+
+    data = backend.populate_data_from_builtins({"some_field": valid}, asgi_connection)
+    assert isinstance(data, module.Outer)
