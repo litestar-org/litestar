@@ -44,6 +44,7 @@ from litestar._openapi.schema_generation.utils import (
 )
 from litestar.datastructures import SecretBytes, SecretString, UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.openapi.spec import Reference
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
@@ -65,7 +66,7 @@ from litestar.utils.typing import (
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
-    from litestar.openapi.spec import Example, Reference
+    from litestar.openapi.spec import Example
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
