@@ -6,6 +6,15 @@ Litestar 2 Changelog
 .. changelog:: 2.24.0
     :date: 2026-06-11
 
+    .. change:: Deprecate ``RapidocRenderPlugin``
+        :type: feature
+        :pr: 4976
+        :issue: 4975
+
+        Deprecate :class:`~litestar.openapi.plugins.RapidocRenderPlugin`. RapiDoc is unmaintained and its
+        former domain has been hijacked. The plugin will be removed in 3.0.0; use another render plugin,
+        such as :class:`~litestar.openapi.plugins.ScalarRenderPlugin`, instead.
+
     .. change:: Fix OpenAPI schema incorrectly marking nullable required fields as not required
         :type: bugfix
         :pr: 4687

@@ -2,12 +2,18 @@ import pytest
 
 from litestar import Litestar
 from litestar.config.csrf import CSRFConfig
+from litestar.exceptions import LitestarDeprecationWarning
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import RapidocRenderPlugin, ScalarRenderPlugin, SwaggerRenderPlugin
 from litestar.testing import TestClient
 
 rapidoc_fragment = ".addEventListener('before-try',"
 swagger_fragment = "requestInterceptor:"
+
+
+def test_rapidoc_deprecation_warning() -> None:
+    with pytest.warns(LitestarDeprecationWarning, match="RapidocRenderPlugin"):
+        RapidocRenderPlugin()
 
 
 def test_rapidoc_csrf() -> None:
