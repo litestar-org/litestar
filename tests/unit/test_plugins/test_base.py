@@ -6,8 +6,10 @@ import pytest
 from click import Group
 
 from litestar import Litestar, MediaType, get
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.dto import AbstractDTO
+from litestar.openapi.spec import Schema
 from litestar.plugins import CLIPluginProtocol, InitPlugin, OpenAPISchemaPlugin, PluginRegistry, SerializationPlugin
 from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.plugins.core import MsgspecDIPlugin
@@ -47,17 +49,18 @@ def test_plugin_on_app_init() -> None:
 def test_plugin_registry() -> None:
     class CLIPlugin(CLIPluginProtocol):
         def on_cli_init(self, cli: Group) -> None:
-            pass
+            raise NotImplementedError
 
     class SomeSerializationPlugin(SerializationPlugin):
         def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
-            pass
+            raise NotImplementedError
 
         def supports_type(self, field_definition: FieldDefinition) -> bool:
-            pass
+            raise NotImplementedError
 
     class SomeSchemaPlugin(OpenAPISchemaPlugin):
-        pass
+        def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
+            raise NotImplementedError
 
     class SomeInitPlugin(InitPlugin):
         pass
