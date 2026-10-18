@@ -4,10 +4,8 @@ import dataclasses
 import secrets
 import sys
 from dataclasses import asdict
-from datetime import UTC, datetime, timedelta
-from datetime import timezone
-from typing import Any, Final
-from typing import Sequence
+from datetime import datetime, timedelta, timezone
+from typing import Any, Final, Sequence
 from uuid import uuid4
 
 import jwt
@@ -331,8 +329,8 @@ def test_leeway_exp() -> None:
     token_secret = secrets.token_hex()
     raw_token = {
         "sub": secrets.token_hex(),
-        "iat": (datetime.now(UTC) - timedelta(seconds=30)),
-        "exp": (datetime.now(UTC) - timedelta(seconds=1)),
+        "iat": (datetime.now(timezone.utc) - timedelta(seconds=30)),
+        "exp": (datetime.now(timezone.utc) - timedelta(seconds=1)),
     }
     encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
     token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256", leeway=_LEEWAY)
@@ -347,8 +345,8 @@ def test_leeway_iat() -> None:
     token_secret = secrets.token_hex()
     raw_token = {
         "sub": secrets.token_hex(),
-        "iat": (datetime.now(UTC) + timedelta(seconds=1)),
-        "exp": (datetime.now(UTC) + timedelta(seconds=30)),
+        "iat": (datetime.now(timezone.utc) + timedelta(seconds=1)),
+        "exp": (datetime.now(timezone.utc) + timedelta(seconds=30)),
     }
     encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
     token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256", leeway=_LEEWAY)
@@ -370,8 +368,8 @@ def test_leeway_with_extras(reserved_claim: dict[str, Any]) -> None:
     token_secret = secrets.token_hex()
     raw_token = {
         "sub": secrets.token_hex(),
-        "iat": (datetime.now(UTC) - timedelta(seconds=30)),
-        "exp": (datetime.now(UTC) + timedelta(seconds=30)),
+        "iat": (datetime.now(timezone.utc) - timedelta(seconds=30)),
+        "exp": (datetime.now(timezone.utc) + timedelta(seconds=30)),
         **reserved_claim,
     }
     encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
@@ -387,7 +385,7 @@ def test_leeway_is_not_encoded_into_extras() -> None:
     token_secret = secrets.token_hex()
     token = Token(
         sub=secrets.token_hex(),
-        exp=(datetime.now(UTC) + timedelta(seconds=30)),
+        exp=(datetime.now(timezone.utc) + timedelta(seconds=30)),
         extras={"__leeway__": _LEEWAY},
     )
     assert token.extras == {}

@@ -1,11 +1,8 @@
 import dataclasses
 import secrets
 import string
-from collections.abc import Callable
-from datetime import UTC, datetime, timedelta
-from datetime import timezone
-from typing import Dict, List, Tuple
-from typing import TYPE_CHECKING, Any, Final, Optional
+from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING, Any, Callable, Dict, Final, List, Optional, Tuple
 from uuid import uuid4
 
 import jwt
@@ -927,7 +924,7 @@ async def test_jwt_auth_leeway(
     header = jwt_auth.format_auth_header(
         Token(
             sub="foo",
-            exp=datetime.now(tz=UTC),
+            exp=datetime.now(tz=timezone.utc),
         ).encode(jwt_auth.token_secret, jwt_auth.algorithm),
     )
 
