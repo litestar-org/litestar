@@ -3,6 +3,174 @@
 Litestar 2 Changelog
 ====================
 
+.. changelog:: 2.25.0
+    :date: 2026-10-18
+
+    .. change:: Return ``400 - Bad Request`` for websocket connections to HTTP-only routes
+        :type: bugfix
+        :pr: 4939
+        :issue: 4935
+
+        A websocket connection attempt to a path that only has HTTP route handlers
+        raised an unhandled ``KeyError``, resulting in a ``500 - Internal Server Error``
+        and a logged traceback. It now returns a ``400 - Bad Request``.
+
+    .. change:: Harden the PsycoPg channels listener
+        :type: bugfix
+        :pr: 4987
+        :issue: 4110
+
+        Serialize subscription changes and consume notifications in a background task so
+        dynamic ``LISTEN`` and ``UNLISTEN`` operations no longer contend with the listener.
+        :class:`~litestar.channels.backends.psycopg.PsycoPgChannelsBackend` now requires
+        psycopg 3.2.4 or newer.
+
+    .. change:: Use ``aclose()`` instead of the deprecated ``reset()`` in the Redis pub/sub backend
+        :type: bugfix
+        :pr: 5071
+        :issue: 5068
+
+        :class:`~litestar.channels.backends.redis.RedisChannelsPubSubBackend` called
+        ``PubSub.reset()`` on shutdown, which is deprecated since redis-py 5.0.1 and
+        emitted a :exc:`DeprecationWarning`. It now calls ``PubSub.aclose()``, falling
+        back to ``reset()`` on older redis-py versions.
+
+    .. change:: Forward ``name`` argument in ``LitestarGroup.add_command()``
+        :type: bugfix
+        :pr: 5048
+        :issue: 5047
+
+        ``LitestarGroup.add_command()`` ignored its ``name`` argument and always
+        registered a command under the command's own name. The name is now passed on to
+        Click, so CLI commands loaded from plugin entry points are registered under the
+        entry point's name.
+
+    .. change:: Render parameter metadata for fields whose schema is a component reference
+        :type: bugfix
+        :pr: 4983
+        :issue: 3076
+
+        Metadata declared with ``Parameter()`` or ``Body()``, such as a title,
+        description, examples or constraints, was not rendered where the field is used if
+        the field's type is rendered as a reference to a component schema, such as a
+        model, an enum or a DTO. For example, ``Body(examples=[...])`` on a ``data``
+        parameter typed as a model did not show up in the request body schema.
+
+        Such fields are now rendered as ``{"allOf": [{"$ref": ...}], ...}``, with the
+        metadata next to the reference. Fields without metadata are still rendered as a
+        plain ``$ref``. ``schema_extra`` is still applied to the component schema.
+
+    .. change:: Serialize ``AsyncPgChannelsBackend`` listener changes
+        :type: bugfix
+        :pr: 4968
+        :issue: 4110
+
+        :class:`~litestar.channels.backends.asyncpg.AsyncPgChannelsBackend` uses a single
+        connection to add and remove listeners. Concurrent subscription changes could
+        overlap on that connection and raise
+        ``InterfaceError: another operation is in progress``. Subscription changes and
+        startup and shutdown of the backend are now serialized.
+
+        Subscriptions are now cleared on shutdown, which allows reusing a backend
+        instance after it has been shut down.
+
+    .. change:: Fix ``OpenAPIFormat.IRI`` value
+        :type: bugfix
+        :pr: 4971
+
+        :class:`OpenAPIFormat.IRI <litestar.openapi.spec.OpenAPIFormat>` had the value
+        ``"iri-reference"``, the same as ``OpenAPIFormat.IRI_REFERENCE``. It now has the
+        value ``"iri"``, as defined by the
+        `JSON Schema specification <https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-00#section-7.3.5>`_.
+
+    .. change:: Fix ``MutableScopeHeaders.getall()`` ignoring an empty ``default``
+        :type: bugfix
+        :pr: 4932
+
+        :meth:`MutableScopeHeaders.getall() <litestar.datastructures.MutableScopeHeaders.getall>`
+        raised a :exc:`KeyError` for a missing header when an empty list was passed as
+        ``default``, instead of returning it. In addition, the :exc:`KeyError` raised by
+        ``getall()`` and by item access for a missing header now contains the header
+        name.
+
+    .. change:: Allow garbage collection of ``Litestar`` instances
+        :type: bugfix
+        :pr: 4930
+        :issue: 4876
+
+        The routing cache was a class-level ``lru_cache``, which kept every router, and
+        through it every :class:`~litestar.app.Litestar` instance and its state, alive
+        for the lifetime of the process. This mainly affected processes that create many
+        applications, such as test suites. The cache is now created per router, so an
+        application can be garbage collected once it is no longer referenced.
+
+    .. change:: Preserve acronyms in generated exception descriptions
+        :type: bugfix
+        :pr: 4921
+        :issue: 4004
+
+        OpenAPI response descriptions generated from exception class names split the
+        name before every capital letter, so ``InvalidAPIKeyError`` was rendered as
+        ``Invalid A P I Key Error``. Consecutive capital letters are now kept together,
+        rendering ``Invalid API Key Error``.
+
+    .. change:: Return ``400 - Bad Request`` for multipart requests without a boundary
+        :type: bugfix
+        :pr: 4839
+        :issue: 4638
+
+        A ``multipart/form-data`` request whose ``Content-Type`` header has no
+        ``boundary`` parameter was passed to the multipart parser with an empty boundary.
+        Such requests are now rejected with a ``400 - Bad Request``.
+
+    .. change:: Deprecate reserved keyword arguments declared without their type
+        :type: feature
+        :pr: 5137
+
+        Deprecate declaring the reserved keyword arguments ``body``, ``cookies``,
+        ``data``, ``headers``, ``query``, ``request``, ``scope`` and ``socket`` without
+        the type listed below, or with a different one. Doing so will raise a
+        :exc:`DeprecationWarning`. Reserved keyword arguments declared without their type
+        will stop working in Litestar 3.0.
+
+        For this, add the types :data:`~litestar.params.RawBody`,
+        :data:`~litestar.params.QueryParams` and :data:`~litestar.params.RequestCookies`,
+        and the body marker :data:`~litestar.params.RequestBody`, which declares a body
+        of the default media type, ``application/json``.
+
+        .. list-table::
+            :header-rows: 1
+            :widths: 20 80
+
+            * - Parameter
+              - Type
+            * - ``body``
+              - :data:`~litestar.params.RawBody`
+            * - ``cookies``
+              - :data:`~litestar.params.RequestCookies`
+            * - ``data``
+              - A body marker, e.g. :data:`~litestar.params.JSONBody` or
+                :data:`~litestar.params.RequestBody`
+            * - ``headers``
+              - :class:`~litestar.datastructures.Headers`
+            * - ``query``
+              - :data:`~litestar.params.QueryParams`
+            * - ``request``
+              - The request class configured for the handler, or one of its base classes,
+                e.g. :class:`~litestar.connection.Request`
+            * - ``scope``
+              - :data:`~litestar.types.Scope`
+            * - ``socket``
+              - The websocket class configured for the handler, or one of its base
+                classes, e.g. :class:`~litestar.connection.WebSocket`
+
+        In route handlers, ``cookies``, ``headers``, ``query`` and ``scope`` can also be
+        accessed through the request, e.g. ``request.headers``.
+
+        .. seealso:: :ref:`handler-function-kwargs`
+
+
+
 .. changelog:: 2.24.0
     :date: 2026-06-11
 

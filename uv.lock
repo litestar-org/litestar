@@ -4852,7 +4852,7 @@ wheels = [
 
 [[package]]
 name = "litestar"
-version = "2.24.0"
+version = "2.25.0"
 source = { editable = "." }
 default-groups = ["dev", "docs", "linting", "test"]
 dependencies = [
