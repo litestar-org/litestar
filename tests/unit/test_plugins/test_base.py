@@ -7,11 +7,11 @@ from click import Group
 
 from litestar import Litestar, MediaType, get
 from litestar.constants import UNDEFINED_SENTINELS
-from litestar.plugins import CLIPluginProtocol, InitPlugin, OpenAPISchemaPlugin, PluginRegistry
+from litestar.dto import AbstractDTO
+from litestar.plugins import CLIPluginProtocol, InitPlugin, OpenAPISchemaPlugin, PluginRegistry, SerializationPlugin
 from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.plugins.core import MsgspecDIPlugin
 from litestar.plugins.pydantic import PydanticDIPlugin, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
-from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 
@@ -49,10 +49,23 @@ def test_plugin_registry() -> None:
         def on_cli_init(self, cli: Group) -> None:
             pass
 
+    class SomeSerializationPlugin(SerializationPlugin):
+        def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
+            pass
+
+        def supports_type(self, field_definition: FieldDefinition) -> bool:
+            pass
+
+    class SomeSchemaPlugin(OpenAPISchemaPlugin):
+        pass
+
+    class SomeInitPlugin(InitPlugin):
+        pass
+
     cli_plugin = CLIPlugin()
-    serialization_plugin = SQLAlchemySerializationPlugin()
-    openapi_plugin = PydanticSchemaPlugin()
-    init_plugin = PydanticInitPlugin()
+    serialization_plugin = SomeSerializationPlugin()
+    openapi_plugin = SomeSchemaPlugin()
+    init_plugin = SomeInitPlugin()
 
     registry = PluginRegistry([cli_plugin, serialization_plugin, openapi_plugin, init_plugin])
 
