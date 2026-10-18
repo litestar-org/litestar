@@ -14,7 +14,7 @@ from litestar.channels import ChannelsBackend
 from litestar.channels.backends.asyncpg import AsyncPgChannelsBackend
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
-from litestar.channels.backends.redis import RedisChannelsStreamBackend
+from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.utils.compat import async_next
 

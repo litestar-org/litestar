@@ -157,7 +157,7 @@ def test_mutable_scope_headers_getall_not_found_no_default(mutable_headers: Muta
 @pytest.mark.parametrize("default", [[], ["one", "two"]])
 def test_mutable_scope_headers_getall_not_found_default(
     mutable_headers: MutableScopeHeaders,
-    default: list[str],
+    default: List[str],
 ) -> None:
     assert mutable_headers.getall("bar", default) == default
 

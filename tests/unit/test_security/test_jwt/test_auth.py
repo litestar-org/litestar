@@ -21,8 +21,6 @@ from litestar.testing import TestClient, create_test_client
 from tests.models import User, UserFactory
 
 if TYPE_CHECKING:
-    from time_machine import Traveller
-
     from litestar.connection import ASGIConnection
 
 
@@ -902,7 +900,6 @@ async def test_jwt_auth_verify_nbf(
 _LEEWAY: Final = 2
 
 
-@pytest.mark.time_machine(datetime(2026, 9, 3))
 @pytest.mark.parametrize(
     "seconds, expected_status_code",
     [
@@ -915,7 +912,7 @@ async def test_jwt_auth_leeway(
     seconds: int,
     expected_status_code: int,
     create_jwt_app: CreateJWTApp,
-    frozen_datetime: "Traveller",
+    frozen_datetime: "Any",
 ) -> None:
     # According to RFC 7519 and PyJWT implementation, a token is expired ON OR AFTER (exp + leeway).
     # So the exact moment it hits the deadline, it must return 401.

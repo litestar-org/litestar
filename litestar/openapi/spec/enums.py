@@ -23,7 +23,7 @@ class OpenAPIFormat(str, Enum):
     JSON_POINTER = "json-pointer"
     RELATIVE_JSON_POINTER = "relative-json-pointer"
     IRI = "iri"
-    IRI_REFERENCE = "iri-reference"  # noqa: PIE796
+    IRI_REFERENCE = "iri-reference"
     UUID = "uuid"
     REGEX = "regex"
     BINARY = "binary"
