@@ -13,6 +13,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 
 class AsyncPgChannelsBackend(ChannelsBackend):
     _listener_conn: asyncpg.Connection
+    _listener_lock: asyncio.Lock
 
     @overload
     def __init__(self, dsn: str) -> None: ...
@@ -37,9 +38,9 @@ class AsyncPgChannelsBackend(ChannelsBackend):
         self._exit_stack = AsyncExitStack()
         self._connect = make_connection or partial(asyncpg.connect, dsn=dsn)
         self._queue: asyncio.Queue[tuple[str, bytes]] | None = None
-        self._listener_lock = asyncio.Lock()
 
     async def on_startup(self) -> None:
+        self._listener_lock = asyncio.Lock()
         async with self._listener_lock:
             self._queue = asyncio.Queue()
             self._listener_conn = await self._connect()

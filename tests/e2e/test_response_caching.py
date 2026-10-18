@@ -17,6 +17,8 @@ from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
+from litestar.stores.redis import RedisStore
+from litestar.stores.valkey import ValkeyStore
 from litestar.testing import TestClient, create_test_client
 from litestar.types import HTTPScope
 
@@ -175,6 +177,10 @@ async def test_with_stores(store: Store, mock: MagicMock) -> None:
     @get(cache=True)
     def handler() -> str:
         return mock()  # type: ignore[no-any-return]
+
+    if isinstance(store, (RedisStore, ValkeyStore)):
+        # the app then closes the client on the TestClient's event loop, which is the loop that opened the connections
+        store.handle_client_shutdown = True
 
     app = Litestar([handler], stores={"response_cache": store})
 
