@@ -34,4 +34,4 @@ config = SQLAlchemyAsyncConfig(
     connection_string="sqlite+aiosqlite:///todo_async.sqlite", create_all=True, metadata=Base.metadata
 )
 plugin = SQLAlchemyPlugin(config=config)
-app = Litestar(route_handlers=[add_item], plugins=[plugin])
+app = Litestar(route_handlers=[add_item], plugins=[plugin], debug=True)

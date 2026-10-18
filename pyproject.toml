@@ -1,10 +1,6 @@
 [project]
 authors = [
-  { name = "Cody Fincher", email = "cody@litestar.dev" },
-  { name = "Jacob Coffee", email = "jacob@litestar.dev" },
-  { name = "Janek Nouvertné", email = "janek@litestar.dev" },
-  { name = "Na'aman Hirschfeld", email = "nhirschfeld@gmail.com" },
-  { name = "Peter Schutt", email = "peter@litestar.dev" },
+  { name = "The Litestar Project", email = "hello@litestar.dev" },
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -85,7 +81,7 @@ annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]"]
-cryptography = ["cryptography"]
+cryptography = ["cryptography<47.0; python_version==\"3.8\"","cryptography; python_version>\"3.8\""]
 full = [
   "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version < \"3.13\"",
   "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version >= \"3.13\"",
@@ -161,12 +157,10 @@ docs = [
   "sphinx-paramlinks>=0.6.0",
 ]
 linting = [
-  "ruff>=0.2.1",
+  "ruff>=0.15,<0.16",
   "mypy<1.17.0", # 1.17.0 dropped support for Python 3.8
   "pre-commit",
   "slotscheck",
-  "codecov-cli",
-  "codecov-cli>=11.2.6; python_version >= \"3.14\"",
   "pyright==1.1.344",
   "asyncpg-stubs",
   "types-beautifulsoup4",
@@ -186,6 +180,7 @@ test = [
   "pytest-timeout",
   "pytest-xdist",
   "time-machine<3",
+  "sqlalchemy<2.1", # advanced-alchemy is currently incompatible with SQLA 2.1. see https://github.com/litestar-org/advanced-alchemy/issues/811
 ]
 
 [build-system]
@@ -210,6 +205,7 @@ asyncio_mode = "auto"
 filterwarnings = [
   "error",
   # https://github.com/pytest-dev/pytest-asyncio/issues/724
+  "ignore:The declarative_mixin:sqlalchemy.exc.SADeprecationWarning:",
   "default:.*socket.socket:pytest.PytestUnraisableExceptionWarning",
   "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
   "ignore::DeprecationWarning:pkg_resources.*",
@@ -228,7 +224,8 @@ filterwarnings = [
   "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",
   "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
   "ignore:Use of deprecated default '__check_model__':DeprecationWarning:polyfactory:",
-  "ignore:Core Pydantic V1:UserWarning:"
+  "ignore:Core Pydantic V1:UserWarning:",
+  "ignore:Call to deprecated function 'set_async_context':DeprecationWarning:"
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",

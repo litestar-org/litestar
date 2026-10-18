@@ -6,12 +6,14 @@ import pytest
 from click import Group
 
 from litestar import Litestar, MediaType, get
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar.constants import UNDEFINED_SENTINELS
-from litestar.plugins import CLIPluginProtocol, InitPlugin, OpenAPISchemaPlugin, PluginRegistry
+from litestar.dto import AbstractDTO
+from litestar.openapi.spec import Schema
+from litestar.plugins import CLIPluginProtocol, InitPlugin, OpenAPISchemaPlugin, PluginRegistry, SerializationPlugin
 from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.plugins.core import MsgspecDIPlugin
 from litestar.plugins.pydantic import PydanticDIPlugin, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
-from litestar.plugins.sqlalchemy import SQLAlchemySerializationPlugin
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 
@@ -47,12 +49,26 @@ def test_plugin_on_app_init() -> None:
 def test_plugin_registry() -> None:
     class CLIPlugin(CLIPluginProtocol):
         def on_cli_init(self, cli: Group) -> None:
-            pass
+            raise NotImplementedError
+
+    class SomeSerializationPlugin(SerializationPlugin):
+        def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
+            raise NotImplementedError
+
+        def supports_type(self, field_definition: FieldDefinition) -> bool:
+            raise NotImplementedError
+
+    class SomeSchemaPlugin(OpenAPISchemaPlugin):
+        def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
+            raise NotImplementedError
+
+    class SomeInitPlugin(InitPlugin):
+        pass
 
     cli_plugin = CLIPlugin()
-    serialization_plugin = SQLAlchemySerializationPlugin()
-    openapi_plugin = PydanticSchemaPlugin()
-    init_plugin = PydanticInitPlugin()
+    serialization_plugin = SomeSerializationPlugin()
+    openapi_plugin = SomeSchemaPlugin()
+    init_plugin = SomeInitPlugin()
 
     registry = PluginRegistry([cli_plugin, serialization_plugin, openapi_plugin, init_plugin])
 
