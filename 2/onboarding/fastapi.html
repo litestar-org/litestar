@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1588,7 +1588,7 @@ FastAPI</label><div class="sd-tab-content docutils">
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -1601,7 +1601,7 @@ Starlette</label><div class="sd-tab-content docutils">
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span> <span class="o">...</span>
 
-<span class="n">routes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">index</span><span class="p">)]</span>
+<span class="n">routes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Route</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">index</span><span class="p">)]</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Starlette</span><span class="p">(</span><span class="n">routes</span><span class="o">=</span><span class="n">routes</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1612,9 +1612,9 @@ Litestar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -1680,9 +1680,9 @@ Litestar</label><div class="sd-tab-content docutils">
     <span class="c1"># Teardown code runs after the application has stopped.</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">lifespan</span><span class="p">])</span>
@@ -1717,21 +1717,21 @@ Litestar</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ArqRedis</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stand-in for an ``arq`` Redis client.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Stand-in for an ``arq`` Redis client."""</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_arq_redis</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArqRedis</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">arq_redis</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arq_redis&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_arq_redis</span><span class="p">)})</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"arq_redis"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_arq_redis</span><span class="p">)})</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">arq_redis</span><span class="p">:</span> <span class="n">ArqRedis</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">arq_redis</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"type"</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">arq_redis</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span>
-    <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">&quot;arq_redis&quot;</span><span class="p">:</span> <span class="n">ArqRedis</span><span class="p">()}),</span>
+    <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">"arq_redis"</span><span class="p">:</span> <span class="n">ArqRedis</span><span class="p">()}),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1752,7 +1752,7 @@ must be marked with <a class="reference internal" href="../reference/params.html
 <input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-7">
 FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{some_path}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/</span><span class="si">{some_path}</span><span class="s2">"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">some_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">some_query</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
@@ -1765,7 +1765,7 @@ Litestar</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span><span class="p">,</span> <span class="n">FromQuery</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{some_path:str}&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/{some_path:str}"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">some_path</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">some_query</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
@@ -1779,7 +1779,7 @@ Litestar</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-9">
 FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{some_path}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/</span><span class="si">{some_path}</span><span class="s2">"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
     <span class="n">some_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">some_query</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Query</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
@@ -1797,10 +1797,10 @@ Litestar</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieParameter</span><span class="p">,</span> <span class="n">HeaderParameter</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
     <span class="n">some_cookie</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">lt</span><span class="o">=</span><span class="mi">10</span><span class="p">)],</span>
-    <span class="n">some_header</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;some-header&quot;</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
+    <span class="n">some_header</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"some-header"</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
@@ -1822,7 +1822,7 @@ the function parameter name.</p>
 <input checked="checked" id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-11">
 FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
     <span class="n">some_cookie</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Cookie</span><span class="p">(</span><span class="n">lt</span><span class="o">=</span><span class="mi">10</span><span class="p">)],</span>
     <span class="n">some_header</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Header</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
@@ -1840,9 +1840,9 @@ Litestar</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{some_path:str}&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/{some_path:str}"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
-    <span class="n">some_path</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PathParameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is the path parameter&quot;</span><span class="p">)],</span>
+    <span class="n">some_path</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PathParameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"This is the path parameter"</span><span class="p">)],</span>
     <span class="n">some_query</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">return</span> <span class="kc">None</span>
@@ -1865,9 +1865,9 @@ FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/items/&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/items/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1877,15 +1877,16 @@ Litestar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/items/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/items/"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">Item</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_item</span><span class="p">])</span>
@@ -1907,12 +1908,12 @@ Litestar</label><div class="sd-tab-content docutils">
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">Form</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/login"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span>
     <span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Form</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
     <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Form</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"user"</span><span class="p">:</span> <span class="n">username</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1926,11 +1927,11 @@ Litestar</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/login"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">URL_ENCODED</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"user"</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">"username"</span><span class="p">]}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">login</span><span class="p">])</span>
@@ -1953,9 +1954,9 @@ model type with <code class="docutils literal notranslate"><span class="pre">Upl
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/upload/&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/upload/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;file_names&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"file_names"</span><span class="p">:</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]}</span>
 </pre></div>
 </div>
 </div>
@@ -1970,11 +1971,11 @@ Litestar</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">Body</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/upload/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;file_names&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"file_names"</span><span class="p">:</span> <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">upload_file</span><span class="p">])</span>
@@ -1994,10 +1995,10 @@ inside a thread pool, set <code class="docutils literal notranslate"><span class
 <input checked="checked" id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-19">
 FastAPI</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">slow_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="c1"># implicitly run in a threadpool</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2009,15 +2010,15 @@ Litestar</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">slow_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/fast&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/fast"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">fast_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">slow_handler</span><span class="p">,</span> <span class="n">fast_handler</span><span class="p">])</span>
@@ -2048,9 +2049,9 @@ and <code class="docutils literal notranslate"><span class="pre">headers=</span>
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;cookie-value&quot;</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"my-cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"cookie-value"</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{}</span>
 </pre></div>
 </div>
@@ -2062,9 +2063,9 @@ Litestar</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cookie</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;cookie-value&quot;</span><span class="p">)])</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"my-cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"cookie-value"</span><span class="p">)])</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;hello&quot;</span>
+    <span class="k">return</span> <span class="s2">"hello"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">])</span>
@@ -2098,12 +2099,12 @@ through <a class="reference internal" href="../reference/template.html#litestar.
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.templating</span><span class="w"> </span><span class="kn">import</span> <span class="n">Jinja2Templates</span>
 
-<span class="n">templates</span> <span class="o">=</span> <span class="n">Jinja2Templates</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s2">&quot;templates&quot;</span><span class="p">)</span>
+<span class="n">templates</span> <span class="o">=</span> <span class="n">Jinja2Templates</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s2">"templates"</span><span class="p">)</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/uploads&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/uploads"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_uploads</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">templates</span><span class="o">.</span><span class="n">TemplateResponse</span><span class="p">(</span>
-        <span class="s2">&quot;uploads.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="n">request</span><span class="p">,</span> <span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="s2">"uploads.html"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"request"</span><span class="p">:</span> <span class="n">request</span><span class="p">,</span> <span class="s2">"debug"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -2119,11 +2120,11 @@ Litestar</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.template.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateConfig</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/uploads&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/uploads"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_uploads</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Template</span><span class="p">(</span>
-        <span class="n">template_str</span><span class="o">=</span><span class="s2">&quot;&lt;p&gt;debug={{ debug }}&lt;/p&gt;&quot;</span><span class="p">,</span>
-        <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="n">template_str</span><span class="o">=</span><span class="s2">"&lt;p&gt;debug={{ debug }}&lt;/p&gt;"</span><span class="p">,</span>
+        <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">"debug"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
     <span class="p">)</span>
 
 
@@ -2155,11 +2156,11 @@ Both wrap a sync or async iterator.</p>
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">StreamingResponse</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/numbers&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/numbers"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_numbers</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">StreamingResponse</span><span class="p">:</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">numbers</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">StreamingResponse</span><span class="p">(</span><span class="n">numbers</span><span class="p">())</span>
 </pre></div>
@@ -2176,10 +2177,10 @@ Litestar</label><div class="sd-tab-content docutils">
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">numbers</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/numbers&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/numbers"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_numbers</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="n">numbers</span><span class="p">())</span>
 
@@ -2213,7 +2214,7 @@ FastAPI</label><div class="sd-tab-content docutils">
 <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">nested_dependency</span><span class="p">)])</span>
 <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">router</span><span class="p">)</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
     <span class="n">val_route</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">route_dependency</span><span class="p">),</span>
     <span class="n">val_router</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">router_dependency</span><span class="p">),</span>
@@ -2235,7 +2236,7 @@ Litestar</label><div class="sd-tab-content docutils">
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">nested_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;nested&quot;</span>
+    <span class="k">return</span> <span class="s2">"nested"</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">router_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -2246,7 +2247,7 @@ Litestar</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">val_nested</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;val_route&quot;</span><span class="p">:</span> <span class="n">route_dependency</span><span class="p">})</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"val_route"</span><span class="p">:</span> <span class="n">route_dependency</span><span class="p">})</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
     <span class="n">val_route</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span>
     <span class="n">val_router</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -2254,24 +2255,24 @@ Litestar</label><div class="sd-tab-content docutils">
     <span class="n">val_app</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;val_route&quot;</span><span class="p">:</span> <span class="n">val_route</span><span class="p">,</span>
-        <span class="s2">&quot;val_router&quot;</span><span class="p">:</span> <span class="n">val_router</span><span class="p">,</span>
-        <span class="s2">&quot;val_nested&quot;</span><span class="p">:</span> <span class="n">val_nested</span><span class="p">,</span>
-        <span class="s2">&quot;val_app&quot;</span><span class="p">:</span> <span class="n">val_app</span><span class="p">,</span>
+        <span class="s2">"val_route"</span><span class="p">:</span> <span class="n">val_route</span><span class="p">,</span>
+        <span class="s2">"val_router"</span><span class="p">:</span> <span class="n">val_router</span><span class="p">,</span>
+        <span class="s2">"val_nested"</span><span class="p">:</span> <span class="n">val_nested</span><span class="p">,</span>
+        <span class="s2">"val_app"</span><span class="p">:</span> <span class="n">val_app</span><span class="p">,</span>
     <span class="p">}</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">,</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span>
-    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;val_router&quot;</span><span class="p">:</span> <span class="n">router_dependency</span><span class="p">},</span>
+    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"val_router"</span><span class="p">:</span> <span class="n">router_dependency</span><span class="p">},</span>
 <span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
     <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;val_app&quot;</span><span class="p">:</span> <span class="n">app_dependency</span><span class="p">,</span>
-        <span class="s2">&quot;val_nested&quot;</span><span class="p">:</span> <span class="n">nested_dependency</span><span class="p">,</span>
+        <span class="s2">"val_app"</span><span class="p">:</span> <span class="n">app_dependency</span><span class="p">,</span>
+        <span class="s2">"val_nested"</span><span class="p">:</span> <span class="n">nested_dependency</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
@@ -2322,9 +2323,9 @@ appended to <code class="docutils literal notranslate"><span class="pre">detail<
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;can&#39;t find that&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">"can't find that"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2335,12 +2336,12 @@ Litestar</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">response_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">}</span>
+    <span class="n">response_fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"array"</span><span class="p">:</span> <span class="s2">"value"</span><span class="p">}</span>
     <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
         <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
-        <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;can&#39;t get that field: </span><span class="si">{</span><span class="n">response_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;missing&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"can't get that field: </span><span class="si">{</span><span class="n">response_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'missing'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
     <span class="p">)</span>
 
 
@@ -2366,7 +2367,7 @@ FastAPI</label><div class="sd-tab-content docutils">
 
 <span class="nd">@app</span><span class="o">.</span><span class="n">exception_handler</span><span class="p">(</span><span class="n">ItemNotFound</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;item not found&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">"detail"</span><span class="p">:</span> <span class="s2">"item not found"</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2381,10 +2382,10 @@ Litestar</label><div class="sd-tab-content docutils">
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">handle_item_not_found</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="n">ItemNotFoundError</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-    <span class="k">return</span> <span class="n">Response</span><span class="p">({</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;item not found&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">({</span><span class="s2">"detail"</span><span class="p">:</span> <span class="s2">"item not found"</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">raise</span> <span class="n">ItemNotFoundError</span>
 
@@ -2429,7 +2430,7 @@ FastAPI</label><div class="sd-tab-content docutils">
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">authenticate</span><span class="p">)])</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">authenticate</span><span class="p">)])</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -2444,13 +2445,13 @@ Litestar</label><div class="sd-tab-content docutils">
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">require_token</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;authorization&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;Bearer secret&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"authorization"</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">"Bearer secret"</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">require_token</span><span class="p">])</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">require_token</span><span class="p">])</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -2483,7 +2484,7 @@ FastAPI</label><div class="sd-tab-content docutils">
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">dispatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">call_next</span><span class="p">):</span>
         <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call_next</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;x-process-time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">"x-process-time"</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">return</span> <span class="n">response</span>
 
 <span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span><span class="n">ProcessTimeMiddleware</span><span class="p">)</span>
@@ -2506,17 +2507,17 @@ Litestar</label><div class="sd-tab-content docutils">
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
 
         <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"http.response.start"</span><span class="p">:</span>
                 <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
-                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;x-process-time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">headers</span><span class="p">[</span><span class="s2">"x-process-time"</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
         <span class="k">await</span> <span class="n">next_app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">ProcessTimeMiddleware</span><span class="p">()])</span>
@@ -2543,10 +2544,10 @@ the response. These tasks run after the response body has been sent.</p>
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackgroundTasks</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">(</span><span class="n">tasks</span><span class="p">:</span> <span class="n">BackgroundTasks</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="n">tasks</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">log_visit</span><span class="p">,</span> <span class="s2">&quot;world&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="n">tasks</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">log_visit</span><span class="p">,</span> <span class="s2">"world"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2562,14 +2563,14 @@ Litestar</label><div class="sd-tab-content docutils">
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">log_visit</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;greeted </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"greeted </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">},</span>
-        <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTask</span><span class="p">(</span><span class="n">log_visit</span><span class="p">,</span> <span class="s2">&quot;world&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">},</span>
+        <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTask</span><span class="p">(</span><span class="n">log_visit</span><span class="p">,</span> <span class="s2">"world"</span><span class="p">),</span>
     <span class="p">)</span>
 
 
@@ -2600,12 +2601,12 @@ serialisation.</p></li>
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebSocket</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s2">"/ws"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">receive_json</span><span class="p">()</span>
-        <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;echo&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]})</span>
+        <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">"echo"</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">"message"</span><span class="p">]})</span>
 </pre></div>
 </div>
 </div>
@@ -2615,9 +2616,9 @@ Litestar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/ws"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;echo&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"echo"</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">"message"</span><span class="p">]}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">echo</span><span class="p">])</span>
@@ -2651,7 +2652,7 @@ FastAPI</label><div class="sd-tab-content docutils">
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
 </pre></div>
 </div>
@@ -2670,16 +2671,16 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_client</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello</span><span class="p">])</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2691,16 +2692,16 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_test_client</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello</span><span class="p">])</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2725,14 +2726,14 @@ etc.) sits on the handler decorator in both frameworks. Application-wide options
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-45">
 FastAPI</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s2">&quot;/items/</span><span class="si">{item_id}</span><span class="s2">&quot;</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">],</span>
-    <span class="n">summary</span><span class="o">=</span><span class="s2">&quot;Retrieve an item&quot;</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Look up a single item by its numeric identifier.&quot;</span><span class="p">,</span>
-    <span class="n">operation_id</span><span class="o">=</span><span class="s2">&quot;get_item_by_id&quot;</span><span class="p">,</span>
+    <span class="s2">"/items/</span><span class="si">{item_id}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"items"</span><span class="p">],</span>
+    <span class="n">summary</span><span class="o">=</span><span class="s2">"Retrieve an item"</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">"Look up a single item by its numeric identifier."</span><span class="p">,</span>
+    <span class="n">operation_id</span><span class="o">=</span><span class="s2">"get_item_by_id"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">item_id</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="n">item_id</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2745,19 +2746,19 @@ Litestar</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/items/{item_id:int}&quot;</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">],</span>
-    <span class="n">summary</span><span class="o">=</span><span class="s2">&quot;Retrieve an item&quot;</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Look up a single item by its numeric identifier.&quot;</span><span class="p">,</span>
-    <span class="n">operation_id</span><span class="o">=</span><span class="s2">&quot;get_item_by_id&quot;</span><span class="p">,</span>
+    <span class="s2">"/items/{item_id:int}"</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"items"</span><span class="p">],</span>
+    <span class="n">summary</span><span class="o">=</span><span class="s2">"Retrieve an item"</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">"Look up a single item by its numeric identifier."</span><span class="p">,</span>
+    <span class="n">operation_id</span><span class="o">=</span><span class="s2">"get_item_by_id"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">item_id</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="n">item_id</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_item</span><span class="p">],</span>
-    <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Items API&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">),</span>
+    <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Items API"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"1.0.0"</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>

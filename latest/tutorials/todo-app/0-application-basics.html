@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1572,9 +1572,9 @@ one that prints <code class="docutils literal notranslate"><span class="pre">&qu
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
+    <span class="k">return</span> <span class="s2">"Hello, world!"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">hello_world</span><span class="p">])</span>
@@ -1609,9 +1609,9 @@ Litestar that you only want to use this function when a <code class="docutils li
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="linenos">2</span>
 <span class="linenos">3</span>
-<span class="hll"><span class="linenos">4</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="hll"><span class="linenos">4</span><span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 </span><span class="linenos">5</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="linenos">6</span>    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
+<span class="linenos">6</span>    <span class="k">return</span> <span class="s2">"Hello, world!"</span>
 <span class="linenos">7</span>
 <span class="linenos">8</span>
 <span class="linenos">9</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">hello_world</span><span class="p">])</span>
@@ -1624,10 +1624,10 @@ a function that takes another function as its argument (in this case <code class
 and replaces it with the return value of the decorator function.
 Without the decorator, the example would look like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
+    <span class="k">return</span> <span class="s2">"Hello, world!"</span>
 
 
-<span class="n">hello_world</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)(</span><span class="n">hello_world</span><span class="p">)</span>
+<span class="n">hello_world</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)(</span><span class="n">hello_world</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For an in-depth explanation of decorators, you can read this excellent Real Python
@@ -1647,16 +1647,16 @@ how you want your data to behave, and what you intend to do with it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="linenos">2</span>
 <span class="linenos">3</span>
-<span class="linenos">4</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="linenos">4</span><span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="hll"><span class="linenos">5</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span class="linenos">6</span>    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
+</span><span class="linenos">6</span>    <span class="k">return</span> <span class="s2">"Hello, world!"</span>
 <span class="linenos">7</span>
 <span class="linenos">8</span>
 <span class="linenos">9</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">hello_world</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>In this example, the <code class="docutils literal notranslate"><span class="pre">hello_world</span></code> function has a return annotation of <code class="docutils literal notranslate"><span class="pre">-&gt;</span> <span class="pre">str</span></code>.
-This means that it will return a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code></a>, and lets Litestar know that
+This means that it will return a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code></a>, and lets Litestar know that
 you would like to send the return value as-is.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1678,9 +1678,9 @@ as the first argument:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="linenos">2</span>
 <span class="linenos">3</span>
-<span class="linenos">4</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="linenos">4</span><span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="linenos">5</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="linenos">6</span>    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
+<span class="linenos">6</span>    <span class="k">return</span> <span class="s2">"Hello, world!"</span>
 <span class="linenos">7</span>
 <span class="linenos">8</span>
 <span class="hll"><span class="linenos">9</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">hello_world</span><span class="p">])</span>

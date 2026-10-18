@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1600,11 +1600,11 @@ pattern-based deletion of keys.</p>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># this will print &#39;None&#39;, as no store with this key has been defined yet</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"key"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># this will print 'None', as no store with this key has been defined yet</span>
 
-    <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"key"</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"value"</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"key"</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1621,12 +1621,12 @@ which a stored value should expire.</p>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="n">expires_in</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"bar"</span><span class="p">,</span> <span class="n">expires_in</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>  <span class="c1"># this will return &#39;None&#39;, since the key has expired</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">)</span>  <span class="c1"># this will return 'None', since the key has expired</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1647,15 +1647,15 @@ sessions or LRU caches:</p>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="n">expires_in</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"bar"</span><span class="p">,</span> <span class="n">expires_in</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
 
-    <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">renew_for</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># this will reset the time to live to one second</span>
+    <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="n">renew_for</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># this will reset the time to live to one second</span>
 
     <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="c1"># it has now been 1.5 seconds since the key was set with a life time of one second,</span>
     <span class="c1"># so it should have expired however, since it was renewed for one second, it is still available</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1679,10 +1679,10 @@ second:</p>
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_response</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
-    <span class="n">last_cleared</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;store_last_cleared&quot;</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
+    <span class="n">last_cleared</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"store_last_cleared"</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">last_cleared</span> <span class="o">&gt;</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
         <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">delete_expired</span><span class="p">()</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;store_last_cleared&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">now</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">"store_last_cleared"</span><span class="p">]</span> <span class="o">=</span> <span class="n">now</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">after_response</span><span class="o">=</span><span class="n">after_response</span><span class="p">)</span>
@@ -1694,7 +1694,7 @@ second:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.file</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileStore</span>
 
-<span class="n">file_store</span> <span class="o">=</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">))</span>
+<span class="n">file_store</span> <span class="o">=</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">"data"</span><span class="p">))</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1713,13 +1713,13 @@ This means that every time a new instance of this store is created, it will star
 </section>
 <section id="what-can-be-stored">
 <h3>What can be stored<a class="headerlink" href="#what-can-be-stored" title="Link to this heading">#</a></h3>
-<p>Stores generally operate on <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>; They accept bytes to store, and will return bytes. For convenience, the
+<p>Stores generally operate on <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>; They accept bytes to store, and will return bytes. For convenience, the
 <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.set" title="litestar.stores.base.Store.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set</span></code></a> method also allows to pass in strings, which will be UTF-8 encoded before being stored.
 This means that <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.get" title="litestar.stores.base.Store.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code></a> will return bytes even when a string has been passed to
 <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.set" title="litestar.stores.base.Store.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set</span></code></a>.</p>
 <p>The reason for this limitation is simple: Different backends used to store the data offer vastly different encoding,
 storage, and (de)serialization capacities. Since stores are designed to be interchangeable, this means settling for a
-common denominator, a type that all backends will support. <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> meet these requirements and make it possible
+common denominator, a type that all backends will support. <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> meet these requirements and make it possible
 to store a very wide variety of data.</p>
 <div class="admonition-technical-details admonition">
 <p class="admonition-title">Technical details</p>
@@ -1754,8 +1754,8 @@ keys matching the current namespace, making it safe and side-effect free.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.redis</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisStore</span>
 
 <span class="n">root_store</span> <span class="o">=</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">()</span>
-<span class="n">cache_store</span> <span class="o">=</span> <span class="n">root_store</span><span class="o">.</span><span class="n">with_namespace</span><span class="p">(</span><span class="s2">&quot;cache&quot;</span><span class="p">)</span>
-<span class="n">session_store</span> <span class="o">=</span> <span class="n">root_store</span><span class="o">.</span><span class="n">with_namespace</span><span class="p">(</span><span class="s2">&quot;sessions&quot;</span><span class="p">)</span>
+<span class="n">cache_store</span> <span class="o">=</span> <span class="n">root_store</span><span class="o">.</span><span class="n">with_namespace</span><span class="p">(</span><span class="s2">"cache"</span><span class="p">)</span>
+<span class="n">session_store</span> <span class="o">=</span> <span class="n">root_store</span><span class="o">.</span><span class="n">with_namespace</span><span class="p">(</span><span class="s2">"sessions"</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">before_shutdown</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1787,15 +1787,15 @@ using the <a class="reference internal" href="#the-default-factory">the default 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryStore</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([],</span> <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;memory&quot;</span><span class="p">:</span> <span class="n">MemoryStore</span><span class="p">()})</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([],</span> <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">"memory"</span><span class="p">:</span> <span class="n">MemoryStore</span><span class="p">()})</span>
 
-<span class="n">memory_store</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
+<span class="n">memory_store</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"memory"</span><span class="p">)</span>
 <span class="c1"># this is the previously defined store</span>
 
-<span class="n">some_other_store</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;something_else&quot;</span><span class="p">)</span>
+<span class="n">some_other_store</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"something_else"</span><span class="p">)</span>
 <span class="c1"># this will be a newly created instance</span>
 
-<span class="k">assert</span> <span class="n">app</span><span class="o">.</span><span class="n">stores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;something_else&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="n">some_other_store</span>
+<span class="k">assert</span> <span class="n">app</span><span class="o">.</span><span class="n">stores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"something_else"</span><span class="p">)</span> <span class="ow">is</span> <span class="n">some_other_store</span>
 <span class="c1"># but subsequent requests will return the same instance</span>
 </pre></div>
 </div>
@@ -1806,8 +1806,8 @@ features or third party integrations.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.rate_limit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RateLimitConfig</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">RateLimitConfig</span><span class="p">((</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
-<span class="n">rate_limit_store</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rate_limit&quot;</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">RateLimitConfig</span><span class="p">((</span><span class="s2">"second"</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">rate_limit_store</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"rate_limit"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This works because <a class="reference internal" href="../reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware" title="litestar.middleware.rate_limit.RateLimitMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code></a> will request
@@ -1816,7 +1816,7 @@ its store internally via <code class="docutils literal notranslate"><span class=
 <h3>The default factory<a class="headerlink" href="#the-default-factory" title="Link to this heading">#</a></h3>
 <p>The pattern above is made possible by using the registry’s default factory; A callable that gets invoked
 every time a store is requested that hasn’t been registered yet. It’s similar to the <code class="docutils literal notranslate"><span class="pre">default</span></code> argument to
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict.get" title="(in Python v3.14)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dict.get()</span></code></a>.</p>
+<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict.get" title="(in Python v3.15)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dict.get()</span></code></a>.</p>
 <p>By default, the default factory is a function that returns a new
 <a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a> instance. This behaviour can be changed by supplying a
 custom <code class="docutils literal notranslate"><span class="pre">default_factory</span></code> method to the registry.</p>
@@ -1850,8 +1850,8 @@ store is being requested.</p>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">stores</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;sessions&quot;</span><span class="p">:</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">(),</span>
-        <span class="s2">&quot;response_cache&quot;</span><span class="p">:</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;response-cache&quot;</span><span class="p">)),</span>
+        <span class="s2">"sessions"</span><span class="p">:</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">(),</span>
+        <span class="s2">"response_cache"</span><span class="p">:</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">"response-cache"</span><span class="p">)),</span>
     <span class="p">},</span>
     <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">ServerSideSessionConfig</span><span class="p">()</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
 <span class="p">)</span>
@@ -1870,11 +1870,11 @@ values. Adjusting those default values allows to easily reuse stores, without th
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.redis</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisStore</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;redis&quot;</span><span class="p">:</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">(),</span> <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">))},</span>
-    <span class="n">response_cache_config</span><span class="o">=</span><span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="s2">&quot;redis&quot;</span><span class="p">),</span>
+    <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">"redis"</span><span class="p">:</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">(),</span> <span class="s2">"file"</span><span class="p">:</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">"data"</span><span class="p">))},</span>
+    <span class="n">response_cache_config</span><span class="o">=</span><span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="s2">"redis"</span><span class="p">),</span>
     <span class="n">middleware</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="s2">&quot;file&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
-        <span class="n">RateLimitConfig</span><span class="p">(</span><span class="n">rate_limit</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">store</span><span class="o">=</span><span class="s2">&quot;redis&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
+        <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="s2">"file"</span><span class="p">)</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
+        <span class="n">RateLimitConfig</span><span class="p">(</span><span class="n">rate_limit</span><span class="o">=</span><span class="p">(</span><span class="s2">"second"</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">store</span><span class="o">=</span><span class="s2">"redis"</span><span class="p">)</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
@@ -1897,15 +1897,15 @@ with minimal boilerplate:</p>
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="c1"># this will use app.stores.get(&quot;response_cache&quot;)</span>
-    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
+    <span class="c1"># this will use app.stores.get("response_cache")</span>
+    <span class="k">return</span> <span class="s2">"Hello, world!"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="p">[</span><span class="n">cached_handler</span><span class="p">],</span>
     <span class="n">stores</span><span class="o">=</span><span class="n">StoreRegistry</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">root_store</span><span class="o">.</span><span class="n">with_namespace</span><span class="p">),</span>
     <span class="n">middleware</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">RateLimitConfig</span><span class="p">((</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
+        <span class="n">RateLimitConfig</span><span class="p">((</span><span class="s2">"second"</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
         <span class="n">ServerSideSessionConfig</span><span class="p">()</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">)</span>

@@ -47,7 +47,6 @@
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
     <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
 
 
@@ -56,173 +55,11 @@
 
 const initStyles = () => {
     const defaultStyle = document.createElement('style');
-    defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}`;
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
     document.head.appendChild(defaultStyle);
 
     const fullscreenStyle = document.createElement('style');
-    fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
     document.head.appendChild(fullscreenStyle);
 }
 
@@ -267,6 +104,32 @@ let darkTheme = isDarkTheme();
 let modal = null;
 let modalContent = null;
 let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
 
 const runMermaid = async (rerun) => {
     console.log("Running mermaid diagrams, rerun =", rerun);
@@ -274,7 +137,15 @@ const runMermaid = async (rerun) => {
     let all_mermaids = document.querySelectorAll(".mermaid");
 
     if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
         all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
             if(!el.hasAttribute("data-original-code")) {
                 // store original code
                 // console.log(`Storing original code for first run: `, el.innerHTML);
@@ -291,42 +162,100 @@ const runMermaid = async (rerun) => {
                 el.setAttribute('data-original-code', el.innerHTML);
             }
         });
-        await mermaid.run();
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
     }
 
     all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
 
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
         if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
                 setTimeout(() => runMermaid(false), 200);
                 return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
             }
+            addZoomToSvgs(svgs);
         }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
+    } else if(mermaids_active.length !== mermaids_processed.length) {
         // Wait for mermaid to process all diagrams
         setTimeout(() => runMermaid(false), 200);
         return;
     }
 
     // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
+    if (!true) return;
 
     if (modal !== null ) {
         // Destroy existing modal
@@ -349,7 +278,7 @@ const runMermaid = async (rerun) => {
     modalContent = modal.querySelector('.mermaid-container-fullscreen');
     const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
 
-    const closeModal = () => {
+    closeModal = () => {
         modal.classList.remove('active');
         modalContent.innerHTML = '';
         document.body.style.overflow = ''
@@ -360,12 +289,6 @@ const runMermaid = async (rerun) => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
     });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
     document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
         if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
             mermaidDiv.closest('.mermaid-fullscreen-modal')) {
@@ -385,8 +308,8 @@ const runMermaid = async (rerun) => {
         const fullscreenBtn = document.createElement('button');
         fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
         fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
 
         // Calculate dynamic position based on diagram's margin and padding
         const diagramStyle = window.getComputedStyle(mermaidDiv);
@@ -398,7 +321,7 @@ const runMermaid = async (rerun) => {
         fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
 
         fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
+            previousScrollOffset = [window.scrollX, window.scrollY];
             const clone = mermaidDiv.cloneNode(true);
             modalContent.innerHTML = '';
             modalContent.appendChild(clone);
@@ -410,9 +333,9 @@ const runMermaid = async (rerun) => {
                 svg.style.width = '100%';
                 svg.style.height = 'auto';
                 svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
+                svg.style.display = 'block';
 
-                if ("False" === "True") {
+                if (false) {
                     setTimeout(() => {
                         const g = svg.querySelector('g');
                         if (g) {
@@ -435,8 +358,11 @@ const runMermaid = async (rerun) => {
     });
 };
 
+
+
 const load = async () => {
     initStyles();
+
 
     await runMermaid(true);
 
@@ -446,10 +372,8 @@ const load = async () => {
             darkTheme = newDarkTheme;
             console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
             await mermaid.initialize(
-                {...JSON.parse(
-                    `{"startOnLoad": false}`
-                ),
-                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
                 }
             );
             await runMermaid(true);
@@ -474,10 +398,8 @@ const load = async () => {
 
 console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
 mermaid.initialize(
-    {...JSON.parse(
-        `{"startOnLoad": false}`
-    ),
-    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
     }
 );
 
@@ -767,7 +689,7 @@ window.runMermaid = runMermaid;</script>
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1321,7 +1243,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1989,7 +1911,7 @@ document.write(`
 class. Typically, this code will be placed in a file called <code class="docutils literal notranslate"><span class="pre">main.py</span></code>, <code class="docutils literal notranslate"><span class="pre">app.py</span></code>, <code class="docutils literal notranslate"><span class="pre">asgi.py</span></code> or similar
 at the project’s root directory.</p>
 <p>These entry points are also used during <a class="reference internal" href="cli.html#autodiscovery"><span class="std std-ref">CLI autodiscovery</span></a></p>
-<p>Creating an app is straightforward – the only required <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">args</span></a> is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+<p>Creating an app is straightforward – the only required <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.15)"><span class="xref std std-term">args</span></a> is a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
 of <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controllers</span></code></a>, <a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Routers</span></code></a>,
 or <a class="reference internal" href="../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Route</span> <span class="pre">handlers</span></code></a>:</p>
 <div class="sd-tab-set docutils">
@@ -2003,10 +1925,10 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="sd">"""Handler function that returns a greeting dictionary."""</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
@@ -2022,10 +1944,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="sd">"""Handler function that returns a greeting dictionary."""</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
@@ -2037,7 +1959,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
-<span class="o">{</span><span class="s2">&quot;hello&quot;</span>:<span class="s2">&quot;world&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"hello"</span>:<span class="s2">"world"</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -2054,9 +1976,9 @@ and <a class="reference internal" href="../reference/handlers.html#litestar.hand
 </section>
 <section id="startup-and-shutdown">
 <h2>Startup and Shutdown<a class="headerlink" href="#startup-and-shutdown" title="Link to this heading">#</a></h2>
-<p>You can pass a list of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.14)"><span class="xref std std-term">callables</span></a> - either sync or async functions, methods, or class instances
+<p>You can pass a list of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.15)"><span class="xref std std-term">callables</span></a> - either sync or async functions, methods, or class instances
 - to the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_startup" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_startup</span></code></a> / <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_shutdown" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_shutdown</span></code></a>
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">kwargs</span></a> of the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app</span></code></a> instance. Those will be called in
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.15)"><span class="xref std std-term">kwargs</span></a> of the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app</span></code></a> instance. Those will be called in
 order, once the ASGI server such as <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a>,
 <a class="reference external" href="https://hypercorn.readthedocs.io/en/latest/#/">Hypercorn</a>, <a class="reference external" href="https://github.com/emmett-framework/granian/">Granian</a>,
 <a class="reference external" href="https://github.com/django/daphne/">Daphne</a>, etc. emits the respective event.</p>
@@ -2078,23 +2000,23 @@ establish the connection, and another to close it, and then pass them to the <a 
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 
-<span class="n">DB_URI</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DATABASE_URI&quot;</span><span class="p">,</span> <span class="s2">&quot;postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db&quot;</span><span class="p">)</span>
+<span class="n">DB_URI</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"DATABASE_URI"</span><span class="p">,</span> <span class="s2">"postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db"</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_db_connection</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncEngine</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the db engine.</span>
+<span class="w">    </span><span class="sd">"""Returns the db engine.</span>
 
-<span class="sd">    If it doesn&#39;t exist, creates it and saves it in on the application state object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+<span class="sd">    If it doesn't exist, creates it and saves it in on the application state object</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">"engine"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="n">DB_URI</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AsyncEngine&quot;</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"AsyncEngine"</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">close_db_connection</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Closes the db connection stored in the application State object.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="k">await</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AsyncEngine&quot;</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">"""Closes the db connection stored in the application State object."""</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">"engine"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"AsyncEngine"</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">get_db_connection</span><span class="p">],</span> <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">close_db_connection</span><span class="p">])</span>
@@ -2105,7 +2027,7 @@ establish the connection, and another to close it, and then pass them to the <a 
 <section id="lifespan-context-managers">
 <span id="id1"></span><h2>Lifespan context managers<a class="headerlink" href="#lifespan-context-managers" title="Link to this heading">#</a></h2>
 <p>In addition to the lifespan hooks, Litestar also supports managing the lifespan of an application using an
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.14)"><span class="xref std std-term">asynchronous context manager</span></a>. This can be useful when dealing with long running tasks, or those that need to
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.15)"><span class="xref std std-term">asynchronous context manager</span></a>. This can be useful when dealing with long running tasks, or those that need to
 keep a certain context object, such as a connection, around.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
@@ -2123,9 +2045,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@asynccontextmanager</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">db_connection</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-    <span class="n">engine</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">"engine"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="s2">&quot;postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db&quot;</span><span class="p">)</span>
+        <span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="s2">"postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db"</span><span class="p">)</span>
         <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">engine</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -2154,9 +2076,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@asynccontextmanager</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">db_connection</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-    <span class="n">engine</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">"engine"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="s2">&quot;postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db&quot;</span><span class="p">)</span>
+        <span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="s2">"postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db"</span><span class="p">)</span>
         <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">engine</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -2175,12 +2097,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <section id="order-of-execution">
 <h2>Order of execution<a class="headerlink" href="#order-of-execution" title="Link to this heading">#</a></h2>
 <p>When multiple lifespan context managers and <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_shutdown" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_shutdown</span></code></a>  hooks are specified,
-Litestar will invoke the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.14)"><span class="xref std std-term">context managers</span></a> in inverse order before the
+Litestar will invoke the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.15)"><span class="xref std std-term">context managers</span></a> in inverse order before the
 shutdown hooks are invoked.</p>
 <p>Consider the case where there are two lifespan context managers <code class="docutils literal notranslate"><span class="pre">ctx_a</span></code> and <code class="docutils literal notranslate"><span class="pre">ctx_b</span></code> as well as two shutdown hooks
 <code class="docutils literal notranslate"><span class="pre">hook_a</span></code> and <code class="docutils literal notranslate"><span class="pre">hook_b</span></code> as shown in the following code:</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Example of multiple <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.14)"><span class="xref std std-term">context managers</span></a> and shutdown hooks</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example of multiple <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.15)"><span class="xref std std-term">context managers</span></a> and shutdown hooks</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">ctx_a</span><span class="p">,</span> <span class="n">ctx_b</span><span class="p">],</span> <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">hook_a</span><span class="p">,</span> <span class="n">hook_b</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -2189,13 +2111,13 @@ shutdown hooks are invoked.</p>
 <pre  class="mermaid">
         flowchart LR
     ctx_b --&gt; ctx_a --&gt; hook_a --&gt; hook_b
-    </pre><p>As seen, the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.14)"><span class="xref std std-term">context managers</span></a> are invoked in inverse order.
+    </pre><p>As seen, the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.15)"><span class="xref std std-term">context managers</span></a> are invoked in inverse order.
 On the other hand, the shutdown hooks are invoked in their specified order.</p>
 </section>
 <section id="using-application-state">
 <span id="application-state"></span><h2>Using Application State<a class="headerlink" href="#using-application-state" title="Link to this heading">#</a></h2>
-<p>As seen in the examples for the <a class="reference external" href="#startup-and-shutdown">on_startup / on_shutdown</a>, <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.14)"><span class="xref std std-term">callables</span></a>
-passed to these hooks can receive an optional <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">kwarg</span></a> called <code class="docutils literal notranslate"><span class="pre">app</span></code>, through which the application’s
+<p>As seen in the examples for the <a class="reference external" href="#startup-and-shutdown">on_startup / on_shutdown</a>, <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.15)"><span class="xref std std-term">callables</span></a>
+passed to these hooks can receive an optional <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.15)"><span class="xref std std-term">kwarg</span></a> called <code class="docutils literal notranslate"><span class="pre">app</span></code>, through which the application’s
 state object and other properties can be accessed. The advantage of using application <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.state" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">state</span></code></a>,
 is that it can be accessed during multiple stages of the connection, and it can be injected into dependencies and
 route handlers.</p>
@@ -2227,31 +2149,31 @@ of the application, as seen below:</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">set_state_on_startup</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Startup and shutdown hooks can receive `State` as a keyword arg.&quot;&quot;&quot;</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;abc123&quot;</span>
+<span class="w">    </span><span class="sd">"""Startup and shutdown hooks can receive `State` as a keyword arg."""</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">"abc123"</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">middleware_factory</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="s2">&quot;ASGIApp&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASGIApp&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A middleware can access application state via `scope`.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">middleware_factory</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="s2">"ASGIApp"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ASGIApp"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A middleware can access application state via `scope`."""</span>
 
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="s2">"Scope"</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">"Receive"</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">"Send"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">state</span> <span class="o">=</span> <span class="n">Litestar</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">state</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in middleware: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"state value in middleware: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="k">await</span> <span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">my_middleware</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_dependency</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dependencies can receive state via injection.&quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in dependency: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Dependencies can receive state via injection."""</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"state value in dependency: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dep&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">my_dependency</span><span class="p">)},</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">middleware_factory</span><span class="p">],</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"dep"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">my_dependency</span><span class="p">)},</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">middleware_factory</span><span class="p">],</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">dep</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handlers can receive state via injection.&quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in handler from `State`: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in handler from `Request`: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Handlers can receive state via injection."""</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"state value in handler from `State`: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"state value in handler from `Request`: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">set_state_on_startup</span><span class="p">])</span>
@@ -2274,12 +2196,12 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">"count"</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
 </pre></div>
 </div>
 </div>
@@ -2295,12 +2217,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">"count"</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
 </pre></div>
 </div>
 </div>
@@ -2308,9 +2230,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> can be initialized with a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>, an instance of
+<p><a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> can be initialized with a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>, an instance of
 <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.ImmutableState" title="litestar.datastructures.state.ImmutableState"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableState</span></code></a> or <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>,
-or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuples</span></code></a> containing key/value pairs.</p>
+or a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuples</span></code></a> containing key/value pairs.</p>
 </div>
 <p>You may instruct <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> to deep copy initialized data to prevent mutation from outside
 the application context.</p>
@@ -2327,7 +2249,7 @@ by specifying <code class="docutils literal notranslate"><span class="pre">state
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -2352,9 +2274,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImmutableState</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">ImmutableState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="nb">setattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># raises AttributeError</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># raises AttributeError</span>
     <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
 
 
@@ -2374,9 +2296,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImmutableState</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">ImmutableState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="nb">setattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># raises AttributeError</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># raises AttributeError</span>
     <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
 
 
@@ -2391,13 +2313,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <section id="application-hooks">
 <h2>Application Hooks<a class="headerlink" href="#application-hooks" title="Link to this heading">#</a></h2>
 <p>Litestar includes several application level hooks that allow users to run their own sync or async
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.14)"><span class="xref std std-term">callables</span></a>. While you are free to use these hooks as you see fit, the design intention
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.15)"><span class="xref std std-term">callables</span></a>. While you are free to use these hooks as you see fit, the design intention
 behind them is to allow for easy instrumentation for observability (monitoring, tracing, logging, etc.).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>All application hook kwargs detailed below receive either a single <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.14)"><span>callable</span></a> or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
-of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.14)"><span class="xref std std-term">callables</span></a>.
-If a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> is provided, it is called in the order it is given.</p>
+<p>All application hook kwargs detailed below receive either a single <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.15)"><span>callable</span></a> or a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.15)"><span class="xref std std-term">callables</span></a>.
+If a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> is provided, it is called in the order it is given.</p>
 </div>
 <section id="after-exception">
 <h3>After Exception<a class="headerlink" href="#after-exception" title="Link to this heading">#</a></h3>
@@ -2419,24 +2341,24 @@ the <code class="docutils literal notranslate"><span class="pre">exception</span
     <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scope</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/some-path"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Route handler that raises an exception.&quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">&quot;bad request&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Route handler that raises an exception."""</span>
+    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">"bad request"</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
 
 
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hook function that will be invoked after each exception.&quot;&quot;&quot;</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="s2">"Scope"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Hook function that will be invoked after each exception."""</span>
     <span class="n">state</span> <span class="o">=</span> <span class="n">Litestar</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">state</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;error_count&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">"error_count"</span><span class="p">):</span>
         <span class="n">state</span><span class="o">.</span><span class="n">error_count</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">state</span><span class="o">.</span><span class="n">error_count</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="s2">&quot;an exception of type </span><span class="si">%s</span><span class="s2"> has occurred for requested path </span><span class="si">%s</span><span class="s2"> and the application error count is </span><span class="si">%d</span><span class="s2">.&quot;</span><span class="p">,</span>
+        <span class="s2">"an exception of type </span><span class="si">%s</span><span class="s2"> has occurred for requested path </span><span class="si">%s</span><span class="s2"> and the application error count is </span><span class="si">%d</span><span class="s2">."</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-        <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+        <span class="n">scope</span><span class="p">[</span><span class="s2">"path"</span><span class="p">],</span>
         <span class="n">state</span><span class="o">.</span><span class="n">error_count</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -2470,25 +2392,25 @@ sent. The hook receives the message instance and the ASGI <code class="docutils 
     <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Scope</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/test"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Example Handler function.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="sd">"""Example Handler function."""</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"value"</span><span class="p">}</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The function will be called on each ASGI message.</span>
+<span class="w">    </span><span class="sd">"""The function will be called on each ASGI message.</span>
 
 <span class="sd">    We therefore ensure it runs only on the message start event.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"http.response.start"</span><span class="p">:</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
-        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;My-Header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Litestar</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">message</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s2">"My-Header"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Litestar</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">message</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A function that will populate the app state before any requests are received.&quot;&quot;&quot;</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;value injected during send&quot;</span>
+<span class="w">    </span><span class="sd">"""A function that will populate the app state before any requests are received."""</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">"value injected during send"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">before_send</span><span class="o">=</span><span class="p">[</span><span class="n">before_send_hook_handler</span><span class="p">])</span>
@@ -2506,7 +2428,7 @@ and in turn, each will receive an instance of <a class="reference internal" href
 develop third-party application configuration systems.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_app_init" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_app_init</span></code></a> handlers cannot be <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.14)"><span>Coroutine function definition</span></a> functions, as they are
+<p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_app_init" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_app_init</span></code></a> handlers cannot be <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.15)"><span>Coroutine function definition</span></a> functions, as they are
 called within <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.__init__" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">__init__</span></code></a>, outside of an async context.</p>
 </div>
 <div class="literal-block-wrapper docutils container" id="id18">
@@ -2520,15 +2442,15 @@ called within <a class="reference internal" href="../reference/app.html#litestar
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">close_db_connection</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Closes the database connection on application shutdown.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Closes the database connection on application shutdown."""</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">receive_app_config</span><span class="p">(</span><span class="n">app_config</span><span class="p">:</span> <span class="s2">&quot;AppConfig&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AppConfig&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Receives parameters from the application.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">receive_app_config</span><span class="p">(</span><span class="n">app_config</span><span class="p">:</span> <span class="s2">"AppConfig"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AppConfig"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Receives parameters from the application.</span>
 
 <span class="sd">    In reality, this would be a library of boilerplate that is carried from one application to another, or a third-party</span>
 <span class="sd">    developed application configuration tool.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">app_config</span><span class="o">.</span><span class="n">on_shutdown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">close_db_connection</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">app_config</span>
 
@@ -2548,7 +2470,7 @@ called within <a class="reference internal" href="../reference/app.html#litestar
 <li><p><a class="reference internal" href="../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controllers</span></code></a></p></li>
 <li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Handlers</span></code></a></p></li>
 </ol>
-<p>There are many <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameters</span></a> that can be defined on every layer, in which case the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameter</span></a>
+<p>There are many <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameters</span></a> that can be defined on every layer, in which case the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameter</span></a>
 defined on the layer <strong>closest to the handler</strong> takes precedence. This allows for maximum
 flexibility and simplicity when configuring complex applications and enables transparent
 overriding of parameters.</p>

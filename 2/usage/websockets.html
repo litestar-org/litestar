@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1573,7 +1573,7 @@ be handled behind the curtains.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.websocket_handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1595,7 +1595,7 @@ asynchronous.</p>
 <h3>Receiving data<a class="headerlink" href="#receiving-data" title="Link to this heading">#</a></h3>
 <p>Data can be received in the listener via the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter. The data passed to this
 will be converted / parsed according to the given type annotation and supports
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, or arbitrary <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> / or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> in the
+<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, or arbitrary <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> / or <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> in the
 form of JSON.
 .. important:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>The listeners will default to JSON unless `data` is annotated with `str` or `bytes`
@@ -1614,7 +1614,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1629,7 +1629,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1646,7 +1646,7 @@ Text</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1661,9 +1661,9 @@ Bytes</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">])</span>
@@ -1681,11 +1681,11 @@ is a limitation of the current implementation and will change in future versions
 <h3>Sending data<a class="headerlink" href="#sending-data" title="Link to this heading">#</a></h3>
 <p>Sending data is done by simply returning the value to be sent from the handler function.
 Similar to receiving data, type annotations configure how the data is being handled.
-Values that are not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> are assumed to be JSON encodable and
+Values that are not <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> are assumed to be JSON encodable and
 will be serialized accordingly before being sent. This serialization is available for
 all data types currently supported by Litestar (
-<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.14)"><span class="xref std std-doc">dataclasses</span></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>,
-<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,  <a class="reference external" href="https://msgspec.dev/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>, etc.), including
+<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.15)"><span class="xref std std-doc">dataclasses</span></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>,
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,  <a class="reference external" href="https://msgspec.dev/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>, etc.), including
 DTOs.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
@@ -1694,7 +1694,7 @@ Text</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1709,9 +1709,9 @@ Bytes</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">])</span>
@@ -1730,9 +1730,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">])</span>
@@ -1745,9 +1745,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">])</span>
@@ -1771,7 +1771,7 @@ Dataclass as JSON</label><div class="sd-tab-content docutils">
     <span class="n">timestamp</span><span class="p">:</span> <span class="nb">float</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Message</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>
 
@@ -1795,7 +1795,7 @@ structured data such as JSON.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">receive_mode</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">receive_mode</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1810,7 +1810,7 @@ Binary mode</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">receive_mode</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">receive_mode</span><span class="o">=</span><span class="s2">"binary"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1838,7 +1838,7 @@ structured data such as JSON.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">send_mode</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">send_mode</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1853,7 +1853,7 @@ Binary mode</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">send_mode</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">send_mode</span><span class="o">=</span><span class="s2">"binary"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1874,10 +1874,10 @@ route handlers:</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">some_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;hello&quot;</span>
+    <span class="k">return</span> <span class="s2">"hello"</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">some_dependency</span><span class="p">)})</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"some"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">some_dependency</span><span class="p">)})</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">some</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span> <span class="o">+</span> <span class="n">some</span>
 
@@ -1906,7 +1906,7 @@ the <code class="docutils literal notranslate"><span class="pre">yield</span></c
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">socket_client_count</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">):</span>
         <span class="n">state</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="n">state</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -1914,7 +1914,7 @@ the <code class="docutils literal notranslate"><span class="pre">yield</span></c
     <span class="n">state</span><span class="o">.</span><span class="n">count</span> <span class="o">-=</span> <span class="mi">1</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;client_count&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">socket_client_count</span><span class="p">)})</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"client_count"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">socket_client_count</span><span class="p">)})</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">client_count</span><span class="o">=</span><span class="n">client_count</span><span class="p">)</span>
 
@@ -1931,9 +1931,9 @@ function via the <code class="docutils literal notranslate"><span class="pre">so
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket_listener</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;goodbye&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="s2">"goodbye"</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">data</span>
@@ -1958,10 +1958,10 @@ function to accept the connection.</p>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">accept_connection</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;custom-cookie&quot;</span><span class="p">})</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Cookie"</span><span class="p">:</span> <span class="s2">"custom-cookie"</span><span class="p">})</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">connection_accept_handler</span><span class="o">=</span><span class="n">accept_connection</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">connection_accept_handler</span><span class="o">=</span><span class="n">accept_connection</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1986,13 +1986,13 @@ Sync</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Handler</span><span class="p">(</span><span class="n">WebsocketListener</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">on_accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connection accepted&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Connection accepted"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">on_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connection closed&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Connection closed"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">on_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span>
@@ -2010,13 +2010,13 @@ Async</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Handler</span><span class="p">(</span><span class="n">WebsocketListener</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/"</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connection accepted&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Connection accepted"</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connection closed&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Connection closed"</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span>
@@ -2046,12 +2046,12 @@ The example below illustrates how to implement a custom WebSocket class for the 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomWebSocket</span><span class="p">(</span><span class="n">WebSocket</span><span class="p">):</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">receive_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">WebSocketMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return fixed response for every websocket message.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return fixed response for every websocket message."""</span>
         <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">receive_data</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;Fixed response&quot;</span>
+        <span class="k">return</span> <span class="s2">"Fixed response"</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -2087,7 +2087,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
 
 
-<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -2111,7 +2111,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
 
 
-<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -2127,10 +2127,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <section id="serialization">
 <h3>Serialization<a class="headerlink" href="#serialization" title="Link to this heading">#</a></h3>
 <p>Just like with route handlers, type annotations configure how the data is being handled.
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> will be sent as-is, while everything else will be encoded
+<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> will be sent as-is, while everything else will be encoded
 as JSON before being sent. This serialization is available for all data types currently
-supported by Litestar (<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.14)"><span class="xref std std-doc">dataclasses</span></a>,
-<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,
+supported by Litestar (<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.15)"><span class="xref std std-doc">dataclasses</span></a>,
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,
 <a class="reference external" href="https://msgspec.dev/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>, etc.), including DTOs.</p>
 </section>
 <section id="id1">
@@ -2164,7 +2164,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
         <span class="k">yield</span>
 
 
-<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">(</span><span class="n">lock</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">alive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ping_external_resource</span><span class="p">()</span>
@@ -2172,7 +2172,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lock&quot;</span><span class="p">:</span> <span class="n">acquire_lock</span><span class="p">})</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"lock"</span><span class="p">:</span> <span class="n">acquire_lock</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -2197,7 +2197,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <span class="k">yield</span>
 
 
-<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">(</span><span class="n">lock</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">alive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ping_external_resource</span><span class="p">()</span>
@@ -2205,7 +2205,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lock&quot;</span><span class="p">:</span> <span class="n">acquire_lock</span><span class="p">})</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"lock"</span><span class="p">:</span> <span class="n">acquire_lock</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -2227,7 +2227,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
 
-<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">RESOURCE_LOCK</span><span class="p">:</span>
@@ -2256,7 +2256,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
 
-<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">RESOURCE_LOCK</span><span class="p">:</span>
@@ -2288,10 +2288,10 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket_stream</span>
 
 
-<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">client</span><span class="p">}</span>
+        <span class="k">yield</span> <span class="p">{</span><span class="s2">"time"</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="s2">"client"</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">client</span><span class="p">}</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
 
 
@@ -2310,10 +2310,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket_stream</span>
 
 
-<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">client</span><span class="p">}</span>
+        <span class="k">yield</span> <span class="p">{</span><span class="s2">"time"</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="s2">"client"</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">client</span><span class="p">}</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
 
 
@@ -2380,7 +2380,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_stream</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="n">is_closed</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-            <span class="k">yield</span> <span class="s2">&quot;ping&quot;</span>
+            <span class="k">yield</span> <span class="s2">"ping"</span>
 
     <span class="k">async</span> <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">create_task_group</span><span class="p">()</span> <span class="k">as</span> <span class="n">tg</span><span class="p">:</span>
         <span class="n">tg</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">send_websocket_stream</span><span class="p">,</span> <span class="n">socket</span><span class="p">,</span> <span class="n">handle_stream</span><span class="p">())</span>
@@ -2393,7 +2393,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
             <span class="n">is_closed</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">connection_lifespan</span><span class="o">=</span><span class="n">listener_lifespan</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">connection_lifespan</span><span class="o">=</span><span class="n">listener_lifespan</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -2423,7 +2423,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_stream</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="n">is_closed</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-            <span class="k">yield</span> <span class="s2">&quot;ping&quot;</span>
+            <span class="k">yield</span> <span class="s2">"ping"</span>
 
     <span class="k">async</span> <span class="k">with</span> <span class="n">anyio</span><span class="o">.</span><span class="n">create_task_group</span><span class="p">()</span> <span class="k">as</span> <span class="n">tg</span><span class="p">:</span>
         <span class="n">tg</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">send_websocket_stream</span><span class="p">,</span> <span class="n">socket</span><span class="p">,</span> <span class="n">handle_stream</span><span class="p">())</span>
@@ -2436,7 +2436,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
             <span class="n">is_closed</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
 
-<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">connection_lifespan</span><span class="o">=</span><span class="n">listener_lifespan</span><span class="p">)</span>
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">connection_lifespan</span><span class="o">=</span><span class="n">listener_lifespan</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -2451,13 +2451,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <label class="sd-tab-label" for="sd-tab-item-28">
 how to test</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_websocket_listener</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the websocket listener.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Test the websocket listener."""</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app_stream_and_receive_listener</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="k">with</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">websocket_connect</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ws</span><span class="p">:</span>
-            <span class="n">ws</span><span class="o">.</span><span class="n">send_text</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">websocket_connect</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span> <span class="k">as</span> <span class="n">ws</span><span class="p">:</span>
+            <span class="n">ws</span><span class="o">.</span><span class="n">send_text</span><span class="p">(</span><span class="s2">"Hello"</span><span class="p">)</span>
             <span class="n">data_1</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">receive_text</span><span class="p">()</span>
             <span class="n">data_2</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">receive_text</span><span class="p">()</span>
-            <span class="k">assert</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">data_1</span><span class="p">,</span> <span class="n">data_2</span><span class="p">])</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;ping&quot;</span><span class="p">])</span>
+            <span class="k">assert</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">data_1</span><span class="p">,</span> <span class="n">data_2</span><span class="p">])</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">"Hello"</span><span class="p">,</span> <span class="s2">"ping"</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -2483,7 +2483,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_websocket_stream</span>
 
 
-<span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
     <span class="n">should_stop</span> <span class="o">=</span> <span class="n">anyio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -2491,10 +2491,10 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_stream</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="n">should_stop</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
-            <span class="k">yield</span> <span class="s2">&quot;ping&quot;</span>
+            <span class="k">yield</span> <span class="s2">"ping"</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_receive</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;handle_receive&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">})</span>
+        <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">"handle_receive"</span><span class="p">:</span> <span class="s2">"start"</span><span class="p">})</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">socket</span><span class="o">.</span><span class="n">iter_json</span><span class="p">():</span>
             <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 
@@ -2523,7 +2523,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_websocket_stream</span>
 
 
-<span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@websocket</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
     <span class="n">should_stop</span> <span class="o">=</span> <span class="n">anyio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -2531,10 +2531,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_stream</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="n">should_stop</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
-            <span class="k">yield</span> <span class="s2">&quot;ping&quot;</span>
+            <span class="k">yield</span> <span class="s2">"ping"</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_receive</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;handle_receive&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">})</span>
+        <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">"handle_receive"</span><span class="p">:</span> <span class="s2">"start"</span><span class="p">})</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">socket</span><span class="o">.</span><span class="n">iter_json</span><span class="p">():</span>
             <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 
@@ -2557,10 +2557,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 how to test</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_websocket_handler</span><span class="p">():</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app_stream_and_receive_raw</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="k">with</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">websocket_connect</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ws</span><span class="p">:</span>
-            <span class="n">echo_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;I should be in response&quot;</span><span class="p">}</span>
+        <span class="k">with</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">websocket_connect</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span> <span class="k">as</span> <span class="n">ws</span><span class="p">:</span>
+            <span class="n">echo_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"data"</span><span class="p">:</span> <span class="s2">"I should be in response"</span><span class="p">}</span>
             <span class="n">ws</span><span class="o">.</span><span class="n">send_json</span><span class="p">(</span><span class="n">echo_data</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="n">ws</span><span class="o">.</span><span class="n">receive_json</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;handle_receive&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">}</span>
+            <span class="k">assert</span> <span class="n">ws</span><span class="o">.</span><span class="n">receive_json</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"handle_receive"</span><span class="p">:</span> <span class="s2">"start"</span><span class="p">}</span>
             <span class="k">assert</span> <span class="n">ws</span><span class="o">.</span><span class="n">receive_json</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">==</span> <span class="n">echo_data</span>
             <span class="k">assert</span> <span class="n">ws</span><span class="o">.</span><span class="n">receive_text</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
@@ -2575,8 +2575,8 @@ how to test</label><div class="sd-tab-content docutils">
 <p>WebSockets have two transport modes: <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">binary</span></code>. They dictate how bytes are
 transferred over the wire and can be set independently from another, i.e. a socket can
 send <code class="docutils literal notranslate"><span class="pre">binary</span></code> and receive <code class="docutils literal notranslate"><span class="pre">text</span></code></p>
-<p>It may seem intuitive that <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">binary</span></code> should map to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> and
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> respectively, but this is not the case. WebSockets can receive and
+<p>It may seem intuitive that <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">binary</span></code> should map to <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> and
+<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> respectively, but this is not the case. WebSockets can receive and
 send data in any format, independently of the mode. The mode only affects how the
 bytes are handled during transport (i.e. on the protocol level). In most cases the
 default mode - <code class="docutils literal notranslate"><span class="pre">text</span></code> - is all that’s needed. Binary transport is usually employed

@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1571,9 +1571,9 @@ issue.</p>
 which inherits from <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.LitestarException" title="litestar.exceptions.LitestarException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarException</span></code></a>. This exception will be serialized
 into a JSON response of the following schema:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Internal Server Error&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;extra&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="nt">"status_code"</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"detail"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Internal Server Error"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"extra"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1647,9 +1647,9 @@ exception handler with a handler that returns plain-text responses you could do 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">plain_text_exception_handler</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default handler for exceptions subclassed from HTTPException.&quot;&quot;&quot;</span>
-    <span class="n">status_code</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="s2">&quot;status_code&quot;</span><span class="p">,</span> <span class="n">HTTP_500_INTERNAL_SERVER_ERROR</span><span class="p">)</span>
-    <span class="n">detail</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="s2">&quot;detail&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Default handler for exceptions subclassed from HTTPException."""</span>
+    <span class="n">status_code</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="s2">"status_code"</span><span class="p">,</span> <span class="n">HTTP_500_INTERNAL_SERVER_ERROR</span><span class="p">)</span>
+    <span class="n">detail</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="s2">"detail"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
@@ -1658,9 +1658,9 @@ exception handler with a handler that returns plain-text responses you could do 
     <span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">&quot;an error occurred&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">"an error occurred"</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1687,7 +1687,7 @@ exceptions that inherit from <code class="docutils literal notranslate"><span cl
 <span class="k">def</span><span class="w"> </span><span class="nf">validation_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">ValidationException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
-        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;validation error: </span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">"validation error: </span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
         <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -1695,7 +1695,7 @@ exceptions that inherit from <code class="docutils literal notranslate"><span cl
 <span class="k">def</span><span class="w"> </span><span class="nf">internal_server_error_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
-        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;server error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">"server error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
         <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -1703,24 +1703,24 @@ exceptions that inherit from <code class="docutils literal notranslate"><span cl
 <span class="k">def</span><span class="w"> </span><span class="nf">value_error_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
-        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;value error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="sa">f</span><span class="s2">"value error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
         <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
     <span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/validation-error&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/validation-error"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">validation_error</span><span class="p">(</span><span class="n">some_query_param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">some_query_param</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/server-error&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/server-error"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">server_error</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/value-error&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/value-error"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">value_error</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;this is wrong&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"this is wrong"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1736,7 +1736,7 @@ exceptions that inherit from <code class="docutils literal notranslate"><span cl
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/validation-error
-validation<span class="w"> </span>error:<span class="w"> </span>Missing<span class="w"> </span>required<span class="w"> </span>query<span class="w"> </span>parameter<span class="w"> </span><span class="s1">&#39;some_query_param&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>path<span class="w"> </span>/validation-error
+validation<span class="w"> </span>error:<span class="w"> </span>Missing<span class="w"> </span>required<span class="w"> </span>query<span class="w"> </span>parameter<span class="w"> </span><span class="s1">'some_query_param'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>path<span class="w"> </span>/validation-error
 &gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/server-error
 server<span class="w"> </span>error:<span class="w"> </span><span class="m">500</span>:<span class="w"> </span>Internal<span class="w"> </span>Server<span class="w"> </span>Error
 &gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/value-error
@@ -1773,10 +1773,10 @@ the <code class="docutils literal notranslate"><span class="pre">ValidationExcep
 <span class="k">def</span><span class="w"> </span><span class="nf">app_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">HTTPException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">content</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;server error&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
-            <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span>
-            <span class="s2">&quot;status_code&quot;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+            <span class="s2">"error"</span><span class="p">:</span> <span class="s2">"server error"</span><span class="p">,</span>
+            <span class="s2">"path"</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+            <span class="s2">"detail"</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span>
+            <span class="s2">"status_code"</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
     <span class="p">)</span>
@@ -1784,22 +1784,22 @@ the <code class="docutils literal notranslate"><span class="pre">ValidationExcep
 
 <span class="k">def</span><span class="w"> </span><span class="nf">router_handler_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">ValidationException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-        <span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;validation error&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">},</span>
+        <span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">"error"</span><span class="p">:</span> <span class="s2">"validation error"</span><span class="p">,</span> <span class="s2">"path"</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">},</span>
         <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
     <span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="s2">&quot;something&#39;s gone wrong&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="s2">"something's gone wrong"</span><span class="p">)</span>
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/greet&quot;</span><span class="p">,</span>
+    <span class="s2">"/greet"</span><span class="p">,</span>
     <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span><span class="n">ValidationException</span><span class="p">:</span> <span class="n">router_handler_exception_handler</span><span class="p">},</span>
 <span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">greet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1811,9 +1811,9 @@ the <code class="docutils literal notranslate"><span class="pre">ValidationExcep
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
-<span class="o">{</span><span class="s2">&quot;error&quot;</span>:<span class="s2">&quot;server error&quot;</span>,<span class="s2">&quot;path&quot;</span>:<span class="s2">&quot;/&quot;</span>,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;something&#39;s gone wrong&quot;</span>,<span class="s2">&quot;status_code&quot;</span>:500<span class="o">}</span>
+<span class="o">{</span><span class="s2">"error"</span>:<span class="s2">"server error"</span>,<span class="s2">"path"</span>:<span class="s2">"/"</span>,<span class="s2">"detail"</span>:<span class="s2">"something's gone wrong"</span>,<span class="s2">"status_code"</span>:500<span class="o">}</span>
 &gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/greet
-<span class="o">{</span><span class="s2">&quot;error&quot;</span>:<span class="s2">&quot;validation error&quot;</span>,<span class="s2">&quot;path&quot;</span>:<span class="s2">&quot;/greet&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"error"</span>:<span class="s2">"validation error"</span>,<span class="s2">"path"</span>:<span class="s2">"/greet"</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>

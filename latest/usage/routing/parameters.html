@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1593,7 +1593,7 @@ Marker form</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromCookie</span><span class="p">,</span> <span class="n">FromHeader</span><span class="p">,</span> <span class="n">FromPath</span><span class="p">,</span> <span class="n">FromQuery</span>
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{user_id:int}&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/{user_id:int}"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
     <span class="n">user_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
     <span class="n">limit</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -1620,12 +1620,12 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">QueryParameter</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{user_id:int}&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/{user_id:int}"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
     <span class="n">user_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">PathParameter</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
     <span class="n">limit</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">)],</span>
-    <span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;X-API-KEY&quot;</span><span class="p">)],</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;session-id&quot;</span><span class="p">)],</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"X-API-KEY"</span><span class="p">)],</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"session-id"</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -1643,12 +1643,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">QueryParameter</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{user_id:int}&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/{user_id:int}"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
     <span class="n">user_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">PathParameter</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
     <span class="n">limit</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">)],</span>
-    <span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;X-API-KEY&quot;</span><span class="p">)],</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;session-id&quot;</span><span class="p">)],</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"X-API-KEY"</span><span class="p">)],</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"session-id"</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -1661,7 +1661,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 is needed.</p>
 <div class="info admonition">
 <p class="admonition-title">Technical details</p>
-<p>These <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameters</span></a> will be parsed from the function signature and
+<p>These <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameters</span></a> will be parsed from the function signature and
 used to generate an internal data model. This model in turn will be used to validate
 the parameters and generate the OpenAPI schema</p>
 </div>
@@ -1693,9 +1693,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"hello"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -1712,9 +1712,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"hello"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -1726,13 +1726,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
-<span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;hello&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"param"</span>:<span class="s2">"hello"</span><span class="o">}</span>
 &gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>john
-<span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;john&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"param"</span>:<span class="s2">"john"</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
-<p>Marking a parameter optional means the type itself permits <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>:</p>
+<p>Marking a parameter optional means the type itself permits <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>:</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-6">
@@ -1745,9 +1745,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -1766,9 +1766,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -1785,9 +1785,9 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -1799,9 +1799,9 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
-<span class="o">{</span><span class="s2">&quot;param&quot;</span>:null<span class="o">}</span>
+<span class="o">{</span><span class="s2">"param"</span>:null<span class="o">}</span>
 &gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>goodbye
-<span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;goodbye&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"param"</span>:<span class="s2">"goodbye"</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1819,7 +1819,7 @@ fills in for the path without the slot.</p>
 <h2>Parameter types<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <section id="path-parameters">
 <h3>Path parameters<a class="headerlink" href="#path-parameters" title="Link to this heading">#</a></h3>
-<p>Path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameters</span></a> are declared as part of the <code class="docutils literal notranslate"><span class="pre">path</span></code> component of
+<p>Path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameters</span></a> are declared as part of the <code class="docutils literal notranslate"><span class="pre">path</span></code> component of
 the URL using the syntax <code class="docutils literal notranslate"><span class="pre">{param_name:param_type}</span></code>. The handler function receives the
 value via a parameter of the same name, declared with <a class="reference internal" href="../../reference/params.html#litestar.params.FromPath" title="litestar.params.FromPath"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromPath</span></code></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
@@ -1836,10 +1836,10 @@ value via a parameter of the same name, declared with <a class="reference intern
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="n">USER_DB</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;John Doe&quot;</span><span class="p">)}</span>
+<span class="n">USER_DB</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"John Doe"</span><span class="p">)}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/user/{user_id:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/user/{user_id:int}"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">USER_DB</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span>
 
@@ -1850,8 +1850,8 @@ value via a parameter of the same name, declared with <a class="reference intern
 </div>
 <p>There are two components to declaring a path parameter:</p>
 <ol class="arabic simple">
-<li><p>In the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;get()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.14)"><span class="xref std std-term">decorator</span></a>, the path component
-declares both the parameter’s name (<code class="docutils literal notranslate"><span class="pre">user_id</span></code>) and type (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>)</p></li>
+<li><p>In the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;get()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.15)"><span class="xref std std-term">decorator</span></a>, the path component
+declares both the parameter’s name (<code class="docutils literal notranslate"><span class="pre">user_id</span></code>) and type (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>)</p></li>
 <li><p>In the handler signature, <code class="docutils literal notranslate"><span class="pre">user_id</span></code> is declared as
 <a class="reference internal" href="../../reference/params.html#litestar.params.FromPath" title="litestar.params.FromPath"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromPath[int]</span></code></a>, which tells Litestar to inject the matching
 path value</p></li>
@@ -1868,7 +1868,7 @@ handler-side type annotation can request a further coercion
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>You only need to declare the path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameter</span></a> in the function signature if the
+<p>You only need to declare the path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameter</span></a> in the function signature if the
 handler actually uses it. If the path parameter is part of the path but the function
 does not consume it, you can omit it from the signature; it will still be validated
 and added to the OpenAPI schema.</p>
@@ -1880,10 +1880,10 @@ and added to the OpenAPI schema.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">date</span></code>: Accepts date strings and time stamps.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code>: Accepts date-time strings and time stamps.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">decimal</span></code>: Accepts decimal values and floats.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>: Accepts ints and floats.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>: Accepts ints and floats.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>: Accepts ints and floats.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>: Accepts ints and floats.</p></li>
 <li><p><a class="reference internal" href="../../reference/config.html#litestar.config.app.AppConfig.path" title="litestar.config.app.AppConfig.path"><code class="xref py py-class docutils literal notranslate"><span class="pre">path</span></code></a>: Accepts valid POSIX paths.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>: Accepts all string values.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>: Accepts all string values.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: Accepts time strings with optional timezone compatible with standard (Pydantic/Msgspec) datetime formats.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">timedelta</span></code>: Accepts duration strings compatible with the standard (Pydantic/Msgspec) timedelta formats.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">uuid</span></code>: Accepts all uuid values.</p></li>
@@ -1892,7 +1892,7 @@ and added to the OpenAPI schema.</p>
 </section>
 <section id="query-parameters">
 <h3>Query parameters<a class="headerlink" href="#query-parameters" title="Link to this heading">#</a></h3>
-<p>Query <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameters</span></a> are declared as <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">parameters</span></a> on
+<p>Query <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameters</span></a> are declared as <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.15)"><span class="xref std std-term">parameters</span></a> on
 the handler function, typed with <a class="reference internal" href="../../reference/params.html#litestar.params.FromQuery" title="litestar.params.FromQuery"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromQuery</span></code></a> or
 <code class="docutils literal notranslate"><span class="pre">Annotated[&lt;type&gt;,</span> <span class="pre">QueryParameter()]</span></code>.</p>
 <div class="sd-tab-set docutils">
@@ -1907,9 +1907,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -1926,9 +1926,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -1940,16 +1940,16 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>foo
-<span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;foo&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"param"</span>:<span class="s2">"foo"</span><span class="o">}</span>
 &gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>bar
-<span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;bar&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"param"</span>:<span class="s2">"bar"</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="header-parameters">
 <h3>Header parameters<a class="headerlink" href="#header-parameters" title="Link to this heading">#</a></h3>
-<p>Header <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameters</span></a> are declared with <a class="reference internal" href="../../reference/params.html#litestar.params.FromHeader" title="litestar.params.FromHeader"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromHeader</span></code></a> or
+<p>Header <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameters</span></a> are declared with <a class="reference internal" href="../../reference/params.html#litestar.params.FromHeader" title="litestar.params.FromHeader"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromHeader</span></code></a> or
 <code class="docutils literal notranslate"><span class="pre">Annotated[&lt;type&gt;,</span> <span class="pre">HeaderParameter()]</span></code>. The handler-side parameter name is used as the
 header name by default; HTTP headers are matched case-insensitively, so
 <code class="docutils literal notranslate"><span class="pre">token:</span> <span class="pre">FromHeader[str]</span></code> matches both <code class="docutils literal notranslate"><span class="pre">Token</span></code> and <code class="docutils literal notranslate"><span class="pre">token</span></code> on the wire.</p>
@@ -1965,7 +1965,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">HeaderParameter</span>
 
 
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;X-API-KEY&quot;</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"X-API-KEY"</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -1977,7 +1977,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">HeaderParameter</span>
 
 
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;X-API-KEY&quot;</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"X-API-KEY"</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -1985,7 +1985,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </section>
 <section id="cookie-parameters">
 <h3>Cookie parameters<a class="headerlink" href="#cookie-parameters" title="Link to this heading">#</a></h3>
-<p>Cookie <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameters</span></a> are declared with
+<p>Cookie <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameters</span></a> are declared with
 <a class="reference internal" href="../../reference/params.html#litestar.params.FromCookie" title="litestar.params.FromCookie"><code class="xref py py-data docutils literal notranslate"><span class="pre">FromCookie</span></code></a> or <code class="docutils literal notranslate"><span class="pre">Annotated[&lt;type&gt;,</span> <span class="pre">CookieParameter()]</span></code>. The handler-side
 parameter name is used as the cookie name by default:</p>
 <div class="sd-tab-set docutils">
@@ -1997,7 +1997,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieParameter</span>
 
 
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;session-id&quot;</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"session-id"</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -2009,7 +2009,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieParameter</span>
 
 
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;session-id&quot;</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"session-id"</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -2029,8 +2029,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotAuthorizedException</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieParameter</span><span class="p">,</span> <span class="n">FromPath</span><span class="p">,</span> <span class="n">HeaderParameter</span>
 
-<span class="n">VALID_TOKEN</span> <span class="o">=</span> <span class="s2">&quot;super-secret-secret&quot;</span>
-<span class="n">VALID_COOKIE_VALUE</span> <span class="o">=</span> <span class="s2">&quot;cookie-secret&quot;</span>
+<span class="n">VALID_TOKEN</span> <span class="o">=</span> <span class="s2">"super-secret-secret"</span>
+<span class="n">VALID_COOKIE_VALUE</span> <span class="o">=</span> <span class="s2">"cookie-secret"</span>
 
 
 <span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
@@ -2040,15 +2040,15 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">USER_DB</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="mi">1</span><span class="p">:</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;John Doe&quot;</span><span class="p">),</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"John Doe"</span><span class="p">),</span>
 <span class="p">}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/users/{user_id:int}/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/users/{user_id:int}/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span>
     <span class="n">user_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-    <span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;X-API-KEY&quot;</span><span class="p">)],</span>
-    <span class="n">cookie</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;my-cookie-param&quot;</span><span class="p">)],</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"X-API-KEY"</span><span class="p">)],</span>
+    <span class="n">cookie</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"my-cookie-param"</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">token</span> <span class="o">!=</span> <span class="n">VALID_TOKEN</span> <span class="ow">or</span> <span class="n">cookie</span> <span class="o">!=</span> <span class="n">VALID_COOKIE_VALUE</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
@@ -2073,8 +2073,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotAuthorizedException</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieParameter</span><span class="p">,</span> <span class="n">FromPath</span><span class="p">,</span> <span class="n">HeaderParameter</span>
 
-<span class="n">VALID_TOKEN</span> <span class="o">=</span> <span class="s2">&quot;super-secret-secret&quot;</span>
-<span class="n">VALID_COOKIE_VALUE</span> <span class="o">=</span> <span class="s2">&quot;cookie-secret&quot;</span>
+<span class="n">VALID_TOKEN</span> <span class="o">=</span> <span class="s2">"super-secret-secret"</span>
+<span class="n">VALID_COOKIE_VALUE</span> <span class="o">=</span> <span class="s2">"cookie-secret"</span>
 
 
 <span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
@@ -2084,15 +2084,15 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">USER_DB</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="mi">1</span><span class="p">:</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;John Doe&quot;</span><span class="p">),</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"John Doe"</span><span class="p">),</span>
 <span class="p">}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/users/{user_id:int}/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/users/{user_id:int}/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span>
     <span class="n">user_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-    <span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;X-API-KEY&quot;</span><span class="p">)],</span>
-    <span class="n">cookie</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;my-cookie-param&quot;</span><span class="p">)],</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"X-API-KEY"</span><span class="p">)],</span>
+    <span class="n">cookie</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"my-cookie-param"</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">token</span> <span class="o">!=</span> <span class="n">VALID_TOKEN</span> <span class="ow">or</span> <span class="n">cookie</span> <span class="o">!=</span> <span class="n">VALID_COOKIE_VALUE</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
@@ -2125,7 +2125,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span>
     <span class="n">date</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">datetime</span><span class="p">],</span>
     <span class="n">number</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -2133,10 +2133,10 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">strings</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;datetime&quot;</span><span class="p">:</span> <span class="n">date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-        <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="n">number</span><span class="p">,</span>
-        <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="n">floating_number</span><span class="p">,</span>
-        <span class="s2">&quot;list&quot;</span><span class="p">:</span> <span class="n">strings</span><span class="p">,</span>
+        <span class="s2">"datetime"</span><span class="p">:</span> <span class="n">date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="s2">"int"</span><span class="p">:</span> <span class="n">number</span><span class="p">,</span>
+        <span class="s2">"float"</span><span class="p">:</span> <span class="n">floating_number</span><span class="p">,</span>
+        <span class="s2">"list"</span><span class="p">:</span> <span class="n">strings</span><span class="p">,</span>
     <span class="p">}</span>
 
 
@@ -2157,7 +2157,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span>
     <span class="n">date</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">datetime</span><span class="p">],</span>
     <span class="n">number</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -2165,10 +2165,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">strings</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;datetime&quot;</span><span class="p">:</span> <span class="n">date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-        <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="n">number</span><span class="p">,</span>
-        <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="n">floating_number</span><span class="p">,</span>
-        <span class="s2">&quot;list&quot;</span><span class="p">:</span> <span class="n">strings</span><span class="p">,</span>
+        <span class="s2">"datetime"</span><span class="p">:</span> <span class="n">date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="s2">"int"</span><span class="p">:</span> <span class="n">number</span><span class="p">,</span>
+        <span class="s2">"float"</span><span class="p">:</span> <span class="n">floating_number</span><span class="p">,</span>
+        <span class="s2">"list"</span><span class="p">:</span> <span class="n">strings</span><span class="p">,</span>
     <span class="p">}</span>
 
 
@@ -2181,13 +2181,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?date<span class="o">=</span><span class="m">2022</span>-11-28T13:22:06.916540<span class="p">&amp;</span><span class="nv">floating_number</span><span class="o">=</span><span class="m">0</span>.1<span class="p">&amp;</span><span class="nv">number</span><span class="o">=</span><span class="m">42</span><span class="p">&amp;</span><span class="nv">strings</span><span class="o">=</span><span class="m">1</span><span class="p">&amp;</span><span class="nv">strings</span><span class="o">=</span><span class="m">2</span>
-<span class="o">{</span><span class="s2">&quot;datetime&quot;</span>:<span class="s2">&quot;2022-11-29T13:22:06.916540&quot;</span>,<span class="s2">&quot;int&quot;</span>:42,<span class="s2">&quot;float&quot;</span>:0.1,<span class="s2">&quot;list&quot;</span>:<span class="o">[</span><span class="s2">&quot;1&quot;</span>,<span class="s2">&quot;2&quot;</span><span class="o">]}</span>
+<span class="o">{</span><span class="s2">"datetime"</span>:<span class="s2">"2022-11-29T13:22:06.916540"</span>,<span class="s2">"int"</span>:42,<span class="s2">"float"</span>:0.1,<span class="s2">"list"</span>:<span class="o">[</span><span class="s2">"1"</span>,<span class="s2">"2"</span><span class="o">]}</span>
 </pre></div>
 </div>
 </div>
 <p>Path parameters additionally support coercion via the path-slot type itself. The handler-side type does not need to
-match the slot type one-to-one — if the slot captures an <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> and the handler asks for a
-<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>, Litestar applies the second conversion:</p>
+match the slot type one-to-one — if the slot captures an <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> and the handler asks for a
+<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>, Litestar applies the second conversion:</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-19">
@@ -2216,7 +2216,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="p">}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/orders/{from_date:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/orders/{from_date:int}"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_orders</span><span class="p">(</span><span class="n">from_date</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="n">datetime</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Order</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">ORDERS_BY_DATETIME</span><span class="p">[</span><span class="n">from_date</span><span class="p">]</span>
 
@@ -2252,7 +2252,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="p">}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/orders/{from_date:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/orders/{from_date:int}"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_orders</span><span class="p">(</span><span class="n">from_date</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="n">datetime</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">ORDERS_BY_DATETIME</span><span class="p">[</span><span class="n">from_date</span><span class="p">]</span>
 
@@ -2288,7 +2288,7 @@ Python 3.11+</label><div class="sd-tab-content docutils">
 <span class="p">}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/orders/{from_date:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/orders/{from_date:int}"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_orders</span><span class="p">(</span><span class="n">from_date</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="n">datetime</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">ORDERS_BY_DATETIME</span><span class="p">[</span><span class="n">from_date</span><span class="p">]</span>
 
@@ -2322,9 +2322,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryParameter</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">snake_case</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;camelCase&quot;</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">snake_case</span><span class="p">}</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">snake_case</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"camelCase"</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">snake_case</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -2343,9 +2343,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryParameter</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">snake_case</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;camelCase&quot;</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">snake_case</span><span class="p">}</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">snake_case</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"camelCase"</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">snake_case</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -2357,7 +2357,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?camelCase<span class="o">=</span>foo
-<span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;foo&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"param"</span>:<span class="s2">"foo"</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -2389,9 +2389,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryParameter</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -2410,9 +2410,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryParameter</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">param</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
@@ -2449,19 +2449,19 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">specs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 
 
-<span class="n">VERSIONS</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="n">Version</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">})}</span>
+<span class="n">VERSIONS</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="n">Version</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="p">{</span><span class="s2">"some"</span><span class="p">:</span> <span class="s2">"value"</span><span class="p">})}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/versions/{version:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/versions/{version:int}"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_product_version</span><span class="p">(</span>
     <span class="n">version</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
         <span class="nb">int</span><span class="p">,</span>
         <span class="n">PathParameter</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Available Product Versions&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Get a specific version spec from the available specs&quot;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Available Product Versions"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"Get a specific version spec from the available specs"</span><span class="p">,</span>
             <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="n">Example</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
             <span class="n">external_docs</span><span class="o">=</span><span class="n">ExternalDocumentation</span><span class="p">(</span>
-                <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://mywebsite.com/documentation/product#versions&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
+                <span class="n">url</span><span class="o">=</span><span class="s2">"https://mywebsite.com/documentation/product#versions"</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
             <span class="p">),</span>
         <span class="p">),</span>
     <span class="p">],</span>
@@ -2496,19 +2496,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">specs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 
 
-<span class="n">VERSIONS</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="n">Version</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">})}</span>
+<span class="n">VERSIONS</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="n">Version</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">specs</span><span class="o">=</span><span class="p">{</span><span class="s2">"some"</span><span class="p">:</span> <span class="s2">"value"</span><span class="p">})}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/versions/{version:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/versions/{version:int}"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_product_version</span><span class="p">(</span>
     <span class="n">version</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
         <span class="nb">int</span><span class="p">,</span>
         <span class="n">PathParameter</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Available Product Versions&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Get a specific version spec from the available specs&quot;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">"Available Product Versions"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"Get a specific version spec from the available specs"</span><span class="p">,</span>
             <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="n">Example</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span>
             <span class="n">external_docs</span><span class="o">=</span><span class="n">ExternalDocumentation</span><span class="p">(</span>
-                <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://mywebsite.com/documentation/product#versions&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
+                <span class="n">url</span><span class="o">=</span><span class="s2">"https://mywebsite.com/documentation/product#versions"</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
             <span class="p">),</span>
         <span class="p">),</span>
     <span class="p">],</span>
@@ -2545,17 +2545,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyEnum</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;My enum accepts two values&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""My enum accepts two values"""</span>
 
-    <span class="n">A</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
-    <span class="n">B</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="s2">"a"</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="s2">"b"</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span>
-    <span class="n">q1</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is q1&quot;</span><span class="p">,</span> <span class="n">schema_component_key</span><span class="o">=</span><span class="s2">&quot;q1&quot;</span><span class="p">)],</span>
+    <span class="n">q1</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"This is q1"</span><span class="p">,</span> <span class="n">schema_component_key</span><span class="o">=</span><span class="s2">"q1"</span><span class="p">)],</span>
     <span class="n">q2</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">],</span>
-    <span class="n">q3</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is q3&quot;</span><span class="p">,</span> <span class="n">schema_component_key</span><span class="o">=</span><span class="s2">&quot;q3&quot;</span><span class="p">)],</span>
+    <span class="n">q3</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"This is q3"</span><span class="p">,</span> <span class="n">schema_component_key</span><span class="o">=</span><span class="s2">"q3"</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
@@ -2577,17 +2577,17 @@ Python 3.11+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyEnum</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;My enum accepts two values&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""My enum accepts two values"""</span>
 
-    <span class="n">A</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
-    <span class="n">B</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="s2">"a"</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="s2">"b"</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span>
-    <span class="n">q1</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is q1&quot;</span><span class="p">,</span> <span class="n">schema_component_key</span><span class="o">=</span><span class="s2">&quot;q1&quot;</span><span class="p">)],</span>
+    <span class="n">q1</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"This is q1"</span><span class="p">,</span> <span class="n">schema_component_key</span><span class="o">=</span><span class="s2">"q1"</span><span class="p">)],</span>
     <span class="n">q2</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">],</span>
-    <span class="n">q3</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is q3&quot;</span><span class="p">,</span> <span class="n">schema_component_key</span><span class="o">=</span><span class="s2">&quot;q3&quot;</span><span class="p">)],</span>
+    <span class="n">q3</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">MyEnum</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"This is q3"</span><span class="p">,</span> <span class="n">schema_component_key</span><span class="o">=</span><span class="s2">"q3"</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
@@ -2608,7 +2608,7 @@ with description “My enum accepts two values”; and the schema for <code clas
 <section id="layered-parameters">
 <h2>Layered Parameters<a class="headerlink" href="#layered-parameters" title="Link to this heading">#</a></h2>
 <p>As part of Litestar’s <a class="reference internal" href="../applications.html#layered-architecture"><span class="std std-ref">layered architecture</span></a>, you can declare
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameters</span></a> not only on individual route handler functions, but also on other layers of the
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameters</span></a> not only on individual route handler functions, but also on other layers of the
 application:</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-30" name="sd-tab-set-14" type="radio">
@@ -2632,12 +2632,12 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/controller"</span>
     <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;controller_param&quot;</span><span class="p">:</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">lt</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+        <span class="s2">"controller_param"</span><span class="p">:</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">lt</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
     <span class="p">}</span>
 
-    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{path_param:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">"/{path_param:int}"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path_param</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -2646,25 +2646,25 @@ Python 3.8+</label><div class="sd-tab-content docutils">
         <span class="n">controller_param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">lt</span><span class="o">=</span><span class="mi">50</span><span class="p">)],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;path_param&quot;</span><span class="p">:</span> <span class="n">path_param</span><span class="p">,</span>
-            <span class="s2">&quot;local_param&quot;</span><span class="p">:</span> <span class="n">local_param</span><span class="p">,</span>
-            <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">router_param</span><span class="p">,</span>
-            <span class="s2">&quot;controller_param&quot;</span><span class="p">:</span> <span class="n">controller_param</span><span class="p">,</span>
+            <span class="s2">"path_param"</span><span class="p">:</span> <span class="n">path_param</span><span class="p">,</span>
+            <span class="s2">"local_param"</span><span class="p">:</span> <span class="n">local_param</span><span class="p">,</span>
+            <span class="s2">"router_param"</span><span class="p">:</span> <span class="n">router_param</span><span class="p">,</span>
+            <span class="s2">"controller_param"</span><span class="p">:</span> <span class="n">controller_param</span><span class="p">,</span>
         <span class="p">}</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/router"</span><span class="p">,</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span>
     <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyHeader&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;^[a-zA-Z]$&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="s2">"router_param"</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"MyHeader"</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">"^[a-zA-Z]$"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">},</span>
 <span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
     <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;app_param&quot;</span><span class="p">:</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;special-cookie&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="s2">"app_param"</span><span class="p">:</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"special-cookie"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
@@ -2692,12 +2692,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/controller"</span>
     <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;controller_param&quot;</span><span class="p">:</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">lt</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+        <span class="s2">"controller_param"</span><span class="p">:</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">lt</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
     <span class="p">}</span>
 
-    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{path_param:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">"/{path_param:int}"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path_param</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -2706,25 +2706,25 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <span class="n">controller_param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">lt</span><span class="o">=</span><span class="mi">50</span><span class="p">)],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;path_param&quot;</span><span class="p">:</span> <span class="n">path_param</span><span class="p">,</span>
-            <span class="s2">&quot;local_param&quot;</span><span class="p">:</span> <span class="n">local_param</span><span class="p">,</span>
-            <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">router_param</span><span class="p">,</span>
-            <span class="s2">&quot;controller_param&quot;</span><span class="p">:</span> <span class="n">controller_param</span><span class="p">,</span>
+            <span class="s2">"path_param"</span><span class="p">:</span> <span class="n">path_param</span><span class="p">,</span>
+            <span class="s2">"local_param"</span><span class="p">:</span> <span class="n">local_param</span><span class="p">,</span>
+            <span class="s2">"router_param"</span><span class="p">:</span> <span class="n">router_param</span><span class="p">,</span>
+            <span class="s2">"controller_param"</span><span class="p">:</span> <span class="n">controller_param</span><span class="p">,</span>
         <span class="p">}</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/router"</span><span class="p">,</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span>
     <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyHeader&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;^[a-zA-Z]$&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="s2">"router_param"</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"MyHeader"</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">"^[a-zA-Z]$"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">},</span>
 <span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
     <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;app_param&quot;</span><span class="p">:</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;special-cookie&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="s2">"app_param"</span><span class="p">:</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"special-cookie"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
@@ -2750,12 +2750,12 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/controller"</span>
     <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;controller_param&quot;</span><span class="p">:</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">lt</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+        <span class="s2">"controller_param"</span><span class="p">:</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">lt</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
     <span class="p">}</span>
 
-    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{path_param:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">"/{path_param:int}"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path_param</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -2764,25 +2764,25 @@ Python 3.10+</label><div class="sd-tab-content docutils">
         <span class="n">controller_param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">lt</span><span class="o">=</span><span class="mi">50</span><span class="p">)],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;path_param&quot;</span><span class="p">:</span> <span class="n">path_param</span><span class="p">,</span>
-            <span class="s2">&quot;local_param&quot;</span><span class="p">:</span> <span class="n">local_param</span><span class="p">,</span>
-            <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">router_param</span><span class="p">,</span>
-            <span class="s2">&quot;controller_param&quot;</span><span class="p">:</span> <span class="n">controller_param</span><span class="p">,</span>
+            <span class="s2">"path_param"</span><span class="p">:</span> <span class="n">path_param</span><span class="p">,</span>
+            <span class="s2">"local_param"</span><span class="p">:</span> <span class="n">local_param</span><span class="p">,</span>
+            <span class="s2">"router_param"</span><span class="p">:</span> <span class="n">router_param</span><span class="p">,</span>
+            <span class="s2">"controller_param"</span><span class="p">:</span> <span class="n">controller_param</span><span class="p">,</span>
         <span class="p">}</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/router"</span><span class="p">,</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span>
     <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyHeader&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;^[a-zA-Z]$&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="s2">"router_param"</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"MyHeader"</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">"^[a-zA-Z]$"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">},</span>
 <span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
     <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;app_param&quot;</span><span class="p">:</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;special-cookie&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="s2">"app_param"</span><span class="p">:</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"special-cookie"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
@@ -2790,7 +2790,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<p>In the above we declare <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameters</span></a> on the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span> <span class="pre">app</span></code></a>,
+<p>In the above we declare <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameters</span></a> on the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span> <span class="pre">app</span></code></a>,
 <a class="reference internal" href="../../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">router</span></code></a>, and <a class="reference internal" href="../../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">controller</span></code></a> layers in addition to those
 declared in the route handler. Examine these more closely:</p>
 <ul>
@@ -2853,7 +2853,7 @@ in 3.0.</p>
 </table>
 <p>The <a class="reference internal" href="../../reference/params.html#litestar.params.Parameter" title="litestar.params.Parameter"><code class="xref py py-func docutils literal notranslate"><span class="pre">Parameter()</span></code></a> function itself is <strong>not</strong> removed and can still be used to attach pure metadata
 (<code class="docutils literal notranslate"><span class="pre">description</span></code>, <code class="docutils literal notranslate"><span class="pre">gt</span></code>, etc.) when wrapped in <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>. Only its <code class="docutils literal notranslate"><span class="pre">header</span></code>, <code class="docutils literal notranslate"><span class="pre">cookie</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">query</span></code> keyword arguments are deprecated — passing any of those emits a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#DeprecationWarning" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> independently of
+<code class="docutils literal notranslate"><span class="pre">query</span></code> keyword arguments are deprecated — passing any of those emits a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#DeprecationWarning" title="(in Python v3.15)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></a> independently of
 the handler-level warning.</p>
 </section>
 </section>

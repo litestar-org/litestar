@@ -330,7 +330,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -884,7 +884,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1635,9 +1635,9 @@ indicating what it changes. The style of the PR title should also follow
 <ul>
 <li><p>When requiring complex types, use a <a class="reference external" href="https://docs.python.org/3/library/typing.html#type-aliases">type alias</a>.
 Check <a class="reference internal" href="reference/types.html"><span class="doc">types</span></a> if a type alias for your use case already exists</p></li>
-<li><p>If something cannot be typed correctly due to a limitation of the type checkers, you may use <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.cast" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">typing.cast()</span></code></a>
+<li><p>If something cannot be typed correctly due to a limitation of the type checkers, you may use <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.cast" title="(in Python v3.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">typing.cast()</span></code></a>
 to rectify the situation. However, you should only use this as a last resort if you’ve exhausted all other options
-of <a class="reference external" href="https://mypy.readthedocs.io/en/stable/type_narrowing.html">type narrowing</a>, such as <a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a> checks
+of <a class="reference external" href="https://mypy.readthedocs.io/en/stable/type_narrowing.html">type narrowing</a>, such as <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#isinstance" title="(in Python v3.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a> checks
 and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard">type guards</a>.</p></li>
 <li><p>You may use a properly scoped <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore</span></code> if you ensured that a line is correct, but mypy / pyright has
 issues with it.</p>
@@ -1689,9 +1689,9 @@ enforce type safety. You can run them with:</p>
 </section>
 <section id="project-documentation">
 <h2>Project documentation<a class="headerlink" href="#project-documentation" title="Link to this heading">#</a></h2>
-<p>The documentation is located in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory and is written  in
-<a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> with the <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a>.
-library. If you’re unfamiliar with any of those,
+<p>The documentation is located in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory and is written in
+<a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> with the
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> library. If you’re unfamiliar with any of those,
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">reStructuredText primer</a> and
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/quickstart.html">Sphinx quickstart</a> are recommended reads.</p>
 <section id="docs-theme-and-appearance">
@@ -1755,7 +1755,7 @@ to test them alongside the rest of the test suite, ensuring they do not become s
 <section id="automatically-execute-examples">
 <h4>Automatically execute examples<a class="headerlink" href="#automatically-execute-examples" title="Link to this heading">#</a></h4>
 <p>Our docs include a Sphinx extension that can automatically run requests against example apps
-and include their result in the documentation page when its being built. This only requires 2 steps:</p>
+and include their result in the documentation page when it’s being built. This only requires 2 steps:</p>
 <ol class="arabic simple">
 <li><p>Create an example file with an <code class="docutils literal notranslate"><span class="pre">app</span></code> object in it, which is an instance of <code class="docutils literal notranslate"><span class="pre">Litestar</span></code></p></li>
 <li><p>Add a comment in the form of <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">run:</span> <span class="pre">/hello</span></code> to the example file</p></li>
@@ -1775,10 +1775,10 @@ specified path can just be a path relative to the app.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="sd">"""Handler function that returns a greeting dictionary."""</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
@@ -1795,10 +1795,10 @@ specified path can just be a path relative to the app.</p>
    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-   <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+   <span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
    <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">       </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
-       <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+<span class="w">       </span><span class="sd">"""Handler function that returns a greeting dictionary."""</span>
+       <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
    <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
@@ -1808,7 +1808,7 @@ specified path can just be a path relative to the app.</p>
 <div class="admonition-run-it admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
-<span class="o">{</span><span class="s2">&quot;hello&quot;</span>:<span class="w"> </span><span class="s2">&quot;world&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"hello"</span>:<span class="w"> </span><span class="s2">"world"</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1846,7 +1846,7 @@ specified path can just be a path relative to the app.</p>
 <li><p>Commit the changes to <code class="docutils literal notranslate"><span class="pre">main</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id13">
 <div class="code-block-caption"><span class="caption-text">Committing the changes to the main branch</span><a class="headerlink" href="#id13" title="Link to this code">#</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-am<span class="w"> </span><span class="s2">&quot;chore(release): prepare release vX.Y.Z&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-am<span class="w"> </span><span class="s2">"chore(release): prepare release vX.Y.Z"</span>
 </pre></div>
 </div>
 </div>

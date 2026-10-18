@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1574,7 +1574,7 @@ Jinja2</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.flash</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlashConfig</span><span class="p">,</span> <span class="n">FlashPlugin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.template.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateConfig</span>
 
-<span class="n">template_config</span> <span class="o">=</span> <span class="n">TemplateConfig</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">JinjaTemplateEngine</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;templates&quot;</span><span class="p">)</span>
+<span class="n">template_config</span> <span class="o">=</span> <span class="n">TemplateConfig</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">JinjaTemplateEngine</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">"templates"</span><span class="p">)</span>
 <span class="n">flash_plugin</span> <span class="o">=</span> <span class="n">FlashPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">FlashConfig</span><span class="p">(</span><span class="n">template_config</span><span class="o">=</span><span class="n">template_config</span><span class="p">))</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1596,7 +1596,7 @@ Mako</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.flash</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlashConfig</span><span class="p">,</span> <span class="n">FlashPlugin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.template.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateConfig</span>
 
-<span class="n">template_config</span> <span class="o">=</span> <span class="n">TemplateConfig</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">MakoTemplateEngine</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;templates&quot;</span><span class="p">)</span>
+<span class="n">template_config</span> <span class="o">=</span> <span class="n">TemplateConfig</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">MakoTemplateEngine</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">"templates"</span><span class="p">)</span>
 <span class="n">flash_plugin</span> <span class="o">=</span> <span class="n">FlashPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">FlashConfig</span><span class="p">(</span><span class="n">template_config</span><span class="o">=</span><span class="n">template_config</span><span class="p">))</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1618,7 +1618,7 @@ MiniJinja</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.flash</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlashConfig</span><span class="p">,</span> <span class="n">FlashPlugin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.template.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateConfig</span>
 
-<span class="n">template_config</span> <span class="o">=</span> <span class="n">TemplateConfig</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">MiniJinjaTemplateEngine</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;templates&quot;</span><span class="p">)</span>
+<span class="n">template_config</span> <span class="o">=</span> <span class="n">TemplateConfig</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">MiniJinjaTemplateEngine</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">"templates"</span><span class="p">)</span>
 <span class="n">flash_plugin</span> <span class="o">=</span> <span class="n">FlashPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">FlashConfig</span><span class="p">(</span><span class="n">template_config</span><span class="o">=</span><span class="n">template_config</span><span class="p">))</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1646,22 +1646,22 @@ The same approach applies to Mako and MiniJinja engines as well.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.template.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateConfig</span>
 
-<span class="n">template_config</span> <span class="o">=</span> <span class="n">TemplateConfig</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">JinjaTemplateEngine</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;templates&quot;</span><span class="p">)</span>
+<span class="n">template_config</span> <span class="o">=</span> <span class="n">TemplateConfig</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="n">JinjaTemplateEngine</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">"templates"</span><span class="p">)</span>
 <span class="n">flash_plugin</span> <span class="o">=</span> <span class="n">FlashPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">FlashConfig</span><span class="p">(</span><span class="n">template_config</span><span class="o">=</span><span class="n">template_config</span><span class="p">))</span>
 
 
 <span class="nd">@get</span><span class="p">()</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Example of adding and displaying a flash message.&quot;&quot;&quot;</span>
-    <span class="n">flash</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Oh no! I&#39;ve been flashed!&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Example of adding and displaying a flash message."""</span>
+    <span class="n">flash</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">"Oh no! I've been flashed!"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">"error"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Template</span><span class="p">(</span>
-        <span class="n">template_str</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">template_str</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    &lt;h1&gt;Flash Message Example&lt;/h1&gt;</span>
 <span class="s2">    {</span><span class="si">% f</span><span class="s2">or message in get_flashes() %}</span>
 <span class="s2">    &lt;p&gt;{{ message.message }} (Category:{{ message.category }})&lt;/p&gt;</span>
 <span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
-<span class="s2">    &quot;&quot;&quot;</span>
+<span class="s2">    """</span>
     <span class="p">)</span>
 
 

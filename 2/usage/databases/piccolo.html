@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -881,7 +881,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1564,70 +1564,70 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.piccolo</span><span class="w"> </span><span class="kn">import</span> <span class="n">PiccoloDTO</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundException</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span><span class="p">,</span> <span class="n">JSONBody</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.piccolo_conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DB</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Task</span><span class="p">(</span><span class="n">Table</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">DB</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An example table.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">Varchar</span><span class="p">()</span>
     <span class="n">completed</span> <span class="o">=</span> <span class="n">Boolean</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PatchDTO</span><span class="p">(</span><span class="n">PiccoloDTO</span><span class="p">[</span><span class="n">Task</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Allow partial updates.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Allow partial updates."""</span>
 
-    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">},</span> <span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">"id"</span><span class="p">},</span> <span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/tasks&quot;</span><span class="p">,</span>
+    <span class="s2">"/tasks"</span><span class="p">,</span>
     <span class="n">return_dto</span><span class="o">=</span><span class="n">PiccoloDTO</span><span class="p">[</span><span class="n">Task</span><span class="p">],</span>
     <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">],</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"Task"</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">tasks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]:</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">Task</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
 <span class="nd">@post</span><span class="p">(</span>
-    <span class="s2">&quot;/tasks&quot;</span><span class="p">,</span>
+    <span class="s2">"/tasks"</span><span class="p">,</span>
     <span class="n">dto</span><span class="o">=</span><span class="n">PiccoloDTO</span><span class="p">[</span><span class="n">Task</span><span class="p">],</span>
     <span class="n">return_dto</span><span class="o">=</span><span class="n">PiccoloDTO</span><span class="p">[</span><span class="n">Task</span><span class="p">],</span>
     <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">],</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"Task"</span><span class="p">],</span>
 <span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_task</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_task</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">Task</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
     <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">data</span>
 
 
 <span class="nd">@patch</span><span class="p">(</span>
-    <span class="s2">&quot;/tasks/{task_id:int}&quot;</span><span class="p">,</span>
+    <span class="s2">"/tasks/{task_id:int}"</span><span class="p">,</span>
     <span class="n">dto</span><span class="o">=</span><span class="n">PatchDTO</span><span class="p">,</span>
     <span class="n">return_dto</span><span class="o">=</span><span class="n">PiccoloDTO</span><span class="p">[</span><span class="n">Task</span><span class="p">],</span>
     <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">],</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"Task"</span><span class="p">],</span>
 <span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">Task</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">DTOData</span><span class="p">[</span><span class="n">Task</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
     <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Task</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Task</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">task_id</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">&quot;Task does not exist&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">"Task does not exist"</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">update_instance</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">result</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">result</span>
 
 
-<span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/tasks/{task_id:int}&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">])</span>
+<span class="nd">@delete</span><span class="p">(</span><span class="s2">"/tasks/{task_id:int}"</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"Task"</span><span class="p">])</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Task</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Task</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">task_id</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">&quot;Task does not exist&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">"Task does not exist"</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
 
 
@@ -1652,70 +1652,70 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.contrib.piccolo</span><span class="w"> </span><span class="kn">import</span> <span class="n">PiccoloDTO</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundException</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span><span class="p">,</span> <span class="n">JSONBody</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.piccolo_conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DB</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Task</span><span class="p">(</span><span class="n">Table</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="n">DB</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An example table.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">Varchar</span><span class="p">()</span>
     <span class="n">completed</span> <span class="o">=</span> <span class="n">Boolean</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PatchDTO</span><span class="p">(</span><span class="n">PiccoloDTO</span><span class="p">[</span><span class="n">Task</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Allow partial updates.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Allow partial updates."""</span>
 
-    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">},</span> <span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">"id"</span><span class="p">},</span> <span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/tasks&quot;</span><span class="p">,</span>
+    <span class="s2">"/tasks"</span><span class="p">,</span>
     <span class="n">return_dto</span><span class="o">=</span><span class="n">PiccoloDTO</span><span class="p">[</span><span class="n">Task</span><span class="p">],</span>
     <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">],</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"Task"</span><span class="p">],</span>
 <span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">tasks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Task</span><span class="p">]:</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">Task</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
 <span class="nd">@post</span><span class="p">(</span>
-    <span class="s2">&quot;/tasks&quot;</span><span class="p">,</span>
+    <span class="s2">"/tasks"</span><span class="p">,</span>
     <span class="n">dto</span><span class="o">=</span><span class="n">PiccoloDTO</span><span class="p">[</span><span class="n">Task</span><span class="p">],</span>
     <span class="n">return_dto</span><span class="o">=</span><span class="n">PiccoloDTO</span><span class="p">[</span><span class="n">Task</span><span class="p">],</span>
     <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">],</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"Task"</span><span class="p">],</span>
 <span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_task</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_task</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">Task</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
     <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">data</span>
 
 
 <span class="nd">@patch</span><span class="p">(</span>
-    <span class="s2">&quot;/tasks/{task_id:int}&quot;</span><span class="p">,</span>
+    <span class="s2">"/tasks/{task_id:int}"</span><span class="p">,</span>
     <span class="n">dto</span><span class="o">=</span><span class="n">PatchDTO</span><span class="p">,</span>
     <span class="n">return_dto</span><span class="o">=</span><span class="n">PiccoloDTO</span><span class="p">[</span><span class="n">Task</span><span class="p">],</span>
     <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">],</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"Task"</span><span class="p">],</span>
 <span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">Task</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">DTOData</span><span class="p">[</span><span class="n">Task</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
     <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Task</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Task</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">task_id</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">&quot;Task does not exist&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">"Task does not exist"</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">update_instance</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">result</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">result</span>
 
 
-<span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/tasks/{task_id:int}&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Task&quot;</span><span class="p">])</span>
+<span class="nd">@delete</span><span class="p">(</span><span class="s2">"/tasks/{task_id:int}"</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"Task"</span><span class="p">])</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Task</span><span class="o">.</span><span class="n">objects</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Task</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">task_id</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">&quot;Task does not exist&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">"Task does not exist"</span><span class="p">)</span>
     <span class="k">await</span> <span class="n">task</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
 
 

@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1584,18 +1584,18 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">route_handler</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;world&quot;</span>
+    <span class="k">return</span> <span class="s2">"world"</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyPlugin</span><span class="p">(</span><span class="n">InitPlugin</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
-        <span class="n">app_config</span><span class="o">.</span><span class="n">dependencies</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_name</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">app_config</span><span class="o">.</span><span class="n">dependencies</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_name</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">app_config</span><span class="o">.</span><span class="n">route_handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route_handler</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">app_config</span>
 
@@ -1616,18 +1616,18 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">route_handler</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;world&quot;</span>
+    <span class="k">return</span> <span class="s2">"world"</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyPlugin</span><span class="p">(</span><span class="n">InitPlugin</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
-        <span class="n">app_config</span><span class="o">.</span><span class="n">dependencies</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_name</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">app_config</span><span class="o">.</span><span class="n">dependencies</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_name</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">app_config</span><span class="o">.</span><span class="n">route_handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route_handler</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">app_config</span>
 
@@ -1641,7 +1641,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
-<span class="o">{</span><span class="s2">&quot;hello&quot;</span>:<span class="s2">&quot;world&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"hello"</span>:<span class="s2">"world"</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1661,7 +1661,7 @@ that are otherwise unsupported by the framework.</p>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a></p></li>
 </ol>
-<p>The method takes a <a class="reference internal" href="../../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and returns a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>
+<p>The method takes a <a class="reference internal" href="../../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and returns a <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>
 indicating whether the plugin supports serialization for that type.</p>
 <ol class="arabic simple" start="2">
 <li><p><a class="reference internal" href="../../reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type" title="litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a></p></li>
@@ -1684,25 +1684,25 @@ that annotation.</p>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn_deprecation</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SQLAlchemySerializationPlugin&quot;</span><span class="p">,)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"SQLAlchemySerializationPlugin"</span><span class="p">,)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="n">attr_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">__all__</span><span class="p">:</span>
         <span class="n">warn_deprecation</span><span class="p">(</span>
-            <span class="n">deprecated_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;litestar.contrib.sqlalchemy.plugins.serialization.</span><span class="si">{</span><span class="n">attr_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.12&quot;</span><span class="p">,</span>
-            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;import&quot;</span><span class="p">,</span>
-            <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span>
-            <span class="n">info</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;importing </span><span class="si">{</span><span class="n">attr_name</span><span class="si">}</span><span class="s2"> from &#39;litestar.contrib.sqlalchemy.plugins.serialization&#39; is deprecated, please &quot;</span>
-            <span class="s2">&quot;import it from &#39;litestar.plugins.sqlalchemy&#39; instead&quot;</span><span class="p">,</span>
+            <span class="n">deprecated_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"litestar.contrib.sqlalchemy.plugins.serialization.</span><span class="si">{</span><span class="n">attr_name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="s2">"2.12"</span><span class="p">,</span>
+            <span class="n">kind</span><span class="o">=</span><span class="s2">"import"</span><span class="p">,</span>
+            <span class="n">removal_in</span><span class="o">=</span><span class="s2">"3.0"</span><span class="p">,</span>
+            <span class="n">info</span><span class="o">=</span><span class="sa">f</span><span class="s2">"importing </span><span class="si">{</span><span class="n">attr_name</span><span class="si">}</span><span class="s2"> from 'litestar.contrib.sqlalchemy.plugins.serialization' is deprecated, please "</span>
+            <span class="s2">"import it from 'litestar.plugins.sqlalchemy' instead"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">SQLAlchemySerializationPlugin</span>
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">attr_name</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># pragma: no cover</span>
+    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">attr_name</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>  <span class="c1"># pragma: no cover</span>
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -1711,7 +1711,7 @@ that annotation.</p>
 </div>
 </div>
 <p><a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type" title="(in advanced_alchemy)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a>
-returns a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> indicating whether the plugin supports serialization for the given type. Specifically, we return
+returns a <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> indicating whether the plugin supports serialization for the given type. Specifically, we return
 <code class="docutils literal notranslate"><span class="pre">True</span></code> if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.</p>
 <p><a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/index.html#advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.create_dto_for_type" title="(in advanced_alchemy)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a>
 takes a <a class="reference internal" href="../../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and returns a
@@ -1759,12 +1759,12 @@ Python 3.8+</label><div class="sd-tab-content docutils">
         <span class="k">return</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">MyBaseType</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Signature</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-        <span class="n">signature</span> <span class="o">=</span> <span class="n">Signature</span><span class="p">([</span><span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">Parameter</span><span class="o">.</span><span class="n">POSITIONAL_OR_KEYWORD</span><span class="p">)])</span>
-        <span class="n">annotations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">]}</span>
+        <span class="n">signature</span> <span class="o">=</span> <span class="n">Signature</span><span class="p">([</span><span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"param"</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">Parameter</span><span class="o">.</span><span class="n">POSITIONAL_OR_KEYWORD</span><span class="p">)])</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">]}</span>
         <span class="k">return</span> <span class="n">signature</span><span class="p">,</span> <span class="n">annotations</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">MyBaseType</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)})</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"injected"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">MyBaseType</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)})</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">MyBaseType</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">injected</span><span class="o">.</span><span class="n">param</span>
 
@@ -1798,12 +1798,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <span class="k">return</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">MyBaseType</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Signature</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-        <span class="n">signature</span> <span class="o">=</span> <span class="n">Signature</span><span class="p">([</span><span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">Parameter</span><span class="o">.</span><span class="n">POSITIONAL_OR_KEYWORD</span><span class="p">)])</span>
-        <span class="n">annotations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">]}</span>
+        <span class="n">signature</span> <span class="o">=</span> <span class="n">Signature</span><span class="p">([</span><span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"param"</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">Parameter</span><span class="o">.</span><span class="n">POSITIONAL_OR_KEYWORD</span><span class="p">)])</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"param"</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">]}</span>
         <span class="k">return</span> <span class="n">signature</span><span class="p">,</span> <span class="n">annotations</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">MyBaseType</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)})</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"injected"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">MyBaseType</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)})</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">MyBaseType</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">injected</span><span class="o">.</span><span class="n">param</span>
 
@@ -1845,7 +1845,7 @@ This happens during the application initialization process, after routes are cre
 
 <span class="k">class</span><span class="w"> </span><span class="nc">RouteLoggerPlugin</span><span class="p">(</span><span class="n">ReceiveRoutePlugin</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">receive_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Route registered: </span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Route registered: </span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span><span class="si">}</span><span class="s2">]"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

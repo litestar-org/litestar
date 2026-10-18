@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1549,7 +1549,7 @@ document.write(`
 <h1>Debugging<a class="headerlink" href="#debugging" title="Link to this heading">#</a></h1>
 <section id="using-the-python-debugger">
 <h2>Using the Python debugger<a class="headerlink" href="#using-the-python-debugger" title="Link to this heading">#</a></h2>
-<p>You can configure Litestar to drop into the <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.14)"><span class="xref std std-doc">Python Debugger</span></a>
+<p>You can configure Litestar to drop into the <a class="reference external" href="https://docs.python.org/3/library/pdb.html" title="(in Python v3.15)"><span class="xref std std-doc">Python Debugger</span></a>
 when an exception occurs. This can be configured in different ways:</p>
 <dl>
 <dt>Configuring <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> with the <code class="docutils literal notranslate"><span class="pre">pdb_on_exception</span></code> option</dt><dd><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">pdb_on_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1627,12 +1627,12 @@ running uvicorn process via <code class="docutils literal notranslate"><span cla
 </li>
 <li><dl>
 <dt>In the opened JSON file, alter the configuration as follows:</dt><dd><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Litestar app&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;debugpy&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;litestar&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;justMyCode&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Python: Litestar app"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"debugpy"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"request"</span><span class="p">:</span><span class="w"> </span><span class="s2">"launch"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"litestar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"justMyCode"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"run"</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1666,12 +1666,12 @@ running uvicorn process via <code class="docutils literal notranslate"><span cla
 </li>
 <li><dl>
 <dt>In the opened JSON file, alter the configuration as follows:</dt><dd><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python: Litestar app&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;debugpy&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uvicorn&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;justMyCode&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;app:app&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Python: Litestar app"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"debugpy"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"request"</span><span class="p">:</span><span class="w"> </span><span class="s2">"launch"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"uvicorn"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"justMyCode"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"app:app"</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>

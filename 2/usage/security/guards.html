@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1550,7 +1550,7 @@ document.write(`
                   
   <section id="guards">
 <h1>Guards<a class="headerlink" href="#guards" title="Link to this heading">#</a></h1>
-<p>Guards are <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.14)"><span class="xref std std-term">callables</span></a> that receive two arguments - <code class="docutils literal notranslate"><span class="pre">connection</span></code>, which is the <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> or <a class="reference internal" href="../../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instance (both sub-classes of <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a>), and <code class="docutils literal notranslate"><span class="pre">route_handler</span></code>, which is a copy of the
+<p>Guards are <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.15)"><span class="xref std std-term">callables</span></a> that receive two arguments - <code class="docutils literal notranslate"><span class="pre">connection</span></code>, which is the <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> or <a class="reference internal" href="../../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instance (both sub-classes of <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a>), and <code class="docutils literal notranslate"><span class="pre">route_handler</span></code>, which is a copy of the
 <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRouteHandler</span></code></a>. Their role is to <em>authorize</em> the request by verifying that
 the connection is allowed to reach the endpoint handler in question. If verification fails, the guard should raise an
 <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPException</span></code></a>, usually a <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.PermissionDeniedException" title="litestar.exceptions.PermissionDeniedException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionDeniedException</span></code></a> with a
@@ -1558,12 +1558,12 @@ the connection is allowed to reach the endpoint handler in question. If verifica
 <p>To illustrate this we will implement a rudimentary role based authorization system in our Litestar app. As we have done
 for <code class="docutils literal notranslate"><span class="pre">authentication</span></code>, we will assume that we added some sort of persistence layer without actually specifying it in
 the example.</p>
-<p>We begin by creating an <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a> with two roles - <code class="docutils literal notranslate"><span class="pre">consumer</span></code> and <code class="docutils literal notranslate"><span class="pre">admin</span></code>:</p>
+<p>We begin by creating an <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a> with two roles - <code class="docutils literal notranslate"><span class="pre">consumer</span></code> and <code class="docutils literal notranslate"><span class="pre">admin</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Defining the enum <code class="docutils literal notranslate"><span class="pre">UserRole</span></code></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">UserRole</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="n">CONSUMER</span> <span class="o">=</span> <span class="s2">&quot;consumer&quot;</span>
-    <span class="n">ADMIN</span> <span class="o">=</span> <span class="s2">&quot;admin&quot;</span>
+    <span class="n">CONSUMER</span> <span class="o">=</span> <span class="s2">"consumer"</span>
+    <span class="n">ADMIN</span> <span class="o">=</span> <span class="s2">"admin"</span>
 </pre></div>
 </div>
 </div>
@@ -1576,7 +1576,7 @@ the example.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determines whether the user is an admin user&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Determines whether the user is an admin user"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">UserRole</span><span class="o">.</span><span class="n">ADMIN</span>
 </pre></div>
 </div>
@@ -1589,8 +1589,8 @@ handler function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">admin_user_guard</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">PermissionDeniedException</span><span class="p">()</span>
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/user&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">admin_user_guard</span><span class="p">])</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/user"</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">admin_user_guard</span><span class="p">],</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -1609,12 +1609,12 @@ on all layers of the app - the Litestar instance, routers, controllers, and indi
 
 <span class="c1"># controller</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/user&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/user"</span>
     <span class="n">guards</span> <span class="o">=</span> <span class="p">[</span><span class="n">my_guard</span><span class="p">]</span>
 
 
 <span class="c1"># router</span>
-<span class="n">admin_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">UserController</span><span class="p">],</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">my_guard</span><span class="p">])</span>
+<span class="n">admin_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"admin"</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">UserController</span><span class="p">],</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">my_guard</span><span class="p">])</span>
 
 <span class="c1"># app</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">admin_router</span><span class="p">],</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">my_guard</span><span class="p">])</span>
@@ -1628,7 +1628,7 @@ on all layers of the app - the Litestar instance, routers, controllers, and indi
 <li><p>Are you aiming to secure all routes managed by a specific router?</p></li>
 <li><p>Or do you need to enforce access control across the entire application?</p></li>
 </ul>
-<p>As you can see in the above examples - <code class="docutils literal notranslate"><span class="pre">guards</span></code> is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>. This means you can add <strong>multiple</strong> guards at
+<p>As you can see in the above examples - <code class="docutils literal notranslate"><span class="pre">guards</span></code> is a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>. This means you can add <strong>multiple</strong> guards at
 every layer. Unlike <a class="reference internal" href="../dependency-injection.html"><span class="doc">dependencies</span></a> , guards do not override each other but are
 rather <em>cumulative</em>. This means that you can define guards on different layers of your app, and they will combine.</p>
 <div class="admonition caution">
@@ -1645,13 +1645,13 @@ other flag. This can be achieved with <a class="reference internal" href="../rou
 the following guard:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">secret_token_guard</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;secret&quot;</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Secret-Header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span>
+        <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"secret"</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Secret-Header"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span> <span class="o">==</span> <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">"secret"</span><span class="p">]</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="n">PermissionDeniedException</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/secret&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">secret_token_guard</span><span class="p">],</span> <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;secret&quot;</span><span class="p">:</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SECRET&quot;</span><span class="p">)})</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/secret"</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">secret_token_guard</span><span class="p">],</span> <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">"secret"</span><span class="p">:</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SECRET"</span><span class="p">)})</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">secret_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>

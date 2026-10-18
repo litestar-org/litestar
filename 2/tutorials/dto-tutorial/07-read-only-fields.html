@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -881,7 +881,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1554,31 +1554,32 @@ instance, the <code class="docutils literal notranslate"><span class="pre">id</s
 <span class="linenos"> 4</span>
 <span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span>
-<span class="linenos"> 7</span>
+<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 <span class="linenos"> 8</span>
-<span class="linenos"> 9</span><span class="nd">@dataclass</span>
-<span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
-<span class="linenos">11</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos">12</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
-<span class="linenos">13</span>    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
-<span class="hll"><span class="linenos">14</span>    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
-</span><span class="linenos">15</span>
-<span class="linenos">16</span>
-<span class="linenos">17</span><span class="k">class</span><span class="w"> </span><span class="nc">ReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-<span class="linenos">18</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">})</span>
-<span class="linenos">19</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nd">@dataclass</span>
+<span class="linenos">11</span><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
+<span class="linenos">12</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">13</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+<span class="linenos">14</span>    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+<span class="hll"><span class="linenos">15</span>    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+</span><span class="linenos">16</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="k">class</span><span class="w"> </span><span class="nc">ReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
+<span class="linenos">19</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">"email"</span><span class="p">})</span>
 <span class="linenos">20</span>
-<span class="linenos">21</span><span class="k">class</span><span class="w"> </span><span class="nc">WriteDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-<span class="linenos">22</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">})</span>
-<span class="linenos">23</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="k">class</span><span class="w"> </span><span class="nc">WriteDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
+<span class="linenos">23</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">"id"</span><span class="p">})</span>
 <span class="linenos">24</span>
-<span class="linenos">25</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/person&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="linenos">26</span><span class="k">def</span><span class="w"> </span><span class="nf">create_person</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Person</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
-<span class="linenos">27</span>    <span class="c1"># Logic for persisting the person goes here</span>
-<span class="linenos">28</span>    <span class="k">return</span> <span class="n">data</span>
-<span class="linenos">29</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="nd">@post</span><span class="p">(</span><span class="s2">"/person"</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">27</span><span class="k">def</span><span class="w"> </span><span class="nf">create_person</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">Person</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
+<span class="linenos">28</span>    <span class="c1"># Logic for persisting the person goes here</span>
+<span class="linenos">29</span>    <span class="k">return</span> <span class="n">data</span>
 <span class="linenos">30</span>
-<span class="linenos">31</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_person</span><span class="p">])</span>
+<span class="linenos">31</span>
+<span class="linenos">32</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_person</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>In this adjustment, we add an <code class="docutils literal notranslate"><span class="pre">id</span></code> field to the <code class="docutils literal notranslate"><span class="pre">Person</span></code> model. We also create a new class, <code class="docutils literal notranslate"><span class="pre">WriteDTO</span></code> that is

@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1586,17 +1586,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of Litestar with Scalar OpenAPI docs&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of Litestar with Scalar OpenAPI docs"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">ScalarRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1611,17 +1611,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of Litestar with Scalar OpenAPI docs&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of Litestar with Scalar OpenAPI docs"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">ScalarRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1644,17 +1644,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">RapidocRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">RapidocRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1669,17 +1669,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">RapidocRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">RapidocRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1702,17 +1702,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedocRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">RedocRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1727,17 +1727,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedocRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">RedocRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1760,17 +1760,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoplightRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StoplightRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1785,17 +1785,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoplightRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StoplightRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1818,17 +1818,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">SwaggerRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SwaggerRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1843,17 +1843,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">SwaggerRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SwaggerRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1876,17 +1876,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">YamlRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">YamlRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1901,17 +1901,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">YamlRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">YamlRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1936,17 +1936,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">RapidocRenderPlugin</span><span class="p">,</span> <span class="n">SwaggerRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">RapidocRenderPlugin</span><span class="p">(),</span> <span class="n">SwaggerRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -1964,17 +1964,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">RapidocRenderPlugin</span><span class="p">,</span> <span class="n">SwaggerRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">RapidocRenderPlugin</span><span class="p">(),</span> <span class="n">SwaggerRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -2013,14 +2013,14 @@ URL to retrieve the bundle from <code class="docutils literal notranslate"><span
 scalar</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarRenderPlugin</span>
 
-<span class="n">scalar_plugin</span> <span class="o">=</span> <span class="n">ScalarRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.19.5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/scalar&quot;</span><span class="p">)</span>
+<span class="n">scalar_plugin</span> <span class="o">=</span> <span class="n">ScalarRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">"1.19.5"</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">"/scalar"</span><span class="p">)</span>
 
 <span class="c1"># Example demonstrating custom Scalar render options</span>
 <span class="c1"># For more configuration options, see: https://guides.scalar.com/scalar/scalar-api-references/configuration</span>
 <span class="n">scalar_plugin_with_options</span> <span class="o">=</span> <span class="n">ScalarRenderPlugin</span><span class="p">(</span>
     <span class="n">options</span><span class="o">=</span><span class="p">{</span>
         <span class="c1"># Hide the sidebar to give more space to the main content</span>
-        <span class="s2">&quot;showSidebar&quot;</span><span class="p">:</span> <span class="kc">False</span>
+        <span class="s2">"showSidebar"</span><span class="p">:</span> <span class="kc">False</span>
     <span class="p">}</span>
 <span class="p">)</span>
 </pre></div>
@@ -2031,7 +2031,7 @@ scalar</label><div class="sd-tab-content docutils">
 rapidoc</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">RapidocRenderPlugin</span>
 
-<span class="n">rapidoc_plugin</span> <span class="o">=</span> <span class="n">RapidocRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;9.3.4&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/rapidoc&quot;</span><span class="p">)</span>
+<span class="n">rapidoc_plugin</span> <span class="o">=</span> <span class="n">RapidocRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">"9.3.4"</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">"/rapidoc"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2041,10 +2041,10 @@ redoc</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedocRenderPlugin</span>
 
 <span class="n">redoc_plugin</span> <span class="o">=</span> <span class="n">RedocRenderPlugin</span><span class="p">(</span>
-    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">"latest"</span><span class="p">,</span>
     <span class="n">google_fonts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/redoc&quot;</span><span class="p">,</span>
-    <span class="n">js_url</span><span class="o">=</span><span class="s2">&quot;https://cdn.company.internal/redoc/custom-redoc.js&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/redoc"</span><span class="p">,</span>
+    <span class="n">js_url</span><span class="o">=</span><span class="s2">"https://cdn.company.internal/redoc/custom-redoc.js"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2060,7 +2060,7 @@ precedence over <code class="docutils literal notranslate"><span class="pre">ver
 stoplight</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoplightRenderPlugin</span>
 
-<span class="n">stoplight_plugin</span> <span class="o">=</span> <span class="n">StoplightRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;7.7.18&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/elements&quot;</span><span class="p">)</span>
+<span class="n">stoplight_plugin</span> <span class="o">=</span> <span class="n">StoplightRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">"7.7.18"</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">"/elements"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2069,7 +2069,7 @@ stoplight</label><div class="sd-tab-content docutils">
 swagger</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">SwaggerRenderPlugin</span>
 
-<span class="n">swagger_plugin</span> <span class="o">=</span> <span class="n">SwaggerRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;5.18.2&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/swagger&quot;</span><span class="p">)</span>
+<span class="n">swagger_plugin</span> <span class="o">=</span> <span class="n">SwaggerRenderPlugin</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">"5.18.2"</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">"/swagger"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2090,18 +2090,18 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is the description of my API&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
-        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/docs&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"My API"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"This is the description of my API"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.1.0"</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">"/docs"</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
@@ -2114,18 +2114,18 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is the description of my API&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
-        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/docs&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"My API"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"This is the description of my API"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.1.0"</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">"/docs"</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
@@ -2167,9 +2167,9 @@ become the default UI plugin in <code class="docutils literal notranslate"><span
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of Litestar with Scalar OpenAPI docs&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of Litestar with Scalar OpenAPI docs"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span><span class="n">ScalarRenderPlugin</span><span class="p">()],</span>
     <span class="p">),</span>
 <span class="p">)</span>
@@ -2206,44 +2206,44 @@ maintained by Litestar. Here’s the finished product:</p>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.19.5&quot;</span><span class="p">,</span>
+        <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"1.19.5"</span><span class="p">,</span>
         <span class="n">js_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">css_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;/scalar&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"/scalar"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">js_url</span> <span class="o">=</span> <span class="n">js_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;https://cdn.jsdelivr.net/npm/@scalar/api-reference@</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">js_url</span> <span class="o">=</span> <span class="n">js_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"https://cdn.jsdelivr.net/npm/@scalar/api-reference@</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">css_url</span> <span class="o">=</span> <span class="n">css_url</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">openapi_schema</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-        <span class="n">style_sheet_link</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">css_url</span><span class="si">}</span><span class="s1">&quot;&gt;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_url</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">head</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">style_sheet_link</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'&lt;link rel="stylesheet" type="text/css" href="</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">css_url</span><span class="si">}</span><span class="s1">"&gt;'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_url</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">                  &lt;head&gt;</span>
-<span class="s2">                    &lt;title&gt;</span><span class="si">{</span><span class="n">openapi_schema</span><span class="p">[</span><span class="s2">&quot;info&quot;</span><span class="p">][</span><span class="s2">&quot;title&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/title&gt;</span>
+<span class="s2">                    &lt;title&gt;</span><span class="si">{</span><span class="n">openapi_schema</span><span class="p">[</span><span class="s2">"info"</span><span class="p">][</span><span class="s2">"title"</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/title&gt;</span>
 <span class="s2">                    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="si">}</span>
-<span class="s2">                    &lt;meta charset=&quot;utf-8&quot;/&gt;</span>
-<span class="s2">                    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;</span>
+<span class="s2">                    &lt;meta charset="utf-8"/&gt;</span>
+<span class="s2">                    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</span>
 <span class="s2">                    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">favicon</span><span class="si">}</span>
 <span class="s2">                    </span><span class="si">{</span><span class="n">style_sheet_link</span><span class="si">}</span>
 <span class="s2">                  &lt;/head&gt;</span>
-<span class="s2">                &quot;&quot;&quot;</span>
+<span class="s2">                """</span>
 
-        <span class="n">body</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">                &lt;script</span>
-<span class="s2">                  id=&quot;api-reference&quot;</span>
-<span class="s2">                  data-url=&quot;openapi.json&quot;&gt;</span>
+<span class="s2">                  id="api-reference"</span>
+<span class="s2">                  data-url="openapi.json"&gt;</span>
 <span class="s2">                &lt;/script&gt;</span>
-<span class="s2">                &lt;script src=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">js_url</span><span class="si">}</span><span class="s2">&quot; crossorigin&gt;&lt;/script&gt;</span>
-<span class="s2">                &quot;&quot;&quot;</span>
+<span class="s2">                &lt;script src="</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">js_url</span><span class="si">}</span><span class="s2">" crossorigin&gt;&lt;/script&gt;</span>
+<span class="s2">                """</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">                &lt;!DOCTYPE html&gt;</span>
 <span class="s2">                    &lt;html&gt;</span>
 <span class="s2">                        </span><span class="si">{</span><span class="n">head</span><span class="si">}</span>
 <span class="s2">                        </span><span class="si">{</span><span class="n">body</span><span class="si">}</span>
 <span class="s2">                    &lt;/html&gt;</span>
-<span class="s2">                &quot;&quot;&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+<span class="s2">                """</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
 </pre></div>
 </div>
 <section id="class-definition">
@@ -2258,13 +2258,13 @@ maintained by Litestar. Here’s the finished product:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.19.5&quot;</span><span class="p">,</span>
+        <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"1.19.5"</span><span class="p">,</span>
         <span class="n">js_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">css_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;/scalar&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"/scalar"</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">js_url</span> <span class="o">=</span> <span class="n">js_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;https://cdn.jsdelivr.net/npm/@scalar/api-reference@</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">js_url</span> <span class="o">=</span> <span class="n">js_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"https://cdn.jsdelivr.net/npm/@scalar/api-reference@</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">css_url</span> <span class="o">=</span> <span class="n">css_url</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
@@ -2278,7 +2278,7 @@ maintained by Litestar. Here’s the finished product:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>: Captures additional arguments to pass to the superclass.</p></li>
 </ul>
 <p>And we construct a url for the Scalar JavaScript bundle if one is not provided:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="bp">self</span><span class="o">.</span><span class="n">js_url</span> <span class="o">=</span> <span class="n">js_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;https://cdn.jsdelivr.net/npm/@scalar/api-reference@</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="bp">self</span><span class="o">.</span><span class="n">js_url</span> <span class="o">=</span> <span class="n">js_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"https://cdn.jsdelivr.net/npm/@scalar/api-reference@</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span>
 </pre></div>
 </div>
 </section>
@@ -2293,39 +2293,39 @@ maintained by Litestar. Here’s the finished product:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">head</span></code>: Defines the HTML <code class="docutils literal notranslate"><span class="pre">&lt;head&gt;</span></code> section, including the title from <code class="docutils literal notranslate"><span class="pre">openapi_schema</span></code>, any additional styles
 (<code class="docutils literal notranslate"><span class="pre">self.style</span></code>), the favicon and custom style sheet if one is provided:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="n">style_sheet_link</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">css_url</span><span class="si">}</span><span class="s1">&quot;&gt;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_url</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">head</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="n">style_sheet_link</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'&lt;link rel="stylesheet" type="text/css" href="</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">css_url</span><span class="si">}</span><span class="s1">"&gt;'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_url</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">                  &lt;head&gt;</span>
-<span class="s2">                    &lt;title&gt;</span><span class="si">{</span><span class="n">openapi_schema</span><span class="p">[</span><span class="s2">&quot;info&quot;</span><span class="p">][</span><span class="s2">&quot;title&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/title&gt;</span>
+<span class="s2">                    &lt;title&gt;</span><span class="si">{</span><span class="n">openapi_schema</span><span class="p">[</span><span class="s2">"info"</span><span class="p">][</span><span class="s2">"title"</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/title&gt;</span>
 <span class="s2">                    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="si">}</span>
-<span class="s2">                    &lt;meta charset=&quot;utf-8&quot;/&gt;</span>
-<span class="s2">                    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;</span>
+<span class="s2">                    &lt;meta charset="utf-8"/&gt;</span>
+<span class="s2">                    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</span>
 <span class="s2">                    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">favicon</span><span class="si">}</span>
 <span class="s2">                    </span><span class="si">{</span><span class="n">style_sheet_link</span><span class="si">}</span>
 <span class="s2">                  &lt;/head&gt;</span>
-<span class="s2">                &quot;&quot;&quot;</span>
+<span class="s2">                """</span>
 </pre></div>
 </div>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">body</span></code>: Constructs the HTML <code class="docutils literal notranslate"><span class="pre">&lt;body&gt;</span></code>, including a link to the OpenAPI JSON, and the JavaScript bundle:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="n">body</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="n">body</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">                &lt;script</span>
-<span class="s2">                  id=&quot;api-reference&quot;</span>
-<span class="s2">                  data-url=&quot;openapi.json&quot;&gt;</span>
+<span class="s2">                  id="api-reference"</span>
+<span class="s2">                  data-url="openapi.json"&gt;</span>
 <span class="s2">                &lt;/script&gt;</span>
-<span class="s2">                &lt;script src=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">js_url</span><span class="si">}</span><span class="s2">&quot; crossorigin&gt;&lt;/script&gt;</span>
-<span class="s2">                &quot;&quot;&quot;</span>
+<span class="s2">                &lt;script src="</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">js_url</span><span class="si">}</span><span class="s2">" crossorigin&gt;&lt;/script&gt;</span>
+<span class="s2">                """</span>
 </pre></div>
 </div>
 </li>
 <li><p>Finally, returns a complete HTML document (as a byte string), combining head and body.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="k">return</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">                &lt;!DOCTYPE html&gt;</span>
 <span class="s2">                    &lt;html&gt;</span>
 <span class="s2">                        </span><span class="si">{</span><span class="n">head</span><span class="si">}</span>
 <span class="s2">                        </span><span class="si">{</span><span class="n">body</span><span class="si">}</span>
 <span class="s2">                    &lt;/html&gt;</span>
-<span class="s2">                &quot;&quot;&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+<span class="s2">                """</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
 </pre></div>
 </div>
 </li>
@@ -2352,12 +2352,12 @@ maintained by Litestar. Here’s the finished product:</p>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyOpenAPIPlugin</span><span class="p">(</span><span class="n">OpenAPIRenderPlugin</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">openapi_schema</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;&lt;html&gt;My UI of Choice!&lt;/html&gt;&quot;</span>
+        <span class="k">return</span> <span class="sa">b</span><span class="s2">"&lt;html&gt;My UI of Choice!&lt;/html&gt;"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">receive_router</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">router</span><span class="p">:</span> <span class="n">Router</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/something&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+        <span class="nd">@get</span><span class="p">(</span><span class="s2">"/something"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">something</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;Something&quot;</span>
+            <span class="k">return</span> <span class="s2">"Something"</span>
 
         <span class="n">router</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">something</span><span class="p">)</span>
 </pre></div>
@@ -2381,26 +2381,26 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">SwaggerRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span>
             <span class="n">SwaggerRenderPlugin</span><span class="p">(</span>
                 <span class="n">init_oauth</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;clientId&quot;</span><span class="p">:</span> <span class="s2">&quot;your-client-id&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;appName&quot;</span><span class="p">:</span> <span class="s2">&quot;your-app-name&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;scopeSeparator&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;scopes&quot;</span><span class="p">:</span> <span class="s2">&quot;openid profile&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;useBasicAuthenticationWithAccessCodeGrant&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                    <span class="s2">&quot;usePkceWithAuthorizationCodeGrant&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">"clientId"</span><span class="p">:</span> <span class="s2">"your-client-id"</span><span class="p">,</span>
+                    <span class="s2">"appName"</span><span class="p">:</span> <span class="s2">"your-app-name"</span><span class="p">,</span>
+                    <span class="s2">"scopeSeparator"</span><span class="p">:</span> <span class="s2">" "</span><span class="p">,</span>
+                    <span class="s2">"scopes"</span><span class="p">:</span> <span class="s2">"openid profile"</span><span class="p">,</span>
+                    <span class="s2">"useBasicAuthenticationWithAccessCodeGrant"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">"usePkceWithAuthorizationCodeGrant"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
         <span class="p">],</span>
@@ -2417,26 +2417,26 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">SwaggerRenderPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello World"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Litestar Example&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Example of litestar&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Litestar Example"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Example of litestar"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
         <span class="n">render_plugins</span><span class="o">=</span><span class="p">[</span>
             <span class="n">SwaggerRenderPlugin</span><span class="p">(</span>
                 <span class="n">init_oauth</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;clientId&quot;</span><span class="p">:</span> <span class="s2">&quot;your-client-id&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;appName&quot;</span><span class="p">:</span> <span class="s2">&quot;your-app-name&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;scopeSeparator&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;scopes&quot;</span><span class="p">:</span> <span class="s2">&quot;openid profile&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;useBasicAuthenticationWithAccessCodeGrant&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                    <span class="s2">&quot;usePkceWithAuthorizationCodeGrant&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">"clientId"</span><span class="p">:</span> <span class="s2">"your-client-id"</span><span class="p">,</span>
+                    <span class="s2">"appName"</span><span class="p">:</span> <span class="s2">"your-app-name"</span><span class="p">,</span>
+                    <span class="s2">"scopeSeparator"</span><span class="p">:</span> <span class="s2">" "</span><span class="p">,</span>
+                    <span class="s2">"scopes"</span><span class="p">:</span> <span class="s2">"openid profile"</span><span class="p">,</span>
+                    <span class="s2">"useBasicAuthenticationWithAccessCodeGrant"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">"usePkceWithAuthorizationCodeGrant"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
         <span class="p">],</span>

@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1549,7 +1549,8 @@ document.write(`
 <h1>Requests<a class="headerlink" href="#requests" title="Link to this heading">#</a></h1>
 <section id="request-body">
 <h2>Request body<a class="headerlink" href="#request-body" title="Link to this heading">#</a></h2>
-<p>The body of HTTP requests can be accessed using the special <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter in a handler function.</p>
+<p>The body of HTTP requests can be accessed using the special <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter in a handler function,
+declared with a body marker. For a JSON body, that’s <a class="reference internal" href="../reference/params.html#litestar.params.JSONBody" title="litestar.params.JSONBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">JSONBody</span></code></a>.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-0">
@@ -1557,10 +1558,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">data</span>
 
 
@@ -1572,10 +1574,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.9" for="sd-tab-item-1">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">data</span>
 
 
@@ -1587,8 +1590,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>The type of <code class="docutils literal notranslate"><span class="pre">data</span></code> can be any supported type, including</p>
 <ul class="simple">
 <li><p>Arbitrary stdlib types</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDicts</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDicts</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses</span></code></a></p></li>
 <li><dl class="simple">
 <dt>Types supported via <a class="reference internal" href="plugins/index.html"><span class="doc">plugins</span></a> ie.</dt><dd><ul>
 <li><p><a class="reference external" href="https://msgspec.devstructs.html">Msgspec Struct</a></p></li>
@@ -1602,6 +1605,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 
 <span class="nd">@dataclass</span>
@@ -1610,8 +1614,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
 
@@ -1645,9 +1649,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Create User&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create a new user.&quot;</span><span class="p">)],</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Create User"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Create a new user."</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1673,9 +1677,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Create User&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create a new user.&quot;</span><span class="p">)],</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Create User"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Create a new user."</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1691,11 +1695,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 how to test</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_request_data_3</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_3</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">})</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">})</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">}</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/schema/openapi.json&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="s2">&quot;Create a new user.&quot;</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;components&quot;</span><span class="p">][</span><span class="s2">&quot;schemas&quot;</span><span class="p">][</span><span class="s2">&quot;User&quot;</span><span class="p">][</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">}</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/schema/openapi.json"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s2">"Create a new user."</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">"components"</span><span class="p">][</span><span class="s2">"schemas"</span><span class="p">][</span><span class="s2">"User"</span><span class="p">][</span><span class="s2">"description"</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -1728,7 +1732,7 @@ example</label><div class="sd-tab-content docutils">
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">URLEncodedBody</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -1742,9 +1746,9 @@ example</label><div class="sd-tab-content docutils">
 how to test</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_request_data_4</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_4</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">})</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">})</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">}</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1790,11 +1794,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">form_input_name</span><span class="p">:</span> <span class="n">UploadFile</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">filename</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"filename"</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
@@ -1818,11 +1822,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">form_input_name</span><span class="p">:</span> <span class="n">UploadFile</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">form_input_name</span><span class="o">.</span><span class="n">filename</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"filename"</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
@@ -1837,16 +1841,16 @@ how to test</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_request_data_5</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_5</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="s2">&quot;/&quot;</span><span class="p">,</span>
-            <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;form_input_name&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;file content&quot;</span><span class="p">))},</span>
-            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">},</span>
+            <span class="s2">"/"</span><span class="p">,</span>
+            <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">"form_input_name"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"filename"</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">"file content"</span><span class="p">))},</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">},</span>
         <span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;filename&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;file content&quot;</span><span class="p">),</span>
+            <span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"John"</span><span class="p">,</span>
+            <span class="s2">"filename"</span><span class="p">:</span> <span class="s2">"filename"</span><span class="p">,</span>
+            <span class="s2">"size"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">"file content"</span><span class="p">),</span>
         <span class="p">}</span>
 </pre></div>
 </div>
@@ -1880,11 +1884,11 @@ example</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
@@ -1896,9 +1900,9 @@ example</label><div class="sd-tab-content docutils">
 how to test</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_request_data_6</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_6</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;upload&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;world&quot;</span><span class="p">)})</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">"upload"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"hello"</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"world"</span><span class="p">)})</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;hello,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;world&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">"hello,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s1">'world'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
 </pre></div>
 </div>
 </div>
@@ -1916,11 +1920,11 @@ example</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">content</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
@@ -1932,9 +1936,9 @@ example</label><div class="sd-tab-content docutils">
 how to test</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_request_data_7</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_7</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;upload&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;world&quot;</span><span class="p">)})</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">"upload"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"hello"</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"world"</span><span class="p">)})</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;hello,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;world&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">"hello,length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s1">'world'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
 </pre></div>
 </div>
 </div>
@@ -1944,8 +1948,8 @@ how to test</label><div class="sd-tab-content docutils">
 <div class="info admonition">
 <p class="admonition-title">Technical details</p>
 <p><a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.UploadFile" title="litestar.datastructures.UploadFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">UploadFile</span></code></a> wraps
-<a class="reference external" href="https://docs.python.org/3/library/tempfile.html#tempfile.SpooledTemporaryFile" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpooledTemporaryFile</span></code></a> so it can be used asynchronously. Inside a synchronous
-function we don’t need this wrapper, so we can use its <a class="reference external" href="https://docs.python.org/3/library/io.html#io.TextIOBase.read" title="(in Python v3.14)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code></a> method directly.</p>
+<a class="reference external" href="https://docs.python.org/3/library/tempfile.html#tempfile.SpooledTemporaryFile" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpooledTemporaryFile</span></code></a> so it can be used asynchronously. Inside a synchronous
+function we don’t need this wrapper, so we can use its <a class="reference external" href="https://docs.python.org/3/library/io.html#io.TextIOBase.read" title="(in Python v3.15)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code></a> method directly.</p>
 </div>
 <section id="multiple-files">
 <h3>Multiple files<a class="headerlink" href="#multiple-files" title="Link to this heading">#</a></h3>
@@ -1972,14 +1976,14 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">diploma</span><span class="p">:</span> <span class="n">UploadFile</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">FormData</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">cv_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">diploma_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">diploma</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="n">cv_content</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="s2">&quot;diploma&quot;</span><span class="p">:</span> <span class="n">diploma_content</span><span class="o">.</span><span class="n">decode</span><span class="p">()}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"cv"</span><span class="p">:</span> <span class="n">cv_content</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="s2">"diploma"</span><span class="p">:</span> <span class="n">diploma_content</span><span class="o">.</span><span class="n">decode</span><span class="p">()}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
@@ -2002,14 +2006,14 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">diploma</span><span class="p">:</span> <span class="n">UploadFile</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">FormData</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">cv_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">diploma_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">diploma</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="n">cv_content</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="s2">&quot;diploma&quot;</span><span class="p">:</span> <span class="n">diploma_content</span><span class="o">.</span><span class="n">decode</span><span class="p">()}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"cv"</span><span class="p">:</span> <span class="n">cv_content</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="s2">"diploma"</span><span class="p">:</span> <span class="n">diploma_content</span><span class="o">.</span><span class="n">decode</span><span class="p">()}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
@@ -2024,10 +2028,10 @@ how to test</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_request_data_8</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_8</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;cv.odf&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;very impressive&quot;</span><span class="p">),</span> <span class="s2">&quot;diploma&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;diploma.pdf&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;the best&quot;</span><span class="p">)}</span>
+            <span class="s2">"/"</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">"cv"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"cv.odf"</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"very impressive"</span><span class="p">),</span> <span class="s2">"diploma"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"diploma.pdf"</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"the best"</span><span class="p">)}</span>
         <span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;cv&quot;</span><span class="p">:</span> <span class="s2">&quot;very impressive&quot;</span><span class="p">,</span> <span class="s2">&quot;diploma&quot;</span><span class="p">:</span> <span class="s2">&quot;the best&quot;</span><span class="p">}</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"cv"</span><span class="p">:</span> <span class="s2">"very impressive"</span><span class="p">,</span> <span class="s2">"diploma"</span><span class="p">:</span> <span class="s2">"the best"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2051,7 +2055,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -2075,7 +2079,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -2098,11 +2102,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 how to test</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_request_data_9</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app_9</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;there&quot;</span><span class="p">),</span> <span class="s2">&quot;i&#39;m&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;another_filename&quot;</span><span class="p">,</span> <span class="s2">&quot;steve&quot;</span><span class="p">)})</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"filename"</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"there"</span><span class="p">),</span> <span class="s2">"i'm"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"another_filename"</span><span class="p">,</span> <span class="s2">"steve"</span><span class="p">)})</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;there&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;another_filename&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;steve&quot;</span><span class="p">),</span>
+            <span class="s2">"filename"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">"there"</span><span class="p">),</span>
+            <span class="s2">"another_filename"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">"steve"</span><span class="p">),</span>
         <span class="p">}</span>
 </pre></div>
 </div>
@@ -2127,7 +2131,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
@@ -2154,7 +2158,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartBody</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_upload</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">MultipartBody</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
@@ -2182,33 +2186,33 @@ how to test</label><div class="sd-tab-content docutils">
         <span class="c1"># so in this app it will be return the last one only...</span>
         <span class="c1">#     # file (or bytes)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+            <span class="s2">"/"</span><span class="p">,</span>
             <span class="n">files</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;will default to upload&quot;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello world&quot;</span><span class="p">),</span>
-                <span class="s2">&quot;will default to upload also&quot;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;another&quot;</span><span class="p">),</span>
+                <span class="s2">"will default to upload"</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">"hello world"</span><span class="p">),</span>
+                <span class="s2">"will default to upload also"</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">"another"</span><span class="p">),</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;upload&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello world&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;upload&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;another&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"upload"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">"hello world"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"upload"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">"another"</span><span class="p">)</span>
 
         <span class="c1"># if you pass the filename explicitly, it will be used as the filename</span>
         <span class="c1">#     # (filename, file (or bytes))</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello&quot;</span><span class="p">))})</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">"file"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"hello.txt"</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">"hello"</span><span class="p">))})</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hello.txt"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">"hello"</span><span class="p">)</span>
 
         <span class="c1"># if you add the content type, it will be used as the content type</span>
         <span class="c1">#     # (filename, file (or bytes), content_type)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello&quot;</span><span class="p">),</span> <span class="s2">&quot;application/x-bittorrent&quot;</span><span class="p">)})</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">"file"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"hello.txt"</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">"hello"</span><span class="p">),</span> <span class="s2">"application/x-bittorrent"</span><span class="p">)})</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;application/x-bittorrent&quot;</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hello.txt"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="sa">b</span><span class="s2">"hello"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hello.txt"</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"application/x-bittorrent"</span>
 
         <span class="c1"># finally you can specify headers like so</span>
         <span class="c1">#     # (filename, file (or bytes), content_type, headers)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;hello&quot;</span><span class="p">),</span> <span class="s2">&quot;application/x-bittorrent&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;X-Foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})}</span>
+            <span class="s2">"/"</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">"file"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"hello.txt"</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="sa">b</span><span class="s2">"hello"</span><span class="p">),</span> <span class="s2">"application/x-bittorrent"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"X-Foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">})}</span>
         <span class="p">)</span>
 </pre></div>
 </div>
@@ -2234,7 +2238,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsgPackBody</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">msgpack_handler</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">MsgPackBody</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
@@ -2256,7 +2260,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsgPackBody</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">msgpack_handler</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">MsgPackBody</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
@@ -2274,12 +2278,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-31" name="sd-tab-set-15" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-31">
 how to test</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;application/x-bittorrent&quot;</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="s2">&quot;X-Foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hello.txt"</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"application/x-bittorrent"</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="s2">"X-Foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">)</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hello.txt"</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_msgpack_app</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Moishe Zuchmir&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;programmer&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Moishe Zuchmir"</span><span class="p">,</span> <span class="s2">"age"</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">"programmer"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2312,24 +2316,24 @@ example</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 
 <span class="n">KITTEN_NAMES_MAP</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">HttpMethod</span><span class="o">.</span><span class="n">GET</span><span class="p">:</span> <span class="s2">&quot;Whiskers&quot;</span><span class="p">,</span>
+    <span class="n">HttpMethod</span><span class="o">.</span><span class="n">GET</span><span class="p">:</span> <span class="s2">"Whiskers"</span><span class="p">,</span>
 <span class="p">}</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomRequest</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enrich request with the kitten name.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Enrich request with the kitten name."""</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;kitten_name&quot;</span><span class="p">,)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"kitten_name"</span><span class="p">,)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span> <span class="o">=</span> <span class="n">empty_receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span> <span class="o">=</span> <span class="n">empty_send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize CustomRequest class.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initialize CustomRequest class."""</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kitten_name</span> <span class="o">=</span> <span class="n">KITTEN_NAMES_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span> <span class="s2">&quot;Mittens&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kitten_name</span> <span class="o">=</span> <span class="n">KITTEN_NAMES_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scope</span><span class="p">[</span><span class="s2">"method"</span><span class="p">],</span> <span class="s2">"Mittens"</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/kitten-name&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/kitten-name"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_kitten_name</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">CustomRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get kitten name based on the HTTP method.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get kitten name based on the HTTP method."""</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">kitten_name</span>
 
 
@@ -2344,7 +2348,7 @@ example</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-35" name="sd-tab-set-17" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-35">
 how to test</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">encode_msgpack</span><span class="p">(</span><span class="n">test_data</span><span class="p">))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">encode_msgpack</span><span class="p">(</span><span class="n">test_data</span><span class="p">))</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="n">test_data</span>
 </pre></div>
 </div>
@@ -2371,7 +2375,7 @@ body, including requesting it via the <code class="docutils literal notranslate"
 consuming it through a manually constructed <a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>
 instance, e.g. in a middleware.</p>
 <p>To disable this limit for a specific handler / router / controller, it can be set to
-<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+<a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>Setting <code class="docutils literal notranslate"><span class="pre">request_max_body_size=None</span></code> is strongly discouraged as it exposes the

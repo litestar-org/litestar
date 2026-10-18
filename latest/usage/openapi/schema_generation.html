@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1557,7 +1557,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">)</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"My API"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"1.0.0"</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1579,7 +1579,7 @@ handlers. You can omit a route handler from the schema by setting <code class="d
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">include_in_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/some-path"</span><span class="p">,</span> <span class="n">include_in_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -1645,10 +1645,10 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/items/{pk:int}&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/items/{pk:int}"</span><span class="p">,</span>
     <span class="n">responses</span><span class="o">=</span><span class="p">{</span>
         <span class="mi">404</span><span class="p">:</span> <span class="n">ResponseSpec</span><span class="p">(</span>
-            <span class="n">data_container</span><span class="o">=</span><span class="n">ItemNotFound</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Item was removed or not found&quot;</span>
+            <span class="n">data_container</span><span class="o">=</span><span class="n">ItemNotFound</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Item was removed or not found"</span>
         <span class="p">)</span>
     <span class="p">},</span>
 <span class="p">)</span>
@@ -1676,10 +1676,10 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/items/{pk:int}&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/items/{pk:int}"</span><span class="p">,</span>
     <span class="n">responses</span><span class="o">=</span><span class="p">{</span>
         <span class="mi">404</span><span class="p">:</span> <span class="n">ResponseSpec</span><span class="p">(</span>
-            <span class="n">data_container</span><span class="o">=</span><span class="n">ItemNotFound</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Item was removed or not found&quot;</span>
+            <span class="n">data_container</span><span class="o">=</span><span class="n">ItemNotFound</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Item was removed or not found"</span>
         <span class="p">)</span>
     <span class="p">},</span>
 <span class="p">)</span>
@@ -1696,33 +1696,33 @@ app instance itself. For example:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/public&quot;</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;public&quot;</span><span class="p">],</span>
+    <span class="s2">"/public"</span><span class="p">,</span>
+    <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"public"</span><span class="p">],</span>
     <span class="n">security</span><span class="o">=</span><span class="p">[{}],</span>  <span class="c1"># this endpoint is marked as having optional security</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">public_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/other&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;internal&quot;</span><span class="p">],</span> <span class="n">security</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;apiKey&quot;</span><span class="p">:</span> <span class="p">[]}])</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/other"</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"internal"</span><span class="p">],</span> <span class="n">security</span><span class="o">=</span><span class="p">[{</span><span class="s2">"apiKey"</span><span class="p">:</span> <span class="p">[]}])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">internal_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">public_path_handler</span><span class="p">,</span> <span class="n">internal_path_handler</span><span class="p">],</span>
     <span class="n">openapi_config</span><span class="o">=</span><span class="n">OpenAPIConfig</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;my api&quot;</span><span class="p">,</span>
-        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"my api"</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">"1.0.0"</span><span class="p">,</span>
         <span class="n">tags</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;public&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This endpoint is for external users&quot;</span><span class="p">),</span>
-            <span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;internal&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This endpoint is for internal users&quot;</span><span class="p">),</span>
+            <span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"public"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"This endpoint is for external users"</span><span class="p">),</span>
+            <span class="n">Tag</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"internal"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"This endpoint is for internal users"</span><span class="p">),</span>
         <span class="p">],</span>
-        <span class="n">security</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;BearerToken&quot;</span><span class="p">:</span> <span class="p">[]}],</span>
+        <span class="n">security</span><span class="o">=</span><span class="p">[{</span><span class="s2">"BearerToken"</span><span class="p">:</span> <span class="p">[]}],</span>
         <span class="n">components</span><span class="o">=</span><span class="n">Components</span><span class="p">(</span>
             <span class="n">security_schemes</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;BearerToken&quot;</span><span class="p">:</span> <span class="n">SecurityScheme</span><span class="p">(</span>
-                    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;http&quot;</span><span class="p">,</span>
-                    <span class="n">scheme</span><span class="o">=</span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span>
+                <span class="s2">"BearerToken"</span><span class="p">:</span> <span class="n">SecurityScheme</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="s2">"http"</span><span class="p">,</span>
+                    <span class="n">scheme</span><span class="o">=</span><span class="s2">"bearer"</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">},</span>
         <span class="p">),</span>
@@ -1739,7 +1739,7 @@ access the request instance:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">openapi_schema</span>
     <span class="k">return</span> <span class="n">schema</span><span class="o">.</span><span class="n">to_schema</span><span class="p">()</span>
@@ -1762,18 +1762,18 @@ attribute on the model called <code class="docutils literal notranslate"><span c
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">IdModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">__schema_name__</span> <span class="o">=</span> <span class="s2">&quot;IdContainer&quot;</span>
+    <span class="n">__schema_name__</span> <span class="o">=</span> <span class="s2">"IdContainer"</span>
 
     <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/id&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/id"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_id_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">IdModel</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 
 <span class="sd">    Returns: An IdModel</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">IdModel</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">uuid4</span><span class="p">())</span>
 
 
@@ -1783,39 +1783,39 @@ attribute on the model called <code class="docutils literal notranslate"><span c
 </div>
 <p>The above will result in an OpenAPI schema object that looks like this:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;openapi&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.1.0&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Litestar API&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;servers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="p">}],</span>
-<span class="w">    </span><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;/id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;get&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;operationId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Retrieve Id Handler&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;responses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="nt">&quot;200&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Request fulfilled, document follows&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
-<span class="w">                        </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                            </span><span class="nt">&quot;application/json&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                                </span><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                                    </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/components/schemas/IdContainer&quot;</span>
+<span class="w">    </span><span class="nt">"openapi"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3.1.0"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"info"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Litestar API"</span><span class="p">,</span><span class="w"> </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"servers"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/"</span><span class="p">}],</span>
+<span class="w">    </span><span class="nt">"paths"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"/id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"get"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"operationId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieve Id Handler"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"responses"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">"200"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Request fulfilled, document follows"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"headers"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">                        </span><span class="nt">"content"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">"application/json"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                </span><span class="nt">"schema"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                                    </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/components/schemas/IdContainer"</span>
 <span class="w">                                </span><span class="p">}</span>
 <span class="w">                            </span><span class="p">}</span>
 <span class="w">                        </span><span class="p">}</span>
 <span class="w">                    </span><span class="p">}</span>
 <span class="w">                </span><span class="p">},</span>
-<span class="w">                </span><span class="nt">&quot;deprecated&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">                </span><span class="nt">"deprecated"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;schemas&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;IdContainer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uuid&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="nt">"components"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"schemas"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"IdContainer"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w"> </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"uuid"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Id"</span><span class="p">}</span>
 <span class="w">                </span><span class="p">},</span>
-<span class="w">                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
-<span class="w">                </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IdContainer&quot;</span>
+<span class="w">                </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"id"</span><span class="p">],</span>
+<span class="w">                </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IdContainer"</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
@@ -1851,42 +1851,42 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomOperation</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Operation class which includes a non-standard field which is part of an OpenAPI extension.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Custom Operation class which includes a non-standard field which is part of an OpenAPI extension."""</span>
 
-    <span class="n">x_code_samples</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;x-codeSamples&quot;</span><span class="p">})</span>
+    <span class="n">x_code_samples</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"x-codeSamples"</span><span class="p">})</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Requires OK, Returns OK&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ok"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">"Requires OK, Returns OK"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request_body</span> <span class="o">=</span> <span class="n">RequestBody</span><span class="p">(</span>
             <span class="n">content</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">OpenAPIMediaType</span><span class="p">(</span>
+                <span class="s2">"text"</span><span class="p">:</span> <span class="n">OpenAPIMediaType</span><span class="p">(</span>
                     <span class="n">schema</span><span class="o">=</span><span class="n">Schema</span><span class="p">(</span>
-                        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Body&quot;</span><span class="p">,</span>
+                        <span class="n">title</span><span class="o">=</span><span class="s2">"Body"</span><span class="p">,</span>
                         <span class="nb">type</span><span class="o">=</span><span class="n">OpenAPIType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                        <span class="n">example</span><span class="o">=</span><span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+                        <span class="n">example</span><span class="o">=</span><span class="s2">"OK"</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">),</span>
             <span class="p">},</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;OK is the only accepted value&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"OK is the only accepted value"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x_codeSamples</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="s2">&quot;Python&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;import requests; requests.get(&#39;localhost/example&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Python&quot;</span><span class="p">},</span>
-            <span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="s2">&quot;cURL&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;curl -XGET localhost/example&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;curl&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"lang"</span><span class="p">:</span> <span class="s2">"Python"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"import requests; requests.get('localhost/example')"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Python"</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"lang"</span><span class="p">:</span> <span class="s2">"cURL"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"curl -XGET localhost/example"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"curl"</span><span class="p">},</span>
         <span class="p">]</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">operation_class</span><span class="o">=</span><span class="n">CustomOperation</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">operation_class</span><span class="o">=</span><span class="n">CustomOperation</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 
 <span class="sd">    Returns: OK</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">())</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;OK&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;OK&quot;</span>
-    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;request payload must be OK&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">())</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">"OK"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"OK"</span>
+    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">"request payload must be OK"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">route</span><span class="p">])</span>
@@ -1910,42 +1910,42 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomOperation</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Operation class which includes a non-standard field which is part of an OpenAPI extension.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Custom Operation class which includes a non-standard field which is part of an OpenAPI extension."""</span>
 
-    <span class="n">x_code_samples</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;x-codeSamples&quot;</span><span class="p">})</span>
+    <span class="n">x_code_samples</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"x-codeSamples"</span><span class="p">})</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Requires OK, Returns OK&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ok"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">"Requires OK, Returns OK"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request_body</span> <span class="o">=</span> <span class="n">RequestBody</span><span class="p">(</span>
             <span class="n">content</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">OpenAPIMediaType</span><span class="p">(</span>
+                <span class="s2">"text"</span><span class="p">:</span> <span class="n">OpenAPIMediaType</span><span class="p">(</span>
                     <span class="n">schema</span><span class="o">=</span><span class="n">Schema</span><span class="p">(</span>
-                        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Body&quot;</span><span class="p">,</span>
+                        <span class="n">title</span><span class="o">=</span><span class="s2">"Body"</span><span class="p">,</span>
                         <span class="nb">type</span><span class="o">=</span><span class="n">OpenAPIType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                        <span class="n">example</span><span class="o">=</span><span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+                        <span class="n">example</span><span class="o">=</span><span class="s2">"OK"</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">),</span>
             <span class="p">},</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;OK is the only accepted value&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"OK is the only accepted value"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x_codeSamples</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="s2">&quot;Python&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;import requests; requests.get(&#39;localhost/example&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Python&quot;</span><span class="p">},</span>
-            <span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="s2">&quot;cURL&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;curl -XGET localhost/example&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;curl&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"lang"</span><span class="p">:</span> <span class="s2">"Python"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"import requests; requests.get('localhost/example')"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Python"</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"lang"</span><span class="p">:</span> <span class="s2">"cURL"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"curl -XGET localhost/example"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"curl"</span><span class="p">},</span>
         <span class="p">]</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">operation_class</span><span class="o">=</span><span class="n">CustomOperation</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">operation_class</span><span class="o">=</span><span class="n">CustomOperation</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 
 <span class="sd">    Returns: OK</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">())</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;OK&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;OK&quot;</span>
-    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;request payload must be OK&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">())</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">"OK"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"OK"</span>
+    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">"request payload must be OK"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">route</span><span class="p">])</span>
@@ -1968,42 +1968,42 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomOperation</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Operation class which includes a non-standard field which is part of an OpenAPI extension.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Custom Operation class which includes a non-standard field which is part of an OpenAPI extension."""</span>
 
-    <span class="n">x_code_samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="s2">&quot;x-codeSamples&quot;</span><span class="p">})</span>
+    <span class="n">x_code_samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"alias"</span><span class="p">:</span> <span class="s2">"x-codeSamples"</span><span class="p">})</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Requires OK, Returns OK&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ok"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">"Requires OK, Returns OK"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request_body</span> <span class="o">=</span> <span class="n">RequestBody</span><span class="p">(</span>
             <span class="n">content</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">OpenAPIMediaType</span><span class="p">(</span>
+                <span class="s2">"text"</span><span class="p">:</span> <span class="n">OpenAPIMediaType</span><span class="p">(</span>
                     <span class="n">schema</span><span class="o">=</span><span class="n">Schema</span><span class="p">(</span>
-                        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Body&quot;</span><span class="p">,</span>
+                        <span class="n">title</span><span class="o">=</span><span class="s2">"Body"</span><span class="p">,</span>
                         <span class="nb">type</span><span class="o">=</span><span class="n">OpenAPIType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-                        <span class="n">example</span><span class="o">=</span><span class="s2">&quot;OK&quot;</span><span class="p">,</span>
+                        <span class="n">example</span><span class="o">=</span><span class="s2">"OK"</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">),</span>
             <span class="p">},</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;OK is the only accepted value&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"OK is the only accepted value"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x_codeSamples</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="s2">&quot;Python&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;import requests; requests.get(&#39;localhost/example&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Python&quot;</span><span class="p">},</span>
-            <span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="s2">&quot;cURL&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;curl -XGET localhost/example&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;curl&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"lang"</span><span class="p">:</span> <span class="s2">"Python"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"import requests; requests.get('localhost/example')"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"Python"</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"lang"</span><span class="p">:</span> <span class="s2">"cURL"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">:</span> <span class="s2">"curl -XGET localhost/example"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"curl"</span><span class="p">},</span>
         <span class="p">]</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">operation_class</span><span class="o">=</span><span class="n">CustomOperation</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">operation_class</span><span class="o">=</span><span class="n">CustomOperation</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 
 <span class="sd">    Returns: OK</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">())</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;OK&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;OK&quot;</span>
-    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;request payload must be OK&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">())</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">"OK"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"OK"</span>
+    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">"request payload must be OK"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">route</span><span class="p">])</span>
@@ -2014,48 +2014,48 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </div>
 <p>The above example will result in an OpenAPI schema object that looks like this:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Litestar API&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span><span class="w"> </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;openapi&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.0.3&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;servers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="w"> </span><span class="p">}],</span>
-<span class="w">    </span><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;/&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;post&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ok&quot;</span><span class="p">],</span>
-<span class="w">                </span><span class="nt">&quot;summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Route&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Requires OK, Returns OK&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;operationId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Route&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;requestBody&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                            </span><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Body&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;example&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="nt">"info"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Litestar API"</span><span class="p">,</span><span class="w"> </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"openapi"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3.0.3"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"servers"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/"</span><span class="w"> </span><span class="p">}],</span>
+<span class="w">    </span><span class="nt">"paths"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"/"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"post"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"tags"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"ok"</span><span class="p">],</span>
+<span class="w">                </span><span class="nt">"summary"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Route"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Requires OK, Returns OK"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"operationId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Route"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"requestBody"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">"content"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">"text"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                            </span><span class="nt">"schema"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Body"</span><span class="p">,</span><span class="w"> </span><span class="nt">"example"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OK"</span><span class="w"> </span><span class="p">}</span>
 <span class="w">                        </span><span class="p">}</span>
 <span class="w">                    </span><span class="p">},</span>
-<span class="w">                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK is the only accepted value&quot;</span><span class="p">,</span>
-<span class="w">                    </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">                    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OK is the only accepted value"</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
 <span class="w">                </span><span class="p">},</span>
-<span class="w">                </span><span class="nt">&quot;responses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="nt">&quot;201&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Document created, URL follows&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;headers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">                </span><span class="nt">"responses"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">"201"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Document created, URL follows"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"headers"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">                    </span><span class="p">}</span>
 <span class="w">                </span><span class="p">},</span>
-<span class="w">                </span><span class="nt">&quot;deprecated&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;x-codeSamples&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="nt">"deprecated"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"x-codeSamples"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">                    </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;lang&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;import requests; requests.get(&#39;localhost/example&#39;)&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python&quot;</span>
+<span class="w">                        </span><span class="nt">"lang"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Python"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"source"</span><span class="p">:</span><span class="w"> </span><span class="s2">"import requests; requests.get('localhost/example')"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Python"</span>
 <span class="w">                    </span><span class="p">},</span>
 <span class="w">                    </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;lang&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cURL&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;curl -XGET localhost/example&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;curl&quot;</span>
+<span class="w">                        </span><span class="nt">"lang"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cURL"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"source"</span><span class="p">:</span><span class="w"> </span><span class="s2">"curl -XGET localhost/example"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"curl"</span>
 <span class="w">                    </span><span class="p">}</span>
 <span class="w">                </span><span class="p">]</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;schemas&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="nt">"components"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"schemas"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>

@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1553,12 +1553,13 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.events</span><span class="w"> </span><span class="kn">import</span> <span class="n">listener</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">db</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_repository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">utils.email</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_welcome_mail</span>
 
 
-<span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">)</span>
+<span class="nd">@listener</span><span class="p">(</span><span class="s2">"user_created"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_welcome_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># do something here to send an email</span>
     <span class="k">await</span> <span class="n">send_welcome_mail</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
@@ -1571,8 +1572,8 @@ document.write(`
     <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/users"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserDTO</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># do something here to create a new user</span>
     <span class="c1"># e.g. insert the user into a database</span>
     <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -1580,7 +1581,7 @@ document.write(`
     <span class="c1"># assuming we have now inserted a user, we want to send a welcome email.</span>
     <span class="c1"># To do this in a none-blocking fashion, we will emit an event to a listener, which will send the email,</span>
     <span class="c1"># using a different async block than the one where we are returning a response.</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">"user_created"</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1596,7 +1597,7 @@ and without slowing down the response cycle.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.events</span><span class="w"> </span><span class="kn">import</span> <span class="n">listener</span>
 
 
-<span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">,</span> <span class="s2">&quot;password_changed&quot;</span><span class="p">)</span>
+<span class="nd">@listener</span><span class="p">(</span><span class="s2">"user_created"</span><span class="p">,</span> <span class="s2">"password_changed"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># do something here to send an email</span>
 
@@ -1611,22 +1612,23 @@ and without slowing down the response cycle.</p>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.events</span><span class="w"> </span><span class="kn">import</span> <span class="n">listener</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">db</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_repository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">utils.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">client</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">utils.email</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_farewell_email</span>
 
 
-<span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
+<span class="nd">@listener</span><span class="p">(</span><span class="s2">"user_deleted"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># do something here to send an email</span>
     <span class="k">await</span> <span class="n">send_farewell_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
 
 
-<span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
+<span class="nd">@listener</span><span class="p">(</span><span class="s2">"user_deleted"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># do something here to send an email</span>
-    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;some-url&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"some-url"</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
 
 
 <span class="nd">@dataclass</span>
@@ -1635,10 +1637,10 @@ and without slowing down the response cycle.</p>
     <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">delete</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">email</span><span class="p">})</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;deleted&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/users"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserDTO</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">delete</span><span class="p">({</span><span class="s2">"email"</span><span class="p">:</span> <span class="n">email</span><span class="p">})</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">"user_deleted"</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">"deleted"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In the above example we are performing two side effect for the same event, one sends the user an email, and the other
@@ -1654,15 +1656,15 @@ sending an HTTP request to a service management system to create an issue.</p>
 this is highly flexible, it also means you need to ensure the listeners for a given event can handle all the expected args
 and kwargs.</p>
 <p>For example, the following would raise an exception in python:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@listener</span><span class="p">(</span><span class="s2">"user_deleted"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">send_farewell_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
 
 
-<span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
+<span class="nd">@listener</span><span class="p">(</span><span class="s2">"user_deleted"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># do something here to send an email</span>
-    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;some-url&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"some-url"</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
 
 
 <span class="nd">@dataclass</span>
@@ -1671,35 +1673,35 @@ and kwargs.</p>
     <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">delete</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">email</span><span class="p">})</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;deleted&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/users"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserDTO</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">delete</span><span class="p">({</span><span class="s2">"email"</span><span class="p">:</span> <span class="n">email</span><span class="p">})</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">"user_deleted"</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">"deleted"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The reason for this is that both listeners will receive two kwargs - <code class="docutils literal notranslate"><span class="pre">email</span></code> and <code class="docutils literal notranslate"><span class="pre">reason</span></code>. To avoid this, the previous example
 had <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in both:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@listener</span><span class="p">(</span><span class="s2">"user_deleted"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">send_farewell_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
 
 
-<span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
+<span class="nd">@listener</span><span class="p">(</span><span class="s2">"user_deleted"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;some-url&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"some-url"</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="creating-event-emitters">
 <h3>Creating Event Emitters<a class="headerlink" href="#creating-event-emitters" title="Link to this heading">#</a></h3>
 <p>An “event emitter” is a class that inherits from
 <a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend" title="litestar.events.BaseEventEmitterBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEventEmitterBackend</span></code></a>, which
-itself inherits from <a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a>.</p>
+itself inherits from <a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a>.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend.emit" title="litestar.events.BaseEventEmitterBackend.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">emit</span></code></a>: This is the method that performs the actual emitting
 logic.</p></li>
 </ul>
 <p>Additionally, the abstract <code class="docutils literal notranslate"><span class="pre">__aenter__</span></code> and <code class="docutils literal notranslate"><span class="pre">__aexit__</span></code> methods from
-<a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a> must be implemented, allowing the
+<a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a> must be implemented, allowing the
 emitter to be used as an async context manager.</p>
 <p>By default Litestar uses the
 <a class="reference internal" href="../reference/events.html#litestar.events.SimpleEventEmitter" title="litestar.events.SimpleEventEmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code></a>, which offers an

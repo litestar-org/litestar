@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1558,7 +1558,7 @@ of <a class="reference internal" href="../../reference/config.html#litestar.conf
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.cors</span><span class="w"> </span><span class="kn">import</span> <span class="n">CORSConfig</span>
 
-<span class="n">cors_config</span> <span class="o">=</span> <span class="n">CORSConfig</span><span class="p">(</span><span class="n">allow_origins</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://www.example.com&quot;</span><span class="p">])</span>
+<span class="n">cors_config</span> <span class="o">=</span> <span class="n">CORSConfig</span><span class="p">(</span><span class="n">allow_origins</span><span class="o">=</span><span class="p">[</span><span class="s2">"https://www.example.com"</span><span class="p">])</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="n">cors_config</span><span class="o">=</span><span class="n">cors_config</span><span class="p">)</span>
 </pre></div>
@@ -1597,20 +1597,20 @@ amount=1000usd&amp;to=attacker@evil.com
 <span class="nd">@get</span><span class="p">()</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="c1"># GET is one of the safe methods</span>
-    <span class="k">return</span> <span class="s2">&quot;some_resource&quot;</span>
+    <span class="k">return</span> <span class="s2">"some_resource"</span>
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;{id:int}&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"{id:int}"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_resource</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="c1"># POST is one of the unsafe methods</span>
     <span class="k">return</span> <span class="kc">True</span>
 
-<span class="n">csrf_config</span> <span class="o">=</span> <span class="n">CSRFConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="s2">&quot;my-secret&quot;</span><span class="p">)</span>
+<span class="n">csrf_config</span> <span class="o">=</span> <span class="n">CSRFConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="s2">"my-secret"</span><span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_resource</span><span class="p">,</span> <span class="n">create_resource</span><span class="p">],</span> <span class="n">csrf_config</span><span class="o">=</span><span class="n">csrf_config</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The following snippet demonstrates how to change the cookie name to <code class="docutils literal notranslate"><span class="pre">&quot;some-cookie-name&quot;</span></code> and header name to <code class="docutils literal notranslate"><span class="pre">&quot;some-header-name&quot;</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">csrf_config</span> <span class="o">=</span> <span class="n">CSRFConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="s2">&quot;my-secret&quot;</span><span class="p">,</span> <span class="n">cookie_name</span><span class="o">=</span><span class="s1">&#39;some-cookie-name&#39;</span><span class="p">,</span> <span class="n">header_name</span><span class="o">=</span><span class="s1">&#39;some-header-name&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">csrf_config</span> <span class="o">=</span> <span class="n">CSRFConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="s2">"my-secret"</span><span class="p">,</span> <span class="n">cookie_name</span><span class="o">=</span><span class="s1">'some-cookie-name'</span><span class="p">,</span> <span class="n">header_name</span><span class="o">=</span><span class="s1">'some-header-name'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A CSRF protected route can be accessed by any client that can make a request with either the header or form-data key.</p>
@@ -1625,29 +1625,29 @@ The following is an example using <a class="reference external" href="https://ww
 
 
 <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-    <span class="n">get_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/&quot;</span><span class="p">)</span>
+    <span class="n">get_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"http://localhost:8000/"</span><span class="p">)</span>
 
-    <span class="c1"># &quot;csrftoken&quot; is the default cookie name</span>
-    <span class="n">csrf</span> <span class="o">=</span> <span class="n">get_response</span><span class="o">.</span><span class="n">cookies</span><span class="p">[</span><span class="s2">&quot;csrftoken&quot;</span><span class="p">]</span>
+    <span class="c1"># "csrftoken" is the default cookie name</span>
+    <span class="n">csrf</span> <span class="o">=</span> <span class="n">get_response</span><span class="o">.</span><span class="n">cookies</span><span class="p">[</span><span class="s2">"csrftoken"</span><span class="p">]</span>
 
-    <span class="c1"># &quot;x-csrftoken&quot; is the default header name</span>
-    <span class="n">post_response_using_header</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/1&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-csrftoken&quot;</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
+    <span class="c1"># "x-csrftoken" is the default header name</span>
+    <span class="n">post_response_using_header</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"http://localhost:8000/1"</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"x-csrftoken"</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
     <span class="k">assert</span> <span class="n">post_response_using_header</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
 
-    <span class="c1"># &quot;_csrf_token&quot; is the default *non* configurable form-data key</span>
-    <span class="n">post_response_using_form_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/1&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;_csrf_token&quot;</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
+    <span class="c1"># "_csrf_token" is the default *non* configurable form-data key</span>
+    <span class="n">post_response_using_form_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"http://localhost:8000/1"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">"_csrf_token"</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
     <span class="k">assert</span> <span class="n">post_response_using_form_data</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
 
     <span class="c1"># despite the header being passed, this request will fail as it does not have a cookie in its session</span>
     <span class="c1"># note the usage of ``httpx.post`` instead of ``client.post``</span>
-    <span class="n">post_response_with_no_persisted_cookie</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/1&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-csrftoken&quot;</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
+    <span class="n">post_response_with_no_persisted_cookie</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"http://localhost:8000/1"</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"x-csrftoken"</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
     <span class="k">assert</span> <span class="n">post_response_with_no_persisted_cookie</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span>
-    <span class="k">assert</span> <span class="s2">&quot;CSRF token verification failed&quot;</span> <span class="ow">in</span> <span class="n">post_response_with_no_persisted_cookie</span><span class="o">.</span><span class="n">text</span>
+    <span class="k">assert</span> <span class="s2">"CSRF token verification failed"</span> <span class="ow">in</span> <span class="n">post_response_with_no_persisted_cookie</span><span class="o">.</span><span class="n">text</span>
 </pre></div>
 </div>
 <p>Routes can be marked as being exempt from the protection offered by this middleware via
 <a class="reference internal" href="../routing/handlers.html#handler-opts"><span class="std std-ref">handler opts</span></a></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/post&quot;</span><span class="p">,</span> <span class="n">exclude_from_csrf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@post</span><span class="p">(</span><span class="s2">"/post"</span><span class="p">,</span> <span class="n">exclude_from_csrf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -1676,7 +1676,7 @@ list of domains to <a class="reference internal" href="../../reference/app.html#
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
     <span class="n">allowed_hosts</span><span class="o">=</span><span class="n">AllowedHostsConfig</span><span class="p">(</span>
-        <span class="n">allowed_hosts</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;*.example.com&quot;</span><span class="p">,</span> <span class="s2">&quot;www.wikipedia.org&quot;</span><span class="p">]</span>
+        <span class="n">allowed_hosts</span><span class="o">=</span><span class="p">[</span><span class="s2">"*.example.com"</span><span class="p">,</span> <span class="s2">"www.wikipedia.org"</span><span class="p">]</span>
     <span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
@@ -1719,7 +1719,7 @@ the <code class="docutils literal notranslate"><span class="pre">backend</span><
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
-    <span class="n">compression_config</span><span class="o">=</span><span class="n">CompressionConfig</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">,</span> <span class="n">gzip_compress_level</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span>
+    <span class="n">compression_config</span><span class="o">=</span><span class="n">CompressionConfig</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"gzip"</span><span class="p">,</span> <span class="n">gzip_compress_level</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1760,7 +1760,7 @@ extra (<code class="docutils literal notranslate"><span class="pre">pip</span> <
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
-    <span class="n">compression_config</span><span class="o">=</span><span class="n">CompressionConfig</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;brotli&quot;</span><span class="p">,</span> <span class="n">brotli_gzip_fallback</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">compression_config</span><span class="o">=</span><span class="n">CompressionConfig</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"brotli"</span><span class="p">,</span> <span class="n">brotli_gzip_fallback</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1774,13 +1774,13 @@ the <a class="reference external" href="https://datatracker.ietf.org/doc/draft-i
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.rate_limit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RateLimitConfig</span>
 
-<span class="n">rate_limit_config</span> <span class="o">=</span> <span class="n">RateLimitConfig</span><span class="p">(</span><span class="n">rate_limit</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;minute&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/schema&quot;</span><span class="p">])</span>
+<span class="n">rate_limit_config</span> <span class="o">=</span> <span class="n">RateLimitConfig</span><span class="p">(</span><span class="n">rate_limit</span><span class="o">=</span><span class="p">(</span><span class="s2">"minute"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">"/schema"</span><span class="p">])</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler which should not be accessed more than once per minute.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="s2">&quot;ok&quot;</span>
+<span class="w">    </span><span class="sd">"""Handler which should not be accessed more than once per minute."""</span>
+    <span class="k">return</span> <span class="s2">"ok"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">rate_limit_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
@@ -1821,9 +1821,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">logging_middleware_config</span> <span class="o">=</span> <span class="n">LoggingMiddlewareConfig</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1844,9 +1844,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">logging_middleware_config</span> <span class="o">=</span> <span class="n">LoggingMiddlewareConfig</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1867,10 +1867,10 @@ configuration:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingMiddlewareConfig</span>
 
 <span class="n">logging_middleware_config</span> <span class="o">=</span> <span class="n">LoggingMiddlewareConfig</span><span class="p">(</span>
-    <span class="n">request_cookies_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-custom-session-key&quot;</span><span class="p">},</span>
-    <span class="n">response_cookies_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-custom-session-key&quot;</span><span class="p">},</span>
-    <span class="n">request_headers_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-custom-header&quot;</span><span class="p">},</span>
-    <span class="n">response_headers_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-custom-header&quot;</span><span class="p">},</span>
+    <span class="n">request_cookies_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">"my-custom-session-key"</span><span class="p">},</span>
+    <span class="n">response_cookies_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">"my-custom-session-key"</span><span class="p">},</span>
+    <span class="n">request_headers_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">"my-custom-header"</span><span class="p">},</span>
+    <span class="n">response_headers_to_obfuscate</span><span class="o">=</span><span class="p">{</span><span class="s2">"my-custom-header"</span><span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1921,23 +1921,23 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">CookieBackendConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>  <span class="c1"># type: ignore[arg-type]</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/session"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that accesses request.session.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;has_session&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span> <span class="o">!=</span> <span class="p">{}}</span>
+<span class="w">    </span><span class="sd">"""Handler function that accesses request.session."""</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"has_session"</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span> <span class="o">!=</span> <span class="p">{}}</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/session"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler to set the session.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Handler to set the session."""</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
         <span class="c1"># value can be a dictionary or pydantic model</span>
-        <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;moishezuchmir&quot;</span><span class="p">})</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">"username"</span><span class="p">:</span> <span class="s2">"moishezuchmir"</span><span class="p">})</span>
 
 
-<span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@delete</span><span class="p">(</span><span class="s2">"/session"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">delete_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler to clear the session.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Handler to clear the session."""</span>
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
         <span class="n">request</span><span class="o">.</span><span class="n">clear_session</span><span class="p">()</span>
 
@@ -1965,23 +1965,23 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">CookieBackendConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>  <span class="c1"># type: ignore[arg-type]</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/session"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that accesses request.session.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;has_session&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span> <span class="o">!=</span> <span class="p">{}}</span>
+<span class="w">    </span><span class="sd">"""Handler function that accesses request.session."""</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"has_session"</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span> <span class="o">!=</span> <span class="p">{}}</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/session"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler to set the session.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Handler to set the session."""</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
         <span class="c1"># value can be a dictionary or pydantic model</span>
-        <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;moishezuchmir&quot;</span><span class="p">})</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">"username"</span><span class="p">:</span> <span class="s2">"moishezuchmir"</span><span class="p">})</span>
 
 
-<span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/session&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@delete</span><span class="p">(</span><span class="s2">"/session"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">delete_session_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler to clear the session.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Handler to clear the session."""</span>
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
         <span class="n">request</span><span class="o">.</span><span class="n">clear_session</span><span class="p">()</span>
 
@@ -2044,7 +2044,7 @@ and load the appropriate data from the store</p>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">ServerSideSessionConfig</span><span class="p">()</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
-    <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sessions&quot;</span><span class="p">:</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;session_data&quot;</span><span class="p">))},</span>
+    <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">"sessions"</span><span class="p">:</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">"session_data"</span><span class="p">))},</span>
 <span class="p">)</span>
 </pre></div>
 </div>

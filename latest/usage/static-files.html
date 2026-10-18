@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1557,17 +1557,17 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.static_files</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_static_files_router</span>
 
-<span class="n">ASSETS_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;assets&quot;</span><span class="p">)</span>
+<span class="n">ASSETS_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"assets"</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">():</span>
     <span class="n">ASSETS_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">ASSETS_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">)</span>
+    <span class="n">ASSETS_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">"hello.txt"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"Hello, world!"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">]),</span>
+        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/static"</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">"assets"</span><span class="p">]),</span>
     <span class="p">],</span>
     <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
 <span class="p">)</span>
@@ -1604,8 +1604,8 @@ of <a class="reference internal" href="../reference/static_files.html#litestar.s
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
         <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
+            <span class="n">path</span><span class="o">=</span><span class="s2">"/static"</span><span class="p">,</span>
+            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">"assets"</span><span class="p">],</span>
             <span class="n">send_as_attachment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">]</span>
@@ -1631,20 +1631,20 @@ parameter of <a class="reference internal" href="../reference/static_files.html#
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.static_files</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_static_files_router</span>
 
-<span class="n">HTML_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;html&quot;</span><span class="p">)</span>
+<span class="n">HTML_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"html"</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&lt;strong&gt;Hello, world!&lt;/strong&gt;&quot;</span><span class="p">)</span>
-    <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;404.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&lt;h1&gt;Not found&lt;/h1&gt;&quot;</span><span class="p">)</span>
+    <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">"index.html"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"&lt;strong&gt;Hello, world!&lt;/strong&gt;"</span><span class="p">)</span>
+    <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">"404.html"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"&lt;h1&gt;Not found&lt;/h1&gt;"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
         <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;html&quot;</span><span class="p">],</span>
+            <span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">,</span>
+            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">"html"</span><span class="p">],</span>
             <span class="n">html_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">],</span>
@@ -1678,11 +1678,11 @@ parameter of <a class="reference internal" href="../reference/static_files.html#
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
         <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
-            <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+            <span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">,</span>
+            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">"assets"</span><span class="p">],</span>
+            <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">"some"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
             <span class="n">include_in_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;static&quot;</span><span class="p">],</span>
+            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">"static"</span><span class="p">],</span>
         <span class="p">)</span>
     <span class="p">]</span>
 <span class="p">)</span>
@@ -1709,8 +1709,8 @@ parameter of <a class="reference internal" href="../reference/static_files.html#
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
         <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
+            <span class="n">path</span><span class="o">=</span><span class="s2">"/static"</span><span class="p">,</span>
+            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">"assets"</span><span class="p">],</span>
             <span class="n">router_class</span><span class="o">=</span><span class="n">MyRouter</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">]</span>
@@ -1731,12 +1731,12 @@ under which a specific file will be available:</p>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">]),</span>
+        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/static"</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">"assets"</span><span class="p">]),</span>
     <span class="p">]</span>
 <span class="p">)</span>
 
 
-<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="s2">&quot;/some_file.txt&quot;</span><span class="p">))</span>  <span class="c1"># /static/some_file.txt</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"static"</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="s2">"/some_file.txt"</span><span class="p">))</span>  <span class="c1"># /static/some_file.txt</span>
 </pre></div>
 </div>
 </div>
@@ -1771,9 +1771,9 @@ with support for popular cloud providers available via 3rd party implementations
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
         <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
-            <span class="n">file_system</span><span class="o">=</span><span class="n">FTPFileSystem</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">),</span>
+            <span class="n">path</span><span class="o">=</span><span class="s2">"/static"</span><span class="p">,</span>
+            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">"assets"</span><span class="p">],</span>
+            <span class="n">file_system</span><span class="o">=</span><span class="n">FTPFileSystem</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">"127.0.0.1"</span><span class="p">),</span>
         <span class="p">),</span>
     <span class="p">]</span>
 <span class="p">)</span>
@@ -1796,7 +1796,7 @@ with support for popular cloud providers available via 3rd party implementations
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">),</span>
+        <span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">"assets"</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">"/static"</span><span class="p">),</span>
     <span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
@@ -1810,7 +1810,7 @@ with support for popular cloud providers available via 3rd party implementations
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">),</span>
+        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">"assets"</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">"/static"</span><span class="p">),</span>
     <span class="p">],</span>
 <span class="p">)</span>
 </pre></div>

@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -881,7 +881,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1556,7 +1556,7 @@ this package, you should first install the required dependencies:</p>
 </div>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">as a Litestar extra</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[prometheus]&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'litestar[prometheus]'</span>
 </pre></div>
 </div>
 </div>
@@ -1571,7 +1571,7 @@ this package, you should first install the required dependencies:</p>
     <span class="c1"># Default app name and prefix is litestar.</span>
     <span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">(</span><span class="n">group_path</span><span class="o">=</span><span class="n">group_path</span><span class="p">)</span>
 
-    <span class="c1"># By default the metrics are available in prometheus format and the path is set to &#39;/metrics&#39;.</span>
+    <span class="c1"># By default the metrics are available in prometheus format and the path is set to '/metrics'.</span>
     <span class="c1"># If you want to change the path and format you can do it by subclassing the PrometheusController class.</span>
 
     <span class="c1"># Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.</span>
@@ -1594,19 +1594,19 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># We can modify the path of our custom handler and override the metrics format by subclassing the PrometheusController.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomPrometheusController</span><span class="p">(</span><span class="n">PrometheusController</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/custom-path&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/custom-path"</span>
     <span class="n">openmetrics_format</span> <span class="o">=</span> <span class="kc">True</span>
 
 
-<span class="c1"># Let&#39;s assume this as our extra custom labels which we want our metrics to have.</span>
+<span class="c1"># Let's assume this as our extra custom labels which we want our metrics to have.</span>
 <span class="c1"># The values can be either a string or a callable that returns a string.</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">custom_label_callable</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;v2.0&quot;</span>
+    <span class="k">return</span> <span class="s2">"v2.0"</span>
 
 
 <span class="n">extra_labels</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;version_no&quot;</span><span class="p">:</span> <span class="n">custom_label_callable</span><span class="p">,</span>
-    <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;earth&quot;</span><span class="p">,</span>
+    <span class="s2">"version_no"</span><span class="p">:</span> <span class="n">custom_label_callable</span><span class="p">,</span>
+    <span class="s2">"location"</span><span class="p">:</span> <span class="s2">"earth"</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># Customizing the buckets for the histogram.</span>
@@ -1616,19 +1616,19 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="c1"># Adding exemplars to the metrics.</span>
 <span class="c1"># Note that this supported only in openmetrics format.</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">custom_exemplar</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;trace_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1234&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"trace_id"</span><span class="p">:</span> <span class="s2">"1234"</span><span class="p">}</span>
 
 
 <span class="c1"># Creating the instance of PrometheusConfig with our own custom options.</span>
 <span class="c1"># The given options are not necessary, you can use the default ones</span>
 <span class="c1"># as well by just creating a raw instance PrometheusConfig()</span>
 <span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">(</span>
-    <span class="n">app_name</span><span class="o">=</span><span class="s2">&quot;litestar-example&quot;</span><span class="p">,</span>
-    <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;litestar&quot;</span><span class="p">,</span>
+    <span class="n">app_name</span><span class="o">=</span><span class="s2">"litestar-example"</span><span class="p">,</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="s2">"litestar"</span><span class="p">,</span>
     <span class="n">labels</span><span class="o">=</span><span class="n">extra_labels</span><span class="p">,</span>
     <span class="n">buckets</span><span class="o">=</span><span class="n">buckets</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportArgumentType]</span>
     <span class="n">exemplars</span><span class="o">=</span><span class="n">custom_exemplar</span><span class="p">,</span>
-    <span class="n">excluded_http_methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">],</span>
+    <span class="n">excluded_http_methods</span><span class="o">=</span><span class="p">[</span><span class="s2">"POST"</span><span class="p">],</span>
 <span class="p">)</span>
 
 
@@ -1651,19 +1651,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># We can modify the path of our custom handler and override the metrics format by subclassing the PrometheusController.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomPrometheusController</span><span class="p">(</span><span class="n">PrometheusController</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/custom-path&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/custom-path"</span>
     <span class="n">openmetrics_format</span> <span class="o">=</span> <span class="kc">True</span>
 
 
-<span class="c1"># Let&#39;s assume this as our extra custom labels which we want our metrics to have.</span>
+<span class="c1"># Let's assume this as our extra custom labels which we want our metrics to have.</span>
 <span class="c1"># The values can be either a string or a callable that returns a string.</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">custom_label_callable</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;v2.0&quot;</span>
+    <span class="k">return</span> <span class="s2">"v2.0"</span>
 
 
 <span class="n">extra_labels</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;version_no&quot;</span><span class="p">:</span> <span class="n">custom_label_callable</span><span class="p">,</span>
-    <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;earth&quot;</span><span class="p">,</span>
+    <span class="s2">"version_no"</span><span class="p">:</span> <span class="n">custom_label_callable</span><span class="p">,</span>
+    <span class="s2">"location"</span><span class="p">:</span> <span class="s2">"earth"</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># Customizing the buckets for the histogram.</span>
@@ -1673,19 +1673,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="c1"># Adding exemplars to the metrics.</span>
 <span class="c1"># Note that this supported only in openmetrics format.</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">custom_exemplar</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;trace_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1234&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"trace_id"</span><span class="p">:</span> <span class="s2">"1234"</span><span class="p">}</span>
 
 
 <span class="c1"># Creating the instance of PrometheusConfig with our own custom options.</span>
 <span class="c1"># The given options are not necessary, you can use the default ones</span>
 <span class="c1"># as well by just creating a raw instance PrometheusConfig()</span>
 <span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">(</span>
-    <span class="n">app_name</span><span class="o">=</span><span class="s2">&quot;litestar-example&quot;</span><span class="p">,</span>
-    <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;litestar&quot;</span><span class="p">,</span>
+    <span class="n">app_name</span><span class="o">=</span><span class="s2">"litestar-example"</span><span class="p">,</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="s2">"litestar"</span><span class="p">,</span>
     <span class="n">labels</span><span class="o">=</span><span class="n">extra_labels</span><span class="p">,</span>
     <span class="n">buckets</span><span class="o">=</span><span class="n">buckets</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportArgumentType]</span>
     <span class="n">exemplars</span><span class="o">=</span><span class="n">custom_exemplar</span><span class="p">,</span>
-    <span class="n">excluded_http_methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">],</span>
+    <span class="n">excluded_http_methods</span><span class="o">=</span><span class="p">[</span><span class="s2">"POST"</span><span class="p">],</span>
 <span class="p">)</span>
 
 

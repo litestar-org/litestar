@@ -47,7 +47,6 @@
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
     <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
 
 
@@ -56,173 +55,11 @@
 
 const initStyles = () => {
     const defaultStyle = document.createElement('style');
-    defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}`;
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
     document.head.appendChild(defaultStyle);
 
     const fullscreenStyle = document.createElement('style');
-    fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
     document.head.appendChild(fullscreenStyle);
 }
 
@@ -267,6 +104,32 @@ let darkTheme = isDarkTheme();
 let modal = null;
 let modalContent = null;
 let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
 
 const runMermaid = async (rerun) => {
     console.log("Running mermaid diagrams, rerun =", rerun);
@@ -274,7 +137,15 @@ const runMermaid = async (rerun) => {
     let all_mermaids = document.querySelectorAll(".mermaid");
 
     if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
         all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
             if(!el.hasAttribute("data-original-code")) {
                 // store original code
                 // console.log(`Storing original code for first run: `, el.innerHTML);
@@ -291,42 +162,100 @@ const runMermaid = async (rerun) => {
                 el.setAttribute('data-original-code', el.innerHTML);
             }
         });
-        await mermaid.run();
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
     }
 
     all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
 
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
         if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
                 setTimeout(() => runMermaid(false), 200);
                 return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
             }
+            addZoomToSvgs(svgs);
         }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
+    } else if(mermaids_active.length !== mermaids_processed.length) {
         // Wait for mermaid to process all diagrams
         setTimeout(() => runMermaid(false), 200);
         return;
     }
 
     // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
+    if (!true) return;
 
     if (modal !== null ) {
         // Destroy existing modal
@@ -349,7 +278,7 @@ const runMermaid = async (rerun) => {
     modalContent = modal.querySelector('.mermaid-container-fullscreen');
     const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
 
-    const closeModal = () => {
+    closeModal = () => {
         modal.classList.remove('active');
         modalContent.innerHTML = '';
         document.body.style.overflow = ''
@@ -360,12 +289,6 @@ const runMermaid = async (rerun) => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
     });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
     document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
         if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
             mermaidDiv.closest('.mermaid-fullscreen-modal')) {
@@ -385,8 +308,8 @@ const runMermaid = async (rerun) => {
         const fullscreenBtn = document.createElement('button');
         fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
         fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
 
         // Calculate dynamic position based on diagram's margin and padding
         const diagramStyle = window.getComputedStyle(mermaidDiv);
@@ -398,7 +321,7 @@ const runMermaid = async (rerun) => {
         fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
 
         fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
+            previousScrollOffset = [window.scrollX, window.scrollY];
             const clone = mermaidDiv.cloneNode(true);
             modalContent.innerHTML = '';
             modalContent.appendChild(clone);
@@ -410,9 +333,9 @@ const runMermaid = async (rerun) => {
                 svg.style.width = '100%';
                 svg.style.height = 'auto';
                 svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
+                svg.style.display = 'block';
 
-                if ("False" === "True") {
+                if (false) {
                     setTimeout(() => {
                         const g = svg.querySelector('g');
                         if (g) {
@@ -435,8 +358,11 @@ const runMermaid = async (rerun) => {
     });
 };
 
+
+
 const load = async () => {
     initStyles();
+
 
     await runMermaid(true);
 
@@ -446,10 +372,8 @@ const load = async () => {
             darkTheme = newDarkTheme;
             console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
             await mermaid.initialize(
-                {...JSON.parse(
-                    `{"startOnLoad": false}`
-                ),
-                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
                 }
             );
             await runMermaid(true);
@@ -474,10 +398,8 @@ const load = async () => {
 
 console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
 mermaid.initialize(
-    {...JSON.parse(
-        `{"startOnLoad": false}`
-    ),
-    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
     }
 );
 
@@ -767,7 +689,7 @@ window.runMermaid = runMermaid;</script>
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1321,7 +1243,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -2119,7 +2041,7 @@ within the dependency tree directly</p>
 <div class="code-block-caption"><span class="caption-text">Passing channels explicitly</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChannelsPlugin</span>
 
-<span class="n">channels_plugin</span> <span class="o">=</span> <span class="n">ChannelsPlugin</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span>
+<span class="n">channels_plugin</span> <span class="o">=</span> <span class="n">ChannelsPlugin</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -2140,7 +2062,7 @@ within the dependency tree directly</p>
 <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.publish" title="litestar.channels.plugin.ChannelsPlugin.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish()</span></code></a> method:</p>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">Publishing data to a channel with <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.publish" title="litestar.channels.plugin.ChannelsPlugin.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish()</span></code></a></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">channels</span><span class="o">.</span><span class="n">publish</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">},</span> <span class="s2">&quot;general&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">channels</span><span class="o">.</span><span class="n">publish</span><span class="p">({</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello"</span><span class="p">},</span> <span class="s2">"general"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2171,11 +2093,11 @@ different approaches exist:</p>
 which can be used to interact with the streams of events subscribed to.</p>
 <p>The context manager should be preferred, since it ensures that channels are being unsubscribed.
 Using the <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.subscribe" title="litestar.channels.plugin.ChannelsPlugin.subscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subscribe()</span></code></a> and <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.unsubscribe" title="litestar.channels.plugin.ChannelsPlugin.unsubscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unsubscribe()</span></code></a> methods directly should only be
-one when a <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.14)"><span class="xref std std-term">context manager</span></a> cannot be used, e.g., when the <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscription</span></a>
+one when a <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.15)"><span class="xref std std-term">context manager</span></a> cannot be used, e.g., when the <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscription</span></a>
 would span different contexts.</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Calling the <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscription</span></a> methods manually</span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subscriber</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">subscribe</span><span class="p">([</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subscriber</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">subscribe</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">])</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># do some stuff here</span>
 <span class="k">finally</span><span class="p">:</span>
@@ -2184,8 +2106,8 @@ would span different contexts.</p>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Using the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.14)"><span class="xref std std-term">async context manager</span></a></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">:</span>
+<div class="code-block-caption"><span class="caption-text">Using the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.15)"><span class="xref std std-term">async context manager</span></a></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># do some stuff here</span>
 </pre></div>
 </div>
@@ -2194,21 +2116,21 @@ would span different contexts.</p>
 <a class="reference internal" href="#term-subscription"><span class="xref std std-term">subscriptions</span></a> need to be managed dynamically.</p>
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text">Unsubscribing from a channel manually</span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subscriber</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">subscribe</span><span class="p">([</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subscriber</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">subscribe</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">])</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># do some stuff here</span>
 <span class="k">finally</span><span class="p">:</span>
-    <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">])</span>
+    <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="p">[</span><span class="s2">"foo"</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 <p>Or, using the context manager</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Using the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.14)"><span class="xref std std-term">async context manager</span></a> to unsubscribe from a
+<div class="code-block-caption"><span class="caption-text">Using the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.15)"><span class="xref std std-term">async context manager</span></a> to unsubscribe from a
 <a class="reference internal" href="#term-channel"><span class="xref std std-term">channel</span></a></span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># do some stuff here</span>
-    <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">])</span>
+    <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="p">[</span><span class="s2">"foo"</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -2227,12 +2149,12 @@ be used to fetch this <a class="reference internal" href="#term-history"><span c
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.channels.backends.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 
 
-<span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span>
+<span class="nd">@websocket</span><span class="p">(</span><span class="s2">"/ws"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">ChannelsPlugin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
 
-    <span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">&quot;some_channel&quot;</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">put_subscriber_history</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;some_channel&quot;</span><span class="p">],</span> <span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">"some_channel"</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">put_subscriber_history</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="p">[</span><span class="s2">"some_channel"</span><span class="p">],</span> <span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -2265,11 +2187,11 @@ backend into the appropriate subscriber’s streams.</p>
 <p>In addition to being an abstraction of an <a class="reference internal" href="#term-event-stream"><span class="xref std std-term">event stream</span></a>, the <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a>
 provides two methods to handle this stream:</p>
 <dl>
-<dt><a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a></dt><dd><p>An <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-generator" title="(in Python v3.14)"><span class="xref std std-term">asynchronous generator</span></a>, producing one event from the stream at a time, waiting
+<dt><a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a></dt><dd><p>An <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-generator" title="(in Python v3.15)"><span class="xref std std-term">asynchronous generator</span></a>, producing one event from the stream at a time, waiting
 until the next one becomes available</p>
 </dd>
-<dt><a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_in_background</span></code></a></dt><dd><p>A <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.14)"><span class="xref std std-term">context manager</span></a>, wrapping an <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Task</span></code></a>,
-consuming events yielded by <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a>, invoking a provided <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callback" title="(in Python v3.14)"><span class="xref std std-term">callback</span></a>
+<dt><a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_in_background</span></code></a></dt><dd><p>A <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.15)"><span class="xref std std-term">context manager</span></a>, wrapping an <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Task</span></code></a>,
+consuming events yielded by <a class="reference internal" href="../reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.iter_events" title="litestar.channels.subscriber.Subscriber.iter_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_events</span></code></a>, invoking a provided <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callback" title="(in Python v3.15)"><span class="xref std std-term">callback</span></a>
 for each of them. Upon exit, it will attempt a graceful shutdown of the running task, waiting
 for all currently enqueued events in the stream to be processed.
 If the context exits with an error, the task will be cancelled instead.</p>
@@ -2304,11 +2226,11 @@ allows to easily run other code concurrently.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.channels.backends.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 
 
-<span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span>
+<span class="nd">@websocket</span><span class="p">(</span><span class="s2">"/ws"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">ChannelsPlugin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
 
-    <span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">&quot;some_channel&quot;</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">"some_channel"</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">:</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">subscriber</span><span class="o">.</span><span class="n">iter_events</span><span class="p">():</span>
             <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_text</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
@@ -2333,11 +2255,11 @@ providing an opportunity to perform other tasks, such as receiving incoming data
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.channels.backends.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 
 
-<span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span>
+<span class="nd">@websocket</span><span class="p">(</span><span class="s2">"/ws"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">ChannelsPlugin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
 
-    <span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">&quot;some_channel&quot;</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">.</span><span class="n">run_in_background</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">channels</span><span class="o">.</span><span class="n">start_subscription</span><span class="p">([</span><span class="s2">"some_channel"</span><span class="p">])</span> <span class="k">as</span> <span class="n">subscriber</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">.</span><span class="n">run_in_background</span><span class="p">(</span>
         <span class="n">socket</span><span class="o">.</span><span class="n">send_text</span>
     <span class="p">):</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -2347,7 +2269,7 @@ providing an opportunity to perform other tasks, such as receiving incoming data
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="p">[</span><span class="n">handler</span><span class="p">],</span>
-    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">ChannelsPlugin</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">MemoryChannelsBackend</span><span class="p">(),</span> <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;some_channel&quot;</span><span class="p">])],</span>
+    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">ChannelsPlugin</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">MemoryChannelsBackend</span><span class="p">(),</span> <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s2">"some_channel"</span><span class="p">])],</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2385,7 +2307,7 @@ added while the backlog is full</p></li>
 <span class="n">channels</span> <span class="o">=</span> <span class="n">ChannelsPlugin</span><span class="p">(</span>
     <span class="n">backend</span><span class="o">=</span><span class="n">MemoryChannelsBackend</span><span class="p">(),</span>
     <span class="n">max_backlog</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="n">backlog_strategy</span><span class="o">=</span><span class="s2">&quot;backoff&quot;</span><span class="p">,</span>
+    <span class="n">backlog_strategy</span><span class="o">=</span><span class="s2">"backoff"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2398,7 +2320,7 @@ added while the backlog is full</p></li>
 <span class="n">channels</span> <span class="o">=</span> <span class="n">ChannelsPlugin</span><span class="p">(</span>
     <span class="n">backend</span><span class="o">=</span><span class="n">MemoryChannelsBackend</span><span class="p">(),</span>
     <span class="n">max_backlog</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="n">backlog_strategy</span><span class="o">=</span><span class="s2">&quot;dropleft&quot;</span><span class="p">,</span>
+    <span class="n">backlog_strategy</span><span class="o">=</span><span class="s2">"dropleft"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2426,7 +2348,8 @@ when <a class="reference internal" href="#term-history"><span class="xref std st
 </dd>
 <dt><a class="reference internal" href="../reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend" title="litestar.channels.backends.asyncpg.AsyncPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncPgChannelsBackend</span></code></a></dt><dd><p>A postgres backend using the <a class="reference external" href="https://magicstack.github.io/asyncpg/current/">asyncpg</a> driver</p>
 </dd>
-<dt><a class="reference internal" href="../reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend" title="litestar.channels.backends.psycopg.PsycoPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">PsycoPgChannelsBackend</span></code></a></dt><dd><p>A postgres backend using the <a class="reference external" href="https://www.psycopg.org/psycopg3/docs/">psycopg3</a> async driver</p>
+<dt><a class="reference internal" href="../reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend" title="litestar.channels.backends.psycopg.PsycoPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">PsycoPgChannelsBackend</span></code></a></dt><dd><p>A postgres backend using version 3.2.4 or newer of the
+<a class="reference external" href="https://www.psycopg.org/psycopg3/docs/">psycopg3</a> async driver</p>
 </dd>
 </dl>
 </section>
@@ -2444,7 +2367,7 @@ client from that channel. This can be fully automated, using the plugin to creat
 
 <span class="n">channels_plugin</span> <span class="o">=</span> <span class="n">ChannelsPlugin</span><span class="p">(</span>
     <span class="n">backend</span><span class="o">=</span><span class="n">MemoryChannelsBackend</span><span class="p">(),</span>
-    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">],</span>
+    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">],</span>
     <span class="n">create_ws_route_handlers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -2463,7 +2386,7 @@ after a client has connected:</p>
 <span class="n">channels_plugin</span> <span class="o">=</span> <span class="n">ChannelsPlugin</span><span class="p">(</span>
     <span class="n">backend</span><span class="o">=</span><span class="n">MemoryChannelsBackend</span><span class="p">(</span><span class="n">history</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>  <span class="c1"># set the amount of messages per channel</span>
     <span class="c1"># to keep in the backend</span>
-    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">],</span>
+    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">],</span>
     <span class="n">create_ws_route_handlers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">ws_handler_send_history</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>  <span class="c1"># send 10 entries of the history by default</span>
 <span class="p">)</span>

@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1559,9 +1559,9 @@ instance of Litestar as the <code class="docutils literal notranslate"><span cla
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/health-check"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
+    <span class="k">return</span> <span class="s2">"healthy"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
@@ -1585,9 +1585,9 @@ Sync</label><div class="sd-tab-content docutils">
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_health_check</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/health-check"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">"healthy"</span>
 </pre></div>
 </div>
 </div>
@@ -1607,9 +1607,9 @@ Async</label><div class="sd-tab-content docutils">
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_health_check</span><span class="p">():</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/health-check"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">"healthy"</span>
 </pre></div>
 </div>
 </div>
@@ -1640,7 +1640,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">"function"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
@@ -1668,7 +1668,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">"function"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
@@ -1701,7 +1701,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">"function"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
@@ -1729,7 +1729,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">"function"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
@@ -1760,24 +1760,24 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/health-check"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
+    <span class="k">return</span> <span class="s2">"healthy"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">"function"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_health_check_with_fixture</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/health-check"</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">"healthy"</span>
 </pre></div>
 </div>
 </div>
@@ -1796,24 +1796,24 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestClient</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/health-check"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
+    <span class="k">return</span> <span class="s2">"healthy"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">"function"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_health_check_with_fixture</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/health-check"</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">"healthy"</span>
 </pre></div>
 </div>
 </div>
@@ -1838,24 +1838,24 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/health-check"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
+    <span class="k">return</span> <span class="s2">"healthy"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">"function"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_health_check_with_fixture</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/health-check"</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">"healthy"</span>
 </pre></div>
 </div>
 </div>
@@ -1874,24 +1874,24 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/health-check"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
+    <span class="k">return</span> <span class="s2">"healthy"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">"function"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_health_check_with_fixture</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">test_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/health-check"</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
+    <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">"healthy"</span>
 </pre></div>
 </div>
 </div>
@@ -1913,17 +1913,17 @@ method on the test client. The method returns a websocket connection object that
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_websocket</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="nd">@websocket</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span>
+    <span class="nd">@websocket</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/ws"</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
         <span class="n">recv</span> <span class="o">=</span> <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">receive_json</span><span class="p">()</span>
-        <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">recv</span><span class="p">})</span>
+        <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">"message"</span><span class="p">:</span> <span class="n">recv</span><span class="p">})</span>
         <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">websocket_handler</span><span class="p">])</span><span class="o">.</span><span class="n">websocket_connect</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ws</span><span class="p">:</span>
-        <span class="n">ws</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">})</span>
+    <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">websocket_handler</span><span class="p">])</span><span class="o">.</span><span class="n">websocket_connect</span><span class="p">(</span><span class="s2">"/ws"</span><span class="p">)</span> <span class="k">as</span> <span class="n">ws</span><span class="p">:</span>
+        <span class="n">ws</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">})</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">receive_json</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="n">data</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}}</span>
+        <span class="k">assert</span> <span class="n">data</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}}</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -1951,7 +1951,7 @@ install the <code class="docutils literal notranslate"><span class="pre">cryptog
 pip</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
 <div class="code-block-caption"><span class="caption-text">Using pip</span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'litestar[cryptography]'</span>
 </pre></div>
 </div>
 </div>
@@ -1961,7 +1961,7 @@ pip</label><div class="sd-tab-content docutils">
 pipx</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id13">
 <div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a></span><a class="headerlink" href="#id13" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipx<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipx<span class="w"> </span>install<span class="w"> </span><span class="s1">'litestar[cryptography]'</span>
 </pre></div>
 </div>
 </div>
@@ -1971,7 +1971,7 @@ pipx</label><div class="sd-tab-content docutils">
 pdm</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id14">
 <div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pdm.fming.dev/">PDM</a></span><a class="headerlink" href="#id14" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pdm<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pdm<span class="w"> </span>add<span class="w"> </span><span class="s1">'litestar[cryptography]'</span>
 </pre></div>
 </div>
 </div>
@@ -1981,7 +1981,7 @@ pdm</label><div class="sd-tab-content docutils">
 poetry</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id15">
 <div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">poetry</a></span><a class="headerlink" href="#id15" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>add<span class="w"> </span><span class="s1">'litestar[cryptography]'</span>
 </pre></div>
 </div>
 </div>
@@ -1991,7 +1991,7 @@ poetry</label><div class="sd-tab-content docutils">
 uv</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id16">
 <div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://docs.astral.sh/uv/">uv</a></span><a class="headerlink" href="#id16" title="Link to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;litestar[cryptography]&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>add<span class="w"> </span><span class="s1">'litestar[cryptography]'</span>
 </pre></div>
 </div>
 </div>
@@ -2017,7 +2017,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/test"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
@@ -2027,8 +2027,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
-        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">"foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/test"</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2047,7 +2047,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/test"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
@@ -2057,8 +2057,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
-        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">"foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">})</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/test"</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2073,16 +2073,16 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/test"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">"foo"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"bar"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/test"</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2105,7 +2105,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/test"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
@@ -2115,9 +2115,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">"foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">})</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/test"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2136,7 +2136,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/test"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
@@ -2146,9 +2146,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">"foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">})</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/test"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2163,9 +2163,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/test"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_session_data</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">"foo"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"bar"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -2173,8 +2173,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_set_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/test"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"foo"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -2200,10 +2200,10 @@ without the test itself being asynchronous.</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_with_portal</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This example shows how to manage asynchronous tasks using a portal.</span>
+<span class="w">    </span><span class="sd">"""This example shows how to manage asynchronous tasks using a portal.</span>
 
 <span class="sd">    The test function itself is not async. Asynchronous functions are executed and awaited using the portal.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_float</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -2242,9 +2242,9 @@ expects <code class="docutils literal notranslate"><span class="pre">route_handl
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_health_check</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/health-check"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">"healthy"</span>
 </pre></div>
 </div>
 </div>
@@ -2259,9 +2259,9 @@ expects <code class="docutils literal notranslate"><span class="pre">route_handl
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_health_check</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="n">health_check</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/health-check"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">"healthy"</span>
 </pre></div>
 </div>
 </div>
@@ -2285,9 +2285,9 @@ with the regular test client setup:</p>
 <input id="sd-tab-item-25" name="sd-tab-set-11" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-25">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""</span>
 <span class="sd">Assemble components into an app that shall be tested</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 
@@ -2303,9 +2303,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/notify/{topic:str}&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/notify/{topic:str}"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_notified</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;Notifier&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">"Notifier"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_notified</span><span class="p">])</span>
@@ -2315,9 +2315,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-26" name="sd-tab-set-11" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.9" for="sd-tab-item-26">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""</span>
 <span class="sd">Assemble components into an app that shall be tested</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
 
@@ -2333,9 +2333,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/notify/{topic:str}&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/notify/{topic:str}"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_notified</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;Notifier&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">"Notifier"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_notified</span><span class="p">])</span>
@@ -2347,9 +2347,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-27" name="sd-tab-set-12" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-27">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""</span>
 <span class="sd">Test the app running in a subprocess</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
@@ -2363,19 +2363,19 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">ROOT</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;async_client&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"async_client"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fx_async_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">subprocess_async_client</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s2">&quot;subprocess_sse_app:app&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">subprocess_async_client</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s2">"subprocess_sse_app:app"</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_subprocess_async_client</span><span class="p">(</span><span class="n">async_client</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the</span>
+<span class="w">    </span><span class="sd">"""Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the</span>
 <span class="sd">    regular async test client.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">topic</span> <span class="o">=</span> <span class="s2">&quot;demo&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">topic</span> <span class="o">=</span> <span class="s2">"demo"</span>
 
-    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx_sse</span><span class="o">.</span><span class="n">aconnect_sse</span><span class="p">(</span><span class="n">async_client</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/notify/</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">event_source</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx_sse</span><span class="o">.</span><span class="n">aconnect_sse</span><span class="p">(</span><span class="n">async_client</span><span class="p">,</span> <span class="s2">"GET"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"/notify/</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">as</span> <span class="n">event_source</span><span class="p">:</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">event_source</span><span class="o">.</span><span class="n">aiter_sse</span><span class="p">():</span>
             <span class="k">assert</span> <span class="n">event</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">topic</span>
             <span class="k">break</span>
@@ -2385,9 +2385,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-28" name="sd-tab-set-12" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.9" for="sd-tab-item-28">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""</span>
 <span class="sd">Test the app running in a subprocess</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
@@ -2401,19 +2401,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">ROOT</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
 
 
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;async_client&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"async_client"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fx_async_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">subprocess_async_client</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s2">&quot;subprocess_sse_app:app&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">subprocess_async_client</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s2">"subprocess_sse_app:app"</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_subprocess_async_client</span><span class="p">(</span><span class="n">async_client</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the</span>
+<span class="w">    </span><span class="sd">"""Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the</span>
 <span class="sd">    regular async test client.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">topic</span> <span class="o">=</span> <span class="s2">&quot;demo&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">topic</span> <span class="o">=</span> <span class="s2">"demo"</span>
 
-    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx_sse</span><span class="o">.</span><span class="n">aconnect_sse</span><span class="p">(</span><span class="n">async_client</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/notify/</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">event_source</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx_sse</span><span class="o">.</span><span class="n">aconnect_sse</span><span class="p">(</span><span class="n">async_client</span><span class="p">,</span> <span class="s2">"GET"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"/notify/</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">as</span> <span class="n">event_source</span><span class="p">:</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">event_source</span><span class="o">.</span><span class="n">aiter_sse</span><span class="p">():</span>
             <span class="k">assert</span> <span class="n">event</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">topic</span>
             <span class="k">break</span>
@@ -2422,9 +2422,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <p>By default, the subprocess client will capture all output from the litestar instance. To discard output in the main (testing) process, set the <code class="docutils literal notranslate"><span class="pre">capture_output</span></code> argument to <code class="docutils literal notranslate"><span class="pre">False</span></code> when creating the client:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;async_client&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"async_client"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fx_async_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">subprocess_async_client</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s2">&quot;subprocess_sse_app:app&quot;</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">subprocess_async_client</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s2">"subprocess_sse_app:app"</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">client</span>
 </pre></div>
 </div>
@@ -2445,8 +2445,8 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 
 <span class="k">def</span><span class="w"> </span><span class="nf">secret_token_guard</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;secret&quot;</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Secret-Header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span>
+        <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"secret"</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Secret-Header"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span> <span class="o">==</span> <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">"secret"</span><span class="p">]</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
 </pre></div>
@@ -2462,7 +2462,7 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 <span class="kn">from</span><span class="w"> </span><span class="nn">my_app.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">secret_token_guard</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/secret&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">secret_token_guard</span><span class="p">],</span> <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;secret&quot;</span><span class="p">:</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SECRET&quot;</span><span class="p">)})</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/secret"</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">secret_token_guard</span><span class="p">],</span> <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">"secret"</span><span class="p">:</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SECRET"</span><span class="p">)})</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">secret_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -2478,19 +2478,19 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 <span class="kn">from</span><span class="w"> </span><span class="nn">my_app.guards</span><span class="w"> </span><span class="kn">import</span> <span class="n">secret_token_guard</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">my_app.secret</span><span class="w"> </span><span class="kn">import</span> <span class="n">secret_endpoint</span>
 
-<span class="n">request</span> <span class="o">=</span> <span class="n">RequestFactory</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="n">request</span> <span class="o">=</span> <span class="n">RequestFactory</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_secret_token_guard_failure_scenario</span><span class="p">():</span>
     <span class="n">copied_endpoint_handler</span> <span class="o">=</span> <span class="n">secret_endpoint</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">copied_endpoint_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">copied_endpoint_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">"secret"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">NotAuthorizedException</span><span class="p">):</span>
         <span class="n">secret_token_guard</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">route_handler</span><span class="o">=</span><span class="n">copied_endpoint_handler</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_secret_token_guard_success_scenario</span><span class="p">():</span>
     <span class="n">copied_endpoint_handler</span> <span class="o">=</span> <span class="n">secret_endpoint</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">copied_endpoint_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;super-secret&quot;</span>
+    <span class="n">copied_endpoint_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">"secret"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"super-secret"</span>
     <span class="n">secret_token_guard</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">route_handler</span><span class="o">=</span><span class="n">copied_endpoint_handler</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2518,7 +2518,7 @@ and powerful way to generate mock data from pydantic models and dataclasses.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/item&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/item"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_item</span><span class="p">(</span><span class="n">service</span><span class="p">:</span> <span class="n">Service</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">service</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 </pre></div>
@@ -2538,7 +2538,7 @@ and powerful way to generate mock data from pydantic models and dataclasses.</p>
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">item</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">Item</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Chair&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Item</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Chair"</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_get_item</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Item</span><span class="p">):</span>
@@ -2547,9 +2547,9 @@ and powerful way to generate mock data from pydantic models and dataclasses.</p>
             <span class="k">return</span> <span class="n">item</span>
 
     <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span>
-        <span class="n">route_handlers</span><span class="o">=</span><span class="n">get_item</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MyService</span><span class="p">())}</span>
+        <span class="n">route_handlers</span><span class="o">=</span><span class="n">get_item</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"service"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MyService</span><span class="p">())}</span>
     <span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/item&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/item"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="n">item</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
 </pre></div>
@@ -2580,7 +2580,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
     <span class="k">def</span><span class="w"> </span><span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/item&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/item"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_item</span><span class="p">(</span><span class="n">service</span><span class="p">:</span> <span class="n">Service</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">service</span><span class="o">.</span><span class="n">get_one</span><span class="p">()</span>
 
@@ -2600,9 +2600,9 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
             <span class="k">return</span> <span class="n">item</span>
 
     <span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span>
-        <span class="n">route_handlers</span><span class="o">=</span><span class="n">get_item</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MyService</span><span class="p">())}</span>
+        <span class="n">route_handlers</span><span class="o">=</span><span class="n">get_item</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"service"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MyService</span><span class="p">())}</span>
     <span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/item&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/item"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span> <span class="o">==</span> <span class="n">item</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
 </pre></div>

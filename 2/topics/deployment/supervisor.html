@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1672,27 +1672,27 @@ exampleapp<span class="w"> </span>watch
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>exampleapp<span class="o">()</span><span class="w"> </span><span class="o">{</span>
 <span class="linenos"> 2</span><span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="k">in</span>
 <span class="linenos"> 3</span><span class="w">    </span>start<span class="o">)</span>
-<span class="linenos"> 4</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Starting exampleapp...&quot;</span>
+<span class="linenos"> 4</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Starting exampleapp..."</span>
 <span class="linenos"> 5</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>exampleapp
 <span class="linenos"> 6</span><span class="w">      </span><span class="p">;;</span>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="w">    </span>stop<span class="o">)</span>
-<span class="linenos"> 9</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Stopping exampleapp...&quot;</span>
+<span class="linenos"> 9</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Stopping exampleapp..."</span>
 <span class="linenos">10</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>stop<span class="w"> </span>exampleapp
 <span class="linenos">11</span><span class="w">      </span><span class="p">;;</span>
 <span class="linenos">12</span>
 <span class="linenos">13</span><span class="w">    </span>restart<span class="o">)</span>
-<span class="linenos">14</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Restarting exampleapp...&quot;</span>
+<span class="linenos">14</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Restarting exampleapp..."</span>
 <span class="linenos">15</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>exampleapp
 <span class="linenos">16</span><span class="w">      </span><span class="p">;;</span>
 <span class="linenos">17</span>
 <span class="linenos">18</span><span class="w">    </span>status<span class="o">)</span>
-<span class="linenos">19</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Checking status of exampleapp...&quot;</span>
+<span class="linenos">19</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Checking status of exampleapp..."</span>
 <span class="linenos">20</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status<span class="w"> </span>exampleapp
 <span class="linenos">21</span><span class="w">      </span><span class="p">;;</span>
 <span class="linenos">22</span>
 <span class="linenos">23</span><span class="w">    </span>watch<span class="o">)</span>
-<span class="linenos">24</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Tailing logs for exampleapp...&quot;</span>
+<span class="linenos">24</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Tailing logs for exampleapp..."</span>
 <span class="linenos">25</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>exampleapp
 <span class="linenos">26</span><span class="w">      </span><span class="p">;;</span>
 <span class="linenos">27</span>
@@ -1708,8 +1708,8 @@ exampleapp<span class="w"> </span>watch
 <span class="linenos">37</span><span class="w">      </span><span class="p">;;</span>
 <span class="linenos">38</span>
 <span class="linenos">39</span><span class="w">    </span>*<span class="o">)</span>
-<span class="linenos">40</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Unknown command: </span><span class="nv">$1</span><span class="s2">&quot;</span>
-<span class="linenos">41</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Use &#39;exampleapp help&#39; for a list of available commands.&quot;</span>
+<span class="linenos">40</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Unknown command: </span><span class="nv">$1</span><span class="s2">"</span>
+<span class="linenos">41</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Use 'exampleapp help' for a list of available commands."</span>
 <span class="linenos">42</span><span class="w">      </span><span class="p">;;</span>
 <span class="linenos">43</span><span class="w">  </span><span class="k">esac</span>
 <span class="linenos">44</span><span class="o">}</span>
@@ -1734,26 +1734,26 @@ facilitating the complete update process of the application:</p>
 <span class="linenos"> 3</span><span class="w">    </span><span class="c1"># ... other cases ... #</span>
 <span class="linenos"> 4</span>
 <span class="linenos"> 5</span><span class="w">    </span>update<span class="o">)</span>
-<span class="linenos"> 6</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Updating exampleapp...&quot;</span>
+<span class="linenos"> 6</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Updating exampleapp..."</span>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="w">      </span><span class="c1"># Stop the service</span>
-<span class="linenos"> 9</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Stopping service...&quot;</span>
+<span class="linenos"> 9</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">" &gt; Stopping service..."</span>
 <span class="linenos">10</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>stop<span class="w"> </span>exampleapp
 <span class="linenos">11</span>
 <span class="linenos">12</span><span class="w">      </span><span class="c1"># Update application files</span>
-<span class="linenos">13</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Pulling latest changes from repository...&quot;</span>
+<span class="linenos">13</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">" &gt; Pulling latest changes from repository..."</span>
 <span class="linenos">14</span><span class="w">      </span><span class="nb">cd</span><span class="w"> </span>/opt/exampleapp
 <span class="linenos">15</span><span class="w">      </span>git<span class="w"> </span>fetch<span class="w"> </span>--all
 <span class="linenos">16</span><span class="w">      </span>git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>origin/master
 <span class="linenos">17</span>
 <span class="linenos">18</span><span class="w">      </span><span class="c1"># Update Supervisor configuration and alias</span>
-<span class="linenos">19</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Updating Supervisor and shell configurations...&quot;</span>
+<span class="linenos">19</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">" &gt; Updating Supervisor and shell configurations..."</span>
 <span class="linenos">20</span><span class="w">      </span>sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/opt/exampleapp/server/service.conf<span class="w"> </span>/etc/supervisor/conf.d/exampleapp.conf
 <span class="linenos">21</span><span class="w">      </span>sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/opt/exampleapp/server/alias.sh<span class="w"> </span>/etc/profile.d/exampleapp.sh
 <span class="linenos">22</span><span class="w">      </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/exampleapp.sh
 <span class="linenos">23</span>
 <span class="linenos">24</span><span class="w">      </span><span class="c1"># Update Supervisor to apply new configurations</span>
-<span class="linenos">25</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Reloading Supervisor configuration...&quot;</span>
+<span class="linenos">25</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">" &gt; Reloading Supervisor configuration..."</span>
 <span class="linenos">26</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>reread
 <span class="linenos">27</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>update
 <span class="linenos">28</span>
@@ -1761,20 +1761,20 @@ facilitating the complete update process of the application:</p>
 <span class="linenos">30</span><span class="w">      </span><span class="c1"># Here you could replace with poetry, pdm, etc., alleviating the need for</span>
 <span class="linenos">31</span><span class="w">      </span><span class="c1"># a requirements.txt file and virtual environment activation.</span>
 <span class="linenos">32</span><span class="w">      </span><span class="nb">source</span><span class="w"> </span>venv/bin/activate
-<span class="linenos">33</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Installing updated dependencies...&quot;</span>
+<span class="linenos">33</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">" &gt; Installing updated dependencies..."</span>
 <span class="linenos">34</span><span class="w">      </span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 <span class="linenos">35</span><span class="w">      </span>deactivate
 <span class="linenos">36</span>
 <span class="linenos">37</span><span class="w">      </span><span class="c1"># ... other update processes like docs building, cleanup, etc. ... #</span>
 <span class="linenos">38</span>
-<span class="linenos">39</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Update process complete.&quot;</span>
+<span class="linenos">39</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Update process complete."</span>
 <span class="linenos">40</span>
 <span class="linenos">41</span><span class="w">      </span><span class="c1"># Prompt to start the service</span>
-<span class="linenos">42</span><span class="w">      </span><span class="nb">read</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;Start the service? (y/n) &quot;</span><span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-r
+<span class="linenos">42</span><span class="w">      </span><span class="nb">read</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">"Start the service? (y/n) "</span><span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-r
 <span class="linenos">43</span><span class="w">      </span><span class="nb">echo</span>
 <span class="linenos">44</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="nv">$REPLY</span><span class="w"> </span><span class="o">=</span>~<span class="w"> </span>^<span class="o">[</span>Yy<span class="o">]</span>$<span class="w"> </span><span class="o">]]</span>
 <span class="linenos">45</span><span class="w">      </span><span class="k">then</span>
-<span class="linenos">46</span><span class="w">          </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Starting service...&quot;</span>
+<span class="linenos">46</span><span class="w">          </span><span class="nb">echo</span><span class="w"> </span><span class="s2">" &gt; Starting service..."</span>
 <span class="linenos">47</span><span class="w">          </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>exampleapp
 <span class="linenos">48</span><span class="w">      </span><span class="k">fi</span>
 <span class="linenos">49</span><span class="w">      </span><span class="p">;;</span>

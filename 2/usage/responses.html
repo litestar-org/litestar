@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1559,9 +1559,9 @@ Litestar take care of the rest:</p>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/resources&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/resources"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">Resource</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my resource&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Resource</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"my resource"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In the example above, the route handler function returns an instance of the <code class="docutils literal notranslate"><span class="pre">Resource</span></code> pydantic class. This value will
@@ -1576,9 +1576,9 @@ the <a class="reference internal" href="../reference/enums.html#litestar.enums.M
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/resources&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/resources"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;The rumbling rabbit ran around the rock&quot;</span>
+    <span class="k">return</span> <span class="s2">"The rumbling rabbit ran around the rock"</span>
 </pre></div>
 </div>
 <p>The value of the <code class="docutils literal notranslate"><span class="pre">media_type</span></code> kwarg affects both the serialization of response data and the generation of OpenAPI docs.
@@ -1599,14 +1599,14 @@ the value in the route handler function.</p>
 <h3>JSON responses<a class="headerlink" href="#json-responses" title="Link to this heading">#</a></h3>
 <p>As previously mentioned, the default <code class="docutils literal notranslate"><span class="pre">media_type</span></code> is <code class="docutils literal notranslate"><span class="pre">MediaType.JSON</span></code>. which supports the following values:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.14)"><span class="xref std std-doc">dataclasses</span></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.15)"><span class="xref std std-doc">dataclasses</span></a></p></li>
 <li><p><a class="reference external" href="https://docs.pydantic.dev/usage/dataclasses/">pydantic dataclasses</a></p></li>
 <li><p><a class="reference external" href="https://docs.pydantic.dev/usage/models/">pydantic models</a></p></li>
 <li><p>models from libraries that extend pydantic models</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDs</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html" title="(in Python v3.14)"><span class="xref std std-doc">datetime objects</span></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDs</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html" title="(in Python v3.15)"><span class="xref std std-doc">datetime objects</span></a></p></li>
 <li><p><a class="reference external" href="https://msgspec.devstructs.html">msgspec.Struct</a></p></li>
-<li><p>container types such as <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> containing supported types</p></li>
+<li><p>container types such as <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> containing supported types</p></li>
 </ul>
 <p>If you need to return other values and would like to extend serialization you can do
 this <a class="reference internal" href="#custom-responses"><span class="std std-ref">custom responses</span></a>.</p>
@@ -1627,15 +1627,15 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+    <span class="s2">"/resources"</span><span class="p">,</span>
     <span class="n">status_code</span><span class="o">=</span><span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
-    <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/vnd.example.resource+json&quot;</span><span class="p">,</span>
+    <span class="n">media_type</span><span class="o">=</span><span class="s2">"application/vnd.example.resource+json"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Server thinks it is a teapot&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Server delusion&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
+        <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Server thinks it is a teapot"</span><span class="p">,</span>
+        <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Server delusion"</span><span class="p">,</span>
+        <span class="s2">"status"</span><span class="p">:</span> <span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
     <span class="p">}</span>
 
 
@@ -1653,15 +1653,15 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+    <span class="s2">"/resources"</span><span class="p">,</span>
     <span class="n">status_code</span><span class="o">=</span><span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
-    <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/vnd.example.resource+json&quot;</span><span class="p">,</span>
+    <span class="n">media_type</span><span class="o">=</span><span class="s2">"application/vnd.example.resource+json"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Server thinks it is a teapot&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Server delusion&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
+        <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Server thinks it is a teapot"</span><span class="p">,</span>
+        <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Server delusion"</span><span class="p">,</span>
+        <span class="s2">"status"</span><span class="p">:</span> <span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
     <span class="p">}</span>
 
 
@@ -1685,9 +1685,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">MESSAGEPACK</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/health-check"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">MESSAGEPACK</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1697,9 +1697,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">MESSAGEPACK</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/health-check"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">MESSAGEPACK</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1707,25 +1707,25 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </section>
 <section id="plaintext-responses">
 <h3>Plaintext responses<a class="headerlink" href="#plaintext-responses" title="Link to this heading">#</a></h3>
-<p>For <code class="docutils literal notranslate"><span class="pre">MediaType.TEXT</span></code>, route handlers should return a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> value:</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">MediaType.TEXT</span></code>, route handlers should return a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> value:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/health-check"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
+    <span class="k">return</span> <span class="s2">"healthy"</span>
 </pre></div>
 </div>
 </section>
 <section id="html-responses">
 <h3>HTML responses<a class="headerlink" href="#html-responses" title="Link to this heading">#</a></h3>
-<p>For <code class="docutils literal notranslate"><span class="pre">MediaType.HTML</span></code>, route handlers should return a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> value that contains HTML:</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">MediaType.HTML</span></code>, route handlers should return a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> value that contains HTML:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/page&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">HTML</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/page"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">HTML</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s2">"""</span>
 <span class="s2">    &lt;html&gt;</span>
 <span class="s2">        &lt;body&gt;</span>
 <span class="s2">            &lt;div&gt;</span>
@@ -1733,7 +1733,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="s2">            &lt;/div&gt;</span>
 <span class="s2">        &lt;/body&gt;</span>
 <span class="s2">    &lt;/html&gt;</span>
-<span class="s2">    &quot;&quot;&quot;</span>
+<span class="s2">    """</span>
 </pre></div>
 </div>
 <div class="admonition tip">
@@ -1753,18 +1753,18 @@ calculate the best matching return media type.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/resource&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/resource"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
-    <span class="n">provided_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="n">HTML</span><span class="p">,</span> <span class="s2">&quot;application/xml&quot;</span><span class="p">]</span>
+    <span class="n">provided_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="n">HTML</span><span class="p">,</span> <span class="s2">"application/xml"</span><span class="p">]</span>
     <span class="n">preferred_type</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">accept</span><span class="o">.</span><span class="n">best_match</span><span class="p">(</span><span class="n">provided_types</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 
     <span class="n">content</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">preferred_type</span> <span class="o">==</span> <span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">:</span>
-        <span class="n">content</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;Hello World!&quot;</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">"Hello World!"</span>
     <span class="k">elif</span> <span class="n">preferred_type</span> <span class="o">==</span> <span class="n">MediaType</span><span class="o">.</span><span class="n">HTML</span><span class="p">:</span>
-        <span class="n">content</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&lt;h1&gt;Hello World!&lt;/h1&gt;&quot;</span>
-    <span class="k">elif</span> <span class="n">preferred_type</span> <span class="o">==</span> <span class="s2">&quot;application/xml&quot;</span><span class="p">:</span>
-        <span class="n">content</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&lt;xml&gt;&lt;msg&gt;Hello World!&lt;/msg&gt;&lt;/xml&gt;&quot;</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">"&lt;h1&gt;Hello World!&lt;/h1&gt;"</span>
+    <span class="k">elif</span> <span class="n">preferred_type</span> <span class="o">==</span> <span class="s2">"application/xml"</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">"&lt;xml&gt;&lt;msg&gt;Hello World!&lt;/msg&gt;&lt;/xml&gt;"</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">preferred_type</span><span class="p">)</span>
 
 
@@ -1796,9 +1796,9 @@ Hello<span class="w"> </span>World!
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/resources&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_202_ACCEPTED</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/resources"</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_202_ACCEPTED</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">Resource</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my resource&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Resource</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"my resource"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If <code class="docutils literal notranslate"><span class="pre">status_code</span></code> is not set by the user, the following defaults are used:</p>
@@ -1822,7 +1822,7 @@ This though might not be the case in your implementation - so take care of setti
 <p class="admonition-title">Tip</p>
 <p>While you can write integers as the value for <code class="docutils literal notranslate"><span class="pre">status_code</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">200</span></code>, it’s best practice to use constants (also in
 tests). Litestar includes easy to use statuses that are exported from <code class="docutils literal notranslate"><span class="pre">litestar.status_codes</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">HTTP_200_OK</span></code>
-and <code class="docutils literal notranslate"><span class="pre">HTTP_201_CREATED</span></code>. Another option is the <a class="reference external" href="https://docs.python.org/3/library/http.html#http.HTTPStatus" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">http.HTTPStatus</span></code></a> enum from the standard library, which also offers
+and <code class="docutils literal notranslate"><span class="pre">HTTP_201_CREATED</span></code>. Another option is the <a class="reference external" href="https://docs.python.org/3/library/http.html#http.HTTPStatus" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">http.HTTPStatus</span></code></a> enum from the standard library, which also offers
 extra functionality.</p>
 </div>
 </section>
@@ -1843,15 +1843,15 @@ example will work perfectly fine:</p>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/resources&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/resources"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">Resource</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">Resource</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my resource&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"my resource"</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;MY-HEADER&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz&quot;</span><span class="p">},</span>
-        <span class="n">cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;abc&quot;</span><span class="p">)],</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"MY-HEADER"</span><span class="p">:</span> <span class="s2">"xyz"</span><span class="p">},</span>
+        <span class="n">cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"my-cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"abc"</span><span class="p">)],</span>
     <span class="p">)</span>
 
 
@@ -1888,7 +1888,7 @@ to type this argument even when returning an empty or <code class="docutils lite
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
@@ -1898,7 +1898,7 @@ to type this argument even when returning an empty or <code class="docutils lite
 <section id="what-is-an-asgi-application">
 <h4>What is an ASGI Application?<a class="headerlink" href="#what-is-an-asgi-application" title="Link to this heading">#</a></h4>
 <p>An ASGI application in this context is any async callable (function, class method or simply a class that implements
-that special <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.14)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a> dunder method) that accepts the three ASGI arguments: <code class="docutils literal notranslate"><span class="pre">scope</span></code>, <code class="docutils literal notranslate"><span class="pre">receive</span></code>, and
+that special <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.15)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a> dunder method) that accepts the three ASGI arguments: <code class="docutils literal notranslate"><span class="pre">scope</span></code>, <code class="docutils literal notranslate"><span class="pre">receive</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">send</span></code>.</p>
 <p>For example, all the following examples are ASGI applications:</p>
 <section id="function-asgi-application">
@@ -1949,9 +1949,9 @@ libraries. For example, you can return the response classes from Starlette or Fa
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIApp</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">})</span>  <span class="c1"># type: ignore</span>
+    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">})</span>  <span class="c1"># type: ignore</span>
 </pre></div>
 </div>
 <div class="admonition attention">
@@ -1974,44 +1974,44 @@ itself:</p>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller-path&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/controller-path"</span>
     <span class="n">response_headers</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">ResponseHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;controller-level-header&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;controller header&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;controller level header&quot;</span><span class="p">)</span>
+        <span class="n">ResponseHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"controller-level-header"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"controller header"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"controller level header"</span><span class="p">)</span>
     <span class="p">]</span>
 
     <span class="nd">@get</span><span class="p">(</span>
-        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/handler-path&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">"/handler-path"</span><span class="p">,</span>
         <span class="n">response_headers</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">ResponseHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;my-local-header&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;local header&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;local level header&quot;</span><span class="p">)</span>
+            <span class="n">ResponseHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"my-local-header"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"local header"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"local level header"</span><span class="p">)</span>
         <span class="p">],</span>
         <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
         <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;hello world&quot;</span>
+        <span class="k">return</span> <span class="s2">"hello world"</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router-path&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/router-path"</span><span class="p">,</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span>
     <span class="n">response_headers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">ResponseHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;router-level-header&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;router header&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;router level header&quot;</span><span class="p">)</span>
+        <span class="n">ResponseHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"router-level-header"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"router header"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"router level header"</span><span class="p">)</span>
     <span class="p">],</span>
 <span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
-    <span class="n">response_headers</span><span class="o">=</span><span class="p">[</span><span class="n">ResponseHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;app-level-header&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;app header&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;app level header&quot;</span><span class="p">)],</span>
+    <span class="n">response_headers</span><span class="o">=</span><span class="p">[</span><span class="n">ResponseHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"app-level-header"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"app header"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"app level header"</span><span class="p">)],</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>In the above example the response returned from <code class="docutils literal notranslate"><span class="pre">my_route_handler</span></code> will have headers set from each layer of the
 application using the given key+value combinations. I.e. it will be a dictionary equal to this:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;my-local-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local header&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;controller-level-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;controller header&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;router-level-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;router header&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;app-level-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app header&quot;</span>
+<span class="w">  </span><span class="nt">"my-local-header"</span><span class="p">:</span><span class="w"> </span><span class="s2">"local header"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"controller-level-header"</span><span class="p">:</span><span class="w"> </span><span class="s2">"controller header"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"router-level-header"</span><span class="p">:</span><span class="w"> </span><span class="s2">"router header"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"app-level-header"</span><span class="p">:</span><span class="w"> </span><span class="s2">"app header"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -2022,7 +2022,7 @@ application using the given key+value combinations. I.e. it will be a dictionary
 a special class that allows to add OpenAPI attributes such as <cite>description</cite> or <cite>documentation_only</cite>.
 If you don’t need those, you can optionally define <cite>response_headers</cite> using a mapping - such as a dictionary -
 as well:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="n">response_headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-header&quot;</span><span class="p">:</span> <span class="s2">&quot;header-value&quot;</span><span class="p">})</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="n">response_headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"my-header"</span><span class="p">:</span> <span class="s2">"header-value"</span><span class="p">})</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -2050,10 +2050,10 @@ as you see fit, e.g.:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+    <span class="s2">"/resources"</span><span class="p">,</span>
     <span class="n">response_headers</span><span class="o">=</span><span class="p">[</span>
         <span class="n">ResponseHeader</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Random-Header&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a random number in the range 1 - 100&quot;</span><span class="p">,</span> <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"Random-Header"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"a random number in the range 1 - 100"</span><span class="p">,</span> <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
     <span class="p">],</span>
     <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -2062,9 +2062,9 @@ as you see fit, e.g.:</p>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">Resource</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my resource&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"my resource"</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Random-Header&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">))},</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Random-Header"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">))},</span>
     <span class="p">)</span>
 
 
@@ -2095,11 +2095,11 @@ the headers on the corresponding layer:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+    <span class="s2">"/resources"</span><span class="p">,</span>
     <span class="n">response_headers</span><span class="o">=</span><span class="p">[</span>
         <span class="n">ResponseHeader</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Random-Header&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a random number in the range 100 - 1000&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"Random-Header"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"a random number in the range 100 - 1000"</span><span class="p">,</span>
             <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">],</span>
@@ -2109,25 +2109,25 @@ the headers on the corresponding layer:</p>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">Resource</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my resource&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"my resource"</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Random-Header&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))},</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Random-Header"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))},</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">after_request_handler</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;Random-Header&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">))})</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"Random-Header"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">))})</span>
     <span class="k">return</span> <span class="n">response</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router-path&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/router-path"</span><span class="p">,</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">retrieve_resource</span><span class="p">],</span>
     <span class="n">after_request</span><span class="o">=</span><span class="n">after_request_handler</span><span class="p">,</span>
     <span class="n">response_headers</span><span class="o">=</span><span class="p">[</span>
         <span class="n">ResponseHeader</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Random-Header&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a random number in the range 1 - 100&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"Random-Header"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"a random number in the range 1 - 100"</span><span class="p">,</span>
             <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">],</span>
@@ -2156,11 +2156,11 @@ different value range:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+    <span class="s2">"/resources"</span><span class="p">,</span>
     <span class="n">response_headers</span><span class="o">=</span><span class="p">[</span>
         <span class="n">ResponseHeader</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Random-Header&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a random number in the range 100 - 1000&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"Random-Header"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"a random number in the range 100 - 1000"</span><span class="p">,</span>
             <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">],</span>
@@ -2170,24 +2170,24 @@ different value range:</p>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">Resource</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my resource&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"my resource"</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Random-Header&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))},</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Random-Header"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))},</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">after_request_handler</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;Random-Header&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">))})</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"Random-Header"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">))})</span>
     <span class="k">return</span> <span class="n">response</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router-path&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/router-path"</span><span class="p">,</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">retrieve_resource</span><span class="p">],</span>
     <span class="n">after_request</span><span class="o">=</span><span class="n">after_request_handler</span><span class="p">,</span>
     <span class="n">response_headers</span><span class="o">=</span><span class="p">[</span>
         <span class="n">ResponseHeader</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Random-Header&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a random number in the range 1 - 100&quot;</span><span class="p">,</span> <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"Random-Header"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"a random number in the range 1 - 100"</span><span class="p">,</span> <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
     <span class="p">],</span>
 <span class="p">)</span>
@@ -2221,20 +2221,20 @@ specifications.</p>
 <span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
     <span class="n">cache_control</span> <span class="o">=</span> <span class="n">CacheControlHeader</span><span class="p">(</span><span class="n">max_age</span><span class="o">=</span><span class="mi">86_400</span><span class="p">,</span> <span class="n">public</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/chance_of_rain&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">"/chance_of_rain"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_chance_of_rain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This endpoint uses the cache control value defined in the controller which overrides the app value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""This endpoint uses the cache control value defined in the controller which overrides the app value."""</span>
         <span class="k">return</span> <span class="mf">0.5</span>
 
-    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/timestamp&quot;</span><span class="p">,</span> <span class="n">cache_control</span><span class="o">=</span><span class="n">CacheControlHeader</span><span class="p">(</span><span class="n">no_store</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">"/timestamp"</span><span class="p">,</span> <span class="n">cache_control</span><span class="o">=</span><span class="n">CacheControlHeader</span><span class="p">(</span><span class="n">no_store</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_server_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This endpoint overrides the cache control value defined in the controller.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""This endpoint overrides the cache control value defined in the controller."""</span>
         <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/population&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/population"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_population_count</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This endpoint will use the cache control defined in the app.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""This endpoint will use the cache control defined in the app."""</span>
     <span class="k">return</span> <span class="mi">100000</span>
 
 
@@ -2272,50 +2272,52 @@ in any cache.</p></li>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">etag</span> <span class="o">=</span> <span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+    <span class="n">etag</span> <span class="o">=</span> <span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">"foo"</span><span class="p">)</span>
 
-    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/chance_of_rain&quot;</span><span class="p">)</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">"/chance_of_rain"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_chance_of_rain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This endpoint uses the etag value in the controller which overrides the app value.</span>
+<span class="w">        </span><span class="sd">"""This endpoint uses the etag value in the controller which overrides the app value.</span>
 
-<span class="sd">        The returned header will be `etag: &quot;foo&quot;`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        The returned header will be `etag: "foo"`</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="mf">0.5</span>
 
-    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/timestamp&quot;</span><span class="p">,</span> <span class="n">etag</span><span class="o">=</span><span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">))</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">"/timestamp"</span><span class="p">,</span> <span class="n">etag</span><span class="o">=</span><span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">"bar"</span><span class="p">,</span> <span class="n">weak</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_server_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This endpoint overrides the etag defined in the controller.</span>
+<span class="w">        </span><span class="sd">"""This endpoint overrides the etag defined in the controller.</span>
 
-<span class="sd">        The returned header will be `etag: W/&quot;bar&quot;`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        The returned header will be `etag: W/"bar"`</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/population&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/population"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_population_count</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This endpoint will use the etag defined in the app.</span>
+<span class="w">    </span><span class="sd">"""This endpoint will use the etag defined in the app.</span>
 
-<span class="sd">    The returned header will be `etag: &quot;bar&quot;`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    The returned header will be `etag: "bar"`</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="mi">100000</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/population-dynamic&quot;</span><span class="p">,</span> <span class="n">etag</span><span class="o">=</span><span class="n">ETag</span><span class="p">(</span><span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/population-dynamic"</span><span class="p">,</span> <span class="n">etag</span><span class="o">=</span><span class="n">ETag</span><span class="p">(</span><span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_population_count_dynamic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The etag defined in this route handler will not be returned, and does not need a value.</span>
+<span class="w">    </span><span class="sd">"""The etag defined in this route handler will not be returned, and does not need a value.</span>
 
 <span class="sd">    It will only be used for OpenAPI generation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">population_count</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">content</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">population_count</span><span class="p">),</span>
-        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;etag&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">population_count</span><span class="p">)},</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"etag"</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">population_count</span><span class="si">}</span><span class="s1">"'</span><span class="p">},</span>
         <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
         <span class="n">status_code</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
     <span class="p">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">,</span> <span class="n">get_population_count</span><span class="p">],</span> <span class="n">etag</span><span class="o">=</span><span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">))</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">,</span> <span class="n">get_population_count</span><span class="p">,</span> <span class="n">get_population_count_dynamic</span><span class="p">],</span> <span class="n">etag</span><span class="o">=</span><span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">"bar"</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2323,8 +2325,8 @@ in any cache.</p></li>
 <div class="code-block-caption"><span class="caption-text">Parsing ETag headers</span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ETag</span>
 
-<span class="k">assert</span> <span class="n">ETag</span><span class="o">.</span><span class="n">from_header</span><span class="p">(</span><span class="s1">&#39;&quot;foo&quot;&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">ETag</span><span class="o">.</span><span class="n">from_header</span><span class="p">(</span><span class="s1">&#39;W/&quot;foo&quot;&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">weak</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">ETag</span><span class="o">.</span><span class="n">from_header</span><span class="p">(</span><span class="s1">'"foo"'</span><span class="p">)</span> <span class="o">==</span> <span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">"foo"</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">ETag</span><span class="o">.</span><span class="n">from_header</span><span class="p">(</span><span class="s1">'W/"foo"'</span><span class="p">)</span> <span class="o">==</span> <span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">"foo"</span><span class="p">,</span> <span class="n">weak</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2341,40 +2343,40 @@ itself:</p>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller-path&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/controller-path"</span>
     <span class="n">response_cookies</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">Cookie</span><span class="p">(</span>
-            <span class="n">key</span><span class="o">=</span><span class="s2">&quot;controller-cookie&quot;</span><span class="p">,</span>
-            <span class="n">value</span><span class="o">=</span><span class="s2">&quot;controller value&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;controller level cookie&quot;</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="s2">"controller-cookie"</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="s2">"controller value"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"controller level cookie"</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">]</span>
 
     <span class="nd">@get</span><span class="p">(</span>
-        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">,</span>
         <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span>
             <span class="n">Cookie</span><span class="p">(</span>
-                <span class="n">key</span><span class="o">=</span><span class="s2">&quot;local-cookie&quot;</span><span class="p">,</span>
-                <span class="n">value</span><span class="o">=</span><span class="s2">&quot;local value&quot;</span><span class="p">,</span>
-                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;route handler level cookie&quot;</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="s2">"local-cookie"</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="s2">"local value"</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s2">"route handler level cookie"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">],</span>
         <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
         <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;hello world&quot;</span>
+        <span class="k">return</span> <span class="s2">"hello world"</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router-path&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/router-path"</span><span class="p">,</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span>
-    <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;router-cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;router value&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;router level cookie&quot;</span><span class="p">)],</span>
+    <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"router-cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"router value"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"router level cookie"</span><span class="p">)],</span>
 <span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
-    <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;app-cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;app value&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;app level cookie&quot;</span><span class="p">)],</span>
+    <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"app-cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"app value"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"app level cookie"</span><span class="p">)],</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2395,17 +2397,17 @@ e.g.:</p>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller-path&quot;</span>
-    <span class="n">response_cookies</span> <span class="o">=</span> <span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;123&quot;</span><span class="p">)]</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">"/controller-path"</span>
+    <span class="n">response_cookies</span> <span class="o">=</span> <span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"my-cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"123"</span><span class="p">)]</span>
 
     <span class="nd">@get</span><span class="p">(</span>
-        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
-        <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;456&quot;</span><span class="p">)],</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">,</span>
+        <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"my-cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">"456"</span><span class="p">)],</span>
         <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">,</span>
         <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;hello world&quot;</span>
+        <span class="k">return</span> <span class="s2">"hello world"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">])</span>
@@ -2417,9 +2419,9 @@ e.g.:</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>If all you need for your cookies are key and value, you can supply them using a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>
-- like a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> - instead:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="n">response_cookies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;cookie-value&quot;</span><span class="p">})</span>
+<p>If all you need for your cookies are key and value, you can supply them using a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>
+- like a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> - instead:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="n">response_cookies</span><span class="o">=</span><span class="p">{</span><span class="s2">"my-cookie"</span><span class="p">:</span> <span class="s2">"cookie-value"</span><span class="p">})</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -2453,11 +2455,11 @@ as you see fit, e.g.:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+    <span class="s2">"/resources"</span><span class="p">,</span>
     <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span>
         <span class="n">Cookie</span><span class="p">(</span>
-            <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Random-Cookie&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a random number in the range 1 - 100&quot;</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="s2">"Random-Cookie"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"a random number in the range 1 - 100"</span><span class="p">,</span>
             <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">],</span>
@@ -2467,9 +2469,9 @@ as you see fit, e.g.:</p>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">Resource</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my resource&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"my resource"</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Random-Cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)))],</span>
+        <span class="n">cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"Random-Cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)))],</span>
     <span class="p">)</span>
 
 
@@ -2499,27 +2501,27 @@ the cookies on the corresponding layer:</p>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/resources&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/resources"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Resource</span><span class="p">(</span>
         <span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my resource&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"my resource"</span><span class="p">,</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">after_request_handler</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Random-Cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)))</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"Random-Cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">response</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router-path&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/router-path"</span><span class="p">,</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">retrieve_resource</span><span class="p">],</span>
     <span class="n">after_request</span><span class="o">=</span><span class="n">after_request_handler</span><span class="p">,</span>
     <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span>
         <span class="n">Cookie</span><span class="p">(</span>
-            <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Random-Cookie&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a random number in the range 1 - 100&quot;</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="s2">"Random-Cookie"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"a random number in the range 1 - 100"</span><span class="p">,</span>
             <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">],</span>
@@ -2547,11 +2549,11 @@ different value range:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span>
-    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+    <span class="s2">"/resources"</span><span class="p">,</span>
     <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span>
         <span class="n">Cookie</span><span class="p">(</span>
-            <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Random-Cookie&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a random number in the range 100 - 1000&quot;</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="s2">"Random-Cookie"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"a random number in the range 100 - 1000"</span><span class="p">,</span>
             <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">],</span>
@@ -2561,25 +2563,25 @@ different value range:</p>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
         <span class="n">Resource</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my resource&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"my resource"</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Random-Cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)))],</span>
+        <span class="n">cookies</span><span class="o">=</span><span class="p">[</span><span class="n">Cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"Random-Cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)))],</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">after_request_handler</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;Random-Cookie&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)))</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"Random-Cookie"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">response</span>
 
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router-path&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">"/router-path"</span><span class="p">,</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">retrieve_resource</span><span class="p">],</span>
     <span class="n">after_request</span><span class="o">=</span><span class="n">after_request_handler</span><span class="p">,</span>
     <span class="n">response_cookies</span><span class="o">=</span><span class="p">[</span>
         <span class="n">Cookie</span><span class="p">(</span>
-            <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Random-Cookie&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;a random number in the range 1 - 100&quot;</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="s2">"Random-Cookie"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"a random number in the range 1 - 100"</span><span class="p">,</span>
             <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">],</span>
@@ -2601,12 +2603,12 @@ status code in the 30x range.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redirect</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_302_FOUND</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/some-path"</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_302_FOUND</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">redirect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
     <span class="c1"># do some stuff here</span>
     <span class="c1"># ...</span>
     <span class="c1"># finally return redirect</span>
-    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/other-path&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/other-path"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To return a redirect response you should do the following:</p>
@@ -2624,11 +2626,11 @@ status code in the 30x range.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/file-download&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/file-download"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_download</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">File</span><span class="p">(</span>
-        <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;report&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">),</span>
-        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;report.pdf&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">"report"</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".pdf"</span><span class="p">),</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">"report.pdf"</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -2653,11 +2655,11 @@ as the value for <code class="docutils literal notranslate"><span class="pre">me
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">File</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/file-download&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/file-download"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="s2">"application/pdf"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handle_file_download</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">File</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">File</span><span class="p">(</span>
-        <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;report&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">),</span>
-        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;report.pdf&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">"report"</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".pdf"</span><span class="p">),</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">"report.pdf"</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -2682,10 +2684,10 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">encode_json</span><span class="p">({</span><span class="s2">&quot;current_time&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()})</span>
+        <span class="k">yield</span> <span class="n">encode_json</span><span class="p">({</span><span class="s2">"current_time"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()})</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/time&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/time"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">stream_time</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
 
@@ -2709,10 +2711,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">encode_json</span><span class="p">({</span><span class="s2">&quot;current_time&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()})</span>
+        <span class="k">yield</span> <span class="n">encode_json</span><span class="p">({</span><span class="s2">"current_time"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()})</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/time&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/time"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">stream_time</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
 
@@ -2759,14 +2761,14 @@ Python 3.8+</label><div class="sd-tab-content docutils">
         <span class="c1"># here a string</span>
         <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
         <span class="c1"># here bytes</span>
-        <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
         <span class="c1"># here a dictionary</span>
-        <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">count</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;event2&quot;</span><span class="p">,</span> <span class="s2">&quot;retry&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+        <span class="k">yield</span> <span class="p">{</span><span class="s2">"data"</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">count</span><span class="p">,</span> <span class="s2">"event"</span><span class="p">:</span> <span class="s2">"event2"</span><span class="p">,</span> <span class="s2">"retry"</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
         <span class="c1"># here a ServerSentEventMessage object</span>
-        <span class="k">yield</span> <span class="n">ServerSentEventMessage</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s2">&quot;something-with-comment&quot;</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;some comment&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">ServerSentEventMessage</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s2">"something-with-comment"</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">"some comment"</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/count"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sse_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
 
@@ -2799,14 +2801,14 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <span class="c1"># here a string</span>
         <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
         <span class="c1"># here bytes</span>
-        <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
         <span class="c1"># here a dictionary</span>
-        <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">count</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;event2&quot;</span><span class="p">,</span> <span class="s2">&quot;retry&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+        <span class="k">yield</span> <span class="p">{</span><span class="s2">"data"</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">count</span><span class="p">,</span> <span class="s2">"event"</span><span class="p">:</span> <span class="s2">"event2"</span><span class="p">,</span> <span class="s2">"retry"</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
         <span class="c1"># here a ServerSentEventMessage object</span>
-        <span class="k">yield</span> <span class="n">ServerSentEventMessage</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s2">&quot;something-with-comment&quot;</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;some comment&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">ServerSentEventMessage</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s2">"something-with-comment"</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">"some comment"</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/count"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sse_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span>
 
@@ -2839,9 +2841,9 @@ engine is in place, you can use a template response like so:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/info&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/info"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">Template</span><span class="p">(</span><span class="n">template_name</span><span class="o">=</span><span class="s2">&quot;info.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">Template</span><span class="p">(</span><span class="n">template_name</span><span class="o">=</span><span class="s2">"info.html"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">"user"</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>In the above example, <a class="reference internal" href="../reference/response/index.html#litestar.response.Template" title="litestar.response.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> is passed the template name, which is a
@@ -2861,9 +2863,9 @@ instances.</p>
     <span class="n">type_encoders</span> <span class="o">=</span> <span class="p">{</span><span class="n">MultiDict</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">dict</span><span class="p">()}</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MultiDict</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">MultiDict</span><span class="p">([(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;baz&quot;</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="n">MultiDict</span><span class="p">([(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"baz"</span><span class="p">)])</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">index</span><span class="p">],</span> <span class="n">response_class</span><span class="o">=</span><span class="n">MultiDictResponse</span><span class="p">)</span>
@@ -2872,7 +2874,7 @@ instances.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
-<span class="o">{</span><span class="s2">&quot;foo&quot;</span>:<span class="o">[</span><span class="s2">&quot;bar&quot;</span>,<span class="s2">&quot;baz&quot;</span><span class="o">]}</span>
+<span class="o">{</span><span class="s2">"foo"</span>:<span class="o">[</span><span class="s2">"bar"</span>,<span class="s2">"baz"</span><span class="o">]}</span>
 </pre></div>
 </div>
 </div>
@@ -2890,7 +2892,7 @@ class on multiple layers, the layer closest to the route handler will take prece
 <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> or an instance of
 <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTasks" title="litestar.background_tasks.BackgroundTasks"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTasks</span></code></a>, which wraps an iterable of
 <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instances.</p>
-<p>A background task is a sync or async callable (function, method, or class that implements the <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.14)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a>
+<p>A background task is a sync or async callable (function, method, or class that implements the <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.15)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a>
 dunder method) that will be called after the response finishes sending the data.</p>
 <p>Thus, in the following example the passed in background task will be executed after the response sends:</p>
 <div class="sd-tab-set docutils">
@@ -2910,14 +2912,14 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">logging_task</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span>
-        <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTask</span><span class="p">(</span><span class="n">logging_task</span><span class="p">,</span> <span class="s2">&quot;greeter&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;was called with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span>
+        <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTask</span><span class="p">(</span><span class="n">logging_task</span><span class="p">,</span> <span class="s2">"greeter"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"was called with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
     <span class="p">)</span>
 
 
@@ -2941,14 +2943,14 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">logging_task</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span>
-        <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTask</span><span class="p">(</span><span class="n">logging_task</span><span class="p">,</span> <span class="s2">&quot;greeter&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;was called with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span>
+        <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTask</span><span class="p">(</span><span class="n">logging_task</span><span class="p">,</span> <span class="s2">"greeter"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"was called with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
     <span class="p">)</span>
 
 
@@ -2964,7 +2966,7 @@ the <a class="reference internal" href="../reference/background_tasks.html#lites
 <p class="admonition-title">Note</p>
 <p>In the above example <code class="docutils literal notranslate"><span class="pre">&quot;greeter&quot;</span></code> is an arg and <code class="docutils literal notranslate"><span class="pre">message=f&quot;was</span> <span class="pre">called</span> <span class="pre">with</span> <span class="pre">name</span> <span class="pre">{name}&quot;</span></code> is a kwarg.
 The function signature of <code class="docutils literal notranslate"><span class="pre">logging_task</span></code> allows for this, so this should pose no problem.
-<a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> is typed with <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ParamSpec" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSpec</span></code></a>,
+<a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> is typed with <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ParamSpec" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSpec</span></code></a>,
 enabling correct type checking for arguments and keyword arguments passed to it.</p>
 </div>
 <p>Route decorators (e.g. <code class="docutils literal notranslate"><span class="pre">&#64;get</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;post</span></code>, etc.) also allow passing in a background task with the <code class="docutils literal notranslate"><span class="pre">background</span></code> kwarg:</p>
@@ -2984,12 +2986,12 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">logging_task</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTask</span><span class="p">(</span><span class="n">logging_task</span><span class="p">,</span> <span class="s2">&quot;greeter&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;was called&quot;</span><span class="p">),</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTask</span><span class="p">(</span><span class="n">logging_task</span><span class="p">,</span> <span class="s2">"greeter"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">"was called"</span><span class="p">),</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">greeter</span><span class="p">])</span>
@@ -3011,12 +3013,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">logging_task</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTask</span><span class="p">(</span><span class="n">logging_task</span><span class="p">,</span> <span class="s2">&quot;greeter&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;was called&quot;</span><span class="p">),</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTask</span><span class="p">(</span><span class="n">logging_task</span><span class="p">,</span> <span class="s2">"greeter"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">"was called"</span><span class="p">),</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="s2">"world"</span><span class="p">}</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">greeter</span><span class="p">])</span>
@@ -3032,7 +3034,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <section id="executing-multiple-background-tasks">
 <h3>Executing Multiple Background Tasks<a class="headerlink" href="#executing-multiple-background-tasks" title="Link to this heading">#</a></h3>
 <p>You can also use the <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTasks" title="litestar.background_tasks.BackgroundTasks"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTasks</span></code></a> class and pass to it an iterable
-(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>, etc.) of <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instances:</p>
+(<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>, etc.) of <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instances:</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.8" for="sd-tab-item-12">
@@ -3051,17 +3053,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">logging_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> was greeted&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> was greeted"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">saving_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">greeted</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span>
         <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTasks</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">BackgroundTask</span><span class="p">(</span><span class="n">logging_task</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span>
@@ -3092,17 +3094,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">logging_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> was greeted&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> was greeted"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">saving_task</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">greeted</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">greeter</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span>
         <span class="n">background</span><span class="o">=</span><span class="n">BackgroundTasks</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">BackgroundTask</span><span class="p">(</span><span class="n">logging_task</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span>
@@ -3166,8 +3168,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
 
 
-<span class="c1"># we will implement a paginator - the paginator must implement two methods &#39;get_total&#39; and &#39;get_items&#39;</span>
-<span class="c1"># we would usually use a database for this, but for our case we will &quot;fake&quot; the dataset using a factory.</span>
+<span class="c1"># we will implement a paginator - the paginator must implement two methods 'get_total' and 'get_items'</span>
+<span class="c1"># we would usually use a database for this, but for our case we will "fake" the dataset using a factory.</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PersonClassicPaginator</span><span class="p">(</span><span class="n">AbstractSyncClassicPaginator</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
@@ -3184,9 +3186,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonClassicPaginator</span><span class="p">()</span>
 
 
-<span class="c1"># we now create a regular handler. The handler will receive two query parameters - &#39;page_size&#39; and &#39;current_page&#39;, which</span>
+<span class="c1"># we now create a regular handler. The handler will receive two query parameters - 'page_size' and 'current_page', which</span>
 <span class="c1"># we will pass to the paginator.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/people"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span><span class="n">page_size</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">current_page</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ClassicPagination</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span> <span class="n">current_page</span><span class="o">=</span><span class="n">current_page</span><span class="p">)</span>
 
@@ -3220,8 +3222,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
 
 
-<span class="c1"># we will implement a paginator - the paginator must implement two methods &#39;get_total&#39; and &#39;get_items&#39;</span>
-<span class="c1"># we would usually use a database for this, but for our case we will &quot;fake&quot; the dataset using a factory.</span>
+<span class="c1"># we will implement a paginator - the paginator must implement two methods 'get_total' and 'get_items'</span>
+<span class="c1"># we would usually use a database for this, but for our case we will "fake" the dataset using a factory.</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PersonClassicPaginator</span><span class="p">(</span><span class="n">AbstractSyncClassicPaginator</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
@@ -3238,9 +3240,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonClassicPaginator</span><span class="p">()</span>
 
 
-<span class="c1"># we now create a regular handler. The handler will receive two query parameters - &#39;page_size&#39; and &#39;current_page&#39;, which</span>
+<span class="c1"># we now create a regular handler. The handler will receive two query parameters - 'page_size' and 'current_page', which</span>
 <span class="c1"># we will pass to the paginator.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/people"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span><span class="n">page_size</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">current_page</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ClassicPagination</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span> <span class="n">current_page</span><span class="o">=</span><span class="n">current_page</span><span class="p">)</span>
 
@@ -3289,8 +3291,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
 
 
-<span class="c1"># we will implement a paginator - the paginator must implement two methods &#39;get_total&#39; and &#39;get_items&#39;</span>
-<span class="c1"># we would usually use a database for this, but for our case we will &quot;fake&quot; the dataset using a factory.</span>
+<span class="c1"># we will implement a paginator - the paginator must implement two methods 'get_total' and 'get_items'</span>
+<span class="c1"># we would usually use a database for this, but for our case we will "fake" the dataset using a factory.</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PersonOffsetPaginator</span><span class="p">(</span><span class="n">AbstractSyncOffsetPaginator</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
@@ -3307,9 +3309,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonOffsetPaginator</span><span class="p">()</span>
 
 
-<span class="c1"># we now create a regular handler. The handler will receive two query parameters - &#39;limit&#39; and &#39;offset&#39;, which</span>
+<span class="c1"># we now create a regular handler. The handler will receive two query parameters - 'limit' and 'offset', which</span>
 <span class="c1"># we will pass to the paginator.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/people"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">offset</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
 
@@ -3344,8 +3346,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
 
 
-<span class="c1"># we will implement a paginator - the paginator must implement two methods &#39;get_total&#39; and &#39;get_items&#39;</span>
-<span class="c1"># we would usually use a database for this, but for our case we will &quot;fake&quot; the dataset using a factory.</span>
+<span class="c1"># we will implement a paginator - the paginator must implement two methods 'get_total' and 'get_items'</span>
+<span class="c1"># we would usually use a database for this, but for our case we will "fake" the dataset using a factory.</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PersonOffsetPaginator</span><span class="p">(</span><span class="n">AbstractSyncOffsetPaginator</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
@@ -3362,9 +3364,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonOffsetPaginator</span><span class="p">()</span>
 
 
-<span class="c1"># we now create a regular handler. The handler will receive two query parameters - &#39;limit&#39; and &#39;offset&#39;, which</span>
+<span class="c1"># we now create a regular handler. The handler will receive two query parameters - 'limit' and 'offset', which</span>
 <span class="c1"># we will pass to the paginator.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/people"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">offset</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
 
@@ -3412,20 +3414,20 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PersonOffsetPaginator</span><span class="p">(</span><span class="n">AbstractAsyncOffsetPaginator</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">async_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># &#39;async_session&#39; dependency will be injected here.</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">async_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># 'async_session' dependency will be injected here.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span> <span class="o">=</span> <span class="n">async_session</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_total</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">))))</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"int"</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">))))</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
         <span class="n">people</span><span class="p">:</span> <span class="n">ScalarResult</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">people</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
 
 
-<span class="c1"># Create a route handler. The handler will receive two query parameters - &#39;limit&#39; and &#39;offset&#39;, which is passed</span>
-<span class="c1"># to the paginator instance. Also create a dependency &#39;paginator&#39; which will be injected into the handler.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;paginator&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">PersonOffsetPaginator</span><span class="p">)})</span>
+<span class="c1"># Create a route handler. The handler will receive two query parameters - 'limit' and 'offset', which is passed</span>
+<span class="c1"># to the paginator instance. Also create a dependency 'paginator' which will be injected into the handler.</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/people"</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"paginator"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">PersonOffsetPaginator</span><span class="p">)})</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span>
     <span class="n">paginator</span><span class="p">:</span> <span class="n">PersonOffsetPaginator</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">offset</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
@@ -3433,13 +3435,13 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span> <span class="n">session_dependency_key</span><span class="o">=</span><span class="s2">&quot;async_session&quot;</span>
-<span class="p">)</span>  <span class="c1"># Create &#39;async_session&#39; dependency.</span>
+    <span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite+aiosqlite:///test.sqlite"</span><span class="p">,</span> <span class="n">session_dependency_key</span><span class="o">=</span><span class="s2">"async_session"</span>
+<span class="p">)</span>  <span class="c1"># Create 'async_session' dependency.</span>
 <span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Initializes the database."""</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 
@@ -3475,20 +3477,20 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PersonOffsetPaginator</span><span class="p">(</span><span class="n">AbstractAsyncOffsetPaginator</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">async_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># &#39;async_session&#39; dependency will be injected here.</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">async_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># 'async_session' dependency will be injected here.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span> <span class="o">=</span> <span class="n">async_session</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_total</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">))))</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"int"</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">id</span><span class="p">))))</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
         <span class="n">people</span><span class="p">:</span> <span class="n">ScalarResult</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">people</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
 
 
-<span class="c1"># Create a route handler. The handler will receive two query parameters - &#39;limit&#39; and &#39;offset&#39;, which is passed</span>
-<span class="c1"># to the paginator instance. Also create a dependency &#39;paginator&#39; which will be injected into the handler.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;paginator&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">PersonOffsetPaginator</span><span class="p">)})</span>
+<span class="c1"># Create a route handler. The handler will receive two query parameters - 'limit' and 'offset', which is passed</span>
+<span class="c1"># to the paginator instance. Also create a dependency 'paginator' which will be injected into the handler.</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/people"</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"paginator"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">PersonOffsetPaginator</span><span class="p">)})</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span>
     <span class="n">paginator</span><span class="p">:</span> <span class="n">PersonOffsetPaginator</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">offset</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
@@ -3496,13 +3498,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">sqlalchemy_config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span> <span class="n">session_dependency_key</span><span class="o">=</span><span class="s2">&quot;async_session&quot;</span>
-<span class="p">)</span>  <span class="c1"># Create &#39;async_session&#39; dependency.</span>
+    <span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite+aiosqlite:///test.sqlite"</span><span class="p">,</span> <span class="n">session_dependency_key</span><span class="o">=</span><span class="s2">"async_session"</span>
+<span class="p">)</span>  <span class="c1"># Create 'async_session' dependency.</span>
 <span class="n">sqlalchemy_plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes the database.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Initializes the database."""</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">sqlalchemy_config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 
@@ -3546,7 +3548,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
 
 
-<span class="c1"># we will implement a paginator - the paginator must implement the method &#39;get_items&#39;.</span>
+<span class="c1"># we will implement a paginator - the paginator must implement the method 'get_items'.</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PersonCursorPaginator</span><span class="p">(</span><span class="n">AbstractSyncCursorPaginator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]):</span>
@@ -3561,9 +3563,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonCursorPaginator</span><span class="p">()</span>
 
 
-<span class="c1"># we now create a regular handler. The handler will receive a single query parameter - &#39;cursor&#39;, which</span>
+<span class="c1"># we now create a regular handler. The handler will receive a single query parameter - 'cursor', which</span>
 <span class="c1"># we will pass to the paginator.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/people"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span><span class="n">cursor</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">results_per_page</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">CursorPagination</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">,</span> <span class="n">results_per_page</span><span class="o">=</span><span class="n">results_per_page</span><span class="p">)</span>
 
@@ -3598,7 +3600,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
 
 
-<span class="c1"># we will implement a paginator - the paginator must implement the method &#39;get_items&#39;.</span>
+<span class="c1"># we will implement a paginator - the paginator must implement the method 'get_items'.</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PersonCursorPaginator</span><span class="p">(</span><span class="n">AbstractSyncCursorPaginator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]):</span>
@@ -3613,9 +3615,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonCursorPaginator</span><span class="p">()</span>
 
 
-<span class="c1"># we now create a regular handler. The handler will receive a single query parameter - &#39;cursor&#39;, which</span>
+<span class="c1"># we now create a regular handler. The handler will receive a single query parameter - 'cursor', which</span>
 <span class="c1"># we will pass to the paginator.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/people"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span><span class="n">cursor</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">results_per_page</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">CursorPagination</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">,</span> <span class="n">results_per_page</span><span class="o">=</span><span class="n">results_per_page</span><span class="p">)</span>
 
@@ -3649,7 +3651,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
     <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
 
 
-<span class="c1"># we will implement a paginator - the paginator must implement the method &#39;get_items&#39;.</span>
+<span class="c1"># we will implement a paginator - the paginator must implement the method 'get_items'.</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PersonCursorPaginator</span><span class="p">(</span><span class="n">AbstractSyncCursorPaginator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]):</span>
@@ -3664,9 +3666,9 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonCursorPaginator</span><span class="p">()</span>
 
 
-<span class="c1"># we now create a regular handler. The handler will receive a single query parameter - &#39;cursor&#39;, which</span>
+<span class="c1"># we now create a regular handler. The handler will receive a single query parameter - 'cursor', which</span>
 <span class="c1"># we will pass to the paginator.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/people"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span><span class="n">cursor</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="n">results_per_page</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">CursorPagination</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">,</span> <span class="n">results_per_page</span><span class="o">=</span><span class="n">results_per_page</span><span class="p">)</span>
 

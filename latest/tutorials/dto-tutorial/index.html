@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -881,7 +881,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1570,11 +1570,11 @@ DTO factories can be used to help us build flexible applications. Lets get start
     <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/person/{name:str}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/person/{name:str}"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_person</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
     <span class="c1"># Your logic to retrieve the person goes here</span>
     <span class="c1"># For demonstration purposes, a placeholder Person instance is returned</span>
-    <span class="k">return</span> <span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;email_of_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">@example.com&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="sa">f</span><span class="s2">"email_of_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">@example.com"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_person</span><span class="p">])</span>
@@ -1582,16 +1582,16 @@ DTO factories can be used to help us build flexible applications. Lets get start
 </div>
 </div>
 <p>In this script, we define a data model, a route handler and an application instance.</p>
-<p>Our data model is a Python <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclass</span></code></a> called <code class="docutils literal notranslate"><span class="pre">Person</span></code> which has three attributes:
+<p>Our data model is a Python <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclass</span></code></a> called <code class="docutils literal notranslate"><span class="pre">Person</span></code> which has three attributes:
 <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">age</span></code>, and <code class="docutils literal notranslate"><span class="pre">email</span></code>.</p>
 <p>The function called <code class="docutils literal notranslate"><span class="pre">get_person</span></code> that is decorated with <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;get()</span></code></a> is a route handler
 with path <code class="docutils literal notranslate"><span class="pre">/person/{name:str}</span></code>, that serves <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET">GET</a>
 requests. In the path, <code class="docutils literal notranslate"><span class="pre">{name:str}</span></code> represents a path parameter called <code class="docutils literal notranslate"><span class="pre">name</span></code> with a string type. The route handler
 receives the name from the path parameter and returns a <code class="docutils literal notranslate"><span class="pre">Person</span></code> object.</p>
 <p>Finally, we create an application instance and register the route handler with it.</p>
-<p>In Litestar, this pattern works “out-of-the-box” - that is, returning <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclass</span></code></a>
+<p>In Litestar, this pattern works “out-of-the-box” - that is, returning <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclass</span></code></a>
 instances from handlers is natively supported. Litestar will take that dataclass instance, and transform it into
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> that can be sent over the network.</p>
+<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> that can be sent over the network.</p>
 <p>Lets run it and see for ourselves!</p>
 <p>Save the above script as <code class="docutils literal notranslate"><span class="pre">app.py</span></code>, run it using the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> command, and then visit
 <a class="reference external" href="http://localhost:8000/person/peter">http://localhost:8000/person/peter</a> in your browser. You should see the

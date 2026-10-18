@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1551,7 +1551,7 @@ document.write(`
   <section id="implementing-custom-authentication">
 <h1>Implementing Custom Authentication<a class="headerlink" href="#implementing-custom-authentication" title="Link to this heading">#</a></h1>
 <p>Litestar exports <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a>, which is an
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-abstract-base-class" title="(in Python v3.14)"><span class="xref std std-term">abstract base class</span></a> (ABC) that implements the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a>.
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-abstract-base-class" title="(in Python v3.15)"><span class="xref std std-term">abstract base class</span></a> (ABC) that implements the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a>.
 To add authentication to your app using this class as a basis, subclass it and implement the abstract method
 <a class="reference internal" href="../../reference/middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">authenticate_request()</span></code></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
@@ -1575,7 +1575,7 @@ To add authentication to your app using this class as a basis, subclass it and i
 </div>
 <p>As you can see, <code class="docutils literal notranslate"><span class="pre">authenticate_request</span></code> is an async function that receives a connection instance and is supposed to return
 an <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a> instance, which is a
-<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.14)"><span class="xref std std-doc">dataclass</span></a> that has two attributes:</p>
+<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.15)"><span class="xref std std-doc">dataclass</span></a> that has two attributes:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">user</span></code>: a non-optional value representing a user. It is typed as <code class="docutils literal notranslate"><span class="pre">Any</span></code> so it receives any value,
 including <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
@@ -1609,7 +1609,7 @@ For the sake of this example here let us say it is a dataclass:</p>
 <div class="code-block-caption"><span class="caption-text">authentication_middleware.py</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomAuthenticationMiddleware</span><span class="p">(</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">):</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthenticationResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB"""</span>
 
         <span class="c1"># retrieve the auth header</span>
         <span class="n">auth_header</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">API_KEY_HEADER</span><span class="p">)</span>
@@ -1630,12 +1630,12 @@ For the sake of this example here let us say it is a dataclass:</p>
 <div class="code-block-caption"><span class="caption-text">main.py</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># you can optionally exclude certain paths from authentication.</span>
 <span class="c1"># the following excludes all routes mounted at or under `/schema*`</span>
-<span class="n">auth_mw</span> <span class="o">=</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="n">CustomAuthenticationMiddleware</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;schema&quot;</span><span class="p">)</span>
+<span class="n">auth_mw</span> <span class="o">=</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="n">CustomAuthenticationMiddleware</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">"schema"</span><span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">site_index</span><span class="p">,</span> <span class="n">my_http_handler</span><span class="p">,</span> <span class="n">my_ws_handler</span><span class="p">],</span>
     <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">auth_mw</span><span class="p">],</span>
-    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">my_dependency</span><span class="p">)},</span>
+    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"some_dependency"</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">my_dependency</span><span class="p">)},</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1644,7 +1644,7 @@ For the sake of this example here let us say it is a dataclass:</p>
 http route handler in the following way:</p>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">Accessing the user and auth in a http route handler with <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_http_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as MyUser</span>
     <span class="n">auth</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as MyToken</span>
@@ -1656,7 +1656,7 @@ http route handler in the following way:</p>
 <p>Or for a websocket route:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Accessing the user and auth in a websocket route handler with <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@websocket</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_ws_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">[</span><span class="n">MyUser</span><span class="p">,</span> <span class="n">MyToken</span><span class="p">,</span> <span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">user</span>  <span class="c1"># correctly typed as MyUser</span>
     <span class="n">auth</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">auth</span>  <span class="c1"># correctly typed as MyToken</span>
@@ -1668,15 +1668,15 @@ http route handler in the following way:</p>
 <p>And if you would like to exclude individual routes outside those configured:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Excluding individual routes from <code class="docutils literal notranslate"><span class="pre">CustomAuthenticationMiddleware</span></code></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">exclude_from_auth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">exclude_from_auth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">site_index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Site index&quot;&quot;&quot;</span>
-    <span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">"""Site index"""</span>
+    <span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">"index.html"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">exists</span><span class="p">:</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">anyio</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">anyio</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">anyio</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">"index.html"</span><span class="p">))</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">HTML</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">&quot;Site index was not found&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="s2">"Site index was not found"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

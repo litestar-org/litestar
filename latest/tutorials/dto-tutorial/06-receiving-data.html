@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -881,7 +881,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1555,26 +1555,27 @@ control the data that we receive from the client.</p>
 <span class="linenos"> 4</span>
 <span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span>
-<span class="linenos"> 7</span>
+<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 <span class="linenos"> 8</span>
-<span class="linenos"> 9</span><span class="nd">@dataclass</span>
-<span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
-<span class="linenos">11</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos">12</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
-<span class="linenos">13</span>    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
-<span class="linenos">14</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nd">@dataclass</span>
+<span class="linenos">11</span><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
+<span class="linenos">12</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">13</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+<span class="linenos">14</span>    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 <span class="linenos">15</span>
-<span class="linenos">16</span><span class="k">class</span><span class="w"> </span><span class="nc">ReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-<span class="linenos">17</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">})</span>
-<span class="linenos">18</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="k">class</span><span class="w"> </span><span class="nc">ReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
+<span class="linenos">18</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">"email"</span><span class="p">})</span>
 <span class="linenos">19</span>
-<span class="linenos">20</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/person&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="linenos">21</span><span class="k">def</span><span class="w"> </span><span class="nf">create_person</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Person</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
-<span class="linenos">22</span>    <span class="c1"># Logic for persisting the person goes here</span>
-<span class="linenos">23</span>    <span class="k">return</span> <span class="n">data</span>
-<span class="linenos">24</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="nd">@post</span><span class="p">(</span><span class="s2">"/person"</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">22</span><span class="k">def</span><span class="w"> </span><span class="nf">create_person</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">Person</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
+<span class="linenos">23</span>    <span class="c1"># Logic for persisting the person goes here</span>
+<span class="linenos">24</span>    <span class="k">return</span> <span class="n">data</span>
 <span class="linenos">25</span>
-<span class="linenos">26</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_person</span><span class="p">])</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_person</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>To simplify our demonstration, we’ve reduced our data model back down to a single <code class="docutils literal notranslate"><span class="pre">Person</span></code> class, with <code class="docutils literal notranslate"><span class="pre">name</span></code>
@@ -1582,7 +1583,7 @@ control the data that we receive from the client.</p>
 <p>As before, <code class="docutils literal notranslate"><span class="pre">ReadDTO</span></code> is configured for the handler, and excludes the <code class="docutils literal notranslate"><span class="pre">email</span></code> attribute from return payloads.</p>
 <p>Our handler is now a <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.post" title="litestar.handlers.post"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;post()</span></code></a> handler, that is annotated to both accept and return an
 instance of <code class="docutils literal notranslate"><span class="pre">Person</span></code>.</p>
-<p>Litestar can natively decode request payloads into Python <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses</span></code></a>, so we don’t
+<p>Litestar can natively decode request payloads into Python <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses</span></code></a>, so we don’t
 <em>need</em> a DTO defined for the inbound data for this script to work.</p>
 <p>Now that we need to send data to the server to test our program, you can use a tool like
 <a class="reference external" href="https://www.postman.com/">Postman</a> or <a class="reference external" href="https://github.com/darrenburns/posting?tab=readme-ov-file#posting">Posting</a>. Here’s an example of a request/response payload:</p>

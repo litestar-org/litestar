@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1553,9 +1553,9 @@ document.write(`
 expected. Litestar comes with a simple mechanism for caching:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/cached"</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;cached&quot;</span>
+    <span class="k">return</span> <span class="s2">"cached"</span>
 </pre></div>
 </div>
 <p>By setting <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.cache" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">cache</span></code></a> to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the response from the handler
@@ -1573,9 +1573,9 @@ will keep the response in cache indefinitely.</p>
 parameter to the number of seconds to cache the response.</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-seconds&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>  <span class="c1"># seconds</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/cached-seconds"</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>  <span class="c1"># seconds</span>
 <span class="hll"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_cached_handler_seconds</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span>    <span class="k">return</span> <span class="s2">&quot;cached for 120 seconds&quot;</span>
+</span>    <span class="k">return</span> <span class="s2">"cached for 120 seconds"</span>
 </pre></div>
 </div>
 </div>
@@ -1588,9 +1588,9 @@ parameter to <a class="reference internal" href="../reference/config.html#litest
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.response_cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">CACHE_FOREVER</span>
 
 
-<span class="hll"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-forever&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">CACHE_FOREVER</span><span class="p">)</span>
+<span class="hll"><span class="nd">@get</span><span class="p">(</span><span class="s2">"/cached-forever"</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">CACHE_FOREVER</span><span class="p">)</span>
 </span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_cached_handler_forever</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;cached forever&quot;</span>
+    <span class="k">return</span> <span class="s2">"cached forever"</span>
 </pre></div>
 </div>
 </div>
@@ -1615,14 +1615,14 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 <span class="nd">@get</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">something</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;something&quot;</span>
+    <span class="k">return</span> <span class="s2">"something"</span>
 
 
-<span class="n">redis_store</span> <span class="o">=</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;redis://localhost/&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">cache_config</span> <span class="o">=</span> <span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="s2">&quot;redis_backed_store&quot;</span><span class="p">)</span>
+<span class="n">redis_store</span> <span class="o">=</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">"redis://localhost/"</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">cache_config</span> <span class="o">=</span> <span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="s2">"redis_backed_store"</span><span class="p">)</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="p">[</span><span class="n">something</span><span class="p">],</span>
-    <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;redis_backed_store&quot;</span><span class="p">:</span> <span class="n">redis_store</span><span class="p">},</span>
+    <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">"redis_backed_store"</span><span class="p">:</span> <span class="n">redis_store</span><span class="p">},</span>
     <span class="n">response_cache_config</span><span class="o">=</span><span class="n">cache_config</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -1640,7 +1640,7 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">key_builder</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my-header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"my-header"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([],</span> <span class="n">response_cache_config</span><span class="o">=</span><span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">))</span>
@@ -1653,12 +1653,12 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">key_builder</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my-header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"my-header"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/cached-path"</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;cached&quot;</span>
+    <span class="k">return</span> <span class="s2">"cached"</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">cached_handler</span><span class="p">])</span>

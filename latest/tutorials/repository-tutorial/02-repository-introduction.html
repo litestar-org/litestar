@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1670,7 +1670,7 @@ to include all of the integrated repository features.</p>
 <span class="linenos">15</span>
 <span class="linenos">16</span>
 <span class="linenos">17</span><span class="k">class</span><span class="w"> </span><span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
-<span class="linenos">18</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
+<span class="linenos">18</span><span class="w">    </span><span class="sd">"""Author repository."""</span>
 <span class="linenos">19</span>
 <span class="linenos">20</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
 </pre></div>
@@ -1692,7 +1692,7 @@ of our Author repository.</p>
 </dl>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># let&#39;s make a simple context manager as an example here.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># let's make a simple context manager as an example here.</span>
 <span class="linenos">2</span><span class="nd">@asynccontextmanager</span>
 <span class="linenos">3</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
 <span class="linenos">4</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
@@ -1716,11 +1716,11 @@ various CRUD operations:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 <span class="linenos">2</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
 <span class="linenos">3</span>            <span class="n">Author</span><span class="p">(</span>
-<span class="linenos">4</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
-<span class="linenos">5</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+<span class="linenos">4</span>                <span class="n">name</span><span class="o">=</span><span class="s2">"F. Scott Fitzgerald"</span><span class="p">,</span>
+<span class="linenos">5</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">"1896-09-24"</span><span class="p">,</span> <span class="s2">"%Y-%m-</span><span class="si">%d</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
 <span class="linenos">6</span>            <span class="p">)</span>
 <span class="linenos">7</span>        <span class="p">)</span>
-<span class="linenos">8</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">8</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 <span class="linenos">9</span>        <span class="k">return</span> <span class="n">obj</span>
 </pre></div>
 </div>
@@ -1732,7 +1732,7 @@ various CRUD operations:</p>
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 <span class="linenos">2</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 <span class="linenos">4</span>        <span class="k">return</span> <span class="n">obj</span>
 </pre></div>
 </div>
@@ -1744,7 +1744,7 @@ various CRUD operations:</p>
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 <span class="linenos">2</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 <span class="linenos">4</span>        <span class="k">return</span> <span class="n">obj</span>
 </pre></div>
 </div>
@@ -1774,7 +1774,7 @@ conditions. This pattern can be extended and adjusted to meet your needs.</p>
 <span class="linenos"> 4</span>
 <span class="linenos"> 5</span>
 <span class="linenos"> 6</span><span class="k">def</span><span class="w"> </span><span class="nf">open_fixture</span><span class="p">(</span><span class="n">fixtures_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="linenos"> 7</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads JSON file with the specified fixture name</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="sd">"""Loads JSON file with the specified fixture name</span>
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span><span class="sd">    Args:</span>
 <span class="linenos">10</span><span class="sd">        fixtures_path (Path): The path to look for fixtures</span>
@@ -1785,13 +1785,13 @@ conditions. This pattern can be extended and adjusted to meet your needs.</p>
 <span class="linenos">15</span>
 <span class="linenos">16</span><span class="sd">    Returns:</span>
 <span class="linenos">17</span><span class="sd">        Any: The parsed JSON data</span>
-<span class="linenos">18</span><span class="sd">    &quot;&quot;&quot;</span>
-<span class="linenos">19</span>    <span class="n">fixture</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fixtures_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span>
+<span class="linenos">18</span><span class="sd">    """</span>
+<span class="linenos">19</span>    <span class="n">fixture</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fixtures_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2">.json"</span><span class="p">)</span>
 <span class="linenos">20</span>    <span class="k">if</span> <span class="n">fixture</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-<span class="linenos">21</span>        <span class="k">with</span> <span class="n">fixture</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="linenos">21</span>        <span class="k">with</span> <span class="n">fixture</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 <span class="linenos">22</span>            <span class="n">f_data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="linenos">23</span>        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f_data</span><span class="p">)</span>
-<span class="linenos">24</span>    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find the </span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2"> fixture&quot;</span><span class="p">)</span>
+<span class="linenos">24</span>    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not find the </span><span class="si">{</span><span class="n">fixture_name</span><span class="si">}</span><span class="s2"> fixture"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1805,220 +1805,220 @@ or view below:</p>
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">us_state_lookup.json</span></code></span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Alabama&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AL&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Alabama"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AL"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Alaska&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AK&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Alaska"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AK"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Arizona&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AZ&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Arizona"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AZ"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Arkansas&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AR&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Arkansas"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AR"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;California&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CA&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"California"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CA"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Colorado&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CO&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Colorado"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CO"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Connecticut&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CT&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Connecticut"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CT"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Delaware&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DE&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Delaware"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DE"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;District Of Columbia&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DC&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"District Of Columbia"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DC"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Florida&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FL&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Florida"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FL"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Georgia&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GA&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Georgia"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GA"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Guam&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GU&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Guam"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GU"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Hawaii&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HI&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Hawaii"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HI"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Idaho&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Idaho"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ID"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Illinois&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IL&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Illinois"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IL"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indiana&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IN&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Indiana"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IN"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Iowa&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IA&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Iowa"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IA"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kansas&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KS&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Kansas"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"KS"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kentucky&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KY&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Kentucky"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"KY"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Louisiana&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LA&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Louisiana"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LA"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maine&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ME&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Maine"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ME"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maryland&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MD&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Maryland"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MD"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Massachusetts&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MA&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Massachusetts"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MA"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Michigan&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MI&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Michigan"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MI"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Minnesota&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MN&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Minnesota"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MN"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Mississippi&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MS&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mississippi"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MS"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Missouri&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MO&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Missouri"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MO"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Montana&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MT&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Montana"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MT"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nebraska&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NE&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Nebraska"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NE"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nevada&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NV&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Nevada"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NV"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;New Hampshire&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NH&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New Hampshire"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NH"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;New Jersey&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NJ&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New Jersey"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NJ"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;New Mexico&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NM&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New Mexico"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NM"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;New York&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NY&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New York"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NY"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;North Carolina&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;NC&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"North Carolina"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NC"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;North Dakota&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ND&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"North Dakota"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ND"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ohio&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OH&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ohio"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OH"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Oklahoma&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Oklahoma"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OK"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Oregon&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OR&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Oregon"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OR"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Palau&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PW&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Palau"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PW"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pennsylvania&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PA&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Pennsylvania"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PA"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Puerto Rico&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PR&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Puerto Rico"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PR"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rhode Island&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RI&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rhode Island"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RI"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;South Carolina&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SC&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"South Carolina"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SC"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;South Dakota&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SD&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"South Dakota"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SD"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tennessee&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TN&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tennessee"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TN"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Texas&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TX&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Texas"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TX"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Utah&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UT&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Utah"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UT"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Vermont&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VT&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Vermont"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VT"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Virginia&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VA&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Virginia"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VA"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Washington&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;WA&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Washington"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"WA"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;West Virginia&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;WV&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"West Virginia"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"WV"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Wisconsin&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;WI&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Wisconsin"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"WI"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Wyoming&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;abbreviation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;WY&quot;</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Wyoming"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"abbreviation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"WY"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
@@ -2043,26 +2043,26 @@ performance when working with larger data sets.</p>
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">USState</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
-<span class="linenos">11</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;us_state_lookup&quot;</span>  <span class="c1"># type: ignore[assignment]</span>
+<span class="linenos">11</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">"us_state_lookup"</span>  <span class="c1"># type: ignore[assignment]</span>
 <span class="linenos">12</span>    <span class="n">abbreviation</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="linenos">13</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="linenos">14</span>
 <span class="linenos">15</span>
 <span class="linenos">16</span><span class="k">class</span><span class="w"> </span><span class="nc">USStateRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemySyncRepository</span><span class="p">[</span><span class="n">USState</span><span class="p">]):</span>
-<span class="linenos">17</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;US State repository.&quot;&quot;&quot;</span>
+<span class="linenos">17</span><span class="w">    </span><span class="sd">"""US State repository."""</span>
 <span class="linenos">18</span>
 <span class="linenos">19</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">USState</span>
 <span class="linenos">20</span>
 <span class="linenos">21</span>
 <span class="linenos">22</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
-<span class="linenos">23</span>    <span class="s2">&quot;duckdb:///:memory:&quot;</span><span class="p">,</span>
+<span class="linenos">23</span>    <span class="s2">"duckdb:///:memory:"</span><span class="p">,</span>
 <span class="linenos">24</span>    <span class="n">future</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="linenos">25</span><span class="p">)</span>
 <span class="linenos">26</span><span class="n">session_factory</span><span class="p">:</span> <span class="n">sessionmaker</span><span class="p">[</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">27</span>
 <span class="linenos">28</span>
 <span class="linenos">29</span><span class="k">def</span><span class="w"> </span><span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">30</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
+<span class="linenos">30</span><span class="w">    </span><span class="sd">"""Load data from a fixture."""</span>
 <span class="linenos">31</span>
 <span class="linenos">32</span>    <span class="c1"># Initializes the database.</span>
 <span class="linenos">33</span>    <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
@@ -2074,7 +2074,7 @@ performance when working with larger data sets.</p>
 <span class="linenos">39</span>        <span class="n">fixture</span> <span class="o">=</span> <span class="n">open_fixture</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 <span class="linenos">40</span>        <span class="n">objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">add_many</span><span class="p">([</span><span class="n">USStateRepository</span><span class="o">.</span><span class="n">model_type</span><span class="p">(</span><span class="o">**</span><span class="n">raw_obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">raw_obj</span> <span class="ow">in</span> <span class="n">fixture</span><span class="p">])</span>
 <span class="linenos">41</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-<span class="linenos">42</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> new objects.&quot;</span><span class="p">)</span>
+<span class="linenos">42</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> new objects."</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2092,7 +2092,7 @@ repository.</p>
 <span class="linenos">3</span>
 <span class="linenos">4</span>        <span class="c1"># 2) Select paginated data and total row count.</span>
 <span class="linenos">5</span>        <span class="n">created_objs</span><span class="p">,</span> <span class="n">total_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_and_count</span><span class="p">(</span><span class="n">LimitOffset</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
-<span class="linenos">6</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">6</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Selected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">created_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2104,9 +2104,9 @@ insert, deleting multiple records with the batch record methods is more efficien
 executing row-by-row.</p>
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="c1"># 3) Let&#39;s remove the batch of records selected.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="c1"># 3) Let's remove the batch of records selected.</span>
 <span class="linenos">2</span>        <span class="n">deleted_objs</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete_many</span><span class="p">([</span><span class="n">new_obj</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">new_obj</span> <span class="ow">in</span> <span class="n">created_objs</span><span class="p">])</span>
-<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">deleted_objs</span><span class="p">)</span><span class="si">}</span><span class="s2"> records out of a total of </span><span class="si">{</span><span class="n">total_objs</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2116,9 +2116,9 @@ executing row-by-row.</p>
 <p>Finally, we’ll demonstrate how to count the number of records remaining in the database.</p>
 <div class="literal-block-wrapper docutils container" id="id11">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="c1"># 4) Let&#39;s count the remaining rows</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>        <span class="c1"># 4) Let's count the remaining rows</span>
 <span class="linenos">2</span>        <span class="n">remaining_count</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete.&quot;</span><span class="p">)</span>
+<span class="linenos">3</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Found </span><span class="si">{</span><span class="n">remaining_count</span><span class="si">}</span><span class="s2"> remaining records after delete."</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2164,19 +2164,19 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 24</span>
 <span class="linenos"> 25</span>
 <span class="linenos"> 26</span><span class="k">class</span><span class="w"> </span><span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
-<span class="hll"><span class="linenos"> 27</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
+<span class="hll"><span class="linenos"> 27</span><span class="w">    </span><span class="sd">"""Author repository."""</span>
 </span><span class="hll"><span class="linenos"> 28</span>
 </span><span class="hll"><span class="linenos"> 29</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
 </span><span class="hll"><span class="linenos"> 30</span>
 </span><span class="linenos"> 31</span>
 <span class="linenos"> 32</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span>
-<span class="linenos"> 33</span>    <span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span>
+<span class="linenos"> 33</span>    <span class="s2">"sqlite+aiosqlite:///test.sqlite"</span><span class="p">,</span>
 <span class="linenos"> 34</span>    <span class="n">future</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="linenos"> 35</span><span class="p">)</span>
 <span class="linenos"> 36</span><span class="n">session_factory</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="hll"><span class="linenos"> 37</span>
 </span><span class="hll"><span class="linenos"> 38</span>
-</span><span class="hll"><span class="linenos"> 39</span><span class="c1"># let&#39;s make a simple context manager as an example here.</span>
+</span><span class="hll"><span class="linenos"> 39</span><span class="c1"># let's make a simple context manager as an example here.</span>
 </span><span class="hll"><span class="linenos"> 40</span><span class="nd">@asynccontextmanager</span>
 </span><span class="hll"><span class="linenos"> 41</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
 </span><span class="hll"><span class="linenos"> 42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
@@ -2192,25 +2192,25 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos"> 52</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 53</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
 </span><span class="hll"><span class="linenos"> 54</span>            <span class="n">Author</span><span class="p">(</span>
-</span><span class="hll"><span class="linenos"> 55</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
-</span><span class="linenos"> 56</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+</span><span class="hll"><span class="linenos"> 55</span>                <span class="n">name</span><span class="o">=</span><span class="s2">"F. Scott Fitzgerald"</span><span class="p">,</span>
+</span><span class="linenos"> 56</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">"1896-09-24"</span><span class="p">,</span> <span class="s2">"%Y-%m-</span><span class="si">%d</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
 <span class="linenos"> 57</span>            <span class="p">)</span>
 <span class="linenos"> 58</span>        <span class="p">)</span>
-<span class="linenos"> 59</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos"> 59</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 <span class="linenos"> 60</span>        <span class="k">return</span> <span class="n">obj</span>
 <span class="hll"><span class="linenos"> 61</span>
 </span><span class="linenos"> 62</span>
 <span class="linenos"> 63</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="hll"><span class="linenos"> 64</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 65</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </span><span class="hll"><span class="linenos"> 67</span>        <span class="k">return</span> <span class="n">obj</span>
 </span><span class="hll"><span class="linenos"> 68</span>
 </span><span class="hll"><span class="linenos"> 69</span>
 </span><span class="hll"><span class="linenos"> 70</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 71</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 72</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 73</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 73</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </span><span class="hll"><span class="linenos"> 74</span>        <span class="k">return</span> <span class="n">obj</span>
 </span><span class="hll"><span class="linenos"> 75</span>
 </span><span class="linenos"> 76</span>
@@ -2218,37 +2218,37 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos"> 78</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 79</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_one_or_none</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
 </span><span class="linenos"> 80</span>        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<span class="hll"><span class="linenos"> 81</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="hll"><span class="linenos"> 81</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Found Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </span><span class="hll"><span class="linenos"> 82</span>        <span class="k">else</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 83</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find Author with primary key </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 83</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not find Author with primary key </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </span><span class="linenos"> 84</span>        <span class="k">return</span> <span class="n">obj</span>
 <span class="linenos"> 85</span>
 <span class="linenos"> 86</span>
 <span class="linenos"> 87</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos"> 88</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
+<span class="linenos"> 88</span><span class="w">    </span><span class="sd">"""Load data from a fixture."""</span>
 <span class="linenos"> 89</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos"> 90</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos"> 91</span>
 <span class="linenos"> 92</span>    <span class="c1"># 1) create a new Author record.</span>
-<span class="linenos"> 93</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;1) Adding a new record&quot;</span><span class="p">)</span>
+<span class="linenos"> 93</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"1) Adding a new record"</span><span class="p">)</span>
 <span class="linenos"> 94</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">create_author</span><span class="p">()</span>
 <span class="linenos"> 95</span>    <span class="n">author_id</span> <span class="o">=</span> <span class="n">author</span><span class="o">.</span><span class="n">id</span>
 <span class="linenos"> 96</span>
-<span class="linenos"> 97</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
-<span class="linenos"> 98</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
-<span class="linenos"> 99</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+<span class="linenos"> 97</span>    <span class="c1"># 2) Let's update the Author record.</span>
+<span class="linenos"> 98</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"2) Updating a record."</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">"1940-12-21"</span><span class="p">,</span> <span class="s2">"%Y-%m-</span><span class="si">%d</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
 <span class="linenos">100</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">101</span>
-<span class="linenos">102</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
-<span class="linenos">103</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
+<span class="linenos">102</span>    <span class="c1"># 3) Let's delete the record we just created.</span>
+<span class="linenos">103</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"3) Removing a record."</span><span class="p">)</span>
 <span class="linenos">104</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">105</span>
-<span class="linenos">106</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
-<span class="linenos">107</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
+<span class="linenos">106</span>    <span class="c1"># 4) Let's verify the record no longer exists.</span>
+<span class="linenos">107</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"4) Select one or none."</span><span class="p">)</span>
 <span class="linenos">108</span>    <span class="n">_should_be_none</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_author_if_exists</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">109</span>
 <span class="linenos">110</span>
-<span class="linenos">111</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">111</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
 <span class="linenos">112</span>    <span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_script</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2285,19 +2285,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 24</span>
 <span class="linenos"> 25</span>
 <span class="linenos"> 26</span><span class="k">class</span><span class="w"> </span><span class="nc">AuthorRepository</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">Author</span><span class="p">]):</span>
-<span class="hll"><span class="linenos"> 27</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author repository.&quot;&quot;&quot;</span>
+<span class="hll"><span class="linenos"> 27</span><span class="w">    </span><span class="sd">"""Author repository."""</span>
 </span><span class="hll"><span class="linenos"> 28</span>
 </span><span class="hll"><span class="linenos"> 29</span>    <span class="n">model_type</span> <span class="o">=</span> <span class="n">Author</span>
 </span><span class="hll"><span class="linenos"> 30</span>
 </span><span class="linenos"> 31</span>
 <span class="linenos"> 32</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span>
-<span class="linenos"> 33</span>    <span class="s2">&quot;sqlite+aiosqlite:///test.sqlite&quot;</span><span class="p">,</span>
+<span class="linenos"> 33</span>    <span class="s2">"sqlite+aiosqlite:///test.sqlite"</span><span class="p">,</span>
 <span class="linenos"> 34</span>    <span class="n">future</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="linenos"> 35</span><span class="p">)</span>
 <span class="linenos"> 36</span><span class="n">session_factory</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="hll"><span class="linenos"> 37</span>
 </span><span class="hll"><span class="linenos"> 38</span>
-</span><span class="hll"><span class="linenos"> 39</span><span class="c1"># let&#39;s make a simple context manager as an example here.</span>
+</span><span class="hll"><span class="linenos"> 39</span><span class="c1"># let's make a simple context manager as an example here.</span>
 </span><span class="hll"><span class="linenos"> 40</span><span class="nd">@asynccontextmanager</span>
 </span><span class="hll"><span class="linenos"> 41</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">repository_factory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">]:</span>
 </span><span class="hll"><span class="linenos"> 42</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db_session</span><span class="p">:</span>
@@ -2313,25 +2313,25 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos"> 52</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 53</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
 </span><span class="hll"><span class="linenos"> 54</span>            <span class="n">Author</span><span class="p">(</span>
-</span><span class="hll"><span class="linenos"> 55</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;F. Scott Fitzgerald&quot;</span><span class="p">,</span>
-</span><span class="linenos"> 56</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1896-09-24&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
+</span><span class="hll"><span class="linenos"> 55</span>                <span class="n">name</span><span class="o">=</span><span class="s2">"F. Scott Fitzgerald"</span><span class="p">,</span>
+</span><span class="linenos"> 56</span>                <span class="n">dob</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">"1896-09-24"</span><span class="p">,</span> <span class="s2">"%Y-%m-</span><span class="si">%d</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span>
 <span class="linenos"> 57</span>            <span class="p">)</span>
 <span class="linenos"> 58</span>        <span class="p">)</span>
-<span class="linenos"> 59</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos"> 59</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Created Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 <span class="linenos"> 60</span>        <span class="k">return</span> <span class="n">obj</span>
 <span class="hll"><span class="linenos"> 61</span>
 </span><span class="linenos"> 62</span>
 <span class="linenos"> 63</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Author</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 <span class="hll"><span class="linenos"> 64</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 65</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 66</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Updated Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </span><span class="hll"><span class="linenos"> 67</span>        <span class="k">return</span> <span class="n">obj</span>
 </span><span class="hll"><span class="linenos"> 68</span>
 </span><span class="hll"><span class="linenos"> 69</span>
 </span><span class="hll"><span class="linenos"> 70</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">remove_author</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 71</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 72</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-</span><span class="hll"><span class="linenos"> 73</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 73</span>        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Deleted Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </span><span class="hll"><span class="linenos"> 74</span>        <span class="k">return</span> <span class="n">obj</span>
 </span><span class="hll"><span class="linenos"> 75</span>
 </span><span class="linenos"> 76</span>
@@ -2339,37 +2339,37 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span><span class="hll"><span class="linenos"> 78</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">repository_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">repo</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 79</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_one_or_none</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
 </span><span class="linenos"> 80</span>        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<span class="hll"><span class="linenos"> 81</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="hll"><span class="linenos"> 81</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Found Author record for </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with primary key </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </span><span class="hll"><span class="linenos"> 82</span>        <span class="k">else</span><span class="p">:</span>
-</span><span class="hll"><span class="linenos"> 83</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find Author with primary key </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos"> 83</span>            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not find Author with primary key </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </span><span class="linenos"> 84</span>        <span class="k">return</span> <span class="n">obj</span>
 <span class="linenos"> 85</span>
 <span class="linenos"> 86</span>
 <span class="linenos"> 87</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_script</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos"> 88</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load data from a fixture.&quot;&quot;&quot;</span>
+<span class="linenos"> 88</span><span class="w">    </span><span class="sd">"""Load data from a fixture."""</span>
 <span class="linenos"> 89</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="linenos"> 90</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
 <span class="linenos"> 91</span>
 <span class="linenos"> 92</span>    <span class="c1"># 1) create a new Author record.</span>
-<span class="linenos"> 93</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;1) Adding a new record&quot;</span><span class="p">)</span>
+<span class="linenos"> 93</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"1) Adding a new record"</span><span class="p">)</span>
 <span class="linenos"> 94</span>    <span class="n">author</span> <span class="o">=</span> <span class="k">await</span> <span class="n">create_author</span><span class="p">()</span>
 <span class="linenos"> 95</span>    <span class="n">author_id</span> <span class="o">=</span> <span class="n">author</span><span class="o">.</span><span class="n">id</span>
 <span class="linenos"> 96</span>
-<span class="linenos"> 97</span>    <span class="c1"># 2) Let&#39;s update the Author record.</span>
-<span class="linenos"> 98</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;2) Updating a record.&quot;</span><span class="p">)</span>
-<span class="linenos"> 99</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">&quot;1940-12-21&quot;</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+<span class="linenos"> 97</span>    <span class="c1"># 2) Let's update the Author record.</span>
+<span class="linenos"> 98</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"2) Updating a record."</span><span class="p">)</span>
+<span class="linenos"> 99</span>    <span class="n">author</span><span class="o">.</span><span class="n">dod</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s2">"1940-12-21"</span><span class="p">,</span> <span class="s2">"%Y-%m-</span><span class="si">%d</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
 <span class="linenos">100</span>    <span class="k">await</span> <span class="n">update_author</span><span class="p">(</span><span class="n">author</span><span class="p">)</span>
 <span class="linenos">101</span>
-<span class="linenos">102</span>    <span class="c1"># 3) Let&#39;s delete the record we just created.</span>
-<span class="linenos">103</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;3) Removing a record.&quot;</span><span class="p">)</span>
+<span class="linenos">102</span>    <span class="c1"># 3) Let's delete the record we just created.</span>
+<span class="linenos">103</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"3) Removing a record."</span><span class="p">)</span>
 <span class="linenos">104</span>    <span class="k">await</span> <span class="n">remove_author</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">105</span>
-<span class="linenos">106</span>    <span class="c1"># 4) Let&#39;s verify the record no longer exists.</span>
-<span class="linenos">107</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;4) Select one or none.&quot;</span><span class="p">)</span>
+<span class="linenos">106</span>    <span class="c1"># 4) Let's verify the record no longer exists.</span>
+<span class="linenos">107</span>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">"4) Select one or none."</span><span class="p">)</span>
 <span class="linenos">108</span>    <span class="n">_should_be_none</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_author_if_exists</span><span class="p">(</span><span class="n">author_id</span><span class="p">)</span>
 <span class="linenos">109</span>
 <span class="linenos">110</span>
-<span class="linenos">111</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">111</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
 <span class="linenos">112</span>    <span class="n">anyio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_script</span><span class="p">)</span>
 </pre></div>
 </div>

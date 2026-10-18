@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1555,7 +1555,7 @@ questions and objections regarding its downsides.</p>
 <p>Simply put, in Litestar, an explicit parameter declaration is any handler or dependency
 function parameter, marked with a <em>marker</em> such as <a class="reference internal" href="../reference/params.html#litestar.params.FromQuery" title="litestar.params.FromQuery"><code class="xref py py-class docutils literal notranslate"><span class="pre">FromQuery</span></code></a>,
 e.g.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">name</span>
 </pre></div>
@@ -1572,7 +1572,7 @@ decided via inference. Specifically, this was possible for path, query, and depe
 parameters.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Declaring a query parameter ‘message’</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">message</span>
 </pre></div>
@@ -1585,7 +1585,7 @@ to provide convenience when writing.</p>
 <p>However, it gets tricky quickly. For example, if the same route handler would be
 included in a router with a path parameter with the name <code class="docutils literal notranslate"><span class="pre">message</span></code>, the path parameter
 would win, and <code class="docutils literal notranslate"><span class="pre">message</span></code> wouldn’t be a query parameter anymore.</p>
-<p>This means that the inferred parameter source is context dependant.</p>
+<p>This means that the inferred parameter source is context dependent.</p>
 <p>There are upsides to this, for example, one could argue that this is a practical
 application of the
 <a class="reference external" href="https://en.wikipedia.org/wiki/Inversion_of_control">Inversion of Control</a> pattern via
@@ -1612,7 +1612,7 @@ for nuance”.</p>
 <p><strong>Easy to write</strong></p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">This is easy to write!</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -1626,11 +1626,11 @@ for nuance”.</p>
 <p>This is easy to write, or rather, easy to type. However, there’s not much information
 available to a reader. Where do <code class="docutils literal notranslate"><span class="pre">data</span></code> and all the other parameters come from? One
 could infer from <code class="docutils literal notranslate"><span class="pre">limit</span></code> and <code class="docutils literal notranslate"><span class="pre">page</span></code> that they’re probably query parameters, but as
-discussed in <a class="reference internal" href="#historical-background">Historical background</a>, that could also be context dependant.</p>
+discussed in <a class="reference internal" href="#historical-background">Historical background</a>, that could also be context dependent.</p>
 <p><strong>Easy to read</strong></p>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">This is easy to read</span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
     <span class="n">limit</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">()],</span>
@@ -1667,22 +1667,22 @@ provided. Why? Because whether a parameter is interpreted as a dependency or a q
 parameter depends on the presence of a dependency provider. If no provider is present,
 the parameter would get interpreted as a query parameter, and, if given no default,
 marked as required.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_page</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
 
-<span class="n">router_a</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">&quot;/a&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;db_session&quot;</span><span class="p">:</span> <span class="n">provide_session</span><span class="p">})</span>
-<span class="n">router_b</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">&quot;/b&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">])</span>
+<span class="n">router_a</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">"/a"</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"db_session"</span><span class="p">:</span> <span class="n">provide_session</span><span class="p">})</span>
+<span class="n">router_b</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">"/b"</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>Calling <code class="docutils literal notranslate"><span class="pre">/a</span></code> would work as expected, but calling <code class="docutils literal notranslate"><span class="pre">/b</span></code> would result in a
 <code class="docutils literal notranslate"><span class="pre">400</span> <span class="pre">-</span> <span class="pre">Bad</span> <span class="pre">Request</span></code> with the info <code class="docutils literal notranslate"><span class="pre">missing</span> <span class="pre">required</span> <span class="pre">query</span> <span class="pre">parameter</span> <span class="pre">'db_session'</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_page</span><span class="p">(</span><span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
 
-<span class="n">router_a</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">&quot;/a&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;db_session&quot;</span><span class="p">:</span> <span class="n">provide_session</span><span class="p">})</span>
-<span class="n">router_b</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">&quot;/b&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">])</span>
+<span class="n">router_a</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">"/a"</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">"db_session"</span><span class="p">:</span> <span class="n">provide_session</span><span class="p">})</span>
+<span class="n">router_b</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="s2">"/b"</span><span class="p">,</span> <span class="p">[</span><span class="n">get_page</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>With explicit declarations, these can either be detected at startup time, or a specific

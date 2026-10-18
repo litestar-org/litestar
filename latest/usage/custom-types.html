@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1552,7 +1552,7 @@ document.write(`
 <p>However, sometimes you may need to employ a custom type.</p>
 <section id="using-type-encoders-decoders">
 <h2>Using type encoders / decoders<a class="headerlink" href="#using-type-encoders-decoders" title="Link to this heading">#</a></h2>
-<p>Litestar supports a mechanism where you provide encoding and decoding hook functions which translate your type in / to a type that it knows. You can provide them via the <code class="docutils literal notranslate"><span class="pre">type_encoders</span></code> and <code class="docutils literal notranslate"><span class="pre">type_decoders</span></code> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.14)"><span class="xref std std-term">parameters</span></a> which can be defined on every layer. For example see the <a class="reference internal" href="../reference/app.html"><span class="doc">litestar app reference</span></a>.</p>
+<p>Litestar supports a mechanism where you provide encoding and decoding hook functions which translate your type in / to a type that it knows. You can provide them via the <code class="docutils literal notranslate"><span class="pre">type_encoders</span></code> and <code class="docutils literal notranslate"><span class="pre">type_decoders</span></code> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.15)"><span class="xref std std-term">parameters</span></a> which can be defined on every layer. For example see the <a class="reference internal" href="../reference/app.html"><span class="doc">litestar app reference</span></a>.</p>
 <div class="admonition-layered-architecture admonition">
 <p class="admonition-title">Layered architecture</p>
 <p><code class="docutils literal notranslate"><span class="pre">type_encoders</span></code> and <code class="docutils literal notranslate"><span class="pre">type_decoders</span></code> are part of Litestar’s layered architecture, which means you can set them on every layer of the application. If you set them on multiple layers,
@@ -1572,17 +1572,18 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Struct</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TenantUser</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Type that represents a user associated to a tenant</span>
+<span class="w">    </span><span class="sd">"""Custom Type that represents a user associated to a tenant</span>
 
 <span class="sd">    Parsed from / serialized to a combined tenant + user id string of the form</span>
 
 <span class="sd">        TENANTPREFIX_USERID</span>
 
 <span class="sd">    i.e. separated by underscore.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">tenant_prefix</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span>
@@ -1592,17 +1593,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
         <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TenantUser&quot;</span><span class="p">:</span>
-        <span class="n">splits</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TenantUser"</span><span class="p">:</span>
+        <span class="n">splits</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Could not split up tenant user id string. &quot;</span>
-                <span class="s2">&quot;Expecting underscore for separation of tenant prefix and user id.&quot;</span>
+                <span class="s2">"Could not split up tenant user id string. "</span>
+                <span class="s2">"Expecting underscore for separation of tenant prefix and user id."</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">tenant_prefix</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">user_id</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_combined_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">tenant_user_type_predicate</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="n">Type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -1621,7 +1622,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">if</span> <span class="n">tenant_user_type_predicate</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tenant_user_dec_hook</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Encountered unknown type during decoding: </span><span class="si">{</span><span class="nb">type</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Encountered unknown type during decoding: </span><span class="si">{</span><span class="nb">type</span><span class="si">!s}</span><span class="s2">"</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">UserAsset</span><span class="p">(</span><span class="n">Struct</span><span class="p">):</span>
@@ -1629,9 +1630,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/asset&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/asset"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_asset</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">UserAsset</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserAsset</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserAsset</span><span class="p">:</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">TenantUser</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span>
@@ -1656,17 +1657,18 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Struct</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TenantUser</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Type that represents a user associated to a tenant</span>
+<span class="w">    </span><span class="sd">"""Custom Type that represents a user associated to a tenant</span>
 
 <span class="sd">    Parsed from / serialized to a combined tenant + user id string of the form</span>
 
 <span class="sd">        TENANTPREFIX_USERID</span>
 
 <span class="sd">    i.e. separated by underscore.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">tenant_prefix</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span>
@@ -1676,17 +1678,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TenantUser&quot;</span><span class="p">:</span>
-        <span class="n">splits</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TenantUser"</span><span class="p">:</span>
+        <span class="n">splits</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Could not split up tenant user id string. &quot;</span>
-                <span class="s2">&quot;Expecting underscore for separation of tenant prefix and user id.&quot;</span>
+                <span class="s2">"Could not split up tenant user id string. "</span>
+                <span class="s2">"Expecting underscore for separation of tenant prefix and user id."</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">tenant_prefix</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">user_id</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_combined_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">tenant_user_type_predicate</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -1705,7 +1707,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">if</span> <span class="n">tenant_user_type_predicate</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tenant_user_dec_hook</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Encountered unknown type during decoding: </span><span class="si">{</span><span class="nb">type</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Encountered unknown type during decoding: </span><span class="si">{</span><span class="nb">type</span><span class="si">!s}</span><span class="s2">"</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">UserAsset</span><span class="p">(</span><span class="n">Struct</span><span class="p">):</span>
@@ -1713,9 +1715,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/asset&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/asset"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_asset</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">UserAsset</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserAsset</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserAsset</span><span class="p">:</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">TenantUser</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span>
@@ -1733,8 +1735,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/asset<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;SomeAsset&quot;</span>,<span class="s2">&quot;user&quot;</span>:<span class="s2">&quot;TenantA_Somebody&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;user&quot;</span>:<span class="s2">&quot;TenantA_Somebody&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;SomeAsset&quot;</span><span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/asset<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">"name"</span>:<span class="s2">"SomeAsset"</span>,<span class="s2">"user"</span>:<span class="s2">"TenantA_Somebody"</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"user"</span>:<span class="s2">"TenantA_Somebody"</span>,<span class="s2">"name"</span>:<span class="s2">"SomeAsset"</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1752,17 +1754,18 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TenantUser</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Type that represents a user associated to a tenant</span>
+<span class="w">    </span><span class="sd">"""Custom Type that represents a user associated to a tenant</span>
 
 <span class="sd">    Parsed from / serialized to a combined tenant + user id string of the form</span>
 
 <span class="sd">        TENANTPREFIX_USERID</span>
 
 <span class="sd">    i.e. separated by underscore.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">tenant_prefix</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span>
@@ -1772,24 +1775,24 @@ Python 3.8+</label><div class="sd-tab-content docutils">
         <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TenantUser&quot;</span><span class="p">:</span>
-        <span class="n">splits</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TenantUser"</span><span class="p">:</span>
+        <span class="n">splits</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Could not split up tenant user id string. &quot;</span>
-                <span class="s2">&quot;Expecting underscore for separation of tenant prefix and user id.&quot;</span>
+                <span class="s2">"Could not split up tenant user id string. "</span>
+                <span class="s2">"Expecting underscore for separation of tenant prefix and user id."</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">tenant_prefix</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">user_id</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_combined_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
 
 
 <span class="n">PydAnnotatedTenantUser</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
     <span class="n">TenantUser</span><span class="p">,</span>
     <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">TenantUser</span><span class="o">.</span><span class="n">from_string</span><span class="p">),</span>
     <span class="n">PlainSerializer</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">to_combined_str</span><span class="p">(),</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">str</span><span class="p">),</span>
-    <span class="n">WithJsonSchema</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;serialization&quot;</span><span class="p">),</span>
+    <span class="n">WithJsonSchema</span><span class="p">({</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">},</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"serialization"</span><span class="p">),</span>
 <span class="p">]</span>
 
 
@@ -1800,9 +1803,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/asset&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/asset"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_asset</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">UserAsset</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserAsset</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserAsset</span><span class="p">:</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">TenantUser</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span>
@@ -1824,17 +1827,18 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TenantUser</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Type that represents a user associated to a tenant</span>
+<span class="w">    </span><span class="sd">"""Custom Type that represents a user associated to a tenant</span>
 
 <span class="sd">    Parsed from / serialized to a combined tenant + user id string of the form</span>
 
 <span class="sd">        TENANTPREFIX_USERID</span>
 
 <span class="sd">    i.e. separated by underscore.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">tenant_prefix</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span>
@@ -1844,24 +1848,24 @@ Python 3.9+</label><div class="sd-tab-content docutils">
         <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TenantUser&quot;</span><span class="p">:</span>
-        <span class="n">splits</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TenantUser"</span><span class="p">:</span>
+        <span class="n">splits</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Could not split up tenant user id string. &quot;</span>
-                <span class="s2">&quot;Expecting underscore for separation of tenant prefix and user id.&quot;</span>
+                <span class="s2">"Could not split up tenant user id string. "</span>
+                <span class="s2">"Expecting underscore for separation of tenant prefix and user id."</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">tenant_prefix</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">user_id</span><span class="o">=</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_combined_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tenant_prefix</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span>
 
 
 <span class="n">PydAnnotatedTenantUser</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
     <span class="n">TenantUser</span><span class="p">,</span>
     <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">TenantUser</span><span class="o">.</span><span class="n">from_string</span><span class="p">),</span>
     <span class="n">PlainSerializer</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">to_combined_str</span><span class="p">(),</span> <span class="n">return_type</span><span class="o">=</span><span class="nb">str</span><span class="p">),</span>
-    <span class="n">WithJsonSchema</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;serialization&quot;</span><span class="p">),</span>
+    <span class="n">WithJsonSchema</span><span class="p">({</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">},</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"serialization"</span><span class="p">),</span>
 <span class="p">]</span>
 
 
@@ -1872,9 +1876,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/asset&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/asset"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_asset</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">UserAsset</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserAsset</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserAsset</span><span class="p">:</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">TenantUser</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span>
@@ -1890,8 +1894,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/asset<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;SomeAsset&quot;</span>,<span class="s2">&quot;user&quot;</span>:<span class="s2">&quot;TenantA_Somebody&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;user&quot;</span>:<span class="s2">&quot;TenantA_Somebody&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;SomeAsset&quot;</span><span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/asset<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">"name"</span>:<span class="s2">"SomeAsset"</span>,<span class="s2">"user"</span>:<span class="s2">"TenantA_Somebody"</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">"user"</span>:<span class="s2">"TenantA_Somebody"</span>,<span class="s2">"name"</span>:<span class="s2">"SomeAsset"</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>

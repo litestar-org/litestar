@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1581,11 +1581,12 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotAuthorizedException</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionBackend</span><span class="p">,</span> <span class="n">ServerSideSessionConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.session_auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionAuth</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryStore</span>
 
 
-<span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
+<span class="c1"># Let's assume we have a User model that is a pydantic model.</span>
 <span class="c1"># This though is not required - we need some sort of user class -</span>
 <span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model,</span>
 <span class="c1"># a representation of a MongoDB  etc.</span>
@@ -1597,7 +1598,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># we also have pydantic types for two different</span>
 <span class="c1"># kinds of POST request bodies: one for creating</span>
-<span class="c1"># a user, e.g. &quot;sign-up&quot;, and the other for logging</span>
+<span class="c1"># a user, e.g. "sign-up", and the other for logging</span>
 <span class="c1"># an existing user in.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserCreatePayload</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -1616,21 +1617,21 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># The SessionAuth class requires a handler callable</span>
 <span class="c1"># that takes the session dictionary, and returns the</span>
-<span class="c1"># &#39;User&#39; instance correlating to it.</span>
+<span class="c1"># 'User' instance correlating to it.</span>
 <span class="c1">#</span>
 <span class="c1"># The session dictionary itself is a value the user decides</span>
 <span class="c1"># upon. So for example, it might be a simple dictionary</span>
-<span class="c1"># that holds a user id, for example: { &quot;id&quot;: &quot;abcd123&quot; }</span>
+<span class="c1"># that holds a user id, for example: { "id": "abcd123" }</span>
 <span class="c1">#</span>
 <span class="c1"># Note: The callable can be either sync or async - both will work.</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">"ASGIConnection[Any, Any, Any, Any]"</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">user_id</span> <span class="o">:=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user_id&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">user_id</span> <span class="o">:=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"user_id"</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserLoginPayload</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/login"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserLoginPayload</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="s2">"Request[Any, Any, Any]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="c1"># we received log-in data via post.</span>
     <span class="c1"># our login handler should retrieve from persistence (a db etc.)</span>
     <span class="c1"># the user data and verify that the login details</span>
@@ -1641,21 +1642,21 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
-    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
 
     <span class="c1"># once verified we can create a session.</span>
     <span class="c1"># to do this we simply need to call the Litestar</span>
-    <span class="c1"># &#39;Request.set_session&#39; method, which accepts either dictionaries</span>
+    <span class="c1"># 'Request.set_session' method, which accepts either dictionaries</span>
     <span class="c1"># or pydantic models. In our case, we can simply record a</span>
     <span class="c1"># simple dictionary with the user ID value:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">})</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">"user_id"</span><span class="p">:</span> <span class="n">user_id</span><span class="p">})</span>
 
     <span class="c1"># you can do whatever we want here. In this case, we will simply return the user data:</span>
     <span class="k">return</span> <span class="n">MOCK_DB</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/signup&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">signup</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserCreatePayload</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/signup"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">signup</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserCreatePayload</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="c1"># this is similar to the login handler, except here we should</span>
     <span class="c1"># insert into persistence - after doing whatever extra</span>
     <span class="c1"># validation we might require. We will assume that this is done,</span>
@@ -1665,8 +1666,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
     <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">user</span>
     <span class="c1"># we are creating a session the same as we do in the</span>
-    <span class="c1"># &#39;login_handler&#39; above:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)})</span>
+    <span class="c1"># 'login_handler' above:</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">"user_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)})</span>
 
     <span class="c1"># and again, you can add whatever logic is required here, we</span>
     <span class="c1"># will simply return the user:</span>
@@ -1675,18 +1676,18 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># the endpoint below requires the user to be already authenticated</span>
 <span class="c1"># to be able to access it.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/user&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/user"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">"user_id"</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
     <span class="c1"># because this route requires authentication, we can access</span>
     <span class="c1"># `request.user`, which is the authenticated user returned</span>
-    <span class="c1"># by the &#39;retrieve_user_handler&#39; function we passed to SessionAuth.</span>
+    <span class="c1"># by the 'retrieve_user_handler' function we passed to SessionAuth.</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
 
 
 <span class="c1"># We add the session security schema to the OpenAPI config.</span>
 <span class="n">openapi_config</span> <span class="o">=</span> <span class="n">OpenAPIConfig</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span>
-    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"My API"</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">"1.0.0"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">session_auth</span> <span class="o">=</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">ServerSideSessionBackend</span><span class="p">](</span>
@@ -1696,11 +1697,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
     <span class="c1"># exclude any URLs that should not have authentication.</span>
     <span class="c1"># We exclude the documentation URLs, signup and login.</span>
-    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/signup&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
+    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">"/login"</span><span class="p">,</span> <span class="s2">"/signup"</span><span class="p">,</span> <span class="s2">"/schema"</span><span class="p">],</span>
 <span class="p">)</span>
 
 
-<span class="c1"># We initialize the app instance, passing to it the &#39;session_auth.on_app_init&#39; and the &#39;openapi_config&#39;.</span>
+<span class="c1"># We initialize the app instance, passing to it the 'session_auth.on_app_init' and the 'openapi_config'.</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">login</span><span class="p">,</span> <span class="n">signup</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
     <span class="n">on_app_init</span><span class="o">=</span><span class="p">[</span><span class="n">session_auth</span><span class="o">.</span><span class="n">on_app_init</span><span class="p">],</span>
@@ -1725,11 +1726,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotAuthorizedException</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionBackend</span><span class="p">,</span> <span class="n">ServerSideSessionConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.session_auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionAuth</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryStore</span>
 
 
-<span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
+<span class="c1"># Let's assume we have a User model that is a pydantic model.</span>
 <span class="c1"># This though is not required - we need some sort of user class -</span>
 <span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model,</span>
 <span class="c1"># a representation of a MongoDB  etc.</span>
@@ -1741,7 +1743,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># we also have pydantic types for two different</span>
 <span class="c1"># kinds of POST request bodies: one for creating</span>
-<span class="c1"># a user, e.g. &quot;sign-up&quot;, and the other for logging</span>
+<span class="c1"># a user, e.g. "sign-up", and the other for logging</span>
 <span class="c1"># an existing user in.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserCreatePayload</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -1760,21 +1762,21 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># The SessionAuth class requires a handler callable</span>
 <span class="c1"># that takes the session dictionary, and returns the</span>
-<span class="c1"># &#39;User&#39; instance correlating to it.</span>
+<span class="c1"># 'User' instance correlating to it.</span>
 <span class="c1">#</span>
 <span class="c1"># The session dictionary itself is a value the user decides</span>
 <span class="c1"># upon. So for example, it might be a simple dictionary</span>
-<span class="c1"># that holds a user id, for example: { &quot;id&quot;: &quot;abcd123&quot; }</span>
+<span class="c1"># that holds a user id, for example: { "id": "abcd123" }</span>
 <span class="c1">#</span>
 <span class="c1"># Note: The callable can be either sync or async - both will work.</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span>
-    <span class="n">session</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span>
+    <span class="n">session</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">"ASGIConnection[Any, Any, Any, Any]"</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">user_id</span> <span class="o">:=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user_id&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">user_id</span> <span class="o">:=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"user_id"</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserLoginPayload</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/login"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserLoginPayload</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="s2">"Request[Any, Any, Any]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="c1"># we received log-in data via post.</span>
     <span class="c1"># our login handler should retrieve from persistence (a db etc.)</span>
     <span class="c1"># the user data and verify that the login details</span>
@@ -1785,21 +1787,21 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
-    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
 
     <span class="c1"># once verified we can create a session.</span>
     <span class="c1"># to do this we simply need to call the Litestar</span>
-    <span class="c1"># &#39;Request.set_session&#39; method, which accepts either dictionaries</span>
+    <span class="c1"># 'Request.set_session' method, which accepts either dictionaries</span>
     <span class="c1"># or pydantic models. In our case, we can simply record a</span>
     <span class="c1"># simple dictionary with the user ID value:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">})</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">"user_id"</span><span class="p">:</span> <span class="n">user_id</span><span class="p">})</span>
 
     <span class="c1"># you can do whatever we want here. In this case, we will simply return the user data:</span>
     <span class="k">return</span> <span class="n">MOCK_DB</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/signup&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">signup</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserCreatePayload</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/signup"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">signup</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserCreatePayload</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="c1"># this is similar to the login handler, except here we should</span>
     <span class="c1"># insert into persistence - after doing whatever extra</span>
     <span class="c1"># validation we might require. We will assume that this is done,</span>
@@ -1809,8 +1811,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
     <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">user</span>
     <span class="c1"># we are creating a session the same as we do in the</span>
-    <span class="c1"># &#39;login_handler&#39; above:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)})</span>
+    <span class="c1"># 'login_handler' above:</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">"user_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)})</span>
 
     <span class="c1"># and again, you can add whatever logic is required here, we</span>
     <span class="c1"># will simply return the user:</span>
@@ -1819,18 +1821,18 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># the endpoint below requires the user to be already authenticated</span>
 <span class="c1"># to be able to access it.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/user&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/user"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">"user_id"</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
     <span class="c1"># because this route requires authentication, we can access</span>
     <span class="c1"># `request.user`, which is the authenticated user returned</span>
-    <span class="c1"># by the &#39;retrieve_user_handler&#39; function we passed to SessionAuth.</span>
+    <span class="c1"># by the 'retrieve_user_handler' function we passed to SessionAuth.</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
 
 
 <span class="c1"># We add the session security schema to the OpenAPI config.</span>
 <span class="n">openapi_config</span> <span class="o">=</span> <span class="n">OpenAPIConfig</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span>
-    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"My API"</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">"1.0.0"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">session_auth</span> <span class="o">=</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">ServerSideSessionBackend</span><span class="p">](</span>
@@ -1840,11 +1842,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
     <span class="c1"># exclude any URLs that should not have authentication.</span>
     <span class="c1"># We exclude the documentation URLs, signup and login.</span>
-    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/signup&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
+    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">"/login"</span><span class="p">,</span> <span class="s2">"/signup"</span><span class="p">,</span> <span class="s2">"/schema"</span><span class="p">],</span>
 <span class="p">)</span>
 
 
-<span class="c1"># We initialize the app instance, passing to it the &#39;session_auth.on_app_init&#39; and the &#39;openapi_config&#39;.</span>
+<span class="c1"># We initialize the app instance, passing to it the 'session_auth.on_app_init' and the 'openapi_config'.</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">login</span><span class="p">,</span> <span class="n">signup</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
     <span class="n">on_app_init</span><span class="o">=</span><span class="p">[</span><span class="n">session_auth</span><span class="o">.</span><span class="n">on_app_init</span><span class="p">],</span>
@@ -1869,11 +1871,12 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotAuthorizedException</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionBackend</span><span class="p">,</span> <span class="n">ServerSideSessionConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.session_auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionAuth</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryStore</span>
 
 
-<span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
+<span class="c1"># Let's assume we have a User model that is a pydantic model.</span>
 <span class="c1"># This though is not required - we need some sort of user class -</span>
 <span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model,</span>
 <span class="c1"># a representation of a MongoDB  etc.</span>
@@ -1885,7 +1888,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># we also have pydantic types for two different</span>
 <span class="c1"># kinds of POST request bodies: one for creating</span>
-<span class="c1"># a user, e.g. &quot;sign-up&quot;, and the other for logging</span>
+<span class="c1"># a user, e.g. "sign-up", and the other for logging</span>
 <span class="c1"># an existing user in.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserCreatePayload</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -1904,21 +1907,21 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># The SessionAuth class requires a handler callable</span>
 <span class="c1"># that takes the session dictionary, and returns the</span>
-<span class="c1"># &#39;User&#39; instance correlating to it.</span>
+<span class="c1"># 'User' instance correlating to it.</span>
 <span class="c1">#</span>
 <span class="c1"># The session dictionary itself is a value the user decides</span>
 <span class="c1"># upon. So for example, it might be a simple dictionary</span>
-<span class="c1"># that holds a user id, for example: { &quot;id&quot;: &quot;abcd123&quot; }</span>
+<span class="c1"># that holds a user id, for example: { "id": "abcd123" }</span>
 <span class="c1">#</span>
 <span class="c1"># Note: The callable can be either sync or async - both will work.</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_handler</span><span class="p">(</span>
-    <span class="n">session</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span>
+    <span class="n">session</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">"ASGIConnection[Any, Any, Any, Any]"</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">user_id</span> <span class="o">:=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user_id&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">user_id</span> <span class="o">:=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"user_id"</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserLoginPayload</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/login"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserLoginPayload</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="s2">"Request[Any, Any, Any]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="c1"># we received log-in data via post.</span>
     <span class="c1"># our login handler should retrieve from persistence (a db etc.)</span>
     <span class="c1"># the user data and verify that the login details</span>
@@ -1929,21 +1932,21 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
-    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
 
     <span class="c1"># once verified we can create a session.</span>
     <span class="c1"># to do this we simply need to call the Litestar</span>
-    <span class="c1"># &#39;Request.set_session&#39; method, which accepts either dictionaries</span>
+    <span class="c1"># 'Request.set_session' method, which accepts either dictionaries</span>
     <span class="c1"># or pydantic models. In our case, we can simply record a</span>
     <span class="c1"># simple dictionary with the user ID value:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">})</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">"user_id"</span><span class="p">:</span> <span class="n">user_id</span><span class="p">})</span>
 
     <span class="c1"># you can do whatever we want here. In this case, we will simply return the user data:</span>
     <span class="k">return</span> <span class="n">MOCK_DB</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/signup&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">signup</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserCreatePayload</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/signup"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">signup</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserCreatePayload</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="c1"># this is similar to the login handler, except here we should</span>
     <span class="c1"># insert into persistence - after doing whatever extra</span>
     <span class="c1"># validation we might require. We will assume that this is done,</span>
@@ -1953,8 +1956,8 @@ Python 3.10+</label><div class="sd-tab-content docutils">
     <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
     <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">user</span>
     <span class="c1"># we are creating a session the same as we do in the</span>
-    <span class="c1"># &#39;login_handler&#39; above:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)})</span>
+    <span class="c1"># 'login_handler' above:</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">"user_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)})</span>
 
     <span class="c1"># and again, you can add whatever logic is required here, we</span>
     <span class="c1"># will simply return the user:</span>
@@ -1963,18 +1966,18 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># the endpoint below requires the user to be already authenticated</span>
 <span class="c1"># to be able to access it.</span>
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/user&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/user"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">"user_id"</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
     <span class="c1"># because this route requires authentication, we can access</span>
     <span class="c1"># `request.user`, which is the authenticated user returned</span>
-    <span class="c1"># by the &#39;retrieve_user_handler&#39; function we passed to SessionAuth.</span>
+    <span class="c1"># by the 'retrieve_user_handler' function we passed to SessionAuth.</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
 
 
 <span class="c1"># We add the session security schema to the OpenAPI config.</span>
 <span class="n">openapi_config</span> <span class="o">=</span> <span class="n">OpenAPIConfig</span><span class="p">(</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span>
-    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"My API"</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">"1.0.0"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">session_auth</span> <span class="o">=</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">ServerSideSessionBackend</span><span class="p">](</span>
@@ -1984,11 +1987,11 @@ Python 3.10+</label><div class="sd-tab-content docutils">
     <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
     <span class="c1"># exclude any URLs that should not have authentication.</span>
     <span class="c1"># We exclude the documentation URLs, signup and login.</span>
-    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/signup&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
+    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">"/login"</span><span class="p">,</span> <span class="s2">"/signup"</span><span class="p">,</span> <span class="s2">"/schema"</span><span class="p">],</span>
 <span class="p">)</span>
 
 
-<span class="c1"># We initialize the app instance, passing to it the &#39;session_auth.on_app_init&#39; and the &#39;openapi_config&#39;.</span>
+<span class="c1"># We initialize the app instance, passing to it the 'session_auth.on_app_init' and the 'openapi_config'.</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">login</span><span class="p">,</span> <span class="n">signup</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
     <span class="n">on_app_init</span><span class="o">=</span><span class="p">[</span><span class="n">session_auth</span><span class="o">.</span><span class="n">on_app_init</span><span class="p">],</span>

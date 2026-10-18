@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1594,33 +1594,34 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
-<span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
-<span class="linenos">11</span>
-<span class="linenos">12</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-<span class="linenos">13</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
-<span class="linenos">14</span>
+<span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+<span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+<span class="linenos">14</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
 <span class="linenos">15</span>
-<span class="linenos">16</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
-<span class="linenos">17</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
 <span class="linenos">18</span>
-<span class="linenos">19</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-<span class="linenos">20</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
-<span class="linenos">21</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">22</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
-<span class="linenos">23</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="linenos">21</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">"todo_item"</span>
+<span class="linenos">22</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">23</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 <span class="linenos">24</span>
-<span class="linenos">25</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">26</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">,</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">27</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
-<span class="linenos">28</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="linenos">29</span>    <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">)))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="linenos">30</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="nd">@post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
+<span class="linenos">27</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">],</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">28</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+<span class="linenos">29</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="linenos">30</span>    <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">)))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="linenos">31</span>
-<span class="linenos">32</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-<span class="linenos">33</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo_async.sqlite&quot;</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span>
-<span class="linenos">34</span><span class="p">)</span>
-<span class="linenos">35</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-<span class="linenos">36</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
+<span class="linenos">34</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite+aiosqlite:///todo_async.sqlite"</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span>
+<span class="linenos">35</span><span class="p">)</span>
+<span class="linenos">36</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="linenos">37</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1640,33 +1641,34 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
-<span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-<span class="linenos">14</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
-<span class="linenos">15</span>
+<span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+<span class="linenos">12</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+<span class="linenos">15</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
 <span class="linenos">16</span>
-<span class="linenos">17</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
-<span class="linenos">18</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
 <span class="linenos">19</span>
-<span class="linenos">20</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-<span class="linenos">21</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
-<span class="linenos">22</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">23</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
-<span class="linenos">24</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="linenos">22</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">"todo_item"</span>
+<span class="linenos">23</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">24</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 <span class="linenos">25</span>
-<span class="linenos">26</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="linenos">27</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">,</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">28</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
-<span class="linenos">29</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="linenos">30</span>    <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">)))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="linenos">31</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="nd">@post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
+<span class="linenos">28</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">],</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">29</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+<span class="linenos">30</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="linenos">31</span>    <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">)))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="linenos">32</span>
-<span class="linenos">33</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-<span class="linenos">34</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo_async.sqlite&quot;</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span>
-<span class="linenos">35</span><span class="p">)</span>
-<span class="linenos">36</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-<span class="linenos">37</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+<span class="linenos">33</span>
+<span class="linenos">34</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
+<span class="linenos">35</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite+aiosqlite:///todo_async.sqlite"</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span>
+<span class="linenos">36</span><span class="p">)</span>
+<span class="linenos">37</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="linenos">38</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1691,31 +1693,32 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
-<span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
-<span class="linenos">11</span>
-<span class="linenos">12</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-<span class="linenos">13</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
-<span class="linenos">14</span>
+<span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+<span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+<span class="linenos">14</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 <span class="linenos">15</span>
-<span class="linenos">16</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
-<span class="linenos">17</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
 <span class="linenos">18</span>
-<span class="linenos">19</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-<span class="linenos">20</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
-<span class="linenos">21</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">22</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
-<span class="linenos">23</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="linenos">21</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">"todo_item"</span>
+<span class="linenos">22</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">23</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 <span class="linenos">24</span>
-<span class="linenos">25</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">26</span><span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">,</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Session</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">27</span>    <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
-<span class="linenos">28</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="linenos">29</span>    <span class="k">return</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="linenos">30</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="nd">@post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">27</span><span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">],</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Session</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">28</span>    <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+<span class="linenos">29</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="linenos">30</span>    <span class="k">return</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="linenos">31</span>
-<span class="linenos">32</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///todo_sync.sqlite&quot;</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
-<span class="linenos">33</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-<span class="linenos">34</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite:///todo_sync.sqlite"</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+<span class="linenos">34</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="linenos">35</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1735,31 +1738,32 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
-<span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-<span class="linenos">14</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
-<span class="linenos">15</span>
+<span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+<span class="linenos">12</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+<span class="linenos">15</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 <span class="linenos">16</span>
-<span class="linenos">17</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
-<span class="linenos">18</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
 <span class="linenos">19</span>
-<span class="linenos">20</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-<span class="linenos">21</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
-<span class="linenos">22</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">23</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
-<span class="linenos">24</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="linenos">22</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">"todo_item"</span>
+<span class="linenos">23</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">24</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 <span class="linenos">25</span>
-<span class="linenos">26</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">27</span><span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">,</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Session</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-<span class="linenos">28</span>    <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
-<span class="linenos">29</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="linenos">30</span>    <span class="k">return</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="linenos">31</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="nd">@post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">28</span><span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">],</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Session</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="linenos">29</span>    <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+<span class="linenos">30</span>        <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="linenos">31</span>    <span class="k">return</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="linenos">32</span>
-<span class="linenos">33</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///todo_sync.sqlite&quot;</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
-<span class="linenos">34</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-<span class="linenos">35</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+<span class="linenos">33</span>
+<span class="linenos">34</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite:///todo_sync.sqlite"</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+<span class="linenos">35</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="linenos">36</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1782,12 +1786,12 @@ Async</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">"todo_item"</span>
     <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1802,12 +1806,12 @@ Sync</label><div class="sd-tab-content docutils">
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">"todo_item"</span>
     <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1828,12 +1832,13 @@ Async</label><div class="sd-tab-content docutils">
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
 
 
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">,</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">],</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
         <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">)))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
@@ -1857,18 +1862,19 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">,</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Session</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">],</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Session</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
     <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
         <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///todo_sync.sqlite&quot;</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite:///todo_sync.sqlite"</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1883,18 +1889,19 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">,</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Session</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">],</span> <span class="n">db_session</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Session</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
     <span class="k">with</span> <span class="n">db_session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
         <span class="n">db_session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">db_session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">TodoItem</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///todo_sync.sqlite&quot;</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite:///todo_sync.sqlite"</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1919,10 +1926,10 @@ Async</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">SQLAlchemy Async Plugin Example</span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo_async.sqlite&quot;</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span>
+    <span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite+aiosqlite:///todo_async.sqlite"</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span>
 <span class="p">)</span>
 <span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1933,7 +1940,7 @@ Sync</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
 <div class="code-block-caption"><span class="caption-text">SQLAlchemy Sync Plugin Example</span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///todo_sync.sqlite&quot;</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite:///todo_sync.sqlite"</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 <span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
 </pre></div>
@@ -1953,10 +1960,10 @@ Async</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">SQLAlchemy Async Plugin Example</span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo_async.sqlite&quot;</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span>
+    <span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite+aiosqlite:///todo_async.sqlite"</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span>
 <span class="p">)</span>
 <span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1967,7 +1974,7 @@ Sync</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id13">
 <div class="code-block-caption"><span class="caption-text">SQLAlchemy Sync Plugin Example</span><a class="headerlink" href="#id13" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///todo_sync.sqlite&quot;</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">"sqlite:///todo_sync.sqlite"</span><span class="p">,</span> <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 <span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
 </pre></div>
@@ -1986,7 +1993,7 @@ function should be run when the app starts up.</p>
 </div>
 <p>You can now add a todo item by sending a POST request to <code class="docutils literal notranslate"><span class="pre">http://localhost:8000</span></code> with a JSON body containing the
 <code class="docutils literal notranslate"><span class="pre">&quot;title&quot;</span></code> of the todo item.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;title&quot;: &quot;Your Todo Title&quot;, &quot;done&quot;: false}&#39;</span><span class="w"> </span>http://localhost:8000/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"title": "Your Todo Title", "done": false}'</span><span class="w"> </span>http://localhost:8000/
 </pre></div>
 </div>
 </section>

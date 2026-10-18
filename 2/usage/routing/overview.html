@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1555,13 +1555,13 @@ document.write(`
 <p>At the root of every Litestar application there is an instance of the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> class,
 on which the root level <a class="reference internal" href="../../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">controllers</span></code></a>, <a class="reference internal" href="../../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">routers</span></code></a>,
 and <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">route</span> <span class="pre">handler</span></code></a> functions are registered using the
-<a class="reference internal" href="../../reference/config.html#litestar.config.app.AppConfig.params.route_handlers" title="litestar.config.app.AppConfig"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">route_handlers</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.14)"><span class="xref std std-term">kwarg</span></a>:</p>
+<a class="reference internal" href="../../reference/config.html#litestar.config.app.AppConfig.params.route_handlers" title="litestar.config.app.AppConfig"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">route_handlers</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.15)"><span class="xref std std-term">kwarg</span></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">Registering route handlers</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/sub-path&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/sub-path"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sub_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
@@ -1581,7 +1581,7 @@ the path <code class="docutils literal notranslate"><span class="pre">&quot;/&qu
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Litestar</span>
 
 
-<span class="nd">@get</span><span class="p">([</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;/sub-path&quot;</span><span class="p">])</span>
+<span class="nd">@get</span><span class="p">([</span><span class="s2">"/"</span><span class="p">,</span> <span class="s2">"/sub-path"</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
@@ -1607,7 +1607,7 @@ the path <code class="docutils literal notranslate"><span class="pre">&quot;/&qu
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">root_handler</span><span class="p">])</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/sub-path&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/sub-path"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sub_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
@@ -1625,9 +1625,9 @@ injected dependencies. For example:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/some-path"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-   <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/sub-path&quot;</span><span class="p">)</span>
+   <span class="nd">@get</span><span class="p">(</span><span class="s2">"/sub-path"</span><span class="p">)</span>
    <span class="k">def</span><span class="w"> </span><span class="nf">sub_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sub_path_handler</span><span class="p">)</span>
@@ -1657,12 +1657,12 @@ class which is the base class for the <a class="reference internal" href="../../
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{order_id:int}&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/{order_id:int}"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">order_handler</span><span class="p">(</span><span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
-<span class="n">order_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/orders&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">order_handler</span><span class="p">])</span>
-<span class="n">base_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/base&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">order_router</span><span class="p">])</span>
+<span class="n">order_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/orders"</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">order_handler</span><span class="p">])</span>
+<span class="n">base_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/base"</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">order_router</span><span class="p">])</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">base_router</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -1684,6 +1684,7 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">delete</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">UUID4</span>
 
 
@@ -1697,20 +1698,20 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">UserOrderController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-   <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/user-order&quot;</span>
+   <span class="n">path</span> <span class="o">=</span> <span class="s2">"/user-order"</span>
 
    <span class="nd">@post</span><span class="p">()</span>
-   <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">UserOrder</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserOrder</span><span class="p">:</span> <span class="o">...</span>
+   <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserOrder</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">UserOrder</span><span class="p">:</span> <span class="o">...</span>
 
-   <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{order_id:uuid}&quot;</span><span class="p">)</span>
+   <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/{order_id:uuid}"</span><span class="p">)</span>
    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_user_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserOrder</span><span class="p">:</span> <span class="o">...</span>
 
-   <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{order_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialUserOrderDTO</span><span class="p">)</span>
+   <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/{order_id:uuid}"</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialUserOrderDTO</span><span class="p">)</span>
    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_user_order</span><span class="p">(</span>
-       <span class="bp">self</span><span class="p">,</span> <span class="n">order_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">PartialUserOrderDTO</span><span class="p">]</span>
+       <span class="bp">self</span><span class="p">,</span> <span class="n">order_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">DTOData</span><span class="p">[</span><span class="n">PartialUserOrderDTO</span><span class="p">]]</span>
    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserOrder</span><span class="p">:</span> <span class="o">...</span>
 
-   <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{order_id:uuid}&quot;</span><span class="p">)</span>
+   <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/{order_id:uuid}"</span><span class="p">)</span>
    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -1739,15 +1740,15 @@ defined for the route handlers declared on it. Thus, in the above example, <code
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-   <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller&quot;</span>
+   <span class="n">path</span> <span class="o">=</span> <span class="s2">"/controller"</span>
 
    <span class="nd">@get</span><span class="p">()</span>
    <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
-<span class="n">internal_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/internal&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">])</span>
-<span class="n">partner_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/partner&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">])</span>
-<span class="n">consumer_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/consumer&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">])</span>
+<span class="n">internal_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/internal"</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">])</span>
+<span class="n">partner_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/partner"</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">])</span>
+<span class="n">consumer_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/consumer"</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1766,13 +1767,13 @@ different sub-path, e.g., <code class="docutils literal notranslate"><span class
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/handler&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/handler"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
-<span class="n">internal_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/internal&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_route_handler</span><span class="p">])</span>
-<span class="n">partner_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/partner&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_route_handler</span><span class="p">])</span>
-<span class="n">consumer_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/consumer&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_route_handler</span><span class="p">])</span>
+<span class="n">internal_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/internal"</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_route_handler</span><span class="p">])</span>
+<span class="n">partner_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/partner"</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_route_handler</span><span class="p">])</span>
+<span class="n">consumer_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/consumer"</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_route_handler</span><span class="p">])</span>
 
 <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">internal_router</span><span class="p">,</span> <span class="n">partner_router</span><span class="p">,</span> <span class="n">consumer_router</span><span class="p">])</span>
 </pre></div>
@@ -1807,9 +1808,9 @@ requests addressed to a given path.</p>
     <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 
 
-<span class="nd">@asgi</span><span class="p">(</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="nd">@asgi</span><span class="p">(</span><span class="s2">"/some/sub-path"</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="s2">"Scope"</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">"Receive"</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">"Send"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Args:</span>
 <span class="sd">        scope: The ASGI connection scope.</span>
 <span class="sd">        receive: The ASGI receive function.</span>
@@ -1817,9 +1818,9 @@ requests addressed to a given path.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;forwarded_path&quot;</span><span class="p">:</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]})</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">ASGIResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+<span class="sd">    """</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">"forwarded_path"</span><span class="p">:</span> <span class="n">scope</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]})</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">ASGIResponse</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">))</span>
     <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
 
 
@@ -1856,17 +1857,17 @@ party libraries. The following example is identical in principle to the one abov
     <span class="kn">from</span><span class="w"> </span><span class="nn">starlette.requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span>
 
 
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A generic starlette handler.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;forwarded_path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">})</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">"Request"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A generic starlette handler."""</span>
+    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">"forwarded_path"</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">})</span>
 
 
-<span class="n">starlette_app</span> <span class="o">=</span> <span class="n">asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span>
+<span class="n">starlette_app</span> <span class="o">=</span> <span class="n">asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/some/sub-path"</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span>
     <span class="n">Starlette</span><span class="p">(</span>
         <span class="n">routes</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
-            <span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/abc/&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
-            <span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/123/another/sub-path/&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
+            <span class="n">Route</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
+            <span class="n">Route</span><span class="p">(</span><span class="s2">"/abc/"</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
+            <span class="n">Route</span><span class="p">(</span><span class="s2">"/123/another/sub-path/"</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
         <span class="p">],</span>
     <span class="p">)</span>
 <span class="p">)</span>

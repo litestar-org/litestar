@@ -331,7 +331,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -885,7 +885,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://litestar.dev/about/organization"
+    <a href="https://litestar.dev/about"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Litestar Organization
         <span class="absolute inset-0"></span>
@@ -1552,18 +1552,18 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_router_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;inside a request&quot;</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"inside a request"</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span>
 
 
 <span class="n">logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
-    <span class="n">root</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">]},</span>
+    <span class="n">root</span><span class="o">=</span><span class="p">{</span><span class="s2">"level"</span><span class="p">:</span> <span class="s2">"INFO"</span><span class="p">,</span> <span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"queue_listener"</span><span class="p">]},</span>
     <span class="n">formatters</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;standard&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">}</span>
+        <span class="s2">"standard"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"format"</span><span class="p">:</span> <span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">}</span>
     <span class="p">},</span>
-    <span class="n">log_exceptions</span><span class="o">=</span><span class="s2">&quot;always&quot;</span><span class="p">,</span>
+    <span class="n">log_exceptions</span><span class="o">=</span><span class="s2">"always"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_router_handler</span><span class="p">],</span> <span class="n">logging_config</span><span class="o">=</span><span class="n">logging_config</span><span class="p">)</span>
@@ -1588,7 +1588,7 @@ or status codes that should not generate stack traces in logs:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span>
 
-<span class="c1"># Don&#39;t log stack traces for 404 errors and ValueError exceptions</span>
+<span class="c1"># Don't log stack traces for 404 errors and ValueError exceptions</span>
 <span class="n">logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
     <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">disable_stack_trace</span><span class="o">=</span><span class="p">{</span><span class="mi">404</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">},</span>
@@ -1610,20 +1610,20 @@ below:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span>
 
 <span class="n">logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
-    <span class="n">root</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">]},</span>
+    <span class="n">root</span><span class="o">=</span><span class="p">{</span><span class="s2">"level"</span><span class="p">:</span> <span class="s2">"INFO"</span><span class="p">,</span> <span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"queue_listener"</span><span class="p">]},</span>
     <span class="n">formatters</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;standard&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">}</span>
+        <span class="s2">"standard"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"format"</span><span class="p">:</span> <span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">}</span>
     <span class="p">},</span>
-    <span class="n">log_exceptions</span><span class="o">=</span><span class="s2">&quot;always&quot;</span><span class="p">,</span>
+    <span class="n">log_exceptions</span><span class="o">=</span><span class="s2">"always"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging_config</span><span class="o">.</span><span class="n">configure</span><span class="p">()()</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_router_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;inside a request&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;here too&quot;</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"inside a request"</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"here too"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1639,8 +1639,8 @@ below:</p>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_logger</span><span class="p">(</span><span class="n">mod_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return logger object.&quot;&quot;&quot;</span>
-    <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2">: </span><span class="si">%(name)s</span><span class="s2">: </span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="sd">"""Return logger object."""</span>
+    <span class="nb">format</span> <span class="o">=</span> <span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2">: </span><span class="si">%(name)s</span><span class="s2">: </span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">"</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">mod_name</span><span class="p">)</span>
     <span class="c1"># Writes to stdout</span>
     <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
@@ -1653,9 +1653,9 @@ below:</p>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_router_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;logger inside a request&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"logger inside a request"</span><span class="p">)</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
@@ -1678,9 +1678,9 @@ dedicated logging plugin and config for using it:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.structlog</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructlogPlugin</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_router_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;inside a request&quot;</span><span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"inside a request"</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span>
 
 
