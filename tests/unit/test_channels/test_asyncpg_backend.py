@@ -36,6 +36,7 @@ async def test_listener_mutations_are_serialized() -> None:
     backend = AsyncPgChannelsBackend(make_connection=asyncio.Future)
     connection = _ConcurrentConnection()
     backend._listener_conn = connection  # type: ignore[assignment]
+    backend._listener_lock = asyncio.Lock()
 
     await asyncio.gather(backend.subscribe(["one"]), backend.subscribe(["two"]))
 
@@ -46,6 +47,7 @@ async def test_duplicate_listener_mutations_are_idempotent() -> None:
     backend = AsyncPgChannelsBackend(make_connection=asyncio.Future)
     connection = _ConcurrentConnection()
     backend._listener_conn = connection  # type: ignore[assignment]
+    backend._listener_lock = asyncio.Lock()
 
     await backend.subscribe(channel for channel in ["one", "one"])
     await backend.subscribe(["one"])
