@@ -963,7 +963,7 @@ added while the backlog is full</p></li>
 <div class="literal-block-wrapper docutils container" id="id13">
 <div class="code-block-caption"><span class="caption-text">Backoff strategy</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChannelsPlugin</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.channels.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.channels.backends.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">channels</span> <span class="o">=</span> <span class="n">ChannelsPlugin</span><span class="p">(</span>
 </span><span data-line="5">    <span class="n">backend</span><span class="o">=</span><span class="n">MemoryChannelsBackend</span><span class="p">(),</span>
@@ -976,7 +976,7 @@ added while the backlog is full</p></li>
 <div class="literal-block-wrapper docutils container" id="id14">
 <div class="code-block-caption"><span class="caption-text"><a class="reference internal" href="#term-eviction"><span class="xref std std-term">Eviction</span></a> strategy</span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChannelsPlugin</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.channels.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.channels.backends.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryChannelsBackend</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="n">channels</span> <span class="o">=</span> <span class="n">ChannelsPlugin</span><span class="p">(</span>
 </span><span data-line="5">    <span class="n">backend</span><span class="o">=</span><span class="n">MemoryChannelsBackend</span><span class="p">(),</span>
