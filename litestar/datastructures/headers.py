@@ -464,6 +464,8 @@ class Accept:
         types = [MediaTypeHeader(t) for t in provided_types]
 
         for accepted in self._accepted_types:
+            if accepted.priority[0] == 0:
+                continue
             for provided in types:
                 if provided.match(accepted):
                     # Return the accepted type with wildcards replaced
