@@ -383,6 +383,13 @@ def test_accept_best_match(accept_value: str, provided_types: list[str], best_ma
     assert accept.best_match(provided_types) == best_match
 
 
+def test_accept_rejects_zero_quality_media_type() -> None:
+    accept = Accept("text/plain;q=0")
+
+    assert accept.best_match(["text/plain"]) is None
+    assert not accept.accepts("text/plain")
+
+
 def test_accept_accepts() -> None:
     accept = Accept("text/plain;q=0.8,text/html")
     assert accept.accepts(MediaType.TEXT)
