@@ -1,4 +1,8 @@
-from litestar.utils.sync import ensure_async_callable
+from collections.abc import Iterator
+
+import pytest
+
+from litestar.utils.sync import AsyncIteratorWrapper, IteratorExhaustedError, ensure_async_callable
 
 
 async def test_function_wrapper_wraps_method_correctly() -> None:
@@ -103,3 +107,51 @@ async def test_function_wrapper_wraps_async_class_correctly() -> None:
 
     await wrapped_class(new_value=10)
     assert instance.value == 10
+
+
+async def test_async_iterator_wrapper_yields_all_values() -> None:
+    assert [v async for v in AsyncIteratorWrapper([1, 2, 3])] == [1, 2, 3]
+
+
+async def test_async_iterator_wrapper_propagates_value_error_from_wrapped_iterator() -> None:
+    # a ``ValueError`` raised by the wrapped iterator must not be mistaken for exhaustion
+    def gen() -> Iterator[int]:
+        yield 1
+        yield 2
+        raise ValueError("boom")
+
+    received = []
+    with pytest.raises(ValueError, match="boom"):
+        async for value in AsyncIteratorWrapper(gen()):
+            received.append(value)
+
+    assert received == [1, 2]
+
+
+@pytest.mark.parametrize("values", [[], [None], [0, "", False, None, b"", []]])
+async def test_async_iterator_wrapper_does_not_mistake_values_for_exhaustion(values: list) -> None:
+    assert [v async for v in AsyncIteratorWrapper(values)] == values
+
+
+@pytest.mark.parametrize("exc_type", [RuntimeError, KeyError])
+async def test_async_iterator_wrapper_propagates_exceptions_from_wrapped_iterator(
+    exc_type: type[BaseException],
+) -> None:
+    def gen() -> Iterator[int]:
+        yield 1
+        raise exc_type()
+
+    received = []
+    with pytest.raises(exc_type):
+        async for value in AsyncIteratorWrapper(gen()):
+            received.append(value)
+
+    assert received == [1]
+
+
+def test_async_iterator_wrapper_call_next_raises_iterator_exhausted_error() -> None:
+    wrapper = AsyncIteratorWrapper([1])
+
+    assert wrapper._call_next() == 1
+    with pytest.raises(IteratorExhaustedError):
+        wrapper._call_next()
