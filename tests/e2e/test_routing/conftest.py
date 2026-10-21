@@ -2,7 +2,7 @@ import time
 from collections.abc import Callable
 from pathlib import Path
 
-import httpx
+import httpx2
 import psutil
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -27,9 +27,9 @@ def run_server(tmp_path: Path, request: FixtureRequest, monkeypatch: MonkeyPatch
 
         for _ in range(50):
             try:
-                httpx.get("http://127.0.0.1:9999/", timeout=0.1)
+                httpx2.get("http://127.0.0.1:9999/", timeout=0.1)
                 break
-            except httpx.TransportError:
+            except httpx2.TransportError:
                 time.sleep(0.1)
         else:
             raise RuntimeError("App failed to come online")
