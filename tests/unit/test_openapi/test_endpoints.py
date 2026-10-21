@@ -266,3 +266,45 @@ def test_explicit_plugin() -> None:
 
         response = client.get("/schema/swagger")
         assert response.status_code == HTTP_200_OK
+
+
+@pytest.mark.parametrize("root_path", ["", "/api", "/api/v1"])
+def test_openapi_schema_uses_root_path(root_path: str) -> None:
+    """Test that the OpenAPI schema uses the root_path from the ASGI scope as the server URL."""
+    from litestar import get
+
+    @get("/test")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    config = OpenAPIConfig(title="Test API", version="1.0.0")
+    with create_test_client(handler, root_path=root_path, openapi_config=config) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == HTTP_200_OK
+        schema = response.json()
+
+        if root_path:
+            assert schema["servers"] == [{"url": root_path}]
+        else:
+            assert schema["servers"] == [{"url": "/"}]
+
+
+def test_openapi_schema_explicit_servers_override_root_path() -> None:
+    """Test that explicitly configured servers are not overridden by root_path."""
+    from litestar import get
+    from litestar.openapi.spec import Server
+
+    @get("/test")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    config = OpenAPIConfig(
+        title="Test API",
+        version="1.0.0",
+        servers=[Server(url="https://api.example.com")],
+    )
+    with create_test_client(handler, root_path="/api", openapi_config=config) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == HTTP_200_OK
+        schema = response.json()
+        assert schema["servers"] == [{"url": "https://api.example.com"}]
