@@ -87,6 +87,11 @@ def redis_store(redis_client: AsyncRedis) -> RedisStore:
 
 
 @pytest.fixture()
+def redis_hash_store(redis_client: AsyncRedis) -> RedisStore:
+    return RedisStore(redis=redis_client, namespace_strategy="hash")
+
+
+@pytest.fixture()
 def valkey_store(valkey_client: AsyncValkey) -> ValkeyStore:
     return ValkeyStore(valkey=valkey_client)
 
@@ -116,6 +121,7 @@ def file_store_create_directories_flag_false(tmp_path: Path) -> FileStore:
 @pytest.fixture(
     params=[
         pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("redis_hash_store", marks=pytest.mark.xdist_group("redis")),
         pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
         "memory_store",
         "file_store",
