@@ -171,15 +171,15 @@ def session_backend_config_memory(memory_store: MemoryStore) -> ServerSideSessio
 
 
 @pytest.fixture
-def session_middleware(session_backend: BaseSessionBackend, mock_asgi_app: ASGIApp) -> SessionMiddleware[Any]:
-    return SessionMiddleware(app=mock_asgi_app, backend=session_backend)
+def session_middleware(session_backend: BaseSessionBackend) -> SessionMiddleware[Any]:
+    return SessionMiddleware(backend=session_backend)
 
 
 @pytest.fixture
 def cookie_session_middleware(
-    cookie_session_backend: ClientSideSessionBackend, mock_asgi_app: ASGIApp
+    cookie_session_backend: ClientSideSessionBackend,
 ) -> SessionMiddleware[ClientSideSessionBackend]:
-    return SessionMiddleware(app=mock_asgi_app, backend=cookie_session_backend)
+    return SessionMiddleware(backend=cookie_session_backend)
 
 
 @pytest.fixture
