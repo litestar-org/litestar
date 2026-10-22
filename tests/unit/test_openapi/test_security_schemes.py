@@ -154,3 +154,52 @@ def test_layered_security_declaration() -> None:
         {"controllerToken": []},
         {"handlerToken": []},
     ]
+
+
+def test_schema_without_any_security_omits_operation_security(public_route: "HTTPRouteHandler") -> None:
+    """When no layer declares ``security``, the operation should omit the field entirely, so it falls back to
+    whatever global ``security`` is declared on the OpenAPI document, rather than being treated as an explicit
+    opt-out.
+    """
+    app = Litestar(
+        route_handlers=[public_route],
+        openapi_config=OpenAPIConfig(title="test app", version="0.0.1", security=[{"BearerToken": []}]),
+    )
+    schema_dict = app.openapi_schema.to_schema()
+
+    assert schema_dict["paths"]["/handler"]["get"].get("security") is None
+    assert schema_dict.get("security") == [{"BearerToken": []}]
+
+
+def test_schema_with_explicit_empty_route_security_opts_out() -> None:
+    """A route handler explicitly declaring ``security=[]`` (with no security declared on any ownership layer)
+    should be documented as requiring no security, instead of falling back to the document-level default.
+    """
+
+    @get("/public", security=[])
+    def _handler() -> Any: ...
+
+    app = Litestar(
+        route_handlers=[_handler],
+        openapi_config=OpenAPIConfig(title="test app", version="0.0.1", security=[{"BearerToken": []}]),
+    )
+    schema_dict = app.openapi_schema.to_schema()
+
+    assert schema_dict["paths"]["/public"]["get"].get("security") == []
+    assert schema_dict.get("security") == [{"BearerToken": []}]
+
+
+def test_explicit_empty_route_security_does_not_cancel_ownership_layer_security() -> None:
+    """A route handler cannot use ``security=[]`` to cancel security requirements declared on an ownership layer
+    above it (router/controller/app) - security requirements are additive, and there's no override semantic for
+    individual layers.
+    """
+
+    @get("/opt-out", security=[])
+    def _handler() -> Any: ...
+
+    router = Router("/router", route_handlers=[_handler], security=[{"routerToken": []}])
+    app = Litestar(route_handlers=[router])
+    schema_dict = app.openapi_schema.to_schema()
+
+    assert schema_dict["paths"]["/router/opt-out"]["get"].get("security") == [{"routerToken": []}]
