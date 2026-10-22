@@ -241,7 +241,7 @@ To receive `MessagePack <https://msgpack.org/>`_ data, annotate ``data`` with
 
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
-            :lines: 136-141
+            :lines: 140-145
 
 .. tip::
     ``MsgPackBody[<type>]`` is a shorthand for
