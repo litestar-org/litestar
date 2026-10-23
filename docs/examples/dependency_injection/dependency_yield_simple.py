@@ -1,7 +1,7 @@
 from collections.abc import Generator
 
 from litestar import Litestar, get
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 
 CONNECTION = {"open": False}
 
@@ -14,7 +14,7 @@ def generator_function() -> Generator[dict[str, bool], None, None]:
 
 
 @get("/", dependencies={"conn": Provide(generator_function)})
-def index(conn: dict[str, bool]) -> dict[str, bool]:
+def index(conn: NamedDependency[dict[str, bool]]) -> dict[str, bool]:
     """Return the current connection state."""
     return conn
 
