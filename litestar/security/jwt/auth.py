@@ -257,7 +257,9 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             The encoded token formatted for the HTTP headers
         """
         security = self.openapi_components.security_schemes.get(self.openapi_security_scheme_name, None)  # type: ignore[union-attr]
-        return f"{security.scheme} {encoded_token}" if isinstance(security, SecurityScheme) else encoded_token
+        return (
+            f"{security.scheme or 'Bearer'} {encoded_token}" if isinstance(security, SecurityScheme) else encoded_token
+        )
 
 
 @dataclass
@@ -410,7 +412,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """
     default_token_expiration: timedelta = field(default_factory=lambda: timedelta(days=1))
     """The default value for token expiration."""
-    openapi_security_scheme_name: str = field(default="BearerToken")
+    openapi_security_scheme_name: str = field(default="CookieToken")
     """The value to use for the OpenAPI security scheme and security requirements."""
     key: str = field(default="token")
     """Key for the cookie."""
@@ -468,11 +470,9 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
         return Components(
             security_schemes={
                 self.openapi_security_scheme_name: SecurityScheme(
-                    type="http",
-                    scheme="Bearer",
+                    type="apiKey",
                     name=self.key,
                     security_scheme_in="cookie",
-                    bearer_format="JWT",
                     description=self.description,
                 )
             }
