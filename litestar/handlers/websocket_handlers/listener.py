@@ -179,7 +179,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
                 default websocket class.
-            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
+            parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if connection_lifespan and any([on_accept, on_disconnect, connection_accept_handler is not WebSocket.accept]):

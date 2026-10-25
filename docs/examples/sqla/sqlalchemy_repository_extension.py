@@ -20,7 +20,8 @@ from sqlalchemy.orm import Mapped, declarative_mixin, mapped_column
 from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
+from litestar.params import FromPath
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -128,7 +129,7 @@ class BlogPostCreate(BaseModel):
 
 # we can optionally override the default `select` used for the repository to pass in
 # specific SQL options such as join details
-async def provide_blog_post_repo(db_session: AsyncSession) -> BlogPostRepository:
+async def provide_blog_post_repo(db_session: NamedDependency[AsyncSession]) -> BlogPostRepository:
     """This provides a simple example demonstrating how to override the join options
     for the repository."""
     return BlogPostRepository(session=db_session)
@@ -149,7 +150,7 @@ async def on_startup() -> None:
 
 @get(path="/")
 async def get_blogs(
-    blog_post_repo: BlogPostRepository,
+    blog_post_repo: NamedDependency[BlogPostRepository],
 ) -> list[BlogPostDTO]:
     """Interact with SQLAlchemy engine and session."""
     objs = await blog_post_repo.list()
@@ -159,8 +160,8 @@ async def get_blogs(
 
 @get(path="/{post_slug:str}")
 async def get_blog_details(
-    post_slug: str,
-    blog_post_repo: BlogPostRepository,
+    post_slug: FromPath[str],
+    blog_post_repo: NamedDependency[BlogPostRepository],
 ) -> BlogPostDTO:
     """Interact with SQLAlchemy engine and session."""
     obj = await blog_post_repo.get_one(slug=post_slug)
@@ -169,7 +170,7 @@ async def get_blog_details(
 
 @post(path="/")
 async def create_blog(
-    blog_post_repo: BlogPostRepository,
+    blog_post_repo: NamedDependency[BlogPostRepository],
     data: BlogPostCreate,
 ) -> BlogPostDTO:
     """Create a new blog post."""

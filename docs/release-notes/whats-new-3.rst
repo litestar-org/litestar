@@ -85,6 +85,25 @@ must explicitly set it:
         ...
 
 
+Path parameters must be marked
+------------------------------
+
+Only a parameter marked with :data:`~.params.FromPath` or :class:`~.params.PathParameter`
+is read from the path. In v2, a parameter whose name matched a path segment was read from
+the path even when it was marked as a query, header or cookie parameter. In v3 it is read
+from the location it is marked with:
+
+.. code-block:: python
+
+    @get("/{item_id:int}")
+    def my_handler(item_id: FromQuery[int]) -> ...:  # read from the query string
+        ...
+
+A parameter named like a path segment that declares no location, such as the deprecated
+``item_id: int``, raises :exc:`~.exceptions.ImproperlyConfiguredException` when the
+application is created. Declare it as ``item_id: FromPath[int]``.
+
+
 OpenAPI Controller Replaced by Plugins
 --------------------------------------
 

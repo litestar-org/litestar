@@ -1,6 +1,5 @@
 # pyright: reportUnnecessaryTypeIgnoreComment = false
 import dataclasses
-import warnings
 from typing import Annotated, Any
 
 import annotated_types
@@ -9,7 +8,7 @@ import pytest
 from litestar import Litestar, get
 from litestar.di import NamedDependency
 from litestar.enums import ParamType
-from litestar.exceptions.base_exceptions import LitestarDeprecationWarning
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Parameter as OpenAPIParameter
 from litestar.params import (
     CookieParameter,
@@ -18,22 +17,10 @@ from litestar.params import (
     FromPath,
     FromQuery,
     HeaderParameter,
-    Parameter,
-    ParameterKwarg,
     PathParameter,
     QueryParameter,
 )
 from litestar.testing import TestClient, create_test_client
-
-
-def _legacy_parameter(**kwargs: Any) -> ParameterKwarg:
-    """Construct a deprecated 'Parameter()' kwarg, suppressing the construction-time
-    deprecation warning so the call site can later test the kwargs_model deprecation
-    warning in isolation.
-    """
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        return Parameter(**kwargs)  # type: ignore[no-any-return]
 
 
 def test_simple_form_handler() -> None:
@@ -167,102 +154,13 @@ def test_explicit_form_with_alias_dependency() -> None:
         assert res.json() == {"path": 1, "query": 2, "header": 3, "cookie": 4}
 
 
-@pytest.mark.parametrize(
-    "annotation,type_",
-    [
-        (Annotated[str, _legacy_parameter(query="query")], "query"),
-        (Annotated[str, _legacy_parameter(header="header")], "header"),
-        (Annotated[str, _legacy_parameter(cookie="cookie")], "cookie"),
-    ],
-)
-def test_deprecated_annotated_style_handler(annotation: Any, type_: str) -> None:
-    @get("/")
-    def handler(some_param: annotation) -> None:  # pyright: ignore
-        pass
-
-    with pytest.warns(
-        LitestarDeprecationWarning,
-        match=f"{type_} parameter 'some_param' declared using deprecated annotated 'param: Annotated",
-    ):
-        Litestar([handler])
-
-
-@pytest.mark.parametrize(
-    "annotation,type_",
-    [
-        (Annotated[str, _legacy_parameter(query="query")], "query"),
-        (Annotated[str, _legacy_parameter(header="header")], "header"),
-        (Annotated[str, _legacy_parameter(cookie="cookie")], "cookie"),
-    ],
-)
-def test_deprecated_annotated_style_dependency(annotation: Any, type_: str) -> None:
-    def dependency(some_param: annotation) -> None:  # pyright: ignore
-        pass
-
-    @get("/", dependencies={"some_dependency": dependency})
-    def handler(some_dependency: NamedDependency[None]) -> None:
-        return None
-
-    with pytest.warns(
-        LitestarDeprecationWarning,
-        match=f"{type_} parameter 'some_param' declared using deprecated annotated 'param: Annotated",
-    ):
-        Litestar([handler])
-
-
-def test_deprecated_implicit_style_handler() -> None:
-    @get("/query")
-    def query_handler(query_param: str) -> None:
-        pass
-
-    @get("/{path_param:str}")
-    def path_handler(path_param: str) -> None:
-        pass
-
-    with pytest.warns(
-        LitestarDeprecationWarning, match="query parameter 'query_param' declared using deprecated inferred"
-    ):
-        Litestar([query_handler])
-
-    with pytest.warns(
-        LitestarDeprecationWarning, match="path parameter 'path_param' declared using deprecated inferred"
-    ):
-        Litestar([path_handler])
-
-
-def test_deprecated_implicit_style_dependency() -> None:
-    def query_dependency(query_param: str) -> None:
-        pass
-
-    def path_dependency(path_param: str) -> None:
-        pass
-
-    @get("/query", dependencies={"query_d": query_dependency})
-    def query_handler(query_d: NamedDependency[None]) -> None:
-        pass
-
-    @get("/{path_param:str}", dependencies={"path_d": path_dependency})
-    def path_handler(path_d: NamedDependency[None]) -> None:
-        pass
-
-    with pytest.warns(
-        LitestarDeprecationWarning, match="query parameter 'query_param' declared using deprecated inferred"
-    ):
-        Litestar([query_handler])
-
-    with pytest.warns(
-        LitestarDeprecationWarning, match="path parameter 'path_param' declared using deprecated inferred"
-    ):
-        Litestar([path_handler])
-
-
 def test_annotated_metadata_does_not_shadow_dependency() -> None:
     # https://github.com/litestar-org/litestar/issues/4804
     async def provide_foo() -> str:
         return "from-dependency"
 
     @get("/", dependencies={"foo": provide_foo})
-    async def handler(foo: Annotated[str, "arbitrary metadata"]) -> str:
+    async def handler(foo: NamedDependency[Annotated[str, "arbitrary metadata"]]) -> str:
         return foo
 
     with create_test_client([handler]) as client:
@@ -278,7 +176,7 @@ def test_constraint_metadata_does_not_shadow_dependency() -> None:
         return 42
 
     @get("/", dependencies={"foo": provide_foo})
-    async def handler(foo: Annotated[int, annotated_types.Gt(5)]) -> int:
+    async def handler(foo: NamedDependency[Annotated[int, annotated_types.Gt(5)]]) -> int:
         return foo
 
     with create_test_client([handler]) as client:
@@ -291,13 +189,88 @@ def test_annotated_metadata_does_not_shadow_path_param() -> None:
     # https://github.com/litestar-org/litestar/issues/4804
 
     @get("/{foo:int}")
-    async def handler(foo: Annotated[int, "arbitrary metadata"]) -> int:
+    async def handler(foo: FromPath[Annotated[int, "arbitrary metadata"]]) -> int:
         return foo
 
-    with create_test_client([handler]) as client:
+    with create_test_client([handler], raise_server_exceptions=True) as client:
         res = client.get("/7")
         assert res.status_code == 200
         assert res.json() == 7
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    [
+        int,
+        # https://github.com/litestar-org/litestar/issues/4804
+        Annotated[int, "arbitrary metadata"],
+    ],
+)
+def test_parameter_without_location_named_like_path_param_raises(annotation: Any) -> None:
+    @get("/{foo:int}")
+    async def handler(foo: annotation) -> None:  # pyright: ignore
+        return None
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=r"handler='handler'\] Missing declaration for parameter 'foo'",
+    ):
+        Litestar([handler])
+
+
+def test_dependency_parameter_without_location_named_like_path_param_raises() -> None:
+    async def provide_foo(foo: int) -> int:
+        return foo
+
+    @get("/{foo:int}", dependencies={"provided": provide_foo})
+    async def handler(provided: NamedDependency[int]) -> int:
+        return provided
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=r"dependencies='provided'\] Missing declaration for parameter 'foo'",
+    ):
+        Litestar([handler])
+
+
+@pytest.mark.parametrize(
+    "annotation, request_kwargs",
+    [
+        (FromQuery[str], {"params": {"value": "from-request"}}),
+        (FromHeader[str], {"headers": {"value": "from-request"}}),
+        (FromCookie[str], {"headers": {"Cookie": "value=from-request"}}),
+    ],
+)
+def test_marker_named_like_path_param_reads_own_location(annotation: Any, request_kwargs: dict[str, Any]) -> None:
+    @get("/{value:str}")
+    async def handler(value: annotation) -> str:  # pyright: ignore
+        return value  # type: ignore[no-any-return]
+
+    with create_test_client([handler]) as client:
+        res = client.get("/from-path", **request_kwargs)
+        assert res.status_code == 200
+        assert res.text == "from-request"
+
+
+@pytest.mark.parametrize(
+    "annotation, request_kwargs",
+    [
+        (Annotated[str, QueryParameter(name="value")], {"params": {"value": "from-request"}}),
+        (Annotated[str, HeaderParameter(name="value")], {"headers": {"value": "from-request"}}),
+        (Annotated[str, CookieParameter(name="value")], {"headers": {"Cookie": "value=from-request"}}),
+    ],
+)
+def test_aliased_marker_named_like_path_param_reads_own_location(
+    annotation: Any, request_kwargs: dict[str, Any]
+) -> None:
+    @get("/{value:str}")
+    async def handler(value: annotation) -> str:  # pyright: ignore
+        return value  # type: ignore[no-any-return]
+
+    with create_test_client([handler]) as client:
+        res = client.get("/from-path", **request_kwargs)
+        assert res.status_code == 200
+        assert res.text == "from-request"
 
 
 def test_named_dependency_explicit_marker() -> None:
@@ -313,3 +286,13 @@ def test_named_dependency_explicit_marker() -> None:
         # isn't implicitly treated as a query parameter
         schema = client.get("/schema/openapi.json").json()
         assert schema["paths"]["/"]["get"].get("parameters") is None
+
+
+def test_unmarked_raises() -> None:
+
+    @get("/{foo:int}")
+    async def handler(foo: int) -> int:
+        return foo
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Litestar([handler])

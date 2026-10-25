@@ -99,7 +99,13 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         pass
 
     async def on_shutdown(self) -> None:
-        await self._pub_sub.reset()
+        # ``PubSub.reset()`` is a deprecated alias for ``aclose()`` (redis-py 5.0.1);
+        # ``aclose()`` does not exist below that, and our floor is 4.4.4.
+        aclose = getattr(self._pub_sub, "aclose", None)
+        if aclose is not None:
+            await aclose()
+        else:
+            await self._pub_sub.reset()
         # the lazy `_pub_sub` property caches the PubSub object; clearing the
         # cache here ensures a fresh PubSub is created on the next startup so
         # the backend can be reused across multiple plugin lifecycles

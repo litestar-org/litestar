@@ -18,7 +18,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
 from litestar.controller import Controller
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import PathParameter, QueryParameter
@@ -78,14 +78,14 @@ class AuthorRepository(repository.SQLAlchemySyncRepository[AuthorModel]):
     model_type = AuthorModel
 
 
-async def provide_authors_repo(db_session: Session) -> AuthorRepository:
+async def provide_authors_repo(db_session: NamedDependency[Session]) -> AuthorRepository:
     """This provides the default Authors repository."""
     return AuthorRepository(session=db_session)
 
 
 # we can optionally override the default `select` used for the repository to pass in
 # specific SQL options such as join details
-async def provide_author_details_repo(db_session: Session) -> AuthorRepository:
+async def provide_author_details_repo(db_session: NamedDependency[Session]) -> AuthorRepository:
     """This provides a simple example demonstrating how to override the join options
     for the repository."""
     return AuthorRepository(
@@ -120,8 +120,8 @@ class AuthorController(Controller):
     @get(path="/authors")
     def list_authors(
         self,
-        authors_repo: AuthorRepository,
-        limit_offset: LimitOffset,
+        authors_repo: NamedDependency[AuthorRepository],
+        limit_offset: NamedDependency[LimitOffset],
     ) -> OffsetPagination[Author]:
         """List authors."""
         results, total = authors_repo.list_and_count(limit_offset)
@@ -136,7 +136,7 @@ class AuthorController(Controller):
     @post(path="/authors")
     def create_author(
         self,
-        authors_repo: AuthorRepository,
+        authors_repo: NamedDependency[AuthorRepository],
         data: AuthorCreate,
     ) -> Author:
         """Create a new author."""
@@ -153,7 +153,7 @@ class AuthorController(Controller):
     )
     def get_author(
         self,
-        authors_repo: AuthorRepository,
+        authors_repo: NamedDependency[AuthorRepository],
         author_id: Annotated[
             UUID,
             PathParameter(
@@ -172,7 +172,7 @@ class AuthorController(Controller):
     )
     def update_author(
         self,
-        authors_repo: AuthorRepository,
+        authors_repo: NamedDependency[AuthorRepository],
         data: AuthorUpdate,
         author_id: Annotated[
             UUID,
@@ -192,7 +192,7 @@ class AuthorController(Controller):
     @delete(path="/authors/{author_id:uuid}")
     def delete_author(
         self,
-        authors_repo: AuthorRepository,
+        authors_repo: NamedDependency[AuthorRepository],
         author_id: Annotated[
             UUID,
             PathParameter(

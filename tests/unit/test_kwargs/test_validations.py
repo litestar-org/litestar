@@ -29,16 +29,6 @@ async def my_dependency() -> int:
     return 1
 
 
-@pytest.mark.parametrize("param_field", ["query", "header", "cookie"])
-def test_path_param_and_param_with_same_key_raises(param_field: str) -> None:
-    @get("/{my_key:str}")
-    def handler(my_key: Annotated[str, _PARAM_TYPES[param_field](name="my_key")]) -> None:
-        pass
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Litestar([handler])
-
-
 def test_path_param_and_dependency_with_same_key_raises() -> None:
     @get("/{my_key:str}", dependencies={"my_key": Provide(my_dependency)})
     def handler(my_key: str) -> None:
@@ -155,7 +145,7 @@ def test_skip_validation_dependency() -> None:
         return "1"
 
     @get("/", dependencies={"foo": provide_foo})
-    def handler(foo: SkipValidation[int]) -> None:
+    def handler(foo: NamedDependency[SkipValidation[int]]) -> None:
         mock(foo)
         return
 

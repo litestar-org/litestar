@@ -1,5 +1,5 @@
 from litestar import Litestar, websocket_listener
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 
 
 def some_dependency() -> str:
@@ -7,7 +7,7 @@ def some_dependency() -> str:
 
 
 @websocket_listener("/", dependencies={"some": Provide(some_dependency)})
-async def handler(data: str, some: str) -> str:
+async def handler(data: str, some: NamedDependency[str]) -> str:
     return data + some
 
 

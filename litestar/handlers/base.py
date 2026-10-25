@@ -120,7 +120,7 @@ class BaseRouteHandler:
                 These types will be added to the signature namespace using their ``__name__`` attribute.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
+            parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty

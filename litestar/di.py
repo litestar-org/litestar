@@ -6,6 +6,7 @@ from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction
 from typing import TYPE_CHECKING, Annotated, Any, Literal, TypeAlias, TypeVar
 
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import ParameterMarker
 from litestar.plugins import DIPlugin, PluginRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.utils import ensure_async_callable
@@ -33,7 +34,7 @@ __all__ = (
 T = TypeVar("T")
 
 
-class Dependency:
+class Dependency(ParameterMarker):
     def __init__(self, kind: Literal["named"] = "named") -> None:
         # currently only 'named' kind is supported, and this value isn't used. 3.0 will
         # introduce the 'type' kind

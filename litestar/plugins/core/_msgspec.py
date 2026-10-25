@@ -10,7 +10,7 @@ import msgspec
 
 from litestar.di import NamedDependency
 from litestar.openapi.spec import Example
-from litestar.params import ParameterKwarg
+from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.plugins import DIPlugin
 
 __all__ = ("MsgspecDIPlugin", "kwarg_definition_from_field")
@@ -58,7 +58,7 @@ def _unwrap_optional(field_type: Any) -> Any:
     return field_type
 
 
-def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[ParameterKwarg | None, dict[str, Any]]:
+def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[KwargDefinition | None, dict[str, Any]]:
     extra: dict[str, Any] = {}
     kwargs: dict[str, Any] = {}
     field_type = _unwrap_optional(field.type)
@@ -111,10 +111,12 @@ def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[Parameter
         kwargs["max_items"] = field_type.max_length
 
     parameter_defaults = {
-        f.name: default for f in dataclasses.fields(ParameterKwarg) if (default := f.default) is not dataclasses.MISSING
+        f.name: default
+        for f in dataclasses.fields(KwargDefinition)
+        if (default := f.default) is not dataclasses.MISSING
     }
     kwargs_without_defaults = {k: v for k, v in kwargs.items() if v != parameter_defaults[k]}
 
     if kwargs_without_defaults:
-        return ParameterKwarg(**kwargs_without_defaults), extra
+        return KwargDefinition(**kwargs_without_defaults), extra
     return None, extra
