@@ -6,6 +6,15 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Read constraint metadata on ``data`` as on any other parameter
+        :type: bugfix
+        :pr: 5157
+
+        A ``data`` parameter annotated with metadata, e.g.
+        ``data: Annotated[int, annotated_types.Gt(0)]``, was interpreted as a request
+        body without a body marker, which got around the check of ``data`` being
+        missing a marker
+
     .. change:: Require "reserved kwargs" to be declared with their type
         :type: feature
         :breaking:

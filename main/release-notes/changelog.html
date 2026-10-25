@@ -1154,6 +1154,14 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Read constraint metadata on <code class="docutils literal notranslate"><span class="pre">data</span></code> as on any other parameter<a class="headerlink reference internal" href="#3.0.0-read constraint metadata on" id="3.0.0-read constraint metadata on">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter annotated with metadata, e.g.
+<code class="docutils literal notranslate"><span class="pre">data:</span> <span class="pre">Annotated[int,</span> <span class="pre">annotated_types.Gt(0)]</span></code>, was interpreted as a request
+body without a body marker, which got around the check of <code class="docutils literal notranslate"><span class="pre">data</span></code> being
+missing a marker</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5157">https://github.com/litestar-org/litestar/pull/5157</a></span></p>
+</div>
+</dd>
 <dt>Only read parameters marked as path parameters from the path<a class="headerlink reference internal" href="#3.0.0-only read parameters marked as path parameters from the path" id="3.0.0-only read parameters marked as path parameters from the path">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>A parameter whose name matched a path segment was read from the path even when it
 was marked with <code class="docutils literal notranslate"><span class="pre">FromQuery</span></code>, <code class="docutils literal notranslate"><span class="pre">FromHeader</span></code>, <code class="docutils literal notranslate"><span class="pre">FromCookie</span></code> or the corresponding
