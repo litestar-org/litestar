@@ -4,6 +4,7 @@ from collections.abc import Callable
 from typing import Annotated, Any, Optional, cast
 from unittest.mock import MagicMock, call
 
+import annotated_types
 import msgspec.json
 import pytest
 
@@ -361,6 +362,9 @@ def test_untyped_reserved_kwargs_in_http_handler_raise() -> None:
     @post("/")
     async def with_data(data: DataclassPerson) -> None: ...
 
+    @post("/")
+    async def with_constrained_data(data: Annotated[int, annotated_types.Gt(0)]) -> None: ...
+
     for handler, message in [
         (with_cookies, "Reserved kwarg 'cookies' declared as 'dict[str, str]'. Use 'request.cookies' instead"),
         (with_headers, "Reserved kwarg 'headers' declared as 'dict[str, str]'. Use 'request.headers' instead"),
@@ -370,6 +374,11 @@ def test_untyped_reserved_kwargs_in_http_handler_raise() -> None:
         (
             with_data,
             "Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[DataclassPerson]' or "
+            "another body marker instead",
+        ),
+        (
+            with_constrained_data,
+            "Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[int]' or "
             "another body marker instead",
         ),
     ]:
@@ -421,6 +430,9 @@ def test_untyped_reserved_kwargs_in_dependency_raise() -> None:
     async def with_data(data: DataclassPerson) -> str:
         return "value"
 
+    async def with_constrained_data(data: Annotated[int, annotated_types.Gt(0)]) -> str:
+        return "value"
+
     cases: list[tuple[Callable[..., Any], str]] = [
         (
             with_cookies,
@@ -436,6 +448,11 @@ def test_untyped_reserved_kwargs_in_dependency_raise() -> None:
         (
             with_data,
             "Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[DataclassPerson]' or "
+            "another body marker instead",
+        ),
+        (
+            with_constrained_data,
+            "Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[int]' or "
             "another body marker instead",
         ),
     ]

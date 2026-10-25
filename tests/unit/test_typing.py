@@ -4,6 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union
 
+import annotated_types
 import msgspec
 import pytest
 from typing_extensions import (
@@ -176,6 +177,12 @@ def test_field_definition_with_annotated_kwarg_definition() -> None:
     kwarg_definition = KwargDefinition()
     fd = FieldDefinition.from_annotation(Annotated[str, kwarg_definition])
     assert fd.kwarg_definition is kwarg_definition
+
+
+def test_constraint_metadata_on_data_is_plain_kwarg_definition() -> None:
+    field_definition = FieldDefinition.from_kwarg(annotation=Annotated[int, annotated_types.Gt(0)], name="data")
+    assert type(field_definition.kwarg_definition) is KwargDefinition
+    assert field_definition.kwarg_definition.gt == 0
 
 
 def test_field_definition_from_union_annotation() -> None:
