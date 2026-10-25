@@ -17,7 +17,7 @@ point_encoder = TypeEncoder(
 )
 
 
-@get("/json", media_type=MediaType.JSON, sync_to_thread=False)
+@get("/json", sync_to_thread=False)
 def get_json() -> Point:
     return Point(1, 2)
 
