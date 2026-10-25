@@ -99,6 +99,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_kwargs_models",
         "_request_class",
         "_request_max_body_size",
+        "_resolved_before_request",
         "_response_class",
         "_response_type_handler",
         "_sync_to_thread",
@@ -306,6 +307,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.before_request: AsyncBeforeRequestHookHandler | None = (
             ensure_async_callable(before_request) if before_request else None
         )
+        self._resolved_before_request: AsyncAnyCallable | None = self.before_request
         self.cache = cache
         self.cache_control = cache_control
         self.cache_key_builder = cache_key_builder
@@ -536,6 +538,9 @@ class HTTPRouteHandler(BaseRouteHandler):
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         super().on_registration(route=route, app=app)
 
+        if type(self).resolve_before_request is not HTTPRouteHandler.resolve_before_request:
+            self._resolved_before_request = self.resolve_before_request()
+
         if self._request_max_body_size is Empty:
             raise ImproperlyConfiguredException(
                 "'request_max_body_size' set to 'Empty' on all layers. To omit a limit, "
@@ -720,7 +725,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_data: Any = None
         parameter_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
 
-        if before_request_handler := self.resolve_before_request():
+        if before_request_handler := self._resolved_before_request:
             response_data = await before_request_handler(request)
 
         # create and enter an AsyncExit stack as we may or may not have a
