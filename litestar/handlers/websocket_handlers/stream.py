@@ -248,7 +248,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
                 parsed_handler_signature,
                 parameters={
                     **parsed_handler_signature.parameters,
-                    "socket": FieldDefinition.from_annotation("WebSocket", name="socket"),
+                    "socket": FieldDefinition.from_annotation(self.websocket_class, name="socket"),
                 },
             )
 

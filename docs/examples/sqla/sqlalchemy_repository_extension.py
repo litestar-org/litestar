@@ -21,7 +21,7 @@ from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
 from litestar.di import NamedDependency, Provide
-from litestar.params import FromPath
+from litestar.params import FromPath, JSONBody
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -171,7 +171,7 @@ async def get_blog_details(
 @post(path="/")
 async def create_blog(
     blog_post_repo: NamedDependency[BlogPostRepository],
-    data: BlogPostCreate,
+    data: JSONBody[BlogPostCreate],
 ) -> BlogPostDTO:
     """Create a new blog post."""
     _data = data.model_dump(exclude_unset=True, by_alias=False, exclude_none=True)

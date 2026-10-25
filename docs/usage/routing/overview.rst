@@ -112,10 +112,11 @@ A :class:`~.router.Router` can register :class:`Controllers <.controller.Control
     :caption: Registering a :class:`~.router.Router`
 
     from litestar import Litestar, Router, get
+    from litestar.params import FromPath
 
 
     @get("/{order_id:int}")
-    def order_handler(order_id: int) -> None: ...
+    def order_handler(order_id: FromPath[int]) -> None: ...
 
 
     order_router = Router(path="/orders", route_handlers=[order_handler])
@@ -141,6 +142,7 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
         from litestar.controller import Controller
         from litestar.dto import DTOConfig, DTOData
         from litestar.handlers import get, post, patch, delete
+        from litestar.params import FromPath, JSONBody
         from pydantic import BaseModel, UUID4
 
 
@@ -157,18 +159,18 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
            path = "/user-order"
 
            @post()
-           async def create_user_order(self, data: UserOrder) -> UserOrder: ...
+           async def create_user_order(self, data: JSONBody[UserOrder]) -> UserOrder: ...
 
            @get(path="/{order_id:uuid}")
-           async def retrieve_user_order(self, order_id: UUID4) -> UserOrder: ...
+           async def retrieve_user_order(self, order_id: FromPath[UUID4]) -> UserOrder: ...
 
            @patch(path="/{order_id:uuid}", dto=PartialUserOrderDTO)
            async def update_user_order(
-               self, order_id: UUID4, data: DTOData[PartialUserOrderDTO]
+               self, order_id: FromPath[UUID4], data: JSONBody[DTOData[PartialUserOrderDTO]]
            ) -> UserOrder: ...
 
            @delete(path="/{order_id:uuid}")
-           async def delete_user_order(self, order_id: UUID4) -> None: ...
+           async def delete_user_order(self, order_id: FromPath[UUID4]) -> None: ...
 
 The above is a simple example of a "CRUD" controller for a model called ``UserOrder``. You can place as
 many :doc:`route handler methods </usage/routing/handlers>` on a controller,

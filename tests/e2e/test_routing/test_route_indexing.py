@@ -6,6 +6,7 @@ from litestar import (
     Controller,
     Litestar,
     Router,
+    WebSocket,
     asgi,
     delete,
     get,
@@ -32,7 +33,7 @@ def test_indexes_handlers(decorator: HTTPHandlerDecorator) -> None:
         pass
 
     @websocket("/websocket-path", name="websocket-name")
-    async def websocket_handler(socket: Any) -> None:
+    async def websocket_handler(socket: WebSocket) -> None:
         pass
 
     router = Router("router-path/", route_handlers=[handler])

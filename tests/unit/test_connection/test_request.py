@@ -22,6 +22,7 @@ from litestar.exceptions import (
     SerializationException,
 )
 from litestar.middleware import MiddlewareProtocol
+from litestar.params import RawBody
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json, encode_msgpack
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_413_REQUEST_ENTITY_TOO_LARGE
@@ -496,7 +497,7 @@ def test_request_body_exceeding_content_length_is_allowed() -> None:
     """
 
     @post("/", request_max_body_size=10)
-    def handler(body: bytes) -> bytes:
+    def handler(body: RawBody) -> bytes:
         return body
 
     with create_test_client([handler]) as client:
@@ -509,7 +510,7 @@ def test_request_body_exceeding_content_length_still_enforces_max_body_size() ->
     """Content-length mismatch is allowed, but request_max_body_size is still enforced."""
 
     @post("/", request_max_body_size=1)
-    def handler(body: bytes) -> bytes:
+    def handler(body: RawBody) -> bytes:
         return body
 
     with create_test_client([handler]) as client:
@@ -523,7 +524,7 @@ def test_request_body_exceeds_max_request_body_size() -> None:
         await request.body()
 
     @post("/two", request_max_body_size=1)
-    async def handler_two(body: bytes) -> None:
+    async def handler_two(body: RawBody) -> None:
         pass
 
     with create_test_client([handler_one, handler_two]) as client:
@@ -541,7 +542,7 @@ def test_request_body_exceeds_max_request_body_size_chunked() -> None:
         await request.body()
 
     @post("/two", request_max_body_size=1)
-    async def handler_two(body: bytes, request: Request) -> None:
+    async def handler_two(body: RawBody, request: Request) -> None:
         assert request.headers["transfer-encoding"] == "chunked"
         await request.body()
 
