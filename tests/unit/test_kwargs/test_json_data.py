@@ -3,6 +3,7 @@ from dataclasses import asdict
 from msgspec import Struct
 
 from litestar import post
+from litestar.params import JSONBody, RequestBody
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import create_test_client
 
@@ -11,7 +12,17 @@ from . import Form
 
 def test_request_body_json() -> None:
     @post(path="/test")
-    def test_method(data: Form) -> None:
+    def test_method(data: JSONBody[Form]) -> None:
+        assert isinstance(data, Form)
+
+    with create_test_client(test_method) as client:
+        response = client.post("/test", json=asdict(Form(name="Moishe Zuchmir", age=30, programmer=True, value="100")))
+        assert response.status_code == HTTP_201_CREATED
+
+
+def test_request_body_declared_with_request_body() -> None:
+    @post(path="/test")
+    def test_method(data: RequestBody[Form]) -> None:
         assert isinstance(data, Form)
 
     with create_test_client(test_method) as client:
@@ -21,7 +32,7 @@ def test_request_body_json() -> None:
 
 def test_empty_dict_allowed() -> None:
     @post(path="/test")
-    def test_method(data: dict) -> None:
+    def test_method(data: JSONBody[dict]) -> None:
         assert isinstance(data, dict)
 
     with create_test_client(test_method) as client:
@@ -36,7 +47,7 @@ def test_no_body_with_default() -> None:
     default = Test(name="default")
 
     @post(path="/test", signature_types=[Test])
-    def test_method(data: Test = default) -> Test:
+    def test_method(data: JSONBody[Test] = default) -> Test:
         return data
 
     with create_test_client(test_method) as client:

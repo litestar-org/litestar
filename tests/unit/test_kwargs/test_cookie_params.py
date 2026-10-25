@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 import pytest
 
 from litestar import get, post
-from litestar.params import CookieParameter, ParameterKwarg
+from litestar.params import CookieParameter, JSONBody, ParameterKwarg
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -46,7 +46,7 @@ def test_cookie_params(t_type: type, param_dict: dict, param: ParameterKwarg, ex
 def test_cookie_param_with_post() -> None:
     # https://github.com/litestar-org/litestar/issues/3734
     @post()
-    async def handler(data: str, secret: Annotated[str, CookieParameter(name="x-secret")]) -> None:
+    async def handler(data: JSONBody[str], secret: Annotated[str, CookieParameter(name="x-secret")]) -> None:
         return None
 
     with create_test_client([handler], raise_server_exceptions=True) as client:

@@ -14,7 +14,7 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotAuthorizedException, PermissionDeniedException
 from litestar.handlers import HTTPRouteHandler
 from litestar.middleware.logging import LoggingMiddleware
-from litestar.params import Body
+from litestar.params import Body, JSONBody
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
 from tests.helpers import cleanup_logging_impl
@@ -210,7 +210,7 @@ def test_logging_middleware_compressed_response_body(
 
 def test_logging_middleware_post_body() -> None:
     @post("/")
-    def post_handler(data: dict[str, str]) -> dict[str, str]:
+    def post_handler(data: JSONBody[dict[str, str]]) -> dict[str, str]:
         return data
 
     with create_test_client(
@@ -315,7 +315,7 @@ def test_logging_middleware_with_session_middleware(session_backend_config_memor
 def test_structlog_invalid_request_body_handled() -> None:
     # https://github.com/litestar-org/litestar/issues/3063
     @post("/")
-    async def hello_world(data: dict[str, Any]) -> dict[str, Any]:
+    async def hello_world(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
         return data
 
     with create_test_client(

@@ -6,6 +6,56 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Require "reserved kwargs" to be declared with their type
+        :type: feature
+        :breaking:
+        :pr: 5154
+
+        Declaring the "reserved kwargs" ``body``, ``cookies``, ``data``,
+        ``headers``, ``query``, ``request``, ``scope`` and ``socket`` without the type
+        listed below, or with a different one, raises
+        :class:`~litestar.exceptions.ImproperlyConfiguredException` at startup.
+
+        For this, add the types :data:`~litestar.params.RawBody`,
+        :data:`~litestar.params.QueryParams` and :data:`~litestar.params.RequestCookies`,
+        and the body marker :data:`~litestar.params.RequestBody`, which declares a body
+        of the default media type, ``application/json``.
+
+        .. list-table::
+            :header-rows: 1
+            :widths: 20 80
+
+            * - Parameter
+              - Type
+            * - ``body``
+              - :data:`~litestar.params.RawBody`
+            * - ``cookies``
+              - :data:`~litestar.params.RequestCookies`
+            * - ``data``
+              - A body marker, e.g. :data:`~litestar.params.JSONBody` or
+                :data:`~litestar.params.RequestBody`
+            * - ``headers``
+              - :class:`~litestar.datastructures.Headers`
+            * - ``query``
+              - :data:`~litestar.params.QueryParams`
+            * - ``request``
+              - The request class configured for the handler, or one of its base classes,
+                e.g. :class:`~litestar.connection.Request`
+            * - ``scope``
+              - :data:`~litestar.types.Scope`
+            * - ``socket``
+              - The websocket class configured for the handler, or one of its base
+                classes, e.g. :class:`~litestar.connection.WebSocket`
+
+        ``headers`` receives the request's :class:`~litestar.datastructures.Headers`.
+        Before, ``headers: dict[str, str]`` received a :class:`dict` and
+        ``headers: Headers`` failed validation with a ``400 - Bad Request``.
+
+        In route handlers, ``cookies``, ``headers``, ``query`` and ``scope`` can also be
+        accessed through the request, e.g. ``request.headers``.
+
+        .. seealso:: :ref:`handler-function-kwargs`
+
     .. change:: Remove support for implicitly declared request parameters
         :type: feature
         :breaking:

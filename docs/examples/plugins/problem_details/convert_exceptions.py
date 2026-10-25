@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from litestar import Litestar, post
+from litestar.params import JSONBody
 from litestar.plugins.problem_details import ProblemDetailsConfig, ProblemDetailsException, ProblemDetailsPlugin
 
 
@@ -20,7 +21,7 @@ class PurchaseNotAllowedError(Exception):
 
 
 @post("/purchase")
-async def purchase(data: PurchaseItem) -> None:
+async def purchase(data: JSONBody[PurchaseItem]) -> None:
     raise PurchaseNotAllowedError(
         account_id=12345,
         balance=30,

@@ -206,9 +206,7 @@ async def headers_extractor(values: dict[str, Any], connection: ASGIConnection) 
     Returns:
         None
     """
-    # TODO: This should be removed in 3.0 and instead Headers should be injected
-    # directly. We are only keeping this one around to not break things
-    values["headers"] = dict(connection.headers.items())
+    values["headers"] = connection.headers
 
 
 async def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
