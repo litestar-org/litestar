@@ -665,17 +665,21 @@ and <a class="reference internal" href="../../reference/params.html#litestar.par
 <li><p><a class="reference internal" href="../dependency-injection.html"><span class="doc">injected dependencies</span></a></p></li>
 </ul>
 <p>Additionally, you can specify the following special <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.15)"><span class="xref std std-term">kwargs</span></a>,
-(known as “reserved keywords arguments”):</p>
+(known as “reserved keywords arguments”), each declared with its type:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">cookies</span></code>: injects the request <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.Cookie" title="litestar.datastructures.cookie.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">cookies</span></code></a> as a parsed
-<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">headers</span></code>: injects the request headers as a parsed <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">query</span></code> : injects the request <code class="docutils literal notranslate"><span class="pre">query_params</span></code> as a parsed <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">request</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance. Available only for <a class="reference internal" href="#http-route-handlers">HTTP route handlers</a></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">scope</span></code> : injects the ASGI scope <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">socket</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instance. Available only for <a class="reference internal" href="#websocket-route-handlers">websocket route handlers</a></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">state</span></code> : injects a copy of the application <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">body</span></code> : the raw request body. Available only for <a class="reference internal" href="#http-route-handlers">HTTP route handlers</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cookies:</span> <span class="pre">RequestCookies</span></code>: injects the request cookies as a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.
+See <a class="reference internal" href="../../reference/params.html#litestar.params.RequestCookies" title="litestar.params.RequestCookies"><code class="xref py py-data docutils literal notranslate"><span class="pre">RequestCookies</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headers:</span> <span class="pre">Headers</span></code>: injects the request <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.Headers" title="litestar.datastructures.headers.Headers"><code class="xref py py-class docutils literal notranslate"><span class="pre">Headers</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">query:</span> <span class="pre">QueryParams</span></code>: injects the request <code class="docutils literal notranslate"><span class="pre">query_params</span></code>. See <a class="reference internal" href="../../reference/params.html#litestar.params.QueryParams" title="litestar.params.QueryParams"><code class="xref py py-data docutils literal notranslate"><span class="pre">QueryParams</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">request:</span> <span class="pre">Request</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance. Available only for
+<a class="reference internal" href="#http-route-handlers">HTTP route handlers</a>. With a custom request class, use that class or one it inherits from.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scope:</span> <span class="pre">Scope</span></code>: injects the ASGI scope <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">socket:</span> <span class="pre">WebSocket</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instance. Available only for
+<a class="reference internal" href="#websocket-route-handlers">websocket route handlers</a>. With a custom websocket class, use that class or one it inherits from.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">state:</span> <span class="pre">State</span></code>: injects a copy of the application <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">body:</span> <span class="pre">RawBody</span></code>: the raw request body. Available only for <a class="reference internal" href="#http-route-handlers">HTTP route handlers</a>. See <a class="reference internal" href="../../reference/params.html#litestar.params.RawBody" title="litestar.params.RawBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">RawBody</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: the parsed request body, declared with a body marker such as <a class="reference internal" href="../../reference/params.html#litestar.params.JSONBody" title="litestar.params.JSONBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">JSONBody</span></code></a>. See
+<a class="reference internal" href="../requests.html"><span class="doc">requests</span></a>.</p></li>
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -686,18 +690,18 @@ and <a class="reference internal" href="../../reference/params.html#litestar.par
 <p>For example:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Providing an alternative name for a reserved keyword argument</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Headers</span><span class="p">,</span> <span class="n">State</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryParams</span><span class="p">,</span> <span class="n">RequestCookies</span>
 </span><span data-line="4">
 </span><span data-line="5">
 </span><span data-line="6"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 </span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_request_handler</span><span class="p">(</span>
 </span><span data-line="8">   <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span>
 </span><span data-line="9">   <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
-</span><span data-line="10">   <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-</span><span data-line="11">   <span class="n">query</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-</span><span data-line="12">   <span class="n">cookies</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+</span><span data-line="10">   <span class="n">headers</span><span class="p">:</span> <span class="n">Headers</span><span class="p">,</span>
+</span><span data-line="11">   <span class="n">query</span><span class="p">:</span> <span class="n">QueryParams</span><span class="p">,</span>
+</span><span data-line="12">   <span class="n">cookies</span><span class="p">:</span> <span class="n">RequestCookies</span><span class="p">,</span>
 </span><span data-line="13"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
@@ -777,7 +781,7 @@ the <a class="reference internal" href="../../reference/handlers.html#litestar.h
 <div class="code-block-caption"><span class="caption-text">Predefined <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.15)"><span class="xref std std-term">decorators</span></a> for HTTP route handlers</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">head</span>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromPath</span><span class="p">,</span> <span class="n">JSONBody</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticDTO</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
@@ -795,7 +799,7 @@ the <a class="reference internal" href="../../reference/handlers.html#litestar.h
 </span><span data-line="18">
 </span><span data-line="19">
 </span><span data-line="20"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources&quot;</span><span class="p">)</span>
-</span><span data-line="21"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="21"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">Resource</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="22">
 </span><span data-line="23">
 </span><span data-line="24"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
@@ -807,12 +811,12 @@ the <a class="reference internal" href="../../reference/handlers.html#litestar.h
 </span><span data-line="30">
 </span><span data-line="31">
 </span><span data-line="32"><span class="nd">@put</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">)</span>
-</span><span data-line="33"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="33"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_resource</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">Resource</span><span class="p">],</span> <span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="34">
 </span><span data-line="35">
 </span><span data-line="36"><span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/resources/{pk:int}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialResourceDTO</span><span class="p">)</span>
 </span><span data-line="37"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">partially_update_resource</span><span class="p">(</span>
-</span><span data-line="38">   <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">PartialResourceDTO</span><span class="p">],</span> <span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+</span><span data-line="38">   <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">DTOData</span><span class="p">[</span><span class="n">PartialResourceDTO</span><span class="p">]],</span> <span class="n">pk</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 </span><span data-line="39"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Resource</span><span class="p">:</span> <span class="o">...</span>
 </span><span data-line="40">
 </span><span data-line="41">
@@ -1127,15 +1131,16 @@ or <code class="docutils literal notranslate"><span class="pre">flake8-type-chec
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="8">    <span class="kn">from</span><span class="w"> </span><span class="nn">domain</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
-</span><span data-line="9">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="9">    <span class="kn">from</span><span class="w"> </span><span class="nn">domain</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
 </span><span data-line="10">
-</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-</span><span data-line="12">    <span class="nd">@post</span><span class="p">()</span>
-</span><span data-line="13">    <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
-</span><span data-line="14">        <span class="k">return</span> <span class="n">data</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="13">    <span class="nd">@post</span><span class="p">()</span>
+</span><span data-line="14">    <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">Model</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+</span><span data-line="15">        <span class="k">return</span> <span class="n">data</span>
 </span></pre></div>
 </div>
 </div>
@@ -1179,15 +1184,16 @@ nor do we require any directives to control behavior of linters.</p>
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="8">    <span class="kn">from</span><span class="w"> </span><span class="nn">.domain</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
-</span><span data-line="9">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="9">    <span class="kn">from</span><span class="w"> </span><span class="nn">.domain</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
 </span><span data-line="10">
-</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-</span><span data-line="12">    <span class="nd">@post</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="13">    <span class="k">def</span><span class="w"> </span><span class="nf">post_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
-</span><span data-line="14">        <span class="k">return</span> <span class="n">data</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="13">    <span class="nd">@post</span><span class="p">(</span><span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="14">    <span class="k">def</span><span class="w"> </span><span class="nf">post_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">Model</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+</span><span data-line="15">        <span class="k">return</span> <span class="n">data</span>
 </span></pre></div>
 </div>
 </div>

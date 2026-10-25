@@ -548,6 +548,69 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Require “reserved kwargs” to be declared with their type<a class="headerlink reference internal" href="#3.0.0-require &quot;reserved kwargs&quot; to be declared with their type" id="3.0.0-require &quot;reserved kwargs&quot; to be declared with their type">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Declaring the “reserved kwargs” <code class="docutils literal notranslate"><span class="pre">body</span></code>, <code class="docutils literal notranslate"><span class="pre">cookies</span></code>, <code class="docutils literal notranslate"><span class="pre">data</span></code>,
+<code class="docutils literal notranslate"><span class="pre">headers</span></code>, <code class="docutils literal notranslate"><span class="pre">query</span></code>, <code class="docutils literal notranslate"><span class="pre">request</span></code>, <code class="docutils literal notranslate"><span class="pre">scope</span></code> and <code class="docutils literal notranslate"><span class="pre">socket</span></code> without the type
+listed below, or with a different one, raises
+<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> at startup.</p>
+<p>For this, add the types <a class="reference internal" href="../reference/params.html#litestar.params.RawBody" title="litestar.params.RawBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">RawBody</span></code></a>,
+<a class="reference internal" href="../reference/params.html#litestar.params.QueryParams" title="litestar.params.QueryParams"><code class="xref py py-data docutils literal notranslate"><span class="pre">QueryParams</span></code></a> and <a class="reference internal" href="../reference/params.html#litestar.params.RequestCookies" title="litestar.params.RequestCookies"><code class="xref py py-data docutils literal notranslate"><span class="pre">RequestCookies</span></code></a>,
+and the body marker <a class="reference internal" href="../reference/params.html#litestar.params.RequestBody" title="litestar.params.RequestBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">RequestBody</span></code></a>, which declares a body
+of the default media type, <code class="docutils literal notranslate"><span class="pre">application/json</span></code>.</p>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">body</span></code></p></td>
+<td><p><a class="reference internal" href="../reference/params.html#litestar.params.RawBody" title="litestar.params.RawBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">RawBody</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cookies</span></code></p></td>
+<td><p><a class="reference internal" href="../reference/params.html#litestar.params.RequestCookies" title="litestar.params.RequestCookies"><code class="xref py py-data docutils literal notranslate"><span class="pre">RequestCookies</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">data</span></code></p></td>
+<td><p>A body marker, e.g. <a class="reference internal" href="../reference/params.html#litestar.params.JSONBody" title="litestar.params.JSONBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">JSONBody</span></code></a> or
+<a class="reference internal" href="../reference/params.html#litestar.params.RequestBody" title="litestar.params.RequestBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">RequestBody</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">headers</span></code></p></td>
+<td><p><a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.Headers" title="litestar.datastructures.Headers"><code class="xref py py-class docutils literal notranslate"><span class="pre">Headers</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">query</span></code></p></td>
+<td><p><a class="reference internal" href="../reference/params.html#litestar.params.QueryParams" title="litestar.params.QueryParams"><code class="xref py py-data docutils literal notranslate"><span class="pre">QueryParams</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request</span></code></p></td>
+<td><p>The request class configured for the handler, or one of its base classes,
+e.g. <a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">scope</span></code></p></td>
+<td><p><a class="reference internal" href="../reference/types.html#litestar.types.Scope" title="litestar.types.Scope"><code class="xref py py-data docutils literal notranslate"><span class="pre">Scope</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">socket</span></code></p></td>
+<td><p>The websocket class configured for the handler, or one of its base
+classes, e.g. <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">headers</span></code> receives the request’s <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.Headers" title="litestar.datastructures.Headers"><code class="xref py py-class docutils literal notranslate"><span class="pre">Headers</span></code></a>.
+Before, <code class="docutils literal notranslate"><span class="pre">headers:</span> <span class="pre">dict[str,</span> <span class="pre">str]</span></code> received a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> and
+<code class="docutils literal notranslate"><span class="pre">headers:</span> <span class="pre">Headers</span></code> failed validation with a <code class="docutils literal notranslate"><span class="pre">400</span> <span class="pre">-</span> <span class="pre">Bad</span> <span class="pre">Request</span></code>.</p>
+<p>In route handlers, <code class="docutils literal notranslate"><span class="pre">cookies</span></code>, <code class="docutils literal notranslate"><span class="pre">headers</span></code>, <code class="docutils literal notranslate"><span class="pre">query</span></code> and <code class="docutils literal notranslate"><span class="pre">scope</span></code> can also be
+accessed through the request, e.g. <code class="docutils literal notranslate"><span class="pre">request.headers</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/routing/handlers.html#handler-function-kwargs"><span class="std std-ref">“reserved” keyword arguments</span></a></p>
+</div>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5154">https://github.com/litestar-org/litestar/pull/5154</a></span></p>
+</div>
+</dd>
 <dt>Remove support for implicitly declared request parameters<a class="headerlink reference internal" href="#3.0.0-remove support for implicitly declared request parameters" id="3.0.0-remove support for implicitly declared request parameters">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Remove the deprecated implicit request parameter declaration. All request
 parameters must now be explicitly marked (e.g. with

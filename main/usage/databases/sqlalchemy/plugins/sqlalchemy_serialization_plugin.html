@@ -575,23 +575,24 @@ Async</label><div class="sd-tab-content docutils">
 </span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 </span><span data-line="5"><span class="linenos"> 5</span>
 </span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="7"><span class="linenos"> 7</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
-</span><span data-line="10"><span class="linenos">10</span>
+</span><span data-line="9"><span class="linenos"> 9</span>
+</span><span data-line="10"><span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
 </span><span data-line="11"><span class="linenos">11</span>
-</span><span data-line="12"><span class="linenos">12</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-</span><span data-line="13"><span class="linenos">13</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
-</span><span data-line="14"><span class="linenos">14</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="15"><span class="linenos">15</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
-</span><span data-line="16"><span class="linenos">16</span>
+</span><span data-line="12"><span class="linenos">12</span>
+</span><span data-line="13"><span class="linenos">13</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+</span><span data-line="14"><span class="linenos">14</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
+</span><span data-line="15"><span class="linenos">15</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="16"><span class="linenos">16</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 </span><span data-line="17"><span class="linenos">17</span>
-</span><span data-line="18"><span class="linenos">18</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="19"><span class="linenos">19</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-</span><span data-line="20"><span class="linenos">20</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
-</span><span data-line="21"><span class="linenos">21</span>
+</span><span data-line="18"><span class="linenos">18</span>
+</span><span data-line="19"><span class="linenos">19</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="20"><span class="linenos">20</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+</span><span data-line="21"><span class="linenos">21</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
 </span><span data-line="22"><span class="linenos">22</span>
-</span><span data-line="23"><span class="linenos">23</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemySerializationPlugin</span><span class="p">()])</span>
+</span><span data-line="23"><span class="linenos">23</span>
+</span><span data-line="24"><span class="linenos">24</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemySerializationPlugin</span><span class="p">()])</span>
 </span></pre></div>
 </div>
 </div>
@@ -607,23 +608,24 @@ Sync</label><div class="sd-tab-content docutils">
 </span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 </span><span data-line="5"><span class="linenos"> 5</span>
 </span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="7"><span class="linenos"> 7</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
-</span><span data-line="10"><span class="linenos">10</span>
+</span><span data-line="9"><span class="linenos"> 9</span>
+</span><span data-line="10"><span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
 </span><span data-line="11"><span class="linenos">11</span>
-</span><span data-line="12"><span class="linenos">12</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-</span><span data-line="13"><span class="linenos">13</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
-</span><span data-line="14"><span class="linenos">14</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="15"><span class="linenos">15</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
-</span><span data-line="16"><span class="linenos">16</span>
+</span><span data-line="12"><span class="linenos">12</span>
+</span><span data-line="13"><span class="linenos">13</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+</span><span data-line="14"><span class="linenos">14</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
+</span><span data-line="15"><span class="linenos">15</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="16"><span class="linenos">16</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 </span><span data-line="17"><span class="linenos">17</span>
-</span><span data-line="18"><span class="linenos">18</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="19"><span class="linenos">19</span><span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-</span><span data-line="20"><span class="linenos">20</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
-</span><span data-line="21"><span class="linenos">21</span>
+</span><span data-line="18"><span class="linenos">18</span>
+</span><span data-line="19"><span class="linenos">19</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="20"><span class="linenos">20</span><span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+</span><span data-line="21"><span class="linenos">21</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
 </span><span data-line="22"><span class="linenos">22</span>
-</span><span data-line="23"><span class="linenos">23</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemySerializationPlugin</span><span class="p">()])</span>
+</span><span data-line="23"><span class="linenos">23</span>
+</span><span data-line="24"><span class="linenos">24</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemySerializationPlugin</span><span class="p">()])</span>
 </span></pre></div>
 </div>
 </div>
@@ -646,23 +648,24 @@ Serialization Plugin</label><div class="sd-tab-content docutils">
 </span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 </span><span data-line="5"><span class="linenos"> 5</span>
 </span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="7"><span class="linenos"> 7</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
-</span><span data-line="10"><span class="linenos">10</span>
+</span><span data-line="9"><span class="linenos"> 9</span>
+</span><span data-line="10"><span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
 </span><span data-line="11"><span class="linenos">11</span>
-</span><span data-line="12"><span class="linenos">12</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-</span><span data-line="13"><span class="linenos">13</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
-</span><span data-line="14"><span class="linenos">14</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="15"><span class="linenos">15</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
-</span><span data-line="16"><span class="linenos">16</span>
+</span><span data-line="12"><span class="linenos">12</span>
+</span><span data-line="13"><span class="linenos">13</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+</span><span data-line="14"><span class="linenos">14</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
+</span><span data-line="15"><span class="linenos">15</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="16"><span class="linenos">16</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 </span><span data-line="17"><span class="linenos">17</span>
-</span><span data-line="18"><span class="linenos">18</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="19"><span class="linenos">19</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-</span><span data-line="20"><span class="linenos">20</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
-</span><span data-line="21"><span class="linenos">21</span>
+</span><span data-line="18"><span class="linenos">18</span>
+</span><span data-line="19"><span class="linenos">19</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="20"><span class="linenos">20</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+</span><span data-line="21"><span class="linenos">21</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
 </span><span data-line="22"><span class="linenos">22</span>
-</span><span data-line="23"><span class="linenos">23</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemySerializationPlugin</span><span class="p">()])</span>
+</span><span data-line="23"><span class="linenos">23</span>
+</span><span data-line="24"><span class="linenos">24</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemySerializationPlugin</span><span class="p">()])</span>
 </span></pre></div>
 </div>
 </div>
@@ -675,23 +678,24 @@ Data Transfer Object</label><div class="sd-tab-content docutils">
 </span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 </span><span data-line="5"><span class="linenos"> 5</span>
 </span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="7"><span class="linenos"> 7</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
-</span><span data-line="10"><span class="linenos">10</span>
+</span><span data-line="9"><span class="linenos"> 9</span>
+</span><span data-line="10"><span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
 </span><span data-line="11"><span class="linenos">11</span>
-</span><span data-line="12"><span class="linenos">12</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-</span><span data-line="13"><span class="linenos">13</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
-</span><span data-line="14"><span class="linenos">14</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="15"><span class="linenos">15</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
-</span><span data-line="16"><span class="linenos">16</span>
+</span><span data-line="12"><span class="linenos">12</span>
+</span><span data-line="13"><span class="linenos">13</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+</span><span data-line="14"><span class="linenos">14</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
+</span><span data-line="15"><span class="linenos">15</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="16"><span class="linenos">16</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
 </span><span data-line="17"><span class="linenos">17</span>
-</span><span data-line="18"><span class="linenos">18</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">])</span>
-</span><span data-line="19"><span class="linenos">19</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-</span><span data-line="20"><span class="linenos">20</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
-</span><span data-line="21"><span class="linenos">21</span>
+</span><span data-line="18"><span class="linenos">18</span>
+</span><span data-line="19"><span class="linenos">19</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">])</span>
+</span><span data-line="20"><span class="linenos">20</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+</span><span data-line="21"><span class="linenos">21</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
 </span><span data-line="22"><span class="linenos">22</span>
-</span><span data-line="23"><span class="linenos">23</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">])</span>
+</span><span data-line="23"><span class="linenos">23</span>
+</span><span data-line="24"><span class="linenos">24</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -717,25 +721,26 @@ Async</label><div class="sd-tab-content docutils">
 </span><span data-line="5"><span class="linenos"> 5</span>
 </span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">dto_field</span>
-</span><span data-line="8"><span class="linenos"> 8</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 </span><span data-line="9"><span class="linenos"> 9</span>
-</span><span data-line="10"><span class="hll"><span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
-</span></span><span data-line="11"><span class="linenos">11</span>
-</span><span data-line="12"><span class="linenos">12</span>
-</span><span data-line="13"><span class="linenos">13</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-</span><span data-line="14"><span class="linenos">14</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
-</span><span data-line="15"><span class="linenos">15</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="16"><span class="linenos">16</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
-</span><span data-line="17"><span class="linenos">17</span>    <span class="n">super_secret_value</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;private&quot;</span><span class="p">))</span>
-</span><span data-line="18"><span class="linenos">18</span>
+</span><span data-line="10"><span class="linenos">10</span>
+</span><span data-line="11"><span class="hll"><span class="linenos">11</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
+</span></span><span data-line="12"><span class="linenos">12</span>
+</span><span data-line="13"><span class="linenos">13</span>
+</span><span data-line="14"><span class="linenos">14</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+</span><span data-line="15"><span class="linenos">15</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
+</span><span data-line="16"><span class="linenos">16</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="17"><span class="linenos">17</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
+</span><span data-line="18"><span class="linenos">18</span>    <span class="n">super_secret_value</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;private&quot;</span><span class="p">))</span>
 </span><span data-line="19"><span class="linenos">19</span>
-</span><span data-line="20"><span class="linenos">20</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="21"><span class="linenos">21</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-</span><span data-line="22"><span class="linenos">22</span>    <span class="n">data</span><span class="o">.</span><span class="n">super_secret_value</span> <span class="o">=</span> <span class="s2">&quot;This is a secret&quot;</span>
-</span><span data-line="23"><span class="hll"><span class="linenos">23</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
-</span></span><span data-line="24"><span class="linenos">24</span>
-</span><span data-line="25"><span class="linenos">25</span>
-</span><span data-line="26"><span class="linenos">26</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemySerializationPlugin</span><span class="p">()])</span>
+</span><span data-line="20"><span class="linenos">20</span>
+</span><span data-line="21"><span class="linenos">21</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="22"><span class="linenos">22</span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+</span><span data-line="23"><span class="linenos">23</span>    <span class="n">data</span><span class="o">.</span><span class="n">super_secret_value</span> <span class="o">=</span> <span class="s2">&quot;This is a secret&quot;</span>
+</span><span data-line="24"><span class="hll"><span class="linenos">24</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
+</span></span><span data-line="25"><span class="linenos">25</span>
+</span><span data-line="26"><span class="linenos">26</span>
+</span><span data-line="27"><span class="linenos">27</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemySerializationPlugin</span><span class="p">()])</span>
 </span></pre></div>
 </div>
 </div>
@@ -752,25 +757,26 @@ Sync</label><div class="sd-tab-content docutils">
 </span><span data-line="5"><span class="linenos"> 5</span>
 </span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">dto_field</span>
-</span><span data-line="8"><span class="linenos"> 8</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 </span><span data-line="9"><span class="linenos"> 9</span>
-</span><span data-line="10"><span class="hll"><span class="linenos">10</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
-</span></span><span data-line="11"><span class="linenos">11</span>
-</span><span data-line="12"><span class="linenos">12</span>
-</span><span data-line="13"><span class="linenos">13</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-</span><span data-line="14"><span class="linenos">14</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
-</span><span data-line="15"><span class="linenos">15</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="16"><span class="linenos">16</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
-</span><span data-line="17"><span class="linenos">17</span>    <span class="n">super_secret_value</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;private&quot;</span><span class="p">))</span>
-</span><span data-line="18"><span class="linenos">18</span>
+</span><span data-line="10"><span class="linenos">10</span>
+</span><span data-line="11"><span class="hll"><span class="linenos">11</span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span> <span class="o">...</span>
+</span></span><span data-line="12"><span class="linenos">12</span>
+</span><span data-line="13"><span class="linenos">13</span>
+</span><span data-line="14"><span class="linenos">14</span><span class="k">class</span><span class="w"> </span><span class="nc">TodoItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+</span><span data-line="15"><span class="linenos">15</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;todo_item&quot;</span>
+</span><span data-line="16"><span class="linenos">16</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="17"><span class="linenos">17</span>    <span class="n">done</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
+</span><span data-line="18"><span class="linenos">18</span>    <span class="n">super_secret_value</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;private&quot;</span><span class="p">))</span>
 </span><span data-line="19"><span class="linenos">19</span>
-</span><span data-line="20"><span class="linenos">20</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="21"><span class="linenos">21</span><span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
-</span><span data-line="22"><span class="linenos">22</span>    <span class="n">data</span><span class="o">.</span><span class="n">super_secret_value</span> <span class="o">=</span> <span class="s2">&quot;This is a secret&quot;</span>
-</span><span data-line="23"><span class="hll"><span class="linenos">23</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
-</span></span><span data-line="24"><span class="linenos">24</span>
-</span><span data-line="25"><span class="linenos">25</span>
-</span><span data-line="26"><span class="linenos">26</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemySerializationPlugin</span><span class="p">()])</span>
+</span><span data-line="20"><span class="linenos">20</span>
+</span><span data-line="21"><span class="linenos">21</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="22"><span class="linenos">22</span><span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoItem</span><span class="p">]:</span>
+</span><span data-line="23"><span class="linenos">23</span>    <span class="n">data</span><span class="o">.</span><span class="n">super_secret_value</span> <span class="o">=</span> <span class="s2">&quot;This is a secret&quot;</span>
+</span><span data-line="24"><span class="hll"><span class="linenos">24</span>    <span class="k">return</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
+</span></span><span data-line="25"><span class="linenos">25</span>
+</span><span data-line="26"><span class="linenos">26</span>
+</span><span data-line="27"><span class="linenos">27</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemySerializationPlugin</span><span class="p">()])</span>
 </span></pre></div>
 </div>
 </div>

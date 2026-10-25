@@ -562,31 +562,32 @@ into a problem details response.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.problem_details</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProblemDetailsConfig</span><span class="p">,</span> <span class="n">ProblemDetailsException</span><span class="p">,</span> <span class="n">ProblemDetailsPlugin</span>
-</span><span data-line="5">
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.problem_details</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProblemDetailsConfig</span><span class="p">,</span> <span class="n">ProblemDetailsException</span><span class="p">,</span> <span class="n">ProblemDetailsPlugin</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="nd">@dataclass</span>
-</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">PurchaseItem</span><span class="p">:</span>
-</span><span data-line="9">    <span class="n">item_id</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="10">    <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="11">
+</span><span data-line="7">
+</span><span data-line="8"><span class="nd">@dataclass</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">PurchaseItem</span><span class="p">:</span>
+</span><span data-line="10">    <span class="n">item_id</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="11">    <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span>
 </span><span data-line="12">
-</span><span data-line="13"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/purchase&quot;</span><span class="p">)</span>
-</span><span data-line="14"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">purchase</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">PurchaseItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="15">    <span class="c1"># Logic to check if the user has enough credit to buy the item.</span>
-</span><span data-line="16">    <span class="c1"># We assume the user does not have enough credit.</span>
-</span><span data-line="17">
-</span><span data-line="18">    <span class="k">raise</span> <span class="n">ProblemDetailsException</span><span class="p">(</span>
-</span><span data-line="19">        <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;https://example.com/probs/out-of-credit&quot;</span><span class="p">,</span>
-</span><span data-line="20">        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;You do not have enough credit.&quot;</span><span class="p">,</span>
-</span><span data-line="21">        <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Your current balance is 30, but that costs 50.&quot;</span><span class="p">,</span>
-</span><span data-line="22">        <span class="n">instance</span><span class="o">=</span><span class="s2">&quot;/account/12345/msgs/abc&quot;</span><span class="p">,</span>
-</span><span data-line="23">        <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;balance&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
-</span><span data-line="24">    <span class="p">)</span>
-</span><span data-line="25">
+</span><span data-line="13">
+</span><span data-line="14"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/purchase&quot;</span><span class="p">)</span>
+</span><span data-line="15"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">purchase</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">PurchaseItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="16">    <span class="c1"># Logic to check if the user has enough credit to buy the item.</span>
+</span><span data-line="17">    <span class="c1"># We assume the user does not have enough credit.</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="k">raise</span> <span class="n">ProblemDetailsException</span><span class="p">(</span>
+</span><span data-line="20">        <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;https://example.com/probs/out-of-credit&quot;</span><span class="p">,</span>
+</span><span data-line="21">        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;You do not have enough credit.&quot;</span><span class="p">,</span>
+</span><span data-line="22">        <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Your current balance is 30, but that costs 50.&quot;</span><span class="p">,</span>
+</span><span data-line="23">        <span class="n">instance</span><span class="o">=</span><span class="s2">&quot;/account/12345/msgs/abc&quot;</span><span class="p">,</span>
+</span><span data-line="24">        <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;balance&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
+</span><span data-line="25">    <span class="p">)</span>
 </span><span data-line="26">
-</span><span data-line="27"><span class="n">problem_details_plugin</span> <span class="o">=</span> <span class="n">ProblemDetailsPlugin</span><span class="p">(</span><span class="n">ProblemDetailsConfig</span><span class="p">())</span>
-</span><span data-line="28"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">purchase</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">problem_details_plugin</span><span class="p">])</span>
+</span><span data-line="27">
+</span><span data-line="28"><span class="n">problem_details_plugin</span> <span class="o">=</span> <span class="n">ProblemDetailsPlugin</span><span class="p">(</span><span class="n">ProblemDetailsConfig</span><span class="p">())</span>
+</span><span data-line="29"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">purchase</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">problem_details_plugin</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -604,25 +605,26 @@ into a problem details response.</p>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions.http_exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundException</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.problem_details</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProblemDetailsConfig</span><span class="p">,</span> <span class="n">ProblemDetailsPlugin</span>
-</span><span data-line="6">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.problem_details</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProblemDetailsConfig</span><span class="p">,</span> <span class="n">ProblemDetailsPlugin</span>
 </span><span data-line="7">
-</span><span data-line="8"><span class="nd">@dataclass</span>
-</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">PurchaseItem</span><span class="p">:</span>
-</span><span data-line="10">    <span class="n">item_id</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="11">    <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="12">
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@dataclass</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">PurchaseItem</span><span class="p">:</span>
+</span><span data-line="11">    <span class="n">item_id</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="12">    <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span>
 </span><span data-line="13">
-</span><span data-line="14"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/purchase&quot;</span><span class="p">)</span>
-</span><span data-line="15"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">purchase</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">PurchaseItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="16">    <span class="c1"># Logic to check if the user has enough credit to buy the item.</span>
-</span><span data-line="17">    <span class="c1"># We assume the user does not have enough credit.</span>
-</span><span data-line="18">
-</span><span data-line="19">    <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">&quot;No item with the given ID was found&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;item_id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">item_id</span><span class="p">})</span>
-</span><span data-line="20">
+</span><span data-line="14">
+</span><span data-line="15"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/purchase&quot;</span><span class="p">)</span>
+</span><span data-line="16"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">purchase</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">PurchaseItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="17">    <span class="c1"># Logic to check if the user has enough credit to buy the item.</span>
+</span><span data-line="18">    <span class="c1"># We assume the user does not have enough credit.</span>
+</span><span data-line="19">
+</span><span data-line="20">    <span class="k">raise</span> <span class="n">NotFoundException</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">&quot;No item with the given ID was found&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;item_id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">item_id</span><span class="p">})</span>
 </span><span data-line="21">
-</span><span data-line="22"><span class="n">problem_details_plugin</span> <span class="o">=</span> <span class="n">ProblemDetailsPlugin</span><span class="p">(</span><span class="n">ProblemDetailsConfig</span><span class="p">(</span><span class="n">enable_for_all_http_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-</span><span data-line="23"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">purchase</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">problem_details_plugin</span><span class="p">])</span>
+</span><span data-line="22">
+</span><span data-line="23"><span class="n">problem_details_plugin</span> <span class="o">=</span> <span class="n">ProblemDetailsPlugin</span><span class="p">(</span><span class="n">ProblemDetailsConfig</span><span class="p">(</span><span class="n">enable_for_all_http_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</span><span data-line="24"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">purchase</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">problem_details_plugin</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -647,48 +649,49 @@ by providing a mapping of the exception type to a callable that converts the exc
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 </span><span data-line="4">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.problem_details</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProblemDetailsConfig</span><span class="p">,</span> <span class="n">ProblemDetailsException</span><span class="p">,</span> <span class="n">ProblemDetailsPlugin</span>
-</span><span data-line="7">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.problem_details</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProblemDetailsConfig</span><span class="p">,</span> <span class="n">ProblemDetailsException</span><span class="p">,</span> <span class="n">ProblemDetailsPlugin</span>
 </span><span data-line="8">
-</span><span data-line="9"><span class="nd">@dataclass</span>
-</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">PurchaseItem</span><span class="p">:</span>
-</span><span data-line="11">    <span class="n">item_id</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="12">    <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="13">
+</span><span data-line="9">
+</span><span data-line="10"><span class="nd">@dataclass</span>
+</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">PurchaseItem</span><span class="p">:</span>
+</span><span data-line="12">    <span class="n">item_id</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="13">    <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span>
 </span><span data-line="14">
-</span><span data-line="15"><span class="k">class</span><span class="w"> </span><span class="nc">PurchaseNotAllowedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-</span><span data-line="16">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">balance</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">detail</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="17">        <span class="bp">self</span><span class="o">.</span><span class="n">account_id</span> <span class="o">=</span> <span class="n">account_id</span>
-</span><span data-line="18">        <span class="bp">self</span><span class="o">.</span><span class="n">balance</span> <span class="o">=</span> <span class="n">balance</span>
-</span><span data-line="19">        <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="n">detail</span>
-</span><span data-line="20">
+</span><span data-line="15">
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">PurchaseNotAllowedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+</span><span data-line="17">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">balance</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">detail</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="18">        <span class="bp">self</span><span class="o">.</span><span class="n">account_id</span> <span class="o">=</span> <span class="n">account_id</span>
+</span><span data-line="19">        <span class="bp">self</span><span class="o">.</span><span class="n">balance</span> <span class="o">=</span> <span class="n">balance</span>
+</span><span data-line="20">        <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="n">detail</span>
 </span><span data-line="21">
-</span><span data-line="22"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/purchase&quot;</span><span class="p">)</span>
-</span><span data-line="23"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">purchase</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">PurchaseItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="24">    <span class="k">raise</span> <span class="n">PurchaseNotAllowedError</span><span class="p">(</span>
-</span><span data-line="25">        <span class="n">account_id</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
-</span><span data-line="26">        <span class="n">balance</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-</span><span data-line="27">        <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Your current balance is 30, but that costs 50.&quot;</span><span class="p">,</span>
-</span><span data-line="28">    <span class="p">)</span>
-</span><span data-line="29">
+</span><span data-line="22">
+</span><span data-line="23"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/purchase&quot;</span><span class="p">)</span>
+</span><span data-line="24"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">purchase</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">PurchaseItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="25">    <span class="k">raise</span> <span class="n">PurchaseNotAllowedError</span><span class="p">(</span>
+</span><span data-line="26">        <span class="n">account_id</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
+</span><span data-line="27">        <span class="n">balance</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+</span><span data-line="28">        <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Your current balance is 30, but that costs 50.&quot;</span><span class="p">,</span>
+</span><span data-line="29">    <span class="p">)</span>
 </span><span data-line="30">
-</span><span data-line="31"><span class="k">def</span><span class="w"> </span><span class="nf">convert_purchase_not_allowed_to_problem_details</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="n">PurchaseNotAllowedError</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProblemDetailsException</span><span class="p">:</span>
-</span><span data-line="32">    <span class="k">return</span> <span class="n">ProblemDetailsException</span><span class="p">(</span>
-</span><span data-line="33">        <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;https://example.com/probs/out-of-credit&quot;</span><span class="p">,</span>
-</span><span data-line="34">        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;You do not have enough credit.&quot;</span><span class="p">,</span>
-</span><span data-line="35">        <span class="n">detail</span><span class="o">=</span><span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span>
-</span><span data-line="36">        <span class="n">instance</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/account/</span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">account_id</span><span class="si">}</span><span class="s2">/msgs/abc&quot;</span><span class="p">,</span>
-</span><span data-line="37">        <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;balance&quot;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">balance</span><span class="p">},</span>
-</span><span data-line="38">    <span class="p">)</span>
-</span><span data-line="39">
+</span><span data-line="31">
+</span><span data-line="32"><span class="k">def</span><span class="w"> </span><span class="nf">convert_purchase_not_allowed_to_problem_details</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="n">PurchaseNotAllowedError</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProblemDetailsException</span><span class="p">:</span>
+</span><span data-line="33">    <span class="k">return</span> <span class="n">ProblemDetailsException</span><span class="p">(</span>
+</span><span data-line="34">        <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;https://example.com/probs/out-of-credit&quot;</span><span class="p">,</span>
+</span><span data-line="35">        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;You do not have enough credit.&quot;</span><span class="p">,</span>
+</span><span data-line="36">        <span class="n">detail</span><span class="o">=</span><span class="n">exc</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span>
+</span><span data-line="37">        <span class="n">instance</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/account/</span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">account_id</span><span class="si">}</span><span class="s2">/msgs/abc&quot;</span><span class="p">,</span>
+</span><span data-line="38">        <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;balance&quot;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">balance</span><span class="p">},</span>
+</span><span data-line="39">    <span class="p">)</span>
 </span><span data-line="40">
-</span><span data-line="41"><span class="n">problem_details_plugin</span> <span class="o">=</span> <span class="n">ProblemDetailsPlugin</span><span class="p">(</span>
-</span><span data-line="42">    <span class="n">ProblemDetailsConfig</span><span class="p">(</span>
-</span><span data-line="43">        <span class="n">enable_for_all_http_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span data-line="44">        <span class="n">exception_to_problem_detail_map</span><span class="o">=</span><span class="p">{</span><span class="n">PurchaseNotAllowedError</span><span class="p">:</span> <span class="n">convert_purchase_not_allowed_to_problem_details</span><span class="p">},</span>
-</span><span data-line="45">    <span class="p">)</span>
-</span><span data-line="46"><span class="p">)</span>
-</span><span data-line="47"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">purchase</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">problem_details_plugin</span><span class="p">])</span>
+</span><span data-line="41">
+</span><span data-line="42"><span class="n">problem_details_plugin</span> <span class="o">=</span> <span class="n">ProblemDetailsPlugin</span><span class="p">(</span>
+</span><span data-line="43">    <span class="n">ProblemDetailsConfig</span><span class="p">(</span>
+</span><span data-line="44">        <span class="n">enable_for_all_http_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="45">        <span class="n">exception_to_problem_detail_map</span><span class="o">=</span><span class="p">{</span><span class="n">PurchaseNotAllowedError</span><span class="p">:</span> <span class="n">convert_purchase_not_allowed_to_problem_details</span><span class="p">},</span>
+</span><span data-line="46">    <span class="p">)</span>
+</span><span data-line="47"><span class="p">)</span>
+</span><span data-line="48"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">purchase</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">problem_details_plugin</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>

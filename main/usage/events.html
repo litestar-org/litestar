@@ -554,39 +554,40 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.events</span><span class="w"> </span><span class="kn">import</span> <span class="n">listener</span>
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">db</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_repository</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">utils.email</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_welcome_mail</span>
-</span><span data-line="9">
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">db</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_repository</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">utils.email</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_welcome_mail</span>
 </span><span data-line="10">
-</span><span data-line="11"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">)</span>
-</span><span data-line="12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_welcome_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="13">    <span class="c1"># do something here to send an email</span>
-</span><span data-line="14">    <span class="k">await</span> <span class="n">send_welcome_mail</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
-</span><span data-line="15">
+</span><span data-line="11">
+</span><span data-line="12"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">)</span>
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_welcome_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="14">    <span class="c1"># do something here to send an email</span>
+</span><span data-line="15">    <span class="k">await</span> <span class="n">send_welcome_mail</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
 </span><span data-line="16">
-</span><span data-line="17"><span class="nd">@dataclass</span>
-</span><span data-line="18"><span class="k">class</span><span class="w"> </span><span class="nc">CreateUserDTO</span><span class="p">:</span>
-</span><span data-line="19">    <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="20">    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="21">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="22">
+</span><span data-line="17">
+</span><span data-line="18"><span class="nd">@dataclass</span>
+</span><span data-line="19"><span class="k">class</span><span class="w"> </span><span class="nc">CreateUserDTO</span><span class="p">:</span>
+</span><span data-line="20">    <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="21">    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="22">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="23">
-</span><span data-line="24"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-</span><span data-line="25"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="26">    <span class="c1"># do something here to create a new user</span>
-</span><span data-line="27">    <span class="c1"># e.g. insert the user into a database</span>
-</span><span data-line="28">    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</span><span data-line="29">
-</span><span data-line="30">    <span class="c1"># assuming we have now inserted a user, we want to send a welcome email.</span>
-</span><span data-line="31">    <span class="c1"># To do this in a non-blocking fashion, we will emit an event to a listener, which will send the email,</span>
-</span><span data-line="32">    <span class="c1"># using a different async block than the one where we are returning a response.</span>
-</span><span data-line="33">    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
-</span><span data-line="34">
+</span><span data-line="24">
+</span><span data-line="25"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+</span><span data-line="26"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserDTO</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="27">    <span class="c1"># do something here to create a new user</span>
+</span><span data-line="28">    <span class="c1"># e.g. insert the user into a database</span>
+</span><span data-line="29">    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span data-line="30">
+</span><span data-line="31">    <span class="c1"># assuming we have now inserted a user, we want to send a welcome email.</span>
+</span><span data-line="32">    <span class="c1"># To do this in a non-blocking fashion, we will emit an event to a listener, which will send the email,</span>
+</span><span data-line="33">    <span class="c1"># using a different async block than the one where we are returning a response.</span>
+</span><span data-line="34">    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_created&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
 </span><span data-line="35">
-</span><span data-line="36"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="37">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user_handler</span><span class="p">],</span> <span class="n">listeners</span><span class="o">=</span><span class="p">[</span><span class="n">send_welcome_email_handler</span><span class="p">]</span>
-</span><span data-line="38"><span class="p">)</span>
+</span><span data-line="36">
+</span><span data-line="37"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="38">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user_handler</span><span class="p">],</span> <span class="n">listeners</span><span class="o">=</span><span class="p">[</span><span class="n">send_welcome_email_handler</span><span class="p">]</span>
+</span><span data-line="39"><span class="p">)</span>
 </span></pre></div>
 </div>
 <p>The above example illustrates the power of this pattern - it allows us to perform async operations without blocking,
@@ -612,34 +613,35 @@ and without slowing down the response cycle.</p>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.events</span><span class="w"> </span><span class="kn">import</span> <span class="n">listener</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">db</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_repository</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">utils.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">client</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">utils.email</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_farewell_email</span>
-</span><span data-line="9">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">db</span><span class="w"> </span><span class="kn">import</span> <span class="n">user_repository</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">utils.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">client</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">utils.email</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_farewell_email</span>
 </span><span data-line="10">
-</span><span data-line="11"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
-</span><span data-line="12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="13">    <span class="c1"># do something here to send an email</span>
-</span><span data-line="14">    <span class="k">await</span> <span class="n">send_farewell_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
-</span><span data-line="15">
+</span><span data-line="11">
+</span><span data-line="12"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_farewell_email_handler</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="14">    <span class="c1"># do something here to send an email</span>
+</span><span data-line="15">    <span class="k">await</span> <span class="n">send_farewell_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
 </span><span data-line="16">
-</span><span data-line="17"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
-</span><span data-line="18"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="19">    <span class="c1"># do something here to send an email</span>
-</span><span data-line="20">    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;some-url&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
-</span><span data-line="21">
+</span><span data-line="17">
+</span><span data-line="18"><span class="nd">@listener</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">)</span>
+</span><span data-line="19"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_customer_support</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="20">    <span class="c1"># do something here to send an email</span>
+</span><span data-line="21">    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;some-url&quot;</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span>
 </span><span data-line="22">
-</span><span data-line="23"><span class="nd">@dataclass</span>
-</span><span data-line="24"><span class="k">class</span><span class="w"> </span><span class="nc">DeleteUserDTO</span><span class="p">:</span>
-</span><span data-line="25">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="26">    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="27">
+</span><span data-line="23">
+</span><span data-line="24"><span class="nd">@dataclass</span>
+</span><span data-line="25"><span class="k">class</span><span class="w"> </span><span class="nc">DeleteUserDTO</span><span class="p">:</span>
+</span><span data-line="26">    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="27">    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="28">
-</span><span data-line="29"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-</span><span data-line="30"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="31">    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">delete</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">email</span><span class="p">})</span>
-</span><span data-line="32">    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;deleted&quot;</span><span class="p">)</span>
+</span><span data-line="29">
+</span><span data-line="30"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+</span><span data-line="31"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserDTO</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="32">    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">delete</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">email</span><span class="p">})</span>
+</span><span data-line="33">    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;deleted&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
 <p>In the above example we are performing two side effect for the same event, one sends the user an email, and the other
@@ -673,7 +675,7 @@ and kwargs.</p>
 </span><span data-line="16">
 </span><span data-line="17">
 </span><span data-line="18"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
-</span><span data-line="19"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="19"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">UserDTO</span><span class="p">],</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="20">    <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">delete</span><span class="p">({</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">email</span><span class="p">})</span>
 </span><span data-line="21">    <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;user_deleted&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;deleted&quot;</span><span class="p">)</span>
 </span></pre></div>

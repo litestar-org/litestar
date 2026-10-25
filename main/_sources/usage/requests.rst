@@ -4,7 +4,8 @@ Requests
 Request body
 ------------
 
-The body of HTTP requests can be accessed using the special ``data`` parameter in a handler function.
+The body of HTTP requests can be accessed using the special ``data`` parameter in a handler function,
+declared with a body marker. For a JSON body, that's :data:`~litestar.params.JSONBody`.
 
 .. literalinclude:: /examples/request_data/request_data_1.py
     :language: python

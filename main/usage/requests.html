@@ -563,16 +563,18 @@ data-aria-dark="Switch to auto color mode">
 <h1>Requests<a class="headerlink" href="#requests" title="Link to this heading">¶</a></h1>
 <section id="request-body">
 <h2>Request body<a class="headerlink" href="#request-body" title="Link to this heading">¶</a></h2>
-<p>The body of HTTP requests can be accessed using the special <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter in a handler function.</p>
+<p>The body of HTTP requests can be accessed using the special <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter in a handler function,
+declared with a body marker. For a JSON body, that’s <a class="reference internal" href="../reference/params.html#litestar.params.JSONBody" title="litestar.params.JSONBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">JSONBody</span></code></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="2">
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="6">    <span class="k">return</span> <span class="n">data</span>
-</span><span data-line="7">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="n">data</span>
 </span><span data-line="8">
-</span><span data-line="9"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 </span></pre></div>
 </div>
 <p>The type of <code class="docutils literal notranslate"><span class="pre">data</span></code> can be any supported type, including</p>
@@ -593,20 +595,21 @@ data-aria-dark="Switch to auto color mode">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="4">
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="nd">@dataclass</span>
-</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
-</span><span data-line="8">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="9">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="10">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@dataclass</span>
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">:</span>
+</span><span data-line="9">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="10">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="11">
-</span><span data-line="12"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-</span><span data-line="14">    <span class="k">return</span> <span class="n">data</span>
-</span><span data-line="15">
+</span><span data-line="12">
+</span><span data-line="13"><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="14"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="15">    <span class="k">return</span> <span class="n">data</span>
 </span><span data-line="16">
-</span><span data-line="17"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </section>

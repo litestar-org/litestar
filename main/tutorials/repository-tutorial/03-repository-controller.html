@@ -615,7 +615,7 @@ interacting with the <code class="docutils literal notranslate"><span class="pre
 </span><span data-line="18"><span class="linenos">18</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">(</span>
 </span><span data-line="19"><span class="linenos">19</span>        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="20"><span class="linenos">20</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
-</span><span data-line="21"><span class="linenos">21</span>        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorCreate</span><span class="p">,</span>
+</span><span data-line="21"><span class="linenos">21</span>        <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">AuthorCreate</span><span class="p">],</span>
 </span><span data-line="22"><span class="linenos">22</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span><span data-line="23"><span class="linenos">23</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
 </span><span data-line="24"><span class="linenos">24</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -648,7 +648,7 @@ interacting with the <code class="docutils literal notranslate"><span class="pre
 </span><span data-line="51"><span class="linenos">51</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
 </span><span data-line="52"><span class="linenos">52</span>        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="53"><span class="linenos">53</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
-</span><span data-line="54"><span class="linenos">54</span>        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
+</span><span data-line="54"><span class="linenos">54</span>        <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">AuthorUpdate</span><span class="p">],</span>
 </span><span data-line="55"><span class="linenos">55</span>        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
 </span><span data-line="56"><span class="linenos">56</span>            <span class="n">UUID</span><span class="p">,</span>
 </span><span data-line="57"><span class="linenos">57</span>            <span class="n">PathParameter</span><span class="p">(</span>
@@ -712,7 +712,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 </span><span data-line="21"><span class="linenos"> 21</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 </span><span data-line="22"><span class="linenos"> 22</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="23"><span class="linenos"> 23</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">OffsetPagination</span>
-</span><span data-line="24"><span class="linenos"> 24</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
+</span><span data-line="24"><span class="linenos"> 24</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span><span class="p">,</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
 </span><span data-line="25"><span class="linenos"> 25</span>
 </span><span data-line="26"><span class="linenos"> 26</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="27"><span class="linenos"> 27</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
@@ -828,7 +828,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 </span><span data-line="137"><span class="linenos">137</span>    <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">(</span>
 </span><span data-line="138"><span class="linenos">138</span>        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="139"><span class="linenos">139</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
-</span><span data-line="140"><span class="linenos">140</span>        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorCreate</span><span class="p">,</span>
+</span><span data-line="140"><span class="linenos">140</span>        <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">AuthorCreate</span><span class="p">],</span>
 </span><span data-line="141"><span class="linenos">141</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span><span data-line="142"><span class="linenos">142</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
 </span><span data-line="143"><span class="linenos">143</span>        <span class="n">obj</span> <span class="o">=</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -864,7 +864,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 </span><span data-line="173"><span class="linenos">173</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
 </span><span data-line="174"><span class="linenos">174</span>        <span class="bp">self</span><span class="p">,</span>
 </span><span data-line="175"><span class="linenos">175</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
-</span><span data-line="176"><span class="linenos">176</span>        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
+</span><span data-line="176"><span class="linenos">176</span>        <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">AuthorUpdate</span><span class="p">],</span>
 </span><span data-line="177"><span class="linenos">177</span>        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
 </span><span data-line="178"><span class="linenos">178</span>            <span class="n">UUID</span><span class="p">,</span>
 </span><span data-line="179"><span class="linenos">179</span>            <span class="n">PathParameter</span><span class="p">(</span>
@@ -952,7 +952,7 @@ functionality to our application.</p>
 </span><span data-line="22"><span class="linenos"> 22</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
 </span><span data-line="23"><span class="linenos"> 23</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="24"><span class="linenos"> 24</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">OffsetPagination</span>
-</span><span data-line="25"><span class="linenos"> 25</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
+</span><span data-line="25"><span class="linenos"> 25</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONBody</span><span class="p">,</span> <span class="n">PathParameter</span><span class="p">,</span> <span class="n">QueryParameter</span>
 </span><span data-line="26"><span class="linenos"> 26</span>
 </span><span data-line="27"><span class="linenos"> 27</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 </span><span data-line="28"><span class="linenos"> 28</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
@@ -1067,7 +1067,7 @@ functionality to our application.</p>
 </span></span><span data-line="137"><span class="hll"><span class="linenos">137</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_author</span><span class="p">(</span>
 </span></span><span data-line="138"><span class="hll"><span class="linenos">138</span>        <span class="bp">self</span><span class="p">,</span>
 </span></span><span data-line="139"><span class="hll"><span class="linenos">139</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
-</span></span><span data-line="140"><span class="hll"><span class="linenos">140</span>        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorCreate</span><span class="p">,</span>
+</span></span><span data-line="140"><span class="hll"><span class="linenos">140</span>        <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">AuthorCreate</span><span class="p">],</span>
 </span></span><span data-line="141"><span class="hll"><span class="linenos">141</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Author</span><span class="p">:</span>
 </span></span><span data-line="142"><span class="hll"><span class="linenos">142</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new author.&quot;&quot;&quot;</span>
 </span></span><span data-line="143"><span class="hll"><span class="linenos">143</span>        <span class="n">obj</span> <span class="o">=</span> <span class="k">await</span> <span class="n">authors_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -1100,7 +1100,7 @@ functionality to our application.</p>
 </span></span><span data-line="170"><span class="hll"><span class="linenos">170</span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
 </span></span><span data-line="171"><span class="hll"><span class="linenos">171</span>        <span class="bp">self</span><span class="p">,</span>
 </span></span><span data-line="172"><span class="hll"><span class="linenos">172</span>        <span class="n">authors_repo</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">AuthorRepository</span><span class="p">],</span>
-</span></span><span data-line="173"><span class="hll"><span class="linenos">173</span>        <span class="n">data</span><span class="p">:</span> <span class="n">AuthorUpdate</span><span class="p">,</span>
+</span></span><span data-line="173"><span class="hll"><span class="linenos">173</span>        <span class="n">data</span><span class="p">:</span> <span class="n">JSONBody</span><span class="p">[</span><span class="n">AuthorUpdate</span><span class="p">],</span>
 </span></span><span data-line="174"><span class="hll"><span class="linenos">174</span>        <span class="n">author_id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
 </span></span><span data-line="175"><span class="hll"><span class="linenos">175</span>            <span class="n">UUID</span><span class="p">,</span>
 </span></span><span data-line="176"><span class="hll"><span class="linenos">176</span>            <span class="n">PathParameter</span><span class="p">(</span>
