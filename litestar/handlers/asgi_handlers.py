@@ -68,7 +68,7 @@ class ASGIRouteHandler(BaseRouteHandler):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             copy_scope: Copy the ASGI 'scope' before calling the mounted application. Should be set to 'True' unless
                 side effects via scope mutations by the mounted ASGI application are intentional
-            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
+            parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self.is_mount = is_mount

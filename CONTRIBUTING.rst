@@ -147,9 +147,9 @@ Our type checkers are run on Python 3.11 in CI, so you should make sure to run t
 Project documentation
 ---------------------
 
-The documentation is located in the ``/docs`` directory and is written  in
-`reStructuredText <https://docutils.sourceforge.io/rst.html>`_ with the `Sphinx <https://www.sphinx-doc.org/en/master/>`_.
-library. If you're unfamiliar with any of those,
+The documentation is located in the ``/docs`` directory and is written in
+`reStructuredText <https://docutils.sourceforge.io/rst.html>`_ with the
+`Sphinx <https://www.sphinx-doc.org/en/master/>`_ library. If you're unfamiliar with any of those,
 `reStructuredText primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ and
 `Sphinx quickstart <https://www.sphinx-doc.org/en/master/usage/quickstart.html>`_ are recommended reads.
 
@@ -218,7 +218,7 @@ Automatically execute examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Our docs include a Sphinx extension that can automatically run requests against example apps
-and include their result in the documentation page when its being built. This only requires 2 steps:
+and include their result in the documentation page when it's being built. This only requires 2 steps:
 
 1. Create an example file with an ``app`` object in it, which is an instance of ``Litestar``
 2. Add a comment in the form of ``# run: /hello`` to the example file
