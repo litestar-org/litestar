@@ -14,7 +14,7 @@ from ipaddress import (
 )
 from pathlib import Path, PurePath
 from re import Pattern
-from typing import TYPE_CHECKING, Any, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Literal, TypeVar, overload
 from uuid import UUID
 
 import msgspec
@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     from litestar.types import TypeEncodersMap
 
 __all__ = (
+    "TypeEncoder",
     "decode_json",
     "decode_msgpack",
     "default_deserializer",
@@ -40,6 +41,36 @@ __all__ = (
 )
 
 T = TypeVar("T")
+
+
+class TypeEncoder:
+    """Type encoder with optional encoding-specific callables.
+
+    Use it when an encoder's result is only valid for one encoding, e.g. pre-encoded bytes
+    wrapped in :class:`msgspec.Raw`.
+
+    Args:
+        default: Encoder used when no encoder exists for the target encoding, or it is unknown
+        json: Encoder used when encoding to JSON
+        msgpack: Encoder used when encoding to MessagePack
+    """
+
+    __slots__ = ("default", "json", "msgpack")
+
+    def __init__(
+        self,
+        default: Callable[[Any], Any],
+        *,
+        json: Callable[[Any], Any] | None = None,
+        msgpack: Callable[[Any], Any] | None = None,
+    ) -> None:
+        self.default = default
+        self.json = default if json is None else json
+        self.msgpack = default if msgpack is None else msgpack
+
+    def __call__(self, value: Any) -> Any:
+        return self.default(value)
+
 
 DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     Path: str,
@@ -71,12 +102,18 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
 }
 
 
-def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], Any]] | None = None) -> Any:
+def default_serializer(
+    value: Any,
+    type_encoders: Mapping[Any, Callable[[Any], Any]] | None = None,
+    *,
+    encoding: Literal["json", "msgpack"] | None = None,
+) -> Any:
     """Transform values non-natively supported by ``msgspec``
 
     Args:
         value: A value to serialized
         type_encoders: Mapping of types to callables to transforming types
+        encoding: Target encoding, passed on to :class:`TypeEncoder` instances. ``None`` if unknown
     Returns:
         A serialized value
     Raises:
@@ -90,6 +127,8 @@ def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], A
         except KeyError:
             continue
         else:
+            if isinstance(encoder, TypeEncoder):
+                encoder = getattr(encoder, encoding or "default")
             return encoder(value)
 
     raise TypeError(f"Unsupported type: {type(value)!r}")
@@ -142,6 +181,26 @@ def default_deserializer(
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
+class _Serializer:
+    """Serializer bound to type encoders; ``json``/``msgpack`` return it bound to that encoding."""
+
+    __slots__ = ("type_encoders",)
+
+    def __init__(self, type_encoders: TypeEncodersMap) -> None:
+        self.type_encoders = type_encoders
+
+    def __call__(self, value: Any) -> Any:
+        return default_serializer(value, self.type_encoders)
+
+    @property
+    def json(self) -> Serializer:
+        return get_serializer(self.type_encoders, encoding="json")
+
+    @property
+    def msgpack(self) -> Serializer:
+        return get_serializer(self.type_encoders, encoding="msgpack")
+
+
 _msgspec_json_encoder = msgspec.json.Encoder(enc_hook=default_serializer)
 _msgspec_json_decoder = msgspec.json.Decoder(dec_hook=default_deserializer)
 _msgspec_msgpack_encoder = msgspec.msgpack.Encoder(enc_hook=default_serializer)
@@ -153,7 +212,8 @@ def encode_json(value: Any, serializer: Callable[[Any], Any] | None = None) -> b
 
     Args:
         value: Value to encode
-        serializer: Optional callable to support non-natively supported types.
+        serializer: Optional callable to support non-natively supported types. Use
+            :func:`get_serializer` to honour :class:`TypeEncoder` instances.
 
     Returns:
         JSON as bytes
@@ -162,7 +222,11 @@ def encode_json(value: Any, serializer: Callable[[Any], Any] | None = None) -> b
         SerializationException: If error encoding ``obj``.
     """
     try:
-        return msgspec.json.encode(value, enc_hook=serializer) if serializer else _msgspec_json_encoder.encode(value)
+        if serializer is None:
+            return _msgspec_json_encoder.encode(value)
+        if isinstance(serializer, _Serializer):
+            serializer = serializer.json
+        return msgspec.json.encode(value, enc_hook=serializer)
     except (TypeError, msgspec.EncodeError) as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
@@ -227,7 +291,8 @@ def encode_msgpack(value: Any, serializer: Callable[[Any], Any] | None = default
 
     Args:
         value: Value to encode
-        serializer: Optional callable to support non-natively supported types
+        serializer: Optional callable to support non-natively supported types. Use
+            :func:`get_serializer` to honour :class:`TypeEncoder` instances.
 
     Returns:
         MessagePack as bytes
@@ -238,6 +303,8 @@ def encode_msgpack(value: Any, serializer: Callable[[Any], Any] | None = default
     try:
         if serializer is None or serializer is default_serializer:
             return _msgspec_msgpack_encoder.encode(value)
+        if isinstance(serializer, _Serializer):
+            serializer = serializer.msgpack
         return msgspec.msgpack.encode(value, enc_hook=serializer)
     except (TypeError, msgspec.EncodeError) as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
@@ -295,10 +362,25 @@ def decode_msgpack(  # type: ignore[misc]
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
-def get_serializer(type_encoders: TypeEncodersMap | None = None) -> Serializer:
-    """Get the serializer for the given type encoders."""
+def get_serializer(
+    type_encoders: TypeEncodersMap | None = None, *, encoding: Literal["json", "msgpack"] | None = None
+) -> Serializer:
+    """Get the serializer for the given type encoders.
 
-    if type_encoders:
-        return partial(default_serializer, type_encoders=type_encoders)
+    Args:
+        type_encoders: Mapping of types to callables to transforming types
+        encoding: Bind the serializer to this encoding when passing it directly to a ``msgspec``
+            encoder as ``enc_hook``; :func:`encode_json` and :func:`encode_msgpack` resolve
+            :class:`TypeEncoder` instances themselves
 
-    return default_serializer
+    Returns:
+        A serializer function
+    """
+
+    if not type_encoders:
+        return default_serializer
+
+    if encoding is None:
+        return _Serializer(type_encoders)
+
+    return partial(default_serializer, type_encoders=type_encoders, encoding=encoding)

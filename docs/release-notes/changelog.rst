@@ -51,17 +51,37 @@
         inferred path parameter style, now raises ``ImproperlyConfiguredException`` when
         the application is created. Declare it with ``FromPath``.
 
-    .. change:: Faster serialization of responses containing Pydantic models
+    .. change:: Faster serialization of JSON responses containing Pydantic models
         :type: feature
+        :pr: 5088
 
         Pydantic models are now serialized to JSON by Pydantic directly and embedded
         as :class:`msgspec.Raw`, instead of being converted into a ``dict`` that msgspec
-        has to traverse a second time.
+        has to traverse a second time. MessagePack responses are unaffected and keep
+        encoding the ``dict`` produced by ``model_dump(mode="json")``.
 
-        The JSON output is unchanged, except that models with a ``ser_json_inf_nan``
-        config now have this setting respected, where ``inf`` / ``nan`` were previously
-        always encoded as ``null``, and that keys colliding after serialization (e.g. a
-        ``serialization_alias`` equal to another field's name) are no longer deduplicated.
+        The JSON output is unchanged, with three exceptions: models with a
+        ``ser_json_inf_nan`` config now have this setting respected, where ``inf`` / ``nan``
+        were previously always encoded as ``null`` (``"constants"`` yields non-standard
+        JSON); keys colliding after serialization (e.g. a ``serialization_alias`` equal to
+        another field's name) are no longer deduplicated; and a ``model_dump`` override on
+        a top-level model is no longer applied, use a ``model_serializer`` instead.
+
+    .. change:: Add ``TypeEncoder`` for encoding-specific type encoders
+        :type: feature
+        :pr: 5088
+
+        Add :class:`~litestar.serialization.TypeEncoder`, a type encoder that can use a different
+        callable depending on whether a value is encoded to JSON or MessagePack. This allows
+        encoders to return pre-encoded :class:`msgspec.Raw` bytes for one encoding while
+        producing a regular value for the other.
+
+        :func:`~litestar.serialization.default_serializer` and :func:`~litestar.serialization.get_serializer`
+        accept a new ``encoding`` argument. :func:`~litestar.serialization.encode_json` and
+        :func:`~litestar.serialization.encode_msgpack` resolve encoding-specific encoders
+        automatically when given the result of ``get_serializer()``, and WebSocket listeners
+        and streams encode with the JSON-specific encoders. ``get_serializer()`` and
+        ``BaseRouteHandler.default_serializer`` no longer return a ``functools.partial``.
 
     .. change:: Add support for ``leeway`` parameter in JWT security backends
         :type: feature

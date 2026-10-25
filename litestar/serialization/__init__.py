@@ -1,4 +1,5 @@
 from .msgspec_hooks import (
+    TypeEncoder,
     decode_json,
     decode_msgpack,
     default_deserializer,
@@ -9,6 +10,7 @@ from .msgspec_hooks import (
 )
 
 __all__ = (
+    "TypeEncoder",
     "decode_json",
     "decode_msgpack",
     "default_deserializer",

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from functools import partial
 from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urlencode
 
@@ -15,7 +14,7 @@ from litestar.app import Litestar
 from litestar.connection import Request
 from litestar.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
 from litestar.handlers.http_handlers import get
-from litestar.serialization import decode_json, default_serializer, encode_json
+from litestar.serialization import decode_json, encode_json, get_serializer
 from litestar.types import DataContainerType, HTTPHandlerDecorator, HTTPScope, RouteHandlerType
 from litestar.types.asgi_types import ASGIVersion
 from litestar.utils import get_serializer_from_scope
@@ -125,7 +124,7 @@ class RequestFactory:
         self.root_path = root_path
         self.scheme = scheme
         self.handler_kwargs = handler_kwargs
-        self.serializer = partial(default_serializer, type_encoders=self.app.type_encoders)
+        self.serializer = get_serializer(self.app.type_encoders)
 
     def _create_scope(
         self,

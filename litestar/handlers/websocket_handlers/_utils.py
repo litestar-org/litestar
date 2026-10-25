@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from msgspec.json import Encoder as JsonEncoder
 
 from litestar.di import NamedDependency, Provide
-from litestar.serialization import decode_json
+from litestar.serialization import decode_json, get_serializer
 from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
 from litestar.utils.helpers import unwrap_partial
@@ -54,7 +54,7 @@ def create_handle_receive(listener: WebsocketListenerRouteHandler) -> Callable[[
 def create_handle_send(
     listener: WebsocketListenerRouteHandler,
 ) -> Callable[[WebSocket, Any], Coroutine[None, None, None]]:
-    json_encoder = JsonEncoder(enc_hook=listener.default_serializer)
+    json_encoder = JsonEncoder(enc_hook=get_serializer(listener.type_encoders, encoding="json"))
 
     if return_dto := listener.return_dto:
 

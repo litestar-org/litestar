@@ -12,8 +12,9 @@ import pytest
 from pydantic_extra_types.color import Color as ColorV2
 from pydantic_extra_types.payment import PaymentCardNumber
 
+from litestar import MediaType, get
 from litestar.exceptions import SerializationException
-from litestar.plugins.pydantic import PydanticInitPlugin, _model_dump_json
+from litestar.plugins.pydantic import PydanticInitPlugin, _model_dump, _model_dump_json
 from litestar.serialization import (
     decode_json,
     decode_msgpack,
@@ -22,6 +23,7 @@ from litestar.serialization import (
     encode_msgpack,
     get_serializer,
 )
+from litestar.testing import create_test_client
 
 from . import PydanticVersion
 
@@ -170,7 +172,9 @@ def test_default_serializer(model: ModelV2, attribute_name: str, expected: Any) 
 
 def test_serialization_of_model_instance(model: ModelV2) -> None:
     assert serializer(getattr(model, "conbytes")) == b"hello"
-    assert bytes(serializer(model)) == _model_dump_json(model).encode()
+    assert serializer(model) == _model_dump(model)
+    assert bytes(serializer(model, encoding="json")) == _model_dump_json(model).encode()
+    assert serializer(model, encoding="msgpack") == _model_dump(model)
 
 
 @pytest.mark.parametrize("prefer_alias", [False, True])
@@ -182,6 +186,28 @@ def test_pydantic_json_compatibility(model: ModelV2, prefer_alias: bool, pydanti
     encoded_result = json.loads(encoded_json)
 
     assert raw_result == encoded_result
+
+
+@pytest.mark.parametrize("prefer_alias", [False, True])
+def test_pydantic_msgpack_compatibility(model: ModelV2, prefer_alias: bool) -> None:
+    type_encoders = PydanticInitPlugin.encoders(prefer_alias=prefer_alias)
+    encoded = encode_msgpack(model, serializer=get_serializer(type_encoders))
+
+    assert decode_msgpack(encoded) == _model_dump(model, by_alias=prefer_alias)
+
+
+def test_pydantic_model_response_media_types(model_type: type[ModelV2], model: ModelV2) -> None:
+    @get("/json", media_type=MediaType.JSON)
+    def json_handler() -> model_type:  # type: ignore[valid-type]
+        return model
+
+    @get("/msgpack", media_type=MediaType.MESSAGEPACK)
+    def msgpack_handler() -> model_type:  # type: ignore[valid-type]
+        return model
+
+    with create_test_client([json_handler, msgpack_handler], plugins=[PydanticInitPlugin()]) as client:
+        assert client.get("/json").content == _model_dump_json(model).encode()
+        assert decode_msgpack(client.get("/msgpack").content) == _model_dump(model)
 
 
 @pytest.mark.parametrize(
@@ -204,9 +230,12 @@ def test_encoder_plugin_kwargs(plugin_kwargs: dict[str, Any]) -> None:
         d: pydantic_v2.Json[list[int]] = [1]
 
     dump_kwargs = {("by_alias" if k == "prefer_alias" else k): v for k, v in plugin_kwargs.items()}
-    encoded = encode_json(Model(a=1), get_serializer(PydanticInitPlugin.encoders(**plugin_kwargs)))
-    assert encoded == encode_json(Model(a=1).model_dump(mode="json", **dump_kwargs))
-    assert encoded != encode_json(Model(a=1).model_dump(mode="json"))
+    serializer = get_serializer(PydanticInitPlugin.encoders(**plugin_kwargs))
+    expected = Model(a=1).model_dump(mode="json", **dump_kwargs)
+    assert expected != Model(a=1).model_dump(mode="json")
+
+    assert encode_json(Model(a=1), serializer) == encode_json(expected)
+    assert encode_msgpack(Model(a=1), serializer) == encode_msgpack(expected)
 
 
 @pytest.mark.parametrize("encoder", [encode_json, encode_msgpack])

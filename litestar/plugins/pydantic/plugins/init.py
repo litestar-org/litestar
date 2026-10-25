@@ -9,6 +9,7 @@ import pydantic
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
 from litestar.plugins import InitPlugin
+from litestar.serialization import TypeEncoder
 from litestar.utils import is_class_and_subclass
 
 if TYPE_CHECKING:
@@ -124,17 +125,29 @@ class PydanticInitPlugin(InitPlugin):
         round_trip: bool = False,
     ) -> dict[Any, Callable[[Any], Any]]:
         encoders: dict[Any, Callable[[Any], Any]] = {
-            pydantic.BaseModel: lambda model: msgspec.Raw(  # pyright: ignore[reportOptionalMemberAccess]
-                model.__pydantic_serializer__.to_json(
-                    model,
+            pydantic.BaseModel: TypeEncoder(  # pyright: ignore[reportOptionalMemberAccess]
+                lambda model: model.model_dump(
                     by_alias=prefer_alias,
                     exclude=exclude,
                     exclude_defaults=exclude_defaults,
                     exclude_none=exclude_none,
                     exclude_unset=exclude_unset,
                     include=include,
+                    mode="json",
                     round_trip=round_trip,
-                )
+                ),
+                json=lambda model: msgspec.Raw(
+                    model.__pydantic_serializer__.to_json(
+                        model,
+                        by_alias=prefer_alias,
+                        exclude=exclude,
+                        exclude_defaults=exclude_defaults,
+                        exclude_none=exclude_none,
+                        exclude_unset=exclude_unset,
+                        include=include,
+                        round_trip=round_trip,
+                    )
+                ),
             ),
             pydantic.types.SecretStr: lambda val: "**********" if val else "",  # pyright: ignore[reportOptionalMemberAccess]
             pydantic.types.SecretBytes: lambda val: "**********" if val else "",  # pyright: ignore[reportOptionalMemberAccess]

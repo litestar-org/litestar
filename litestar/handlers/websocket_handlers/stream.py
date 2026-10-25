@@ -11,6 +11,7 @@ from msgspec.json import Encoder as JsonEncoder
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning, WebSocketDisconnect
 from litestar.handlers.websocket_handlers.route_handler import WebsocketRouteHandler
+from litestar.serialization import get_serializer
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
@@ -254,7 +255,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         self._parsed_fn_signature = parsed_handler_signature
         self._parsed_return_field = parsed_stream_fn_signature.return_type.inner_types[0]
 
-        json_encoder = JsonEncoder(enc_hook=self.default_serializer)
+        json_encoder = JsonEncoder(enc_hook=get_serializer(self.type_encoders, encoding="json"))
         self._dto = self._resolve_data_dto(app=app)
         self._return_dto = return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
 
