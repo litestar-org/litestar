@@ -11,7 +11,7 @@ from litestar import Litestar, get, post, put
 from litestar.datastructures import State
 from litestar.di import NamedDependency
 from litestar.exceptions import ClientException, NotFoundException
-from litestar.params import FromPath, FromQuery
+from litestar.params import FromPath, FromQuery, JSONBody
 from litestar.status_codes import HTTP_409_CONFLICT
 
 
@@ -80,14 +80,14 @@ async def get_list(transaction: NamedDependency[AsyncSession], done: FromQuery[b
 
 
 @post("/")
-async def add_item(data: TodoItem, transaction: NamedDependency[AsyncSession]) -> TodoItem:
+async def add_item(data: JSONBody[TodoItem], transaction: NamedDependency[AsyncSession]) -> TodoItem:
     transaction.add(data)
     return data
 
 
 @put("/{item_title:str}")
 async def update_item(
-    item_title: FromPath[str], data: TodoItem, transaction: NamedDependency[AsyncSession]
+    item_title: FromPath[str], data: JSONBody[TodoItem], transaction: NamedDependency[AsyncSession]
 ) -> TodoItem:
     todo_item = await get_todo_by_title(item_title, transaction)
     todo_item.title = data.title

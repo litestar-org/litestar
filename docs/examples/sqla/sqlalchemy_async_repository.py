@@ -22,7 +22,7 @@ from litestar.controller import Controller
 from litestar.di import NamedDependency, Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
-from litestar.params import PathParameter, QueryParameter
+from litestar.params import JSONBody, PathParameter, QueryParameter
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -137,7 +137,7 @@ class AuthorController(Controller):
     async def create_author(
         self,
         authors_repo: NamedDependency[AuthorRepository],
-        data: AuthorCreate,
+        data: JSONBody[AuthorCreate],
     ) -> Author:
         """Create a new author."""
         obj = await authors_repo.add(
@@ -170,7 +170,7 @@ class AuthorController(Controller):
     async def update_author(
         self,
         authors_repo: NamedDependency[AuthorRepository],
-        data: AuthorUpdate,
+        data: JSONBody[AuthorUpdate],
         author_id: Annotated[
             UUID,
             PathParameter(

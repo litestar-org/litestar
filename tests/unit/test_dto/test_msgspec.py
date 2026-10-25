@@ -11,6 +11,7 @@ from msgspec import Meta, Struct, field
 from litestar import Litestar, post
 from litestar.dto import DTOField, Mark, MsgspecDTO, dto_field
 from litestar.dto.data_structures import DTOFieldDefinition
+from litestar.params import JSONBody
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -171,15 +172,15 @@ def test_tag_field_included_in_schema() -> None:
         regular_field: str
 
     @post("/1")
-    def handler(data: Model) -> None:
+    def handler(data: JSONBody[Model]) -> None:
         return None
 
     @post("/2")
-    def handler_2(data: Model2) -> None:
+    def handler_2(data: JSONBody[Model2]) -> None:
         return None
 
     @post("/3")
-    def handler_3(data: Model3) -> None:
+    def handler_3(data: JSONBody[Model3]) -> None:
         return None
 
     components = Litestar(

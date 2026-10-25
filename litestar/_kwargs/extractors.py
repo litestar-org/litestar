@@ -126,7 +126,7 @@ def create_connection_value_extractor(
 
 @lru_cache(1024)
 def create_query_default_dict(
-    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...]
+    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: frozenset[str]
 ) -> defaultdict[str, list[str] | str]:
     """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
 
@@ -206,9 +206,7 @@ async def headers_extractor(values: dict[str, Any], connection: ASGIConnection) 
     Returns:
         None
     """
-    # TODO: This should be removed in 3.0 and instead Headers should be injected
-    # directly. We are only keeping this one around to not break things
-    values["headers"] = dict(connection.headers.items())
+    values["headers"] = connection.headers
 
 
 async def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
