@@ -183,6 +183,7 @@ test = [
   "covdefaults",
   "pytest>=8.4",
   "pytest-asyncio>0.24.0",
+  "pytest-codspeed>=5.0.3",
   "pytest-cov",
   "pytest-lazy-fixtures",
   "pytest-mock",
@@ -235,6 +236,7 @@ filterwarnings = [
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
   "server_integration: Test integration with ASGI server",
+  "benchmark: CodSpeed micro-benchmark (see tests/benchmarks)",
 ]
 testpaths = ["tests", "docs/examples/testing"]
 xfail_strict = true
