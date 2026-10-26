@@ -110,6 +110,17 @@
         inferred path parameter style, now raises ``ImproperlyConfiguredException`` when
         the application is created. Declare it with ``FromPath``.
 
+    .. change:: Defer nested model validation for ``DTOData``
+        :type: bugfix
+        :issue: 3620
+
+        ``DTOData`` is documented to keep payload data as builtins and only construct
+        the domain model when ``create_instance()`` is called. Nested models inside
+        collections and mappings were still instantiated during decode, so Pydantic
+        constraints on nested types ran before the handler. Nested values now remain
+        dictionaries until ``create_instance()``, matching top-level ``DTOData``
+        behaviour.
+
     .. change:: Add support for ``leeway`` parameter in JWT security backends
         :type: feature
         :pr: 5037
@@ -152,6 +163,33 @@
         Applications using ``RapidocRenderPlugin`` should migrate to another bundled UI
         plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
         ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
+
+    .. change:: Migrate ``CSRFMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 4998
+        :issue: 4009
+        :breaking:
+
+        ``CSRFMiddleware`` has been moved from the legacy ``MiddlewareProtocol`` base to
+        :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all built-in
+        middleware off the legacy bases. It now lives in ``litestar.middleware._internal``.
+        This removes the ``litestar.middleware.csrf`` module, including the
+        ``generate_csrf_token`` and ``generate_csrf_hash`` helpers, from the public API.
+
+        Applications that configure CSRF protection through
+        :class:`~litestar.config.csrf.CSRFConfig` are unaffected, since Litestar
+        constructs the middleware itself, via a ``from_config`` classmethod on the
+        middleware.
+
+        Two behavioural changes for excluded routes:
+
+        - :attr:`~litestar.config.csrf.CSRFConfig.exclude` patterns are now matched against
+          the **handler's path template** (e.g. ``/user/{user_id:int}``) at startup, instead
+          of the request path (e.g. ``/user/1``) at runtime. Patterns targeting literal
+          paths keep working; patterns written to match expanded path parameters must be
+          rewritten against the template.
+        - Handlers excluded via ``exclude`` or ``exclude_from_csrf`` now bypass the
+          middleware entirely at startup rather than per request.
 
     .. change:: Migrate ``ResponseCacheMiddleware`` to ``ASGIMiddleware``
         :type: feature
