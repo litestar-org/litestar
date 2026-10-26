@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import functools
+import inspect
 import warnings
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Mapping, cast
 
@@ -245,12 +246,22 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         receives_socket_parameter = "socket" in parsed_stream_fn_signature.parameters
 
         if not receives_socket_parameter:
+            original_parameters = list(parsed_handler_signature.original_signature.parameters.values())
+            # a keyword-only parameter must come before '**kwargs'
+            insert_at = next(
+                (i for i, p in enumerate(original_parameters) if p.kind is inspect.Parameter.VAR_KEYWORD),
+                len(original_parameters),
+            )
+            original_parameters.insert(
+                insert_at, inspect.Parameter("socket", inspect.Parameter.KEYWORD_ONLY, annotation=self.websocket_class)
+            )
             parsed_handler_signature = dataclasses.replace(
                 parsed_handler_signature,
                 parameters={
                     **parsed_handler_signature.parameters,
                     "socket": FieldDefinition.from_annotation(self.resolve_websocket_class(), name="socket"),
                 },
+                original_signature=parsed_handler_signature.original_signature.replace(parameters=original_parameters),
             )
 
         self._parsed_fn_signature = parsed_handler_signature
