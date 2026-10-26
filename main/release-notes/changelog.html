@@ -290,7 +290,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/compression.html">compression</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><ul>
@@ -676,6 +675,29 @@ Custom token classes overriding either method must accept it and forward to
 plugin, such as <code class="docutils literal notranslate"><span class="pre">ScalarRenderPlugin</span></code> (the default), <code class="docutils literal notranslate"><span class="pre">SwaggerRenderPlugin</span></code>,
 <code class="docutils literal notranslate"><span class="pre">RedocRenderPlugin</span></code> or <code class="docutils literal notranslate"><span class="pre">StoplightRenderPlugin</span></code>.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4977">https://github.com/litestar-org/litestar/pull/4977</a></span></p>
+</div>
+</dd>
+<dt>Migrate <code class="docutils literal notranslate"><span class="pre">CSRFMiddleware</span></code> to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink reference internal" href="#3.0.0-migrate" id="3.0.0-migrate">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">CSRFMiddleware</span></code> has been moved from the legacy <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> base to
+<a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>, as part of migrating all built-in
+middleware off the legacy bases. It now lives in <code class="docutils literal notranslate"><span class="pre">litestar.middleware._internal</span></code>.
+This removes the <code class="docutils literal notranslate"><span class="pre">litestar.middleware.csrf</span></code> module, including the
+<code class="docutils literal notranslate"><span class="pre">generate_csrf_token</span></code> and <code class="docutils literal notranslate"><span class="pre">generate_csrf_hash</span></code> helpers, from the public API.</p>
+<p>Applications that configure CSRF protection through
+<a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig" title="litestar.config.csrf.CSRFConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSRFConfig</span></code></a> are unaffected, since Litestar
+constructs the middleware itself, via a <code class="docutils literal notranslate"><span class="pre">from_config</span></code> classmethod on the
+middleware.</p>
+<p>Two behavioural changes for excluded routes:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig.exclude" title="litestar.config.csrf.CSRFConfig.exclude"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude</span></code></a> patterns are now matched against
+the <strong>handler’s path template</strong> (e.g. <code class="docutils literal notranslate"><span class="pre">/user/{user_id:int}</span></code>) at startup, instead
+of the request path (e.g. <code class="docutils literal notranslate"><span class="pre">/user/1</span></code>) at runtime. Patterns targeting literal
+paths keep working; patterns written to match expanded path parameters must be
+rewritten against the template.</p></li>
+<li><p>Handlers excluded via <code class="docutils literal notranslate"><span class="pre">exclude</span></code> or <code class="docutils literal notranslate"><span class="pre">exclude_from_csrf</span></code> now bypass the
+middleware entirely at startup rather than per request.</p></li>
+</ul>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4009">https://github.com/litestar-org/litestar/issues/4009</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4998">https://github.com/litestar-org/litestar/pull/4998</a></span></p>
 </div>
 </dd>
 <dt>Migrate <code class="docutils literal notranslate"><span class="pre">ResponseCacheMiddleware</span></code> to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink reference internal" href="#3.0.0-migrate" id="3.0.0-migrate">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
