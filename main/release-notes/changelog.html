@@ -1176,6 +1176,14 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Declare <code class="docutils literal notranslate"><span class="pre">socket</span></code> in the original signature of a <code class="docutils literal notranslate"><span class="pre">websocket_stream</span></code> handler<a class="headerlink reference internal" href="#3.0.0-declare" id="3.0.0-declare">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A <code class="docutils literal notranslate"><span class="pre">websocket_stream</span></code> handler whose function takes no <code class="docutils literal notranslate"><span class="pre">socket</span></code> parameter adds
+one to its <code class="docutils literal notranslate"><span class="pre">parsed_fn_signature</span></code>, but only to its <code class="docutils literal notranslate"><span class="pre">parameters</span></code>, so its
+<code class="docutils literal notranslate"><span class="pre">original_signature</span></code> lacked a parameter its <code class="docutils literal notranslate"><span class="pre">parameters</span></code> declared. It now
+declares <code class="docutils literal notranslate"><span class="pre">socket</span></code> in both.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5161">https://github.com/litestar-org/litestar/pull/5161</a></span></p>
+</div>
+</dd>
 <dt>Read constraint metadata on <code class="docutils literal notranslate"><span class="pre">data</span></code> as on any other parameter<a class="headerlink reference internal" href="#3.0.0-read constraint metadata on" id="3.0.0-read constraint metadata on">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter annotated with metadata, e.g.
 <code class="docutils literal notranslate"><span class="pre">data:</span> <span class="pre">Annotated[int,</span> <span class="pre">annotated_types.Gt(0)]</span></code>, was interpreted as a request
