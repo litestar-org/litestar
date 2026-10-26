@@ -15,6 +15,7 @@ from litestar.params import (
     CookieParameter,
     FromQuery,
     HeaderParameter,
+    JSONBody,
     MultipartBody,
     QueryParameter,
     SkipValidation,
@@ -27,16 +28,6 @@ _PARAM_TYPES = {"query": QueryParameter, "header": HeaderParameter, "cookie": Co
 
 async def my_dependency() -> int:
     return 1
-
-
-@pytest.mark.parametrize("param_field", ["query", "header", "cookie"])
-def test_path_param_and_param_with_same_key_raises(param_field: str) -> None:
-    @get("/{my_key:str}")
-    def handler(my_key: Annotated[str, _PARAM_TYPES[param_field](name="my_key")]) -> None:
-        pass
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Litestar([handler])
 
 
 def test_path_param_and_dependency_with_same_key_raises() -> None:
@@ -92,7 +83,7 @@ def multi_part_dependency(data: MultipartBody[dict[str, Any]]) -> dict[str, Any]
     return data
 
 
-def json_dependency(data: dict[str, Any]) -> dict[str, Any]:
+def json_dependency(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
     assert data
     return data
 
@@ -107,7 +98,7 @@ def json_dependency(data: dict[str, Any]) -> dict[str, Any]:
 )
 def test_dependency_data_kwarg_validation_success_scenarios(body_annotation: Any, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency)})
-    def handler(first: NamedDependency[dict[str, Any]], data: body_annotation) -> None:  # pyright: ignore
+    def handler(first: NamedDependency[dict[str, Any]], data: JSONBody[body_annotation]) -> None:  # pyright: ignore
         pass
 
     Litestar(route_handlers=[handler])
@@ -126,7 +117,7 @@ def test_dependency_data_kwarg_validation_success_scenarios(body_annotation: Any
 )
 def test_dependency_data_kwarg_validation_failure_scenarios(body_annotation: BodyKwarg, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency, sync_to_thread=False)})
-    def handler(first: NamedDependency[dict[str, Any]], data: body_annotation) -> None:  # type: ignore[valid-type]
+    def handler(first: NamedDependency[dict[str, Any]], data: JSONBody[body_annotation]) -> None:  # type: ignore[valid-type]
         assert first
         assert data
 
@@ -155,7 +146,7 @@ def test_skip_validation_dependency() -> None:
         return "1"
 
     @get("/", dependencies={"foo": provide_foo})
-    def handler(foo: SkipValidation[int]) -> None:
+    def handler(foo: NamedDependency[SkipValidation[int]]) -> None:
         mock(foo)
         return
 

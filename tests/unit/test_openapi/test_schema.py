@@ -50,8 +50,8 @@ from litestar.params import (
     FromPath,
     FromQuery,
     HeaderParameter,
+    JSONBody,
     KwargDefinition,
-    Parameter,
     ParameterKwarg,
     PathParameter,
     QueryParameter,
@@ -110,12 +110,12 @@ def test_override_schema_component_key() -> None:
 
     @post("/")
     def handler(
-        data: Data,
-    ) -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+        data: JSONBody[Data],
+    ) -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 
     @get("/")
-    def handler_2() -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+    def handler_2() -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 
     app = Litestar([handler, handler_2])
@@ -155,12 +155,12 @@ def test_override_schema_component_key_raise_if_keys_are_not_unique() -> None:
 
     @post("/")
     def handler(
-        data: Data,
-    ) -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+        data: JSONBody[Data],
+    ) -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 
     @get("/")
-    def handler_2() -> Annotated[Data2, Parameter(schema_component_key="not_data")]:
+    def handler_2() -> Annotated[Data2, Body(schema_component_key="not_data")]:
         return Data2()
 
     with pytest.raises(ImproperlyConfiguredException, match="Schema component keys must be unique"):
@@ -899,7 +899,7 @@ def test_enum_schema_respects_annotated_title_and_description() -> None:
         FieldDefinition.from_kwarg(
             name="color",
             annotation=Color,
-            kwarg_definition=Parameter(title="Custom Color", description="A custom color"),
+            kwarg_definition=QueryParameter(title="Custom Color", description="A custom color"),
         )
     )
 
@@ -920,7 +920,7 @@ def test_new_type_preserves_constraints() -> None:
     UserId = NewType("UserId", int)
 
     schema = get_schema_for_field_definition(
-        FieldDefinition.from_kwarg(name="user_id", annotation=UserId, kwarg_definition=Parameter(gt=0))
+        FieldDefinition.from_kwarg(name="user_id", annotation=UserId, kwarg_definition=QueryParameter(gt=0))
     )
 
     assert schema.exclusive_minimum == 0
@@ -1109,7 +1109,7 @@ def test_reference_result_keeps_kwarg_metadata() -> None:
         FieldDefinition.from_kwarg(
             name="person",
             annotation=DataclassPerson,
-            kwarg_definition=Parameter(title="A person", description="The person to greet"),
+            kwarg_definition=QueryParameter(title="A person", description="The person to greet"),
         )
     )
 
@@ -1133,7 +1133,7 @@ def test_reference_result_keeps_kwarg_metadata_on_subsequent_use() -> None:
     first = creator.for_field_definition(FieldDefinition.from_kwarg(name="a", annotation=DataclassPerson))
     second = creator.for_field_definition(
         FieldDefinition.from_kwarg(
-            name="b", annotation=DataclassPerson, kwarg_definition=Parameter(description="second use")
+            name="b", annotation=DataclassPerson, kwarg_definition=QueryParameter(description="second use")
         )
     )
 

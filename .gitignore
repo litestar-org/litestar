@@ -48,3 +48,4 @@ __pypackages__/
 certs/
 pdm.toml
 .zed
+/tests/nginx_test_files/test.txt
