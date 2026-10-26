@@ -183,6 +183,7 @@ test = [
   "covdefaults",
   "pytest>=8.4",
   "pytest-asyncio>0.24.0",
+  "pytest-codspeed>=5.0.3",
   "pytest-cov",
   "pytest-lazy-fixtures",
   "pytest-mock",
