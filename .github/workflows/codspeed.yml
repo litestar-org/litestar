@@ -17,8 +17,8 @@ on:
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/codspeed.yml"
-  # Lets CodSpeed backtest past commits to build up history. Never add merge_group:
-  # the CodSpeed runner rejects that event.
+  # Manual runs (e.g. to seed history from a temporary branch pointing at an older
+  # commit). Never add merge_group: the CodSpeed runner rejects that event.
   workflow_dispatch:
 
 # Public repository: CodSpeed accepts tokenless uploads, so no secret and no id-token
@@ -33,9 +33,11 @@ concurrency:
 
 env:
   UV_LOCKED: 1
-  # uv must reuse the interpreter installed by actions/setup-python; CodSpeed's tracing
-  # does not work with uv-managed Python builds.
+  # uv must reuse the 3.14 interpreter installed by actions/setup-python; CodSpeed's tracing
+  # does not work with uv-managed Python builds, and pinning UV_PYTHON makes uv fail loudly
+  # instead of falling back to the runner's system 3.12.
   UV_PYTHON_PREFERENCE: only-system
+  UV_PYTHON: "3.14"
   # Reduce run-to-run variance from hash randomisation and CPU-specific glibc paths.
   PYTHONHASHSEED: "0"
   GLIBC_TUNABLES: "glibc.cpu.hwcaps=-AVX512F,-AVX512VL,-AVX512BW,-ERMS,-FSRM:glibc.malloc.mmap_threshold=32768"
@@ -43,6 +45,7 @@ env:
 jobs:
   benchmarks:
     name: Run benchmarks
+    if: github.repository == 'litestar-org/litestar'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -67,8 +70,8 @@ jobs:
       - name: Install dependencies
         run: uv sync --no-group docs --no-group linting
 
-      - name: Show interpreter
-        run: uv run --no-sync python -c "import sys; print(sys.version); print(sys.executable)"
+      - name: Check interpreter
+        run: uv run --no-sync python -c "import sys; print(sys.version, sys.executable); assert sys.version_info[:2] == (3, 14), sys.version"
 
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v5.6.0
