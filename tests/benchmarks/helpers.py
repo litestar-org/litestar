@@ -3,7 +3,9 @@
 The benchmarks deliberately avoid ``TestClient``: it runs the app behind an anyio
 blocking portal in a separate thread, which adds overhead and is serialised under
 Valgrind. Calling ``app(scope, receive, send)`` on a reused event loop measures only
-Litestar's own request path.
+Litestar's own request path; ``ASGIRunner.request_many`` batches several requests into
+one event-loop entry so a benchmark measures the request path rather than
+``asyncio.Runner`` overhead.
 """
 
 from __future__ import annotations
@@ -100,6 +102,28 @@ class ASGIRunner:
 
         async def call() -> None:
             await app(request_scope, receive, send)
+
+        self._runner.run(call())
+        return messages
+
+    def request_many(self, app: ASGIApp, scope: HTTPScope, body: bytes | None = None, count: int = 10) -> list[Message]:
+        """Send ``count`` sequential requests inside one event-loop entry.
+
+        ``asyncio.Runner.run`` costs roughly three times a plaintext request, so measuring
+        one request per call would mostly measure the runner. Batching amortises that; the
+        messages of the last response are returned so callers can still assert on them.
+        """
+        messages: list[Message] = []
+
+        async def send(message: Message) -> None:
+            messages.append(message)
+
+        async def call() -> None:
+            for _ in range(count):
+                messages.clear()
+                request_scope = cast("Scope", {**scope, "state": {}})
+                receive = make_receive(body) if body is not None else _unreadable_receive
+                await app(request_scope, receive, send)
 
         self._runner.run(call())
         return messages

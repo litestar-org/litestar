@@ -39,7 +39,7 @@ def openapi_config() -> OpenAPIConfig:
     return OpenAPIConfig(title="bench", version="1.0.0")
 
 
-@pytest.mark.benchmark(max_rounds=10)
+@pytest.mark.benchmark(max_rounds=10)  # walltime-only knob (local runs); simulation mode runs each benchmark once
 @pytest.mark.parametrize("route_count", [10, 500], ids=["10_routes", "500_routes"])
 def test_app_init(benchmark: BenchmarkFixture, route_count: int) -> None:
     handlers = make_handlers(route_count)
@@ -47,7 +47,7 @@ def test_app_init(benchmark: BenchmarkFixture, route_count: int) -> None:
     assert len(app.routes) >= route_count
 
 
-@pytest.mark.benchmark(max_rounds=10)
+@pytest.mark.benchmark(max_rounds=10)  # walltime-only knob (local runs); simulation mode runs each benchmark once
 def test_openapi_schema_500_routes(benchmark: BenchmarkFixture) -> None:
     app = Litestar(route_handlers=make_handlers(500), openapi_config=openapi_config())
     plugin = app.plugins.get(OpenAPIPlugin)
@@ -126,12 +126,17 @@ def test_dto_backend_create(
 
 
 def test_routing_trie_lookup_500(benchmark: BenchmarkFixture) -> None:
+    """Measures the uncached trie traversal (``_handle_routing``); production requests
+    normally hit the per-instance ``lru_cache`` in front of it.
+    """
     app = Litestar(route_handlers=make_handlers(500), openapi_config=None)
     router = app.asgi_router
     paths = ["/resource0/1", "/resource250/42", "/resource499/7"]
 
     def lookup() -> list[dict[str, Any]]:
         # _handle_routing is the uncached implementation behind the lru_cache'd handle_routing.
+        for _ in range(99):
+            [router._handle_routing(path=path, method="GET")[3] for path in paths]
         return [router._handle_routing(path=path, method="GET")[3] for path in paths]
 
     params = benchmark(lookup)

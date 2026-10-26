@@ -1,4 +1,7 @@
-"""Per-request hot path benchmarks, mirroring the scenarios in docs/benchmarks.rst."""
+"""Per-request hot path benchmarks, mirroring the scenarios in docs/benchmarks.rst.
+
+Each benchmark sends 10 requests per measured call; see ``ASGIRunner.request_many``.
+"""
 
 from __future__ import annotations
 
@@ -180,77 +183,77 @@ def middleware_app() -> Litestar:
 
 def test_plaintext_get(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/plaintext")
-    messages = benchmark(runner.request, app, scope)
+    messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert response_body(messages) == b"Hello, world!"
 
 
 def test_json_dict_get(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/json")
-    messages = benchmark(runner.request, app, scope)
+    messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert b'"count":3' in response_body(messages)
 
 
 def test_path_param_int(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/items/12345")
-    messages = benchmark(runner.request, app, scope)
+    messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert response_body(messages) == b'{"item_id":12345}'
 
 
 def test_query_params_int_and_list(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/query", query_string=b"page=2&tags=alpha&tags=beta&tags=gamma")
-    messages = benchmark(runner.request, app, scope)
+    messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert response_body(messages) == b'{"page":2,"tags":["alpha","beta","gamma"]}'
 
 
 def test_header_and_cookie_params(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/headers", headers=[(b"x-token", b"secret"), (b"cookie", b"session_id=abc123; theme=dark")])
-    messages = benchmark(runner.request, app, scope)
+    messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert response_body(messages) == b'{"token":"secret","session_id":"abc123"}'
 
 
 def test_post_json_dataclass(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/items/dataclass", method="POST", headers=JSON_HEADERS)
-    messages = benchmark(runner.request, app, scope, ITEM_JSON)
+    messages = benchmark(runner.request_many, app, scope, ITEM_JSON)
     assert response_status(messages) == 201
     assert response_body(messages) == ITEM_JSON
 
 
 def test_post_json_struct(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/items/struct", method="POST", headers=JSON_HEADERS)
-    messages = benchmark(runner.request, app, scope, ITEM_JSON)
+    messages = benchmark(runner.request_many, app, scope, ITEM_JSON)
     assert response_status(messages) == 201
     assert response_body(messages) == ITEM_JSON
 
 
 def test_di_nested_async_3(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/di/async")
-    messages = benchmark(runner.request, app, scope)
+    messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert response_body(messages) == b'{"c":3}'
 
 
 def test_di_nested_sync_3(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/di/sync")
-    messages = benchmark(runner.request, app, scope)
+    messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert response_body(messages) == b'{"c":3}'
 
 
 def test_di_generator_cleanup(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/di/generator")
-    messages = benchmark(runner.request, app, scope)
+    messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert response_body(messages) == b'{"value":1}'
 
 
 def test_cors_simple_request(cors_app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/json", headers=[(b"origin", b"https://example.com")])
-    messages = benchmark(runner.request, cors_app, scope)
+    messages = benchmark(runner.request_many, cors_app, scope)
     assert response_status(messages) == 200
     headers = dict(messages[0]["headers"])  # type: ignore[typeddict-item]
     assert headers[b"access-control-allow-origin"] == b"https://example.com"
@@ -258,18 +261,18 @@ def test_cors_simple_request(cors_app: Litestar, runner: ASGIRunner, benchmark: 
 
 def test_middleware_stack_3_asgi(middleware_app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/json")
-    messages = benchmark(runner.request, middleware_app, scope)
+    messages = benchmark(runner.request_many, middleware_app, scope)
     assert response_status(messages) == 200
 
 
 def test_exception_http_raise(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/raise")
-    messages = benchmark(runner.request, app, scope)
+    messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 404
     assert b'"detail":"missing"' in response_body(messages)
 
 
 def test_exception_no_route(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/does/not/exist")
-    messages = benchmark(runner.request, app, scope)
+    messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 404

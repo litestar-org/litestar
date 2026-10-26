@@ -71,13 +71,25 @@ def test_encode_json_nested(benchmark: BenchmarkFixture) -> None:
         "request_id": uuid5(NAMESPACE, "request"),
         "meta": {"page": 1, "size": 20, "filters": ["active", "verified"]},
     }
-    encoded = benchmark(encode_json, payload)
+
+    def encode_20_times() -> bytes:
+        for _ in range(19):
+            encode_json(payload)
+        return encode_json(payload)
+
+    encoded = benchmark(encode_20_times)
     assert encoded.startswith(b'{"people":[{"id":"')
 
 
 def test_decode_json_typed(benchmark: BenchmarkFixture) -> None:
     raw = encode_json(make_people(20))
-    people = benchmark(decode_json, raw, target_type=list[Person])
+
+    def decode_10_times() -> list[Person]:
+        for _ in range(9):
+            decode_json(raw, target_type=list[Person])
+        return decode_json(raw, target_type=list[Person])
+
+    people = benchmark(decode_10_times)
     assert len(people) == 20
     assert isinstance(people[0].address, Address)
 
@@ -138,5 +150,11 @@ def test_signature_model_parse(benchmark: BenchmarkFixture) -> None:
     model = route_handler.signature_model
     connection = RequestFactory(app=app).get("/search")
     kwargs = {"page": "2", "size": "50", "q": "hello", "active": "true", "ids": ["1", "2", "3"]}
-    parsed = benchmark(model.parse_values_from_connection_kwargs, connection, kwargs)
+
+    def parse_100_times() -> Any:
+        for _ in range(99):
+            model.parse_values_from_connection_kwargs(connection, kwargs)
+        return model.parse_values_from_connection_kwargs(connection, kwargs)
+
+    parsed = benchmark(parse_100_times)
     assert parsed == {"page": 2, "size": 50, "q": "hello", "active": True, "ids": [1, 2, 3]}
