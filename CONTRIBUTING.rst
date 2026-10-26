@@ -131,6 +131,26 @@ or ``make coverage``. Due to the nature of pytest-xdist, attaching a debugger is
 straightforward. For debugging, it's recommended to run the tests individually with
 ``pytest <test name>`` or via an IDE, which will skip ``pytest-xdist``.
 
+Running benchmarks
+++++++++++++++++++
+
+Micro-benchmarks live in ``tests/benchmarks`` and are measured on every pull request by
+`CodSpeed <https://codspeed.io/litestar-org/litestar>`_. They are ordinary pytest tests
+marked with ``@pytest.mark.benchmark``: ``make test`` runs each of them once as a smoke
+test, and ``make benchmark`` runs them through ``pytest-codspeed`` and prints timings.
+Timings measured locally are wall-clock and noisy; CI measures instruction counts under
+Valgrind, which is deterministic enough to compare against ``main``.
+
+The CodSpeed check on a pull request is informational. A reported regression is a prompt
+to look at the flame graph linked from the CodSpeed comment, not a merge blocker; results
+can shift by a few percent for reasons unrelated to a change.
+
+When adding a benchmark, keep the measured call free of I/O and ``TestClient`` (drive the
+app with the ``ASGIRunner`` helper from ``tests/benchmarks/helpers.py``), make it do at
+least ~100 µs of work, and assert on its result so it keeps working as a regular test.
+Pass positional arguments or wrap the call in a ``lambda``: ``pytest-codspeed`` forwards
+keyword arguments to its own measuring function, so a keyword named ``fn`` collides with it.
+
 Running type checkers
 +++++++++++++++++++++
 
