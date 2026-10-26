@@ -114,6 +114,11 @@ test-examples:            			              	## Run the examples tests
 .PHONY: test-all
 test-all: test test-examples 						## Run all tests
 
+.PHONY: benchmark
+benchmark:                                          ## Run the CodSpeed benchmarks (walltime locally, instrumented in CI)
+	@echo "=> Running benchmarks"
+	@uv run pytest tests/benchmarks --codspeed -n 0
+
 .PHONY: check-all
 check-all: lint test-all coverage                   ## Run all linting, tests, and coverage checks
 

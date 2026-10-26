@@ -1,0 +1,77 @@
+name: CodSpeed
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "litestar/**"
+      - "tests/benchmarks/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/codspeed.yml"
+  pull_request:
+    paths:
+      - "litestar/**"
+      - "tests/benchmarks/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/codspeed.yml"
+  # Lets CodSpeed backtest past commits to build up history. Never add merge_group:
+  # the CodSpeed runner rejects that event.
+  workflow_dispatch:
+
+# Public repository: CodSpeed accepts tokenless uploads, so no secret and no id-token
+# are needed. PR comments and the check are posted by the CodSpeed GitHub App.
+permissions:
+  contents: read
+
+concurrency:
+  group: codspeed-${{ github.ref }}
+  # Cancel superseded PR runs, but never a push-to-main baseline run.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  UV_LOCKED: 1
+  # uv must reuse the interpreter installed by actions/setup-python; CodSpeed's tracing
+  # does not work with uv-managed Python builds.
+  UV_PYTHON_PREFERENCE: only-system
+  # Reduce run-to-run variance from hash randomisation and CPU-specific glibc paths.
+  PYTHONHASHSEED: "0"
+  GLIBC_TUNABLES: "glibc.cpu.hwcaps=-AVX512F,-AVX512VL,-AVX512BW,-ERMS,-FSRM:glibc.malloc.mmap_threshold=32768"
+
+jobs:
+  benchmarks:
+    name: Run benchmarks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.0
+        with:
+          enable-cache: true
+
+      - name: Install build dependencies
+        run: sudo apt-get install build-essential libpq-dev python3-dev -y
+
+      - name: Install dependencies
+        run: uv sync --no-group docs --no-group linting
+
+      - name: Show interpreter
+        run: uv run --no-sync python -c "import sys; print(sys.version); print(sys.executable)"
+
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v5.6.0
+        with:
+          mode: simulation,memory
+          run: uv run --no-sync pytest tests/benchmarks --codspeed -n 0
