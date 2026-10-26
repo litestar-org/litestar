@@ -47,9 +47,24 @@ async def plaintext() -> str:
     return "Hello, world!"
 
 
+@get("/plaintext-sync", media_type=MediaType.TEXT, sync_to_thread=False)
+def plaintext_sync() -> str:
+    return "Hello, world!"
+
+
 @get("/json")
 async def json_dict() -> dict[str, Any]:
     return {"message": "Hello, world!", "count": 3, "items": ["alpha", "beta", "gamma"]}
+
+
+ITEM_STRUCTS = [
+    ItemStruct(name=f"item-{index}", price=index * 1.5, tags=["alpha", "beta", "gamma"]) for index in range(100)
+]
+
+
+@get("/items/structs")
+async def json_struct_list() -> list[ItemStruct]:
+    return ITEM_STRUCTS
 
 
 @get("/items/{item_id:int}")
@@ -148,7 +163,9 @@ def app() -> Litestar:
     return Litestar(
         route_handlers=[
             plaintext,
+            plaintext_sync,
             json_dict,
+            json_struct_list,
             path_param,
             query_params,
             header_and_cookie,
@@ -188,11 +205,25 @@ def test_plaintext_get(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFi
     assert response_body(messages) == b"Hello, world!"
 
 
+def test_plaintext_get_sync_handler(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
+    scope = make_scope("/plaintext-sync")
+    messages = benchmark(runner.request_many, app, scope)
+    assert response_status(messages) == 200
+    assert response_body(messages) == b"Hello, world!"
+
+
 def test_json_dict_get(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/json")
     messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert b'"count":3' in response_body(messages)
+
+
+def test_json_struct_list_100_get(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
+    scope = make_scope("/items/structs")
+    messages = benchmark(runner.request_many, app, scope)
+    assert response_status(messages) == 200
+    assert response_body(messages).count(b'"name":"item-') == 100
 
 
 def test_path_param_int(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
@@ -276,3 +307,10 @@ def test_exception_no_route(app: Litestar, runner: ASGIRunner, benchmark: Benchm
     scope = make_scope("/does/not/exist")
     messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 404
+
+
+def test_exception_query_validation(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
+    scope = make_scope("/query", query_string=b"page=not-a-number&tags=alpha")
+    messages = benchmark(runner.request_many, app, scope)
+    assert response_status(messages) == 400
+    assert b"page" in response_body(messages)
