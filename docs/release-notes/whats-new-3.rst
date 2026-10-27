@@ -507,14 +507,13 @@ startup.
 -----------------------------------------------------
 
 Every :func:`~.handlers.asgi` handler, mounted or not, now receives a copy of the ASGI
-``scope``, so the wrapped application can no longer add or replace top-level scope keys
-seen by the outer application. In 2.x the default was ``None``, which passed the original
-scope through, warned at registration and warned again when the wrapped application
-mutated the scope. Both warnings are gone.
+``scope``, so the wrapped application can no longer add, replace or remove top-level scope
+keys seen by the outer application. In 2.x the default was ``None``, which passed the
+original scope through, warned at registration and warned again when the wrapped
+application mutated the scope. Both warnings are gone.
 
-The copy is shallow. Nested values such as ``scope["state"]``, ``scope["headers"]``,
-``scope["path_params"]`` and ``scope["app"]`` are still shared with the outer scope, so
-isolation applies to top-level keys only.
+The copy is shallow, so nested values such as ``scope["state"]`` are still shared with the
+outer scope.
 
 Set ``copy_scope=False`` where the wrapped application is meant to communicate with the
 outer application through the scope:
@@ -524,12 +523,19 @@ outer application through the scope:
     @asgi("/some/sub-path", is_mount=True, copy_scope=False)
     async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None: ...
 
-You need the opt-out if the wrapped application injects an authenticated user or a request
-id for outer middleware to read, calls :meth:`~.connection.ASGIConnection.set_session` or
-:meth:`~.connection.ASGIConnection.clear_session`, or sets routing metadata that tracing
-integrations such as Sentry or OpenTelemetry read after the response. Those stop working
-silently, since the warning that used to flag them is gone.
+You need the opt-out if the wrapped application writes a top-level scope key the outer
+application reads, such as ``scope["user"]``, or calls
+:meth:`~.connection.ASGIConnection.set_session` or
+:meth:`~.connection.ASGIConnection.clear_session`, both of which rebind
+``scope["session"]``. A mounted Starlette or FastAPI application also sets
+``scope["endpoint"]`` and ``scope["route"]``, which outer Sentry or OpenTelemetry layers
+read after the response to name the transaction. All of these now fail silently.
+
+``copy_scope`` is set per handler; there is no router- or application-level equivalent, so
+an application with several mounts opts out on each handler. A ``handler_class`` subclass
+that pinned ``copy_scope`` by passing it to ``super().__init__()`` must now accept it as a
+parameter and forward it, because :func:`~.handlers.asgi` always passes it.
 
 .. seealso::
 
-    :ref:`usage/routing/overview:Mounting ASGI Apps`
+    :ref:`usage/routing/handlers:ASGI route handler considerations`

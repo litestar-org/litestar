@@ -74,7 +74,6 @@ def test_custom_handler_class() -> None:
     "handler_kwargs, expected_value",
     [
         pytest.param({"is_mount": True}, None, id="mount-default"),
-        pytest.param({"is_mount": True, "copy_scope": True}, None, id="mount-explicit-true"),
         pytest.param({"is_mount": True, "copy_scope": False}, "foo", id="mount-opt-out"),
         pytest.param({}, None, id="non-mount-default"),
         pytest.param({"copy_scope": False}, "foo", id="non-mount-opt-out"),
@@ -101,22 +100,29 @@ def test_copy_scope(handler_kwargs: "dict[str, Any]", expected_value: "str | Non
     mock.assert_called_once_with(expected_value)
 
 
-def test_copy_scope_is_shallow() -> None:
+def test_copy_scope_isolates_top_level_keys_only() -> None:
     mock = MagicMock()
 
     def middleware_factory(app: Litestar) -> ASGIApp:
         async def middleware(scope: "Scope", receive: "Receive", send: "Send") -> None:
             await app(scope, receive, send)
-            mock(scope["state"].get("injected"))
+            mock(scope.get("foo"), scope["state"].get("injected"))
 
         return middleware
 
     @asgi(is_mount=True)
     async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        scope["foo"] = "foo"  # type: ignore[typeddict-unknown-key]
         scope["state"]["injected"] = "nested"
         await ASGIResponse()(scope, receive, send)
 
     with create_test_client([handler], middleware=[middleware_factory]) as client:
         client.get("/")
 
-    mock.assert_called_once_with("nested")
+    mock.assert_called_once_with(None, "nested")
+
+
+def test_copy_scope_default_on_handler_class() -> None:
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None: ...
+
+    assert ASGIRouteHandler(path="/", fn=handler).copy_scope is True

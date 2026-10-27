@@ -12,20 +12,18 @@
         :pr: 5164
 
         Every ``asgi`` handler, mounted or not, now receives a copy of the ASGI ``scope``,
-        so the wrapped application can no longer add or replace top-level scope keys seen
-        by the outer application. The default was ``None``, which passed the original scope
-        through, warned at registration and warned again when the wrapped application
-        mutated the scope; both warnings are gone.
+        so the wrapped application can no longer add, replace or remove top-level scope
+        keys seen by the outer application. The default was ``None``, which passed the
+        original scope through, warned at registration and warned again when the wrapped
+        application mutated the scope; both warnings are gone.
 
-        The copy is shallow. Nested values such as ``scope["state"]``,
-        ``scope["headers"]``, ``scope["path_params"]`` and ``scope["app"]`` are still
-        shared with the outer scope.
+        The copy is shallow, so nested values such as ``scope["state"]`` are still shared
+        with the outer scope.
 
         Set ``copy_scope=False`` where the wrapped application is meant to communicate with
-        the outer application through the scope. Symptoms of needing it: a mounted
-        application that injects an authenticated user or a request id for outer middleware
-        to read, that calls ``Request.set_session`` or ``Request.clear_session``, or that
-        sets routing metadata which tracing integrations read after the response.
+        the outer application through the scope, for example by writing ``scope["user"]``
+        for outer middleware to read, or by calling ``Request.set_session`` or
+        ``Request.clear_session``. All of these now fail silently.
 
     .. change:: Declare ``socket`` in the original signature of a ``websocket_stream`` handler
         :type: bugfix
