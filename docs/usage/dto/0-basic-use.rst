@@ -112,47 +112,6 @@ to disable the codegen backend selectively:
     class FooDTO(DataclassDTO[Foo]):
         config = DTOConfig(experimental_codegen_backend=False)
 
-Enabling the backend
---------------------
-
-.. note:: This is a historical document meant for Litestar versions prior to 2.8.0
-    This backend was enabled by default since 2.8.0
-
-.. dropdown:: Enabling DTO codegen backend
-    :icon: git-pull-request-closed
-
-    You can enable this backend selectively for individual DTOs:
-
-    .. code-block:: python
-
-        from dataclasses import dataclass
-        from litestar.dto import DTOConfig, DataclassDTO
-
-
-        @dataclass
-        class Foo:
-            name: str
-
-
-        class FooDTO(DataclassDTO[Foo]):
-            config = DTOConfig(experimental_codegen_backend=True)
-
-    The same flag can be used to disable the backend selectively:
-
-    .. code-block:: python
-
-        from dataclasses import dataclass
-        from litestar.dto import DTOConfig, DataclassDTO
-
-
-        @dataclass
-        class Foo:
-            name: str
-
-
-        class FooDTO(DataclassDTO[Foo]):
-            config = DTOConfig(experimental_codegen_backend=False)
-
 
 Performance improvements
 ------------------------
