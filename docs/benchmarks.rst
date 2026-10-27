@@ -127,6 +127,6 @@ Continuous benchmarks
 In addition to the throughput comparison above, Litestar tracks the CPU cost of its own
 request path, serialization and application startup with
 `CodSpeed <https://codspeed.io/litestar-org/litestar>`_ on every pull request that touches the
-library (``litestar/``, the benchmarks, ``pyproject.toml`` or ``uv.lock``). These micro-benchmarks
+library (``litestar/``, the benchmarks, ``pyproject.toml`` or ``uv.lock``). These benchmarks
 live in ``tests/benchmarks`` in the repository and compare each change against the latest
 ``main`` commit, so regressions are visible before they are merged.

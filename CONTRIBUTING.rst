@@ -134,7 +134,7 @@ straightforward. For debugging, it's recommended to run the tests individually w
 Running benchmarks
 ++++++++++++++++++
 
-Micro-benchmarks live in ``tests/benchmarks`` and are measured by
+Benchmarks live in ``tests/benchmarks`` and are measured by
 `CodSpeed <https://codspeed.io/litestar-org/litestar>`_ on every pull request that touches the
 library (``litestar/``, the benchmarks, ``pyproject.toml`` or ``uv.lock``). They are ordinary pytest tests
 marked with ``@pytest.mark.benchmark``: ``make test`` runs each of them once as a smoke
