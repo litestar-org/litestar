@@ -202,9 +202,22 @@ Declaring a :class:`~.dto.field.DTOField` through Pydantic's ``Field.extra``, th
 ``Field(**dto_field("read-only"))``, is no longer supported. The mark was already being
 ignored in 2.x and only produced a deprecation warning.
 
-The declaration has to be removed, not merely left inert: it puts an internal key into the
-field's ``json_schema_extra``, which makes OpenAPI schema generation fail for a model that
-is not passed through a DTO. Use ``Annotated`` instead:
+Remove the declaration: it leaves an internal key in the field's ``json_schema_extra``,
+which can make OpenAPI schema generation fail.
+
+Before:
+
+.. code-block:: python
+
+    import pydantic
+
+    from litestar.dto import dto_field
+
+
+    class User(pydantic.BaseModel):
+        id: int = pydantic.Field(**dto_field("read-only"))
+
+After:
 
 .. code-block:: python
 
