@@ -8,6 +8,11 @@ This document is an overview of the changes between the **2.x** release line and
 For a detailed list of all changes, including changes between versions leading up to the
 3.0 release, consult the :doc:`/release-notes/changelog`.
 
+.. seealso::
+
+    :doc:`/upgrading/v3` walks through upgrading an existing application, in the order the
+    work is best done.
+
 Imports
 -------
 
@@ -16,7 +21,7 @@ Imports
 +====================================================+========================================================================+
 | ``litestar.contrib.attrs``                         | ``litestar.plugins.attrs``                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.contrib.htmx``                          | ``litestar_htmx``                                                      |
+| ``litestar.contrib.htmx``                          | ``litestar.plugins.htmx``                                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``litestar.contrib.jinja``                         | ``litestar.plugins.jinja``                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
@@ -314,8 +319,9 @@ Built-in middleware migrated to ``ASGIMiddleware``
 --------------------------------------------------
 
 Litestar's built-in middleware is moving from the legacy ``AbstractMiddleware`` and
-``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`, and both
-legacy bases are themselves deprecated. ``CORSMiddleware``, ``ResponseCacheMiddleware``,
+``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
+Subclassing ``AbstractMiddleware`` directly is deprecated and warns.
+``CORSMiddleware``, ``ResponseCacheMiddleware``,
 ``CSRFMiddleware`` and ``LoggingMiddleware`` have made this move; ``AllowedHostsMiddleware``,
 ``CompressionMiddleware``, ``RateLimitMiddleware`` and ``SessionMiddleware`` have not yet.
 ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into

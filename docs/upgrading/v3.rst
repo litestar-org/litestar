@@ -1,0 +1,622 @@
+Upgrading to 3.0
+================
+
+This guide shows what to change in an application written for Litestar 2.x. For a
+per-change reference see :doc:`/release-notes/whats-new-3`, and for the exhaustive list
+:doc:`/release-notes/changelog`.
+
+There is no codemod or automated upgrade command. The last 2.x release warns about roughly
+half of what follows; :ref:`finding-the-rest` explains how to surface those warnings.
+
+
+Before you start
+----------------
+
+**Litestar 3.0 requires Python 3.11 or newer.**
+
+Several packages moved out of the default dependencies. These fail on installation rather
+than at runtime, so declare the extras you need first:
+
+.. list-table::
+    :header-rows: 1
+    :widths: 40 60
+
+    * - If your application
+      - Install
+    * - uses the ``litestar`` command
+      - ``litestar[cli]``, or ``litestar[standard]`` for the CLI plus Jinja
+    * - uses ``litestar.testing``
+      - ``litestar[testing]``
+    * - serves the OpenAPI schema as YAML
+      - ``litestar[yaml]``
+    * - uses the HTMX plugin
+      - ``litestar[htmx]``
+    * - uses the ``polyfactory`` integration
+      - ``litestar[polyfactory]``
+
+
+Request parameters
+------------------
+
+Every request parameter must now declare where it comes from. An unmarked parameter raises
+at application construction:
+
+.. code-block:: text
+
+    ImproperlyConfiguredException: [paths='/', handler='handler'] Missing declaration for parameter 'name'
+
+Query parameters:
+
+.. code-block:: python
+    :caption: 2.x
+
+    @get("/")
+    async def handler(name: str) -> dict[str, str]:
+        return {"name": name}
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.params import FromQuery
+
+
+    @get("/")
+    async def handler(name: FromQuery[str]) -> dict[str, str]:
+        return {"name": name}
+
+Path parameters:
+
+.. code-block:: python
+    :caption: 2.x
+
+    @get("/users/{user_id:int}")
+    async def handler(user_id: int) -> dict[str, int]:
+        return {"user_id": user_id}
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.params import FromPath
+
+
+    @get("/users/{user_id:int}")
+    async def handler(user_id: FromPath[int]) -> dict[str, int]:
+        return {"user_id": user_id}
+
+``FromHeader`` and ``FromCookie`` work the same way. They match the Python parameter name
+verbatim, so a header such as ``api-key`` cannot be expressed as ``api_key: FromHeader[str]``
+and needs ``HeaderParameter(name="api-key")``.
+
+An optional parameter is no longer given an implicit default of ``None``, so write the
+default out. Without it, a missing value is a validation error rather than ``None``:
+
+.. code-block:: python
+    :caption: 2.x
+
+    @get("/")
+    async def handler(q: str | None) -> dict[str, str | None]:
+        return {"q": q}
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.params import FromQuery
+
+
+    @get("/")
+    async def handler(q: FromQuery[str | None] = None) -> dict[str, str | None]:
+        return {"q": q}
+
+``Parameter`` has been removed. Where it carried a location, use the matching specifier and
+rename ``query``/``header``/``cookie`` to ``name``:
+
+.. code-block:: python
+    :caption: 2.x
+
+    from litestar.params import Parameter
+
+
+    @get("/")
+    async def handler(
+        name: Annotated[str, Parameter(query="alias")],
+        api_key: Annotated[str, Parameter(header="X-API-KEY")],
+        session: Annotated[str, Parameter(cookie="session")],
+    ) -> None: ...
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.params import CookieParameter, HeaderParameter, QueryParameter
+
+
+    @get("/")
+    async def handler(
+        name: Annotated[str, QueryParameter(name="alias")],
+        api_key: Annotated[str, HeaderParameter(name="X-API-KEY")],
+        session: Annotated[str, CookieParameter(name="session")],
+    ) -> None: ...
+
+Metadata-only use is the case 2.x never warned about. There is no location-less parameter
+specifier anymore, so pick the location explicitly:
+
+.. code-block:: python
+    :caption: 2.x
+
+    @get("/")
+    async def handler(count: Annotated[int, Parameter(gt=0, description="How many")]) -> int:
+        return count
+
+.. code-block:: python
+    :caption: 3.x
+
+    @get("/")
+    async def handler(count: Annotated[int, QueryParameter(gt=0, description="How many")]) -> int:
+        return count
+
+Declaring metadata as a default value is no longer supported:
+
+.. code-block:: python
+    :caption: 2.x
+
+    @get("/")
+    async def handler(name: str = Parameter(query="alias", min_length=2)) -> str:
+        return name
+
+.. code-block:: python
+    :caption: 3.x
+
+    @get("/")
+    async def handler(name: Annotated[str, QueryParameter(name="alias", min_length=2)]) -> str:
+        return name
+
+Ordinary defaults are of course unaffected: ``name: FromQuery[str] = "anon"``.
+
+.. warning::
+
+    ``QueryParameter`` and its siblings are dataclasses whose first field is ``examples``,
+    where 2.x ``Parameter`` took the annotation positionally. ``QueryParameter(int, lt=100)``
+    is therefore accepted, serves requests, and fails later during schema generation with
+    ``TypeError: 'type' object is not iterable``. In ``parameters={...}`` mappings, pass the
+    type as ``annotation=``.
+
+
+Reserved keyword arguments
+--------------------------
+
+The reserved kwargs must now be declared with their type:
+
+.. code-block:: python
+    :caption: 2.x
+
+    @post("/info")
+    async def info(
+        data: Payload,
+        body: bytes,
+        headers: dict[str, str],
+        query: dict[str, Any],
+        cookies: dict[str, str],
+    ) -> None: ...
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.datastructures import Headers
+    from litestar.params import JSONBody, QueryParams, RawBody, RequestCookies
+
+
+    @post("/info")
+    async def info(
+        data: JSONBody[Payload],
+        body: RawBody,
+        headers: Headers,
+        query: QueryParams,
+        cookies: RequestCookies,
+    ) -> None: ...
+
+``request``, ``socket`` and ``scope`` are unchanged, as long as they are annotated with
+``Request``, ``WebSocket`` and ``Scope`` respectively.
+
+For ``headers``, ``query``, ``cookies`` and ``scope`` the error message suggests reading
+them off the connection instead, which is often the better fix because it removes the
+parameter altogether:
+
+.. code-block:: text
+
+    Reserved kwarg 'headers' declared as 'dict[str, str]'. Use 'request.headers' instead
+
+Note that ``headers`` now receives a :class:`~.datastructures.Headers` instance rather than
+a ``dict``. It is immutable, case-insensitive and multi-value aware, so lookups and
+iteration keep working, while ``headers["k"] = v``, ``headers.update(...)`` and comparing
+against a plain dict do not.
+
+
+Dependency injection
+--------------------
+
+``Provide`` is unchanged, but the handler consuming a dependency must now mark it. This is
+the most common single edit:
+
+.. code-block:: python
+    :caption: 2.x
+
+    @get("/", dependencies={"user_id": Provide(provide_user_id)})
+    async def index(user_id: int) -> int:
+        return user_id
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.di import NamedDependency
+
+
+    @get("/", dependencies={"user_id": Provide(provide_user_id)})
+    async def index(user_id: NamedDependency[int]) -> int:
+        return user_id
+
+Without the marker the application fails to start with a message that does not mention
+dependencies at all:
+
+.. code-block:: text
+
+    ImproperlyConfiguredException: [paths='/', handler='index'] Missing declaration for parameter 'user_id'
+
+``litestar.params.Dependency`` has been removed:
+
+.. code-block:: python
+    :caption: 2.x
+
+    async def index(user_id: int = Dependency()) -> int: ...
+
+
+    async def other(injected: Annotated[int, Dependency(skip_validation=True)]) -> str: ...
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.di import NamedDependency
+    from litestar.params import SkipValidation
+
+
+    async def index(user_id: NamedDependency[int]) -> int: ...
+
+
+    async def other(injected: NamedDependency[SkipValidation[int]]) -> str: ...
+
+A default declared on the marker moves to the parameter default, and an optional dependency
+must spell out ``= None``. ``NamedDependency[int | None]`` with no default and no provider
+passes startup validation and then fails per request with a bare 500.
+
+
+Logging
+-------
+
+Litestar no longer configures logging. ``LoggingConfig``, ``StructlogPlugin``,
+``Litestar.logger``, ``Litestar.get_logger`` and ``ASGIConnection.logger`` are gone, and
+there is no replacement configuration object — use the standard library directly. On 2.x a
+bare ``Litestar(...)`` installed a logging config for you, so ``INFO`` messages appeared
+without any setup; they now go nowhere unless you configure logging yourself.
+
+.. code-block:: python
+    :caption: 2.x
+
+    @get("/")
+    async def index(request: Request) -> None:
+        request.logger.info("inside a request")
+
+
+    app = Litestar([index], logging_config=LoggingConfig())
+
+.. code-block:: python
+    :caption: 3.x
+
+    import logging
+
+    logging.basicConfig(level=logging.INFO)
+
+    logger = logging.getLogger(__name__)
+
+
+    @get("/")
+    async def index() -> None:
+        logger.info("inside a request")
+
+
+    app = Litestar([index])
+
+Structlog users configure structlog themselves and pass the logger to the request logging
+middleware, which replaces ``LoggingMiddlewareConfig``:
+
+.. code-block:: python
+    :caption: 2.x
+
+    app = Litestar([index], plugins=[StructlogPlugin()])
+
+.. code-block:: python
+    :caption: 3.x
+
+    import structlog
+
+    from litestar.middleware.logging import LoggingMiddleware
+
+    app = Litestar([index], middleware=[LoggingMiddleware(structlog.get_logger(), log_structured=True)])
+
+``LoggingMiddleware`` takes its logger as a required first argument, and it logs fewer
+fields by default than 2.x did: requests log ``path``, ``method``, ``content_type``,
+``query`` and ``path_params``, and responses log only ``status_code``. Pass
+``request_log_fields`` and ``response_log_fields`` to restore the rest.
+
+Litestar also no longer logs exceptions, so ``log_exceptions``, ``disable_stack_trace`` and
+``traceback_line_limit`` have no equivalent. Use the ``after_exception`` hook:
+
+.. code-block:: python
+    :caption: 3.x
+
+    async def log_exception(exc: Exception, scope: Scope) -> None:
+        logger.exception("Uncaught exception", exc_info=exc)
+
+
+    app = Litestar([index], after_exception=[log_exception])
+
+
+Unhandled exceptions
+--------------------
+
+An exception that no handler catches now propagates to the ASGI server instead of being
+turned into a 500 response. To restore the 2.x behaviour, register a handler for
+``HTTP_500_INTERNAL_SERVER_ERROR``:
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.exceptions.responses import create_exception_response
+    from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+
+    app = Litestar(
+        [handler],
+        exception_handlers={HTTP_500_INTERNAL_SERVER_ERROR: create_exception_response},
+    )
+
+``create_exception_response`` reproduces the 2.x response body exactly. Prefer the status
+code as the key over ``Exception``: the latter is found through the exception's MRO and
+therefore also intercepts ``HTTPException``\ s such as 404s.
+
+.. important::
+
+    Exception handlers must be synchronous. An ``async def`` handler fails with
+    ``AttributeError: 'coroutine' object has no attribute 'to_asgi_response'``.
+
+
+Custom middleware
+-----------------
+
+``AbstractMiddleware`` is deprecated in favour of
+:class:`~litestar.middleware.ASGIMiddleware`. The middleware is now instantiated by you and
+receives the next application per call, instead of wrapping it at construction:
+
+.. code-block:: python
+    :caption: 2.x
+
+    from litestar.middleware import AbstractMiddleware, DefineMiddleware
+
+
+    class TimeoutMiddleware(AbstractMiddleware):
+        exclude = "^/health$"
+
+        def __init__(self, app: ASGIApp, timeout: float) -> None:
+            self.timeout = timeout
+            super().__init__(app=app)
+
+        async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+            with anyio.move_on_after(self.timeout):
+                await self.app(scope, receive, send)
+
+
+    app = Litestar(middleware=[DefineMiddleware(TimeoutMiddleware, timeout=5)])
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.enums import ScopeType
+    from litestar.middleware import ASGIMiddleware
+
+
+    class TimeoutMiddleware(ASGIMiddleware):
+        scopes = (ScopeType.HTTP,)
+        exclude_path_pattern = "^/health$"
+
+        def __init__(self, timeout: float) -> None:
+            self.timeout = timeout
+
+        async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+            with anyio.move_on_after(self.timeout):
+                await next_app(scope, receive, send)
+
+
+    app = Litestar(middleware=[TimeoutMiddleware(timeout=5)])
+
+Instances are created once and shared across requests, so per-connection state must live
+inside ``handle``. ``exclude`` becomes ``exclude_path_pattern`` and takes a string or a
+tuple; it is matched against the handler's path template at startup, not the request path,
+so patterns written against expanded path parameters need rewriting. For genuinely dynamic
+bypassing, use ``should_bypass_for_scope``.
+
+Two other middleware forms were dropped. The Starlette-style tuple is no longer accepted:
+
+.. code-block:: python
+    :caption: 2.x
+
+    app = Litestar(middleware=[(MyMiddleware, {"value": "x"})])
+
+.. code-block:: python
+    :caption: 3.x
+
+    app = Litestar(middleware=[MyMiddleware(value="x")])
+
+And middleware factories are now called positionally, so a keyword-only ``app`` parameter
+no longer works:
+
+.. code-block:: python
+    :caption: 2.x
+
+    def middleware_factory(*, app: ASGIApp) -> ASGIApp: ...
+
+.. code-block:: python
+    :caption: 3.x
+
+    def middleware_factory(app: ASGIApp) -> ASGIApp: ...
+
+
+Testing
+-------
+
+``AsyncTestClient`` is now async-native. Plain requests are unchanged, but websocket
+sessions became asynchronous:
+
+.. code-block:: python
+    :caption: 2.x
+
+    async with create_async_test_client([handler]) as client:
+        with await client.websocket_connect("/ws") as ws:
+            ws.send_json({"hello": "world"})
+            assert ws.receive_json() == {"hello": "world"}
+
+.. code-block:: python
+    :caption: 3.x
+
+    async with (
+        create_async_test_client([handler]) as client,
+        await client.websocket_connect("/ws") as ws,
+    ):
+        await ws.send_json({"hello": "world"})
+        assert await ws.receive_json() == {"hello": "world"}
+
+``backend`` and ``backend_options`` were removed from ``AsyncTestClient`` and
+``create_async_test_client``, since the application now runs on the caller's event loop, and
+``timeout`` narrowed to ``float | None``. Use the client inline inside the test rather than
+yielding it from an async generator fixture.
+
+Two default values changed, and they are the most likely cause of existing tests failing:
+``raise_server_exceptions`` is now ``False`` (it had no effect at all in 2.x), and
+``create_test_client`` no longer defaults to ``debug=True``. Combined with unhandled
+exceptions no longer being converted into a response, a handler that raises now produces a
+plain-text ``500 - Internal Server Error`` where 2.x produced a JSON body:
+
+.. code-block:: python
+    :caption: 2.x
+
+    with create_test_client([boom], debug=False) as client:
+        response = client.get("/boom")
+        assert response.json() == {"status_code": 500, "detail": "Internal Server Error"}
+
+.. code-block:: python
+    :caption: 3.x
+
+    with create_test_client([boom], raise_server_exceptions=True) as client:
+        with pytest.raises(RuntimeError):
+            client.get("/boom")
+
+
+Static files
+------------
+
+.. code-block:: python
+    :caption: 2.x
+
+    app = Litestar(static_files_config=[StaticFilesConfig(directories=["assets"], path="/static")])
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.static_files import create_static_files_router
+
+    app = Litestar(route_handlers=[create_static_files_router(directories=["assets"], path="/static")])
+
+``Litestar.url_for_static_asset`` and ``Request.url_for_static_asset`` are gone; use
+``url_for("static", file_path=...)``, where ``static`` is the router's ``name``. The
+``resolve_symlinks`` parameter was replaced by ``allow_symlinks_outside_directory``, which
+defaults to ``False`` where the old one defaulted to ``True``.
+
+
+OpenAPI UI
+----------
+
+The OpenAPI controller was replaced by render plugins:
+
+.. code-block:: python
+    :caption: 2.x
+
+    app = Litestar(
+        openapi_config=OpenAPIConfig(
+            title="My API",
+            version="1.0.0",
+            openapi_controller=MyOpenAPIController,
+            root_schema_site="swagger",
+            enabled_endpoints={"swagger", "openapi.json"},
+        )
+    )
+
+.. code-block:: python
+    :caption: 3.x
+
+    from litestar.openapi.plugins import SwaggerRenderPlugin
+
+    app = Litestar(
+        openapi_config=OpenAPIConfig(
+            title="My API",
+            version="1.0.0",
+            path="/api-docs",
+            render_plugins=[SwaggerRenderPlugin()],
+        )
+    )
+
+The first plugin in ``render_plugins`` is served at the configuration root, which is how
+``root_schema_site`` is expressed now.
+
+The default set of endpoints also shrank: a plain ``OpenAPIConfig(...)`` served Redoc at
+``/schema`` plus Swagger, Elements, RapiDoc and the YAML schema in 2.x, and now serves
+``openapi.json`` and Scalar only. Add ``SwaggerRenderPlugin``, ``RedocRenderPlugin``,
+``StoplightRenderPlugin`` or ``YamlRenderPlugin`` for the others; ``RapidocRenderPlugin``
+was removed with no replacement. ``litestar routes`` is the quickest way to diff the route
+table before and after.
+
+
+Imports
+-------
+
+The ``litestar.contrib`` namespace was removed. Every module warned on 2.x with its
+replacement, and the full mapping is in
+:ref:`the import table <release-notes/whats-new-3:Imports>`. Since those warnings fire once
+per process and only if your warning filters are installed first, a plain
+``grep -rn "litestar\.contrib" .`` over your project is a more reliable check.
+
+
+.. _finding-the-rest:
+
+Finding the rest
+----------------
+
+The last 2.x release warns about many of the changes above. Litestar's deprecations use
+``LitestarDeprecationWarning``, which subclasses ``DeprecationWarning``, but some
+upgrade-relevant warnings use ``LitestarWarning``, which subclasses ``UserWarning`` instead,
+so configure all three categories:
+
+.. code-block:: toml
+    :caption: pyproject.toml
+
+    [tool.pytest.ini_options]
+    filterwarnings = [
+      "error::DeprecationWarning",
+      "error::PendingDeprecationWarning",
+      "error::litestar.exceptions.LitestarWarning",
+    ]
+
+Prefer this over ``python -W error::DeprecationWarning``: pytest applies its
+``filterwarnings`` configuration after ``-W``, so an existing block in your project silently
+overrides the command line.
+
+Most of these warnings are emitted while the application is being constructed, not while a
+request is handled, because they come from route and signature processing. A test suite that
+only calls handler functions directly will surface almost nothing, so make sure your tests
+build a ``Litestar`` instance. Finally, unset ``LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD``,
+``LITESTAR_WARN_SYNC_TO_THREAD_WITH_ASYNC``, ``LITESTAR_WARN_SYNC_TO_THREAD_WITH_GENERATOR``
+and ``LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE`` while you work through them.
