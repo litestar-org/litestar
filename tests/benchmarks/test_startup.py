@@ -39,7 +39,7 @@ def openapi_config() -> OpenAPIConfig:
     return OpenAPIConfig(title="bench", version="1.0.0")
 
 
-@pytest.mark.benchmark(max_rounds=10)  # walltime-only knob (local runs); simulation mode runs each benchmark once
+@pytest.mark.benchmark(max_rounds=10)
 @pytest.mark.parametrize("route_count", [10, 500], ids=["10_routes", "500_routes"])
 def test_app_init(benchmark: BenchmarkFixture, route_count: int) -> None:
     handlers = make_handlers(route_count)
@@ -47,7 +47,7 @@ def test_app_init(benchmark: BenchmarkFixture, route_count: int) -> None:
     assert len(app.routes) >= route_count
 
 
-@pytest.mark.benchmark(max_rounds=10)  # walltime-only knob (local runs); simulation mode runs each benchmark once
+@pytest.mark.benchmark(max_rounds=10)
 def test_openapi_schema_500_routes(benchmark: BenchmarkFixture) -> None:
     app = Litestar(route_handlers=make_handlers(500), openapi_config=openapi_config())
     plugin = app.plugins.get(OpenAPIPlugin)
@@ -74,10 +74,7 @@ def test_signature_model_create(benchmark: BenchmarkFixture) -> None:
         return None
 
     parsed_signature = ParsedSignature.from_fn(fn, {})
-    # Wrapped in a lambda rather than passed as `benchmark(SignatureModel.create, fn=fn, ...)`:
-    # pytest-codspeed's instrumented measure() has its own positional parameter named `fn`, which
-    # collides with SignatureModel.create's `fn` keyword under --codspeed (TypeError: multiple
-    # values for argument 'fn').
+    # lambda: pytest-codspeed's measure() has its own `fn` parameter, which collides with `fn=fn`
     model = benchmark(
         lambda: SignatureModel.create(
             dependency_name_set=set(),
@@ -134,7 +131,6 @@ def test_routing_trie_lookup_500(benchmark: BenchmarkFixture) -> None:
     paths = ["/resource0/1", "/resource250/42", "/resource499/7"]
 
     def lookup() -> list[dict[str, Any]]:
-        # _handle_routing is the uncached implementation behind the lru_cache'd handle_routing.
         for _ in range(99):
             [router._handle_routing(path=path, method="GET")[3] for path in paths]
         return [router._handle_routing(path=path, method="GET")[3] for path in paths]

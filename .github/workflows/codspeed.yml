@@ -17,28 +17,20 @@ on:
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/codspeed.yml"
-  # Manual runs (e.g. to seed history from a temporary branch pointing at an older
-  # commit). Never add merge_group: the CodSpeed runner rejects that event.
+  # Never add merge_group: the CodSpeed runner rejects that event.
   workflow_dispatch:
 
-# Public repository: CodSpeed accepts tokenless uploads, so no secret and no id-token
-# are needed. PR comments and the check are posted by the CodSpeed GitHub App.
 permissions:
   contents: read
 
 concurrency:
   group: codspeed-${{ github.ref }}
-  # Cancel superseded PR runs, but never a push-to-main baseline run.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   UV_LOCKED: 1
-  # uv must reuse the 3.14 interpreter installed by actions/setup-python; CodSpeed's tracing
-  # does not work with uv-managed Python builds, and pinning UV_PYTHON makes uv fail loudly
-  # instead of falling back to the runner's system 3.12.
   UV_PYTHON_PREFERENCE: only-system
   UV_PYTHON: "3.14"
-  # Reduce run-to-run variance from hash randomisation and CPU-specific glibc paths.
   PYTHONHASHSEED: "0"
   GLIBC_TUNABLES: "glibc.cpu.hwcaps=-AVX512F,-AVX512VL,-AVX512BW,-ERMS,-FSRM:glibc.malloc.mmap_threshold=32768"
 

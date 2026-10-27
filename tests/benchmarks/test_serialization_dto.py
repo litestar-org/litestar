@@ -145,7 +145,6 @@ def test_signature_model_parse(benchmark: BenchmarkFixture) -> None:
         return None
 
     app = Litestar(route_handlers=[handler], openapi_config=None)
-    # routes[0] is the HTTPRoute for /search; route_handlers[0] is our GET handler, [1] the auto OPTIONS handler.
     route_handler = app.routes[0].route_handlers[0]  # type: ignore[union-attr]
     model = route_handler.signature_model
     connection = RequestFactory(app=app).get("/search")
