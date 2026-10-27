@@ -9,6 +9,7 @@
     .. change:: Remove support for declaring ``DTOField`` via Pydantic's ``Field.extra``
         :type: feature
         :breaking:
+        :pr: 5163
 
         Declaring a ``DTOField`` through Pydantic's ``Field.extra``, that is
         ``Field(**dto_field("read-only"))``, is no longer supported. The mark was already
