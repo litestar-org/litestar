@@ -17,7 +17,6 @@ on:
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/codspeed.yml"
-  # Never add merge_group: the CodSpeed runner rejects that event.
   workflow_dispatch:
 
 permissions:
