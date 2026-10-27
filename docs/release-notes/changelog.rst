@@ -9,6 +9,7 @@
     .. change:: Default ``copy_scope`` to ``True`` for mounted ASGI apps
         :type: feature
         :breaking:
+        :pr: 5164
 
         An ASGI handler mounted with ``is_mount=True`` now receives a copy of the ASGI
         ``scope``, so mutations made by the mounted application no longer leak into the
