@@ -223,7 +223,6 @@ filterwarnings = [
   "ignore::DeprecationWarning:google.iam",
   "ignore::DeprecationWarning:google",
   "ignore::DeprecationWarning:sphinxcontrib",
-  "ignore:.*'copy_scope' not set:DeprecationWarning",
   "ignore:.*Deprecated in litestar:DeprecationWarning",
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
   "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",

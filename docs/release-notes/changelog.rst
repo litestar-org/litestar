@@ -6,6 +6,18 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Default ``copy_scope`` to ``True`` for mounted ASGI apps
+        :type: feature
+        :breaking:
+
+        An ASGI handler mounted with ``is_mount=True`` now receives a copy of the ASGI
+        ``scope``, so mutations made by the mounted application no longer leak into the
+        outer scope. The default was ``None``, which passed the original scope through and
+        emitted a warning when the mounted application mutated it.
+
+        Set ``copy_scope=False`` where the mounted application is meant to mutate the
+        outer scope.
+
     .. change:: Declare ``socket`` in the original signature of a ``websocket_stream`` handler
         :type: bugfix
         :pr: 5161

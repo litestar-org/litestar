@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -14,9 +13,8 @@ __all__ = ("ASGIRouteHandler", "asgi")
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping, Sequence
 
-    from litestar import Litestar, Router
+    from litestar import Router
     from litestar.connection import ASGIConnection
-    from litestar.routes import BaseRoute
     from litestar.types import (
         AsyncAnyCallable,
         ExceptionHandlersMap,
@@ -42,7 +40,7 @@ class ASGIRouteHandler(BaseRouteHandler):
         opt: Mapping[str, Any] | None = None,
         is_mount: bool = False,
         signature_namespace: Mapping[str, Any] | None = None,
-        copy_scope: bool | None = None,
+        copy_scope: bool = True,
         parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
@@ -66,8 +64,8 @@ class ASGIRouteHandler(BaseRouteHandler):
                 ``/some-path/sub-path/`` etc.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            copy_scope: Copy the ASGI 'scope' before calling the mounted application. Should be set to 'True' unless
-                side effects via scope mutations by the mounted ASGI application are intentional
+            copy_scope: Copy the ASGI 'scope' before calling the mounted application. Set to 'False' if side effects
+                via scope mutations by the mounted ASGI application are intentional
             parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -85,19 +83,6 @@ class ASGIRouteHandler(BaseRouteHandler):
             parameters=parameters,
             **kwargs,
         )
-
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
-        super().on_registration(app=app, route=route)
-
-        if self.copy_scope is None:
-            warnings.warn(
-                f"{self}: 'copy_scope' not set for ASGI handler. Leaving 'copy_scope' unset will warn about mounted "
-                "ASGI applications modifying the scope. Set 'copy_scope=True' to ensure calling into mounted ASGI apps "
-                "does not cause any side effects via scope mutations, or set 'copy_scope=False' if those mutations are "
-                "desired. 'copy'scope' will default to 'True' in Litestar 3",
-                category=DeprecationWarning,
-                stacklevel=1,
-            )
 
     def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)

@@ -501,3 +501,19 @@ startup.
 .. seealso::
 
     :ref:`usage/middleware/creating-middleware:Configuration constraints`
+
+
+``copy_scope`` defaults to ``True`` for mounted ASGI apps
+---------------------------------------------------------
+
+An ASGI handler mounted with ``is_mount=True`` now receives a copy of the ASGI ``scope``,
+so mutations made by the mounted application no longer leak into the outer scope. In 2.x
+the default was ``None``, which passed the original scope through and emitted a warning
+when the mounted application mutated it.
+
+Set ``copy_scope=False`` where the mounted application is meant to mutate the outer scope:
+
+.. code-block:: python
+
+    @asgi("/some/sub-path", is_mount=True, copy_scope=False)
+    async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None: ...
