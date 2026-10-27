@@ -93,6 +93,15 @@
         for outer middleware to read, or by calling ``Request.set_session`` or
         ``Request.clear_session``. All of these now fail silently.
 
+    .. change:: Remove support for declaring ``DTOField`` via Pydantic's ``Field.extra``
+        :type: feature
+        :breaking:
+
+        Declaring a ``DTOField`` through Pydantic's ``Field.extra``, that is
+        ``Field(**dto_field("read-only"))``, is no longer supported. The mark was already
+        ignored in 2.x and only emitted a deprecation warning, so the declaration now has
+        no effect at all. Use ``Annotated[int, DTOField(mark="read-only")]`` instead.
+
     .. change:: Declare ``socket`` in the original signature of a ``websocket_stream`` handler
         :type: bugfix
         :pr: 5161
