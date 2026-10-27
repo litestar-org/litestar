@@ -118,23 +118,10 @@ Enabling the backend
 .. note:: This is a historical document meant for Litestar versions prior to 2.8.0
     This backend was enabled by default since 2.8.0
 
-.. warning:: ``ExperimentalFeatures.DTO_CODEGEN`` is deprecated and will be removed in 3.0.0
-
 .. dropdown:: Enabling DTO codegen backend
     :icon: git-pull-request-closed
 
-    You can enable this backend globally for all DTOs by passing the appropriate feature
-    flag to your Litestar application:
-
-    .. code-block:: python
-
-        from litestar import Litestar
-        from litestar.config.app import ExperimentalFeatures
-
-        app = Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])
-
-
-    or selectively for individual DTOs:
+    You can enable this backend selectively for individual DTOs:
 
     .. code-block:: python
 
