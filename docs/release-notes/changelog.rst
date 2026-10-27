@@ -14,8 +14,8 @@
         Declaring a ``DTOField`` through Pydantic's ``Field.extra``, that is
         ``Field(**dto_field("read-only"))``, is no longer supported. The mark was already
         ignored in 2.x and only emitted a deprecation warning. Remove the declaration and
-        use ``Annotated[int, DTOField(mark="read-only")]`` instead; leaving it in place
-        makes OpenAPI schema generation fail for models that are not passed through a DTO.
+        use ``Annotated[int, DTOField(mark="read-only")]`` instead; leaving it in place can
+        make OpenAPI schema generation fail.
 
     .. change:: Declare ``socket`` in the original signature of a ``websocket_stream`` handler
         :type: bugfix

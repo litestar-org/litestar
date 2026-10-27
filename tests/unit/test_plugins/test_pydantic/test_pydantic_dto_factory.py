@@ -142,17 +142,29 @@ def test_pydantic_dto_annotated_dto_field(base_model: type[pydantic_v2.BaseModel
     assert fields[1].dto_field == DTOField("read-only")
 
 
-def test_dto_field_meta_key_is_dropped_from_schema_extra() -> None:
+def test_dto_field_via_pydantic_field_extra_is_ignored() -> None:
     with pytest.warns(pydantic_v2.PydanticDeprecatedSince20):
 
         class Model(pydantic_v2.BaseModel):
             a: int = pydantic_v2.Field(**dto_field("read-only"))  # type: ignore[call-overload]
-
-    assert next(PydanticDTO.generate_field_definitions(Model)).dto_field == DTOField()
-    assert Model.model_fields["a"].json_schema_extra == {}
+            b: int = pydantic_v2.Field(json_schema_extra={"deprecated": True, **dto_field("read-only")})  # type: ignore[dict-item]
 
     @get("/", return_dto=PydanticDTO[Model], sync_to_thread=False)
     def handler() -> Model:
-        return Model(a=1)
+        return Model(a=1, b=2)
 
-    assert Litestar(route_handlers=[handler], signature_types=[Model]).openapi_schema
+    components = Litestar(route_handlers=[handler], signature_types=[Model]).openapi_schema.components.to_schema()[
+        "schemas"
+    ]
+
+    assert components["HandlerModelResponseBody"] == {
+        "properties": {"a": {"type": "integer"}, "b": {"deprecated": True, "type": "integer"}},
+        "type": "object",
+        "required": ["a", "b"],
+        "title": "HandlerModelResponseBody",
+    }
+
+    assert Model.model_fields["a"].json_schema_extra == {}
+    assert Model.model_fields["b"].json_schema_extra == {"deprecated": True}
+
+    assert [field.dto_field for field in PydanticDTO.generate_field_definitions(Model)] == [DTOField(), DTOField()]
