@@ -10,6 +10,7 @@ from unittest.mock import ANY
 import pydantic as pydantic_v2
 import pytest
 
+from litestar import Litestar, get
 from litestar.dto import DTOField, DTOFieldDefinition, Mark, dto_field
 from litestar.plugins.pydantic import PydanticDTO
 from litestar.typing import FieldDefinition
@@ -141,11 +142,18 @@ def test_pydantic_dto_annotated_dto_field(base_model: type[pydantic_v2.BaseModel
     assert fields[1].dto_field == DTOField("read-only")
 
 
-def test_dto_field_via_pydantic_field_extra_deprecation() -> None:
+def test_dto_field_meta_key_is_dropped_from_schema_extra() -> None:
     with pytest.warns(pydantic_v2.PydanticDeprecatedSince20):
 
         class Model(pydantic_v2.BaseModel):
             a: int = pydantic_v2.Field(**dto_field("read-only"))  # type: ignore[call-overload]
 
-    with pytest.warns(DeprecationWarning):
-        next(PydanticDTO.generate_field_definitions(Model))
+    next(PydanticDTO.generate_field_definitions(Model))
+
+    assert Model.model_fields["a"].json_schema_extra == {}
+
+    @get("/", return_dto=PydanticDTO[Model], sync_to_thread=False)
+    def handler() -> Model:
+        return Model(a=1)
+
+    assert Litestar(route_handlers=[handler], signature_types=[Model]).openapi_schema
