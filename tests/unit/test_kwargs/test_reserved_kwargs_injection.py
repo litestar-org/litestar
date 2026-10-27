@@ -368,8 +368,8 @@ def test_untyped_reserved_kwargs_in_http_handler_raise() -> None:
     for handler, message in [
         (with_cookies, "Reserved kwarg 'cookies' declared as 'dict[str, str]'. Use 'request.cookies' instead"),
         (with_headers, "Reserved kwarg 'headers' declared as 'dict[str, str]'. Use 'request.headers' instead"),
-        (with_query, "Reserved kwarg 'query' declared as 'dict[str, Any]'. Use 'request.query_params' instead"),
-        (with_scope, "Reserved kwarg 'scope' declared as 'dict[str, Any]'. Use 'request.scope' instead"),
+        (with_query, "Reserved kwarg 'query' declared as 'dict[str, typing.Any]'. Use 'request.query_params' instead"),
+        (with_scope, "Reserved kwarg 'scope' declared as 'dict[str, typing.Any]'. Use 'request.scope' instead"),
         (with_body, "Reserved kwarg 'body' declared as 'bytes'. Declare it as 'body: RawBody' instead"),
         (
             with_data,
@@ -403,8 +403,8 @@ def test_untyped_reserved_kwargs_in_websocket_handler_raise() -> None:
     for handler, message in [
         (with_cookies, "Reserved kwarg 'cookies' declared as 'dict[str, str]'. Use 'socket.cookies' instead"),
         (with_headers, "Reserved kwarg 'headers' declared as 'dict[str, str]'. Use 'socket.headers' instead"),
-        (with_query, "Reserved kwarg 'query' declared as 'dict[str, Any]'. Use 'socket.query_params' instead"),
-        (with_scope, "Reserved kwarg 'scope' declared as 'dict[str, Any]'. Use 'socket.scope' instead"),
+        (with_query, "Reserved kwarg 'query' declared as 'dict[str, typing.Any]'. Use 'socket.query_params' instead"),
+        (with_scope, "Reserved kwarg 'scope' declared as 'dict[str, typing.Any]'. Use 'socket.scope' instead"),
     ]:
         with pytest.raises(ImproperlyConfiguredException) as exc_info:
             Litestar([handler])
@@ -442,8 +442,14 @@ def test_untyped_reserved_kwargs_in_dependency_raise() -> None:
             with_headers,
             "Reserved kwarg 'headers' declared as 'dict[str, str]'. Declare it as 'headers: Headers' instead",
         ),
-        (with_query, "Reserved kwarg 'query' declared as 'dict[str, Any]'. Declare it as 'query: QueryParams' instead"),
-        (with_scope, "Reserved kwarg 'scope' declared as 'dict[str, Any]'. Declare it as 'scope: Scope' instead"),
+        (
+            with_query,
+            "Reserved kwarg 'query' declared as 'dict[str, typing.Any]'. Declare it as 'query: QueryParams' instead",
+        ),
+        (
+            with_scope,
+            "Reserved kwarg 'scope' declared as 'dict[str, typing.Any]'. Declare it as 'scope: Scope' instead",
+        ),
         (with_body, "Reserved kwarg 'body' declared as 'bytes'. Declare it as 'body: RawBody' instead"),
         (
             with_data,
@@ -493,7 +499,22 @@ def test_typed_reserved_kwargs_do_not_raise() -> None:
     Litestar([handler])
 
 
-@pytest.mark.parametrize("annotation, declared", [(Any, "Any"), (dict[str, Any], "dict[str, Any]")])
+class Item:
+    pass
+
+
+# a class from a user module that happens to be named 'typing'
+Item.__module__, Item.__qualname__ = "myapp.typing", "Item"
+
+
+@pytest.mark.parametrize(
+    "annotation, declared",
+    [
+        (Any, "Any"),
+        (dict[str, Any], "dict[str, typing.Any]"),
+        (list[Item], "list[myapp.typing.Item]"),
+    ],
+)
 def test_request_kwarg_without_connection_type_raises(annotation: Any, declared: str) -> None:
     @get("/")
     async def handler(request: annotation) -> None: ...  # pyright: ignore

@@ -600,7 +600,7 @@ def _resolve_connection_class(handler: BaseRouteHandler) -> type[ASGIConnection]
 
 
 def _type_repr(annotation: Any) -> str:
-    return annotation.__name__ if isinstance(annotation, type) else repr(annotation).replace("typing.", "")
+    return annotation.__name__ if isinstance(annotation, type) else repr(annotation)
 
 
 def _has_reserved_kwarg_type(name: str, field_definition: FieldDefinition, ctx: HandlerContext) -> bool:

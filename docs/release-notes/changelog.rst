@@ -6,6 +6,15 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Declare ``socket`` in the original signature of a ``websocket_stream`` handler
+        :type: bugfix
+        :pr: 5161
+
+        A ``websocket_stream`` handler whose function takes no ``socket`` parameter adds
+        one to its ``parsed_fn_signature``, but only to its ``parameters``, so its
+        ``original_signature`` lacked a parameter its ``parameters`` declared. It now
+        declares ``socket`` in both.
+
     .. change:: Read constraint metadata on ``data`` as on any other parameter
         :type: bugfix
         :pr: 5157
