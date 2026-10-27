@@ -503,17 +503,33 @@ startup.
     :ref:`usage/middleware/creating-middleware:Configuration constraints`
 
 
-``copy_scope`` defaults to ``True`` for mounted ASGI apps
----------------------------------------------------------
+``copy_scope`` defaults to ``True`` for ASGI handlers
+-----------------------------------------------------
 
-An ASGI handler mounted with ``is_mount=True`` now receives a copy of the ASGI ``scope``,
-so mutations made by the mounted application no longer leak into the outer scope. In 2.x
-the default was ``None``, which passed the original scope through and emitted a warning
-when the mounted application mutated it.
+Every :func:`~.handlers.asgi` handler, mounted or not, now receives a copy of the ASGI
+``scope``, so the wrapped application can no longer add or replace top-level scope keys
+seen by the outer application. In 2.x the default was ``None``, which passed the original
+scope through, warned at registration and warned again when the wrapped application
+mutated the scope. Both warnings are gone.
 
-Set ``copy_scope=False`` where the mounted application is meant to mutate the outer scope:
+The copy is shallow. Nested values such as ``scope["state"]``, ``scope["headers"]``,
+``scope["path_params"]`` and ``scope["app"]`` are still shared with the outer scope, so
+isolation applies to top-level keys only.
+
+Set ``copy_scope=False`` where the wrapped application is meant to communicate with the
+outer application through the scope:
 
 .. code-block:: python
 
     @asgi("/some/sub-path", is_mount=True, copy_scope=False)
     async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None: ...
+
+You need the opt-out if the wrapped application injects an authenticated user or a request
+id for outer middleware to read, calls :meth:`~.connection.ASGIConnection.set_session` or
+:meth:`~.connection.ASGIConnection.clear_session`, or sets routing metadata that tracing
+integrations such as Sentry or OpenTelemetry read after the response. Those stop working
+silently, since the warning that used to flag them is gone.
+
+.. seealso::
+
+    :ref:`usage/routing/overview:Mounting ASGI Apps`

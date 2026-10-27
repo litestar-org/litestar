@@ -266,6 +266,11 @@ The handler function will receive all requests with an url that begins with ``/s
     the value of ``scope["path"]`` will equal ``"/"``. If we send a request to ``/some/sub-path/abc``, it will also be
     invoked,and ``scope["path"]`` will equal ``"/abc"``.
 
+The wrapped application receives a copy of the ASGI ``scope``, so it cannot add or replace top-level scope keys seen by
+the outer application. The copy is shallow, so nested values such as ``scope["state"]`` are still shared. Pass
+``copy_scope=False`` if the wrapped application is meant to communicate with the outer application through the scope,
+for example by injecting a user or a request id that outer middleware reads.
+
 Mounting is especially useful when you need to combine components of other ASGI applications - for example, for third
 party libraries. The following example is identical in principle to the one above, but it uses
 `Starlette <https://www.starlette.io/>`_:

@@ -64,8 +64,9 @@ class ASGIRouteHandler(BaseRouteHandler):
                 ``/some-path/sub-path/`` etc.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            copy_scope: Copy the ASGI 'scope' before calling the mounted application. Set to 'False' if side effects
-                via scope mutations by the mounted ASGI application are intentional
+            copy_scope: Copy the ASGI 'scope' before calling the wrapped ASGI application. The copy is shallow, so
+                nested values such as 'scope["state"]' remain shared. Set to 'False' if the wrapped application is
+                meant to communicate with the outer application through the scope
             parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -131,6 +132,7 @@ def asgi(
     opt: Mapping[str, Any] | None = None,
     is_mount: bool = False,
     signature_namespace: Mapping[str, Any] | None = None,
+    copy_scope: bool = True,
     handler_class: type[ASGIRouteHandler] = ASGIRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AsyncAnyCallable], ASGIRouteHandler]:
@@ -151,6 +153,9 @@ def asgi(
             accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
             ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.
             ``/some-path/sub-path/`` etc.
+        copy_scope: Copy the ASGI 'scope' before calling the wrapped ASGI application. The copy is shallow, so
+            nested values such as 'scope["state"]' remain shared. Set to 'False' if the wrapped application is
+            meant to communicate with the outer application through the scope
         handler_class: Route handler class instantiated by the decorator
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
@@ -165,6 +170,7 @@ def asgi(
             opt=opt,
             is_mount=is_mount,
             signature_namespace=signature_namespace,
+            copy_scope=copy_scope,
             **kwargs,
         )
 

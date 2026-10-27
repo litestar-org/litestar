@@ -71,7 +71,14 @@ def test_custom_handler_class() -> None:
 
 
 @pytest.mark.parametrize(
-    "handler_kwargs, expected_value", [({}, None), ({"copy_scope": True}, None), ({"copy_scope": False}, "foo")]
+    "handler_kwargs, expected_value",
+    [
+        pytest.param({"is_mount": True}, None, id="mount-default"),
+        pytest.param({"is_mount": True, "copy_scope": True}, None, id="mount-explicit-true"),
+        pytest.param({"is_mount": True, "copy_scope": False}, "foo", id="mount-opt-out"),
+        pytest.param({}, None, id="non-mount-default"),
+        pytest.param({"copy_scope": False}, "foo", id="non-mount-opt-out"),
+    ],
 )
 def test_copy_scope(handler_kwargs: "dict[str, Any]", expected_value: "str | None") -> None:
     mock = MagicMock()
@@ -83,7 +90,7 @@ def test_copy_scope(handler_kwargs: "dict[str, Any]", expected_value: "str | Non
 
         return middleware
 
-    @asgi(is_mount=True, **handler_kwargs)
+    @asgi(**handler_kwargs)
     async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
         scope["foo"] = "foo"  # type: ignore[typeddict-unknown-key]
         await ASGIResponse()(scope, receive, send)
@@ -92,3 +99,24 @@ def test_copy_scope(handler_kwargs: "dict[str, Any]", expected_value: "str | Non
         client.get("/")
 
     mock.assert_called_once_with(expected_value)
+
+
+def test_copy_scope_is_shallow() -> None:
+    mock = MagicMock()
+
+    def middleware_factory(app: Litestar) -> ASGIApp:
+        async def middleware(scope: "Scope", receive: "Receive", send: "Send") -> None:
+            await app(scope, receive, send)
+            mock(scope["state"].get("injected"))
+
+        return middleware
+
+    @asgi(is_mount=True)
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        scope["state"]["injected"] = "nested"
+        await ASGIResponse()(scope, receive, send)
+
+    with create_test_client([handler], middleware=[middleware_factory]) as client:
+        client.get("/")
+
+    mock.assert_called_once_with("nested")
