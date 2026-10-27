@@ -148,8 +148,7 @@ def test_dto_field_meta_key_is_dropped_from_schema_extra() -> None:
         class Model(pydantic_v2.BaseModel):
             a: int = pydantic_v2.Field(**dto_field("read-only"))  # type: ignore[call-overload]
 
-    next(PydanticDTO.generate_field_definitions(Model))
-
+    assert next(PydanticDTO.generate_field_definitions(Model)).dto_field == DTOField()
     assert Model.model_fields["a"].json_schema_extra == {}
 
     @get("/", return_dto=PydanticDTO[Model], sync_to_thread=False)
