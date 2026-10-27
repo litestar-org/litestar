@@ -400,15 +400,6 @@ class Litestar(Router):
             self._lifespan_managers.append(store)
         self._server_lifespan_managers = [p.server_lifespan for p in config.plugins or [] if isinstance(p, CLIPlugin)]
         self.experimental_features = frozenset(config.experimental_features or [])
-        if ExperimentalFeatures.DTO_CODEGEN in self.experimental_features:
-            warnings.warn(
-                "Use of redundant experimental feature flag DTO_CODEGEN. "
-                "DTO codegen backend is enabled by default since Litestar 2.8. The "
-                "DTO_CODEGEN feature flag can be safely removed from the configuration "
-                "and will be removed in version 3.0.",
-                category=LitestarWarning,
-                stacklevel=2,
-            )
 
         self.after_exception = [ensure_async_callable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
