@@ -35,8 +35,23 @@ than at runtime, so declare the extras you need first:
       - ``litestar[polyfactory]``
 
 
+Explicit declarations
+---------------------
+
+Litestar now requires every handler and dependency parameter to declare where its value
+comes from. The three sections below are one change seen from different angles: request
+parameters, the reserved keyword arguments, and injected dependencies. A parameter that
+declares no source is an error when the application is created, instead of a source
+inferred from the surrounding context at request time.
+
+.. seealso::
+
+    :doc:`/topics/explicit_declarations` for the reasoning behind this, and
+    :doc:`/usage/routing/parameters` for the markers themselves.
+
+
 Request parameters
-------------------
+~~~~~~~~~~~~~~~~~~
 
 Every request parameter must now declare where it comes from. An unmarked parameter raises
 at application construction:
@@ -181,7 +196,7 @@ Ordinary defaults are of course unaffected: ``name: FromQuery[str] = "anon"``.
 
 
 Reserved keyword arguments
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The reserved kwargs must now be declared with their type:
 
@@ -231,7 +246,7 @@ against a plain dict do not.
 
 
 Dependency injection
---------------------
+~~~~~~~~~~~~~~~~~~~~
 
 ``Provide`` is unchanged, but the handler consuming a dependency must now mark it. This is
 the most common single edit:
@@ -469,8 +484,28 @@ no longer works:
 Testing
 -------
 
-``AsyncTestClient`` is now async-native. Plain requests are unchanged, but websocket
-sessions became asynchronous:
+``AsyncTestClient`` is now async-native: in 2.x it ran the application in a separate
+thread with its own event loop and bridged every call through a blocking portal, and it now
+runs the application on the caller's event loop, the same one the test runs on.
+
+In practice that means:
+
+- The client has to be entered with ``async with`` from an asynchronous test. There is no
+  implicit startup.
+- Websocket sessions are asynchronous. ``websocket_connect`` returns an
+  ``AsyncWebSocketTestSession``, so the session is entered with ``async with`` and every
+  ``send_*``, ``receive_*`` and ``close`` call is awaited.
+- ``backend`` and ``backend_options`` were removed from ``AsyncTestClient`` and
+  ``create_async_test_client``, since there is no longer a separate loop to configure.
+- ``timeout`` narrowed to ``float | None``, so ``httpx.Timeout`` objects no longer apply.
+- The application shares the test's event loop, so blocking that loop in a test also blocks
+  the application.
+- Use the client inline in the test. Yielding it from an async generator fixture requires
+  anyio's pytest plugin; under ``pytest-asyncio`` setup and teardown run in different tasks
+  and teardown fails with ``RuntimeError: Attempted to exit cancel scope in a different
+  task than it was entered in``.
+
+Plain requests need no changes, but websocket sessions do:
 
 .. code-block:: python
     :caption: 2.x
