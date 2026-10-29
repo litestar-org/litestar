@@ -91,8 +91,8 @@ jobs:
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
         include:
-          # pyyaml, zstandard and autobahn have no cp315 manylinux wheels yet, so uv
-          # builds them from sdist. Allow headroom for a cold uv cache.
+          # msgspec, pyyaml, zstandard and autobahn have no cp315 manylinux wheels
+          # yet, so uv builds them from sdist. Allow headroom for a cold uv cache.
           - python-version: "3.15"
             timeout: 20
     uses: ./.github/workflows/test.yml
