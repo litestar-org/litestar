@@ -195,6 +195,43 @@ If you were relying on this utility, you can define it yourself as follows:
         return isgeneratorfunction(obj) or isasyncgenfunction(obj)
 
 
+Deprecated ``DTOField`` declaration via Pydantic's ``Field.extra`` removed
+--------------------------------------------------------------------------
+
+Declaring a :class:`~.dto.field.DTOField` through Pydantic's ``Field.extra``, that is
+``Field(**dto_field("read-only"))``, is no longer supported. The mark was already being
+ignored in 2.x and only produced a deprecation warning.
+
+Remove the declaration: it leaves an internal key in the field's ``json_schema_extra``,
+which can make OpenAPI schema generation fail.
+
+Before:
+
+.. code-block:: python
+
+    import pydantic
+
+    from litestar.dto import dto_field
+
+
+    class User(pydantic.BaseModel):
+        id: int = pydantic.Field(**dto_field("read-only"))
+
+After:
+
+.. code-block:: python
+
+    from typing import Annotated
+
+    import pydantic
+
+    from litestar.dto import DTOField
+
+
+    class User(pydantic.BaseModel):
+        id: Annotated[int, DTOField(mark="read-only")]
+
+
 Removal of semantic HTTP route handler classes
 -----------------------------------------------
 
