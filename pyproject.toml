@@ -21,6 +21,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Programming Language :: Python",
   "Topic :: Internet :: WWW/HTTP",
   "Topic :: Software Development :: Libraries",
@@ -169,7 +170,9 @@ linting = [
   "mypy",
   "pre-commit",
   "slotscheck",
-  "codecov-cli",
+  # codecov-cli pins test-results-parser==0.6.1, whose pyo3-ffi 0.27 refuses to build on
+  # 3.15+. CI uploads coverage via codecov/codecov-action, so the CLI is local-dev only.
+  "codecov-cli; python_version < '3.15'",
   "pyright>=1.1.403",
   "asyncpg-stubs",
   "types-beautifulsoup4",
