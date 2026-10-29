@@ -90,10 +90,16 @@ jobs:
       fail-fast: true
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
+        include:
+          # pyyaml, zstandard and autobahn have no cp315 manylinux wheels yet, so uv
+          # builds them from sdist. Allow headroom for a cold uv cache.
+          - python-version: "3.15"
+            timeout: 20
     uses: ./.github/workflows/test.yml
     with:
       coverage: true
       python-version: ${{ matrix.python-version }}
+      timeout: ${{ matrix.timeout || 10 }}
 
   # add an aggregate step here to check if any of the steps of the matrix 'test' job
   # failed. this allows us to have dynamic or diverging steps in the matrix, while still
