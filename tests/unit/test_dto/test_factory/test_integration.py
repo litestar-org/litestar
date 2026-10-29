@@ -889,7 +889,7 @@ def test_msgspec_dto_copies_constraints(
     # https://github.com/litestar-org/litestar/issues/3026
     struct = msgspec.defstruct(
         "Foo",
-        fields=[("bar", Annotated[field_type, msgspec.Meta(**{constraint_name: constraint_value})])],
+        fields=[("bar", Annotated[field_type, msgspec.Meta(**{constraint_name: constraint_value})])],  # type: ignore[list-item]
     )
 
     @post(
