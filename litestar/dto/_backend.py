@@ -803,19 +803,23 @@ def _create_struct_field_meta_for_field_definition(field_definition: TransferDTO
     ):
         return None
 
-    return msgspec.Meta(
-        description=kwarg_definition.description,
-        examples=[e.value for e in kwarg_definition.examples or []],
-        ge=kwarg_definition.ge,
-        gt=kwarg_definition.gt,
-        le=kwarg_definition.le,
-        lt=kwarg_definition.lt,
-        max_length=kwarg_definition.max_length if not field_definition.is_partial else None,
-        min_length=kwarg_definition.min_length if not field_definition.is_partial else None,
-        multiple_of=kwarg_definition.multiple_of,
-        pattern=kwarg_definition.pattern,
-        title=kwarg_definition.title,
-    )
+    # ``Meta`` has one overload per constraint kind, because msgspec refuses to mix
+    # numeric constraints with ``pattern``/length ones. Only one kind is ever set for a
+    # given field, but that cannot be expressed statically, so build the kwargs as a dict.
+    meta_kwargs: dict[str, Any] = {
+        "description": kwarg_definition.description,
+        "examples": [e.value for e in kwarg_definition.examples or []],
+        "ge": kwarg_definition.ge,
+        "gt": kwarg_definition.gt,
+        "le": kwarg_definition.le,
+        "lt": kwarg_definition.lt,
+        "max_length": kwarg_definition.max_length if not field_definition.is_partial else None,
+        "min_length": kwarg_definition.min_length if not field_definition.is_partial else None,
+        "multiple_of": kwarg_definition.multiple_of,
+        "pattern": kwarg_definition.pattern,
+        "title": kwarg_definition.title,
+    }
+    return msgspec.Meta(**meta_kwargs)
 
 
 def _create_struct_for_field_definitions(
