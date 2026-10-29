@@ -6,6 +6,21 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Match mounted ASGI apps on path segments
+        :type: bugfix
+        :breaking:
+        :pr:
+        :issue: 5173
+
+        A mount matched any path merely *starting with* its path string, so a mount on
+        ``/admin`` served ``/administrator``, handing the mounted app ``istrator/`` as its
+        path. A mount now matches only its own path and sub-paths of it, ``/admin`` and
+        ``/admin/...``, and ``/`` still mounts everything no more specific mount claims.
+
+        This also fixes mounts with a shared or nested prefix shadowing one another, and
+        mount paths containing regex metacharacters, which raised
+        ``500 - Internal Server Error`` or failed application startup.
+
     .. change:: Declare ``socket`` in the original signature of a ``websocket_stream`` handler
         :type: bugfix
         :pr: 5161

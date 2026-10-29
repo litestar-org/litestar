@@ -256,15 +256,16 @@ requests addressed to a given path.
         :language: python
         :caption: Mounting an ASGI App
 
-The handler function will receive all requests with an url that begins with ``/some/sub-path``, e.g, ``/some/sub-path``,
-``/some/sub-path/abc``, ``/some/sub-path/123/another/sub-path``, etc.
+The handler function will receive all requests for ``/some/sub-path`` and any sub path under it, e.g,
+``/some/sub-path``, ``/some/sub-path/abc``, ``/some/sub-path/123/another/sub-path``, etc. A request for a path that
+merely starts with the same characters, e.g. ``/some/sub-path-other``, is not mounted.
 
 .. admonition:: Technical Details
     :class: info
 
     If we are sending a request to the above with the url ``/some/sub-path``, the handler will be invoked and
     the value of ``scope["path"]`` will equal ``"/"``. If we send a request to ``/some/sub-path/abc``, it will also be
-    invoked,and ``scope["path"]`` will equal ``"/abc"``.
+    invoked,and ``scope["path"]`` will equal ``"/abc/"``.
 
 Mounting is especially useful when you need to combine components of other ASGI applications - for example, for third
 party libraries. The following example is identical in principle to the one above, but it uses
