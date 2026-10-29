@@ -394,11 +394,6 @@ def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
     assert events[3] == "hook_b"
 
 
-def test_use_dto_codegen_feature_flag_warns() -> None:
-    with pytest.warns(LitestarWarning, match="Use of redundant experimental feature flag DTO_CODEGEN"):
-        Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])
-
-
 def test_use_future_feature_flag_warns() -> None:
     app = Litestar(experimental_features=[ExperimentalFeatures.FUTURE])
     assert app.experimental_features == frozenset([ExperimentalFeatures.FUTURE])

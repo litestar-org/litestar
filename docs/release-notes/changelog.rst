@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Remove the deprecated ``ExperimentalFeatures.DTO_CODEGEN`` flag
+        :type: feature
+        :breaking:
+        :pr: 5162
+
+        The ``DTO_CODEGEN`` experimental feature flag has been removed. The DTO codegen
+        backend has been enabled by default since ``2.8.0``, so the flag was a no-op that
+        only emitted a warning. Drop it from ``Litestar(experimental_features=...)``. The
+        backend can still be disabled per DTO with
+        ``DTOConfig(experimental_codegen_backend=False)``.
+
     .. change:: Declare ``socket`` in the original signature of a ``websocket_stream`` handler
         :type: bugfix
         :pr: 5161

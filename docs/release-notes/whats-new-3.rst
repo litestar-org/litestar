@@ -148,6 +148,15 @@ For those previously using the ``root_schema_site`` attribute, the migration inv
 be served at the ``/schema`` endpoint is the first plugin listed in the :attr:`OpenAPIConfig.render_plugins`.
 
 
+Removal of the ``DTO_CODEGEN`` experimental feature flag
+--------------------------------------------------------
+
+The ``ExperimentalFeatures.DTO_CODEGEN`` flag has been removed. The DTO codegen backend
+has been enabled by default since ``2.8.0``, so the flag had no effect and only emitted a
+warning. Remove it from ``Litestar(experimental_features=...)``; the backend can still be
+disabled for a single DTO with ``DTOConfig(experimental_codegen_backend=False)``.
+
+
 Removal of the RapiDoc OpenAPI UI plugin
 ----------------------------------------
 

@@ -229,7 +229,5 @@ class AppConfig:
 
 
 class ExperimentalFeatures(enum.StrEnum):
-    DTO_CODEGEN = "DTO_CODEGEN"
-    """Enable DTO codegen."""
     FUTURE = "FUTURE"
     """Enable future features that may be considered breaking or changing."""
