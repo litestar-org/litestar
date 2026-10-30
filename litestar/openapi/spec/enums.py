@@ -18,6 +18,8 @@ class OpenAPIFormat(StrEnum):
     IDN_HOST_NAME = "idn-hostname"
     IPV4 = "ipv4"
     IPV6 = "ipv6"
+    IPV4_CIDR = "ipv4-cidr"
+    IPV6_CIDR = "ipv6-cidr"
     URI = "uri"
     URI_REFERENCE = "uri-reference"
     URI_TEMPLATE = "uri-template"

@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import Enum, StrEnum, auto
+from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from typing import (
     TYPE_CHECKING,
     Annotated,
@@ -848,6 +849,25 @@ def test_decimal_schema_type() -> None:
 
     schema = create_schema_for_annotation(Decimal)
     assert schema.type == OpenAPIType.STRING
+
+
+@pytest.mark.parametrize(
+    ("annotation", "expected_format"),
+    [
+        pytest.param(IPv4Address, OpenAPIFormat.IPV4, id="ipv4-address"),
+        pytest.param(IPv4Interface, OpenAPIFormat.IPV4, id="ipv4-interface"),
+        pytest.param(IPv4Network, OpenAPIFormat.IPV4_CIDR, id="ipv4-network"),
+        pytest.param(IPv6Address, OpenAPIFormat.IPV6, id="ipv6-address"),
+        pytest.param(IPv6Interface, OpenAPIFormat.IPV6, id="ipv6-interface"),
+        pytest.param(IPv6Network, OpenAPIFormat.IPV6_CIDR, id="ipv6-network"),
+    ],
+)
+def test_ipaddress_schema_formats(annotation: type, expected_format: OpenAPIFormat) -> None:
+    from litestar._openapi.schema_generation.schema import create_schema_for_annotation
+
+    schema = create_schema_for_annotation(annotation)
+    assert schema.type == OpenAPIType.STRING
+    assert schema.format == expected_format
 
 
 def test_not_generating_examples_preserves_schema_registry() -> None:
