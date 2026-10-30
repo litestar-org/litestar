@@ -198,6 +198,10 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     def cookies(self) -> dict[str, str]:
         """Return the ``cookies`` of this connection's ``Scope``.
 
+        Every ``cookie`` header is parsed: a client may send one per cookie over HTTP/2 and
+        HTTP/3, where :rfc:`9113` has them reassembled with the ``"; "`` delimiter. A cookie
+        name sent more than once keeps the first value it was sent with.
+
         Returns:
             Returns any cookies stored in the header as a parsed dictionary.
         """
@@ -205,8 +209,9 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             if (cookies := self._connection_state.cookies) is not Empty:
                 self._cookies = cookies
             else:
+                cookie_headers = self.headers.getall("cookie", [])
                 self._connection_state.cookies = self._cookies = (
-                    parse_cookie_string(cookie_header) if (cookie_header := self.headers.get("cookie")) else {}
+                    parse_cookie_string("; ".join(cookie_headers)) if cookie_headers else {}
                 )
         return self._cookies
 
