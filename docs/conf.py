@@ -375,6 +375,11 @@ html_theme_options = {
             "title": "Release notes",
             "children": [
                 {
+                    "title": "Upgrading to 3.0",
+                    "url": "upgrading/v3",
+                    "summary": "Upgrade an existing application from 2.x to 3.0",
+                },
+                {
                     "title": "What's new in 3.0",
                     "url": "release-notes/whats-new-3",
                     "summary": "Explore the new features in Litestar 3.0",

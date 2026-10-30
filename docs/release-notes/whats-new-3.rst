@@ -4,11 +4,14 @@
 What's changed in 3.0?
 ======================
 
-This document is an overview of the changes between version **2.11.x** and **3.0**.
+This document is an overview of the changes between the **2.x** release line and **3.0**.
 For a detailed list of all changes, including changes between versions leading up to the
 3.0 release, consult the :doc:`/release-notes/changelog`.
 
-.. note:: The **2.11** release line is unaffected by this change
+.. seealso::
+
+    :doc:`/upgrading/v3` walks through upgrading an existing application, in the order the
+    work is best done.
 
 Imports
 -------
@@ -18,7 +21,7 @@ Imports
 +====================================================+========================================================================+
 | ``litestar.contrib.attrs``                         | ``litestar.plugins.attrs``                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.contrib.htmx``                          | ``litestar_htmx``                                                      |
+| ``litestar.contrib.htmx``                          | ``litestar.plugins.htmx``                                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``litestar.contrib.jinja``                         | ``litestar.plugins.jinja``                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
@@ -44,8 +47,8 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
-Removal of ``StaticFileConfig``
--------------------------------
+Removal of ``StaticFilesConfig``
+--------------------------------
 
 The ``StaticFilesConfig`` has been removed, alongside these related parameters and
 functions:
@@ -95,13 +98,17 @@ from the location it is marked with:
 
 .. code-block:: python
 
+    from litestar import get
+    from litestar.params import FromQuery
+
+
     @get("/{item_id:int}")
     def my_handler(item_id: FromQuery[int]) -> ...:  # read from the query string
         ...
 
-A parameter named like a path segment that declares no location, such as the deprecated
-``item_id: int``, raises :exc:`~.exceptions.ImproperlyConfiguredException` when the
-application is created. Declare it as ``item_id: FromPath[int]``.
+A parameter named like a path segment that declares no location, such as ``item_id: int``,
+raises :exc:`~.exceptions.ImproperlyConfiguredException` when the application is created.
+Declare it as ``item_id: FromPath[int]``.
 
 
 OpenAPI Controller Replaced by Plugins
@@ -196,7 +203,7 @@ If you were relying on this utility, you can define it yourself as follows:
 
 
 Removal of semantic HTTP route handler classes
------------------------------------------------
+----------------------------------------------
 
 The semantic ``HTTPRouteHandler`` classes have been removed in favour of functional
 decorators. ``route``, ``get``, ``post``, ``patch``, ``put``, ``head`` and ``delete``
@@ -231,14 +238,6 @@ After:
         ...
 
 
-Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
--------------------------------------------------------------------------------
-
-The parameter ``app`` for :meth:`~response.Response.to_asgi_response` has been removed.
-If you need access to the app instance inside a custom ``to_asgi_response`` method,
-replace the usages of ``app`` with ``request.app``.
-
-
 Removal of deprecated ``litestar.middleware.exceptions`` module and ``ExceptionHandlerMiddleware``
 --------------------------------------------------------------------------------------------------
 
@@ -251,37 +250,38 @@ Update MessagePack media type to ``application/vnd.msgpack``
 ------------------------------------------------------------
 
 Change the default media type of ``MessagePack`` from ``application/x-msgpack`` to the
-newly introduced official ``application/vnd.msgpack``.
-
-https://www.iana.org/assignments/media-types/application/vnd.msgpack
+newly introduced official
+`application/vnd.msgpack <https://www.iana.org/assignments/media-types/application/vnd.msgpack>`_.
 
 
 Deprecated ``resolve_`` methods on route handlers
 -------------------------------------------------
 
-All ``resolve_`` methods on the route handlers
-(e.g. ``HTTPRouteHandler.resolve_response_headers``) have been
-deprecated and will be removed in ``4.0``. The attributes can now safely be accessed
-directly (e.g. `HTTPRouteHandlers.response_headers`).
+The ``resolve_`` methods that merged a value across the handler's layers
+(e.g. ``HTTPRouteHandler.resolve_response_headers``) have been deprecated and will be
+removed in ``4.0``. The corresponding attributes can now safely be accessed directly
+(e.g. ``HTTPRouteHandler.response_headers``), as they hold the merged value.
 
 
 Moved routing related methods from ``Router`` to ``Litestar``
 -------------------------------------------------------------
 
 :class:`~litestar.router.Router` now only holds route handlers and configuration, while
-the actual routing is done in :class:`~litestar.app.Litestar`. With this, several
-methods and properties have been moved from ``Router`` to ``Litestar``:
+the actual routing is done in :class:`~litestar.app.Litestar`. With this, these
+properties have moved from ``Router`` to ``Litestar``:
 
 - ``route_handler_method_map``
-- ``get_route_handler_map``
 - ``routes``
 
+``Router.get_route_handler_map`` has been removed outright; it has no replacement on
+``Litestar``.
 
-Removal of  ``CLIPluginProtocol``
----------------------------------
 
-The :class:`~typing.Protocol` ``CLIPluginProtocol`` has been removed in favour
-of the abstract ``CLIPluginProtocol``. The functionality and interface remain the same,
+Removal of ``CLIPluginProtocol``
+--------------------------------
+
+The :class:`~typing.Protocol` ``CLIPluginProtocol`` has been removed in favour of the
+abstract :class:`~.plugins.CLIPlugin`. The functionality and interface remain the same,
 the only difference being that plugins that wish to provide this functionality are now
 required to inherit from :class:`~.plugins.CLIPlugin`.
 
@@ -318,10 +318,13 @@ callable as its only argument and returns another ASGI callable:
 Built-in middleware migrated to ``ASGIMiddleware``
 --------------------------------------------------
 
-Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
+Litestar's built-in middleware is moving from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``CORSMiddleware``, ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have made this
-move. ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
+Subclassing ``AbstractMiddleware`` directly is deprecated and warns.
+``CORSMiddleware``, ``ResponseCacheMiddleware``,
+``CSRFMiddleware`` and ``LoggingMiddleware`` have made this move; ``AllowedHostsMiddleware``,
+``CompressionMiddleware``, ``RateLimitMiddleware`` and ``SessionMiddleware`` have not yet.
+``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
 ``litestar.middleware._internal``, removing them from the public API; for CSRF this
 includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
 ``generate_csrf_hash`` helpers.
@@ -384,7 +387,7 @@ this functionality are now required to inherit from
 
 
 Removal of ``body`` in streaming responses
--------------------------------------------
+------------------------------------------
 
 The unsupported ``body`` parameter of :class:`~.ASGIStreamingResponse`
 and :class:`.ASGIFileResponse` has been removed.
@@ -393,7 +396,7 @@ This does not change any behaviour, as this parameter was previously ignored.
 
 
 ``polyfactory`` package removed from default dependencies
-----------------------------------------------------------
+---------------------------------------------------------
 
 The `polyfactory <https://polyfactory.litestar.dev/>`_ library has been moved from the
 default dependencies to the ``litestar[polyfactory]`` package extra. It
@@ -436,7 +439,7 @@ naming the extra to install:
 
 
 ``httpx`` package removed from default dependencies
-----------------------------------------------------
+---------------------------------------------------
 
 The `httpx <https://www.python-httpx.org/>`_ library, on which the
 :doc:`test clients </usage/testing>` are based, has been moved from the default
@@ -454,7 +457,7 @@ naming the extra to install:
 
 
 ``rich-click>=1.9`` is now required by the CLI
------------------------------------------------
+----------------------------------------------
 
 The ``litestar[cli]`` extra now requires ``rich-click>=1.9``, which is needed for the
 themed :doc:`CLI </usage/cli>` output. Previously ``rich-click`` was capped at ``<1.9``,
@@ -464,7 +467,7 @@ This only affects applications that additionally pin ``rich-click<1.9`` themselv
 
 
 Improved file system handling / fsspec integration
----------------------------------------------------
+--------------------------------------------------
 
 A more coherent :doc:`file system </usage/file_systems>` integration was added, with
 improved support for `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_.
@@ -492,7 +495,7 @@ parameter.
 
 
 Middleware configuration constraints
--------------------------------------
+------------------------------------
 
 :class:`~litestar.middleware.ASGIMiddleware`\ s can now express constraints for how
 they are applied in the middleware stack, which are then validated on application
