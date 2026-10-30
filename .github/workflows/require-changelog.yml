@@ -1,0 +1,86 @@
+name: "Check PR Changelog Entry"
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  main:
+    name: Check changelog entry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: docs/release-notes/changelog.rst
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require("fs");
+
+            const changelogPath = "docs/release-notes/changelog.rst";
+            const changeTypes = {
+                feat: "feature",
+                fix: "bugfix",
+            };
+
+            const { number, title } = context.payload.pull_request;
+            const commitType = title.match(/^(\w+)(\([^)]+\))?!?: /)?.[1];
+            const changeType = changeTypes[commitType];
+
+            if (changeType === undefined) {
+                console.log(`PR title ${JSON.stringify(title)} is not of type ${Object.keys(changeTypes).join(" or ")}, no changelog entry required.`);
+                return;
+            }
+
+            // the options of a '.. change::' directive are the ':name: value' lines
+            // between the directive line and the first blank line
+            const entries = [];
+            let entry = null;
+            for (const line of fs.readFileSync(changelogPath, "utf8").split("\n")) {
+                if (/^\s*\.\. change::/.test(line)) {
+                    entry = { title: line.split("::")[1].trim(), options: {} };
+                    entries.push(entry);
+                } else if (!line.trim()) {
+                    entry = null;
+                } else if (entry) {
+                    const option = line.match(/^\s+:([\w-]+):(.*)$/);
+                    if (option) {
+                        entry.options[option[1]] = option[2].trim();
+                    }
+                }
+            }
+
+            const prEntries = entries.filter(
+                (e) => (e.options.pr ?? "").match(/\d+/g)?.includes(String(number)),
+            );
+            const typeOf = (e) => (e.options.type ?? "misc").toLowerCase();
+
+            if (prEntries.some((e) => typeOf(e) === changeType)) {
+                console.log(`${changelogPath} has a "${changeType}" entry for #${number}.`);
+                return;
+            }
+
+            const expected = `A "${commitType}" PR requires a ".. change::" entry with ":type: ${changeType}" and ":pr: ${number}".`;
+
+            if (prEntries.length) {
+                core.setFailed(
+                    `${changelogPath} has no "${changeType}" entry for #${number}:\n` +
+                    prEntries.map((e) => `  ${JSON.stringify(e.title)} has type "${typeOf(e)}"\n`).join("") +
+                    `\n${expected}`
+                );
+                return;
+            }
+
+            core.setFailed(`${changelogPath} has no entry for #${number}.\n\n${expected}`);
