@@ -6,6 +6,151 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Default ``copy_scope`` to ``True`` for ASGI handlers
+        :type: feature
+        :breaking:
+        :pr: 5164
+
+        Every ``asgi`` handler, mounted or not, now receives a copy of the ASGI ``scope``,
+        so the wrapped application can no longer add, replace or remove top-level scope
+        keys seen by the outer application. The default was ``None``, which passed the
+        original scope through, warned at registration and warned again when the wrapped
+        application mutated the scope; both warnings are gone.
+
+        The copy is shallow, so nested values such as ``scope["state"]`` are still shared
+        with the outer scope.
+
+        Set ``copy_scope=False`` where the wrapped application is meant to communicate with
+        the outer application through the scope, for example by writing ``scope["user"]``
+        for outer middleware to read, or by calling ``Request.set_session`` or
+        ``Request.clear_session``. All of these now fail silently.
+
+    .. change:: Declare ``socket`` in the original signature of a ``websocket_stream`` handler
+        :type: bugfix
+        :pr: 5161
+
+        A ``websocket_stream`` handler whose function takes no ``socket`` parameter adds
+        one to its ``parsed_fn_signature``, but only to its ``parameters``, so its
+        ``original_signature`` lacked a parameter its ``parameters`` declared. It now
+        declares ``socket`` in both.
+
+    .. change:: Read constraint metadata on ``data`` as on any other parameter
+        :type: bugfix
+        :pr: 5157
+
+        A ``data`` parameter annotated with metadata, e.g.
+        ``data: Annotated[int, annotated_types.Gt(0)]``, was interpreted as a request
+        body without a body marker, which got around the check of ``data`` being
+        missing a marker
+
+    .. change:: Require "reserved kwargs" to be declared with their type
+        :type: feature
+        :breaking:
+        :pr: 5154
+
+        Declaring the "reserved kwargs" ``body``, ``cookies``, ``data``,
+        ``headers``, ``query``, ``request``, ``scope`` and ``socket`` without the type
+        listed below, or with a different one, raises
+        :class:`~litestar.exceptions.ImproperlyConfiguredException` at startup.
+
+        For this, add the types :data:`~litestar.params.RawBody`,
+        :data:`~litestar.params.QueryParams` and :data:`~litestar.params.RequestCookies`,
+        and the body marker :data:`~litestar.params.RequestBody`, which declares a body
+        of the default media type, ``application/json``.
+
+        .. list-table::
+            :header-rows: 1
+            :widths: 20 80
+
+            * - Parameter
+              - Type
+            * - ``body``
+              - :data:`~litestar.params.RawBody`
+            * - ``cookies``
+              - :data:`~litestar.params.RequestCookies`
+            * - ``data``
+              - A body marker, e.g. :data:`~litestar.params.JSONBody` or
+                :data:`~litestar.params.RequestBody`
+            * - ``headers``
+              - :class:`~litestar.datastructures.Headers`
+            * - ``query``
+              - :data:`~litestar.params.QueryParams`
+            * - ``request``
+              - The request class configured for the handler, or one of its base classes,
+                e.g. :class:`~litestar.connection.Request`
+            * - ``scope``
+              - :data:`~litestar.types.Scope`
+            * - ``socket``
+              - The websocket class configured for the handler, or one of its base
+                classes, e.g. :class:`~litestar.connection.WebSocket`
+
+        ``headers`` receives the request's :class:`~litestar.datastructures.Headers`.
+        Before, ``headers: dict[str, str]`` received a :class:`dict` and
+        ``headers: Headers`` failed validation with a ``400 - Bad Request``.
+
+        In route handlers, ``cookies``, ``headers``, ``query`` and ``scope`` can also be
+        accessed through the request, e.g. ``request.headers``.
+
+        .. seealso:: :ref:`handler-function-kwargs`
+
+    .. change:: Remove support for implicitly declared request parameters
+        :type: feature
+        :breaking:
+        :pr:
+
+        Remove the deprecated implicit request parameter declaration. All request
+        parameters must now be explicitly marked (e.g. with
+        :data:`~litestar.params.FromQuery`).
+
+        .. list-table::
+            :header-rows: 1
+            :widths: 45 55
+
+            * - Deprecated
+              - Use instead
+            * - ``def h(name: str)`` *(implicit query parameter)*
+              - ``def h(name: FromQuery[str])``
+            * - ``def h(user_id: int)`` *(implicit path parameter)*
+              - ``def h(user_id: FromPath[int])``
+            * - ``Annotated[str, Parameter(query="alias")]``
+              - ``Annotated[str, QueryParameter(name="alias")]``
+            * - ``Annotated[str, Parameter(header="X-API-KEY")]``
+              - ``Annotated[str, HeaderParameter(name="X-API-KEY")]``
+            * - ``Annotated[str, Parameter(cookie="session")]``
+              - ``Annotated[str, CookieParameter(name="session")]``
+            * - ``name: str = Parameter(...)`` *(default-value style)*
+              - ``name: Annotated[str, QueryParameter(...)]``
+
+        .. seealso::
+            :doc:`/usage/routing/parameters`
+
+    .. change:: Only read parameters marked as path parameters from the path
+        :type: bugfix
+        :pr: 5128
+        :breaking:
+
+        A parameter whose name matched a path segment was read from the path even when it
+        was marked with ``FromQuery``, ``FromHeader``, ``FromCookie`` or the corresponding
+        ``Parameter`` kwarg, and was documented as a path parameter. Such a parameter is
+        now read from, and documented at, the location it is marked with.
+
+        A parameter named like a path segment that declares no location, the deprecated
+        inferred path parameter style, now raises ``ImproperlyConfiguredException`` when
+        the application is created. Declare it with ``FromPath``.
+
+    .. change:: Add support for ``leeway`` parameter in JWT security backends
+        :type: feature
+        :pr: 5037
+        :issue: 4584
+        :breaking:
+
+        Add support for ``leeway`` parameter in JWT security backends, which allows set
+        a number of potential seconds as a clock error for expired tokens.
+
+        ``Token.decode`` and ``Token.decode_payload`` now take a ``leeway`` argument.
+        Custom token classes overriding either method must accept it and forward to
+        ``super()``, otherwise decoding raises ``TypeError``.
+
     .. change:: Fix ``TypeError`` when generating a schema for a union of enums
         :type: bugfix
         :pr: 4997
@@ -35,6 +180,33 @@
         Applications using ``RapidocRenderPlugin`` should migrate to another bundled UI
         plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
         ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
+
+    .. change:: Migrate ``CSRFMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 4998
+        :issue: 4009
+        :breaking:
+
+        ``CSRFMiddleware`` has been moved from the legacy ``MiddlewareProtocol`` base to
+        :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all built-in
+        middleware off the legacy bases. It now lives in ``litestar.middleware._internal``.
+        This removes the ``litestar.middleware.csrf`` module, including the
+        ``generate_csrf_token`` and ``generate_csrf_hash`` helpers, from the public API.
+
+        Applications that configure CSRF protection through
+        :class:`~litestar.config.csrf.CSRFConfig` are unaffected, since Litestar
+        constructs the middleware itself, via a ``from_config`` classmethod on the
+        middleware.
+
+        Two behavioural changes for excluded routes:
+
+        - :attr:`~litestar.config.csrf.CSRFConfig.exclude` patterns are now matched against
+          the **handler's path template** (e.g. ``/user/{user_id:int}``) at startup, instead
+          of the request path (e.g. ``/user/1``) at runtime. Patterns targeting literal
+          paths keep working; patterns written to match expanded path parameters must be
+          rewritten against the template.
+        - Handlers excluded via ``exclude`` or ``exclude_from_csrf`` now bypass the
+          middleware entirely at startup rather than per request.
 
     .. change:: Migrate ``ResponseCacheMiddleware`` to ``ASGIMiddleware``
         :type: feature

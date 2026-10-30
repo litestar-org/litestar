@@ -83,7 +83,7 @@ class Parameter(BaseSchemaObject):
     """
 
     style: str | None = None
-    """Describes how the parameter value will be serialized depending on the ype of the parameter value. Default values
+    """Describes how the parameter value will be serialized depending on the type of the parameter value. Default values
     (based on value of ``in``):
 
     - for ``query`` - ``form``

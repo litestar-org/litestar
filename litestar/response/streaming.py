@@ -180,7 +180,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
         status_code: int | None = None,
         type_encoders: TypeEncodersMap | None = None,
     ) -> ASGIResponse:
-        """Create an ASGIStreamingResponse from a StremaingResponse instance.
+        """Create an ASGIStreamingResponse from a StreamingResponse instance.
 
         Args:
             background: Background task(s) to be executed after the response is sent.

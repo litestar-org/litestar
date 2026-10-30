@@ -112,10 +112,11 @@ A :class:`~.router.Router` can register :class:`Controllers <.controller.Control
     :caption: Registering a :class:`~.router.Router`
 
     from litestar import Litestar, Router, get
+    from litestar.params import FromPath
 
 
     @get("/{order_id:int}")
-    def order_handler(order_id: int) -> None: ...
+    def order_handler(order_id: FromPath[int]) -> None: ...
 
 
     order_router = Router(path="/orders", route_handlers=[order_handler])
@@ -141,6 +142,7 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
         from litestar.controller import Controller
         from litestar.dto import DTOConfig, DTOData
         from litestar.handlers import get, post, patch, delete
+        from litestar.params import FromPath, JSONBody
         from pydantic import BaseModel, UUID4
 
 
@@ -157,18 +159,18 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
            path = "/user-order"
 
            @post()
-           async def create_user_order(self, data: UserOrder) -> UserOrder: ...
+           async def create_user_order(self, data: JSONBody[UserOrder]) -> UserOrder: ...
 
            @get(path="/{order_id:uuid}")
-           async def retrieve_user_order(self, order_id: UUID4) -> UserOrder: ...
+           async def retrieve_user_order(self, order_id: FromPath[UUID4]) -> UserOrder: ...
 
            @patch(path="/{order_id:uuid}", dto=PartialUserOrderDTO)
            async def update_user_order(
-               self, order_id: UUID4, data: DTOData[PartialUserOrderDTO]
+               self, order_id: FromPath[UUID4], data: JSONBody[DTOData[PartialUserOrderDTO]]
            ) -> UserOrder: ...
 
            @delete(path="/{order_id:uuid}")
-           async def delete_user_order(self, order_id: UUID4) -> None: ...
+           async def delete_user_order(self, order_id: FromPath[UUID4]) -> None: ...
 
 The above is a simple example of a "CRUD" controller for a model called ``UserOrder``. You can place as
 many :doc:`route handler methods </usage/routing/handlers>` on a controller,
@@ -263,6 +265,12 @@ The handler function will receive all requests with an url that begins with ``/s
     If we are sending a request to the above with the url ``/some/sub-path``, the handler will be invoked and
     the value of ``scope["path"]`` will equal ``"/"``. If we send a request to ``/some/sub-path/abc``, it will also be
     invoked,and ``scope["path"]`` will equal ``"/abc"``.
+
+The mounted application receives a copy of the ASGI ``scope``, so it cannot add, replace or remove top-level scope keys
+seen by the outer application - the path rewriting described above is performed by the router and is unaffected. The copy
+is shallow, so nested values such as ``scope["state"]`` are still shared. Pass ``copy_scope=False`` if the mounted
+application is meant to communicate with the outer application through the scope, for example by writing
+``scope["user"]`` for outer middleware to read.
 
 Mounting is especially useful when you need to combine components of other ASGI applications - for example, for third
 party libraries. The following example is identical in principle to the one above, but it uses

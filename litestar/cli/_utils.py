@@ -170,7 +170,7 @@ class LitestarGroup(Group):  # pyright: ignore[reportGeneralTypeIssues]
         """
         if cmd.callback:
             cmd.callback = _inject_args(cmd.callback)
-        super().add_command(cmd)
+        super().add_command(cmd, name=name)
 
     def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:  # type: ignore[override]
         # For some reason, even when copying the overloads + signature from click 1:1, mypy goes haywire

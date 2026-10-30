@@ -306,7 +306,10 @@ class AbstractDTO(Generic[T]):
     def get_property_fields(cls, model_type: type[Any]) -> dict[str, FieldDefinition]:
         return {
             name: dataclasses.replace(
-                ParsedSignature.from_fn(attr.fget, cls.get_model_namespace(model_type)).return_type,
+                ParsedSignature.from_property(
+                    attr,
+                    cls.get_model_namespace(model_type),
+                ).return_type,
                 name=name,
             )
             for name, attr in vars(model_type).items()

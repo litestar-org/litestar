@@ -243,7 +243,7 @@ class Litestar(Router):
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
                 defined Compression middleware.
             cors_config: If set, configures CORS handling for the application.
-            csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
+            csrf_config: If set, enables CSRF protection.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
@@ -272,7 +272,7 @@ class Litestar(Router):
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <litestar.connection.request.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
-            parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
+            parameters: A mapping of :class:`Parameter <.params.ParameterKwarg>` definitions available to all application
                 paths.
             path: A path fragment that is prefixed to all route handlers, controllers and routers associated
                 with the application instance.

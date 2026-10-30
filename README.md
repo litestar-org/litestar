@@ -314,7 +314,7 @@ or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our
 Litestar is open to contributions big and small. You can always [join our discord](https://discord.gg/litestar) server
 or [join our Matrix](https://matrix.to/#/#litestar:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
-see [the contribution guide](CONTRIBUTING.rst).
+see [the contribution guide](https://github.com/litestar-org/litestar/blob/main/CONTRIBUTING.rst).
 
 <!-- contributors-start -->
 

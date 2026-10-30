@@ -20,7 +20,7 @@ from litestar.openapi import OpenAPIConfig
 from litestar.openapi.plugins import YamlRenderPlugin
 from litestar.openapi.spec import Parameter as OpenAPIParameter
 from litestar.openapi.spec import Schema
-from litestar.params import FromCookie, FromPath, FromQuery, HeaderParameter
+from litestar.params import FromCookie, FromPath, FromQuery, HeaderParameter, JSONBody
 from litestar.serialization.msgspec_hooks import decode_json, encode_json, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
@@ -468,18 +468,18 @@ def test_components_schemas_in_alphabetical_order() -> None:
 
     class TestController(Controller):
         @post("/", sync_to_thread=False)
-        def post_handler(self, data: B) -> None: ...
+        def post_handler(self, data: JSONBody[B]) -> None: ...
 
         @get("/", sync_to_thread=False)
         def get_handler(self) -> A:  # type: ignore[empty-body]
             ...
 
         @patch("/", sync_to_thread=False)
-        def patch_handler(self, data: C) -> A:  # type: ignore[empty-body]
+        def patch_handler(self, data: JSONBody[C]) -> A:  # type: ignore[empty-body]
             ...
 
         @delete("/", sync_to_thread=False)
-        def delete_handler(self, data: B) -> None: ...
+        def delete_handler(self, data: JSONBody[B]) -> None: ...
 
     app = Litestar([TestController], signature_types=[A, B, C])
     openapi_plugin = app.plugins.get(OpenAPIPlugin)

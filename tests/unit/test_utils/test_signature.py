@@ -15,6 +15,7 @@ from typing_extensions import TypedDict
 from litestar import Controller, post
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.exceptions.base_exceptions import LitestarWarning
+from litestar.params import JSONBody
 from litestar.response.base import ASGIResponse
 from litestar.types.asgi_types import Receive, Scope, Send
 from litestar.types.builtin_types import NoneType
@@ -191,7 +192,7 @@ def test_add_types_to_signature_namespace_warn_disabled(monkeypatch: pytest.Monk
 )
 def test_using_generics_in_fn_annotations(namespace: dict[str, Any], expected: dict[str, Any]) -> None:
     @post(signature_namespace=namespace)
-    def create_item(data: T) -> T:
+    def create_item(data: JSONBody[T]) -> T:
         return data
 
     signature = create_item.parsed_fn_signature
@@ -213,7 +214,7 @@ class GenericController(Controller, Generic[T]):
 
 class BaseController(GenericController[T]):
     @post()
-    async def create(self, data: T) -> T:
+    async def create(self, data: JSONBody[T]) -> T:
         return data
 
 
@@ -234,3 +235,14 @@ def test_using_generics_in_controller_annotations(annotation_type: type, expecte
     signature = (controller_object.get_route_handlers()[0]).merge(controller_object.as_router()).parsed_fn_signature
     actual = {"data": signature.parameters["data"].annotation, "return": signature.return_type.annotation}
     assert actual == expected
+
+
+def test_from_property() -> None:
+    class Foo:
+        @property
+        def bar(self) -> None:
+            return None
+
+    sig = ParsedSignature.from_property(Foo.bar, {})  # type: ignore[arg-type]
+    assert sig.return_type.type_ is type(None)
+    assert not sig.parameters

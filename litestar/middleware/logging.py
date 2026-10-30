@@ -80,6 +80,7 @@ class LoggingMiddleware(ASGIMiddleware):
         self.request_log_message = request_log_message
         self.response_log_message = response_log_message
         self.request_log_fields = request_log_fields
+        self._request_log_fields_set = frozenset(request_log_fields)
         self.response_log_fields = response_log_fields
         self.log_structured = log_structured
 
@@ -200,7 +201,7 @@ class LoggingMiddleware(ASGIMiddleware):
         data: dict[str, Any] = {"message": self.request_log_message}
         serializer = get_serializer_from_scope(request.scope)
 
-        extracted_data = await self.request_extractor.extract(connection=request, fields=self.request_log_fields)
+        extracted_data = await self.request_extractor.extract(connection=request, fields=self._request_log_fields_set)
 
         for key in self.request_log_fields:
             data[key] = self._serialize_value(serializer, extracted_data.get(key))

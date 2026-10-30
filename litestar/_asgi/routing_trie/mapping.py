@@ -182,10 +182,10 @@ def build_route_middleware_stack(
     Returns:
         An ASGIApp that is composed of a "stack" of middlewares.
     """
+    from litestar.middleware._internal.csrf import CSRFMiddleware
     from litestar.middleware._internal.response_cache import ResponseCacheMiddleware
     from litestar.middleware.allowed_hosts import AllowedHostsMiddleware
     from litestar.middleware.base import ASGIMiddleware
-    from litestar.middleware.csrf import CSRFMiddleware
     from litestar.routes import HTTPRoute
 
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
@@ -203,7 +203,9 @@ def build_route_middleware_stack(
         asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
         if app.csrf_config:
-            asgi_handler = CSRFMiddleware(app=asgi_handler, config=app.csrf_config)
+            csrf_middleware = CSRFMiddleware.from_config(app.csrf_config)
+            if not csrf_middleware.should_bypass_for_handler(route_handler):
+                asgi_handler = csrf_middleware(asgi_handler)
 
         if compression_config := app.compression_config:
             asgi_handler = compression_config.middleware_class(app=asgi_handler, config=app.compression_config)

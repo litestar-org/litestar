@@ -1,13 +1,22 @@
 from datetime import date, datetime
-from typing import Annotated, Any, Optional, Union
+from typing import Annotated, Optional, Union
 
 import pytest
 
-from litestar import Controller, MediaType, delete, get, patch, post, put
-from litestar.datastructures import ResponseHeader, State
+from litestar import Controller, MediaType, Request, delete, get, patch, post, put
+from litestar.datastructures import Headers, ResponseHeader, State
 from litestar.dto import DataclassDTO, DTOConfig, DTOData
 from litestar.openapi.spec.example import Example
-from litestar.params import CookieParameter, FromPath, FromQuery, HeaderParameter, QueryParameter
+from litestar.params import (
+    CookieParameter,
+    FromPath,
+    FromQuery,
+    HeaderParameter,
+    JSONBody,
+    QueryParameter,
+    QueryParams,
+    RequestCookies,
+)
 from tests.models import DataclassPerson, DataclassPersonFactory, DataclassPet
 from tests.unit.test_openapi.utils import Gender, LuckyNumber, PetException
 
@@ -24,11 +33,11 @@ def create_person_controller() -> type[Controller]:
         def get_persons(
             self,
             # expected to be ignored
-            headers: Any,
-            request: Any,
+            headers: Headers,
+            request: Request,
             state: State,
-            query: dict[str, Any],
-            cookies: dict[str, Any],
+            query: QueryParams,
+            cookies: RequestCookies,
             # path parameter
             service_id: FromPath[int],
             # required query parameters below
@@ -64,25 +73,29 @@ def create_person_controller() -> type[Controller]:
 
         @post("/", media_type=MediaType.TEXT, sync_to_thread=False)
         def create_person(
-            self, data: DataclassPerson, secret_header: Annotated[str, HeaderParameter(name="secret")]
+            self, data: JSONBody[DataclassPerson], secret_header: Annotated[str, HeaderParameter(name="secret")]
         ) -> DataclassPerson:
             return data
 
         @post(path="/bulk", dto=PartialDataclassPersonDTO, sync_to_thread=False)
         def bulk_create_person(
-            self, data: DTOData[list[DataclassPerson]], secret_header: Annotated[str, HeaderParameter(name="secret")]
+            self,
+            data: JSONBody[DTOData[list[DataclassPerson]]],
+            secret_header: Annotated[str, HeaderParameter(name="secret")],
         ) -> list[DataclassPerson]:
             return []
 
         @put(path="/bulk", sync_to_thread=False)
         def bulk_update_person(
-            self, data: list[DataclassPerson], secret_header: Annotated[str, HeaderParameter(name="secret")]
+            self, data: JSONBody[list[DataclassPerson]], secret_header: Annotated[str, HeaderParameter(name="secret")]
         ) -> list[DataclassPerson]:
             return []
 
         @patch(path="/bulk", dto=PartialDataclassPersonDTO, sync_to_thread=False)
         def bulk_partial_update_person(
-            self, data: DTOData[list[DataclassPerson]], secret_header: Annotated[str, HeaderParameter(name="secret")]
+            self,
+            data: JSONBody[DTOData[list[DataclassPerson]]],
+            secret_header: Annotated[str, HeaderParameter(name="secret")],
         ) -> list[DataclassPerson]:
             return []
 
@@ -97,12 +110,14 @@ def create_person_controller() -> type[Controller]:
             dto=PartialDataclassPersonDTO,
             sync_to_thread=False,
         )
-        def partial_update_person(self, person_id: FromPath[str], data: DTOData[DataclassPerson]) -> DataclassPerson:
+        def partial_update_person(
+            self, person_id: FromPath[str], data: JSONBody[DTOData[DataclassPerson]]
+        ) -> DataclassPerson:
             """Description in docstring."""
             return DataclassPersonFactory.build(id=person_id)
 
         @put(path="/{person_id:str}", sync_to_thread=False)
-        def update_person(self, person_id: FromPath[str], data: DataclassPerson) -> DataclassPerson:
+        def update_person(self, person_id: FromPath[str], data: JSONBody[DataclassPerson]) -> DataclassPerson:
             """Multiline docstring example.
 
             Line 3.
