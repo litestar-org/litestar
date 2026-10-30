@@ -385,6 +385,11 @@ Additionally, ASGI route handler functions **must** be :ref:`async functions <py
 This is enforced using inspection, and if the function is not an :ref:`async function <python:async def>`,
 an informative exception will be raised.
 
+The ``scope`` the handler receives is a copy, whether or not the handler is a mount, so top-level keys the wrapped
+application adds, replaces or removes are not seen by the outer application. The copy is shallow, so nested values such
+as ``scope["state"]`` are still shared. Pass ``copy_scope=False`` if the wrapped application is meant to communicate with
+the outer application through the scope.
+
 See the :class:`ASGIRouteHandler API reference documentation <.handlers.asgi_handlers.ASGIRouteHandler>` for full
 details on the :func:`@asgi() <.handlers.asgi>` :term:`decorator` and the :term:`kwargs <argument>` it accepts.
 
