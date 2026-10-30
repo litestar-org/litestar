@@ -16,7 +16,7 @@ def test_schema_generation() -> None:
                         "operationId": "IdRetrieveIdHandler",
                         "responses": {
                             "200": {
-                                "description": "Request fulfilled, document follows",
+                                "description": "OK",
                                 "headers": {},
                                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/IdModel"}}},
                             }
