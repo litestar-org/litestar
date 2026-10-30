@@ -9,7 +9,7 @@
     .. change:: Match mounted ASGI apps on path segments
         :type: bugfix
         :breaking:
-        :pr:
+        :pr: 5178
         :issue: 5173
 
         A mount matched any path merely *starting with* its path string, so a mount on
