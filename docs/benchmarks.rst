@@ -120,3 +120,13 @@ While trying to design the tests in a way that simulate somewhat realistic scena
 representation of how a real world application behaves and performs, where, aside from the workload, many other factors
 come into play. These tests were mainly written to be used internally for Litestar development, to help us locate and
 track performance regressions and improvements.
+
+Continuous benchmarks
+---------------------
+
+In addition to the throughput comparison above, Litestar tracks the CPU cost of its own
+request path, serialization and application startup with
+`CodSpeed <https://codspeed.io/litestar-org/litestar>`_ on every pull request that touches the
+library (``litestar/``, the benchmarks, ``pyproject.toml`` or ``uv.lock``). These benchmarks
+live in ``tests/benchmarks`` in the repository and compare each change against the latest
+``main`` commit, so regressions are visible before they are merged.
