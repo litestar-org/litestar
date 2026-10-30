@@ -503,204 +503,192 @@ data-aria-dark="Switch to auto color mode">
           <h1>Source code for litestar.handlers.asgi_handlers</h1><div class="highlight"><pre>
 <span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
-</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfiguredException</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRouteHandler</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.builtin_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoneType</span>
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.predicates</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_async_callable</span>
-</span><span data-line="10">
-</span><span data-line="11"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ASGIRouteHandler&quot;</span><span class="p">,</span> <span class="s2">&quot;asgi&quot;</span><span class="p">)</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfiguredException</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRouteHandler</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.builtin_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoneType</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.predicates</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_async_callable</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ASGIRouteHandler&quot;</span><span class="p">,</span> <span class="s2">&quot;asgi&quot;</span><span class="p">)</span>
+</span><span data-line="11">
 </span><span data-line="12">
-</span><span data-line="13">
-</span><span data-line="14"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="15">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
-</span><span data-line="16">
-</span><span data-line="17">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span>
-</span><span data-line="18">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRoute</span>
-</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-</span><span data-line="21">        <span class="n">AsyncAnyCallable</span><span class="p">,</span>
-</span><span data-line="22">        <span class="n">ExceptionHandlersMap</span><span class="p">,</span>
-</span><span data-line="23">        <span class="n">Guard</span><span class="p">,</span>
-</span><span data-line="24">        <span class="n">ParametersMap</span><span class="p">,</span>
-</span><span data-line="25">    <span class="p">)</span>
-</span><span data-line="26">
-</span><span data-line="27">
+</span><span data-line="13"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="14">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Router</span>
+</span><span data-line="17">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="18">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="19">        <span class="n">AsyncAnyCallable</span><span class="p">,</span>
+</span><span data-line="20">        <span class="n">ExceptionHandlersMap</span><span class="p">,</span>
+</span><span data-line="21">        <span class="n">Guard</span><span class="p">,</span>
+</span><span data-line="22">        <span class="n">ParametersMap</span><span class="p">,</span>
+</span><span data-line="23">    <span class="p">)</span>
+</span><span data-line="24">
+</span><span data-line="25">
 <div class="viewcode-block" id="ASGIRouteHandler">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.ASGIRouteHandler">[docs]</a>
-</span><span data-line="28"><span class="k">class</span><span class="w"> </span><span class="nc">ASGIRouteHandler</span><span class="p">(</span><span class="n">BaseRouteHandler</span><span class="p">):</span>
-</span><span data-line="29">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="30">        <span class="s2">&quot;copy_scope&quot;</span><span class="p">,</span>
-</span><span data-line="31">        <span class="s2">&quot;is_mount&quot;</span><span class="p">,</span>
-</span><span data-line="32">    <span class="p">)</span>
-</span><span data-line="33">
+</span><span data-line="26"><span class="k">class</span><span class="w"> </span><span class="nc">ASGIRouteHandler</span><span class="p">(</span><span class="n">BaseRouteHandler</span><span class="p">):</span>
+</span><span data-line="27">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="28">        <span class="s2">&quot;copy_scope&quot;</span><span class="p">,</span>
+</span><span data-line="29">        <span class="s2">&quot;is_mount&quot;</span><span class="p">,</span>
+</span><span data-line="30">    <span class="p">)</span>
+</span><span data-line="31">
 <div class="viewcode-block" id="ASGIRouteHandler.__init__">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.ASGIRouteHandler.__init__">[docs]</a>
-</span><span data-line="34">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="35">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="36">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="37">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="38">        <span class="n">fn</span><span class="p">:</span> <span class="n">AsyncAnyCallable</span><span class="p">,</span>
-</span><span data-line="39">        <span class="n">exception_handlers</span><span class="p">:</span> <span class="n">ExceptionHandlersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="40">        <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="41">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="42">        <span class="n">opt</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="43">        <span class="n">is_mount</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="44">        <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="45">        <span class="n">copy_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="46">        <span class="n">parameters</span><span class="p">:</span> <span class="n">ParametersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="47">        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-</span><span data-line="48">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="49"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Route handler for ASGI routes.</span>
-</span><span data-line="50">
-</span><span data-line="51"><span class="sd">        Args:</span>
-</span><span data-line="52"><span class="sd">            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to</span>
-</span><span data-line="53"><span class="sd">                ``/``.</span>
-</span><span data-line="54"><span class="sd">            fn: The handler function.</span>
-</span><span data-line="55">
-</span><span data-line="56"><span class="sd">                .. versionadded:: 3.0</span>
-</span><span data-line="57"><span class="sd">            exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
-</span><span data-line="58"><span class="sd">            guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
-</span><span data-line="59"><span class="sd">            name: A string identifying the route handler.</span>
-</span><span data-line="60"><span class="sd">            opt: A string key mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
-</span><span data-line="61"><span class="sd">                wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
-</span><span data-line="62"><span class="sd">                :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
-</span><span data-line="63"><span class="sd">            is_mount: A boolean dictating whether the handler&#39;s paths should be regarded as mount paths. Mount path</span>
-</span><span data-line="64"><span class="sd">                accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path</span>
-</span><span data-line="65"><span class="sd">                ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.</span>
-</span><span data-line="66"><span class="sd">                ``/some-path/sub-path/`` etc.</span>
-</span><span data-line="67"><span class="sd">            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.</span>
-</span><span data-line="68"><span class="sd">            type_encoders: A mapping of types to callables that transform them into types supported for serialization.</span>
-</span><span data-line="69"><span class="sd">            copy_scope: Copy the ASGI &#39;scope&#39; before calling the mounted application. Should be set to &#39;True&#39; unless</span>
-</span><span data-line="70"><span class="sd">                side effects via scope mutations by the mounted ASGI application are intentional</span>
-</span><span data-line="71"><span class="sd">            parameters: A mapping of :func:`Parameter &lt;.params.ParameterKwarg&gt;` definitions</span>
-</span><span data-line="72"><span class="sd">            **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
-</span><span data-line="73"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="74">        <span class="bp">self</span><span class="o">.</span><span class="n">is_mount</span> <span class="o">=</span> <span class="n">is_mount</span>
-</span><span data-line="75">        <span class="bp">self</span><span class="o">.</span><span class="n">copy_scope</span> <span class="o">=</span> <span class="n">copy_scope</span>
-</span><span data-line="76">
-</span><span data-line="77">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="78">            <span class="n">path</span><span class="p">,</span>
-</span><span data-line="79">            <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span>
-</span><span data-line="80">            <span class="n">exception_handlers</span><span class="o">=</span><span class="n">exception_handlers</span><span class="p">,</span>
-</span><span data-line="81">            <span class="n">guards</span><span class="o">=</span><span class="n">guards</span><span class="p">,</span>
-</span><span data-line="82">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-</span><span data-line="83">            <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
-</span><span data-line="84">            <span class="n">signature_namespace</span><span class="o">=</span><span class="n">signature_namespace</span><span class="p">,</span>
-</span><span data-line="85">            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
-</span><span data-line="86">            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-</span><span data-line="87">        <span class="p">)</span></div>
+</span><span data-line="32">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="33">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="34">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="35">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="36">        <span class="n">fn</span><span class="p">:</span> <span class="n">AsyncAnyCallable</span><span class="p">,</span>
+</span><span data-line="37">        <span class="n">exception_handlers</span><span class="p">:</span> <span class="n">ExceptionHandlersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="38">        <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="39">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="40">        <span class="n">opt</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="41">        <span class="n">is_mount</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="42">        <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="43">        <span class="n">copy_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="44">        <span class="n">parameters</span><span class="p">:</span> <span class="n">ParametersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="45">        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+</span><span data-line="46">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="47"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Route handler for ASGI routes.</span>
+</span><span data-line="48">
+</span><span data-line="49"><span class="sd">        Args:</span>
+</span><span data-line="50"><span class="sd">            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to</span>
+</span><span data-line="51"><span class="sd">                ``/``.</span>
+</span><span data-line="52"><span class="sd">            fn: The handler function.</span>
+</span><span data-line="53">
+</span><span data-line="54"><span class="sd">                .. versionadded:: 3.0</span>
+</span><span data-line="55"><span class="sd">            exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
+</span><span data-line="56"><span class="sd">            guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
+</span><span data-line="57"><span class="sd">            name: A string identifying the route handler.</span>
+</span><span data-line="58"><span class="sd">            opt: A string key mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
+</span><span data-line="59"><span class="sd">                wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
+</span><span data-line="60"><span class="sd">                :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
+</span><span data-line="61"><span class="sd">            is_mount: A boolean dictating whether the handler&#39;s paths should be regarded as mount paths. Mount path</span>
+</span><span data-line="62"><span class="sd">                accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path</span>
+</span><span data-line="63"><span class="sd">                ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.</span>
+</span><span data-line="64"><span class="sd">                ``/some-path/sub-path/`` etc.</span>
+</span><span data-line="65"><span class="sd">            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.</span>
+</span><span data-line="66"><span class="sd">            type_encoders: A mapping of types to callables that transform them into types supported for serialization.</span>
+</span><span data-line="67"><span class="sd">            copy_scope: Copy the ASGI &#39;scope&#39; before calling the wrapped ASGI application. The copy is shallow, so</span>
+</span><span data-line="68"><span class="sd">                nested values such as &#39;scope[&quot;state&quot;]&#39; remain shared. Set to &#39;False&#39; if the wrapped application is</span>
+</span><span data-line="69"><span class="sd">                meant to communicate with the outer application through the scope</span>
+</span><span data-line="70"><span class="sd">            parameters: A mapping of :func:`Parameter &lt;.params.ParameterKwarg&gt;` definitions</span>
+</span><span data-line="71"><span class="sd">            **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
+</span><span data-line="72"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="73">        <span class="bp">self</span><span class="o">.</span><span class="n">is_mount</span> <span class="o">=</span> <span class="n">is_mount</span>
+</span><span data-line="74">        <span class="bp">self</span><span class="o">.</span><span class="n">copy_scope</span> <span class="o">=</span> <span class="n">copy_scope</span>
+</span><span data-line="75">
+</span><span data-line="76">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="77">            <span class="n">path</span><span class="p">,</span>
+</span><span data-line="78">            <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span>
+</span><span data-line="79">            <span class="n">exception_handlers</span><span class="o">=</span><span class="n">exception_handlers</span><span class="p">,</span>
+</span><span data-line="80">            <span class="n">guards</span><span class="o">=</span><span class="n">guards</span><span class="p">,</span>
+</span><span data-line="81">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="82">            <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
+</span><span data-line="83">            <span class="n">signature_namespace</span><span class="o">=</span><span class="n">signature_namespace</span><span class="p">,</span>
+</span><span data-line="84">            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+</span><span data-line="85">            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+</span><span data-line="86">        <span class="p">)</span></div>
 
-</span><span data-line="88">
-<div class="viewcode-block" id="ASGIRouteHandler.on_registration">
-<a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.ASGIRouteHandler.on_registration">[docs]</a>
-</span><span data-line="89">    <span class="k">def</span><span class="w"> </span><span class="nf">on_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="90">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_registration</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">route</span><span class="o">=</span><span class="n">route</span><span class="p">)</span>
-</span><span data-line="91">
-</span><span data-line="92">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_scope</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="93">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-</span><span data-line="94">                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">: &#39;copy_scope&#39; not set for ASGI handler. Leaving &#39;copy_scope&#39; unset will warn about mounted &quot;</span>
-</span><span data-line="95">                <span class="s2">&quot;ASGI applications modifying the scope. Set &#39;copy_scope=True&#39; to ensure calling into mounted ASGI apps &quot;</span>
-</span><span data-line="96">                <span class="s2">&quot;does not cause any side effects via scope mutations, or set &#39;copy_scope=False&#39; if those mutations are &quot;</span>
-</span><span data-line="97">                <span class="s2">&quot;desired. &#39;copy&#39;scope&#39; will default to &#39;True&#39; in Litestar 3&quot;</span><span class="p">,</span>
-</span><span data-line="98">                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-</span><span data-line="99">                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="100">            <span class="p">)</span></div>
-
-</span><span data-line="101">
-</span><span data-line="102">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_merge_opts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Router</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="103">        <span class="n">merge_opts</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_merge_opts</span><span class="p">(</span><span class="n">others</span><span class="p">)</span>
-</span><span data-line="104">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;is_mount&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mount</span>
-</span><span data-line="105">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;copy_scope&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_scope</span>
-</span><span data-line="106">        <span class="k">return</span> <span class="n">merge_opts</span>
+</span><span data-line="87">
+</span><span data-line="88">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_merge_opts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Router</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="89">        <span class="n">merge_opts</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_merge_opts</span><span class="p">(</span><span class="n">others</span><span class="p">)</span>
+</span><span data-line="90">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;is_mount&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mount</span>
+</span><span data-line="91">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;copy_scope&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_scope</span>
+</span><span data-line="92">        <span class="k">return</span> <span class="n">merge_opts</span>
+</span><span data-line="93">
+</span><span data-line="94">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_handler_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="95"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the route handler function once it&#39;s set by inspecting its return annotations.&quot;&quot;&quot;</span>
+</span><span data-line="96">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate_handler_function</span><span class="p">()</span>
+</span><span data-line="97">
+</span><span data-line="98">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">return_type</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">NoneType</span><span class="p">):</span>
+</span><span data-line="99">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;ASGI handler functions should return &#39;None&#39;&quot;</span><span class="p">)</span>
+</span><span data-line="100">
+</span><span data-line="101">        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">parameters</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;scope&quot;</span><span class="p">,</span> <span class="s2">&quot;send&quot;</span><span class="p">,</span> <span class="s2">&quot;receive&quot;</span><span class="p">)):</span>
+</span><span data-line="102">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="103">                <span class="s2">&quot;ASGI handler functions should define &#39;scope&#39;, &#39;send&#39; and &#39;receive&#39; arguments&quot;</span>
+</span><span data-line="104">            <span class="p">)</span>
+</span><span data-line="105">        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_async_callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">):</span>
+</span><span data-line="106">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Functions decorated with &#39;asgi&#39; must be async functions&quot;</span><span class="p">)</span>
 </span><span data-line="107">
-</span><span data-line="108">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_handler_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="109"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the route handler function once it&#39;s set by inspecting its return annotations.&quot;&quot;&quot;</span>
-</span><span data-line="110">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate_handler_function</span><span class="p">()</span>
-</span><span data-line="111">
-</span><span data-line="112">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">return_type</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">NoneType</span><span class="p">):</span>
-</span><span data-line="113">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;ASGI handler functions should return &#39;None&#39;&quot;</span><span class="p">)</span>
-</span><span data-line="114">
-</span><span data-line="115">        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">parameters</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;scope&quot;</span><span class="p">,</span> <span class="s2">&quot;send&quot;</span><span class="p">,</span> <span class="s2">&quot;receive&quot;</span><span class="p">)):</span>
-</span><span data-line="116">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="117">                <span class="s2">&quot;ASGI handler functions should define &#39;scope&#39;, &#39;send&#39; and &#39;receive&#39; arguments&quot;</span>
-</span><span data-line="118">            <span class="p">)</span>
-</span><span data-line="119">        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_async_callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">):</span>
-</span><span data-line="120">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;Functions decorated with &#39;asgi&#39; must be async functions&quot;</span><span class="p">)</span>
-</span><span data-line="121">
 <div class="viewcode-block" id="ASGIRouteHandler.handle">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.ASGIRouteHandler.handle">[docs]</a>
-</span><span data-line="122">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">[</span><span class="n">ASGIRouteHandler</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="123"><span class="w">        </span><span class="sd">&quot;&quot;&quot;ASGI app that authorizes the connection and then awaits the handler function.</span>
-</span><span data-line="124">
-</span><span data-line="125"><span class="sd">        .. versionadded: 3.0</span>
-</span><span data-line="126">
-</span><span data-line="127"><span class="sd">        Args:</span>
-</span><span data-line="128"><span class="sd">                connection: The ASGI connection</span>
-</span><span data-line="129">
-</span><span data-line="130"><span class="sd">        Returns:</span>
-</span><span data-line="131"><span class="sd">                None</span>
-</span><span data-line="132"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="133">
-</span><span data-line="134">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
-</span><span data-line="135">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">authorize_connection</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
-</span><span data-line="136">
-</span><span data-line="137">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">connection</span><span class="o">.</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">)</span></div>
+</span><span data-line="108">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">[</span><span class="n">ASGIRouteHandler</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="109"><span class="w">        </span><span class="sd">&quot;&quot;&quot;ASGI app that authorizes the connection and then awaits the handler function.</span>
+</span><span data-line="110">
+</span><span data-line="111"><span class="sd">        .. versionadded: 3.0</span>
+</span><span data-line="112">
+</span><span data-line="113"><span class="sd">        Args:</span>
+</span><span data-line="114"><span class="sd">                connection: The ASGI connection</span>
+</span><span data-line="115">
+</span><span data-line="116"><span class="sd">        Returns:</span>
+</span><span data-line="117"><span class="sd">                None</span>
+</span><span data-line="118"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="119">
+</span><span data-line="120">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
+</span><span data-line="121">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">authorize_connection</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+</span><span data-line="122">
+</span><span data-line="123">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">connection</span><span class="o">.</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">)</span></div>
 </div>
 
-</span><span data-line="138">
-</span><span data-line="139">
+</span><span data-line="124">
+</span><span data-line="125">
 <div class="viewcode-block" id="asgi">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.asgi">[docs]</a>
-</span><span data-line="140"><span class="k">def</span><span class="w"> </span><span class="nf">asgi</span><span class="p">(</span>
-</span><span data-line="141">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="142">    <span class="o">*</span><span class="p">,</span>
-</span><span data-line="143">    <span class="n">exception_handlers</span><span class="p">:</span> <span class="n">ExceptionHandlersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="144">    <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="145">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="146">    <span class="n">opt</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="147">    <span class="n">is_mount</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="148">    <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="149">    <span class="n">handler_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">ASGIRouteHandler</span><span class="p">]</span> <span class="o">=</span> <span class="n">ASGIRouteHandler</span><span class="p">,</span>
-</span><span data-line="150">    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-</span><span data-line="151"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">AsyncAnyCallable</span><span class="p">],</span> <span class="n">ASGIRouteHandler</span><span class="p">]:</span>
-</span><span data-line="152"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an :class:`ASGIRouteHandler`.</span>
-</span><span data-line="153">
-</span><span data-line="154"><span class="sd">    Args:</span>
-</span><span data-line="155"><span class="sd">        path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults</span>
-</span><span data-line="156"><span class="sd">            to ``/``</span>
-</span><span data-line="157"><span class="sd">        exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
-</span><span data-line="158"><span class="sd">        guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
-</span><span data-line="159"><span class="sd">        name: A string identifying the route handler.</span>
-</span><span data-line="160"><span class="sd">        opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
-</span><span data-line="161"><span class="sd">            wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
-</span><span data-line="162"><span class="sd">            :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
-</span><span data-line="163"><span class="sd">        signature_namespace: A mapping of names to types for use in forward reference resolution during signature</span>
-</span><span data-line="164"><span class="sd">            modelling.</span>
-</span><span data-line="165"><span class="sd">        is_mount: A boolean dictating whether the handler&#39;s paths should be regarded as mount paths. Mount path</span>
-</span><span data-line="166"><span class="sd">            accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path</span>
-</span><span data-line="167"><span class="sd">            ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.</span>
-</span><span data-line="168"><span class="sd">            ``/some-path/sub-path/`` etc.</span>
-</span><span data-line="169"><span class="sd">        handler_class: Route handler class instantiated by the decorator</span>
-</span><span data-line="170"><span class="sd">        **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
-</span><span data-line="171"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="172">
-</span><span data-line="173">    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AsyncAnyCallable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIRouteHandler</span><span class="p">:</span>
-</span><span data-line="174">        <span class="k">return</span> <span class="n">handler_class</span><span class="p">(</span>
-</span><span data-line="175">            <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span>
-</span><span data-line="176">            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-</span><span data-line="177">            <span class="n">exception_handlers</span><span class="o">=</span><span class="n">exception_handlers</span><span class="p">,</span>
-</span><span data-line="178">            <span class="n">guards</span><span class="o">=</span><span class="n">guards</span><span class="p">,</span>
-</span><span data-line="179">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-</span><span data-line="180">            <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
-</span><span data-line="181">            <span class="n">is_mount</span><span class="o">=</span><span class="n">is_mount</span><span class="p">,</span>
-</span><span data-line="182">            <span class="n">signature_namespace</span><span class="o">=</span><span class="n">signature_namespace</span><span class="p">,</span>
-</span><span data-line="183">            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-</span><span data-line="184">        <span class="p">)</span>
-</span><span data-line="185">
-</span><span data-line="186">    <span class="k">return</span> <span class="n">decorator</span></div>
+</span><span data-line="126"><span class="k">def</span><span class="w"> </span><span class="nf">asgi</span><span class="p">(</span>
+</span><span data-line="127">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="128">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="129">    <span class="n">exception_handlers</span><span class="p">:</span> <span class="n">ExceptionHandlersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="130">    <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="131">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="132">    <span class="n">opt</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="133">    <span class="n">is_mount</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="134">    <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="135">    <span class="n">copy_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="136">    <span class="n">handler_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">ASGIRouteHandler</span><span class="p">]</span> <span class="o">=</span> <span class="n">ASGIRouteHandler</span><span class="p">,</span>
+</span><span data-line="137">    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+</span><span data-line="138"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">AsyncAnyCallable</span><span class="p">],</span> <span class="n">ASGIRouteHandler</span><span class="p">]:</span>
+</span><span data-line="139"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an :class:`ASGIRouteHandler`.</span>
+</span><span data-line="140">
+</span><span data-line="141"><span class="sd">    Args:</span>
+</span><span data-line="142"><span class="sd">        path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults</span>
+</span><span data-line="143"><span class="sd">            to ``/``</span>
+</span><span data-line="144"><span class="sd">        exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
+</span><span data-line="145"><span class="sd">        guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
+</span><span data-line="146"><span class="sd">        name: A string identifying the route handler.</span>
+</span><span data-line="147"><span class="sd">        opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
+</span><span data-line="148"><span class="sd">            wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
+</span><span data-line="149"><span class="sd">            :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
+</span><span data-line="150"><span class="sd">        signature_namespace: A mapping of names to types for use in forward reference resolution during signature</span>
+</span><span data-line="151"><span class="sd">            modelling.</span>
+</span><span data-line="152"><span class="sd">        is_mount: A boolean dictating whether the handler&#39;s paths should be regarded as mount paths. Mount path</span>
+</span><span data-line="153"><span class="sd">            accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path</span>
+</span><span data-line="154"><span class="sd">            ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.</span>
+</span><span data-line="155"><span class="sd">            ``/some-path/sub-path/`` etc.</span>
+</span><span data-line="156"><span class="sd">        copy_scope: Copy the ASGI &#39;scope&#39; before calling the wrapped ASGI application. The copy is shallow, so</span>
+</span><span data-line="157"><span class="sd">            nested values such as &#39;scope[&quot;state&quot;]&#39; remain shared. Set to &#39;False&#39; if the wrapped application is</span>
+</span><span data-line="158"><span class="sd">            meant to communicate with the outer application through the scope</span>
+</span><span data-line="159"><span class="sd">        handler_class: Route handler class instantiated by the decorator</span>
+</span><span data-line="160"><span class="sd">        **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
+</span><span data-line="161"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="162">
+</span><span data-line="163">    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AsyncAnyCallable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIRouteHandler</span><span class="p">:</span>
+</span><span data-line="164">        <span class="k">return</span> <span class="n">handler_class</span><span class="p">(</span>
+</span><span data-line="165">            <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span>
+</span><span data-line="166">            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+</span><span data-line="167">            <span class="n">exception_handlers</span><span class="o">=</span><span class="n">exception_handlers</span><span class="p">,</span>
+</span><span data-line="168">            <span class="n">guards</span><span class="o">=</span><span class="n">guards</span><span class="p">,</span>
+</span><span data-line="169">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="170">            <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
+</span><span data-line="171">            <span class="n">is_mount</span><span class="o">=</span><span class="n">is_mount</span><span class="p">,</span>
+</span><span data-line="172">            <span class="n">signature_namespace</span><span class="o">=</span><span class="n">signature_namespace</span><span class="p">,</span>
+</span><span data-line="173">            <span class="n">copy_scope</span><span class="o">=</span><span class="n">copy_scope</span><span class="p">,</span>
+</span><span data-line="174">            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+</span><span data-line="175">        <span class="p">)</span>
+</span><span data-line="176">
+</span><span data-line="177">    <span class="k">return</span> <span class="n">decorator</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

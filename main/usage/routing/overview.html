@@ -820,7 +820,7 @@ Python 3.11+</label><div class="sd-tab-content docutils">
 </span><span data-line="8">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 </span><span data-line="9">
 </span><span data-line="10">
-</span><span data-line="11"><span class="nd">@asgi</span><span class="p">(</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="11"><span class="nd">@asgi</span><span class="p">(</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span data-line="12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="13"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span data-line="14"><span class="sd">    Args:</span>
@@ -856,7 +856,7 @@ Python 3.14+</label><div class="sd-tab-content docutils">
 </span><span data-line="8">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 </span><span data-line="9">
 </span><span data-line="10">
-</span><span data-line="11"><span class="nd">@asgi</span><span class="p">(</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="11"><span class="nd">@asgi</span><span class="p">(</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span data-line="12"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span data-line="13"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span data-line="14"><span class="sd">    Args:</span>
@@ -887,6 +887,11 @@ Python 3.14+</label><div class="sd-tab-content docutils">
 the value of <code class="docutils literal notranslate"><span class="pre">scope[&quot;path&quot;]</span></code> will equal <code class="docutils literal notranslate"><span class="pre">&quot;/&quot;</span></code>. If we send a request to <code class="docutils literal notranslate"><span class="pre">/some/sub-path/abc</span></code>, it will also be
 invoked,and <code class="docutils literal notranslate"><span class="pre">scope[&quot;path&quot;]</span></code> will equal <code class="docutils literal notranslate"><span class="pre">&quot;/abc&quot;</span></code>.</p>
 </div>
+<p>The mounted application receives a copy of the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code>, so it cannot add, replace or remove top-level scope keys
+seen by the outer application - the path rewriting described above is performed by the router and is unaffected. The copy
+is shallow, so nested values such as <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code> are still shared. Pass <code class="docutils literal notranslate"><span class="pre">copy_scope=False</span></code> if the mounted
+application is meant to communicate with the outer application through the scope, for example by writing
+<code class="docutils literal notranslate"><span class="pre">scope[&quot;user&quot;]</span></code> for outer middleware to read.</p>
 <p>Mounting is especially useful when you need to combine components of other ASGI applications - for example, for third
 party libraries. The following example is identical in principle to the one above, but it uses
 <a class="reference external" href="https://www.starlette.io/">Starlette</a>:</p>
@@ -916,7 +921,7 @@ Python 3.11+</label><div class="sd-tab-content docutils">
 </span><span data-line="15">    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;forwarded_path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">})</span>
 </span><span data-line="16">
 </span><span data-line="17">
-</span><span data-line="18"><span class="n">starlette_app</span> <span class="o">=</span> <span class="n">asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span>
+</span><span data-line="18"><span class="n">starlette_app</span> <span class="o">=</span> <span class="n">asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span>
 </span><span data-line="19">    <span class="n">Starlette</span><span class="p">(</span>
 </span><span data-line="20">        <span class="n">routes</span><span class="o">=</span><span class="p">[</span>
 </span><span data-line="21">            <span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
@@ -954,7 +959,7 @@ Python 3.14+</label><div class="sd-tab-content docutils">
 </span><span data-line="15">    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">({</span><span class="s2">&quot;forwarded_path&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">})</span>
 </span><span data-line="16">
 </span><span data-line="17">
-</span><span data-line="18"><span class="n">starlette_app</span> <span class="o">=</span> <span class="n">asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span>
+</span><span data-line="18"><span class="n">starlette_app</span> <span class="o">=</span> <span class="n">asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span>
 </span><span data-line="19">    <span class="n">Starlette</span><span class="p">(</span>
 </span><span data-line="20">        <span class="n">routes</span><span class="o">=</span><span class="p">[</span>
 </span><span data-line="21">            <span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>

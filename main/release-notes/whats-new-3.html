@@ -482,6 +482,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#improved-file-system-handling-fsspec-integration">Improved file system handling / fsspec integration</a></li>
 <li><a class="reference internal" href="#removal-of-resolve-symlinks-parameter-to-create-static-files-router">Removal of <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code></a></li>
 <li><a class="reference internal" href="#middleware-configuration-constraints">Middleware configuration constraints</a></li>
+<li><a class="reference internal" href="#copy-scope-defaults-to-true-for-asgi-handlers"><code class="docutils literal notranslate"><span class="pre">copy_scope</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code> for ASGI handlers</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -1004,6 +1005,37 @@ startup.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../usage/middleware/creating-middleware.html#configuration-constraints"><span class="std std-ref">Configuration constraints</span></a></p>
+</div>
+</section>
+<section id="copy-scope-defaults-to-true-for-asgi-handlers">
+<h2><code class="docutils literal notranslate"><span class="pre">copy_scope</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code> for ASGI handlers<a class="headerlink" href="#copy-scope-defaults-to-true-for-asgi-handlers" title="Link to this heading">¶</a></h2>
+<p>Every <a class="reference internal" href="../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">asgi()</span></code></a> handler, mounted or not, now receives a copy of the ASGI
+<code class="docutils literal notranslate"><span class="pre">scope</span></code>, so the wrapped application can no longer add, replace or remove top-level scope
+keys seen by the outer application. In 2.x the default was <code class="docutils literal notranslate"><span class="pre">None</span></code>, which passed the
+original scope through, warned at registration and warned again when the wrapped
+application mutated the scope. Both warnings are gone.</p>
+<p>The copy is shallow, so nested values such as <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code> are still shared with the
+outer scope.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">copy_scope=False</span></code> where the wrapped application is meant to communicate with the
+outer application through the scope:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@asgi</span><span class="p">(</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_scope</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span></pre></div>
+</div>
+<p>You need the opt-out if the wrapped application writes a top-level scope key the outer
+application reads, such as <code class="docutils literal notranslate"><span class="pre">scope[&quot;user&quot;]</span></code>, or calls
+<a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection.set_session" title="litestar.connection.ASGIConnection.set_session"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_session()</span></code></a> or
+<a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection.clear_session" title="litestar.connection.ASGIConnection.clear_session"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clear_session()</span></code></a>, both of which rebind
+<code class="docutils literal notranslate"><span class="pre">scope[&quot;session&quot;]</span></code>. A mounted Starlette or FastAPI application also sets
+<code class="docutils literal notranslate"><span class="pre">scope[&quot;endpoint&quot;]</span></code> and <code class="docutils literal notranslate"><span class="pre">scope[&quot;route&quot;]</span></code>, which outer Sentry or OpenTelemetry layers
+read after the response to name the transaction. All of these now fail silently.</p>
+<p><code class="docutils literal notranslate"><span class="pre">copy_scope</span></code> is set per handler; there is no router- or application-level equivalent, so
+an application with several mounts opts out on each handler. A <code class="docutils literal notranslate"><span class="pre">handler_class</span></code> subclass
+that pinned <code class="docutils literal notranslate"><span class="pre">copy_scope</span></code> by passing it to <code class="docutils literal notranslate"><span class="pre">super().__init__()</span></code> must now accept it as a
+parameter and forward it, because <a class="reference internal" href="../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">asgi()</span></code></a> always passes it.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/routing/handlers.html#asgi-route-handler-considerations"><span class="std std-ref">ASGI route handler considerations</span></a></p>
 </div>
 </section>
 </section>

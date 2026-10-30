@@ -547,6 +547,21 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Default <code class="docutils literal notranslate"><span class="pre">copy_scope</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> for ASGI handlers<a class="headerlink reference internal" href="#3.0.0-default" id="3.0.0-default">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Every <code class="docutils literal notranslate"><span class="pre">asgi</span></code> handler, mounted or not, now receives a copy of the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code>,
+so the wrapped application can no longer add, replace or remove top-level scope
+keys seen by the outer application. The default was <code class="docutils literal notranslate"><span class="pre">None</span></code>, which passed the
+original scope through, warned at registration and warned again when the wrapped
+application mutated the scope; both warnings are gone.</p>
+<p>The copy is shallow, so nested values such as <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code> are still shared
+with the outer scope.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">copy_scope=False</span></code> where the wrapped application is meant to communicate with
+the outer application through the scope, for example by writing <code class="docutils literal notranslate"><span class="pre">scope[&quot;user&quot;]</span></code>
+for outer middleware to read, or by calling <code class="docutils literal notranslate"><span class="pre">Request.set_session</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Request.clear_session</span></code>. All of these now fail silently.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5164">https://github.com/litestar-org/litestar/pull/5164</a></span></p>
+</div>
+</dd>
 <dt>Require “reserved kwargs” to be declared with their type<a class="headerlink reference internal" href="#3.0.0-require &quot;reserved kwargs&quot; to be declared with their type" id="3.0.0-require &quot;reserved kwargs&quot; to be declared with their type">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Declaring the “reserved kwargs” <code class="docutils literal notranslate"><span class="pre">body</span></code>, <code class="docutils literal notranslate"><span class="pre">cookies</span></code>, <code class="docutils literal notranslate"><span class="pre">data</span></code>,
 <code class="docutils literal notranslate"><span class="pre">headers</span></code>, <code class="docutils literal notranslate"><span class="pre">query</span></code>, <code class="docutils literal notranslate"><span class="pre">request</span></code>, <code class="docutils literal notranslate"><span class="pre">scope</span></code> and <code class="docutils literal notranslate"><span class="pre">socket</span></code> without the type

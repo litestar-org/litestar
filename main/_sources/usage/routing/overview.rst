@@ -266,6 +266,12 @@ The handler function will receive all requests with an url that begins with ``/s
     the value of ``scope["path"]`` will equal ``"/"``. If we send a request to ``/some/sub-path/abc``, it will also be
     invoked,and ``scope["path"]`` will equal ``"/abc"``.
 
+The mounted application receives a copy of the ASGI ``scope``, so it cannot add, replace or remove top-level scope keys
+seen by the outer application - the path rewriting described above is performed by the router and is unaffected. The copy
+is shallow, so nested values such as ``scope["state"]`` are still shared. Pass ``copy_scope=False`` if the mounted
+application is meant to communicate with the outer application through the scope, for example by writing
+``scope["user"]`` for outer middleware to read.
+
 Mounting is especially useful when you need to combine components of other ASGI applications - for example, for third
 party libraries. The following example is identical in principle to the one above, but it uses
 `Starlette <https://www.starlette.io/>`_:
