@@ -552,6 +552,9 @@ class DTOBackend:
             field_definition=field_definition,
             inner_types=inner_types,
             has_nested=any(t.has_nested for t in inner_types),
+            nested_member_count=sum(
+                1 for inner_type in inner_types if isinstance(inner_type, SimpleType) and inner_type.nested_field_info
+            ),
         )
 
 
@@ -651,7 +654,8 @@ def _transfer_instance_data(
         attribute_accessor: 'getattr'-like function to access attributes on the data source
 
     Returns:
-        Data parsed into ``model_type``.
+        Data parsed into ``destination_type``. When that type is ``dict`` (DTOData
+        builtins), the unstructured mapping is returned directly.
     """
     unstructured_data = {}
 
@@ -684,7 +688,25 @@ def _transfer_instance_data(
             attribute_accessor=attribute_accessor,
         )
 
+    # If the destination type is a dict we can reuse the unstructured mapping.
+    if destination_type is dict:
+        return unstructured_data
+
     return destination_type(**unstructured_data)
+
+
+def _nested_destination_type(
+    *,
+    nested_as_dict: bool,
+    is_data_field: bool,
+    field_annotation: Any,
+    nested_model: Any,
+) -> Any:
+    if nested_as_dict:
+        return dict
+    if is_data_field:
+        return field_annotation
+    return nested_model
 
 
 def _transfer_type_data(
@@ -695,15 +717,13 @@ def _transfer_type_data(
     attribute_accessor: Callable[[object, str], Any],
 ) -> Any:
     if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
-        if nested_as_dict:
-            destination_type: Any = dict
-        elif is_data_field:
-            destination_type = transfer_type.field_definition.annotation
-        else:
-            destination_type = transfer_type.nested_field_info.model
-
         return _transfer_instance_data(
-            destination_type=destination_type,
+            destination_type=_nested_destination_type(
+                nested_as_dict=nested_as_dict,
+                is_data_field=is_data_field,
+                field_annotation=transfer_type.field_definition.annotation,
+                nested_model=transfer_type.nested_field_info.model,
+            ),
             source_instance=source_value,
             field_definitions=transfer_type.nested_field_info.field_definitions,
             is_data_field=is_data_field,
@@ -716,6 +736,7 @@ def _transfer_type_data(
             source_value=source_value,
             is_data_field=is_data_field,
             attribute_accessor=attribute_accessor,
+            nested_as_dict=nested_as_dict,
         )
 
     if isinstance(transfer_type, CollectionType):
@@ -724,7 +745,7 @@ def _transfer_type_data(
                 _transfer_type_data(
                     source_value=item,
                     transfer_type=transfer_type.inner_type,
-                    nested_as_dict=False,
+                    nested_as_dict=nested_as_dict,
                     is_data_field=is_data_field,
                     attribute_accessor=attribute_accessor,
                 )
@@ -741,7 +762,7 @@ def _transfer_type_data(
                     _transfer_type_data(
                         source_value=value,
                         transfer_type=transfer_type.value_type,
-                        nested_as_dict=False,
+                        nested_as_dict=nested_as_dict,
                         is_data_field=is_data_field,
                         attribute_accessor=attribute_accessor,
                     ),
@@ -759,19 +780,36 @@ def _transfer_nested_union_type_data(
     source_value: Any,
     is_data_field: bool,
     attribute_accessor: Callable[[object, str], Any],
+    nested_as_dict: bool,
 ) -> Any:
+    # DTOData keeps nested models as mappings until create_instance(). A mapping
+    # can be rebuilt into a model only when the union has a single nested member
+    # (e.g. Optional[Model] or Union[Model, str]), so the target type is unambiguous.
+    # Untagged unions of multiple nested models (e.g. Union[ModelA, ModelB]) are
+    # rejected by msgspec before this transfer runs.
+    allow_mapping_source = (
+        is_data_field
+        and not nested_as_dict
+        and transfer_type.nested_member_count == 1
+        and isinstance(source_value, Mapping)
+    )
+
     for inner_type in transfer_type.inner_types:
         if isinstance(inner_type, CompositeType):
             raise RuntimeError("Composite inner types not (yet) supported for nested unions.")
 
-        if inner_type.nested_field_info and isinstance(
-            source_value,
-            inner_type.nested_field_info.model if is_data_field else inner_type.field_definition.annotation,
-        ):
+        if not inner_type.nested_field_info:
+            continue
+
+        constraint = inner_type.nested_field_info.model if is_data_field else inner_type.field_definition.annotation
+        if isinstance(source_value, constraint) or allow_mapping_source:
             return _transfer_instance_data(
-                destination_type=inner_type.field_definition.annotation
-                if is_data_field
-                else inner_type.nested_field_info.model,
+                destination_type=_nested_destination_type(
+                    nested_as_dict=nested_as_dict,
+                    is_data_field=is_data_field,
+                    field_annotation=inner_type.field_definition.annotation,
+                    nested_model=inner_type.nested_field_info.model,
+                ),
                 source_instance=source_value,
                 field_definitions=inner_type.nested_field_info.field_definitions,
                 is_data_field=is_data_field,
