@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
-from functools import partial
 from typing import TYPE_CHECKING
 
 import msgspec.json
@@ -14,7 +13,7 @@ from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.handlers import WebsocketRouteHandler
 from litestar.plugins import InitPlugin
-from litestar.serialization import default_serializer
+from litestar.serialization import get_serializer
 
 from .subscriber import BacklogStrategy, EventCallback, Subscriber
 
@@ -93,9 +92,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         self._create_route_handlers = create_ws_route_handlers
         self._handler_root_path = ws_handler_base_path
         self._socket_send_mode: WebSocketMode = ws_send_mode
-        self._encode_json = msgspec.json.Encoder(
-            enc_hook=partial(default_serializer, type_encoders=type_encoders)
-        ).encode
+        self._encode_json = msgspec.json.Encoder(enc_hook=get_serializer(type_encoders, encoding="json")).encode
         self._handler_should_send_history = bool(ws_handler_send_history)
         self._history_limit = None if ws_handler_send_history < 0 else ws_handler_send_history
         self._max_backlog = subscriber_max_backlog

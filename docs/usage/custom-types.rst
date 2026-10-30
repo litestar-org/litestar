@@ -26,6 +26,27 @@ Here is an example:
    :language: python
    :caption: Tell Litestar how to encode and decode a custom type
 
+Encoding-specific type encoders
+-------------------------------
+
+When the result of an encoder is only valid for one encoding, for example pre-encoded bytes wrapped in
+:class:`msgspec.Raw`, use :class:`~litestar.serialization.TypeEncoder` to provide a dedicated callable per encoding.
+Encodings without a dedicated callable fall back to the ``default`` one.
+
+.. literalinclude:: /examples/encoding_decoding/encoding_specific_type_encoder.py
+   :language: python
+   :caption: Use a different encoder for JSON and MessagePack
+
+Litestar's own Pydantic integration uses this to let Pydantic serialize models straight to JSON, while still
+producing a regular ``dict`` for MessagePack responses.
+
+.. note::
+
+    If you pass a serializer to a ``msgspec`` encoder yourself, bind it to the target encoding with
+    ``get_serializer(type_encoders, encoding="json")``. :func:`~litestar.serialization.encode_json` and
+    :func:`~litestar.serialization.encode_msgpack` do this for you when given the result of
+    :func:`~litestar.serialization.get_serializer`. Binding to the wrong encoding is not detected.
+
 Custom Pydantic types
 ---------------------
 
