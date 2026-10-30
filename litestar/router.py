@@ -1,12 +1,30 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Any
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
+from litestar.connection import Request, WebSocket
+from litestar.datastructures import CacheControlHeader, ETag
+from litestar.dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.types.empty import Empty
+from litestar.openapi.spec import SecurityRequirement
+from litestar.response import Response
+from litestar.types import (
+    AfterRequestHookHandler,
+    AfterResponseHookHandler,
+    BeforeRequestHookHandler,
+    ControllerRouterHandler,
+    ExceptionHandlersMap,
+    Guard,
+    Middleware,
+    ParametersMap,
+    ResponseCookies,
+    TypeEncodersMap,
+)
+from litestar.types.composite_types import Dependencies, ResponseHeaders, TypeDecodersSequence
+from litestar.types.empty import Empty, EmptyType
 from litestar.utils import normalize_path
 from litestar.utils.signature import add_types_to_signature_namespace
 from litestar.utils.sync import ensure_async_callable
@@ -15,28 +33,7 @@ __all__ = ("Router",)
 
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
-
-    from litestar.connection import Request, WebSocket
-    from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.dto import AbstractDTO
-    from litestar.openapi.spec import SecurityRequirement
-    from litestar.response import Response
-    from litestar.types import (
-        AfterRequestHookHandler,
-        AfterResponseHookHandler,
-        BeforeRequestHookHandler,
-        ControllerRouterHandler,
-        ExceptionHandlersMap,
-        Guard,
-        Middleware,
-        ParametersMap,
-        ResponseCookies,
-        TypeEncodersMap,
-    )
     from litestar.types.callable_types import AsyncAfterRequestHookHandler, AsyncAfterResponseHookHandler
-    from litestar.types.composite_types import Dependencies, ResponseHeaders, TypeDecodersSequence
-    from litestar.types.empty import EmptyType
 
 
 class Router:

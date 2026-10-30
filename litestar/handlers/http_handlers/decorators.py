@@ -1,12 +1,17 @@
-from __future__ import annotations
+from collections.abc import Callable, Mapping, Sequence
+from typing import Any
 
-from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING, Any
-
+from litestar.background_tasks import BackgroundTask, BackgroundTasks
+from litestar.config.response_cache import CACHE_FOREVER
+from litestar.connection import Request
+from litestar.datastructures import CacheControlHeader, ETag
+from litestar.dto import AbstractDTO
 from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import HTTPException
 from litestar.handlers.http_handlers.base import HTTPRouteHandler
+from litestar.openapi.datastructures import ResponseSpec
 from litestar.openapi.spec import Operation, SecurityRequirement
+from litestar.response import Response
 from litestar.types import (
     AfterRequestHookHandler,
     AfterResponseHookHandler,
@@ -26,35 +31,6 @@ from litestar.types import (
     TypeDecodersSequence,
     TypeEncodersMap,
 )
-
-if TYPE_CHECKING:
-    from collections.abc import Callable, Mapping, Sequence
-    from typing import Any
-
-    from litestar.background_tasks import BackgroundTask, BackgroundTasks
-    from litestar.config.response_cache import CACHE_FOREVER
-    from litestar.connection import Request
-    from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.dto import AbstractDTO
-    from litestar.exceptions import HTTPException
-    from litestar.openapi.datastructures import ResponseSpec
-    from litestar.openapi.spec import SecurityRequirement
-    from litestar.response import Response
-    from litestar.types import (
-        AfterRequestHookHandler,
-        AfterResponseHookHandler,
-        BeforeRequestHookHandler,
-        CacheKeyBuilder,
-        Dependencies,
-        EmptyType,
-        ExceptionHandlersMap,
-        Guard,
-        Middleware,
-        ResponseCookies,
-        ResponseHeaders,
-        TypeEncodersMap,
-    )
-    from litestar.types.callable_types import AnyCallable, OperationIDCreator
 
 __all__ = ("delete", "get", "head", "patch", "post", "put", "route")
 

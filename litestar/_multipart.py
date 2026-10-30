@@ -1,10 +1,10 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any
+from collections.abc import AsyncGenerator
+from typing import Any
 
 from multipart import (  # type: ignore[import-untyped]
     MultipartSegment,
@@ -16,14 +16,10 @@ from multipart import (  # type: ignore[import-untyped]
 from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import ClientException
 from litestar.exceptions.http_exceptions import RequestEntityTooLarge
+from litestar.types import TypeDecodersSequence
 
 __all__ = ("parse_content_header", "parse_multipart_form")
 
-
-if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator
-
-    from litestar.types import TypeDecodersSequence
 
 _token = r"([\w!#$%&'*+\-.^_`|~]+)"  # noqa: S105
 _quoted = r'"([^"]*)"'

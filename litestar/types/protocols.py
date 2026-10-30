@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from collections.abc import Collection, Iterable
 from typing import Any, ClassVar, Protocol, TypeVar, runtime_checkable
 

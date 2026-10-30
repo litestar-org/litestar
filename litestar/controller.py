@@ -1,45 +1,38 @@
-from __future__ import annotations
-
 import types
 from collections import defaultdict
+from collections.abc import Mapping, Sequence
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
+from litestar.connection import Request, WebSocket
+from litestar.datastructures import CacheControlHeader, ETag
+from litestar.dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketRouteHandler
-from litestar.types.empty import Empty
+from litestar.openapi.spec import SecurityRequirement
+from litestar.response import Response
+from litestar.router import Router
+from litestar.types import (
+    AfterRequestHookHandler,
+    AfterResponseHookHandler,
+    BeforeRequestHookHandler,
+    Dependencies,
+    ExceptionHandlersMap,
+    Guard,
+    Middleware,
+    ParametersMap,
+    ResponseCookies,
+    TypeEncodersMap,
+)
+from litestar.types.composite_types import ResponseHeaders, TypeDecodersSequence
+from litestar.types.empty import Empty, EmptyType
 from litestar.utils import normalize_path
 from litestar.utils.signature import add_types_to_signature_namespace
 
 __all__ = ("Controller",)
-
-
-if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
-
-    from litestar.connection import Request, WebSocket
-    from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.dto import AbstractDTO
-    from litestar.openapi.spec import SecurityRequirement
-    from litestar.response import Response
-    from litestar.router import Router
-    from litestar.types import (
-        AfterRequestHookHandler,
-        AfterResponseHookHandler,
-        BeforeRequestHookHandler,
-        Dependencies,
-        ExceptionHandlersMap,
-        Guard,
-        Middleware,
-        ParametersMap,
-        ResponseCookies,
-        TypeEncodersMap,
-    )
-    from litestar.types.composite_types import ResponseHeaders, TypeDecodersSequence
-    from litestar.types.empty import EmptyType
 
 
 class Controller:
