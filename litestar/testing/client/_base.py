@@ -70,16 +70,16 @@ def _prepare_ws_connect_request(
     timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
     extensions: Mapping[str, Any] | None = None,
 ) -> httpx.Request:
-    default_headers: dict[str, str] = {}
-    default_headers.setdefault("connection", "upgrade")
-    default_headers.setdefault("sec-websocket-key", "testserver==")
-    default_headers.setdefault("sec-websocket-version", "13")
+    request_headers = httpx.Headers(headers)
+    request_headers["connection"] = "upgrade"
+    request_headers["sec-websocket-key"] = "testserver=="
+    request_headers["sec-websocket-version"] = "13"
     if subprotocols is not None:
-        default_headers.setdefault("sec-websocket-protocol", ", ".join(subprotocols))
+        request_headers["sec-websocket-protocol"] = ", ".join(subprotocols)
     return client.build_request(
         "GET",
         client.base_url.copy_with(scheme="ws").join(url),
-        headers={**dict(headers or {}), **default_headers},  # type: ignore[misc]
+        headers=request_headers,
         params=params,
         cookies=cookies,
         extensions=None if extensions is None else dict(extensions),

@@ -587,3 +587,31 @@ async def test_client_warns_not_initialized_async() -> None:
     with pytest.warns(LitestarWarning, match="AsyncTestClient not initialized"):
         client = create_async_test_client()
         await client.get("/")
+
+
+def test_client_sends_repeated_headers_separately() -> None:
+    @get("/")
+    def handler(request: Request) -> list[tuple[str, str]]:
+        return [(key.decode(), value.decode()) for key, value in request.scope["headers"]]
+
+    with create_test_client(handler) as client:
+        response = client.get("/", headers=[("host", "example.org"), ("x-trace", "1"), ("x-trace", "2")])
+
+    scope_headers = [(key, value) for key, value in response.json()]
+    assert scope_headers[0] == ("host", "example.org")
+    assert [value for key, value in scope_headers if key == "host"] == ["example.org"]
+    assert [value for key, value in scope_headers if key == "x-trace"] == ["1", "2"]
+
+
+def test_websocket_connect_sends_repeated_headers_separately() -> None:
+    @websocket("/")
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        await socket.send_json(socket.cookies)
+        await socket.close()
+
+    with (
+        create_test_client(handler) as client,
+        client.websocket_connect("/", headers=[("cookie", "a=1; dup=first"), ("cookie", "dup=second; b=2")]) as ws,
+    ):
+        assert ws.receive_json() == {"a": "1", "dup": "first", "b": "2"}

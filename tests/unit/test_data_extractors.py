@@ -112,6 +112,20 @@ async def test_response_data_extractor() -> None:
     assert extracted_data.get("cookies") == {"Path": "/", "SameSite": "lax", "auth": "", "regular": ""}
 
 
+async def test_response_data_extractor_cookies_of_the_same_key() -> None:
+    cookies = [Cookie(key="session", value="scoped", path="/admin"), Cookie(key="session", value="root", path="/")]
+    response = ASGIResponse(body=b"", cookies=cookies)
+    messages: list[Any] = []
+
+    async def send(message: "Any") -> None:
+        messages.append(message)
+
+    await response({}, empty_receive, send)  # type: ignore[arg-type]
+
+    extracted_data = ResponseDataExtractor()(messages)  # type: ignore[arg-type]
+    assert extracted_data.get("cookies") == {"Path": "/admin", "SameSite": "lax", "session": "scoped"}
+
+
 async def test_request_data_extractor_skip_keys() -> None:
     req = factory.get()
     extractor = ConnectionDataExtractor()
