@@ -29,6 +29,25 @@
         segment higher, or declare the sibling path as a further path of the mount, e.g.
         ``@asgi(["/admin", "/administrator"], is_mount=True)``.
 
+    .. change:: Default ``copy_scope`` to ``True`` for ASGI handlers
+        :type: feature
+        :breaking:
+        :pr: 5164
+
+        Every ``asgi`` handler, mounted or not, now receives a copy of the ASGI ``scope``,
+        so the wrapped application can no longer add, replace or remove top-level scope
+        keys seen by the outer application. The default was ``None``, which passed the
+        original scope through, warned at registration and warned again when the wrapped
+        application mutated the scope; both warnings are gone.
+
+        The copy is shallow, so nested values such as ``scope["state"]`` are still shared
+        with the outer scope.
+
+        Set ``copy_scope=False`` where the wrapped application is meant to communicate with
+        the outer application through the scope, for example by writing ``scope["user"]``
+        for outer middleware to read, or by calling ``Request.set_session`` or
+        ``Request.clear_session``. All of these now fail silently.
+
     .. change:: Declare ``socket`` in the original signature of a ``websocket_stream`` handler
         :type: bugfix
         :pr: 5161
