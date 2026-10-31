@@ -191,6 +191,7 @@ test = [
   "pytest-xdist",
   "time-machine",
   "zstandard",
+  "trio",  # required to run against trio anyio backend
 ]
 
 [build-system]

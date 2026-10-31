@@ -6,9 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix ``ModuleNotFoundError`` when Pydantic or attrs are not installed
+        :type: bugfix
+        :issue: 5142
+
+        Fix a bug that would raise :exc:`ModuleNotFoundError` when attrs or Pydantic
+        were not installed.
+
     .. change:: ServerSideSessionBackend: Prevent storing empty sessions and session cookies for every request
         :type: bugfix
         :issue: 5182
+        :pr: 5172
 
         Fix a bug where ``ServerSideSessionBackend`` would store an empty session under
         a new session ID and set a session cookie for every request, even when that
