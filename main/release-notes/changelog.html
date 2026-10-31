@@ -1191,6 +1191,16 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>ServerSideSessionBackend: Prevent storing empty sessions and session cookies for every request<a class="headerlink reference internal" href="#3.0.0-serversidesessionbackend: prevent storing empty sessions and session cookies for every request" id="3.0.0-serversidesessionbackend: prevent storing empty sessions and session cookies for every request">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where <code class="docutils literal notranslate"><span class="pre">ServerSideSessionBackend</span></code> would store an empty session under
+a new session ID and set a session cookie for every request, even when that
+request did not have a session cookie attached.</p>
+<p>The fixed backend will now only store a session if the client has a session
+cookie set. Empty sessions for a request with a session cookie will now also
+be deleted reliably.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/5182">https://github.com/litestar-org/litestar/issues/5182</a></span></p>
+</div>
+</dd>
 <dt>Apply <code class="docutils literal notranslate"><span class="pre">allow_symlinks_outside_directory=False</span></code> to every part of a static file’s path<a class="headerlink reference internal" href="#3.0.0-apply" id="3.0.0-apply">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that would resolve symlinks only for the directory path, not the file
 path, when <code class="docutils literal notranslate"><span class="pre">allow_symlinks_outside_directory=False</span></code>. The whole path is now
