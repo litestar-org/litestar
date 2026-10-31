@@ -325,6 +325,101 @@ def test_allow_symlinks_outside_directory_internal_link(
         assert client.get("/linked.txt").status_code == 200
 
 
+@pytest.mark.parametrize("file_system", [BaseLocalFileSystem(), LocalFileSystem()])
+@pytest.mark.parametrize("allow_symlinks_outside_directory", [False, None])
+def test_file_in_symlinked_directory_outside_directory_returns_404(
+    tmp_path: Path,
+    allow_symlinks_outside_directory: bool | None,
+    tmp_path_factory: pytest.TempPathFactory,
+    file_system: BaseFileSystem,
+) -> None:
+    static_file_dir = tmp_path / "static"
+    static_file_dir.mkdir()
+
+    source_dir = tmp_path_factory.mktemp("test")
+    source_dir.joinpath("test.txt").write_text("hello")
+
+    static_file_dir.joinpath("linked").symlink_to(source_dir, target_is_directory=True)
+
+    if allow_symlinks_outside_directory is not None:
+        router = create_static_files_router(
+            path="/",
+            directories=[static_file_dir],
+            file_system=file_system,
+            allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+        )
+    else:
+        router = create_static_files_router(
+            path="/",
+            directories=[static_file_dir],
+            file_system=file_system,
+        )
+
+    with create_test_client(router) as client:
+        assert client.get("/linked/test.txt").status_code == 404
+
+
+@pytest.mark.parametrize("file_system", [BaseLocalFileSystem(), LocalFileSystem()])
+def test_file_in_symlinked_directory_outside_directory_served_if_allowed(
+    tmp_path: Path,
+    tmp_path_factory: pytest.TempPathFactory,
+    file_system: BaseFileSystem,
+) -> None:
+    static_file_dir = tmp_path / "static"
+    static_file_dir.mkdir()
+
+    source_dir = tmp_path_factory.mktemp("test")
+    source_dir.joinpath("test.txt").write_text("hello")
+
+    static_file_dir.joinpath("linked").symlink_to(source_dir, target_is_directory=True)
+
+    router = create_static_files_router(
+        path="/",
+        directories=[static_file_dir],
+        file_system=file_system,
+        allow_symlinks_outside_directory=True,
+    )
+
+    with create_test_client(router) as client:
+        res = client.get("/linked/test.txt")
+        assert res.status_code == 200
+        assert res.text == "hello"
+
+
+@pytest.mark.parametrize("file_system", [BaseLocalFileSystem(), LocalFileSystem()])
+@pytest.mark.parametrize("allow_symlinks_outside_directory", [False, None])
+def test_symlinked_directory_served(
+    tmp_path: Path,
+    allow_symlinks_outside_directory: bool | None,
+    file_system: BaseFileSystem,
+) -> None:
+    source_dir = tmp_path / "source"
+    source_dir.mkdir()
+    source_dir.joinpath("test.txt").write_text("hello")
+
+    static_file_dir = tmp_path / "static"
+    static_file_dir.symlink_to(source_dir, target_is_directory=True)
+
+    if allow_symlinks_outside_directory is not None:
+        router = create_static_files_router(
+            path="/",
+            directories=[static_file_dir],
+            file_system=file_system,
+            allow_symlinks_outside_directory=allow_symlinks_outside_directory,
+        )
+    else:
+        router = create_static_files_router(
+            path="/",
+            directories=[static_file_dir],
+            file_system=file_system,
+        )
+
+    with create_test_client(router) as client:
+        res = client.get("/test.txt")
+        assert res.status_code == 200
+        assert res.text == "hello"
+
+
 @pytest.mark.parametrize("allow_symlinks_outside_directory", [False, None])
 def test_symlinked_file_without_symlink_resolution_support_on_file_system_raises(
     tmp_path: Path,
