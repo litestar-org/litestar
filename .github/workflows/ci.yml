@@ -260,7 +260,7 @@ jobs:
       - name: Test
         run: |
           mv tests/examples/test_hello_world.py test_hello_world.py
-          uv run pytest test_hello_world.py
+          uv run --isolated --group=test --no-default-groups pytest test.py
 
   upload-test-coverage:
     runs-on: ubuntu-latest
