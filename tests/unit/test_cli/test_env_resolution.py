@@ -96,6 +96,36 @@ def test_env_from_env_autodiscover_from_files_ignore_paths(
         LitestarEnv.from_env(None)
 
 
+def test_env_from_env_autodiscover_skips_unresolvable_type_hints(
+    create_app_file: CreateAppFileFixture,
+) -> None:
+    """Modules picked up during autodiscovery may define callables whose annotations
+    reference names that only exist under ``TYPE_CHECKING`` in their *defining* module
+    (e.g. ``litestar.connection.Request``, whose ``scope`` attribute is annotated with
+    ``Scope``, only imported for type checking in ``litestar/connection/base.py``).
+
+    Resolving these while probing the module for an app factory used to raise a
+    ``NameError`` and abort autodiscovery entirely, even though the offending callable
+    has nothing to do with the actual factory. See https://github.com/litestar-org/litestar/issues/3895
+    """
+    tmp_file_path = create_app_file(
+        file="app.py",
+        content="""
+from litestar import Litestar, Request
+
+
+def any_name() -> Litestar:
+    return Litestar([])
+""",
+    )
+    env = LitestarEnv.from_env(None)
+
+    dotted_path = _path_to_dotted_path(tmp_file_path.relative_to(Path.cwd()))
+
+    assert isinstance(env.app, Litestar)
+    assert env.app_path == f"{dotted_path}:any_name"
+
+
 @pytest.mark.parametrize("use_file_in_app_path", [True, False])
 def test_env_using_app_dir(
     app_file_content: str, app_file_app_name: str, create_app_file: CreateAppFileFixture, use_file_in_app_path: bool
