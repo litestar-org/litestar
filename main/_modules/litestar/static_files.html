@@ -768,64 +768,56 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="262">        <span class="k">try</span><span class="p">:</span>
 </span><span data-line="263">            <span class="n">joined_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
 </span><span data-line="264">            <span class="n">file_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fs</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">joined_path</span><span class="p">)</span>
-</span><span data-line="265">            <span class="k">if</span> <span class="ow">not</span> <span class="n">file_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_symlink&quot;</span><span class="p">):</span>
-</span><span data-line="266">                <span class="c1"># not a symlink, just normalize the path</span>
-</span><span data-line="267">                <span class="n">normalized_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">joined_path</span><span class="p">)</span>
-</span><span data-line="268">            <span class="k">elif</span> <span class="n">allow_symlinks_outside_directory</span><span class="p">:</span>
-</span><span data-line="269">                <span class="c1"># we want to read &#39;through&#39; a symlink. in both</span>
-</span><span data-line="270">                <span class="c1"># cases we can just get the normpath.</span>
-</span><span data-line="271">                <span class="n">normalized_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">joined_path</span><span class="p">)</span>
-</span><span data-line="272">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="273">                <span class="c1"># file *is* a symlink, *and* we do not want to read &#39;through&#39; it, so ask</span>
-</span><span data-line="274">                <span class="c1"># the fs to resolve potential symlinks and return the real path to the</span>
-</span><span data-line="275">                <span class="c1"># file. this means that if our path is &#39;/path/to/file&#39; and a symlink</span>
-</span><span data-line="276">                <span class="c1"># pointing to &#39;/some/other/location&#39;, the latter part will be used to</span>
-</span><span data-line="277">                <span class="c1"># check if we are allowed to serve this file. in this example, if the</span>
-</span><span data-line="278">                <span class="c1"># configured base directory is &#39;/path/to&#39;, we would not serve the file</span>
-</span><span data-line="279">                <span class="c1"># located at &#39;/path/to/file&#39;, since it links to &#39;/some/other/location&#39;,</span>
-</span><span data-line="280">                <span class="c1"># which is *not* a subpath of &#39;/path/to&#39;</span>
-</span><span data-line="281">                <span class="n">resolver</span> <span class="o">=</span> <span class="n">LinkableFileSystem</span><span class="o">.</span><span class="n">get_symlink_resolver</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
-</span><span data-line="282">                <span class="k">if</span> <span class="n">resolver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="283">                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-</span><span data-line="284">                        <span class="sa">f</span><span class="s2">&quot;path </span><span class="si">{</span><span class="n">joined_path</span><span class="si">}</span><span class="s2"> contains a symlink, but the file system &quot;</span>
-</span><span data-line="285">                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fs</span><span class="si">}</span><span class="s2"> does not support resolving symlinks.&quot;</span>
-</span><span data-line="286">                    <span class="p">)</span>
-</span><span data-line="287">
-</span><span data-line="288">                <span class="n">normalized_file_path</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolver</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">joined_path</span><span class="p">)</span>
-</span><span data-line="289">
-</span><span data-line="290">            <span class="n">directory_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
-</span><span data-line="291">            <span class="k">if</span> <span class="p">(</span>
-</span><span data-line="292">                <span class="n">file_info</span>
-</span><span data-line="293">                <span class="ow">and</span> <span class="n">commonpath</span><span class="p">([</span><span class="n">directory_path</span><span class="p">,</span> <span class="n">file_info</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">joined_path</span><span class="p">])</span> <span class="o">==</span> <span class="n">directory_path</span>
-</span><span data-line="294">                <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonpath</span><span class="p">([</span><span class="n">directory</span><span class="p">,</span> <span class="n">normalized_file_path</span><span class="p">])</span> <span class="o">==</span> <span class="n">directory_path</span>
-</span><span data-line="295">            <span class="p">):</span>
-</span><span data-line="296">                <span class="k">return</span> <span class="n">joined_path</span><span class="p">,</span> <span class="n">file_info</span>
-</span><span data-line="297">        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
-</span><span data-line="298">            <span class="k">continue</span>
-</span><span data-line="299">    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+</span><span data-line="265">            <span class="n">directory_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+</span><span data-line="266">            <span class="n">resolver</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">allow_symlinks_outside_directory</span> <span class="k">else</span> <span class="n">LinkableFileSystem</span><span class="o">.</span><span class="n">get_symlink_resolver</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+</span><span data-line="267">            <span class="k">if</span> <span class="n">resolver</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="268">                <span class="c1"># compare real paths. a real path below &#39;directory&#39; means &#39;directory&#39; is</span>
+</span><span data-line="269">                <span class="c1"># its own real path, so &#39;directory&#39; is only resolved if that check fails</span>
+</span><span data-line="270">                <span class="n">normalized_file_path</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolver</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">joined_path</span><span class="p">)</span>
+</span><span data-line="271">                <span class="n">normalized_directory_path</span> <span class="o">=</span> <span class="n">directory_path</span>
+</span><span data-line="272">                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonpath</span><span class="p">([</span><span class="n">directory_path</span><span class="p">,</span> <span class="n">normalized_file_path</span><span class="p">])</span> <span class="o">!=</span> <span class="n">directory_path</span><span class="p">:</span>
+</span><span data-line="273">                    <span class="n">normalized_directory_path</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolver</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
+</span><span data-line="274">            <span class="k">elif</span> <span class="n">file_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_symlink&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">allow_symlinks_outside_directory</span><span class="p">:</span>
+</span><span data-line="275">                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+</span><span data-line="276">                    <span class="sa">f</span><span class="s2">&quot;path </span><span class="si">{</span><span class="n">joined_path</span><span class="si">}</span><span class="s2"> contains a symlink, but the file system &quot;</span>
+</span><span data-line="277">                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fs</span><span class="si">}</span><span class="s2"> does not support resolving symlinks.&quot;</span>
+</span><span data-line="278">                <span class="p">)</span>
+</span><span data-line="279">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="280">                <span class="n">normalized_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">joined_path</span><span class="p">)</span>
+</span><span data-line="281">                <span class="n">normalized_directory_path</span> <span class="o">=</span> <span class="n">directory_path</span>
+</span><span data-line="282">
+</span><span data-line="283">            <span class="k">if</span> <span class="p">(</span>
+</span><span data-line="284">                <span class="n">file_info</span>
+</span><span data-line="285">                <span class="ow">and</span> <span class="n">commonpath</span><span class="p">([</span><span class="n">directory_path</span><span class="p">,</span> <span class="n">file_info</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">joined_path</span><span class="p">])</span> <span class="o">==</span> <span class="n">directory_path</span>
+</span><span data-line="286">                <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonpath</span><span class="p">([</span><span class="n">normalized_directory_path</span><span class="p">,</span> <span class="n">normalized_file_path</span><span class="p">])</span> <span class="o">==</span> <span class="n">normalized_directory_path</span>
+</span><span data-line="287">            <span class="p">):</span>
+</span><span data-line="288">                <span class="k">return</span> <span class="n">joined_path</span><span class="p">,</span> <span class="n">file_info</span>
+</span><span data-line="289">        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+</span><span data-line="290">            <span class="k">continue</span>
+</span><span data-line="291">    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+</span><span data-line="292">
+</span><span data-line="293">
+</span><span data-line="294"><span class="k">def</span><span class="w"> </span><span class="nf">_validate_config</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">directories</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PathType</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="295">    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+</span><span data-line="296">        <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;path must be a non-zero length string&quot;</span><span class="p">)</span>
+</span><span data-line="297">
+</span><span data-line="298">    <span class="k">if</span> <span class="ow">not</span> <span class="n">directories</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">directories</span><span class="p">):</span>
+</span><span data-line="299">        <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;directories must include at least one path&quot;</span><span class="p">)</span>
 </span><span data-line="300">
-</span><span data-line="301">
-</span><span data-line="302"><span class="k">def</span><span class="w"> </span><span class="nf">_validate_config</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">directories</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PathType</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="303">    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
-</span><span data-line="304">        <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;path must be a non-zero length string&quot;</span><span class="p">)</span>
-</span><span data-line="305">
-</span><span data-line="306">    <span class="k">if</span> <span class="ow">not</span> <span class="n">directories</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">directories</span><span class="p">):</span>
-</span><span data-line="307">        <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;directories must include at least one path&quot;</span><span class="p">)</span>
+</span><span data-line="301">    <span class="k">if</span> <span class="s2">&quot;{&quot;</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+</span><span data-line="302">        <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;path parameters are not supported for static files&quot;</span><span class="p">)</span>
+</span><span data-line="303">
+</span><span data-line="304">
+</span><span data-line="305"><span class="k">def</span><span class="w"> </span><span class="nf">_get_file_system</span><span class="p">(</span><span class="n">fs</span><span class="p">:</span> <span class="n">BaseFileSystem</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseFileSystem</span><span class="p">:</span>
+</span><span data-line="306">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">BaseFileSystem</span><span class="p">):</span>
+</span><span data-line="307">        <span class="k">return</span> <span class="n">fs</span>
 </span><span data-line="308">
-</span><span data-line="309">    <span class="k">if</span> <span class="s2">&quot;{&quot;</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
-</span><span data-line="310">        <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;path parameters are not supported for static files&quot;</span><span class="p">)</span>
-</span><span data-line="311">
-</span><span data-line="312">
-</span><span data-line="313"><span class="k">def</span><span class="w"> </span><span class="nf">_get_file_system</span><span class="p">(</span><span class="n">fs</span><span class="p">:</span> <span class="n">BaseFileSystem</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseFileSystem</span><span class="p">:</span>
-</span><span data-line="314">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">BaseFileSystem</span><span class="p">):</span>
-</span><span data-line="315">        <span class="k">return</span> <span class="n">fs</span>
-</span><span data-line="316">
-</span><span data-line="317">    <span class="n">registry</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">FileSystemRegistry</span><span class="p">)</span>
-</span><span data-line="318">
-</span><span data-line="319">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span data-line="320">        <span class="k">return</span> <span class="n">registry</span><span class="p">[</span><span class="n">fs</span><span class="p">]</span>
-</span><span data-line="321">
-</span><span data-line="322">    <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">default</span>
+</span><span data-line="309">    <span class="n">registry</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">FileSystemRegistry</span><span class="p">)</span>
+</span><span data-line="310">
+</span><span data-line="311">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span data-line="312">        <span class="k">return</span> <span class="n">registry</span><span class="p">[</span><span class="n">fs</span><span class="p">]</span>
+</span><span data-line="313">
+</span><span data-line="314">    <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">default</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

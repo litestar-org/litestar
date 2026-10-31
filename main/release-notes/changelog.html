@@ -1191,6 +1191,13 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Apply <code class="docutils literal notranslate"><span class="pre">allow_symlinks_outside_directory=False</span></code> to every part of a static file’s path<a class="headerlink reference internal" href="#3.0.0-apply" id="3.0.0-apply">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would resolve symlinks only for the directory path, not the file
+path, when <code class="docutils literal notranslate"><span class="pre">allow_symlinks_outside_directory=False</span></code>. The whole path is now
+always resolved.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5181">https://github.com/litestar-org/litestar/pull/5181</a></span></p>
+</div>
+</dd>
 <dt>Match mounted ASGI apps on path segments<a class="headerlink reference internal" href="#3.0.0-match mounted asgi apps on path segments" id="3.0.0-match mounted asgi apps on path segments">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>A mount matched any path merely <em>starting with</em> its path string, so a mount on
 <code class="docutils literal notranslate"><span class="pre">/admin</span></code> served <code class="docutils literal notranslate"><span class="pre">/administrator</span></code>, handing the mounted app <code class="docutils literal notranslate"><span class="pre">istrator/</span></code> as its
