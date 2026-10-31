@@ -1022,7 +1022,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="511">
 </span><span data-line="512">        <span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MsgspecDIPlugin</span><span class="p">())</span>
 </span><span data-line="513">
-</span><span data-line="514">        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">MissingDependencyException</span><span class="p">):</span>
+</span><span data-line="514">        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">MissingDependencyException</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">):</span>
 </span><span data-line="515">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 </span><span data-line="516">                <span class="n">PydanticDIPlugin</span><span class="p">,</span>
 </span><span data-line="517">                <span class="n">PydanticInitPlugin</span><span class="p">,</span>
@@ -1042,7 +1042,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="531">                <span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PydanticInitPlugin</span><span class="p">())</span>
 </span><span data-line="532">            <span class="k">if</span> <span class="ow">not</span> <span class="n">pydantic_plugin_found</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pydantic_serialization_plugin_found</span><span class="p">:</span>
 </span><span data-line="533">                <span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PydanticDIPlugin</span><span class="p">())</span>
-</span><span data-line="534">        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">MissingDependencyException</span><span class="p">):</span>
+</span><span data-line="534">        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">MissingDependencyException</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">):</span>
 </span><span data-line="535">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.attrs</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttrsSchemaPlugin</span>
 </span><span data-line="536">
 </span><span data-line="537">            <span class="n">pre_configured</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">AttrsSchemaPlugin</span><span class="p">)</span> <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">plugins</span><span class="p">)</span>
