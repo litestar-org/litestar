@@ -565,10 +565,10 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="58"><span class="sd">            opt: A string key mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
 </span><span data-line="59"><span class="sd">                wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
 </span><span data-line="60"><span class="sd">                :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
-</span><span data-line="61"><span class="sd">            is_mount: A boolean dictating whether the handler&#39;s paths should be regarded as mount paths. Mount path</span>
-</span><span data-line="62"><span class="sd">                accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path</span>
-</span><span data-line="63"><span class="sd">                ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.</span>
-</span><span data-line="64"><span class="sd">                ``/some-path/sub-path/`` etc.</span>
+</span><span data-line="61"><span class="sd">            is_mount: A boolean dictating whether the handler&#39;s paths should be regarded as mount paths. A mount path</span>
+</span><span data-line="62"><span class="sd">                accepts its own path and any sub path under it. For example, a mount with the path ``/some-path/``</span>
+</span><span data-line="63"><span class="sd">                will accept requests for ``/some-path/`` and any sub path under this, e.g. ``/some-path/sub-path/``</span>
+</span><span data-line="64"><span class="sd">                etc., but not ``/some-path-other/``.</span>
 </span><span data-line="65"><span class="sd">            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.</span>
 </span><span data-line="66"><span class="sd">            type_encoders: A mapping of types to callables that transform them into types supported for serialization.</span>
 </span><span data-line="67"><span class="sd">            copy_scope: Copy the ASGI &#39;scope&#39; before calling the wrapped ASGI application. The copy is shallow, so</span>
@@ -663,10 +663,10 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="149"><span class="sd">            :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
 </span><span data-line="150"><span class="sd">        signature_namespace: A mapping of names to types for use in forward reference resolution during signature</span>
 </span><span data-line="151"><span class="sd">            modelling.</span>
-</span><span data-line="152"><span class="sd">        is_mount: A boolean dictating whether the handler&#39;s paths should be regarded as mount paths. Mount path</span>
-</span><span data-line="153"><span class="sd">            accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path</span>
-</span><span data-line="154"><span class="sd">            ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.</span>
-</span><span data-line="155"><span class="sd">            ``/some-path/sub-path/`` etc.</span>
+</span><span data-line="152"><span class="sd">        is_mount: A boolean dictating whether the handler&#39;s paths should be regarded as mount paths. A mount path</span>
+</span><span data-line="153"><span class="sd">            accepts its own path and any sub path under it. For example, a mount with the path ``/some-path/`` will</span>
+</span><span data-line="154"><span class="sd">            accept requests for ``/some-path/`` and any sub path under this, e.g. ``/some-path/sub-path/`` etc., but</span>
+</span><span data-line="155"><span class="sd">            not ``/some-path-other/``.</span>
 </span><span data-line="156"><span class="sd">        copy_scope: Copy the ASGI &#39;scope&#39; before calling the wrapped ASGI application. The copy is shallow, so</span>
 </span><span data-line="157"><span class="sd">            nested values such as &#39;scope[&quot;state&quot;]&#39; remain shared. Set to &#39;False&#39; if the wrapped application is</span>
 </span><span data-line="158"><span class="sd">            meant to communicate with the outer application through the scope</span>
