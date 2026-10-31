@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from warnings import warn
 
 import anyio.from_thread
-from httpx import USE_CLIENT_DEFAULT, Client
+from httpx2 import USE_CLIENT_DEFAULT, Client
 
 from litestar.testing.client._base import (
     _get_session_data,
@@ -23,8 +23,8 @@ if TYPE_CHECKING:
     from types import TracebackType
     from typing import Self
 
-    from httpx._client import UseClientDefault
-    from httpx._types import (
+    from httpx2._client import UseClientDefault
+    from httpx2._types import (
         AuthTypes,
         CookieTypes,
         HeaderTypes,

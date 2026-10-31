@@ -12,8 +12,8 @@ from litestar.utils.scope.state import ScopeState
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
-    from httpx._client import UseClientDefault
-    from httpx._types import (
+    from httpx2._client import UseClientDefault
+    from httpx2._types import (
         CookieTypes,
         HeaderTypes,
         QueryParamTypes,
@@ -23,8 +23,8 @@ if TYPE_CHECKING:
     from litestar.testing import AsyncTestClient, TestClient
 
 
-import httpx
-from httpx._client import USE_CLIENT_DEFAULT, UseClientDefault
+import httpx2
+from httpx2._client import USE_CLIENT_DEFAULT, UseClientDefault
 
 
 def fake_http_send_message(headers: MutableScopeHeaders) -> HTTPResponseStartEvent:
@@ -61,7 +61,7 @@ def fake_asgi_connection(app: ASGIApp, cookies: dict[str, str]) -> ASGIConnectio
 
 
 def _prepare_ws_connect_request(
-    client: httpx.Client | httpx.AsyncClient,
+    client: httpx2.Client | httpx2.AsyncClient,
     url: str,
     subprotocols: Sequence[str] | None = None,
     params: QueryParamTypes | None = None,
@@ -69,7 +69,7 @@ def _prepare_ws_connect_request(
     cookies: CookieTypes | None = None,
     timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
     extensions: Mapping[str, Any] | None = None,
-) -> httpx.Request:
+) -> httpx2.Request:
     default_headers: dict[str, str] = {}
     default_headers.setdefault("connection", "upgrade")
     default_headers.setdefault("sec-websocket-key", "testserver==")
@@ -102,9 +102,9 @@ async def _set_session_data(client: TestClient | AsyncTestClient, data: dict[str
     await client._session_backend.store_in_message(
         scope_session=data, message=fake_http_send_message(mutable_headers), connection=connection
     )
-    response = httpx.Response(200, request=httpx.Request("GET", client.base_url), headers=mutable_headers.headers)
+    response = httpx2.Response(200, request=httpx2.Request("GET", client.base_url), headers=mutable_headers.headers)
 
-    cookies = httpx.Cookies(CookieJar())
+    cookies = httpx2.Cookies(CookieJar())
     cookies.extract_cookies(response)
     client.cookies.update(cookies)
 

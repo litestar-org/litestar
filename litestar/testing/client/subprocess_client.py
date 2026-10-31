@@ -5,7 +5,7 @@ import time
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager, contextmanager
 
-import httpx
+import httpx2
 
 
 class StartupError(RuntimeError):
@@ -53,10 +53,10 @@ def run_app(
 
         for _ in range(retry_count):
             try:
-                httpx.get(url, timeout=0.1)
+                httpx2.get(url, timeout=0.1)
                 application_started = True
                 break
-            except httpx.TransportError:
+            except httpx2.TransportError:
                 time.sleep(retry_timeout)
 
         if not application_started:
@@ -70,8 +70,8 @@ def run_app(
 @asynccontextmanager
 async def subprocess_async_client(
     workdir: pathlib.Path, app: str, capture_output: bool = True
-) -> AsyncIterator[httpx.AsyncClient]:
-    """Provides an async httpx client for a litestar app launched in a subprocess.
+) -> AsyncIterator[httpx2.AsyncClient]:
+    """Provides an async httpx2 client for a litestar app launched in a subprocess.
 
     Args:
         workdir: Path to the directory in which the app module resides.
@@ -79,18 +79,18 @@ async def subprocess_async_client(
         capture_output: Whether to capture output from the subprocess in the main process stdout/stderr
     """
     with run_app(workdir=workdir, app=app, capture_output=capture_output) as url:
-        async with httpx.AsyncClient(base_url=url) as client:
+        async with httpx2.AsyncClient(base_url=url) as client:
             yield client
 
 
 @contextmanager
-def subprocess_sync_client(workdir: pathlib.Path, app: str, capture_output: bool = True) -> Iterator[httpx.Client]:
-    """Provides a sync httpx client for a litestar app launched in a subprocess.
+def subprocess_sync_client(workdir: pathlib.Path, app: str, capture_output: bool = True) -> Iterator[httpx2.Client]:
+    """Provides a sync httpx2 client for a litestar app launched in a subprocess.
 
     Args:
         workdir: Path to the directory in which the app module resides.
         app: Uvicorn app string that can be resolved in the provided working directory, e.g.: "app:app"
         capture_output: Whether to capture output from the subprocess in the main process stdout/stderr
     """
-    with run_app(workdir=workdir, app=app, capture_output=capture_output) as url, httpx.Client(base_url=url) as client:
+    with run_app(workdir=workdir, app=app, capture_output=capture_output) as url, httpx2.Client(base_url=url) as client:
         yield client
