@@ -6,6 +6,14 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Apply ``allow_symlinks_outside_directory=False`` to every part of a static file's path
+        :type: bugfix
+        :pr: 5181
+
+        Fix a bug that would resolve symlinks only for the directory path, not the file
+        path, when ``allow_symlinks_outside_directory=False``. The whole path is now
+        always resolved.
+
     .. change:: Match mounted ASGI apps on path segments
         :type: bugfix
         :pr: 5178
