@@ -6,6 +6,18 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: ServerSideSessionBackend: Prevent storing empty sessions and session cookies for every request
+        :type: bugfix
+        :issue: 5182
+
+        Fix a bug where ``ServerSideSessionBackend`` would store an empty session under
+        a new session ID and set a session cookie for every request, even when that
+        request did not have a session cookie attached.
+
+        The fixed backend will now only store a session if the client has a session
+        cookie set. Empty sessions for a request with a session cookie will now also
+        be deleted reliably.
+
     .. change:: Apply ``allow_symlinks_outside_directory=False`` to every part of a static file's path
         :type: bugfix
         :pr: 5181
