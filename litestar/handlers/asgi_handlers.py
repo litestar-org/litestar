@@ -58,10 +58,10 @@ class ASGIRouteHandler(BaseRouteHandler):
             opt: A string key mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
-            is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path
-                accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
-                ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.
-                ``/some-path/sub-path/`` etc.
+            is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. A mount path
+                accepts its own path and any sub path under it. For example, a mount with the path ``/some-path/``
+                will accept requests for ``/some-path/`` and any sub path under this, e.g. ``/some-path/sub-path/``
+                etc., but not ``/some-path-other/``.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             copy_scope: Copy the ASGI 'scope' before calling the wrapped ASGI application. The copy is shallow, so
@@ -149,10 +149,10 @@ def asgi(
             :class:`ASGI Scope <.types.Scope>`.
         signature_namespace: A mapping of names to types for use in forward reference resolution during signature
             modelling.
-        is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path
-            accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
-            ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.
-            ``/some-path/sub-path/`` etc.
+        is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. A mount path
+            accepts its own path and any sub path under it. For example, a mount with the path ``/some-path/`` will
+            accept requests for ``/some-path/`` and any sub path under this, e.g. ``/some-path/sub-path/`` etc., but
+            not ``/some-path-other/``.
         copy_scope: Copy the ASGI 'scope' before calling the wrapped ASGI application. The copy is shallow, so
             nested values such as 'scope["state"]' remain shared. Set to 'False' if the wrapped application is
             meant to communicate with the outer application through the scope

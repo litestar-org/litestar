@@ -6,6 +6,29 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Match mounted ASGI apps on path segments
+        :type: bugfix
+        :pr: 5178
+        :issue: 5173
+        :breaking:
+
+        A mount matched any path merely *starting with* its path string, so a mount on
+        ``/admin`` served ``/administrator``, handing the mounted app ``istrator/`` as its
+        path. A mount now matches only its own path and sub-paths of it, ``/admin`` and
+        ``/admin/...``, and ``/`` still mounts everything that no more specific mount
+        claims.
+
+        Of several mounts matching a path, the longest one now receives the request, so a
+        mount nested under another, e.g. ``/admin/inner`` under ``/admin``, is reachable.
+        This also fixes mounts sharing a prefix shadowing one another, and mount paths
+        containing regex metacharacters, which raised ``500 - Internal Server Error`` or
+        failed application startup.
+
+        An application relying on a mount absorbing sibling paths that merely share its
+        prefix now receives ``404 - Not Found`` for them. Mount the application one path
+        segment higher, or declare the sibling path as a further path of the mount, e.g.
+        ``@asgi(["/admin", "/administrator"], is_mount=True)``.
+
     .. change:: Default ``copy_scope`` to ``True`` for ASGI handlers
         :type: feature
         :breaking:
