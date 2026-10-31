@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Callable
 
 import brotli
 import pytest
+from fsspec.implementations.memory import MemoryFileSystem
 from typing_extensions import TypeAlias
 
 from litestar import MediaType, Router, get
@@ -296,6 +297,161 @@ def test_resolve_symlinks(tmp_path: Path, resolve: bool) -> None:
             assert client.get("/test.txt").status_code == 404
         else:
             assert client.get("/test.txt").status_code == 200
+
+
+@pytest.mark.parametrize("resolve", [True, None])
+def test_resolve_symlinks_file_in_symlinked_directory_outside_directory_served(
+    tmp_path: Path,
+    tmp_path_factory: pytest.TempPathFactory,
+    file_system: FileSystemProtocol,
+    resolve: bool | None,
+) -> None:
+    static_dir = tmp_path / "static"
+    static_dir.mkdir()
+    source_dir = tmp_path_factory.mktemp("source")
+    source_dir.joinpath("test.txt").write_text("hello")
+    static_dir.joinpath("linked").symlink_to(source_dir, target_is_directory=True)
+
+    if resolve is None:
+        router = create_static_files_router(path="/", directories=[static_dir], file_system=file_system)
+    else:
+        router = create_static_files_router(
+            path="/", directories=[static_dir], file_system=file_system, resolve_symlinks=resolve
+        )
+
+    with create_test_client(router) as client:
+        res = client.get("/linked/test.txt")
+        assert res.status_code == 200
+        assert res.text == "hello"
+
+
+def test_resolve_symlinks_false_file_in_symlinked_directory_outside_directory_returns_404(
+    tmp_path: Path,
+    tmp_path_factory: pytest.TempPathFactory,
+    file_system: FileSystemProtocol,
+) -> None:
+    static_dir = tmp_path / "static"
+    static_dir.mkdir()
+    source_dir = tmp_path_factory.mktemp("source")
+    source_dir.joinpath("test.txt").write_text("hello")
+    static_dir.joinpath("linked").symlink_to(source_dir, target_is_directory=True)
+
+    router = create_static_files_router(
+        path="/", directories=[static_dir], file_system=file_system, resolve_symlinks=False
+    )
+
+    with create_test_client(router) as client:
+        assert client.get("/linked/test.txt").status_code == 404
+
+
+def test_resolve_symlinks_false_symlinked_file_outside_directory_returns_404(
+    tmp_path: Path,
+    tmp_path_factory: pytest.TempPathFactory,
+    file_system: FileSystemProtocol,
+) -> None:
+    static_dir = tmp_path / "static"
+    static_dir.mkdir()
+    source_file = tmp_path_factory.mktemp("source") / "test.txt"
+    source_file.write_text("hello")
+    static_dir.joinpath("linked.txt").symlink_to(source_file)
+
+    router = create_static_files_router(
+        path="/", directories=[static_dir], file_system=file_system, resolve_symlinks=False
+    )
+
+    with create_test_client(router) as client:
+        assert client.get("/linked.txt").status_code == 404
+
+
+def test_resolve_symlinks_false_symlinked_file_inside_directory_returns_404(
+    tmp_path: Path,
+    file_system: FileSystemProtocol,
+) -> None:
+    static_dir = tmp_path / "static"
+    static_dir.mkdir()
+    static_dir.joinpath("test.txt").write_text("hello")
+    static_dir.joinpath("linked.txt").symlink_to("test.txt")
+
+    router = create_static_files_router(
+        path="/", directories=[static_dir], file_system=file_system, resolve_symlinks=False
+    )
+
+    with create_test_client(router) as client:
+        assert client.get("/linked.txt").status_code == 404
+
+
+def test_resolve_symlinks_false_symlinked_directory_served(
+    tmp_path: Path,
+    file_system: FileSystemProtocol,
+) -> None:
+    source_dir = tmp_path / "source"
+    source_dir.mkdir()
+    source_dir.joinpath("test.txt").write_text("hello")
+    static_dir = tmp_path / "static"
+    static_dir.symlink_to(source_dir, target_is_directory=True)
+
+    router = create_static_files_router(
+        path="/", directories=[static_dir], file_system=file_system, resolve_symlinks=False
+    )
+
+    with create_test_client(router) as client:
+        res = client.get("/test.txt")
+        assert res.status_code == 200
+        assert res.text == "hello"
+
+
+def test_resolve_symlinks_false_html_mode_index_served(
+    tmp_path: Path,
+    file_system: FileSystemProtocol,
+) -> None:
+    static_dir = tmp_path / "static"
+    static_dir.mkdir()
+    static_dir.joinpath("index.html").write_text("index")
+
+    router = create_static_files_router(
+        path="/", directories=[static_dir], file_system=file_system, html_mode=True, resolve_symlinks=False
+    )
+
+    with create_test_client(router) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+        assert res.text == "index"
+
+
+def test_resolve_symlinks_false_file_system_without_islink_served() -> None:
+    file_system = MemoryFileSystem()
+    file_system.pipe("/static/test.txt", b"hello")
+
+    router = create_static_files_router(
+        path="/", directories=["/static"], file_system=file_system, resolve_symlinks=False
+    )
+
+    with create_test_client(router) as client:
+        res = client.get("/test.txt")
+        assert res.status_code == 200
+        assert res.text == "hello"
+
+
+async def test_staticfiles_get_fs_info_resolve_symlinks_false_dot_segments_after_symlink(
+    tmp_path: Path,
+    file_system: FileSystemProtocol,
+) -> None:
+    # 'linked/..' is 'static' lexically, but 'tmp_path' on the file system
+    static_dir = tmp_path / "static"
+    static_dir.mkdir()
+    static_dir.joinpath("test.txt").write_text("inside")
+    tmp_path.joinpath("test.txt").write_text("outside")
+    source_dir = tmp_path / "source"
+    source_dir.mkdir()
+    static_dir.joinpath("linked").symlink_to(source_dir, target_is_directory=True)
+
+    static_files = StaticFiles(
+        is_html_mode=False, directories=[static_dir], file_system=file_system, resolve_symlinks=False
+    )
+    path, _ = await static_files.get_fs_info(static_files.directories, "linked/../test.txt")
+
+    assert path is not None
+    assert path.read_text() == "inside"
 
 
 async def test_staticfiles_get_fs_info_no_access_to_non_static_directory(

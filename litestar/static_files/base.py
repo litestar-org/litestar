@@ -21,7 +21,14 @@ if TYPE_CHECKING:
 class StaticFiles:
     """ASGI App that handles file sending."""
 
-    __slots__ = ("adapter", "directories", "headers", "is_html_mode", "send_as_attachment")
+    __slots__ = (
+        "adapter",
+        "directories",
+        "headers",
+        "is_html_mode",
+        "resolve_symlinks",
+        "send_as_attachment",
+    )
 
     def __init__(
         self,
@@ -40,7 +47,7 @@ class StaticFiles:
             file_system: The file_system spec to use for serving files.
             send_as_attachment: Whether to send the file with a ``content-disposition`` header of
              ``attachment`` or ``inline``
-            resolve_symlinks: Resolve symlinks to the directories
+            resolve_symlinks: Resolve symlinks to the base directories and served paths
             headers: Headers that will be sent with every response.
         """
         self.adapter = FileSystemAdapter(file_system)
@@ -49,6 +56,7 @@ class StaticFiles:
         )
         self.is_html_mode = is_html_mode
         self.send_as_attachment = send_as_attachment
+        self.resolve_symlinks = resolve_symlinks
         self.headers = headers
 
     async def get_fs_info(
@@ -74,13 +82,33 @@ class StaticFiles:
             try:
                 joined_path = Path(directory, file_path)
                 normalized_file_path = os.path.normpath(joined_path)
-                if os.path.commonpath([directory, normalized_file_path]) == str(directory) and (
-                    file_info := await self.adapter.info(joined_path)
-                ):
-                    return joined_path, file_info
+                if os.path.commonpath([directory, normalized_file_path]) != str(directory):
+                    continue
+                file_info: FileInfo | None
+                if self.resolve_symlinks:
+                    path = joined_path
+                    file_info = await self.adapter.info(joined_path)
+                else:
+                    path = Path(normalized_file_path)
+                    file_info = await self._get_info_without_symlinks(directory, normalized_file_path)
+                if file_info:
+                    return path, file_info
             except FileNotFoundError:
                 continue
         return None, None
+
+    async def _get_info_without_symlinks(self, directory: PathType, file_path: str) -> FileInfo | None:
+        path = Path(directory)
+        file_info = None
+        for part in Path(file_path).relative_to(directory).parts:
+            path /= part
+            file_info = await self.adapter.info(path)
+            if file_info.get("islink"):
+                return None
+        if file_info is None:
+            # 'file_path' is 'directory' itself
+            file_info = await self.adapter.info(path)
+        return file_info
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
