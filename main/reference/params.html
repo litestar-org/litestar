@@ -991,7 +991,8 @@ will be inferred from the annotated parameter’s name.</p>
 <dt class="sig sig-object py" id="litestar.params.ParameterKwarg.required">
 <span class="sig-name descname"><span class="pre">required</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#litestar.params.ParameterKwarg.required" title="Link to this definition">¶</a></dt>
 <dd><p>A boolean flag dictating whether this parameter is required.</p>
-<p>If set to False, None values will be allowed. Defaults to True.</p>
+<p>If set to False, a function parameter receiving it must declare a default, which it receives when the
+parameter is missing from the request. Defaults to True.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1093,7 +1094,7 @@ marker <a class="reference internal" href="di.html#litestar.di.NamedDependency" 
 <dt class="sig sig-object py" id="litestar.params.SkipValidation">
 <span class="sig-prename descclassname"><span class="pre">litestar.params.</span></span><span class="sig-name descname"><span class="pre">SkipValidation</span></span><a class="headerlink" href="#litestar.params.SkipValidation" title="Link to this definition">¶</a></dt>
 <dd><p>Exclude ‘T’ from validation, effectively treating it as ‘Any’</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>, &lt;litestar.params.SkipValidationMarker object at 0x7fd30c216e40&gt;]</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>, &lt;litestar.params.SkipValidationMarker object at 0x7f330f4b6f30&gt;]</p>
 </dd></dl>
 
 <dl class="py class">

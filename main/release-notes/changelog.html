@@ -1191,6 +1191,19 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">Optional</span></code> / <code class="docutils literal notranslate"><span class="pre">Any</span></code> + <code class="docutils literal notranslate"><span class="pre">required=False</span></code> + without default parameters receiving <code class="docutils literal notranslate"><span class="pre">Empty</span></code><a class="headerlink reference internal" href="#3.0.0-fix" id="3.0.0-fix">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would cause a request parameter typed <code class="docutils literal notranslate"><span class="pre">Optional</span></code> or <code class="docutils literal notranslate"><span class="pre">Any</span></code>,
+<em>and</em> declared without a default <em>and</em> annotated as <code class="docutils literal notranslate"><span class="pre">required=False</span></code> to
+receive the <code class="docutils literal notranslate"><span class="pre">Empty</span></code> sentinel when that parameter was missing from the request.</p>
+<p>A parameter annotated <code class="docutils literal notranslate"><span class="pre">required=False</span></code> that is consumed by any handler or
+dependency, and does not have a default, now raises
+<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> at startup.</p>
+<p>This includes a marker for a parameter also declared as a layer parameter
+with <code class="docutils literal notranslate"><span class="pre">required=False</span></code>. Layer parameters that are <em>not</em> consumed are not
+affected by this.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5185">https://github.com/litestar-org/litestar/pull/5185</a></span></p>
+</div>
+</dd>
 <dt>Fix <code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError</span></code> when Pydantic or attrs are not installed<a class="headerlink reference internal" href="#3.0.0-fix" id="3.0.0-fix">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that would raise <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ModuleNotFoundError" title="(in Python v3.15)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ModuleNotFoundError</span></code></a> when attrs or Pydantic
 were not installed.</p>

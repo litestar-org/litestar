@@ -6,6 +6,23 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix ``Optional`` / ``Any`` + ``required=False`` + without default parameters receiving ``Empty``
+        :type: bugfix
+        :breaking:
+        :pr: 5185
+
+        Fix a bug that would cause a request parameter typed ``Optional`` or ``Any``,
+        *and* declared without a default *and* annotated as ``required=False`` to
+        receive the ``Empty`` sentinel when that parameter was missing from the request.
+
+        A parameter annotated ``required=False`` that is consumed by any handler or
+        dependency, and does not have a default, now raises
+        :class:`~litestar.exceptions.ImproperlyConfiguredException` at startup.
+
+        This includes a marker for a parameter also declared as a layer parameter
+        with ``required=False``. Layer parameters that are *not* consumed are not
+        affected by this.
+
     .. change:: Fix ``ModuleNotFoundError`` when Pydantic or attrs are not installed
         :type: bugfix
         :issue: 5142

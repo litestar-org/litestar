@@ -666,6 +666,7 @@ have a default value.</p>
 <li><p>Parameters declared with a default are optional</p></li>
 <li><p>Parameters declared with <code class="docutils literal notranslate"><span class="pre">|</span> <span class="pre">None</span></code> are <em>nullable</em>, i.e. the may take a <code class="docutils literal notranslate"><span class="pre">None</span></code>
 value; they are still required, unless they are given a default value</p></li>
+<li><p>Parameters declared <code class="docutils literal notranslate"><span class="pre">required=False</span></code> must be given a default value</p></li>
 </ul>
 <p>Defaults work exactly like defaults in regular function parameters: If the value is
 missing from the request, the handler is called with the default:</p>
@@ -1182,7 +1183,7 @@ application:</p>
 </span><span data-line="37">    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router&quot;</span><span class="p">,</span>
 </span><span data-line="38">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span>
 </span><span data-line="39">    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="40">        <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyHeader&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;^[a-zA-Z]$&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+</span><span data-line="40">        <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyHeader&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;^[a-zA-Z]$&quot;</span><span class="p">),</span>
 </span><span data-line="41">    <span class="p">},</span>
 </span><span data-line="42"><span class="p">)</span>
 </span><span data-line="43">
@@ -1206,10 +1207,10 @@ declared in the route handler. Examine these more closely:</p>
 validated at the application level even though the handler never sees it.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">router_param</span></code> is a header parameter with the key <code class="docutils literal notranslate"><span class="pre">MyHeader</span></code>, declared via <a class="reference internal" href="../../reference/params.html#litestar.params.HeaderParameter" title="litestar.params.HeaderParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeaderParameter</span></code></a>
-on the router. It is declared <code class="docutils literal notranslate"><span class="pre">required=False</span></code> on the router, so it does not fail validation if absent — unless
-the handler explicitly opts in by re-declaring it (as this one does).</p>
-<p>The handler types it as <a class="reference internal" href="../../reference/params.html#litestar.params.FromHeader" title="litestar.params.FromHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">FromHeader[str]</span></code></a> (rather than <code class="docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code>), making it
-required at the handler level. If a value <em>is</em> provided, it is also tested against the router-declared regex.</p>
+on the router. On the handler, it is declared as <a class="reference internal" href="../../reference/params.html#litestar.params.FromHeader" title="litestar.params.FromHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">FromHeader[str]</span></code></a>, taking on
+the router’s declaration. If a value <em>is</em> provided, it is also tested against the router-declared regex.</p>
+<p>Had the router declared it <code class="docutils literal notranslate"><span class="pre">required=False</span></code>, the handler would have to give it a default, e.g.
+<code class="docutils literal notranslate"><span class="pre">router_param:</span> <span class="pre">FromHeader[str]</span> <span class="pre">=</span> <span class="pre">&quot;a&quot;</span></code>.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">controller_param</span></code> is a query parameter with the key <code class="docutils literal notranslate"><span class="pre">controller_param</span></code>, declared via
 <a class="reference internal" href="../../reference/params.html#litestar.params.QueryParameter" title="litestar.params.QueryParameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueryParameter</span></code></a> on the controller with <code class="docutils literal notranslate"><span class="pre">lt=100</span></code> (value must be less than 100). The handler
