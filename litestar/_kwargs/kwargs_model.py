@@ -244,9 +244,11 @@ class KwargsModel:
 
         param_definitions = {
             *(
+                # no function parameter receives the value of a layer parameter none of them declares
                 create_parameter_definition(
                     field_definition=field_definition,
                     field_name=field_name,
+                    requires_default=False,
                 )
                 for field_name, field_definition in layered_parameters.items()
                 if field_name not in ignored_keys
@@ -342,11 +344,12 @@ class KwargsModel:
         for field_name in sorted((RESERVED_KWARGS - {"state"}).intersection(field_definitions)):
             _validate_reserved_kwarg_type(field_name, field_definitions[field_name], ctx)
 
-        param_definitions, expected_dependencies = cls._get_param_definitions(
-            layered_parameters=layered_parameters,
-            dependencies=dependencies,
-            field_definitions=field_definitions,
-        )
+        with ctx.wrap_config_exception():
+            param_definitions, expected_dependencies = cls._get_param_definitions(
+                layered_parameters=layered_parameters,
+                dependencies=dependencies,
+                field_definitions=field_definitions,
+            )
 
         expected_reserved_kwargs = {field_name for field_name in field_definitions if field_name in RESERVED_KWARGS}
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}
