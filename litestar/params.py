@@ -192,7 +192,8 @@ class ParameterKwarg(KwargDefinition, ParameterMarker):
     required: bool | None = field(default=None)
     """A boolean flag dictating whether this parameter is required.
 
-    If set to False, None values will be allowed. Defaults to True.
+    If set to False, a function parameter receiving it must declare a default, which it receives when the
+    parameter is missing from the request. Defaults to True.
     """
 
     @property
