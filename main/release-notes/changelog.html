@@ -1200,6 +1200,45 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Parse every <code class="docutils literal notranslate"><span class="pre">cookie</span></code> header of a request<a class="headerlink reference internal" href="#3.0.0-parse every" id="3.0.0-parse every">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Only the first <code class="docutils literal notranslate"><span class="pre">cookie</span></code> header was parsed into
+<a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection.cookies" title="litestar.connection.ASGIConnection.cookies"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cookies</span></code></a>. Over HTTP/2 and HTTP/3 the
+header may repeat, and browsers send one per cookie, so every cookie but those in
+the first header went missing. All <code class="docutils literal notranslate"><span class="pre">cookie</span></code> headers are now parsed, joined with
+the <code class="docutils literal notranslate"><span class="pre">&quot;;</span> <span class="pre">&quot;</span></code> delimiter <span class="target" id="index-0"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc9113.html"><strong>RFC 9113</strong></a> and <span class="target" id="index-1"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc9114.html"><strong>RFC 9114</strong></a> prescribe.</p>
+<p>A cookie name sent more than once now keeps its first value, where it kept its last
+one before, following the <span class="target" id="index-2"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc6265.html"><strong>RFC 6265</strong></a> ordering that serialises the cookie of the
+longer path first. Scope a cookie holding a session or a CSRF token with the
+<code class="docutils literal notranslate"><span class="pre">__Host-</span></code> prefix so that a cookie of the same name, set under a longer path,
+cannot take precedence over it. <code class="docutils literal notranslate"><span class="pre">cookies</span></code> of
+<a class="reference internal" href="../reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddleware" title="litestar.middleware.logging.LoggingMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code></a>’s response log likewise
+holds the first of several <code class="docutils literal notranslate"><span class="pre">set-cookie</span></code> headers of one name, not the last.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/5177">https://github.com/litestar-org/litestar/issues/5177</a></span></p>
+</div>
+</dd>
+<dt>Restore a session split across several cookies over HTTP/2 and HTTP/3<a class="headerlink reference internal" href="#3.0.0-restore a session split across several cookies over http/2 and http/3" id="3.0.0-restore a session split across several cookies over http/2 and http/3">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A session too large for one cookie is stored across several, named <code class="docutils literal notranslate"><span class="pre">session-0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">session-1</span></code> and so on. Over HTTP/2 and HTTP/3 only the chunks carried by the first
+<code class="docutils literal notranslate"><span class="pre">cookie</span></code> header were read, and
+<a class="reference internal" href="../reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend" title="litestar.middleware.session.client_side.ClientSideSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code></a> yields an
+empty session when it cannot decode the value in full, so such a session was
+silently dropped and the user logged out. Every chunk is now read.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/5177">https://github.com/litestar-org/litestar/issues/5177</a></span></p>
+</div>
+</dd>
+<dt>Send repeated headers separately from the test client<a class="headerlink reference internal" href="#3.0.0-send repeated headers separately from the test client" id="3.0.0-send repeated headers separately from the test client">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The test client merged headers of the same name into one comma-joined header, which
+is invalid for <code class="docutils literal notranslate"><span class="pre">cookie</span></code>, and left a request carrying a repeated header impossible
+to simulate. Repeated headers now reach the application as they were given, on
+requests and on <a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient.websocket_connect" title="litestar.testing.TestClient.websocket_connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">websocket_connect()</span></code></a>, which
+dropped all but the last of them.</p>
+<p>A test passing a header of the same name twice is affected: the application now
+receives the two values it was given, rather than one comma-joined value. Header
+values are also passed on as the bytes they were given in, where they were decoded
+and re-encoded as UTF-8 before.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/5177">https://github.com/litestar-org/litestar/issues/5177</a></span></p>
+</div>
+</dd>
 <dt>Fix <code class="docutils literal notranslate"><span class="pre">Optional</span></code> / <code class="docutils literal notranslate"><span class="pre">Any</span></code> + <code class="docutils literal notranslate"><span class="pre">required=False</span></code> + without default parameters receiving <code class="docutils literal notranslate"><span class="pre">Empty</span></code><a class="headerlink reference internal" href="#3.0.0-fix" id="3.0.0-fix">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that would cause a request parameter typed <code class="docutils literal notranslate"><span class="pre">Optional</span></code> or <code class="docutils literal notranslate"><span class="pre">Any</span></code>,
 <em>and</em> declared without a default <em>and</em> annotated as <code class="docutils literal notranslate"><span class="pre">required=False</span></code> to

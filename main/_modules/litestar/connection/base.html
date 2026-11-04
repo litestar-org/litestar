@@ -706,130 +706,136 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="198">    <span class="k">def</span><span class="w"> </span><span class="nf">cookies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="199"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``cookies`` of this connection&#39;s ``Scope``.</span>
 </span><span data-line="200">
-</span><span data-line="201"><span class="sd">        Returns:</span>
-</span><span data-line="202"><span class="sd">            Returns any cookies stored in the header as a parsed dictionary.</span>
-</span><span data-line="203"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="204">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="205">            <span class="k">if</span> <span class="p">(</span><span class="n">cookies</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">cookies</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="206">                <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="o">=</span> <span class="n">cookies</span>
-</span><span data-line="207">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="208">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">cookies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="209">                    <span class="n">parse_cookie_string</span><span class="p">(</span><span class="n">cookie_header</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">cookie_header</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cookie&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="p">{}</span>
-</span><span data-line="210">                <span class="p">)</span>
-</span><span data-line="211">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span>
-</span><span data-line="212">
-</span><span data-line="213">    <span class="nd">@property</span>
-</span><span data-line="214">    <span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="215"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``client`` data of this connection&#39;s ``Scope``.</span>
-</span><span data-line="216">
-</span><span data-line="217"><span class="sd">        Returns:</span>
-</span><span data-line="218"><span class="sd">            A two tuple of the host name and port number.</span>
-</span><span data-line="219"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="220">        <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;client&quot;</span><span class="p">)</span>
-</span><span data-line="221">        <span class="k">return</span> <span class="n">Address</span><span class="p">(</span><span class="o">*</span><span class="n">client</span><span class="p">)</span> <span class="k">if</span> <span class="n">client</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="201"><span class="sd">        Every ``cookie`` header is parsed: a client may send one per cookie over HTTP/2 and</span>
+</span><span data-line="202"><span class="sd">        HTTP/3, where :rfc:`9113` and :rfc:`9114` respectively have them reassembled with the</span>
+</span><span data-line="203"><span class="sd">        ``&quot;; &quot;`` delimiter. A cookie name sent more than once keeps the first value it was</span>
+</span><span data-line="204"><span class="sd">        sent with.</span>
+</span><span data-line="205">
+</span><span data-line="206"><span class="sd">        Returns:</span>
+</span><span data-line="207"><span class="sd">            Returns any cookies stored in the header as a parsed dictionary.</span>
+</span><span data-line="208"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="209">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="210">            <span class="k">if</span> <span class="p">(</span><span class="n">cookies</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">cookies</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="211">                <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="o">=</span> <span class="n">cookies</span>
+</span><span data-line="212">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="213">                <span class="n">cookie_headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="s2">&quot;cookie&quot;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span data-line="214">                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">cookies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="215">                    <span class="n">parse_cookie_string</span><span class="p">(</span><span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cookie_headers</span><span class="p">))</span> <span class="k">if</span> <span class="n">cookie_headers</span> <span class="k">else</span> <span class="p">{}</span>
+</span><span data-line="216">                <span class="p">)</span>
+</span><span data-line="217">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span>
+</span><span data-line="218">
+</span><span data-line="219">    <span class="nd">@property</span>
+</span><span data-line="220">    <span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="221"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``client`` data of this connection&#39;s ``Scope``.</span>
 </span><span data-line="222">
-</span><span data-line="223">    <span class="nd">@property</span>
-</span><span data-line="224">    <span class="k">def</span><span class="w"> </span><span class="nf">auth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthT</span><span class="p">:</span>
-</span><span data-line="225"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``auth`` data of this connection&#39;s ``Scope``.</span>
-</span><span data-line="226">
-</span><span data-line="227"><span class="sd">        Raises:</span>
-</span><span data-line="228"><span class="sd">            ImproperlyConfiguredException: If ``auth`` is not set in scope via an ``AuthMiddleware``, raises an exception</span>
-</span><span data-line="229">
-</span><span data-line="230"><span class="sd">        Returns:</span>
-</span><span data-line="231"><span class="sd">            A type correlating to the generic variable Auth.</span>
-</span><span data-line="232"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="233">        <span class="k">if</span> <span class="s2">&quot;auth&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
-</span><span data-line="234">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;&#39;auth&#39; is not defined in scope, install an AuthMiddleware to set it&quot;</span><span class="p">)</span>
+</span><span data-line="223"><span class="sd">        Returns:</span>
+</span><span data-line="224"><span class="sd">            A two tuple of the host name and port number.</span>
+</span><span data-line="225"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="226">        <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;client&quot;</span><span class="p">)</span>
+</span><span data-line="227">        <span class="k">return</span> <span class="n">Address</span><span class="p">(</span><span class="o">*</span><span class="n">client</span><span class="p">)</span> <span class="k">if</span> <span class="n">client</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="228">
+</span><span data-line="229">    <span class="nd">@property</span>
+</span><span data-line="230">    <span class="k">def</span><span class="w"> </span><span class="nf">auth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuthT</span><span class="p">:</span>
+</span><span data-line="231"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``auth`` data of this connection&#39;s ``Scope``.</span>
+</span><span data-line="232">
+</span><span data-line="233"><span class="sd">        Raises:</span>
+</span><span data-line="234"><span class="sd">            ImproperlyConfiguredException: If ``auth`` is not set in scope via an ``AuthMiddleware``, raises an exception</span>
 </span><span data-line="235">
-</span><span data-line="236">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AuthT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">])</span>
-</span><span data-line="237">
-</span><span data-line="238">    <span class="nd">@property</span>
-</span><span data-line="239">    <span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserT</span><span class="p">:</span>
-</span><span data-line="240"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``user`` data of this connection&#39;s ``Scope``.</span>
+</span><span data-line="236"><span class="sd">        Returns:</span>
+</span><span data-line="237"><span class="sd">            A type correlating to the generic variable Auth.</span>
+</span><span data-line="238"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="239">        <span class="k">if</span> <span class="s2">&quot;auth&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
+</span><span data-line="240">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;&#39;auth&#39; is not defined in scope, install an AuthMiddleware to set it&quot;</span><span class="p">)</span>
 </span><span data-line="241">
-</span><span data-line="242"><span class="sd">        Raises:</span>
-</span><span data-line="243"><span class="sd">            ImproperlyConfiguredException: If ``user`` is not set in scope via an ``AuthMiddleware``, raises an exception</span>
-</span><span data-line="244">
-</span><span data-line="245"><span class="sd">        Returns:</span>
-</span><span data-line="246"><span class="sd">            A type correlating to the generic variable User.</span>
-</span><span data-line="247"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="248">        <span class="k">if</span> <span class="s2">&quot;user&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
-</span><span data-line="249">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;&#39;user&#39; is not defined in scope, install an AuthMiddleware to set it&quot;</span><span class="p">)</span>
+</span><span data-line="242">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AuthT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">])</span>
+</span><span data-line="243">
+</span><span data-line="244">    <span class="nd">@property</span>
+</span><span data-line="245">    <span class="k">def</span><span class="w"> </span><span class="nf">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserT</span><span class="p">:</span>
+</span><span data-line="246"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ``user`` data of this connection&#39;s ``Scope``.</span>
+</span><span data-line="247">
+</span><span data-line="248"><span class="sd">        Raises:</span>
+</span><span data-line="249"><span class="sd">            ImproperlyConfiguredException: If ``user`` is not set in scope via an ``AuthMiddleware``, raises an exception</span>
 </span><span data-line="250">
-</span><span data-line="251">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;UserT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">])</span>
-</span><span data-line="252">
-</span><span data-line="253">    <span class="nd">@property</span>
-</span><span data-line="254">    <span class="k">def</span><span class="w"> </span><span class="nf">session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="255"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the session for this connection if a session was previously set in the ``Scope``</span>
+</span><span data-line="251"><span class="sd">        Returns:</span>
+</span><span data-line="252"><span class="sd">            A type correlating to the generic variable User.</span>
+</span><span data-line="253"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="254">        <span class="k">if</span> <span class="s2">&quot;user&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
+</span><span data-line="255">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;&#39;user&#39; is not defined in scope, install an AuthMiddleware to set it&quot;</span><span class="p">)</span>
 </span><span data-line="256">
-</span><span data-line="257"><span class="sd">        Returns:</span>
-</span><span data-line="258"><span class="sd">            A dictionary representing the session value - if existing.</span>
-</span><span data-line="259">
-</span><span data-line="260"><span class="sd">        Raises:</span>
-</span><span data-line="261"><span class="sd">            ImproperlyConfiguredException: if session is not set in scope.</span>
-</span><span data-line="262"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="263">        <span class="k">if</span> <span class="s2">&quot;session&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
-</span><span data-line="264">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="265">                <span class="s2">&quot;&#39;session&#39; is not defined in scope, install a SessionMiddleware to set it&quot;</span>
-</span><span data-line="266">            <span class="p">)</span>
-</span><span data-line="267">
-</span><span data-line="268">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">])</span>
-</span><span data-line="269">
+</span><span data-line="257">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;UserT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">])</span>
+</span><span data-line="258">
+</span><span data-line="259">    <span class="nd">@property</span>
+</span><span data-line="260">    <span class="k">def</span><span class="w"> </span><span class="nf">session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="261"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the session for this connection if a session was previously set in the ``Scope``</span>
+</span><span data-line="262">
+</span><span data-line="263"><span class="sd">        Returns:</span>
+</span><span data-line="264"><span class="sd">            A dictionary representing the session value - if existing.</span>
+</span><span data-line="265">
+</span><span data-line="266"><span class="sd">        Raises:</span>
+</span><span data-line="267"><span class="sd">            ImproperlyConfiguredException: if session is not set in scope.</span>
+</span><span data-line="268"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="269">        <span class="k">if</span> <span class="s2">&quot;session&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
+</span><span data-line="270">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="271">                <span class="s2">&quot;&#39;session&#39; is not defined in scope, install a SessionMiddleware to set it&quot;</span>
+</span><span data-line="272">            <span class="p">)</span>
+</span><span data-line="273">
+</span><span data-line="274">        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">])</span>
+</span><span data-line="275">
 <div class="viewcode-block" id="ASGIConnection.set_session">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.ASGIConnection.set_session">[docs]</a>
-</span><span data-line="270">    <span class="k">def</span><span class="w"> </span><span class="nf">set_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">DataContainerType</span> <span class="o">|</span> <span class="n">EmptyType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="271"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the session in the connection&#39;s ``Scope``.</span>
-</span><span data-line="272">
-</span><span data-line="273"><span class="sd">        If the :class:`SessionMiddleware &lt;.middleware.session.base.SessionMiddleware&gt;` is enabled, the session will be added</span>
-</span><span data-line="274"><span class="sd">        to the response as a cookie header.</span>
-</span><span data-line="275">
-</span><span data-line="276"><span class="sd">        Args:</span>
-</span><span data-line="277"><span class="sd">            value: Dictionary or pydantic model instance for the session data.</span>
+</span><span data-line="276">    <span class="k">def</span><span class="w"> </span><span class="nf">set_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">DataContainerType</span> <span class="o">|</span> <span class="n">EmptyType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="277"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the session in the connection&#39;s ``Scope``.</span>
 </span><span data-line="278">
-</span><span data-line="279"><span class="sd">        Returns:</span>
-</span><span data-line="280"><span class="sd">            None</span>
-</span><span data-line="281"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="282">        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+</span><span data-line="279"><span class="sd">        If the :class:`SessionMiddleware &lt;.middleware.session.base.SessionMiddleware&gt;` is enabled, the session will be added</span>
+</span><span data-line="280"><span class="sd">        to the response as a cookie header.</span>
+</span><span data-line="281">
+</span><span data-line="282"><span class="sd">        Args:</span>
+</span><span data-line="283"><span class="sd">            value: Dictionary or pydantic model instance for the session data.</span>
+</span><span data-line="284">
+</span><span data-line="285"><span class="sd">        Returns:</span>
+</span><span data-line="286"><span class="sd">            None</span>
+</span><span data-line="287"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="288">        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
-</span><span data-line="283">
+</span><span data-line="289">
 <div class="viewcode-block" id="ASGIConnection.clear_session">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.ASGIConnection.clear_session">[docs]</a>
-</span><span data-line="284">    <span class="k">def</span><span class="w"> </span><span class="nf">clear_session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="285"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the session from the connection&#39;s ``Scope``.</span>
-</span><span data-line="286">
-</span><span data-line="287"><span class="sd">        If the :class:`Litestar SessionMiddleware &lt;.middleware.session.base.SessionMiddleware&gt;` is enabled, this will cause</span>
-</span><span data-line="288"><span class="sd">        the session data to be cleared.</span>
-</span><span data-line="289">
-</span><span data-line="290"><span class="sd">        Returns:</span>
-</span><span data-line="291"><span class="sd">            None.</span>
-</span><span data-line="292"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="293">        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="294">        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">session_id</span> <span class="o">=</span> <span class="n">Empty</span></div>
-
+</span><span data-line="290">    <span class="k">def</span><span class="w"> </span><span class="nf">clear_session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="291"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the session from the connection&#39;s ``Scope``.</span>
+</span><span data-line="292">
+</span><span data-line="293"><span class="sd">        If the :class:`Litestar SessionMiddleware &lt;.middleware.session.base.SessionMiddleware&gt;` is enabled, this will cause</span>
+</span><span data-line="294"><span class="sd">        the session data to be cleared.</span>
 </span><span data-line="295">
-</span><span data-line="296">    <span class="k">def</span><span class="w"> </span><span class="nf">get_session_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="297">        <span class="k">return</span> <span class="n">value_or_default</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">session_id</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="298">
+</span><span data-line="296"><span class="sd">        Returns:</span>
+</span><span data-line="297"><span class="sd">            None.</span>
+</span><span data-line="298"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="299">        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="300">        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">session_id</span> <span class="o">=</span> <span class="n">Empty</span></div>
+
+</span><span data-line="301">
+</span><span data-line="302">    <span class="k">def</span><span class="w"> </span><span class="nf">get_session_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="303">        <span class="k">return</span> <span class="n">value_or_default</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_state</span><span class="o">.</span><span class="n">session_id</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="304">
 <div class="viewcode-block" id="ASGIConnection.url_for">
 <a class="viewcode-back" href="../../../reference/connection.html#litestar.connection.ASGIConnection.url_for">[docs]</a>
-</span><span data-line="299">    <span class="k">def</span><span class="w"> </span><span class="nf">url_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">BaseRouteHandler</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="300"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the url for a given route handler / handler name.</span>
-</span><span data-line="301">
-</span><span data-line="302"><span class="sd">        Args:</span>
-</span><span data-line="303"><span class="sd">            name: The ``name`` of the route handler, or the route handler itself.</span>
-</span><span data-line="304"><span class="sd">            **path_parameters: Values for path parameters in the route</span>
-</span><span data-line="305">
-</span><span data-line="306"><span class="sd">        Raises:</span>
-</span><span data-line="307"><span class="sd">            NoRouteMatchFoundException: If route with ``name`` does not exist, path parameters are missing or have a</span>
-</span><span data-line="308"><span class="sd">                wrong type.</span>
-</span><span data-line="309">
-</span><span data-line="310"><span class="sd">        Returns:</span>
-</span><span data-line="311"><span class="sd">            A string representing the absolute url of the route handler.</span>
-</span><span data-line="312"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="313">        <span class="n">litestar_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;litestar_app&quot;</span><span class="p">]</span>
-</span><span data-line="314">        <span class="n">url_path</span> <span class="o">=</span> <span class="n">litestar_instance</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">)</span>
+</span><span data-line="305">    <span class="k">def</span><span class="w"> </span><span class="nf">url_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">BaseRouteHandler</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="306"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the url for a given route handler / handler name.</span>
+</span><span data-line="307">
+</span><span data-line="308"><span class="sd">        Args:</span>
+</span><span data-line="309"><span class="sd">            name: The ``name`` of the route handler, or the route handler itself.</span>
+</span><span data-line="310"><span class="sd">            **path_parameters: Values for path parameters in the route</span>
+</span><span data-line="311">
+</span><span data-line="312"><span class="sd">        Raises:</span>
+</span><span data-line="313"><span class="sd">            NoRouteMatchFoundException: If route with ``name`` does not exist, path parameters are missing or have a</span>
+</span><span data-line="314"><span class="sd">                wrong type.</span>
 </span><span data-line="315">
-</span><span data-line="316">        <span class="k">return</span> <span class="n">make_absolute_url</span><span class="p">(</span><span class="n">url_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span></div>
+</span><span data-line="316"><span class="sd">        Returns:</span>
+</span><span data-line="317"><span class="sd">            A string representing the absolute url of the route handler.</span>
+</span><span data-line="318"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="319">        <span class="n">litestar_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;litestar_app&quot;</span><span class="p">]</span>
+</span><span data-line="320">        <span class="n">url_path</span> <span class="o">=</span> <span class="n">litestar_instance</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">path_parameters</span><span class="p">)</span>
+</span><span data-line="321">
+</span><span data-line="322">        <span class="k">return</span> <span class="n">make_absolute_url</span><span class="p">(</span><span class="n">url_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span></div>
 </div>
 
 </span></pre></div>
