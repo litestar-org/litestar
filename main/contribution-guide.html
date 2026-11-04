@@ -458,6 +458,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#guidelines-for-writing-code">Guidelines for writing code</a><ul>
 <li><a class="reference internal" href="#writing-and-running-tests">Writing and running tests</a></li>
+<li><a class="reference internal" href="#benchmarks">Benchmarks</a></li>
 <li><a class="reference internal" href="#running-type-checkers">Running type checkers</a></li>
 </ul>
 </li>
@@ -692,6 +693,17 @@ test runs. These are enabled by default when running <code class="docutils liter
 or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">coverage</span></code>. Due to the nature of pytest-xdist, attaching a debugger isn’t as
 straightforward. For debugging, it’s recommended to run the tests individually with
 <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">&lt;test</span> <span class="pre">name&gt;</span></code> or via an IDE, which will skip <code class="docutils literal notranslate"><span class="pre">pytest-xdist</span></code>.</p>
+</section>
+<section id="benchmarks">
+<h3>Benchmarks<a class="headerlink" href="#benchmarks" title="Link to this heading">¶</a></h3>
+<p>Benchmarks live in <code class="docutils literal notranslate"><span class="pre">tests/benchmarks</span></code> and are measured by
+<a class="reference external" href="https://codspeed.io/litestar-org/litestar">CodSpeed</a> in CI. They are ordinary pytest
+tests, so <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code> runs each of them once.</p>
+<p>When adding one, drive the app with <code class="docutils literal notranslate"><span class="pre">ASGIRunner</span></code> from <code class="docutils literal notranslate"><span class="pre">tests/benchmarks/helpers.py</span></code>
+rather than <code class="docutils literal notranslate"><span class="pre">TestClient</span></code>, and assert on the result so it keeps working as a test.
+<code class="docutils literal notranslate"><span class="pre">pytest-codspeed</span></code> forwards keyword arguments to its own measuring function, so pass the
+call’s arguments positionally or wrap it in a <code class="docutils literal notranslate"><span class="pre">lambda</span></code> – a keyword named <code class="docutils literal notranslate"><span class="pre">target</span></code>,
+<code class="docutils literal notranslate"><span class="pre">fn</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">uri</span></code> or <code class="docutils literal notranslate"><span class="pre">marker_options</span></code> collides with it.</p>
 </section>
 <section id="running-type-checkers">
 <h3>Running type checkers<a class="headerlink" href="#running-type-checkers" title="Link to this heading">¶</a></h3>
