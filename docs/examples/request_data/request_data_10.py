@@ -1,15 +1,12 @@
-from typing import Annotated, Any
-
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import MultipartBody
 
 
 @post(path="/")
 async def handle_file_upload(
-    data: Annotated[list[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)],
-) -> dict[str, tuple[str, str, Any]]:
+    data: MultipartBody[list[UploadFile]],
+) -> dict[str, tuple[int, str, dict[str, str]]]:
     result = {}
     for file in data:
         content = await file.read()

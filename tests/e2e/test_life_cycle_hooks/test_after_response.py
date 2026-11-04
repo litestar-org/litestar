@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from unittest.mock import MagicMock, call
 
 import pytest
@@ -14,7 +16,7 @@ def test_after_response_resolution(layer: str, sync: bool) -> None:
 
     if sync:
 
-        def handler(_: Request) -> None:  # pyright: ignore
+        def handler(_: Request) -> None:  # pyright: ignore[reportRedeclaration]
             mock(layer)
 
     else:

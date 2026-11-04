@@ -23,7 +23,7 @@ T = TypeVar("T", bound=Model)
 
 def get_backend(dto_type: type[DataclassDTO[Any]]) -> DTOBackend:
     value = next(iter(dto_type._dto_backends.values()))
-    return value["data_backend"]  # pyright: ignore
+    return value["data_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
 
 def test_forward_referenced_type_argument_raises_exception() -> None:
@@ -53,14 +53,14 @@ def test_type_narrowing_with_annotated_scalar_type_arg() -> None:
 
 def test_type_narrowing_with_only_type_var() -> None:
     t = TypeVar("t", bound=Model)
-    generic_dto = DataclassDTO[t]  # pyright: ignore
+    generic_dto = DataclassDTO[t]  # pyright: ignore[reportGeneralTypeIssues]
     assert generic_dto is DataclassDTO
 
 
 def test_type_narrowing_with_annotated_type_var() -> None:
     config = DTOConfig()
     t = TypeVar("t", bound=Model)
-    generic_dto = DataclassDTO[Annotated[t, config]]  # pyright: ignore
+    generic_dto = DataclassDTO[Annotated[t, config]]  # pyright: ignore[reportGeneralTypeIssues]
     assert generic_dto is not DataclassDTO
     assert issubclass(generic_dto, DataclassDTO)
     assert generic_dto.config is config
@@ -75,17 +75,17 @@ def test_extra_annotated_metadata_ignored() -> None:
 
 def test_overwrite_config() -> None:
     first = DTOConfig(exclude={"a"})
-    generic_dto = DataclassDTO[Annotated[T, first]]  # pyright: ignore
+    generic_dto = DataclassDTO[Annotated[T, first]]  # pyright: ignore[reportGeneralTypeIssues]
     second = DTOConfig(exclude={"b"})
-    dto = generic_dto[Annotated[Model, second]]  # pyright: ignore
+    dto = generic_dto[Annotated[Model, second]]  # pyright: ignore[reportInvalidTypeArguments]
     assert dto.config is second
 
 
 def test_existing_config_not_overwritten() -> None:
     assert getattr(DataclassDTO, "_config", None) is None
     first = DTOConfig(exclude={"a"})
-    generic_dto = DataclassDTO[Annotated[T, first]]  # pyright: ignore
-    dto = generic_dto[Model]  # pyright: ignore
+    generic_dto = DataclassDTO[Annotated[T, first]]  # pyright: ignore[reportGeneralTypeIssues]
+    dto = generic_dto[Model]  # pyright: ignore[reportInvalidTypeArguments]
     assert dto.config is first
 
 
@@ -111,7 +111,7 @@ def test_config_field_rename(asgi_connection: Request[Any, Any, Any]) -> None:
     DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.create_for_field_definition(FieldDefinition.from_kwarg(Model, name="data"), handler_id="handler_id")
-    field_definitions = dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions  # pyright: ignore
+    field_definitions = dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions  # pyright: ignore[reportTypedDictNotRequiredAccess]
     assert field_definitions[0].serialization_name == "z"
 
 
@@ -157,7 +157,7 @@ def test_sub_types_supported() -> None:
         handler_id="handler_id", field_definition=FieldDefinition.from_kwarg(SubType, name="data")
     )
     assert (
-        dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions[-1].name == "c"  # pyright: ignore
+        dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions[-1].name == "c"  # pyright: ignore[reportTypedDictNotRequiredAccess]
     )
 
 

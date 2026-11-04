@@ -85,15 +85,14 @@ def test_guards_with_websocket_handler(local_guard: Guard) -> None:
         await socket.send_json({"data": "123"})
         await socket.close()
 
-    client = create_test_client(route_handlers=my_websocket_route_handler)
+    with create_test_client(route_handlers=my_websocket_route_handler) as client:
+        with pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)), client.websocket_connect("/") as ws:
+            ws.send_json({"data": "123"})
 
-    with pytest.RaisesGroup(pytest.RaisesExc(WebSocketDisconnect)), client.websocket_connect("/") as ws:
-        ws.send_json({"data": "123"})
+        client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["websocket"][1].opt["allow_all"] = True
 
-    client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["websocket"][1].opt["allow_all"] = True
-
-    with client.websocket_connect("/") as ws:
-        ws.send_json({"data": "123"})
+        with client.websocket_connect("/") as ws:
+            ws.send_json({"data": "123"})
 
 
 def test_guard_ordering(local_guard: Guard, router_guard: Guard, app_guard: Guard) -> None:

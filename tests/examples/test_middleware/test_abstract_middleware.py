@@ -5,7 +5,7 @@ from litestar.testing import TestClient
 
 
 def test_base_middleware_example_websocket() -> None:
-    with TestClient(app).websocket_connect("/my-websocket") as ws:
+    with TestClient(app) as client, client.websocket_connect("/my-websocket") as ws:
         assert b"x-process-time" not in dict(ws.scope["headers"])
 
 

@@ -1,7 +1,7 @@
 import pytest
 
-from litestar._kwargs.dependencies import Dependency, create_dependency_batches
-from litestar.di import Provide
+from litestar._kwargs.dependencies import DependencyContainer, create_dependency_batches
+from litestar.di import NamedDependency, Provide
 from litestar.exceptions import HTTPException, ValidationException
 from litestar.handlers import get
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_422_UNPROCESSABLE_ENTITY, HTTP_500_INTERNAL_SERVER_ERROR
@@ -12,11 +12,11 @@ async def dummy() -> None:
     pass
 
 
-DEPENDENCY_A = Dependency("A", Provide(dummy), [])
-DEPENDENCY_B = Dependency("B", Provide(dummy), [])
-DEPENDENCY_C1 = Dependency("C1", Provide(dummy), [])
-DEPENDENCY_C2 = Dependency("C2", Provide(dummy), [DEPENDENCY_C1])
-DEPENDENCY_ALL_EXCEPT_A = Dependency("D", Provide(dummy), [DEPENDENCY_B, DEPENDENCY_C1, DEPENDENCY_C2])
+DEPENDENCY_A = DependencyContainer("A", Provide(dummy), [])
+DEPENDENCY_B = DependencyContainer("B", Provide(dummy), [])
+DEPENDENCY_C1 = DependencyContainer("C1", Provide(dummy), [])
+DEPENDENCY_C2 = DependencyContainer("C2", Provide(dummy), [DEPENDENCY_C1])
+DEPENDENCY_ALL_EXCEPT_A = DependencyContainer("D", Provide(dummy), [DEPENDENCY_B, DEPENDENCY_C1, DEPENDENCY_C2])
 
 
 @pytest.mark.parametrize(
@@ -55,7 +55,9 @@ DEPENDENCY_ALL_EXCEPT_A = Dependency("D", Provide(dummy), [DEPENDENCY_B, DEPENDE
         ),
     ],
 )
-def test_dependency_batches(dependency_tree: set[Dependency], expected_batches: list[set[Dependency]]) -> None:
+def test_dependency_batches(
+    dependency_tree: set[DependencyContainer], expected_batches: list[set[DependencyContainer]]
+) -> None:
     calculated_batches = create_dependency_batches(dependency_tree)
     assert calculated_batches == expected_batches
 
@@ -80,11 +82,11 @@ def test_dependency_batch_with_exception(exception: Exception, status_code: int,
     def a() -> None:
         raise exception
 
-    def c(a: None, b: None) -> None:
+    def c(a: NamedDependency[None], b: NamedDependency[None]) -> None:
         pass
 
     @get(path="/")
-    def handler(c: None) -> None:
+    def handler(c: NamedDependency[None]) -> None:
         pass
 
     with create_test_client(

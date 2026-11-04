@@ -2,12 +2,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+from advanced_alchemy.extensions.litestar import base, repository
+from advanced_alchemy.filters import LimitOffset
 from rich import get_console
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Mapped, Session, sessionmaker
-
-from litestar.plugins.sqlalchemy import base, repository
-from litestar.repository.filters import LimitOffset
 
 here = Path(__file__).parent
 console = get_console()
@@ -15,7 +14,7 @@ console = get_console()
 
 class USState(base.UUIDBase):
     # you can optionally override the generated table name by manually setting it.
-    __tablename__ = "us_state_lookup"  # type: ignore[assignment]
+    __tablename__ = "us_state_lookup"
     abbreviation: Mapped[str]
     name: Mapped[str]
 
@@ -64,7 +63,7 @@ def run_script() -> None:
     with session_factory() as db_session:
         # 1) Load the JSON data into the US States table.
         repo = USStateRepository(session=db_session)
-        fixture = open_fixture(here, USStateRepository.model_type.__tablename__)  # type: ignore
+        fixture = open_fixture(here, USStateRepository.model_type.__tablename__)
         objs = repo.add_many([USStateRepository.model_type(**raw_obj) for raw_obj in fixture])
         db_session.commit()
         console.print(f"Created {len(objs)} new objects.")

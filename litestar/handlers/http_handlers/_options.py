@@ -30,7 +30,7 @@ def create_options_handler(path: str, allow_methods: Iterable[Method]) -> HTTPRo
         return Response(
             content=None,
             status_code=HTTP_204_NO_CONTENT,
-            headers={"Allow": ", ".join(sorted(allow_methods))},  # pyright: ignore
+            headers={"Allow": ", ".join(sorted(allow_methods))},
             media_type=MediaType.TEXT,
         )
 

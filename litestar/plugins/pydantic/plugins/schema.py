@@ -145,7 +145,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
-    def for_pydantic_model(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:  # pyright: ignore
+    def for_pydantic_model(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
         """Create a schema object for a given pydantic model class.
 
         Args:

@@ -1,10 +1,12 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from inspect import isasyncgenfunction, isclass, isfunction, isgeneratorfunction, ismethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Annotated, Any, Literal, TypeAlias, TypeVar
 
-from litestar._signature import SignatureModel
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import ParameterMarker
 from litestar.plugins import DIPlugin, PluginRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.utils import ensure_async_callable
@@ -18,10 +20,33 @@ from litestar.utils.warnings import (
 )
 
 if TYPE_CHECKING:
+    from litestar._signature import SignatureModel
     from litestar.dto import AbstractDTO
     from litestar.types import AnyCallable
 
-__all__ = ("Provide",)
+
+__all__ = (
+    "NamedDependency",
+    "Provide",
+)
+
+
+T = TypeVar("T")
+
+
+class Dependency(ParameterMarker):
+    def __init__(self, kind: Literal["named"] = "named") -> None:
+        # currently only 'named' kind is supported, and this value isn't used. 3.0 will
+        # introduce the 'type' kind
+        self.kind = kind
+
+
+NamedDependency: TypeAlias = Annotated[T, Dependency(kind="named")]
+"""
+Mark a parameter for name-based dependency injection.
+
+The name of the function parameter will be used as the name for the dependency to inject.
+"""
 
 
 class Provide:
@@ -75,21 +100,19 @@ class Provide:
                 "Cannot cache generator dependency, consider using Lifespan Context instead."
             )
 
-        has_sync_callable = is_class_dependency or not is_async_callable(dependency)  # pyright: ignore
-
+        has_sync_callable = is_class_dependency or not is_async_callable(dependency)
         if sync_to_thread is not None:
             if has_generator_dependency:
                 warn_sync_to_thread_with_generator(dependency, stacklevel=3)  # type: ignore[arg-type]
             elif not has_sync_callable:
-                warn_sync_to_thread_with_async_callable(dependency, stacklevel=3)  # pyright: ignore
+                warn_sync_to_thread_with_async_callable(dependency, stacklevel=3)
         elif has_sync_callable and not has_generator_dependency:
-            warn_implicit_sync_to_thread(dependency, stacklevel=3)  # pyright: ignore
-
+            warn_implicit_sync_to_thread(dependency, stacklevel=3)
         if sync_to_thread and has_sync_callable:
-            self.dependency = ensure_async_callable(dependency)  # pyright: ignore
+            self.dependency = ensure_async_callable(dependency)
             self.has_sync_callable = False
         else:
-            self.dependency = dependency  # pyright: ignore
+            self.dependency = dependency
             self.has_sync_callable = has_sync_callable
 
         self.sync_to_thread = bool(sync_to_thread)
@@ -132,6 +155,8 @@ class Provide:
                 self._parsed_fn_signature = ParsedSignature.from_fn(dependency, signature_namespace)
 
         if self._signature_model is None:
+            from litestar._signature import SignatureModel
+
             self._signature_model = SignatureModel.create(
                 dependency_name_set=dependency_keys,
                 fn=self.dependency,

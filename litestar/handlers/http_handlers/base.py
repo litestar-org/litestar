@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import contextlib
@@ -27,6 +29,7 @@ from litestar.handlers.http_handlers._utils import (
     normalize_http_method,
 )
 from litestar.openapi.spec import Operation
+from litestar.params import RawBody
 from litestar.response import File, Response
 from litestar.response.file import ASGIFileResponse
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
@@ -97,6 +100,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_kwargs_models",
         "_request_class",
         "_request_max_body_size",
+        "_resolved_before_request",
         "_response_class",
         "_response_type_handler",
         "_sync_to_thread",
@@ -253,7 +257,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
+            parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if not http_method:
@@ -297,13 +301,14 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.after_request: AsyncAfterRequestHookHandler | None = (
             ensure_async_callable(after_request) if after_request else None  # type: ignore[assignment]
         )
-        self.after_response: AsyncAfterResponseHookHandler | None = (  # pyright: ignore
+        self.after_response: AsyncAfterResponseHookHandler | None = (  # pyright: ignore[reportAttributeAccessIssue]
             ensure_async_callable(after_response) if after_response else None
         )
         self.background = background
         self.before_request: AsyncBeforeRequestHookHandler | None = (
             ensure_async_callable(before_request) if before_request else None
         )
+        self._resolved_before_request: AsyncAnyCallable | None = self.before_request
         self.cache = cache
         self.cache_control = cache_control
         self.cache_key_builder = cache_key_builder
@@ -529,10 +534,13 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     @property
     def request_max_body_size(self) -> int | None:
-        return value_or_default(self._request_max_body_size, None)  # pyright: ignore
+        return value_or_default(self._request_max_body_size, None)  # pyright: ignore[reportReturnType]
 
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         super().on_registration(route=route, app=app)
+
+        if type(self).resolve_before_request is not HTTPRouteHandler.resolve_before_request:
+            self._resolved_before_request = self.resolve_before_request()
 
         if self._request_max_body_size is Empty:
             raise ImproperlyConfiguredException(
@@ -608,7 +616,11 @@ class HTTPRouteHandler(BaseRouteHandler):
                     f"{self}: Handlers for 'HEAD' requests must not return a value. Either return 'None' or a response type without a body."
                 )
 
-        if (body_param := self.parsed_fn_signature.parameters.get("body")) and not body_param.is_subclass_of(bytes):
+        if (
+            (body_param := self.parsed_fn_signature.parameters.get("body"))
+            and body_param.annotation is not RawBody
+            and not body_param.is_subclass_of(bytes)
+        ):
             raise ImproperlyConfiguredException(
                 f"Invalid type annotation for 'body' parameter in route handler {self}. 'body' will always receive the "
                 f"raw request body as bytes but was annotated with '{body_param.raw!r}'. If you want to receive "
@@ -708,7 +720,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     async def _call_handler_function(
         self,
         request: Request,
-    ) -> ASGIApp:  # pyright: ignore[reportGeneralTypeIssues]
+    ) -> ASGIApp:
         """Call the before request handlers, retrieve any data required for the route handler, and call the route
         handler's ``to_response`` method.
 
@@ -718,7 +730,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_data: Any = None
         parameter_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
 
-        if before_request_handler := self.resolve_before_request():
+        if before_request_handler := self._resolved_before_request:
             response_data = await before_request_handler(request)
 
         # create and enter an AsyncExit stack as we may or may not have a

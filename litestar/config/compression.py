@@ -30,8 +30,10 @@ class CompressionConfig:
     """Minimum response size (bytes) to enable compression, affects all backends."""
     gzip_compress_level: int = field(default=9)
     """Range ``[0-9]``, see :doc:`python:library/gzip`."""
-    zstd_compress_level: int = field(default=3)
-    """Range `[0-22]`, see `zstandard <https://pypi.org/project/zstandard/>`"""
+    zstd_compress_level: int = field(default=0)
+    """Integer greater than or equal to 0.
+    A value of 0 indicates use of default compression level set by the library.
+    """
     brotli_quality: int = field(default=5)
     """Range ``[0-11]``, Controls the compression-speed vs compression-density tradeoff.
 
@@ -86,12 +88,13 @@ class CompressionConfig:
             self.gzip_fallback = self.brotli_gzip_fallback
             self.compression_facade = BrotliCompression
         elif self.backend == "zstd":
-            if self.zstd_compress_level < 1 or self.zstd_compress_level > 22:
-                raise ImproperlyConfiguredException(
-                    f"zstd_compress_level must be between 1 and 22, given: {self.zstd_compress_level}"
-                )
-
             from litestar.middleware.compression.zstd_facade import ZstdCompression
+
+            upper_bound = ZstdCompression.upper_bound
+            if not (0 <= self.zstd_compress_level <= upper_bound):
+                raise ImproperlyConfiguredException(
+                    f"zstd_compress_level must be between 0 and {upper_bound}, given: {self.zstd_compress_level}"
+                )
 
             self.gzip_fallback = self.zstd_gzip_fallback
             self.compression_facade = ZstdCompression

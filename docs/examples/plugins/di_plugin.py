@@ -2,12 +2,13 @@ from inspect import Parameter, Signature
 from typing import Any
 
 from litestar import Litestar, get
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
+from litestar.params import FromQuery
 from litestar.plugins import DIPlugin
 
 
 class MyBaseType:
-    def __init__(self, param):
+    def __init__(self, param: str) -> None:
         self.param = param
 
 
@@ -17,12 +18,12 @@ class MyDIPlugin(DIPlugin):
 
     def get_typed_init(self, type_: Any) -> tuple[Signature, dict[str, Any]]:
         signature = Signature([Parameter(name="param", kind=Parameter.POSITIONAL_OR_KEYWORD)])
-        annotations = {"param": str}
+        annotations = {"param": FromQuery[str]}
         return signature, annotations
 
 
 @get("/", dependencies={"injected": Provide(MyBaseType, sync_to_thread=False)})
-async def handler(injected: MyBaseType) -> str:
+async def handler(injected: NamedDependency[MyBaseType]) -> str:
     return injected.param
 
 

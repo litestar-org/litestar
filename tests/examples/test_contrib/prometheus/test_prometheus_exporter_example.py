@@ -4,6 +4,7 @@ import pytest
 from prometheus_client import REGISTRY
 
 from litestar import Controller, Litestar, Request, get
+from litestar.params import FromPath, FromQuery
 from litestar.plugins.prometheus import PrometheusMiddleware
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient
@@ -47,9 +48,16 @@ def test_prometheus_exporter_example(
 
     clear_collectors()
 
-    @get(route_template)
-    def home(name: str) -> dict[str, Any]:
-        return {"hello": name}
+    if "{name:str}" in route_template:
+
+        @get(route_template)
+        def home(name: FromPath[str]) -> dict[str, Any]:
+            return {"hello": name}
+    else:
+
+        @get(route_template)
+        def home(name: FromQuery[str] = "") -> dict[str, Any]:  # type: ignore[no-redef]
+            return {"hello": name}
 
     app.register(home)
 
@@ -67,11 +75,11 @@ def test_correct_population_path_template() -> None:
         path = "/prefix"
 
         @get("/{id_:int}")
-        async def b(self, request: Request, id_: int) -> str:
+        async def b(self, request: Request, id_: FromPath[int]) -> str:
             return request.scope["path_template"]
 
         @get("/{id_:int}/postfix")
-        async def a(self, request: Request, id_: int) -> str:
+        async def a(self, request: Request, id_: FromPath[int]) -> str:
             return request.scope["path_template"]
 
     app = Litestar([TestController])

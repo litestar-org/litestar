@@ -4,6 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union
 
+import annotated_types
 import msgspec
 import pytest
 from typing_extensions import (
@@ -17,14 +18,14 @@ from typing_extensions import (
     TypeAliasType as TeTypeAliasType,
 )
 
+from litestar.exceptions import ImproperlyConfiguredException
+
 try:
     from typing import TypeAliasType  # type: ignore[attr-defined]
 except ImportError:
     TypeAliasType = TeTypeAliasType
 
-from litestar import get
-from litestar.exceptions import LitestarWarning
-from litestar.params import DependencyKwarg, KwargDefinition, Parameter, ParameterKwarg
+from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.typing import FieldDefinition
 from tests.unit.test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
@@ -167,8 +168,8 @@ def test_field_definition_kwarg_definition_from_extras() -> None:
     )
 
 
-@pytest.mark.parametrize("kwarg_definition", [KwargDefinition(), DependencyKwarg()])
-def test_field_definition_kwarg_definition_from_kwargs(kwarg_definition: KwargDefinition | DependencyKwarg) -> None:
+def test_field_definition_kwarg_definition_from_kwargs() -> None:
+    kwarg_definition = KwargDefinition()
     assert FieldDefinition.from_annotation(int, kwarg_definition=kwarg_definition).kwarg_definition is kwarg_definition
 
 
@@ -176,6 +177,12 @@ def test_field_definition_with_annotated_kwarg_definition() -> None:
     kwarg_definition = KwargDefinition()
     fd = FieldDefinition.from_annotation(Annotated[str, kwarg_definition])
     assert fd.kwarg_definition is kwarg_definition
+
+
+def test_constraint_metadata_on_data_is_plain_kwarg_definition() -> None:
+    field_definition = FieldDefinition.from_kwarg(annotation=Annotated[int, annotated_types.Gt(0)], name="data")
+    assert type(field_definition.kwarg_definition) is KwargDefinition
+    assert field_definition.kwarg_definition.gt == 0
 
 
 def test_field_definition_from_union_annotation() -> None:
@@ -212,7 +219,7 @@ def test_field_definition_is_type_var_predicate() -> None:
     """Test FieldDefinition.is_type_var."""
     assert FieldDefinition.from_annotation(int).is_type_var is False
     assert FieldDefinition.from_annotation(T).is_type_var is True
-    assert FieldDefinition.from_annotation(Union[int, T]).is_type_var is False  # pyright: ignore
+    assert FieldDefinition.from_annotation(Union[int, T]).is_type_var is False  # pyright: ignore[reportGeneralTypeIssues]
 
 
 def test_field_definition_is_union_predicate() -> None:
@@ -338,7 +345,10 @@ def test_is_required() -> None:
     )
     assert (
         FieldDefinition.from_kwarg(
-            name="foo", kwarg_definition=ParameterKwarg(required=None, default=""), annotation=str
+            name="foo",
+            kwarg_definition=ParameterKwarg(required=None),
+            annotation=str,
+            default=None,
         ).is_required
         is False
     )
@@ -349,13 +359,17 @@ def test_is_required() -> None:
         is True
     )
 
-    assert FieldDefinition.from_annotation(Optional[str]).is_required is False
+    # Nullable type without a default is required (nullability != optionality)
+    nullable_field = FieldDefinition.from_annotation(Optional[str])
+    assert nullable_field.is_required is True
+    assert nullable_field.is_optional is True
     assert FieldDefinition.from_annotation(str).is_required is True
 
-    assert FieldDefinition.from_annotation(Any).is_required is False
+    assert FieldDefinition.from_annotation(Any).is_required is True
 
+    # from_annotation only sees the type, not the default value from the struct definition
     assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_default"]).is_required is True
-    assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_none_default"]).is_required is False
+    assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_none_default"]).is_required is True
 
 
 def test_field_definition_bound_type() -> None:
@@ -450,35 +464,11 @@ def test_field_definition_get_type_hints_dont_resolve_generics(
     )
 
 
-def test_warn_ambiguous_default_values() -> None:
-    with pytest.warns((LitestarWarning, DeprecationWarning)):
-        FieldDefinition.from_annotation(Annotated[int, Parameter(default=1)], default=2)
-
-
-def test_warn_defaults_inside_parameter_definition() -> None:
-    with pytest.warns(DeprecationWarning, match="Deprecated default value specification"):
-        FieldDefinition.from_annotation(Annotated[int, Parameter(default=1)], default=1)
-
-
-def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
-    with pytest.warns() as warnings:
-
-        @get(sync_to_thread=False)
-        def handler(foo: Annotated[int, Parameter(default=1)]) -> None:
-            pass
-
-        _ = handler.parsed_fn_signature
-
-    (record,) = warnings
-    assert record.category == DeprecationWarning
-    assert "Deprecated default value specification" in str(record.message)
-
-
 @pytest.mark.parametrize(
     "annotation",
     [
-        pytest.param(TypeAliasType("IntAlias", int), id="typing.TypeAliasType"),  # pyright: ignore
-        pytest.param(TeTypeAliasType("IntAlias", int), id="typing_extensions.TypeAliasType"),  # pyright: ignore
+        pytest.param(TypeAliasType("IntAlias", int), id="typing.TypeAliasType"),  # pyright: ignore[reportGeneralTypeIssues]
+        pytest.param(TeTypeAliasType("IntAlias", int), id="typing_extensions.TypeAliasType"),  # pyright: ignore[reportGeneralTypeIssues]
     ],
 )
 def test_is_type_alias_type(annotation: Any) -> None:
@@ -493,3 +483,10 @@ def test_unwrap_type_alias_type_keyword() -> None:
     annotation = ctx["IntAlias"]
     field_definition = FieldDefinition.from_annotation(annotation)
     assert field_definition.is_type_alias_type
+
+
+def test_kwarg_definition_as_default_raises() -> None:
+    with pytest.raises(
+        ImproperlyConfiguredException, match="Usage of parameter defaults to declare metadata is no longer supported."
+    ):
+        FieldDefinition.from_annotation(int, default=ParameterKwarg())

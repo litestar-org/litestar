@@ -2,11 +2,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Generic, TypeVar
 
-from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
+from advanced_alchemy.extensions.litestar import SQLAlchemyDTO, SQLAlchemyDTOConfig
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, get
-from litestar.dto import DTOConfig
 
 from .my_lib import Base
 
@@ -26,7 +25,7 @@ class User(Base):
 
 
 class UserDTO(SQLAlchemyDTO[User]):
-    config = DTOConfig(exclude={"password", "created_at"})
+    config = SQLAlchemyDTOConfig(exclude={"password", "created_at"})
 
 
 @get("/users", dto=UserDTO, sync_to_thread=False)

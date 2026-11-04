@@ -61,6 +61,13 @@ def _get_available_port() -> int:
             return sock.getsockname()[1]
 
 
+def _run_example_app(app_path_str: str, port: int) -> None:
+    """Module-level uvicorn entry point so it is picklable under macOS ``spawn``."""
+    with redirect_stderr(Path(os.devnull).open()):
+        app = _load_app_from_path(Path(app_path_str))
+        uvicorn.run(app, port=port, access_log=False)
+
+
 @contextmanager
 def run_app(path: Path) -> Generator[int, None, None]:
     """Run an example app from a python file.
@@ -69,15 +76,12 @@ def run_app(path: Path) -> Generator[int, None, None]:
     """
 
     port = _get_available_port()
-    app = _load_app_from_path(path)
-
-    def run() -> None:
-        with redirect_stderr(Path(os.devnull).open()):
-            uvicorn.run(app, port=port, access_log=False)
+    # Validate the app exists before spawning the child; the child re-imports it.
+    _load_app_from_path(path)
 
     count = 0
     while count < 100:
-        proc = multiprocessing.Process(target=run)
+        proc = multiprocessing.Process(target=_run_example_app, args=(str(path), port))
         proc.start()
         try:
             for _ in range(100):

@@ -11,9 +11,10 @@ from litestar.config.compression import CompressionConfig
 from litestar.connection import Request
 from litestar.datastructures import Cookie, UploadFile
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import NotAuthorizedException, PermissionDeniedException
 from litestar.handlers import HTTPRouteHandler
 from litestar.middleware.logging import LoggingMiddleware
-from litestar.params import Body
+from litestar.params import Body, JSONBody
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
 from tests.helpers import cleanup_logging_impl
@@ -209,7 +210,7 @@ def test_logging_middleware_compressed_response_body(
 
 def test_logging_middleware_post_body() -> None:
     @post("/")
-    def post_handler(data: dict[str, str]) -> dict[str, str]:
+    def post_handler(data: JSONBody[dict[str, str]]) -> dict[str, str]:
         return data
 
     with create_test_client(
@@ -314,7 +315,7 @@ def test_logging_middleware_with_session_middleware(session_backend_config_memor
 def test_structlog_invalid_request_body_handled() -> None:
     # https://github.com/litestar-org/litestar/issues/3063
     @post("/")
-    async def hello_world(data: dict[str, Any]) -> dict[str, Any]:
+    async def hello_world(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
         return data
 
     with create_test_client(
@@ -322,3 +323,94 @@ def test_structlog_invalid_request_body_handled() -> None:
         middleware=[LoggingMiddleware(structlog.get_logger("litestar.test"))],
     ) as client:
         assert client.post("/", headers={"Content-Type": "application/json"}, content=b'{"a": "b",}').status_code == 400
+
+
+def test_logging_middleware_records_correct_status_for_exceptions(caplog: "LogCaptureFixture") -> None:
+    """Test that LoggingMiddleware correctly logs HTTP exception status codes.
+    This test verifies the fix for the issue where NotAuthorizedException and other
+    HTTP exceptions were not being logged because the log wrapper was never called
+    when an exception occurred.
+    """
+
+    @get("/protected")
+    def protected_handler() -> dict:
+        raise NotAuthorizedException("Invalid token")
+
+    @get("/forbidden")
+    def forbidden_handler() -> dict:
+        raise PermissionDeniedException("Access denied")
+
+    with (
+        create_test_client(
+            route_handlers=[protected_handler, forbidden_handler],
+            middleware=[
+                LoggingMiddleware(
+                    "litestar.test",
+                    response_log_fields=["status_code"],
+                    request_log_fields=["path", "method"],
+                )
+            ],
+        ) as client,
+        caplog.at_level(INFO),
+    ):
+        # Request that raises NotAuthorizedException (401)
+        response = client.get("/protected")
+        assert response.status_code == 401
+
+        # Request that raises PermissionDeniedException (403)
+        response = client.get("/forbidden")
+        assert response.status_code == 403
+
+        # Check that responses were logged with correct status codes
+        # We should have 4 messages: 2 requests + 2 responses
+        assert len(caplog.messages) == 4
+
+        # Check that 401 was logged
+        assert any("status_code=401" in msg for msg in caplog.messages), (
+            f"Expected 'status_code=401' in logs, but got: {caplog.messages}"
+        )
+
+        # Check that 403 was logged
+        assert any("status_code=403" in msg for msg in caplog.messages), (
+            f"Expected 'status_code=403' in logs, but got: {caplog.messages}"
+        )
+
+
+def test_logging_middleware_records_generic_exception_as_500(caplog: "LogCaptureFixture") -> None:
+    """Test that LoggingMiddleware logs generic exceptions as 500.
+
+    This test verifies that non-HTTPException errors are logged. When a generic exception
+    occurs (not HTTPException), only the request is logged before the exception propagates
+    to Litestar's exception handler.
+    """
+
+    @get("/generic_error")
+    def generic_error_handler() -> dict:
+        raise ValueError("Something went wrong")
+
+    with (
+        create_test_client(
+            route_handlers=[generic_error_handler],
+            middleware=[
+                LoggingMiddleware(
+                    "litestar.test",
+                    response_log_fields=["status_code"],
+                    request_log_fields=["path", "method"],
+                )
+            ],
+        ) as client,
+        caplog.at_level(INFO),
+    ):
+        # Request that raises a generic exception
+        response = client.get("/generic_error")
+        # The exception is caught by Litestar's exception handler and converted to 500
+        assert response.status_code == 500
+
+        # For generic exceptions (not HTTPException), only the request is logged
+        # before the exception propagates up the middleware stack
+        assert len(caplog.messages) >= 1
+
+        # Check that the request was logged
+        assert any("HTTP Request" in msg for msg in caplog.messages), (
+            f"Expected 'HTTP Request' in logs, but got: {caplog.messages}"
+        )

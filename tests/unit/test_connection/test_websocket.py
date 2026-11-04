@@ -49,7 +49,7 @@ def test_route_handler_property() -> None:
         value["handler"] = socket.route_handler
         await socket.close()
 
-    with create_test_client(route_handlers=[handler]).websocket_connect("/"):
+    with create_test_client(route_handlers=[handler]) as client, client.websocket_connect("/"):
         assert str(value["handler"]) == str(handler)
 
 
@@ -91,7 +91,10 @@ async def test_custom_websocket_class() -> None:
         await socket.accept()
         await socket.close()
 
-    with create_test_client(route_handlers=[handler], websocket_class=MyWebSocket).websocket_connect("/"):
+    with (
+        create_test_client(route_handlers=[handler], websocket_class=MyWebSocket) as client,
+        client.websocket_connect("/"),
+    ):
         assert value["called"]
 
 

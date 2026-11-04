@@ -24,10 +24,11 @@ if TYPE_CHECKING:
     from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.plugins import OpenAPIRenderPlugin
     from litestar.openapi.spec import OpenAPI, PathItem
+    from litestar.params import FromPath
     from litestar.routes import BaseRoute
 
 
-def handle_schema_path_not_found(path: str = "/") -> Response:
+def handle_schema_path_not_found(path: FromPath[str] = "/") -> Response:
     """Handler for returning HTML formatted errors from not-found schema paths.
 
     This preserves backward compatibility with the Controller-based OpenAPI implementation.
@@ -88,6 +89,12 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         openapi.paths = path_items
         openapi.components.schemas = context.schema_registry.generate_components_schemas()
         return openapi
+
+    def invalidate_schema_cache(self) -> None:
+        if self._openapi_config is None:
+            raise ImproperlyConfiguredException("OpenAPIConfig not initialized")
+        self._openapi = None
+        self._openapi_schema = None
 
     def provide_openapi(self) -> OpenAPI:
         if not self._openapi:
@@ -201,4 +208,5 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         if any(route_handler.include_in_schema for route_handler in route.route_handler_map.values()):
             # Force recompute the schema if a new route is added
             self._openapi = None
+            self._openapi_schema = None
             self.included_routes[route.path] = route

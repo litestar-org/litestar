@@ -36,7 +36,7 @@ class _State:
 async def _run_sync_asyncio(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
     ctx = contextvars.copy_context()
     bound_fn = partial(ctx.run, fn, *args, **kwargs)
-    return await asyncio.get_running_loop().run_in_executor(get_asyncio_executor(), bound_fn)  # pyright: ignore
+    return await asyncio.get_running_loop().run_in_executor(get_asyncio_executor(), bound_fn)
 
 
 async def _run_sync_trio(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:

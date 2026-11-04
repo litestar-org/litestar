@@ -4,7 +4,8 @@ Requests
 Request body
 ------------
 
-The body of HTTP requests can be accessed using the special ``data`` parameter in a handler function.
+The body of HTTP requests can be accessed using the special ``data`` parameter in a handler function,
+declared with a body marker. For a JSON body, that's :data:`~litestar.params.JSONBody`.
 
 .. literalinclude:: /examples/request_data/request_data_1.py
     :language: python
@@ -17,7 +18,7 @@ The type of ``data`` can be any supported type, including
 * :class:`TypedDicts <typing.TypedDict>`
 * :func:`dataclasses <dataclasses.dataclass>`
 * Types supported via :doc:`plugins </usage/plugins/index>` ie.
-    - `Msgspec Struct <https://jcristharif.com/msgspec/structs.html>`_
+    - `Msgspec Struct <https://msgspec.dev/structs>`_
     - `Pydantic models <https://docs.pydantic.dev/usage/models/>`_
     - `Attrs classes <https://www.attrs.org/en/stable/>`_
 
@@ -59,8 +60,8 @@ URL Encoded Form Data
 ^^^^^^^^^^^^^^^^^^^^^
 
 To access data sent as `url-encoded form data <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST>`_,
-i.e. ``application/x-www-form-urlencoded`` Content-Type header, use :class:`Body <litestar.params.Body>` and specify
-:class:`RequestEncodingType.URL_ENCODED <litestar.enums.RequestEncodingType>` as the ``media_type``:
+i.e. ``application/x-www-form-urlencoded`` Content-Type header, wrap the ``data``
+annotation with :data:`~litestar.params.URLEncodedBody`:
 
 .. tab-set::
 
@@ -81,12 +82,19 @@ i.e. ``application/x-www-form-urlencoded`` Content-Type header, use :class:`Body
     dictionaries and deeply nested data. It should only be used for simple data structures.
 
 
+.. tip::
+    ``URLEncodedBody[<type>]`` is a shorthand for
+    ``Annotated[<type>, Body(media_type=RequestEncodingType.URL_ENCODED)]``. If you want
+    to pass additional OpenAPI metadata or constraints, use the
+    :class:`~typing.Annotated` form
+
+
 MultiPart Form Data
 ^^^^^^^^^^^^^^^^^^^
 
 You can access data uploaded using a request with a
 `multipart/form-data <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST>`_
-Content-Type header by specifying it in the :class:`Body <litestar.params.Body>` function:
+Content-Type header by specifying the data with :data:`~litestar.params.MultipartBody`:
 
 .. tab-set::
 
@@ -100,6 +108,13 @@ Content-Type header by specifying it in the :class:`Body <litestar.params.Body>`
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
             :lines: 51-64
+
+
+.. tip::
+    ``MultipartBody[<type>]`` is a shorthand for
+    ``Annotated[<type>, Body(media_type=RequestEncodingType.MULTI_PART)]``. If you want
+    to pass additional OpenAPI metadata or constraints, use the
+    :class:`~typing.Annotated` form
 
 
 File uploads
@@ -156,7 +171,7 @@ To access a single file simply type ``data`` as :class:`UploadFile <.datastructu
 Multiple files
 ^^^^^^^^^^^^^^
 
-To access multiple files with known filenames, you can use a pydantic model:
+To access multiple files with known filenames, you can use any structured type:
 
 
 .. tab-set::
@@ -213,8 +228,8 @@ Finally, you can also access the files as a list without the filenames:
 MessagePack data
 ----------------
 
-To receive `MessagePack <https://msgpack.org/>`_ data, specify the appropriate ``Content-Type``
-for ``Body``\ , by using :class:`RequestEncodingType.MESSAGEPACK <.enums.RequestEncodingType>`:
+To receive `MessagePack <https://msgpack.org/>`_ data, annotate ``data`` with
+:data:`~litestar.params.MsgPackBody`:
 
 .. tab-set::
 
@@ -228,6 +243,14 @@ for ``Body``\ , by using :class:`RequestEncodingType.MESSAGEPACK <.enums.Request
         .. literalinclude:: ../../tests/examples/test_request_data.py
             :language: python
             :lines: 136-141
+
+.. tip::
+    ``MsgPackBody[<type>]`` is a shorthand for
+    ``Annotated[<type>, Body(media_type=RequestEncodingType.MESSAGEPACK)]``. If you want
+    to pass additional OpenAPI metadata or constraints, use the
+    :class:`~typing.Annotated` form
+
+
 
 Custom Request
 --------------
@@ -304,7 +327,7 @@ To disable this limit for a specific handler / router / controller, it can be se
     For requests that define a ``Content-Length`` header, Litestar will not attempt to
     read the request body should the header value exceed the ``request_max_body_size``.
 
-    If the header value is within the allowed bounds, Litestar will verify during the
-    streaming of the request body that it does not exceed the size specified in the
-    header. Should the request exceed this size, it will abort the request with a
-    ``400 - Bad Request``.
+    Validation that the actual request body matches the ``Content-Length`` header is
+    delegated to the ASGI server (e.g. uvicorn). This ensures compatibility with
+    request decompression middleware, where the decompressed body may legitimately
+    exceed the wire-format ``Content-Length``.

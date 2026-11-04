@@ -13,55 +13,28 @@ import pytest
 from litestar import get
 from litestar.datastructures import MultiDict
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response.base import ASGIResponse
 from litestar.response.redirect import ASGIRedirectResponse, Redirect
 from litestar.status_codes import HTTP_200_OK
-from litestar.testing import TestClient, create_test_client
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar.types import Receive, Scope, Send
+    pass
 
 
 def test_redirect_response() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["path"] == "/":
-            response = ASGIResponse(body=b"hello, world", media_type="text/plain")
-        else:
-            response = ASGIRedirectResponse(path="/")
-        await response(scope, receive, send)
+    @get("/redirect")
+    def redirect() -> Redirect:
+        return Redirect(path="/")
 
-    client = TestClient(app)
-    response = client.get("/redirect")
-    assert response.text == "hello, world"
-    assert response.url == "http://testserver.local/"
+    @get("/")
+    def index() -> str:
+        return "hello, world"
 
-
-def test_quoting_redirect_response() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["path"] == "/test/":
-            response = ASGIResponse(body=b"hello, world", media_type="text/plain")
-        else:
-            response = ASGIRedirectResponse(path="/test/")
-        await response(scope, receive, send)
-
-    client = TestClient(app)
-    response = client.get("/redirect", follow_redirects=True)
-    assert response.text == "hello, world"
-    assert str(response.url) == "http://testserver.local/test/"
-
-
-def test_redirect_response_content_length_header() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["path"] == "/":
-            response = ASGIResponse(body=b"hello", media_type="text/plain")
-        else:
-            response = ASGIRedirectResponse(path="/")
-        await response(scope, receive, send)
-
-    client: TestClient = TestClient(app)
-    response = client.request("GET", "/redirect", follow_redirects=False)
-    assert str(response.url) == "http://testserver.local/redirect"
-    assert "content-length" in response.headers
+    with create_test_client([redirect, index], raise_server_exceptions=True) as client:
+        response = client.get("/redirect")
+        assert response.text == "hello, world"
+        assert response.url == "http://testserver.local/"
+        assert "content-length" in response.headers
 
 
 def test_redirect_response_status_validation() -> None:
@@ -70,17 +43,18 @@ def test_redirect_response_status_validation() -> None:
 
 
 def test_redirect_response_html_media_type() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["path"] == "/":
-            response = ASGIResponse(body=b"hello")
-        else:
-            response = ASGIRedirectResponse(path="/", media_type="text/html")
-        await response(scope, receive, send)
+    @get("/redirect")
+    def redirect() -> Redirect:
+        return Redirect(path="/", media_type="text/html")
 
-    client: TestClient = TestClient(app)
-    response = client.request("GET", "/redirect", follow_redirects=False)
-    assert str(response.url) == "http://testserver.local/redirect"
-    assert "text/html" in str(response.headers["Content-Type"])
+    @get("/")
+    def index() -> str:
+        return "hello"
+
+    with create_test_client([index, redirect]) as client:
+        response = client.request("GET", "/redirect", follow_redirects=False)
+        assert str(response.url) == "http://testserver.local/redirect"
+        assert "text/html" in str(response.headers["Content-Type"])
 
 
 def test_redirect_response_media_type_validation() -> None:

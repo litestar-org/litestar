@@ -29,14 +29,14 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           version: "0.5.4"
           enable-cache: true
@@ -48,14 +48,20 @@ jobs:
         run: git fetch origin gh-pages --depth=1
 
       - name: Build release docs
+        env:
+          LITESTAR_DOCS_SOURCE_REF: ${{ github.event.release.tag_name }}
         run: uv run python tools/build_docs.py docs-build
         if: github.event_name == 'release'
 
       - name: Build docs (main branch)
+        env:
+          LITESTAR_DOCS_SOURCE_REF: main
         run: uv run python tools/build_docs.py docs-build --version main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
       - name: Build docs (v2 branch)
+        env:
+          LITESTAR_DOCS_SOURCE_REF: v2
         run: uv run python tools/build_docs.py docs-build --version 2
         if: github.event_name == 'push' && github.ref == 'refs/heads/v2'
 
@@ -64,6 +70,11 @@ jobs:
           if [ "${{ inputs.version }}" == "release" ]; then
             uv run python tools/build_docs.py docs-build
           else
+            if [ "${{ inputs.version }}" == "main" ]; then
+              export LITESTAR_DOCS_SOURCE_REF="main"
+            else
+              export LITESTAR_DOCS_SOURCE_REF="v${{ inputs.version }}"
+            fi
             uv run python tools/build_docs.py docs-build --version ${{ inputs.version }}
           fi
         if: github.event_name == 'workflow_dispatch'

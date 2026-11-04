@@ -1,7 +1,7 @@
 from litestar import Litestar, Request, get
-from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.plugins.flash import FlashConfig, FlashPlugin, flash
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.response import Template
 from litestar.template.config import TemplateConfig
 

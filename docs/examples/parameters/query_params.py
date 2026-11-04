@@ -1,8 +1,9 @@
 from litestar import Litestar, get
+from litestar.params import FromQuery
 
 
 @get("/", sync_to_thread=False)
-def index(param: str) -> dict[str, str]:
+def index(param: FromQuery[str]) -> dict[str, str]:
     return {"param": param}
 
 

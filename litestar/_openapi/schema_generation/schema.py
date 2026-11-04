@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from collections import OrderedDict, defaultdict, deque
@@ -14,7 +16,6 @@ from typing import (
     Any,
     Literal,
     Self,
-    Union,
     cast,
     get_args,
 )
@@ -33,8 +34,9 @@ from litestar._openapi.schema_generation.utils import (
 from litestar.datastructures import SecretBytes, SecretString, UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
+from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
-from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
+from litestar.params import BodyKwarg, KwargDefinition
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType
@@ -47,16 +49,16 @@ from litestar.utils.predicates import (
 from litestar.utils.typing import (
     get_origin_or_inner_type,
     make_non_optional_union,
+    unwrap_annotation,
     unwrap_new_type,
 )
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
-    from litestar.openapi.spec import Example, Reference
+    from litestar.openapi.spec import Example
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "content_encoding": "content_encoding",
-    "default": "default",
     "description": "description",
     "enum": "enum",
     "examples": "examples",
@@ -77,7 +79,7 @@ KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
 }
 
 TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
-    Decimal: Schema(type=OpenAPIType.NUMBER),
+    Decimal: Schema(type=OpenAPIType.STRING),
     defaultdict: Schema(type=OpenAPIType.OBJECT),
     deque: Schema(type=OpenAPIType.ARRAY),
     dict: Schema(type=OpenAPIType.OBJECT),
@@ -170,6 +172,11 @@ def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
     Yields:
         The flattened arguments of the Literal.
     """
+    # Strip ``Annotated[...]`` (and similar wrappers) so we never iterate over
+    # PEP 593 metadata as if it were a literal value. Reachable e.g. via
+    # ``Optional[Annotated[Literal[...], Meta(...)]]`` because
+    # ``make_non_optional_union`` preserves the ``Annotated`` wrapper.
+    annotation, _, _ = unwrap_annotation(annotation)
     for arg in get_args(annotation):
         if get_origin_or_inner_type(arg) is Literal:
             yield from _iter_flat_literal_args(arg)
@@ -212,7 +219,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry")
+    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry", "signature_namespace")
 
     def __init__(
         self,
@@ -220,6 +227,7 @@ class SchemaCreator:
         plugins: Iterable[OpenAPISchemaPlugin] | None = None,
         prefer_alias: bool = True,
         schema_registry: SchemaRegistry | None = None,
+        signature_namespace: dict[str, Any] | None = None,
     ) -> None:
         """Instantiate a SchemaCreator.
 
@@ -228,11 +236,13 @@ class SchemaCreator:
             plugins: A list of plugins.
             prefer_alias: Whether to prefer the alias name for the schema.
             schema_registry: A SchemaRegistry instance.
+            signature_namespace: Additional names for forward reference resolution.
         """
         self.generate_examples = generate_examples
         self.plugins = plugins if plugins is not None else []
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
+        self.signature_namespace = signature_namespace or {}
 
     @classmethod
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
@@ -246,7 +256,13 @@ class SchemaCreator:
         """Return a SchemaCreator with generate_examples set to False."""
         if not self.generate_examples:
             return self
-        return type(self)(generate_examples=False, plugins=self.plugins, prefer_alias=False)
+        return type(self)(
+            generate_examples=False,
+            plugins=self.plugins,
+            prefer_alias=False,
+            schema_registry=self.schema_registry,
+            signature_namespace=self.signature_namespace,
+        )
 
     @staticmethod
     def plugin_supports_field(plugin: OpenAPISchemaPlugin, field: FieldDefinition) -> bool:
@@ -263,7 +279,7 @@ class SchemaCreator:
     def is_constrained_field(self, field_definition: FieldDefinition) -> bool:
         """Return if the field is constrained, taking into account constraints defined by plugins"""
         return (
-            isinstance(field_definition.kwarg_definition, (ParameterKwarg, BodyKwarg))
+            isinstance(field_definition.kwarg_definition, KwargDefinition)
             and field_definition.kwarg_definition.is_constrained
         ) or any(
             p.is_constrained_field(field_definition)
@@ -305,9 +321,30 @@ class SchemaCreator:
                 annotation,
                 include_null=field_definition.is_optional,
             )
+        elif field_definition.is_subclass_of(UploadFile) or (
+            # optional handler-level upload bodies keep their multipart schema; optionality
+            # is expressed through `requestBody.required` instead of a `oneOf` with `null`
+            field_definition.is_optional
+            and field_definition.name == "data"
+            and isinstance(field_definition.kwarg_definition, BodyKwarg)
+            and all(
+                t.is_none_type or t.is_subclass_of(UploadFile) or t.has_inner_subclass_of(UploadFile)
+                for t in field_definition.inner_types
+            )
+        ):
+            result = self.for_upload_file(
+                FieldDefinition.from_kwarg(
+                    annotation=make_non_optional_union(field_definition.annotation),
+                    name=field_definition.name,
+                    default=field_definition.default,
+                    kwarg_definition=field_definition.kwarg_definition,
+                )
+                if field_definition.is_optional
+                else field_definition
+            )
         elif field_definition.is_optional:
             result = self.for_optional_field(field_definition)
-        elif field_definition.is_enum:
+        elif field_definition.is_enum and not field_definition.is_union:
             result = self.for_enum_field(field_definition)
         elif field_definition.is_union:
             result = self.for_union_field(field_definition)
@@ -319,12 +356,19 @@ class SchemaCreator:
             # this case does not recurse for all base cases, so it needs to happen
             # after all non-concrete cases
             result = self.for_object_type(field_definition)
-        elif field_definition.is_subclass_of(UploadFile):
-            result = self.for_upload_file(field_definition)
         else:
             result = create_schema_for_annotation(field_definition.annotation)
 
-        return self.process_schema_result(field_definition, result) if isinstance(result, Schema) else result
+        if isinstance(result, Schema):
+            result = self.process_schema_result(field_definition, result)
+
+        if isinstance(result, Reference):
+            wrapper = Schema()
+            self._apply_kwarg_definition_metadata(field_definition, wrapper)
+            if wrapper != Schema():
+                wrapper.all_of = [result]
+                return wrapper
+        return result
 
     def for_new_type(self, field_definition: FieldDefinition) -> Schema | Reference:
         return self.for_field_definition(
@@ -332,6 +376,7 @@ class SchemaCreator:
                 annotation=unwrap_new_type(field_definition.annotation),
                 name=field_definition.name,
                 default=field_definition.default,
+                kwarg_definition=field_definition.kwarg_definition,
             )
         )
 
@@ -406,6 +451,24 @@ class SchemaCreator:
                 default=field_definition.default,
             )
         )
+        # nullable scalars are expressed as 'type: [X, null]' rather than 'oneOf: [X, null]',
+        # which tooling handles better (e.g. Swagger UI file inputs). refs, unions, enums and
+        # const cannot preserve their semantics in a type array; structured types could, but
+        # downstream tooling support is weak, so both keep the oneOf encoding.
+        if (
+            isinstance(schema_or_reference, Schema)
+            and isinstance(schema_type := schema_or_reference.type, OpenAPIType)
+            and schema_type in (OpenAPIType.STRING, OpenAPIType.INTEGER, OpenAPIType.NUMBER, OpenAPIType.BOOLEAN)
+            and schema_or_reference.one_of is None
+            and schema_or_reference.any_of is None
+            and schema_or_reference.all_of is None
+            and schema_or_reference.enum is None
+            and schema_or_reference.const is None
+        ):
+            schema = copy(schema_or_reference)
+            schema.type = [schema_type, OpenAPIType.NULL]
+            return schema
+
         if isinstance(schema_or_reference, Schema) and isinstance(schema_or_reference.one_of, list):
             result = schema_or_reference.one_of
         else:
@@ -510,7 +573,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        kwarg_definition = cast("Union[ParameterKwarg, BodyKwarg]", field.kwarg_definition)
+        kwarg_definition = cast("KwargDefinition", field.kwarg_definition)
         if any(is_class_and_subclass(field.annotation, t) for t in (int, float, Decimal)):
             return create_numerical_constrained_field_schema(field.annotation, kwarg_definition)
         if any(is_class_and_subclass(field.annotation, t) for t in (str, bytes)):
@@ -529,7 +592,7 @@ class SchemaCreator:
             A schema instance.
         """
         schema = Schema(type=OpenAPIType.ARRAY)
-        kwarg_definition = cast("Union[ParameterKwarg, BodyKwarg]", field_definition.kwarg_definition)
+        kwarg_definition = cast("KwargDefinition", field_definition.kwarg_definition)
         if kwarg_definition.min_items:
             schema.min_items = kwarg_definition.min_items
         if kwarg_definition.max_items:
@@ -571,17 +634,15 @@ class SchemaCreator:
         schema = self.schema_registry.get_schema_for_field_definition(field_definition)
         schema.type = enum_type
         schema.enum = enum_values
-        schema.title = get_name(field_definition.annotation)
         self.process_schema_result(field_definition, schema)
+        if schema.title is None:
+            schema.title = get_name(field_definition.annotation)
         if schema.description is None:
             schema.description = field_definition.annotation.__doc__
 
         return self.schema_registry.get_reference_for_field_definition(field_definition) or schema
 
-    def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
-        if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
-            schema.const = field.default
-
+    def _apply_kwarg_definition_metadata(self, field: FieldDefinition, schema: Schema) -> None:
         if field.kwarg_definition:
             for kwarg_definition_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
                 if (value := getattr(field.kwarg_definition, kwarg_definition_key, Empty)) and (
@@ -599,15 +660,21 @@ class SchemaCreator:
                     if getattr(schema, schema_key, None) is None:
                         setattr(schema, schema_key, value)
 
-            if isinstance(field.kwarg_definition, KwargDefinition) and (extra := field.kwarg_definition.schema_extra):
-                field_aliases = schema.field_aliases()
-                for schema_key, value in extra.items():
-                    schema_key = field_aliases.get(schema_key, schema_key)
-                    if not hasattr(schema, schema_key):
-                        raise ValueError(
-                            f"`schema_extra` declares key `{schema_key}` which does not exist in `Schema` object"
-                        )
-                    setattr(schema, schema_key, value)
+    def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
+        if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
+            schema.const = field.default
+
+        self._apply_kwarg_definition_metadata(field, schema)
+
+        if isinstance(field.kwarg_definition, KwargDefinition) and (extra := field.kwarg_definition.schema_extra):
+            field_aliases = schema.field_aliases()
+            for schema_key, value in extra.items():
+                schema_key = field_aliases.get(schema_key, schema_key)
+                if not hasattr(schema, schema_key):
+                    raise ValueError(
+                        f"`schema_extra` declares key `{schema_key}` which does not exist in `Schema` object"
+                    )
+                setattr(schema, schema_key, value)
 
         if schema.default is None and field.default is not Empty:
             schema.default = field.default

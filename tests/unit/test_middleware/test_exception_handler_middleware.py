@@ -1,9 +1,9 @@
+import dataclasses
 from collections.abc import Callable, Generator
 from inspect import getinnerframes
 from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock
 
-import pydantic
 import pytest
 from pytest_mock import MockerFixture
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -165,11 +165,12 @@ def test_exception_handler_middleware_exception_handlers_mapping() -> None:
 def test_exception_handler_middleware_handler_response_type_encoding(
     scope: HTTPScope, middleware: ExceptionHandlerMiddleware
 ) -> None:
-    class ErrorMessage(pydantic.BaseModel):
+    @dataclasses.dataclass
+    class ErrorMessage:
         message: str
 
     @get("/")
-    def handler(_: Request) -> None:
+    def handler(request: Request) -> None:
         raise Exception
 
     def exception_handler(_: Request, _e: Exception) -> Response:
@@ -185,11 +186,12 @@ def test_exception_handler_middleware_handler_response_type_encoding(
 def test_exception_handler_middleware_handler_response_type_encoding_no_route_handler(
     scope: HTTPScope, middleware: ExceptionHandlerMiddleware
 ) -> None:
-    class ErrorMessage(pydantic.BaseModel):
+    @dataclasses.dataclass
+    class ErrorMessage:
         message: str
 
     @get("/")
-    def handler(_: Request) -> None:
+    def handler(request: Request) -> None:
         raise Exception
 
     def exception_handler(_: Request, _e: Exception) -> Response:

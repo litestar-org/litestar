@@ -2,9 +2,7 @@
 Test the app running in a subprocess
 """
 
-import asyncio
 import pathlib
-import sys
 from collections.abc import AsyncIterator, Iterator
 
 import httpx
@@ -13,9 +11,6 @@ import pytest
 
 from litestar.testing import subprocess_async_client, subprocess_sync_client
 from litestar.testing.client.subprocess_client import StartupError, run_app
-
-if sys.platform == "win32":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 ROOT = pathlib.Path(__file__).parent
 APP = "demo:app"

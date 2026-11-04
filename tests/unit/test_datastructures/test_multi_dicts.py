@@ -25,13 +25,13 @@ def test_multi_multi_items(multi_class: type[MultiDict | ImmutableMultiDict]) ->
 
 def test_multi_dict_as_immutable() -> None:
     data = [("key", "value"), ("key", "value2"), ("key2", "value3")]
-    multi = MultiDict[str](data)  # pyright: ignore
+    multi = MultiDict[str](data)
     assert multi.immutable().dict() == ImmutableMultiDict(data).dict()
 
 
 def test_immutable_multi_dict_as_mutable() -> None:
     data = [("key", "value"), ("key", "value2"), ("key2", "value3")]
-    multi = ImmutableMultiDict[str](data)  # pyright: ignore
+    multi = ImmutableMultiDict[str](data)
     assert multi.mutable_copy().dict() == MultiDict(data).dict()
 
 

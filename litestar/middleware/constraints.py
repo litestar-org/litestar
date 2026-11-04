@@ -118,7 +118,7 @@ class MiddlewareConstraints:
             if self.unique is False:
                 raise MiddlewareConstraintError("Cannot set 'first=True' if 'unique=False'")
             if self.after:
-                raise MiddlewareConstraintError("Cannot set 'first=True' if if 'after' is not empty")
+                raise MiddlewareConstraintError("Cannot set 'first=True' if 'after' is not empty")
 
         if self.last:
             if self.unique is False:
@@ -348,7 +348,7 @@ def check_middleware_constraints(middlewares: tuple[Middleware, ...]) -> None:
         else:
             # 'middleware' might be a class or an instance of a class
             middleware_type = type(middleware) if not inspect.isclass(middleware) else middleware
-            for base in middleware_type.mro()[:-1]:  # pyright: ignore
+            for base in middleware_type.mro()[:-1]:  # pyright: ignore[reportFunctionMemberAccess]
                 positions[base].append(i)
 
         if not (isinstance(middleware, ASGIMiddleware) and middleware.constraints):

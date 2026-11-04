@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from litestar import Litestar, post
 from litestar.dto import DataclassDTO, DTOConfig
+from litestar.params import JSONBody
 
 
 @dataclass
@@ -18,7 +19,7 @@ class ReadDTO(DataclassDTO[Person]):
 
 
 @post("/person", return_dto=ReadDTO, sync_to_thread=False)
-def create_person(data: Person) -> Person:
+def create_person(data: JSONBody[Person]) -> Person:
     # Logic for persisting the person goes here
     return data
 

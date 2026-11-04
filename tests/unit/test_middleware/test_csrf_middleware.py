@@ -8,11 +8,10 @@ from bs4 import BeautifulSoup
 
 from litestar import MediaType, WebSocket, delete, get, patch, post, put, websocket
 from litestar.config.csrf import CSRFConfig
-from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.contrib.mako import MakoTemplateEngine
-from litestar.enums import RequestEncodingType
 from litestar.handlers import HTTPRouteHandler
-from litestar.params import Body
+from litestar.params import FromPath, URLEncodedBody
+from litestar.plugins.jinja import JinjaTemplateEngine
+from litestar.plugins.mako import MakoTemplateEngine
 from litestar.response.template import Template
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
 from litestar.template.config import TemplateConfig
@@ -182,7 +181,7 @@ def test_csrf_form_parsing(engine: Any, template: str, tmp_path: Path) -> None:
         return Template(template_name="abc.html")
 
     @post("/")
-    def form_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def form_handler(data: URLEncodedBody[dict]) -> dict:
         return data
 
     with create_test_client(
@@ -208,7 +207,7 @@ def test_csrf_form_parsing(engine: Any, template: str, tmp_path: Path) -> None:
 
 def test_csrf_middleware_exclude_from_check_via_opts() -> None:
     @post("/", exclude_from_csrf=True)
-    def post_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def post_handler(data: URLEncodedBody[dict]) -> dict:
         return data
 
     with create_test_client(
@@ -223,11 +222,11 @@ def test_csrf_middleware_exclude_from_check_via_opts() -> None:
 
 def test_csrf_middleware_exclude_from_check() -> None:
     @post("/protected-handler")
-    def post_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def post_handler(data: URLEncodedBody[dict]) -> dict:
         return data
 
     @post("/unprotected-handler")
-    def post_handler2(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def post_handler2(data: URLEncodedBody[dict]) -> dict:
         return data
 
     with create_test_client(
@@ -270,11 +269,11 @@ def test_csrf_middleware_exclude_from_set_cookies() -> None:
 
 def test_csrf_middleware_configure_name_for_exclude_from_check_via_opts() -> None:
     @post("/handler", exclude_from_csrf=True)
-    def post_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def post_handler(data: URLEncodedBody[dict]) -> dict:
         return data
 
     @post("/handler2", custom_exclude_from_csrf=True)
-    def post_handler2(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+    def post_handler2(data: URLEncodedBody[dict]) -> dict:
         return data
 
     with create_test_client(
@@ -289,3 +288,92 @@ def test_csrf_middleware_configure_name_for_exclude_from_check_via_opts() -> Non
         response = client.post("/handler2", data=data)
         assert response.status_code == HTTP_201_CREATED
         assert response.json() == data
+
+
+def test_cookie_attribute_wiring() -> None:
+    @get("/handler")
+    def get_handler() -> None:
+        return None
+
+    with create_test_client(
+        base_url="http://test.com",
+        route_handlers=[get_handler],
+        csrf_config=CSRFConfig(
+            secret="secret",
+            cookie_path="/sub",
+            cookie_domain="test.com",
+            cookie_secure=True,
+            cookie_httponly=True,
+            cookie_samesite="strict",
+        ),
+    ) as client:
+        response = client.get("/handler")
+        set_cookie_header = response.headers.get("set-cookie")
+        assert set_cookie_header is not None
+        assert set_cookie_header.split("; ") == [
+            f"csrftoken={response.cookies.get('csrftoken')}",
+            "Domain=test.com",
+            "HttpOnly",
+            "Path=/sub",
+            "SameSite=strict",
+            "Secure",
+        ]
+
+
+def test_custom_safe_methods_wiring(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
+    with create_test_client(
+        route_handlers=[get_handler, post_handler],
+        csrf_config=CSRFConfig(secret="secret", safe_methods={"POST"}),
+    ) as client:
+        response = client.post("/")
+        assert response.status_code == HTTP_201_CREATED
+        assert "set-cookie" in response.headers
+
+        response = client.get("/")
+        assert response.status_code == HTTP_403_FORBIDDEN
+
+
+def test_exclude_matches_handler_path_template() -> None:
+    @post("/user/{user_id:int}")
+    def excluded_handler(user_id: FromPath[int], data: URLEncodedBody[dict]) -> dict:
+        return data
+
+    @post("/order/{order_id:int}")
+    def protected_handler(order_id: FromPath[int], data: URLEncodedBody[dict]) -> dict:
+        return data
+
+    # exclusion patterns match the handler's path template, not the request path
+    with create_test_client(
+        route_handlers=[excluded_handler, protected_handler],
+        csrf_config=CSRFConfig(secret="secret", exclude=[r"/user/\{user_id:int\}"]),
+    ) as client:
+        response = client.post("/user/1", data={"field": "value"})
+        assert response.status_code == HTTP_201_CREATED
+
+        response = client.post("/order/1", data={"field": "value"})
+        assert response.status_code == HTTP_403_FORBIDDEN
+
+    # a request-path pattern does not match a dynamic handler and excludes nothing
+    with create_test_client(
+        route_handlers=[excluded_handler, protected_handler],
+        csrf_config=CSRFConfig(secret="secret", exclude=["^/user/1$"]),
+    ) as client:
+        response = client.post("/user/1", data={"field": "value"})
+        assert response.status_code == HTTP_403_FORBIDDEN
+
+
+def test_defaults_match_config_defaults() -> None:
+    from litestar.middleware._internal.csrf import CSRFMiddleware
+
+    middleware = CSRFMiddleware(secret="secret")
+    config = CSRFConfig(secret="secret")
+
+    assert middleware.cookie_name == config.cookie_name
+    assert middleware.cookie_path == config.cookie_path
+    assert middleware.header_name == config.header_name
+    assert middleware.cookie_secure == config.cookie_secure
+    assert middleware.cookie_httponly == config.cookie_httponly
+    assert middleware.cookie_samesite == config.cookie_samesite
+    assert middleware.cookie_domain == config.cookie_domain
+    assert middleware.safe_methods == config.safe_methods
+    assert middleware.exclude_opt_key == config.exclude_from_csrf_key

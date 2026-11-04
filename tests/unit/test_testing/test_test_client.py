@@ -7,6 +7,7 @@ import anyio
 from _pytest.fixtures import FixtureRequest
 
 from litestar import Controller, Request, WebSocket, delete, head, patch, put, websocket
+from litestar.exceptions import LitestarWarning
 from litestar.middleware.session.base import BaseBackendConfig
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.stores.base import Store
@@ -435,6 +436,12 @@ def test_websocket_connect(anyio_backend: "AnyIOBackend") -> None:
             assert data == {"data": "123"}
 
 
+def test_client_warns_not_initialized() -> None:
+    with pytest.warns(LitestarWarning, match="TestClient not initialized"):
+        client = create_test_client()
+        client.get("/")
+
+
 # ASYNC TESTS
 @pytest.mark.parametrize("block,exception", [(True, TimeoutError), (False, anyio.WouldBlock)])
 @pytest.mark.parametrize(
@@ -574,3 +581,37 @@ async def test_lifespan_uses_native_loop() -> None:
 
     async with create_async_test_client([], lifespan=[lifespan]) as client:
         assert client.app.state["loop"] is asyncio.get_running_loop()
+
+
+async def test_client_warns_not_initialized_async() -> None:
+    with pytest.warns(LitestarWarning, match="AsyncTestClient not initialized"):
+        client = create_async_test_client()
+        await client.get("/")
+
+
+def test_client_sends_repeated_headers_separately() -> None:
+    @get("/")
+    def handler(request: Request) -> list[tuple[str, str]]:
+        return [(key.decode(), value.decode()) for key, value in request.scope["headers"]]
+
+    with create_test_client(handler) as client:
+        response = client.get("/", headers=[("host", "example.org"), ("x-trace", "1"), ("x-trace", "2")])
+
+    scope_headers = [(key, value) for key, value in response.json()]
+    assert scope_headers[0] == ("host", "example.org")
+    assert [value for key, value in scope_headers if key == "host"] == ["example.org"]
+    assert [value for key, value in scope_headers if key == "x-trace"] == ["1", "2"]
+
+
+def test_websocket_connect_sends_repeated_headers_separately() -> None:
+    @websocket("/")
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        await socket.send_json(socket.cookies)
+        await socket.close()
+
+    with (
+        create_test_client(handler) as client,
+        client.websocket_connect("/", headers=[("cookie", "a=1; dup=first"), ("cookie", "dup=second; b=2")]) as ws,
+    ):
+        assert ws.receive_json() == {"a": "1", "dup": "first", "b": "2"}

@@ -17,6 +17,7 @@ from litestar import (
 )
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import FromPath
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.testing import create_test_client
 from litestar.types import HTTPHandlerDecorator
@@ -53,7 +54,7 @@ async def test_controller_http_method(
         path = test_path
 
         @decorator()
-        def test_method(self) -> return_annotation:  # pyright: ignore
+        def test_method(self) -> return_annotation:  # pyright: ignore[reportInvalidTypeForm]
             return return_value
 
     with create_test_client(MyController) as client:
@@ -79,9 +80,10 @@ def test_controller_with_websocket_handler() -> None:
             await socket.send_json({"data": "123"})
             await socket.close()
 
-    client = create_test_client(route_handlers=MyController)
-
-    with client.websocket_connect(f"{test_path}/socket") as ws:
+    with (
+        create_test_client(route_handlers=MyController) as client,
+        client.websocket_connect(f"{test_path}/socket") as ws,
+    ):
         ws.send_json({"data": "123"})
         data = ws.receive_json()
         assert data
@@ -106,7 +108,7 @@ def test_controller_validation() -> None:
 def test_controller_subclassing() -> None:
     class BaseController(Controller):
         @get("/{id:int}")
-        async def test_get(self, id: int) -> str:
+        async def test_get(self, id: FromPath[int]) -> str:
             return f"{self.__class__.__name__} {id}"
 
     class FooController(BaseController):

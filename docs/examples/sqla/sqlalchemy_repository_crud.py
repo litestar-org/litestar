@@ -6,11 +6,10 @@ from datetime import date, datetime
 from uuid import UUID
 
 import anyio
+from advanced_alchemy.extensions.litestar import base, repository
 from rich import get_console
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Mapped
-
-from litestar.plugins.sqlalchemy import base, repository
 
 console = get_console()
 

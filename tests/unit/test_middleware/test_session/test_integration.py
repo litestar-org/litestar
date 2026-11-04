@@ -9,6 +9,7 @@ from litestar.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
+from litestar.params import JSONBody
 from litestar.security.session_auth import SessionAuth
 from litestar.status_codes import HTTP_204_NO_CONTENT
 from litestar.stores.memory import MemoryStore
@@ -39,7 +40,7 @@ async def retrieve_user_handler(
 
 
 @post("/login")
-async def login(data: UserLoginPayload, request: "Request[Any, Any, Any]") -> User:
+async def login(data: JSONBody[UserLoginPayload], request: "Request[Any, Any, Any]") -> User:
     user_id_bytes = await memory_store.get(data.email)
 
     if not user_id_bytes:

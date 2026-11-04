@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
-from litestar.plugins.sqlalchemy import SQLAlchemyDTO
+from litestar.params import JSONBody
 
 
 class Base(DeclarativeBase): ...
@@ -16,7 +17,7 @@ class TodoItem(Base):
 
 
 @post("/", dto=SQLAlchemyDTO[TodoItem])
-async def add_item(data: TodoItem) -> list[TodoItem]:
+async def add_item(data: JSONBody[TodoItem]) -> list[TodoItem]:
     return [data]
 
 

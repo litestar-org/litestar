@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.template.config import TemplateConfig
 
 if TYPE_CHECKING:

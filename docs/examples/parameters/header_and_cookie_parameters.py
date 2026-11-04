@@ -1,36 +1,34 @@
+import dataclasses
 from typing import Annotated
-
-from pydantic import BaseModel
 
 from litestar import Litestar, get
 from litestar.exceptions import NotAuthorizedException
-from litestar.params import Parameter
-
-USER_DB = {
-    1: {
-        "id": 1,
-        "name": "John Doe",
-    },
-}
+from litestar.params import CookieParameter, FromPath, HeaderParameter
 
 VALID_TOKEN = "super-secret-secret"
 VALID_COOKIE_VALUE = "cookie-secret"
 
 
-class User(BaseModel):
+@dataclasses.dataclass
+class User:
     id: int
     name: str
 
 
+USER_DB = {
+    1: User(id=1, name="John Doe"),
+}
+
+
 @get(path="/users/{user_id:int}/")
 async def get_user(
-    user_id: int,
-    token: Annotated[str, Parameter(header="X-API-KEY")],
-    cookie: Annotated[str, Parameter(cookie="my-cookie-param")],
+    user_id: FromPath[int],
+    token: Annotated[str, HeaderParameter(name="X-API-KEY")],
+    cookie: Annotated[str, CookieParameter(name="my-cookie-param")],
 ) -> User:
     if token != VALID_TOKEN or cookie != VALID_COOKIE_VALUE:
         raise NotAuthorizedException
-    return User.model_validate(USER_DB[user_id])
+    return USER_DB[user_id]
 
 
 app = Litestar(route_handlers=[get_user])

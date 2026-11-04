@@ -10,7 +10,6 @@ middleware
     allowed_hosts
     authentication
     compression
-    csrf
     logging
     rate_limit
     session/index

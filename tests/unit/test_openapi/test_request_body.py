@@ -6,16 +6,15 @@ from unittest.mock import ANY, MagicMock
 import pytest
 from typing_extensions import ReadOnly
 
-from litestar import Controller, Litestar, get, post
+from litestar import Controller, Litestar, post
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.request_body import create_request_body
 from litestar.datastructures.upload_file import UploadFile
 from litestar.dto import AbstractDTO
-from litestar.enums import RequestEncodingType
 from litestar.handlers import BaseRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import RequestBody
-from litestar.params import Body
+from litestar.params import Body, JSONBody, MultipartBody
 from litestar.typing import FieldDefinition
 
 
@@ -63,9 +62,9 @@ def test_request_body_schema_extra() -> None:
     class RequestBody:
         foo: str
 
-    @get()
+    @post()
     async def handler(
-        body1: Annotated[
+        data: Annotated[
             RequestBody,
             Body(
                 title="Default title",
@@ -75,7 +74,7 @@ def test_request_body_schema_extra() -> None:
             ),
         ],
     ) -> Any:
-        return body1
+        return data
 
     app = Litestar([handler])
     schema = app.openapi_schema.to_schema()
@@ -85,9 +84,7 @@ def test_request_body_schema_extra() -> None:
 
 def test_upload_single_file_schema_generation() -> None:
     @post(path="/file-upload")
-    async def handle_file_upload(
-        data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART),
-    ) -> None:
+    async def handle_file_upload(data: MultipartBody[UploadFile]) -> None:
         return None
 
     app = Litestar([handle_file_upload])
@@ -101,9 +98,7 @@ def test_upload_single_file_schema_generation() -> None:
 
 def test_upload_list_of_files_schema_generation() -> None:
     @post(path="/file-list-upload")
-    async def handle_file_list_upload(
-        data: list[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART),
-    ) -> None:
+    async def handle_file_list_upload(data: MultipartBody[list[UploadFile]]) -> None:
         return None
 
     app = Litestar([handle_file_list_upload])
@@ -123,7 +118,7 @@ def test_upload_list_of_files_schema_generation() -> None:
 def test_upload_file_dict_schema_generation() -> None:
     @post(path="/file-dict-upload")
     async def handle_file_list_upload(
-        data: dict[str, UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART),
+        data: MultipartBody[dict[str, UploadFile]],
     ) -> None:
         return None
 
@@ -143,9 +138,7 @@ def test_upload_file_dict_schema_generation() -> None:
 
 def test_upload_file_model_schema_generation() -> None:
     @post(path="/form-upload")
-    async def handle_form_upload(
-        data: FormData = Body(media_type=RequestEncodingType.MULTI_PART),
-    ) -> None:
+    async def handle_form_upload(data: MultipartBody[FormData]) -> None:
         return None
 
     app = Litestar([handle_form_upload])
@@ -172,8 +165,8 @@ def test_upload_file_model_schema_generation() -> None:
 def test_request_body_generation_with_dto(create_request: RequestBodyFactory) -> None:
     mock_dto = MagicMock(spec=AbstractDTO)
 
-    @post(path="/form-upload", dto=mock_dto)  # pyright: ignore
-    async def handler(data: dict[str, Any]) -> None:
+    @post(path="/form-upload", dto=mock_dto)
+    async def handler(data: JSONBody[dict[str, Any]]) -> None:
         return None
 
     app = Litestar(route_handlers=[handler])
@@ -192,7 +185,7 @@ def test_unwrap_read_only() -> None:
 
     @post("/")
     async def handler(
-        data: SchemaDict,
+        data: JSONBody[SchemaDict],
     ) -> SchemaDict:
         return {"id": data["id"], "email": "new@example.com"}
 
@@ -218,3 +211,101 @@ def test_unwrap_read_only() -> None:
             }
         }
     }
+
+
+def test_upload_optional_file_schema_generation() -> None:
+    @post(path="/optional-file-upload")
+    async def handle_file_upload(data: MultipartBody[UploadFile | None] = None) -> None:
+        return None
+
+    app = Litestar([handle_file_upload])
+    schema = app.openapi_schema.to_schema()
+    request_body = schema["paths"]["/optional-file-upload"]["post"]["requestBody"]
+
+    assert request_body["required"] is False
+    assert request_body["content"]["multipart/form-data"]["schema"] == {
+        "properties": {"file": {"type": "string", "format": "binary", "contentMediaType": "application/octet-stream"}},
+        "type": "object",
+    }
+
+
+def test_optional_data_request_body_is_not_required() -> None:
+    @dataclass
+    class Payload:
+        name: str
+
+    @post(path="/optional-data")
+    async def handler(data: JSONBody[Payload | None] = None) -> None:
+        return None
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+
+    assert schema["paths"]["/optional-data"]["post"]["requestBody"]["required"] is False
+
+
+def test_data_request_body_is_required() -> None:
+    @dataclass
+    class Payload:
+        name: str
+
+    @post(path="/data")
+    async def handler(data: JSONBody[Payload]) -> None:
+        return None
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+
+    assert schema["paths"]["/data"]["post"]["requestBody"]["required"] is True
+
+
+def test_upload_optional_list_of_files_schema_generation() -> None:
+    @post(path="/optional-file-list-upload")
+    async def handle_file_list_upload(data: MultipartBody[list[UploadFile] | None] = None) -> None:
+        return None
+
+    app = Litestar([handle_file_list_upload])
+    schema = app.openapi_schema.to_schema()
+    request_body = schema["paths"]["/optional-file-list-upload"]["post"]["requestBody"]
+
+    assert request_body["required"] is False
+    assert request_body["content"]["multipart/form-data"]["schema"] == {
+        "type": "object",
+        "properties": {
+            "files": {
+                "items": {"type": "string", "contentMediaType": "application/octet-stream", "format": "binary"},
+                "type": "array",
+            }
+        },
+    }
+
+
+def test_upload_file_mixed_union_keeps_alternatives() -> None:
+    @post(path="/mixed-upload")
+    async def handler(data: MultipartBody[UploadFile | str | None] = None) -> None:
+        return None
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+    body_schema = schema["paths"]["/mixed-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"]
+
+    assert {"type": "string"} in body_schema["oneOf"]
+    assert {"type": "null"} in body_schema["oneOf"]
+
+
+def test_nested_optional_upload_file_keeps_null_alternative() -> None:
+    @dataclass
+    class Form:
+        file: UploadFile | None
+
+    @post(path="/nested-optional-upload")
+    async def handler(data: MultipartBody[Form]) -> None:
+        return None
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+    form_schema = next(iter(schema["components"]["schemas"].values()))
+
+    file_schema = form_schema["properties"]["file"]
+    assert file_schema["type"] == ["string", "null"]
+    assert file_schema["format"] == "binary"

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import itertools
+import html
 from mimetypes import guess_type
 from pathlib import PurePath
 from typing import TYPE_CHECKING, Any, cast
@@ -49,7 +49,7 @@ class Template(Response[bytes]):
 
         Args:
             template_name: Path-like name for the template to be rendered, e.g. ``index.html``.
-            template_str: A string representing the template, e.g. ``tmpl = "Hello <strong>World</strong>"``.
+            template_str: A string representing the template, e.g. ``template_str = "Hello <strong>World</strong>"``.
             background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
                 :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to ``None``.
@@ -62,10 +62,10 @@ class Template(Response[bytes]):
                 the media type based on the template name. If this fails, fall back to ``text/plain``.
             status_code: A value for the response HTTP status code.
         """
-        if not (template_name or template_str):
+        if template_name is None and template_str is None:
             raise ValueError("Either template_name or template_str must be provided.")
 
-        if template_name and template_str:
+        if template_name is not None and template_str is not None:
             raise ValueError("Either template_name or template_str must be provided, not both.")
 
         super().__init__(
@@ -94,7 +94,7 @@ class Template(Response[bytes]):
         return {
             **self.context,
             "request": request,
-            "csrf_input": f'<input type="hidden" name="_csrf_token" value="{csrf_token}" />',
+            "csrf_input": f'<input type="hidden" name="_csrf_token" value="{html.escape(csrf_token)}" />',
         }
 
     def to_asgi_response(
@@ -113,7 +113,6 @@ class Template(Response[bytes]):
             raise ImproperlyConfiguredException("Template engine is not configured")
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         media_type = self.media_type or media_type
         if not media_type:
@@ -141,7 +140,7 @@ class Template(Response[bytes]):
             background=self.background or background,
             body=body,
             content_length=None,
-            cookies=cookies,
+            cookies=self._merge_cookies(cookies),
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

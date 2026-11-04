@@ -1,5 +1,6 @@
 from litestar import Litestar, MediaType, Request, Response, get
 from litestar.exceptions import HTTPException, ValidationException
+from litestar.params import FromQuery
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 
@@ -28,7 +29,7 @@ def value_error_handler(request: Request, exc: ValueError) -> Response:
 
 
 @get("/validation-error")
-async def validation_error(some_query_param: str) -> str:
+async def validation_error(some_query_param: FromQuery[str]) -> str:
     return some_query_param
 
 

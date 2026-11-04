@@ -187,7 +187,7 @@ def decode_json(
 
 def decode_json(  # type: ignore[misc]
     value: str | bytes,
-    target_type: type[T] | EmptyType = Empty,  # pyright: ignore
+    target_type: type[T] | EmptyType = Empty,
     type_decoders: TypeDecodersSequence | None = None,
     strict: bool = True,
 ) -> Any:
@@ -263,7 +263,7 @@ def decode_msgpack(
 
 def decode_msgpack(  # type: ignore[misc]
     value: bytes,
-    target_type: type[T] | EmptyType = Empty,  # pyright: ignore[reportInvalidTypeVarUse]
+    target_type: type[T] | EmptyType = Empty,
     type_decoders: TypeDecodersSequence | None = None,
     strict: bool = True,
 ) -> Any:

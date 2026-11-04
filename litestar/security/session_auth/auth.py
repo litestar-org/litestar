@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig[UserType, dict[str, Any]]):
     """Session Based Security Backend."""
 
-    session_backend_config: BaseBackendConfig[BaseSessionBackendT]  # pyright: ignore
+    session_backend_config: BaseBackendConfig[BaseSessionBackendT]
     """A session backend config."""
     retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Any | None]]
     """Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.
@@ -36,7 +36,7 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
 
     """
 
-    authentication_middleware_class: type[SessionAuthMiddleware] = field(default=SessionAuthMiddleware)  # pyright: ignore
+    authentication_middleware_class: type[SessionAuthMiddleware] = field(default=SessionAuthMiddleware)  # pyright: ignore[reportIncompatibleVariableOverride]
     """The authentication middleware class to use.
 
     Must inherit from :class:`SessionAuthMiddleware <litestar.security.session_auth.middleware.SessionAuthMiddleware>`
@@ -106,7 +106,7 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
         Returns:
             A subclass of :class:`BaseSessionBackend <litestar.middleware.session.base.BaseSessionBackend>`
         """
-        return self.session_backend_config._backend_class(config=self.session_backend_config)  # pyright: ignore
+        return self.session_backend_config._backend_class(config=self.session_backend_config)
 
     @property
     def openapi_components(self) -> Components:
@@ -120,7 +120,7 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
                 "sessionCookie": SecurityScheme(
                     type="apiKey",
                     name=self.session_backend_config.key,
-                    security_scheme_in="cookie",  # pyright: ignore
+                    security_scheme_in="cookie",
                     description="Session cookie authentication.",
                 )
             }

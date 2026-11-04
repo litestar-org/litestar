@@ -68,12 +68,12 @@ This is particularly useful when you want to have optional
     :caption: Defining a route handler with a path that has an optional path parameter
 
     from litestar import get
-
+    from litestar.params import FromPath
 
     @get(
        ["/some-path", "/some-path/{some_id:int}"],
     )
-    async def my_route_handler(some_id: int = 1) -> None: ...
+    async def my_route_handler(some_id: FromPath[int] = 1) -> None: ...
 
 .. _handler-function-kwargs:
 
@@ -85,43 +85,51 @@ Route handler functions or methods access various data by declaring these as ann
 
 The following sources can be accessed using annotated function :term:`kwargs <argument>`:
 
-- :ref:`path, query, header, and cookie parameters <usage/routing/parameters:the parameter function>`
+- :ref:`path, query, header, and cookie parameters <parameter-types>`, declared with
+  :data:`~.params.FromPath`, :data:`~.params.FromQuery`, :data:`~.params.FromHeader`,
+  and :data:`~.params.FromCookie`
 - :doc:`requests </usage/requests>`
 - :doc:`injected dependencies </usage/dependency-injection>`
 
 Additionally, you can specify the following special :term:`kwargs <argument>`,
-(known as "reserved keywords"):
+(known as "reserved keywords arguments"), each declared with its type:
 
-* ``cookies``: injects the request :class:`cookies <.datastructures.cookie.Cookie>` as a parsed
-  :class:`dictionary <dict>`.
-* ``headers``: injects the request headers as a parsed :class:`dictionary <dict>`.
-* ``query`` : injects the request ``query_params`` as a parsed :class:`dictionary <dict>`.
-* ``request``: injects the :class:`Request <.connection.Request>` instance. Available only for `HTTP route handlers`_
-* ``scope`` : injects the ASGI scope :class:`dictionary <dict>`.
-* ``socket``: injects the :class:`WebSocket <.connection.WebSocket>` instance. Available only for `websocket route handlers`_
-* ``state`` : injects a copy of the application :class:`State <.datastructures.state.State>`.
-* ``body`` : the raw request body. Available only for `HTTP route handlers`_
+* ``cookies: RequestCookies``: injects the request cookies as a :class:`dictionary <dict>`.
+  See :data:`~.params.RequestCookies`.
+* ``headers: Headers``: injects the request :class:`~.datastructures.headers.Headers`.
+* ``query: QueryParams``: injects the request ``query_params``. See :data:`~.params.QueryParams`.
+* ``request: Request``: injects the :class:`Request <.connection.Request>` instance. Available only for
+  `HTTP route handlers`_. With a custom request class, use that class or one it inherits from.
+* ``scope: Scope``: injects the ASGI scope :class:`dictionary <dict>`.
+* ``socket: WebSocket``: injects the :class:`WebSocket <.connection.WebSocket>` instance. Available only for
+  `websocket route handlers`_. With a custom websocket class, use that class or one it inherits from.
+* ``state: State``: injects a copy of the application :class:`State <.datastructures.state.State>`.
+* ``body: RawBody``: the raw request body. Available only for `HTTP route handlers`_. See :data:`~.params.RawBody`.
+* ``data``: the parsed request body, declared with a body marker such as :data:`~.params.JSONBody`. See
+  :doc:`requests </usage/requests>`.
 
-Note that if your parameters collide with any of the reserved :term:`keyword arguments <argument>` above, you can
-:ref:`provide an alternative name <usage/routing/parameters:Alternative names and constraints>`.
+.. tip::
+    Note that if your parameters collide with any of the reserved
+    :term:`keyword arguments <argument>` above, you can
+    :ref:`provide an alternative name <usage/routing/parameters:Aliasing>`.
 
 For example:
 
 .. code-block:: python
     :caption: Providing an alternative name for a reserved keyword argument
 
-    from typing import Any, Dict
     from litestar import Request, get
     from litestar.datastructures import Headers, State
+    from litestar.params import QueryParams, RequestCookies
 
 
     @get(path="/")
     async def my_request_handler(
        state: State,
        request: Request,
-       headers: Dict[str, str],
-       query: Dict[str, Any],
-       cookies: Dict[str, Any],
+       headers: Headers,
+       query: QueryParams,
+       cookies: RequestCookies,
     ) -> None: ...
 
 .. tip:: You can define a custom typing for your application state and then use it as a type instead of just using the
@@ -202,6 +210,7 @@ the :paramref:`~.handlers.HTTPRouteHandler.http_method` :term:`kwarg <argument>`
 
         from litestar import delete, get, patch, post, put, head
         from litestar.dto import DTOConfig, DTOData
+        from litestar.params import FromPath, JSONBody
         from litestar.plugins.pydantic import PydanticDTO
 
         from pydantic import BaseModel
@@ -219,29 +228,29 @@ the :paramref:`~.handlers.HTTPRouteHandler.http_method` :term:`kwarg <argument>`
 
 
         @post(path="/resources")
-        async def create_resource(data: Resource) -> Resource: ...
+        async def create_resource(data: JSONBody[Resource]) -> Resource: ...
 
 
         @get(path="/resources/{pk:int}")
-        async def retrieve_resource(pk: int) -> Resource: ...
+        async def retrieve_resource(pk: FromPath[int]) -> Resource: ...
 
 
         @head(path="/resources/{pk:int}")
-        async def retrieve_resource_head(pk: int) -> None: ...
+        async def retrieve_resource_head(pk: FromPath[int]) -> None: ...
 
 
         @put(path="/resources/{pk:int}")
-        async def update_resource(data: Resource, pk: int) -> Resource: ...
+        async def update_resource(data: JSONBody[Resource], pk: FromPath[int]) -> Resource: ...
 
 
         @patch(path="/resources/{pk:int}", dto=PartialResourceDTO)
         async def partially_update_resource(
-           data: DTOData[PartialResourceDTO], pk: int
+           data: JSONBody[DTOData[PartialResourceDTO]], pk: FromPath[int]
         ) -> Resource: ...
 
 
         @delete(path="/resources/{pk:int}")
-        async def delete_resource(pk: int) -> None: ...
+        async def delete_resource(pk: FromPath[int]) -> None: ...
 
 Furthermore, in the OpenAPI specification each unique combination of HTTP verb (e.g. ``GET``, ``POST``, etc.) and path
 is regarded as a distinct `operation <https://spec.openapis.org/oas/latest.html#operation-object>`_\ , and each
@@ -373,8 +382,13 @@ In difference to the other route handlers, the :func:`@asgi() <.handlers.asgi>` 
 You can read more about these in the `ASGI specification <https://asgi.readthedocs.io/en/latest/specs/main.html>`_.
 
 Additionally, ASGI route handler functions **must** be :ref:`async functions <python:async def>`.
-This is enforced using inspection, and if the function is not an :ref:`async functions <python:async def>`,
+This is enforced using inspection, and if the function is not an :ref:`async function <python:async def>`,
 an informative exception will be raised.
+
+The ``scope`` the handler receives is a copy, whether or not the handler is a mount, so top-level keys the wrapped
+application adds, replaces or removes are not seen by the outer application. The copy is shallow, so nested values such
+as ``scope["state"]`` are still shared. Pass ``copy_scope=False`` if the wrapped application is meant to communicate with
+the outer application through the scope.
 
 See the :class:`ASGIRouteHandler API reference documentation <.handlers.asgi_handlers.ASGIRouteHandler>` for full
 details on the :func:`@asgi() <.handlers.asgi>` :term:`decorator` and the :term:`kwargs <argument>` it accepts.
@@ -398,6 +412,7 @@ containing the route handler instance and paths. It can also be used to build a 
 
     from litestar import Litestar, Request, get
     from litestar.exceptions import NotFoundException
+    from litestar.params import FromPath, FromQuery
     from litestar.response import Redirect
 
 
@@ -412,15 +427,15 @@ containing the route handler instance and paths. It can also be used to build a 
 
 
     @get("/def/{param:int}", name="three")
-    def handler_three(param: int) -> None:
+    def handler_three(param: FromPath[int]) -> None:
         pass
 
 
     @get("/{handler_name:str}", name="four")
-    def handler_four(request: Request, name: str) -> Redirect:
-        handler_index = request.app.get_handler_index_by_name(name)
+    def handler_four(request: Request, handler_name: FromPath[str]) -> Redirect:
+        handler_index = request.app.get_handler_index_by_name(handler_name)
         if not handler_index:
-            raise NotFoundException(f"no handler matching the name {name} was found")
+            raise NotFoundException(f"no handler matching the name {handler_name} was found")
 
         # handler_index == { "paths": ["/"], "handler": ..., "qualname": ... }
         # do something with the handler index below, e.g. send a redirect response to the handler, or access
@@ -430,7 +445,7 @@ containing the route handler instance and paths. It can also be used to build a 
 
 
     @get("/redirect/{param_value:int}", name="five")
-    def handler_five(request: Request, param_value: int) -> Redirect:
+    def handler_five(request: Request, param_value: FromPath[int]) -> Redirect:
         path = request.app.route_reverse("three", param=param_value)
         return Redirect(path=path)
 
@@ -468,13 +483,14 @@ the highest number of the :term:`keyword arguments <argument>` passed to the fun
     :caption: Using the :meth:`~.app.Litestar.route_reverse` method to build a URL path for a route handler
 
     from litestar import get, Request
+    from litestar.params import FromPath
 
 
     @get(
        ["/some-path", "/some-path/{id:int}", "/some-path/{id:int}/{val:str}"],
        name="handler_name",
     )
-    def handler(id: int = 1, val: str = "default") -> None: ...
+    def handler(id: FromPath[int] = 1, val: FromPath[str] = "default") -> None: ...
 
 
     @get("/path-info")
@@ -564,6 +580,7 @@ For example, the name ``Model`` is *not* available at runtime in the following s
     from typing import TYPE_CHECKING
 
     from litestar import Controller, post
+    from litestar.params import JSONBody
 
     if TYPE_CHECKING:
         from domain import Model
@@ -571,7 +588,7 @@ For example, the name ``Model`` is *not* available at runtime in the following s
 
     class MyController(Controller):
         @post()
-        def create_item(data: Model) -> Model:
+        def create_item(data: JSONBody[Model]) -> Model:
             return data
 
 In this example, Litestar will be unable to generate the signature model because the type ``Model`` does not exist in

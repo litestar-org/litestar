@@ -50,9 +50,10 @@ def test_schema_export_with_examples(suffix: str, create_module: Callable[[str],
 from datetime import datetime
 from litestar import Litestar, get
 from litestar.openapi import OpenAPIConfig
+from litestar.params import FromQuery
 
 @get()
-async def something(date: datetime) -> None:
+async def something(date: FromQuery[datetime]) -> None:
     return None
 
 app = Litestar([something], openapi_config=OpenAPIConfig('example', '0.0.1', True))
@@ -102,3 +103,22 @@ def test_openapi_typescript_command_without_jsbeautifier(
     result = runner.invoke(cli_command, command)
     assert result.exit_code == 0
     assert mock_path_write_text.called
+
+
+def test_cli_importable_without_pyyaml(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The CLI must not require pyyaml at import time.
+
+    An eager module-level yaml import made every CLI invocation fail with
+    ``ModuleNotFoundError: No module named 'yaml'`` when litestar was installed
+    without the ``yaml`` extra. https://github.com/litestar-org/litestar/issues/4449
+    """
+    import importlib
+    import sys
+
+    # Simulate pyyaml not being installed: a None entry makes `import yaml`
+    # raise ImportError.
+    monkeypatch.setitem(sys.modules, "yaml", None)
+    monkeypatch.delitem(sys.modules, "litestar.cli.commands.schema", raising=False)
+
+    module = importlib.import_module("litestar.cli.commands.schema")
+    assert module.schema_group is not None

@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from litestar import Litestar
-from litestar.contrib.mako import MakoTemplateEngine
+from litestar.plugins.mako import MakoTemplateEngine
 from litestar.template.config import TemplateConfig
 
 app = Litestar(

@@ -910,7 +910,7 @@
         :issue: 2812
         :pr: 2818
 
-        Fix a bug where an incorrect OpenAPI schema was generated generated when any
+        Fix a bug where an incorrect OpenAPI schema was generated when any
         ``Literal | None``-union was present in an annotation.
 
         For example
@@ -1330,7 +1330,7 @@
         additional validation was added to generate a more user friendly CLI errors.
 
         The other SSL-related flags (like password or CA) were not added (yet). See
-        `uvicorn CLI docs <https://www.uvicorn.org/#command-line-options>`_
+        `uvicorn CLI docs <https://uvicorn.dev/#command-line-options>`_
 
         **Generating of a self-signed certificate**
 
@@ -1600,7 +1600,7 @@
         :pr: 2404
         :issue: 2373
 
-        A new :class:`~litestar.contrib.pydantic.PydanticPlugin` has been added, which
+        A new ``PydanticPlugin`` has been added, which
         can be used to configure Pydantic behaviour. Currently it supports setting a
         ``prefer_alias`` option, which will pass the ``by_alias=True`` flag to Pydantic
         when exporting models, as well as generate schemas accordingly.
@@ -2612,7 +2612,7 @@
         :type: feature
         :pr: 1780
 
-        When using the :class:`litestar.contrib.sqlalchemy.types.JsonB` type with an
+        When using the ``litestar.contrib.sqlalchemy.types.JsonB`` type with an
         Oracle Database engine, a JSON check constraint will be created for that
         column.
 
@@ -2700,11 +2700,11 @@
         :pr: 1712
         :issue: 1531, 1532
 
-        DTO factories for `msgspec <https://jcristharif.com/msgspec/>`_ and
+        DTO factories for `msgspec <https://msgspec.dev>`_ and
         `Pydantic <https://docs.pydantic.dev/latest/>`_ have been added:
 
-        - :class:`~litestar.contrib.msgspec.MsgspecDTO`
-        - :class:`~litestar.contrib.pydantic.PydanticDTO`
+        - :class:`~litestar.dto.msgspec_dto.MsgspecDTO`
+        - :class:`~litestar.plugins.pydantic.PydanticDTO`
 
     .. change:: DTOs: Arbitrary generic wrappers
         :pr: 1801
@@ -3338,7 +3338,7 @@
         :pr: 1487
 
         Support OpenAPI schema generation for `attrs <https://www.attrs.org>`_ classes and
-        `msgspec <https://jcristharif.com/msgspec/>`_ ``Struct``\ s.
+        `msgspec <https://msgspec.dev>`_ ``Struct``\ s.
 
     .. change:: SQLAlchemy repository: Add ``ModelProtocol``
         :type: feature
@@ -3610,7 +3610,7 @@
         :type: feature
         :pr: 1395
 
-        A :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` was added,
+        A ``SQLAlchemyInitPlugin`` was added,
         providing support for managed synchronous and asynchronous sessions.
 
         .. note::

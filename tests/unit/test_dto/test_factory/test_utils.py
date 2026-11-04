@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from typing import Generic, Optional, TypeVar
 
 from litestar.dto import DataclassDTO

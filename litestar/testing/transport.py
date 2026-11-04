@@ -1,5 +1,8 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
+import warnings
 from io import BytesIO
 from types import GeneratorType
 from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar, Union, cast
@@ -8,6 +11,7 @@ from urllib.parse import unquote
 import anyio
 from httpx import AsyncBaseTransport, BaseTransport, ByteStream, Response
 
+from litestar.exceptions import LitestarWarning
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 if TYPE_CHECKING:
@@ -123,7 +127,7 @@ class TestClientTransport(AsyncBaseTransport, Generic[T]):
 
         host_header = request.headers.pop("host", host if port == default_port else f"{host}:{port}")
 
-        headers = [(k.lower().encode(), v.encode()) for k, v in (("host", host_header), *request.headers.items())]
+        headers = [(b"host", host_header.encode()), *((k.lower(), v) for k, v in request.headers.raw)]
 
         return {
             "type": "websocket" if scheme in {"ws", "wss"} else "http",
@@ -138,6 +142,13 @@ class TestClientTransport(AsyncBaseTransport, Generic[T]):
         }
 
     async def handle_async_request(self, request: Request) -> Response:
+        if not self.client._initialized:
+            warnings.warn(
+                "AsyncTestClient not initialized. Was the client instance used as a context manager?",
+                LitestarWarning,
+                stacklevel=2,
+            )
+
         scope = self.parse_request(request=request)
         if scope["type"] == "websocket":
             scope.update(
@@ -206,4 +217,10 @@ class SyncTestClientTransport(BaseTransport):
         )
 
     def handle_request(self, request: Request) -> Response:
+        if not self.client._initialized:
+            warnings.warn(
+                "TestClient not initialized. Was the client instance used as a context manager?",
+                LitestarWarning,
+                stacklevel=2,
+            )
         return self.client.blocking_portal.call(self._async_transport.handle_async_request, request)

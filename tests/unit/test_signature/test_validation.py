@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from dataclasses import dataclass
 from typing import Annotated, Generic, Optional, TypeVar
 
@@ -7,10 +9,18 @@ from typing_extensions import TypedDict
 
 from litestar import get, post
 from litestar._signature import SignatureModel
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
-from litestar.params import Dependency, Parameter
+from litestar.params import (
+    CookieParameter,
+    FromHeader,
+    FromQuery,
+    HeaderParameter,
+    JSONBody,
+    PathParameter,
+    QueryParameter,
+)
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, create_test_client
 from litestar.utils.signature import ParsedSignature
@@ -50,7 +60,9 @@ def test_dependency_validation_failure_raises_500() -> None:
     dependencies = {"dep": Provide(lambda: "thirteen", sync_to_thread=False)}
 
     @get("/")
-    def test(dep: int, param: int, optional_dep: Optional[int] = Dependency()) -> None: ...
+    def test(
+        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]
+    ) -> None: ...
 
     with create_test_client(
         route_handlers=[test],
@@ -66,7 +78,9 @@ def test_validation_failure_raises_400() -> None:
     dependencies = {"dep": Provide(lambda: 13, sync_to_thread=False)}
 
     @get("/")
-    def test(dep: int, param: int, optional_dep: Optional[int] = Dependency(default=None)) -> None: ...
+    def test(
+        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]
+    ) -> None: ...
 
     with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
         response = client.get("/?param=thirteen")
@@ -80,7 +94,7 @@ def test_validation_failure_raises_400() -> None:
 
 def test_invalid_path_parameter() -> None:
     @get("/{param:int}")
-    def test(param: Annotated[int, Parameter(le=10)]) -> None: ...
+    def test(param: Annotated[int, PathParameter(le=10)]) -> None: ...
 
     with create_test_client(route_handlers=[test]) as client:
         response = client.get("/11")
@@ -92,6 +106,20 @@ def test_invalid_path_parameter() -> None:
     }
 
 
+def test_invalid_marked_parameter_named_like_path_parameter_reports_marked_source() -> None:
+    @get("/{param:str}")
+    def test(param: FromHeader[int]) -> None: ...
+
+    with create_test_client(route_handlers=[test]) as client:
+        response = client.get("/thirteen", headers={"param": "thirteen"})
+
+    assert response.json() == {
+        "detail": "Validation failed for GET /thirteen",
+        "extra": [{"key": "param", "message": "Expected `int`, got `str`", "source": "header"}],
+        "status_code": 400,
+    }
+
+
 def test_client_backend_error_precedence_over_server_error() -> None:
     dependencies = {
         "dep": Provide(lambda: "thirteen", sync_to_thread=False),
@@ -99,7 +127,9 @@ def test_client_backend_error_precedence_over_server_error() -> None:
     }
 
     @get("/")
-    def test(dep: int, param: int, optional_dep: Optional[int] = Dependency()) -> None: ...
+    def test(
+        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]
+    ) -> None: ...
 
     with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
         response = client.get("/?param=thirteen")
@@ -129,7 +159,7 @@ def test_validation_error_exception_key() -> None:
         other_child: OtherChild
 
     @get("/")
-    def handler(data: Parent) -> None:
+    def handler(data: JSONBody[Parent]) -> None:
         pass
 
     model = SignatureModel.create(
@@ -166,10 +196,10 @@ def test_invalid_input_attrs() -> None:
 
     @post("/")
     def test(
-        data: Parent,
-        int_param: int,
-        int_header: int = Parameter(header="X-SOME-INT"),
-        int_cookie: int = Parameter(cookie="int-cookie"),
+        data: JSONBody[Parent],
+        int_param: FromQuery[int],
+        int_header: Annotated[int, HeaderParameter(name="X-SOME-INT")],
+        int_cookie: Annotated[int, CookieParameter(name="int-cookie")],
     ) -> None: ...
 
     with create_test_client(route_handlers=[test]) as client:
@@ -211,11 +241,11 @@ def test_invalid_input_dataclass() -> None:
 
     @post("/")
     def test(
-        data: Parent,
-        int_param: int,
-        length_param: str = Parameter(min_length=2),
-        int_header: int = Parameter(header="X-SOME-INT"),
-        int_cookie: int = Parameter(cookie="int-cookie"),
+        data: JSONBody[Parent],
+        int_param: FromQuery[int],
+        length_param: Annotated[str, QueryParameter(min_length=2)],
+        int_header: Annotated[int, HeaderParameter(name="X-SOME-INT")],
+        int_cookie: Annotated[int, CookieParameter(name="int-cookie")],
     ) -> None: ...
 
     with create_test_client(route_handlers=[test]) as client:
@@ -255,11 +285,11 @@ def test_invalid_input_typed_dict() -> None:
 
     @post("/")
     def test(
-        data: Parent,
-        int_param: int,
-        length_param: str = Parameter(min_length=2),
-        int_header: int = Parameter(header="X-SOME-INT"),
-        int_cookie: int = Parameter(cookie="int-cookie"),
+        data: JSONBody[Parent],
+        int_param: FromQuery[int],
+        length_param: Annotated[str, QueryParameter(min_length=2)],
+        int_header: Annotated[int, HeaderParameter(name="X-SOME-INT")],
+        int_cookie: Annotated[int, CookieParameter(name="int-cookie")],
     ) -> None: ...
 
     with create_test_client(route_handlers=[test]) as client:
@@ -286,7 +316,7 @@ def test_invalid_input_typed_dict() -> None:
 
 
 def test_parse_values_from_connection_kwargs_with_multiple_errors() -> None:
-    def fn(a: Annotated[int, Parameter(gt=5)], b: Annotated[int, Parameter(lt=5)]) -> None:
+    def fn(a: Annotated[int, QueryParameter(gt=5)], b: Annotated[int, QueryParameter(lt=5)]) -> None:
         pass
 
     model = SignatureModel.create(
@@ -312,7 +342,7 @@ def test_validate_subscribed_generics() -> None:
         pass
 
     @get("/")
-    async def something(foo: Foo[str] = Foo()) -> None:
+    async def something(foo: FromQuery[Foo[str]] = Foo()) -> None:
         return None
 
     with create_test_client([something]) as client:
@@ -326,14 +356,14 @@ def test_separate_model_namespace() -> None:
         return "connection"
 
     @get("/connection", dependencies={"connection": provide_connection})
-    async def get_connection(connection: str) -> str:
+    async def get_connection(connection: NamedDependency[str]) -> str:
         return connection
 
     async def provide_deserializer() -> str:
         return "deserializer"
 
     @get("/deserializer", dependencies={"deserializer": provide_deserializer})
-    async def get_deserializer(deserializer: int) -> str:
+    async def get_deserializer(deserializer: NamedDependency[int]) -> str:
         return deserializer  # type: ignore[return-value]
 
     with create_test_client([get_connection, get_deserializer], raise_server_exceptions=True, debug=True) as client:

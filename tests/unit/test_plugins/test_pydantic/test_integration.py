@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from typing import Annotated, Any
 from unittest.mock import ANY
 
@@ -7,7 +9,7 @@ import pytest
 from litestar import get, post
 from litestar.enums import RequestEncodingType
 from litestar.openapi.spec import Schema
-from litestar.params import Body, Parameter
+from litestar.params import Body, CookieParameter, FromPath, FromQuery, HeaderParameter, JSONBody, QueryParameter
 from litestar.plugins.pydantic import PydanticDTO, PydanticInitPlugin, PydanticPlugin
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -27,7 +29,7 @@ def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
     annotation = Annotated[Model, meta] if meta is not None else Model
 
     @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
-    def handler(data: annotation) -> Any:  # pyright: ignore
+    def handler(data: JSONBody[annotation]) -> Any:  # pyright: ignore[reportInvalidTypeForm]
         return data
 
     model_json = {"foo": "too long"}
@@ -56,7 +58,7 @@ def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
 
 def test_default_error_handling() -> None:
     @post("/{param:int}")
-    def my_route_handler(param: int, data: PydanticPerson) -> None: ...
+    def my_route_handler(param: FromPath[int], data: JSONBody[PydanticPerson]) -> None: ...
 
     with create_test_client(my_route_handler) as client:
         response = client.post("/123", json={"first_name": "moishe"})
@@ -76,7 +78,7 @@ def test_serialize_raw_errors_v2() -> None:
             raise ValueError("user id must be greater than 0")
 
     @post("/", dto=PydanticDTO[User])
-    async def create_user(data: User) -> User:
+    async def create_user(data: JSONBody[User]) -> User:
         return data
 
     with create_test_client(create_user) as client:
@@ -108,11 +110,11 @@ def test_signature_model_invalid_input(base_model: BaseModelType, pydantic_versi
 
     @post("/")
     def test(
-        data: Parent,
-        int_param: int,
-        length_param: str = Parameter(min_length=2),
-        int_header: int = Parameter(header="X-SOME-INT"),
-        int_cookie: int = Parameter(cookie="int-cookie"),
+        data: JSONBody[Parent],
+        int_param: FromQuery[int],
+        length_param: Annotated[str, QueryParameter(min_length=2)],
+        int_header: Annotated[int, HeaderParameter(name="X-SOME-INT")],
+        int_cookie: Annotated[int, CookieParameter(name="int-cookie")],
     ) -> None: ...
 
     with create_test_client(route_handlers=[test], signature_types=[Parent]) as client:
@@ -152,7 +154,7 @@ class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
 @pytest.mark.parametrize("model_type", [V2ModelWithPrivateFields])
 def test_private_fields(model_type: BaseModelType) -> None:
     @post("/")
-    async def handler(data: V2ModelWithPrivateFields) -> V2ModelWithPrivateFields:
+    async def handler(data: JSONBody[V2ModelWithPrivateFields]) -> V2ModelWithPrivateFields:
         return data
 
     with create_test_client([handler]) as client:
@@ -197,10 +199,10 @@ def test_private_fields(model_type: BaseModelType) -> None:
 )
 def test_dto_with_non_instantiable_types(base_model: BaseModelType, type_: Any, in_: Any) -> None:
     class Model(base_model):  # type: ignore[misc, valid-type]
-        foo: type_  # pyright: ignore
+        foo: type_  # pyright: ignore[reportInvalidTypeForm]
 
     @post("/", dto=PydanticDTO[Model])
-    async def handler(data: Model) -> Model:
+    async def handler(data: JSONBody[Model]) -> Model:
         return data
 
     with create_test_client(handler) as client:
@@ -266,7 +268,7 @@ def test_v2_strict_validate(
         test_bool: pydantic_v2.StrictBool
 
     @post("/")
-    async def handler(data: Model) -> None:
+    async def handler(data: JSONBody[Model]) -> None:
         return None
 
     plugins = []
@@ -285,7 +287,7 @@ def test_model_defaults(pydantic_version: PydanticVersion) -> None:
         c: int = pydantic_v2.Field(default_factory=lambda: 3)
 
     @post("/")
-    async def handler(data: Model) -> dict[str, int]:
+    async def handler(data: JSONBody[Model]) -> dict[str, int]:
         return {"a": data.a, "b": data.b, "c": data.c}
 
     with create_test_client([handler]) as client:
@@ -341,7 +343,7 @@ def test_pydantic_v2_round_trip() -> None:
 
     @get("/")
     async def handler() -> Model:
-        return Model(foo=resp)  # type: ignore[arg-type] # pyright: ignore[reportArgumentType]
+        return Model(foo=resp)  # type: ignore[arg-type]
 
     with create_test_client([handler], plugins=[PydanticPlugin(round_trip=True)]) as client:
         assert client.get("/").json() == {"foo": resp}

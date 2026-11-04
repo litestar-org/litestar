@@ -3,7 +3,6 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import replace
 from typing import TYPE_CHECKING, Annotated, Any, Generic, TypeAlias, TypeVar
-from warnings import warn
 
 from typing_extensions import override
 
@@ -47,7 +46,7 @@ _down_types: dict[Any, Any] = {
 }
 
 
-def convert_validation_error(validation_error: ValidationError) -> list[dict[str, Any]]:  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+def convert_validation_error(validation_error: ValidationError) -> list[dict[str, Any]]:
     error_list = validation_error.errors()
     for error in error_list:
         if isinstance(exception := error.get("ctx", {}).get("error"), Exception):
@@ -83,7 +82,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
     @classmethod
     def generate_field_definitions(
         cls,
-        model_type: type[pydantic.BaseModel],  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
+        model_type: type[pydantic.BaseModel],
     ) -> Generator[DTOFieldDefinition, None, None]:
         model_info = get_model_info(model_type)
         model_fields = model_info.model_fields
@@ -98,19 +97,9 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
             if field_info := model_fields.get(field_name):
                 # field_info might not exist, since FieldInfo isn't provided by pydantic
                 # for computed fields, but we still generate a FieldDefinition for them
-                try:
-                    extra = field_info.extra  # type: ignore[union-attr, attr-defined]
-                except AttributeError:
-                    extra = field_info.json_schema_extra  # type: ignore[union-attr]
-
-                if extra is not None and extra.pop(DTO_FIELD_META_KEY, None):  # pyright: ignore
-                    warn(
-                        message="Declaring 'DTOField' via Pydantic's 'Field.extra' is deprecated. "
-                        "Use 'Annotated', e.g., 'Annotated[str, DTOField(mark='read-only')]' instead. "
-                        "Support for 'DTOField' in 'Field.extra' will be removed in v3.",
-                        category=DeprecationWarning,
-                        stacklevel=2,
-                    )
+                extra = field_info.json_schema_extra
+                if isinstance(extra, dict):
+                    extra.pop(DTO_FIELD_META_KEY, None)
 
                 if not is_pydantic_undefined(field_info.default):
                     default = field_info.default

@@ -38,7 +38,7 @@ Installation
     :doc:`Prometheus Instrumentation </usage/metrics/prometheus>`
         :code:`pip install 'litestar[prometheus]'`
 
-    :doc:`Open Telemetry Instrumentation </usage/metrics/open-telemetry>`
+    :doc:`OpenTelemetry Instrumentation </usage/metrics/opentelemetry>`
         :code:`pip install 'litestar[opentelemetry]'`
 
     :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>` (via `Advanced-Alchemy <https://advanced-alchemy.litestar.dev/latest/>`_)
@@ -120,7 +120,6 @@ and
     * ``http://localhost:8000/schema`` (for `ReDoc <https://redocly.com/redoc>`_),
     * ``http://localhost:8000/schema/swagger`` (for `Swagger UI <https://swagger.io/>`_),
     * ``http://localhost:8000/schema/elements`` (for `Stoplight Elements <https://stoplight.io/open-source/elements/>`_)
-    * ``http://localhost:8000/schema/rapidoc`` (for `RapiDoc <https://rapidocweb.com/>`_)
 
 You can check out a more in-depth tutorial in the :doc:`/tutorials/todo-app/index` section!
 
@@ -171,6 +170,7 @@ You can also use dataclasses (standard library and Pydantic),
 
     from litestar import Controller, get, post, put, patch, delete
     from litestar.dto import DTOData
+    from litestar.params import FromPath, JSONBody
     from pydantic import UUID4
 
     from my_app.models import User, PartialUserDTO
@@ -180,24 +180,24 @@ You can also use dataclasses (standard library and Pydantic),
         path = "/users"
 
         @post()
-        async def create_user(self, data: User) -> User: ...
+        async def create_user(self, data: JSONBody[User]) -> User: ...
 
         @get()
         async def list_users(self) -> List[User]: ...
 
         @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
         async def partial_update_user(
-            self, user_id: UUID4, data: DTOData[User]
+            self, user_id: FromPath[UUID4], data: JSONBody[DTOData[User]]
         ) -> User: ...
 
         @put(path="/{user_id:uuid}")
-        async def update_user(self, user_id: UUID4, data: User) -> User: ...
+        async def update_user(self, user_id: FromPath[UUID4], data: JSONBody[User]) -> User: ...
 
         @get(path="/{user_id:uuid}")
-        async def get_user(self, user_id: UUID4) -> User: ...
+        async def get_user(self, user_id: FromPath[UUID4]) -> User: ...
 
         @delete(path="/{user_id:uuid}")
-        async def delete_user(self, user_id: UUID4) -> None: ...
+        async def delete_user(self, user_id: FromPath[UUID4]) -> None: ...
 
 
 When instantiating your app, import your *controller* into your application's
@@ -211,7 +211,7 @@ entry-point and pass it to Litestar:
 
    app = Litestar(route_handlers=[UserController])
 
-To **run your application**, use an ASGI server such as `uvicorn <https://www.uvicorn.org/>`_ :
+To **run your application**, use an ASGI server such as `uvicorn <https://uvicorn.dev/>`_ :
 
 .. code-block:: shell
 

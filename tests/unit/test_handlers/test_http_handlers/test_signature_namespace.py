@@ -5,6 +5,7 @@ from typing import Any
 import pytest
 
 from litestar import Controller, Router, delete, get, patch, post, put
+from litestar.params import FromQuery
 from litestar.testing import create_test_client
 from litestar.types import HTTPHandlerDecorator
 
@@ -27,10 +28,10 @@ def test_websocket_signature_namespace(method: str, decorator: HTTPHandlerDecora
         @decorator(path="/", signature_namespace={"d": list[str], "dict": dict}, status_code=200)
         async def simple_handler(
             self,
-            a: a,  # type:ignore[name-defined]  # noqa: F821
-            b: b,  # type:ignore[name-defined]  # noqa: F821
-            c: c,  # type:ignore[name-defined]  # noqa: F821
-            d: d,  # type:ignore[name-defined]  # noqa: F821
+            a: FromQuery[a],  # type:ignore[name-defined]  # noqa: F821
+            b: FromQuery[b],  # type:ignore[name-defined]  # noqa: F821
+            c: FromQuery[c],  # type:ignore[name-defined]  # noqa: F821
+            d: FromQuery[d],  # type:ignore[name-defined]  # noqa: F821
         ) -> dict[str, Any]:
             return {"a": a, "b": b, "c": c, "d": d}
 

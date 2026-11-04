@@ -271,8 +271,8 @@ class FsspecSyncWrapper(BaseFileSystem):
             start: Offset to start reading from
             end: Offset to stop reading at (inclusive)
         """
-        return await sync_to_thread(
-            self.wrapped_fs.cat_file,  # pyright: ignore
+        return await sync_to_thread(  # pyright: ignore[reportReturnType]
+            self.wrapped_fs.cat_file,
             str(path),
             start=start or None,
             end=end if end != -1 else None,
@@ -385,7 +385,7 @@ class FsspecAsyncWrapper(BaseFileSystem):
         # if we want to stream the whole thing we can use '.open_async' if it's
         # implemented
         if start == 0 and end == -1 and self._supports_open_async:
-            async with await self.wrapped_fs.open_async(path, mode="rb") as fh:  # pyright: ignore
+            async with await self.wrapped_fs.open_async(path, mode="rb") as fh:  # pyright: ignore[reportGeneralTypeIssues]
                 while chunk := await fh.read(chunksize):
                     yield chunk
             return

@@ -1,6 +1,6 @@
 from litestar import Litestar, get
 from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.plugins import RapidocRenderPlugin, SwaggerRenderPlugin
+from litestar.openapi.plugins import ScalarRenderPlugin, SwaggerRenderPlugin
 
 
 @get("/", sync_to_thread=False)
@@ -14,6 +14,6 @@ app = Litestar(
         title="Litestar Example",
         description="Example of litestar",
         version="0.0.1",
-        render_plugins=[RapidocRenderPlugin(), SwaggerRenderPlugin()],
+        render_plugins=[ScalarRenderPlugin(), SwaggerRenderPlugin()],
     ),
 )

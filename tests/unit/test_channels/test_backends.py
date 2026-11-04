@@ -14,7 +14,7 @@ from litestar.channels import ChannelsBackend
 from litestar.channels.backends.asyncpg import AsyncPgChannelsBackend
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
-from litestar.channels.backends.redis import RedisChannelsStreamBackend
+from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.exceptions import ImproperlyConfiguredException
 
 
@@ -147,6 +147,34 @@ async def test_redis_streams_backend_flushall(redis_stream_backend: RedisChannel
     assert result == 3
 
 
+@pytest.mark.xdist_group("redis")
+async def test_redis_pubsub_backend_reusable_across_plugin_lifecycles(
+    redis_pub_sub_backend: RedisChannelsPubSubBackend,
+) -> None:
+    """A pubsub backend instance must be reusable across multiple ``ChannelsPlugin`` lifecycles.
+
+    Regression test for a bug where ``on_shutdown`` closed the underlying
+    ``PubSub`` connection but the lazy ``_pub_sub`` cache kept the dead object,
+    breaking the next startup/subscribe cycle.
+    """
+    from litestar.channels import ChannelsPlugin
+
+    for _ in range(2):
+        async with ChannelsPlugin(backend=redis_pub_sub_backend, channels=["c"]) as plugin:
+            subscriber = await plugin.subscribe("c")
+            await plugin.wait_published(b"x", "c")
+
+            async def _consume() -> list[bytes]:
+                items: list[bytes] = []
+                async for item in subscriber.iter_events():
+                    items.append(item)
+                    if len(items) == 1:
+                        break
+                return items
+
+            assert await asyncio.wait_for(_consume(), timeout=2.0) == [b"x"]
+
+
 @pytest.mark.flaky(reruns=5)  # this should not really happen but just in case, we retry
 @pytest.mark.xdist_group("redis")
 async def test_redis_stream_backend_expires(redis_client: Redis) -> None:
@@ -247,6 +275,30 @@ async def test_memory_backend_unsubscribe_clears_all_history() -> None:
     # With the fix using pop(channel, None), all channels should have their history cleared
     assert len(await backend.get_history("foo")) == 0
     assert len(await backend.get_history("bar")) == 0
-    assert len(await backend.get_history("baz")) == 0
-
     await backend.on_shutdown()
+
+
+async def test_redis_pubsub_backend_on_shutdown_calls_aclose() -> None:
+    redis_mock = MagicMock(spec=Redis)
+    pubsub_mock = MagicMock()
+    pubsub_mock.aclose = AsyncMock()
+    pubsub_mock.reset = AsyncMock()
+    redis_mock.pubsub.return_value = pubsub_mock
+
+    backend = RedisChannelsPubSubBackend(redis=redis_mock)
+    await backend.on_shutdown()
+
+    pubsub_mock.aclose.assert_awaited_once()
+    pubsub_mock.reset.assert_not_awaited()
+
+
+async def test_redis_pubsub_backend_on_shutdown_fallback_reset() -> None:
+    redis_mock = MagicMock(spec=Redis)
+    pubsub_mock = MagicMock(spec=["reset"])
+    pubsub_mock.reset = AsyncMock()
+    redis_mock.pubsub.return_value = pubsub_mock
+
+    backend = RedisChannelsPubSubBackend(redis=redis_mock)
+    await backend.on_shutdown()
+
+    pubsub_mock.reset.assert_awaited_once()

@@ -7,8 +7,8 @@ Getting Started
 Supported Python Versions
 +++++++++++++++++++++++++
 
-The lowest currently supported version is Python 3.9.
-At a minimum you will need Python 3.9 for code changes and 3.13 if you plan on doing documentation building / changes.
+The lowest currently supported version is Python 3.11.
+At a minimum you will need Python 3.11 for code changes and 3.13 if you plan on doing documentation building / changes.
 
 You can use various tools to manage multiple Python versions on your system including:
 
@@ -131,6 +131,19 @@ or ``make coverage``. Due to the nature of pytest-xdist, attaching a debugger is
 straightforward. For debugging, it's recommended to run the tests individually with
 ``pytest <test name>`` or via an IDE, which will skip ``pytest-xdist``.
 
+Benchmarks
+++++++++++
+
+Benchmarks live in ``tests/benchmarks`` and are measured by
+`CodSpeed <https://codspeed.io/litestar-org/litestar>`_ in CI. They are ordinary pytest
+tests, so ``make test`` runs each of them once.
+
+When adding one, drive the app with ``ASGIRunner`` from ``tests/benchmarks/helpers.py``
+rather than ``TestClient``, and assert on the result so it keeps working as a test.
+``pytest-codspeed`` forwards keyword arguments to its own measuring function, so pass the
+call's arguments positionally or wrap it in a ``lambda`` -- a keyword named ``target``,
+``fn``, ``name``, ``uri`` or ``marker_options`` collides with it.
+
 Running type checkers
 +++++++++++++++++++++
 
@@ -142,14 +155,14 @@ enforce type safety. You can run them with:
 - ``make type-check`` to run both
 - ``make lint`` to run pre-commit hooks and type checkers.
 
-Our type checkers are run on Python 3.9 in CI, so you should make sure to run them on the same version locally as well.
+Our type checkers are run on Python 3.11 in CI, so you should make sure to run them on the same version locally as well.
 
 Project documentation
 ---------------------
 
-The documentation is located in the ``/docs`` directory and is written  in
-`reStructuredText <https://docutils.sourceforge.io/rst.html>`_ with the `Sphinx <https://www.sphinx-doc.org/en/master/>`_.
-library. If you're unfamiliar with any of those,
+The documentation is located in the ``/docs`` directory and is written in
+`reStructuredText <https://docutils.sourceforge.io/rst.html>`_ with the
+`Sphinx <https://www.sphinx-doc.org/en/master/>`_ library. If you're unfamiliar with any of those,
 `reStructuredText primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ and
 `Sphinx quickstart <https://www.sphinx-doc.org/en/master/usage/quickstart.html>`_ are recommended reads.
 
@@ -218,7 +231,7 @@ Automatically execute examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Our docs include a Sphinx extension that can automatically run requests against example apps
-and include their result in the documentation page when its being built. This only requires 2 steps:
+and include their result in the documentation page when it's being built. This only requires 2 steps:
 
 1. Create an example file with an ``app`` object in it, which is an instance of ``Litestar``
 2. Add a comment in the form of ``# run: /hello`` to the example file

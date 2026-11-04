@@ -43,7 +43,7 @@ async def maybe_async(obj: T) -> T: ...
 
 
 async def maybe_async(obj: Awaitable[T] | T) -> T:
-    return await obj if inspect.isawaitable(obj) else obj  # pyright: ignore
+    return await obj if inspect.isawaitable(obj) else obj  # pyright: ignore[reportReturnType]
 
 
 class _AsyncContextManagerWrapper(AbstractAsyncContextManager):

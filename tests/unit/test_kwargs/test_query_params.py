@@ -1,3 +1,4 @@
+# pyright: reportUnnecessaryTypeIgnoreComment = false
 from datetime import datetime
 from typing import (
     Annotated,
@@ -11,8 +12,8 @@ import pytest
 
 from litestar import MediaType, Request, get, post
 from litestar.datastructures import MultiDict
-from litestar.di import Provide
-from litestar.params import Parameter
+from litestar.di import NamedDependency, Provide
+from litestar.params import FromQuery, JSONBody, QueryParameter, QueryParams
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -103,11 +104,11 @@ def test_query_params(params_dict: dict, should_raise: bool) -> None:
 
     @get(path=test_path)
     def test_method(
-        page: int,
-        page_size: int = Parameter(query="pageSize", gt=0, le=100),
-        brands: list[str] = Parameter(min_items=1, max_items=3),
-        from_date: Optional[datetime] = None,
-        to_date: Optional[datetime] = None,
+        page: FromQuery[int],
+        page_size: Annotated[int, QueryParameter(name="pageSize", gt=0, le=100)],
+        brands: Annotated[list[str], QueryParameter(min_items=1, max_items=3)],
+        from_date: FromQuery[Optional[datetime]] = None,
+        to_date: FromQuery[Optional[datetime]] = None,
     ) -> None:
         assert page
         assert page_size
@@ -143,7 +144,7 @@ def test_query_param_arrays(expected_type: Any, provided_value: Any, default: An
 
     test_method = test_method_without_default if default is ... else test_method_with_default
     # Set the type annotation of 'param' in a way mypy can deal with
-    test_method.fn.__annotations__["param"] = expected_type
+    test_method.fn.__annotations__["param"] = FromQuery[expected_type]  # type: ignore[misc]
 
     with create_test_client(test_method) as client:
         params = urlencode({"param": provided_value}, doseq=True)
@@ -163,7 +164,7 @@ def test_query_kwarg() -> None:
     )
 
     @get(test_path)
-    def handler(a: list[str], b: list[str], query: MultiDict) -> None:
+    def handler(a: FromQuery[list[str]], b: FromQuery[list[str]], query: QueryParams) -> None:
         assert isinstance(query, MultiDict)
         assert {k: query.getall(k) for k in query} == {"a": ["foo", "bar"], "b": ["qux"]}
         assert isinstance(a, list)
@@ -191,7 +192,7 @@ def test_query_parsing_of_escaped_values(values: tuple[tuple[str, str], tuple[st
     request_values: dict[str, Any] = {}
 
     @get(path="/handler")
-    def handler(request: Request, first: str, second: str) -> None:
+    def handler(request: Request, first: FromQuery[str], second: FromQuery[str]) -> None:
         request_values["first"] = first
         request_values["second"] = second
         request_values["query"] = request.query_params
@@ -208,11 +209,11 @@ def test_query_parsing_of_escaped_values(values: tuple[tuple[str, str], tuple[st
 
 
 def test_query_param_dependency_with_alias() -> None:
-    async def qp_dependency(page_size: int = Parameter(query="pageSize", gt=0, le=100)) -> int:
+    async def qp_dependency(page_size: Annotated[int, QueryParameter(name="pageSize", gt=0, le=100)]) -> int:
         return page_size
 
     @get("/", media_type=MediaType.TEXT)
-    def handler(page_size_dep: int) -> str:
+    def handler(page_size_dep: NamedDependency[int]) -> str:
         return str(page_size_dep)
 
     with create_test_client(handler, dependencies={"page_size_dep": Provide(qp_dependency)}) as client:
@@ -224,7 +225,7 @@ def test_query_param_dependency_with_alias() -> None:
 def test_query_params_with_post() -> None:
     # https://github.com/litestar-org/litestar/issues/3734
     @post()
-    async def handler(data: str, secret: Annotated[str, Parameter(query="x-secret")]) -> None:
+    async def handler(data: JSONBody[str], secret: Annotated[str, QueryParameter(name="x-secret")]) -> None:
         return None
 
     with create_test_client([handler], raise_server_exceptions=True) as client:

@@ -95,12 +95,11 @@ litestar run
 - [OpenAPI 3.1 schema generation](#openapi)
 - [Life Cycle Hooks](#request-life-cycle-hooks)
 - [Route Guards based Authorization](#route-guards)
-- Support for `dataclasses`, `TypedDict`, [`msgspec`](https://jcristharif.com/msgspec/), [pydantic version 1 and version 2 (even within the same application)](https://docs.pydantic.dev/latest/) and [(c)attrs](https://catt.rs/en/stable/)
+- Support for `dataclasses`, `TypedDict`, [`msgspec`](https://msgspec.dev), [pydantic version 1 and version 2 (even within the same application)](https://docs.pydantic.dev/latest/) and [(c)attrs](https://catt.rs/en/stable/)
 - Layered parameter declaration
 - Support for [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457) standardized "Problem Detail" error responses
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Scalar](https://github.com/scalar/scalar/)
-  - [RapiDoc](https://github.com/rapi-doc/RapiDoc)
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
@@ -228,7 +227,6 @@ Litestar serves the documentation from the generated OpenAPI schema with:
 - [ReDoc](https://redoc.ly/)
 - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Stoplight Elements](https://github.com/stoplightio/elements)
-- [RapiDoc](https://rapidocweb.com/)
 
 All these are available and enabled by default.
 
@@ -316,7 +314,7 @@ or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our
 Litestar is open to contributions big and small. You can always [join our discord](https://discord.gg/litestar) server
 or [join our Matrix](https://matrix.to/#/#litestar:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
-see [the contribution guide](CONTRIBUTING.rst).
+see [the contribution guide](https://github.com/litestar-org/litestar/blob/main/CONTRIBUTING.rst).
 
 <!-- contributors-start -->
 
@@ -601,6 +599,9 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/PokkaKiyo"><img src="https://avatars.githubusercontent.com/u/31039465?v=4?s=100" width="100px;" alt="PokkaKiyo"/><br /><sub><b>PokkaKiyo</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=PokkaKiyo" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/s-aleshin"><img src="https://avatars.githubusercontent.com/u/66841202?v=4?s=100" width="100px;" alt="Sergei Aleshin"/><br /><sub><b>Sergei Aleshin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=s-aleshin" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/IDrokin117"><img src="https://avatars.githubusercontent.com/u/41319097?v=4?s=100" width="100px;" alt="Igor Drokin"/><br /><sub><b>Igor Drokin</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=IDrokin117" title="Documentation">📖</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TanayK07"><img src="https://avatars.githubusercontent.com/u/95276223?v=4?s=100" width="100px;" alt="Tanay Kedia"/><br /><sub><b>Tanay Kedia</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=TanayK07" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=TanayK07" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=TanayK07" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

@@ -1,4 +1,10 @@
-from .base_exceptions import LitestarException, LitestarWarning, MissingDependencyException, SerializationException
+from .base_exceptions import (
+    LitestarDeprecationWarning,
+    LitestarException,
+    LitestarWarning,
+    MissingDependencyException,
+    SerializationException,
+)
 from .dto_exceptions import DTOFactoryException, InvalidAnnotationException
 from .http_exceptions import (
     ClientException,
@@ -24,6 +30,7 @@ __all__ = (
     "ImproperlyConfiguredException",
     "InternalServerException",
     "InvalidAnnotationException",
+    "LitestarDeprecationWarning",
     "LitestarException",
     "LitestarWarning",
     "MethodNotAllowedException",

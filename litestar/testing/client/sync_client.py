@@ -87,6 +87,7 @@ class TestClient(Client, Generic[T]):
                 name="test_client",
             )
         )
+        self._initialized = False
 
         super().__init__(
             base_url=base_url,
@@ -100,12 +101,12 @@ class TestClient(Client, Generic[T]):
             ),
             timeout=timeout,
         )
-        # warn on usafe if client not initialized
 
     def __enter__(self) -> Self:
         self.exit_stack.enter_context(self.blocking_portal.wrap_async_context_manager(LifeSpanHandler(self.app)))
         super().__enter__()
         self.exit_stack.push(super().__exit__)
+        self._initialized = True
         return self
 
     def __exit__(
@@ -116,6 +117,7 @@ class TestClient(Client, Generic[T]):
     ) -> None:
         try:
             self.exit_stack.__exit__(exc_type, exc_value, traceback)
+            self._initialized = False
         except Exception as exc:
             exc = _collapse_exception_groups(exc)
             raise exc

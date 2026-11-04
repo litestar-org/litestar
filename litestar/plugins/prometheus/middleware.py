@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from litestar.connection.request import Request
 from litestar.enums import ScopeType
-from litestar.exceptions import MissingDependencyException
+from litestar.exceptions import HTTPException, MissingDependencyException
 from litestar.middleware.base import AbstractMiddleware
 
 __all__ = ("PrometheusMiddleware",)
@@ -154,7 +154,14 @@ class PrometheusMiddleware(AbstractMiddleware):
         self.requests_in_progress(labels).labels(*labels.values()).inc()
 
         try:
-            await self.app(scope, receive, wrapped_send)
+            try:
+                await self.app(scope, receive, wrapped_send)
+            except HTTPException as exc:
+                request_span["status_code"] = exc.status_code
+                raise
+            except Exception:
+                request_span["status_code"] = HTTP_500_INTERNAL_SERVER_ERROR
+                raise
         finally:
             extra: dict[str, Any] = {}
             if self._config.exemplars:

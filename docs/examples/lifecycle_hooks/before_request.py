@@ -1,4 +1,5 @@
 from litestar import Litestar, Request, get
+from litestar.params import FromQuery
 
 
 async def before_request_handler(request: Request) -> dict[str, str] | None:
@@ -10,7 +11,7 @@ async def before_request_handler(request: Request) -> dict[str, str] | None:
 
 
 @get("/")
-async def handler(request: Request, name: str) -> dict[str, str]:
+async def handler(request: Request, name: FromQuery[str]) -> dict[str, str]:
     message: str = request.state["message"]
     return {"message": message}
 

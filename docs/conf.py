@@ -1,20 +1,20 @@
 from __future__ import annotations
 
 import importlib.metadata
+import json
 import os
 import re
 import warnings
 from datetime import datetime
-from functools import partial
-from typing import Any
+from pathlib import Path
 
-from sphinx.addnodes import document
+from shibuya._pygments import ShibuyaPygmentsBridge
 from sphinx.application import Sphinx
 from sqlalchemy.exc import SAWarning
 
 warnings.filterwarnings("ignore", category=SAWarning)
 
-__all__ = ["setup", "update_html_context"]
+__all__ = ["setup"]
 
 PY_CLASS = "py:class"
 PY_RE = r"py:.*"
@@ -54,7 +54,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "msgspec": ("https://jcristharif.com/msgspec/", None),
+    "msgspec": ("https://msgspec.dev", None),
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
     "cryptography": ("https://cryptography.io/en/latest/", None),
@@ -64,7 +64,6 @@ intersphinx_mapping = {
     "redis": ("https://redis.readthedocs.io/en/stable/", None),
     "structlog": ("https://www.structlog.org/en/stable/", None),
     "tortoise": ("https://tortoise.github.io/", None),
-    "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest/", None),
     "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
     "advanced-alchemy": ("https://advanced-alchemy.litestar.dev/latest/", None),
     "jinja2": ("https://jinja.palletsprojects.com/en/latest/", None),
@@ -88,6 +87,8 @@ autodoc_default_options = {"special-members": "__init__", "show-inheritance": Tr
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 autodoc_mock_imports = []
+# (Kumzy): drop once https://github.com/sphinx-doc/sphinx/issues/14089
+autodoc_use_legacy_class_based = True
 
 nitpicky = True
 nitpick_ignore = [
@@ -105,6 +106,9 @@ nitpick_ignore = [
     (PY_CLASS, "abc.Collection"),
     (PY_CLASS, "advanced_alchemy.utils.dataclass.Empty"),
     (PY_CLASS, "jinja2.environment.Environment"),
+    (PY_CLASS, "mako.lookup.TemplateLookup"),
+    (PY_CLASS, "mako.template.Template"),
+    (PY_CLASS, "minijinja.Environment"),
     (PY_CLASS, "pydantic.BaseModel"),
     (PY_CLASS, "pydantic.generics.GenericModel"),
     (PY_CLASS, "pydantic.main.BaseModel"),
@@ -118,6 +122,14 @@ nitpick_ignore = [
     (PY_METH, "litestar.typing.ParsedType.is_subclass_of"),
     (PY_METH, "type_engine"),
     # type vars and aliases / intentionally undocumented
+    (PY_CLASS, "OperationIDCreator"),  # (Kumzy) litestar.types.callable_types alias; xref fails on Sphinx 9
+    (
+        PY_CLASS,
+        "ProblemDetailsExceptionHandlerType",
+    ),  # (Kumzy)litestar.plugins.problem_details alias; xref fails on Sphinx 9
+    (PY_CLASS, "ClientRequestHookHandler"),
+    (PY_CLASS, "ClientResponseHookHandler"),
+    (PY_CLASS, "ServerRequestHookHandler"),
     (PY_CLASS, "AnyIOBackend"),
     (PY_CLASS, "BaseSessionBackendT"),
     (PY_CLASS, "C"),
@@ -140,6 +152,7 @@ nitpick_ignore = [
     (PY_OBJ, "litestar.template.base.ContextType_co"),
     (PY_CLASS, "litestar.template.base.TemplateType_co"),
     (PY_CLASS, "litestar.template.base.ContextType_co"),
+    (PY_CLASS, "litestar.template.base.ContextType"),
     (PY_CLASS, "litestar.template.base.R"),
     # intentionally undocumented
     (PY_CLASS, "BacklogStrategy"),
@@ -152,14 +165,6 @@ nitpick_ignore = [
     # types in changelog that no longer exist
     (PY_ATTR, "litestar.dto.factory.DTOConfig.underscore_fields_private"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),
-    (PY_CLASS, "litestar.contrib.msgspec.MsgspecDTO"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"),
-    (PY_CLASS, "litestar.contrib.repository.filters.NotInCollectionFilter"),
-    (PY_CLASS, "litestar.contrib.repository.filters.NotInSearchFilter"),
-    (PY_CLASS, "litestar.contrib.repository.filters.OnBeforeAfter"),
-    (PY_CLASS, "litestar.contrib.repository.filters.OrderBy"),
-    (PY_CLASS, "litestar.contrib.repository.filters.SearchFilter"),
     (PY_CLASS, "litestar.dto.base_factory.AbstractDTOFactory"),
     (PY_CLASS, "litestar.dto.factory.DTOConfig"),
     (PY_CLASS, "litestar.dto.factory.DTOData"),
@@ -168,7 +173,6 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response.RedirectResponse"),
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response_containers.Template"),
-    (PY_CLASS, "litestar.contrib.htmx.request.HTMXRequest"),
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
     (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
@@ -186,12 +190,12 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.background_tasks.P"),
     (PY_CLASS, "P.args"),
     (PY_CLASS, "P.kwargs"),
-    (PY_CLASS, "litestar.contrib.jinja.P"),
-    (PY_CLASS, "litestar.contrib.mako.P"),
+    (PY_CLASS, "litestar.plugins.jinja.P"),
+    (PY_CLASS, "litestar.plugins.mako.P"),
+    (PY_CLASS, "MiniJinjaTemplate"),
+    (PY_CLASS, "litestar.plugins.minijinja.MiniJinjaTemplate"),
     (PY_CLASS, "JWTDecodeOptions"),
     (PY_CLASS, "litestar.template.base.P"),
-    (PY_CLASS, "litestar.contrib.pydantic.PydanticDTO"),
-    (PY_CLASS, "litestar.contrib.pydantic.PydanticPlugin"),
     (PY_CLASS, "typing.Self"),
     (PY_CLASS, "attr.AttrsInstance"),
     (PY_CLASS, "typing_extensions.TypeGuard"),
@@ -236,6 +240,11 @@ nitpick_ignore_regex = [
     (PY_OBJ, r"litestar.security.jwt.auth.TokenT"),
     (PY_CLASS, "ExceptionToProblemDetailMapType"),
     (PY_CLASS, "litestar.security.jwt.token.JWTDecodeOptions"),
+    # (Kumzy) Drop the 4 next rows once this done. https://github.com/sphinx-doc/sphinx/issues/14089
+    (PY_RE, r"^Mapping\[(str|int)$"),
+    (PY_RE, r"^dict\[str$"),
+    (PY_RE, r"^Literal\[.*$"),
+    (PY_RE, r"^set\[~?typing\.Literal\[.*$"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
@@ -249,10 +258,7 @@ ignore_missing_refs = {
     "litestar.response.file.async_file_iterator": {"FileSystemAdapter"},
     re.compile("litestar.response.redirect.*"): {"RedirectStatusType"},
     re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
-    re.compile(r"litestar\.(contrib|repository)\.*"): re.compile(".*T"),
-    re.compile(r"litestar\.contrib\.sqlalchemy\.*"): re.compile(
-        ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase)"
-    ),
+    re.compile(r"litestar\.repository\.*"): re.compile(".*T"),
     re.compile(r"litestar\.dto.*"): re.compile(".*T|.*FieldDefinition|Empty"),
     re.compile(r"litestar\.template\.(config|TemplateConfig).*"): re.compile(".*EngineType"),
     "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
@@ -289,27 +295,32 @@ suppress_warnings = [
 # -- Style configuration -----------------------------------------------------
 html_theme = "litestar_sphinx_theme"
 html_title = "Litestar Framework"
-pygments_style = "lightbulb"
+
+# Pygments theming.
+# Shibuya only reads `pygments_style` from conf.py; the dark companion lives on
+# `ShibuyaPygmentsBridge.dark_style_name` as a class attribute, so we set it here.
+pygments_style = "one-light"
+ShibuyaPygmentsBridge.dark_style_name = "one-dark-pro"
 
 html_static_path = ["_static"]
 templates_path = ["_templates"]
-html_js_files = ["versioning.js"]
 html_css_files = ["style.css"]
 
-html_show_sourcelink = True  # TODO: this doesn't work :(
+_versions = json.loads((Path(__file__).parent / "_static" / "versions.json").read_text())
+
+html_show_sourcelink = True
 html_copy_source = True
+html_sourcelink_suffix = ""
 
 html_context = {
     "source_type": "github",
     "source_user": "litestar-org",
     "source_repo": "litestar",
-    # "source_version": "main",  # TODO: We should set this with an envvar depending on which branch we are building?
+    "source_version": os.getenv("LITESTAR_DOCS_SOURCE_REF", "main"),
     "current_version": release,  # Use the detected version
-    "versions": [  # TODO(provinzkraut): this needs to use versions.json but im not 100% on how to do this yet
+    "versions": [
         ("latest", "/latest"),
-        ("v3 (development)", "/main"),
-        ("v2", "/2"),
-        ("v1", "/1"),
+        *((_versions["labels"][slug], f"/{slug}") for slug in reversed(_versions["versions"])),
     ],
     "version": release,
 }
@@ -349,7 +360,7 @@ html_theme_options = {
                 {
                     "title": "Litestar Organization",
                     "summary": "Details about the Litestar organization",
-                    "url": "https://litestar.dev/about/organization",
+                    "url": "https://litestar.dev/about",
                     "icon": "org",
                 },
                 {
@@ -407,17 +418,11 @@ html_theme_options = {
     ],
 }
 
-if environment != "latest":  # TODO(provinzkraut): it'd be awesome to be able to use the builtin announcement banner
+if environment != "latest":
     html_theme_options["announcement"] = (
-        f"You are viewing the <bold>{environment}</bold> version of the documentation. "
-        f"Click here to go to the latest version."
+        f"You are viewing the <strong>{environment}</strong> version of the documentation. "
+        f'<a href="/latest/">Click here to go to the latest version.</a>'
     )
-
-
-def update_html_context(
-    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: document
-) -> None:
-    context["generate_toctree_html"] = partial(context["generate_toctree_html"], startdepth=0)
 
 
 def delayed_setup(app: Sphinx) -> None:
@@ -430,10 +435,9 @@ def delayed_setup(app: Sphinx) -> None:
         return
 
     app.setup_extension("shibuya")
-    # app.connect("html-page-context", update_html_context)  # TODO(provinkraut): fix
 
 
 def setup(app: Sphinx) -> dict[str, bool]:
-    app.connect("builder-inited", delayed_setup, priority=0)  # type: ignore
+    app.connect("builder-inited", delayed_setup, priority=0)
     app.setup_extension("litestar_sphinx_theme")
     return {"parallel_read_safe": True, "parallel_write_safe": True}

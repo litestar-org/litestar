@@ -97,7 +97,7 @@ def test_abstract_security_config_registers_route_handlers(
                             "app": SecurityScheme(
                                 type="http",
                                 name="test",
-                                security_scheme_in="cookie",  # pyright: ignore
+                                security_scheme_in="cookie",
                                 description="test.",
                             )
                         }

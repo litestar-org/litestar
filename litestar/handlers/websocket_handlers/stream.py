@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import functools
+import inspect
 import warnings
 from collections.abc import AsyncGenerator, Awaitable, Callable, Mapping
 from typing import TYPE_CHECKING, Any, cast
@@ -243,12 +244,22 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         receives_socket_parameter = "socket" in parsed_stream_fn_signature.parameters
 
         if not receives_socket_parameter:
+            original_parameters = list(parsed_handler_signature.original_signature.parameters.values())
+            # a keyword-only parameter must come before '**kwargs'
+            insert_at = next(
+                (i for i, p in enumerate(original_parameters) if p.kind is inspect.Parameter.VAR_KEYWORD),
+                len(original_parameters),
+            )
+            original_parameters.insert(
+                insert_at, inspect.Parameter("socket", inspect.Parameter.KEYWORD_ONLY, annotation=self.websocket_class)
+            )
             parsed_handler_signature = dataclasses.replace(
                 parsed_handler_signature,
                 parameters={
                     **parsed_handler_signature.parameters,
-                    "socket": FieldDefinition.from_annotation("WebSocket", name="socket"),
+                    "socket": FieldDefinition.from_annotation(self.websocket_class, name="socket"),
                 },
+                original_signature=parsed_handler_signature.original_signature.replace(parameters=original_parameters),
             )
 
         self._parsed_fn_signature = parsed_handler_signature
@@ -259,7 +270,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         self._return_dto = return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
 
         # make sure the closure doesn't capture self._ws_stream / self
-        send_mode: WebSocketMode = self._ws_stream_options.send_mode  # pyright: ignore
+        send_mode: WebSocketMode = self._ws_stream_options.send_mode  # pyright: ignore[reportAssignmentType]
         listen_for_disconnect = self._ws_stream_options.listen_for_disconnect
         warn_on_data_discard = self._ws_stream_options.warn_on_data_discard
 
@@ -292,8 +303,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
                 send_handler=send_handler,
             )
 
-        self.fn = handler_fn  # pyright: ignore
-
+        self.fn = handler_fn  # pyright: ignore[reportGeneralTypeIssues]
         super().on_registration(route, app)
 
 

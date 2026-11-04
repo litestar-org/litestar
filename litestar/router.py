@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -131,7 +133,7 @@ class Router:
             opt: A string keyed mapping of arbitrary values that can be accessed in :data:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :data:`ASGI Scope <.types.Scope>`.
-            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions available to all application
+            parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions available to all application
                 paths.
             path: A path fragment that is prefixed to all route handlers, controllers and other routers associated
                 with the router instance.
@@ -166,7 +168,7 @@ class Router:
         self.after_request: AsyncAfterRequestHookHandler | None = (
             ensure_async_callable(after_request) if after_request else None  # type: ignore[assignment]
         )
-        self.after_response: AsyncAfterResponseHookHandler | None = (  # pyright: ignore
+        self.after_response: AsyncAfterResponseHookHandler | None = (  # pyright: ignore[reportAttributeAccessIssue]
             ensure_async_callable(after_response) if after_response else None
         )
         self.before_request = ensure_async_callable(before_request) if before_request else None

@@ -3,6 +3,7 @@ from uuid import UUID, uuid4
 
 from litestar import Litestar, post
 from litestar.dto import DataclassDTO
+from litestar.params import JSONBody
 
 
 @dataclass
@@ -17,7 +18,7 @@ UserDTO = DataclassDTO[User]
 
 
 @post(dto=UserDTO, return_dto=None, sync_to_thread=False)
-def create_user(data: User) -> bytes:
+def create_user(data: JSONBody[User]) -> bytes:
     return data.name.encode(encoding="utf-8")
 
 

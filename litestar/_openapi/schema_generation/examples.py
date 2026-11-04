@@ -36,7 +36,7 @@ def _normalize_example_value(value: Any) -> Any:
         args = list(get_args(value))
         try:
             args.remove(msgspec.UnsetType)
-            value = typing.Union[tuple(args)]  # pyright: ignore
+            value = typing.Union[tuple(args)]
         except ValueError:
             # UnsetType not part of the Union
             pass

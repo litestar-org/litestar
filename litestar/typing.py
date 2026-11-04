@@ -1,13 +1,25 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import dataclasses
-import warnings
 from collections import abc
 from collections.abc import Callable, Collection, Mapping
-from dataclasses import dataclass, is_dataclass, replace
+from dataclasses import dataclass, is_dataclass
 from enum import Enum
 from inspect import Parameter, Signature
+from typing import Annotated as te_Annotated
 from typing import Any, AnyStr, ForwardRef, Literal, TypeVar, cast
+
+from litestar.utils.errors import raise_for_kwarg_as_default
+
+try:
+    from typing import Annotated  # pyright: ignore
+
+    _ANNOTATED_TYPE_FORMS = (Annotated, te_Annotated)
+except ImportError:
+    _ANNOTATED_TYPE_FORMS = (te_Annotated,)  # type: ignore[assignment]
+
 
 from litestar.types import Empty
 
@@ -33,8 +45,8 @@ try:
 except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
-from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
-from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import KwargDefinition, ParameterKwarg, ParameterMarker
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
     is_any,
@@ -143,7 +155,7 @@ class FieldDefinition:
     """Default value of the field."""
     extra: dict[str, Any]
     """A mapping of extra values."""
-    kwarg_definition: KwargDefinition | DependencyKwarg | None
+    kwarg_definition: KwargDefinition | None
     """Kwarg Parameter."""
     name: str
     """Field name."""
@@ -159,6 +171,20 @@ class FieldDefinition:
 
     def __hash__(self) -> int:
         return hash((self.name, self.raw, self.annotation, self.origin, self.inner_types))
+
+    def get_from_metadata(self, type_: type[T]) -> T | None:
+        """Return the next instance of ``type_`` in the field's metadata"""
+        return next((m for m in self.metadata if isinstance(m, type_)), None)
+
+    def has_metadata(self, type_: Any) -> bool:
+        """Whether the field has any ``type_`` in its metadata"""
+        return self.get_from_metadata(type_) is not None
+
+    @property
+    def is_di_field(self) -> bool:
+        from litestar.di import Dependency
+
+        return self.has_metadata(Dependency)
 
     @property
     def has_default(self) -> bool:
@@ -218,9 +244,21 @@ class FieldDefinition:
         )
 
     @property
-    def is_parameter_field(self) -> bool:
-        """Check if the field type is a parameter kwarg value."""
-        return isinstance(self.kwarg_definition, ParameterKwarg)
+    def is_non_marker_parameter_field(self) -> bool:
+        """Check if the field type is a ParameterKwarg that's not a marker only.
+
+        A marker is considered an instance of 'ParameterKwarg' without any constraints
+        applied, usually produced by 'FromQuery[]', 'FromPath[]', etc.
+        """
+        return isinstance(self.kwarg_definition, ParameterKwarg) and not self.kwarg_definition.is_marker
+
+    @property
+    def is_marker_field(self) -> bool:
+        """Check if the field declares its source explicitly, either via a parameter /
+        body marker ('FromQuery[]', 'Body(...)', etc.) or a dependency marker
+        ('NamedDependency[]').
+        """
+        return isinstance(self.kwarg_definition, ParameterMarker) or self.is_di_field
 
     @property
     def is_const(self) -> bool:
@@ -239,12 +277,12 @@ class FieldDefinition:
         if isinstance(self.kwarg_definition, ParameterKwarg) and self.kwarg_definition.required is not None:
             return self.kwarg_definition.required
 
-        return not self.is_optional and not self.is_any and (not self.has_default or self.default is None)
+        return not self.has_default
 
     @property
     def is_annotated(self) -> bool:
         """Check if the field type is Annotated."""
-        return bool(self.metadata)
+        return any(a in self.type_wrappers for a in _ANNOTATED_TYPE_FORMS)  # type: ignore[comparison-overlap]
 
     @property
     def is_literal(self) -> bool:
@@ -385,23 +423,31 @@ class FieldDefinition:
         """
         return any(t.is_subclass_of(cl) for t in self.inner_types)
 
-    def get_type_hints(self, *, include_extras: bool = False, resolve_generics: bool = False) -> dict[str, Any]:
+    def get_type_hints(
+        self, *, include_extras: bool = False, resolve_generics: bool = False, namespace: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Get the type hints for the annotation.
 
         Args:
             include_extras: Flag to indicate whether to include ``Annotated[T, ...]`` or not.
             resolve_generics: Flag to indicate whether to resolve the generic types in the type hints or not.
+            namespace: Additional names to use when resolving forward references.
 
         Returns:
             The type hints.
         """
 
+        # an empty dict must become None: get_type_hints only merges class-body
+        # locals (vars of each base) when localns is None
+        localns = namespace or None
         if self.origin is not None or self.is_generic:
             if resolve_generics:
-                return get_type_hints_with_generics_resolved(self.annotation, include_extras=include_extras)
-            return get_type_hints(self.origin or self.annotation, include_extras=include_extras)
+                return get_type_hints_with_generics_resolved(
+                    self.annotation, include_extras=include_extras, localns=localns
+                )
+            return get_type_hints(self.origin or self.annotation, include_extras=include_extras, localns=localns)
 
-        return get_type_hints(self.annotation, include_extras=include_extras)
+        return get_type_hints(self.annotation, include_extras=include_extras, localns=localns)
 
     @classmethod
     def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
@@ -422,34 +468,15 @@ class FieldDefinition:
 
         annotation_args = () if origin is abc.Callable else get_args(unwrapped)
 
+        if isinstance(default := kwargs.get("default"), KwargDefinition):
+            # TODO: Remove in 4.0
+            raise_for_kwarg_as_default(default)
+
         if not kwargs.get("kwarg_definition"):
-            if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
-                kwargs["kwarg_definition"] = kwargs.pop("default")
-            elif kwarg_definition := next(
-                (v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))), None
-            ):
+            if kwarg_definition := next((v for v in metadata if isinstance(v, KwargDefinition)), None):
                 kwargs["kwarg_definition"] = kwarg_definition
 
-                if kwarg_definition.default is not Empty:
-                    warnings.warn(
-                        f"Deprecated default value specification for annotation '{annotation}'. Setting defaults "
-                        f"inside 'typing.Annotated' is discouraged and support for this will be removed in a future "
-                        f"version. Defaults should be set with regular parameter default values. Use "
-                        "'param: Annotated[<type>, Parameter(...)] = <default>' instead of "
-                        "'param: Annotated[<type>, Parameter(..., default=<default>)].",
-                        category=DeprecationWarning,
-                        stacklevel=2,
-                    )
-                    if kwargs.get("default", Empty) is not Empty and kwarg_definition.default != kwargs["default"]:
-                        warnings.warn(
-                            f"Ambiguous default values for annotation '{annotation}'. The default value "
-                            f"'{kwarg_definition.default!r}' set inside the parameter annotation differs from the "
-                            f"parameter default value '{kwargs['default']!r}'",
-                            category=LitestarWarning,
-                            stacklevel=2,
-                        )
-
-                metadata = tuple(v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg)))
+                metadata = tuple(v for v in metadata if not isinstance(v, KwargDefinition))
             elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
                 kwargs["kwarg_definition"] = extra.pop("kwarg_definition")
 
@@ -468,9 +495,10 @@ class FieldDefinition:
                     existing_kwargs_definition, **kwarg_definition_merge_args
                 )
             # if not, create a new KwargDefinition
-            else:
-                model = BodyKwarg if kwargs.get("name") == "data" else ParameterKwarg
-                kwargs["kwarg_definition"] = model(**kwarg_definition_merge_args)
+            elif kwarg_definition_merge_args:
+                # a parameter or body is only ever declared via an explicit marker, so plain
+                # constraint metadata becomes a plain 'KwargDefinition'
+                kwargs["kwarg_definition"] = KwargDefinition(**kwarg_definition_merge_args)
 
         kwargs.setdefault("annotation", unwrapped)
         kwargs.setdefault("args", annotation_args)
@@ -486,11 +514,7 @@ class FieldDefinition:
         kwargs.setdefault("safe_generic_origin", get_safe_generic_origin(origin, unwrapped))
         kwargs.setdefault("type_wrappers", wrappers)
 
-        instance = FieldDefinition(**kwargs)
-        if not instance.has_default and instance.kwarg_definition:
-            return replace(instance, default=instance.kwarg_definition.default)
-
-        return instance
+        return FieldDefinition(**kwargs)
 
     @classmethod
     def from_kwarg(
@@ -499,7 +523,7 @@ class FieldDefinition:
         name: str,
         default: Any = Empty,
         inner_types: tuple[FieldDefinition, ...] | None = None,
-        kwarg_definition: KwargDefinition | DependencyKwarg | None = None,
+        kwarg_definition: KwargDefinition | None = None,
         extra: dict[str, Any] | None = None,
     ) -> FieldDefinition:
         """Create a new FieldDefinition instance.
@@ -553,12 +577,17 @@ class FieldDefinition:
                 f"'{parameter.name}' does not have a type annotation. If it should receive any value, use 'Any'."
             ) from e
 
-        if parameter.name == "state" and not issubclass(annotation, ImmutableState):
-            raise ImproperlyConfiguredException(
-                f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. "
-                "It must be typed to a subclass of `litestar.datastructures.ImmutableState` or "
-                "`litestar.datastructures.State`."
+        if parameter.name == "state":
+            # Unwrap Annotated[...] so we can validate the underlying type
+            bare_annotation = (
+                getattr(annotation, "__origin__", annotation) if hasattr(annotation, "__metadata__") else annotation
             )
+            if not isinstance(bare_annotation, type) or not issubclass(bare_annotation, ImmutableState):
+                raise ImproperlyConfiguredException(
+                    f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. "
+                    "It must be typed to a subclass of `litestar.datastructures.ImmutableState` or "
+                    "`litestar.datastructures.State`."
+                )
 
         return FieldDefinition.from_kwarg(
             annotation=annotation,

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from litestar import Litestar, get, post, put
 from litestar.exceptions import NotFoundException
+from litestar.params import FromPath, FromQuery, JSONBody
 
 
 @dataclass
@@ -17,7 +18,7 @@ TODO_LIST: list[TodoItem] = [
 ]
 
 
-def get_todo_by_title(todo_name) -> TodoItem:
+def get_todo_by_title(todo_name: str) -> TodoItem:
     for item in TODO_LIST:
         if item.title == todo_name:
             return item
@@ -25,20 +26,20 @@ def get_todo_by_title(todo_name) -> TodoItem:
 
 
 @get("/")
-async def get_list(done: bool | None = None) -> list[TodoItem]:
+async def get_list(done: FromQuery[bool | None] = None) -> list[TodoItem]:
     if done is None:
         return TODO_LIST
     return [item for item in TODO_LIST if item.done == done]
 
 
 @post("/")
-async def add_item(data: TodoItem) -> list[TodoItem]:
+async def add_item(data: JSONBody[TodoItem]) -> list[TodoItem]:
     TODO_LIST.append(data)
     return TODO_LIST
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: str, data: TodoItem) -> list[TodoItem]:
+async def update_item(item_title: FromPath[str], data: JSONBody[TodoItem]) -> list[TodoItem]:
     todo_item = get_todo_by_title(item_title)
     todo_item.title = data.title
     todo_item.done = data.done

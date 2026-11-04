@@ -1,10 +1,11 @@
-from typing import Literal, Union
+from typing import Literal
 
 from litestar import Litestar, post
+from litestar.params import FromQuery
 
 
 @post("/")
-async def query_type_test(param: Union[Literal["1"], None]) -> None:
+async def query_type_test(param: FromQuery[Literal["1"] | None]) -> None:
     return None
 
 

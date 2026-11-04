@@ -146,7 +146,7 @@ class AbstractMiddleware:
             ):
                 await self.app(scope, receive, send)
             else:
-                await original__call__(self, scope, receive, send)  # pyright: ignore
+                await original__call__(self, scope, receive, send)  # pyright: ignore[reportArgumentType]
 
         # https://github.com/python/mypy/issues/2427#issuecomment-384229898
         setattr(cls, "__call__", wrapped_call)

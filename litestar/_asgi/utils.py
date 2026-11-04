@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
@@ -7,7 +8,20 @@ if TYPE_CHECKING:
     from litestar.routes.base import BaseRoute
     from litestar.types import ASGIApp, RouteHandlerType
 
-__all__ = ("get_route_handlers", "wrap_in_exception_handler")
+__all__ = (
+    "get_route_handlers",
+    "is_valid_host",
+    "wrap_in_exception_handler",
+)
+
+_HOST_HEADER_REGEX = re.compile(
+    rb"\A[0-9A-Za-z!$&'()*+,;=\-._~:\[\]@%]*\Z",
+    re.IGNORECASE,
+)
+
+
+def is_valid_host(host: bytes) -> bool:
+    return _HOST_HEADER_REGEX.match(host) is not None
 
 
 def wrap_in_exception_handler(app: ASGIApp) -> ASGIApp:

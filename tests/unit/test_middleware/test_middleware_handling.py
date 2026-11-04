@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import logging
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
@@ -10,6 +12,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from litestar import Controller, Request, Response, Router, get, post
 from litestar.enums import ScopeType
 from litestar.middleware import DefineMiddleware, MiddlewareProtocol
+from litestar.params import JSONBody
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -53,7 +56,7 @@ class MiddlewareWithArgsAndKwargs(BaseHTTPMiddleware):
     [
         BaseMiddlewareRequestLoggingMiddleware,
         # Middleware(MiddlewareWithArgsAndKwargs, kwarg="123Jeronimo"),  # pyright: ignore[reportGeneralTypeIssues] # noqa: ERA001
-        # Middleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),  # type: ignore[arg-type] # pyright: ignore[reportGeneralTypeIssues] # noqa: ERA001
+        # Middleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),  # type: ignore[arg-type] # noqa: ERA001
         DefineMiddleware(MiddlewareWithArgsAndKwargs, 1, kwarg="123Jeronimo"),  # type: ignore[arg-type]
         DefineMiddleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),
     ],
@@ -70,7 +73,7 @@ def test_custom_middleware_processing(middleware: Any) -> None:
         cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
-            cur = cast("ASGIApp", cur.app)  # pyright: ignore
+            cur = cast("ASGIApp", cur.app)  # pyright: ignore[reportFunctionMemberAccess]
         unpacked_middleware.append(cur)
 
         middleware_instance, *_ = unpacked_middleware
@@ -95,7 +98,7 @@ def test_request_body_logging_middleware(mocker: MockerFixture) -> None:
         name: str
 
     @post(path="/")
-    def post_handler(data: JSONRequest) -> JSONRequest:
+    def post_handler(data: JSONBody[JSONRequest]) -> JSONRequest:
         return data
 
     mock_log_info = mocker.patch.object(logger, "info")

@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import contextlib
@@ -39,6 +41,8 @@ from litestar.utils import envflag, get_name
 if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Iterable, Sequence
     from types import ModuleType
+
+    from click import Command as BaseCommand
 
     try:
         from rich_click import RichContext
@@ -142,7 +146,7 @@ class LoadedApp:
     is_factory: bool
 
 
-class LitestarGroup(Group):  # pyright: ignore
+class LitestarGroup(Group):  # pyright: ignore[reportGeneralTypeIssues]
     """:class:`click.Group` subclass that automatically injects ``app`` and ``env` kwargs into commands that request it.
 
     Use this as the ``cls`` for :class:`click.Group` if you're extending the internal CLI with a group. For ``command``s
@@ -152,7 +156,7 @@ class LitestarGroup(Group):  # pyright: ignore
     def __init__(
         self,
         name: str | None = None,
-        commands: dict[str, Command] | Sequence[Command] | None = None,
+        commands: dict[str, BaseCommand] | Sequence[BaseCommand] | None = None,
         **attrs: Any,
     ) -> None:
         """Init ``LitestarGroup``"""
@@ -166,7 +170,7 @@ class LitestarGroup(Group):  # pyright: ignore
         """
         if cmd.callback:
             cmd.callback = _inject_args(cmd.callback)
-        super().add_command(cmd)
+        super().add_command(cmd, name=name)
 
     def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:  # type: ignore[override]
         # For some reason, even when copying the overloads + signature from click 1:1, mypy goes haywire
@@ -197,7 +201,7 @@ class LitestarExtensionGroup(LitestarGroup):
     def __init__(
         self,
         name: str | None = None,
-        commands: dict[str, Command] | Sequence[Command] | None = None,
+        commands: dict[str, BaseCommand] | Sequence[BaseCommand] | None = None,
         **attrs: Any,
     ) -> None:
         """Init ``LitestarExtensionGroup``"""
@@ -230,7 +234,7 @@ class LitestarExtensionGroup(LitestarGroup):
 
         self._prepare_done = True
 
-    def make_context(  # type: ignore[override]
+    def make_context(
         self,
         info_name: str | None,
         args: list[str],
@@ -281,7 +285,7 @@ def _inject_args(func: Callable[P, T]) -> Callable[P, T]:
 def _wrap_commands(commands: Iterable[Command]) -> None:
     for command in commands:
         if hasattr(command, "commands"):
-            _wrap_commands(command.commands.values())  # pyright: ignore
+            _wrap_commands(command.commands.values())  # pyright: ignore[reportAttributeAccessIssue]
         elif command.callback:
             command.callback = _inject_args(command.callback)
 
@@ -319,7 +323,7 @@ def _load_app_from_path(app_path: str) -> LoadedApp:
     if not isinstance(app, Litestar) and callable(app):
         app = app()
         is_factory = True
-    return LoadedApp(app=app, app_path=app_path, is_factory=is_factory)  # pyright: ignore
+    return LoadedApp(app=app, app_path=app_path, is_factory=is_factory)  # pyright: ignore[reportArgumentType]
 
 
 def _path_to_dotted_path(path: Path) -> str:
@@ -385,8 +389,7 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
                 os.environ["LITESTAR_APP"] = app_string
                 if not quiet_console and sys.stdout.isatty():
                     console.print(f"Using {app_name} factory from [bright_blue]{app_string}")
-                return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)  # pyright: ignore
-
+                return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)  # pyright: ignore[reportArgumentType]
     raise LitestarCLIException(f"Could not find {app_name} instance or factory")
 
 

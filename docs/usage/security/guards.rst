@@ -4,8 +4,8 @@ Guards
 Guards are :term:`callables <python:callable>` that receive two arguments - ``connection``, which is the :class:`Request <.connection.Request>` or :class:`WebSocket <.connection.WebSocket>` instance (both sub-classes of :class:`~.connection.ASGIConnection`), and ``route_handler``, which is a copy of the
 :class:`~.handlers.BaseRouteHandler`. Their role is to *authorize* the request by verifying that
 the connection is allowed to reach the endpoint handler in question. If verification fails, the guard should raise an
-:exc:`HTTPException`, usually a :class:`~.exceptions.NotAuthorizedException` with a
-``status_code`` of ``401``.
+:exc:`HTTPException`, usually a :class:`~.exceptions.PermissionDeniedException` with a
+``status_code`` of ``403``.
 
 To illustrate this we will implement a rudimentary role based authorization system in our Litestar app. As we have done
 for ``authentication``, we will assume that we added some sort of persistence layer without actually specifying it in
@@ -15,14 +15,14 @@ We begin by creating an :class:`~enum.Enum` with two roles - ``consumer`` and ``
 
 .. literalinclude:: /examples/security/guards.py
     :language: python
-    :lines: 12-14
+    :lines: 13-15
     :caption: Defining the enum ``UserRole``
 
 Our ``User`` model will now look like this:
 
 .. literalinclude:: /examples/security/guards.py
         :language: python
-        :lines: 17-24
+        :lines: 18-25
         :caption: User model for role based authorization
 
 Given that the ``User`` model has a ``role`` property we can use it to authorize a request.
@@ -31,7 +31,7 @@ handler function:
 
 .. literalinclude:: /examples/security/guards.py
         :language: python
-        :lines: 27-29, 32-33
+        :lines: 28-30, 33-34
         :caption: Defining the guard ``admin_user_guard`` used to authorize certain route handlers
 
 Here, the ``admin_user_guard`` guard checks if the user is an admin.
@@ -49,7 +49,7 @@ on all layers of the app - the Litestar instance, routers, controllers, and indi
 
 .. literalinclude:: /examples/security/guards.py
     :language: python
-    :lines: 36-49
+    :lines: 37-50
     :caption: Declaring guards on different layers of the app
 
 The placement of guards within the Litestar application depends on the scope and level of access control needed:
@@ -80,4 +80,4 @@ the following guard:
 
 .. literalinclude:: /examples/security/guards.py
     :language: python
-    :lines: 52-61
+    :lines: 53-62

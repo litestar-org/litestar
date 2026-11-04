@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import functools
@@ -118,7 +120,7 @@ class BaseRouteHandler:
                 These types will be added to the signature namespace using their ``__name__`` attribute.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
+            parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
@@ -138,7 +140,7 @@ class BaseRouteHandler:
         self._dto = dto
         self._return_dto = return_dto
         self.exception_handlers = exception_handlers or {}
-        self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()  # pyright: ignore
+        self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()  # pyright: ignore[reportAttributeAccessIssue]
         self.middleware = tuple(middleware) if middleware else ()
         self.name = name
         self.opt = dict(opt or {})
@@ -466,6 +468,8 @@ class BaseRouteHandler:
         """
         if (_return_dto := self._return_dto) is not Empty:
             return_dto: type[AbstractDTO] | None = _return_dto
+        elif data_dto is not None and data_dto.is_supported_model_type_field(self.parsed_return_field):
+            return_dto = data_dto
         elif plugin_for_return_type := next(
             (
                 plugin
@@ -527,7 +531,7 @@ class BaseRouteHandler:
         Returns:
             A string
         """
-        target: type[AsyncAnyCallable] | AsyncAnyCallable  # pyright: ignore
+        target: type[AsyncAnyCallable] | AsyncAnyCallable  # pyright: ignore[reportInvalidTypeForm]
         target = unwrap_partial(self.fn)
         if not hasattr(target, "__qualname__"):
             target = type(target)
@@ -546,4 +550,5 @@ class BaseRouteHandler:
             dependencies=self.dependencies,
             path_parameters=set(path_parameters),
             layered_parameters=self.parameter_field_definitions,
+            ctx=self,
         )

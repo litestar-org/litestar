@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 try:
     import rich_click as click
 except ImportError:
@@ -57,5 +59,5 @@ def clear_sessions_command(app: Litestar) -> None:
         raise LitestarCLIException(f"{type(store)} does not support clearing all sessions")
 
     if Confirm.ask("[red]Delete all sessions?"):
-        anyio.run(store.delete_all)  # pyright: ignore
+        anyio.run(store.delete_all)
         console.print("[green]All active sessions deleted")

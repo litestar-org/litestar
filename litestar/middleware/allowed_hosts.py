@@ -42,12 +42,11 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             for host in config.allowed_hosts
         }
 
-        self.allowed_hosts_regex = re.compile("|".join(sorted(allowed_hosts)))  # pyright: ignore
-
+        self.allowed_hosts_regex = re.compile("|".join(sorted(allowed_hosts)))
         if config.www_redirect and (
             redirect_domains := {host.replace("www.", "") for host in config.allowed_hosts if host.startswith("www.")}
         ):
-            self.redirect_domains = re.compile("|".join(sorted(redirect_domains)))  # pyright: ignore
+            self.redirect_domains = re.compile("|".join(sorted(redirect_domains)))
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
@@ -65,7 +64,7 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             return
 
         headers = MutableScopeHeaders(scope=scope)
-        if host := headers.get("host", headers.get("x-forwarded-host", "")).split(":")[0]:
+        if (host := headers.get("host")) is not None and host.split(":")[0]:
             if self.allowed_hosts_regex.fullmatch(host):
                 await self.app(scope, receive, send)
                 return

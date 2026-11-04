@@ -33,7 +33,7 @@ class CustomStrEnum(StrEnum):
 )
 def test_media_type_inference(annotation: Any, expected_media_type: MediaType) -> None:
     @get("/")
-    def handler() -> annotation:  # pyright: ignore
+    def handler() -> annotation:  # pyright: ignore[reportInvalidTypeForm]
         return None
 
     app = Litestar(route_handlers=[handler])

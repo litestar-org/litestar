@@ -1,6 +1,11 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
+import json
+import re
 import sys
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
+from decimal import Decimal
 from enum import Enum, StrEnum, auto
 from typing import (
     TYPE_CHECKING,
@@ -8,6 +13,7 @@ from typing import (
     Any,
     Generic,
     Literal,
+    NewType,
     Optional,
     TypeAlias,
     TypedDict,
@@ -28,15 +34,27 @@ from litestar._openapi.schema_generation.schema import (
     SchemaCreator,
 )
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
+from litestar.openapi.spec.enums import OpenAPIFormat
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
-from litestar.params import KwargDefinition, Parameter, ParameterKwarg
+from litestar.params import (
+    Body,
+    FromPath,
+    FromQuery,
+    HeaderParameter,
+    JSONBody,
+    KwargDefinition,
+    ParameterKwarg,
+    PathParameter,
+    QueryParameter,
+)
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
@@ -56,7 +74,6 @@ def test_process_schema_result() -> None:
         examples=[Example(value=1)],
         external_docs=ExternalDocumentation(url="https://example.com/docs"),
         content_encoding="utf-8",
-        default=test_str,
         title=test_str,
         description=test_str,
         const=True,
@@ -72,7 +89,7 @@ def test_process_schema_result() -> None:
         pattern="^[a-z]$",
     )
     schema = get_schema_for_field_definition(
-        FieldDefinition.from_annotation(annotation=str, kwarg_definition=kwarg_definition)
+        FieldDefinition.from_annotation(annotation=str, kwarg_definition=kwarg_definition, default=test_str)
     )
 
     assert schema.title
@@ -81,7 +98,7 @@ def test_process_schema_result() -> None:
     for signature_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
         if schema_key == "examples":
             assert schema.examples == [kwarg_definition.examples[0].value]
-        else:
+        elif hasattr(kwarg_definition, signature_key):
             assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
 
 
@@ -92,12 +109,12 @@ def test_override_schema_component_key() -> None:
 
     @post("/")
     def handler(
-        data: Data,
-    ) -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+        data: JSONBody[Data],
+    ) -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 
     @get("/")
-    def handler_2() -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+    def handler_2() -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 
     app = Litestar([handler, handler_2])
@@ -137,12 +154,12 @@ def test_override_schema_component_key_raise_if_keys_are_not_unique() -> None:
 
     @post("/")
     def handler(
-        data: Data,
-    ) -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+        data: JSONBody[Data],
+    ) -> Annotated[Data, Body(schema_component_key="not_data")]:
         return Data()
 
     @get("/")
-    def handler_2() -> Annotated[Data2, Parameter(schema_component_key="not_data")]:
+    def handler_2() -> Annotated[Data2, Body(schema_component_key="not_data")]:
         return Data2()
 
     with pytest.raises(ImproperlyConfiguredException, match="Schema component keys must be unique"):
@@ -150,13 +167,17 @@ def test_override_schema_component_key_raise_if_keys_are_not_unique() -> None:
 
 
 def test_dependency_schema_generation() -> None:
-    async def top_dependency(query_param: int) -> int:
+    async def top_dependency(query_param: FromQuery[int]) -> int:
         return query_param
 
-    async def mid_level_dependency(header_param: str = Parameter(header="header_param", required=False)) -> int:
+    async def mid_level_dependency(
+        header_param: Annotated[str, HeaderParameter(name="header_param", required=False)] = "",
+    ) -> int:
         return 5
 
-    async def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
+    async def local_dependency(
+        path_param: FromPath[int], mid_level: NamedDependency[int], top_level: NamedDependency[int]
+    ) -> int:
         return path_param + mid_level + top_level
 
     class MyController(Controller):
@@ -170,7 +191,7 @@ def test_dependency_schema_generation() -> None:
             },
             media_type=MediaType.TEXT,
         )
-        def test_function(self, summed: int, handler_param: int) -> str:
+        def test_function(self, summed: NamedDependency[int], handler_param: FromQuery[int]) -> str:
             return str(summed)
 
     with create_test_client(
@@ -295,6 +316,8 @@ class Foo(TypedDict):
 
 
 def test_create_schema_from_msgspec_annotated_type() -> None:
+    from uuid import UUID
+
     class Lookup(msgspec.Struct):
         int_field: Annotated[int, msgspec.Meta(gt=0)]
         str_field: Annotated[
@@ -302,6 +325,8 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
             msgspec.Meta(max_length=16, examples=["example"], description="description", title="title", pattern=r"\w+"),
         ]
         bytes_field: Annotated[bytes, msgspec.Meta(max_length=2, min_length=1)]
+        list_field: Annotated[list[UUID], msgspec.Meta(min_length=1, max_length=10)]
+        set_field: Annotated[set[int], msgspec.Meta(min_length=2)]
         default_field: Annotated[str, msgspec.Meta(min_length=1)] = "a"
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
@@ -313,13 +338,68 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.properties["str_field"].description == "description"  # type: ignore[index]
     assert schema.properties["str_field"].title == "title"  # type: ignore[index, union-attr]
     assert schema.properties["str_field"].max_length == 16  # type: ignore[index, union-attr]
-    assert sorted(schema.required) == sorted(["int_field", "str_field", "bytes_field"])  # type: ignore[arg-type]
+    assert sorted(schema.required) == sorted(["int_field", "str_field", "bytes_field", "list_field", "set_field"])  # type: ignore[arg-type]
     assert schema.properties["bytes_field"].to_schema() == {  # type: ignore[index]
         "contentEncoding": "utf-8",
         "maxLength": 2,
         "minLength": 1,
         "type": "string",
     }
+    assert schema.properties["list_field"].min_items == 1  # type: ignore[index, union-attr]
+    assert schema.properties["list_field"].max_items == 10  # type: ignore[index, union-attr]
+    assert schema.properties["set_field"].min_items == 2  # type: ignore[index, union-attr]
+
+
+def test_msgspec_optional_annotated_meta_propagates() -> None:
+    """Regression: ``Optional[Annotated[T, msgspec.Meta(...)]]`` must propagate description, examples, and constraints."""
+
+    class Body(msgspec.Struct):
+        required_field: Annotated[str, msgspec.Meta(description="d", examples=["ex"])]
+        optional_field: Optional[Annotated[str, msgspec.Meta(description="d2", examples=["ex2"])]] = None
+        optional_int: Optional[Annotated[int, msgspec.Meta(gt=1, le=100)]] = None
+        optional_str: Optional[Annotated[str, msgspec.Meta(min_length=2, max_length=8, pattern="^[a-z]+$")]] = None
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Body", annotation=Body))
+
+    assert schema.properties["required_field"].description == "d"  # type: ignore[index]
+    assert schema.properties["required_field"].examples == ["ex"]  # type: ignore[index, union-attr]
+    assert schema.properties["optional_field"].description == "d2"  # type: ignore[index]
+    assert schema.properties["optional_field"].examples == ["ex2"]  # type: ignore[index, union-attr]
+    assert schema.properties["optional_int"].exclusive_minimum == 1  # type: ignore[index, union-attr]
+    assert schema.properties["optional_int"].maximum == 100  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].min_length == 2  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].max_length == 8  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].pattern == "^[a-z]+$"  # type: ignore[index, union-attr]
+
+
+def test_msgspec_union_with_metadata_arm_is_not_unwrapped() -> None:
+    """Heterogeneous unions must not have a single arm's ``Meta`` lifted onto the whole field."""
+
+    class Body(msgspec.Struct):
+        mixed: Union[Annotated[str, msgspec.Meta(description="only-str", min_length=5)], int] = ""
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Body", annotation=Body))
+
+    assert schema.properties["mixed"].description is None  # type: ignore[index]
+    assert schema.properties["mixed"].min_length is None  # type: ignore[index, union-attr]
+
+
+def test_unwrap_optional_branches() -> None:
+    """Direct branch coverage for the ``_unwrap_optional`` helper."""
+    from litestar.plugins.core._msgspec import _unwrap_optional
+
+    # Not a UnionType: returned as-is.
+    int_type = msgspec.inspect.IntType(gt=None, ge=None, lt=None, le=None, multiple_of=None)
+    assert _unwrap_optional(int_type) is int_type
+
+    # Optional[X]: single non-None arm is returned.
+    optional_int = msgspec.inspect.UnionType(types=(int_type, msgspec.inspect.NoneType()))
+    assert _unwrap_optional(optional_int) is int_type
+
+    # Heterogeneous union: returned as-is.
+    str_type = msgspec.inspect.StrType(min_length=None, max_length=None, pattern=None)
+    hetero = msgspec.inspect.UnionType(types=(int_type, str_type))
+    assert _unwrap_optional(hetero) is hetero
 
 
 def test_annotated_types() -> None:
@@ -395,7 +475,7 @@ annotations.append(TypedDictGeneric[int])
 @pytest.mark.parametrize("cls", annotations)
 def test_schema_generation_with_generic_classes(cls: Any) -> None:
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
+    expected_optional_foo_schema = Schema(type=[OpenAPIType.INTEGER, OpenAPIType.NULL])
 
     properties = get_schema_for_field_definition(
         FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
@@ -449,7 +529,7 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
 )
 def test_schema_generation_with_pagination(annotation: Any) -> None:
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
+    expected_optional_foo_schema = Schema(type=[OpenAPIType.INTEGER, OpenAPIType.NULL])
 
     properties = get_schema_for_field_definition(FieldDefinition.from_annotation(annotation).inner_types[-1]).properties
 
@@ -586,6 +666,21 @@ def test_optional_literal() -> None:
     assert schema.enum == [1, None]
 
 
+@pytest.mark.parametrize(
+    "annotation",
+    [
+        Optional[Annotated[Literal["a", "b"], msgspec.Meta(description="legacy")]],
+        Optional[Annotated[Literal["a", "b"], annotated_types.MaxLen(8)]],
+    ],
+)
+def test_optional_annotated_literal_strips_metadata(annotation: Any) -> None:
+    """Regression: ``Annotated`` metadata around a ``Literal`` inside ``Optional`` must not leak into enum values."""
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(annotation))
+    assert schema.type is not None
+    assert set(schema.type) == {OpenAPIType.STRING, OpenAPIType.NULL}
+    assert schema.enum == ["a", "b", None]
+
+
 def test_not_generating_examples_property() -> None:
     with_examples = SchemaCreator(generate_examples=True)
     without_examples = with_examples.not_generating_examples
@@ -594,6 +689,7 @@ def test_not_generating_examples_property() -> None:
 
 def test_process_schema_result_with_unregistered_object_schema() -> None:
     """This test ensures that if a schema is created for an object and not registered in the schema registry, the
+
     schema is returned as-is, and not referenced.
     """
     schema = Schema(title="has title", type=OpenAPIType.OBJECT)
@@ -606,11 +702,11 @@ def test_type_union(base_type: type) -> None:
     if base_type is dataclass:
 
         @dataclass
-        class ModelA:  # pyright: ignore
+        class ModelA:  # pyright: ignore[reportRedeclaration]
             pass
 
         @dataclass
-        class ModelB:  # pyright: ignore
+        class ModelB:  # pyright: ignore[reportRedeclaration]
             pass
 
     else:
@@ -636,11 +732,11 @@ def test_type_union_with_none(base_type: type) -> None:
     if base_type is dataclass:
 
         @dataclass
-        class ModelA:  # pyright: ignore
+        class ModelA:  # pyright: ignore[reportRedeclaration]
             pass
 
         @dataclass
-        class ModelB:  # pyright: ignore
+        class ModelB:  # pyright: ignore[reportRedeclaration]
             pass
 
     else:
@@ -679,11 +775,11 @@ def test_default_not_provided_for_kwarg_but_for_field() -> None:
 def test_routes_with_different_path_param_types_get_merged() -> None:
     # https://github.com/litestar-org/litestar/issues/2700
     @get("/{param:int}")
-    async def get_handler(param: int) -> None:
+    async def get_handler(param: FromPath[int]) -> None:
         pass
 
     @post("/{param:str}")
-    async def post_handler(param: str) -> None:
+    async def post_handler(param: FromPath[str]) -> None:
         pass
 
     app = Litestar([get_handler, post_handler])
@@ -697,21 +793,21 @@ def test_unconsumed_path_parameters_are_documented() -> None:
     # https://github.com/litestar-org/litestar/issues/3290
     # https://github.com/litestar-org/litestar/issues/3369
 
-    async def dd(param3: Annotated[str, Parameter(description="123")]) -> str:
+    async def dd(param3: Annotated[str, PathParameter(description="123")]) -> str:
         return param3
 
-    async def d(dep_dep: str, param2: Annotated[str, Parameter(description="abc")]) -> str:
+    async def d(dep_dep: NamedDependency[str], param2: Annotated[str, PathParameter(description="abc")]) -> str:
         return f"{dep_dep}_{param2}"
 
     @get("/{param1:str}/{param2:str}/{param3:str}", dependencies={"dep": d, "dep_dep": dd})
-    async def handler(dep: str) -> None:
+    async def handler(dep: NamedDependency[str]) -> None:
         pass
 
     app = Litestar([handler])
     params = app.openapi_schema.paths["/{param1}/{param2}/{param3}"].get.parameters  # type: ignore[index, union-attr]
     assert params
     assert len(params) == 3
-    for i, param in enumerate(sorted(params, key=lambda p: p.name), 1):  # pyright: ignore
+    for i, param in enumerate(sorted(params, key=lambda p: p.name), 1):  # pyright: ignore[reportAttributeAccessIssue]
         assert isinstance(param, OpenAPIParameter)
         assert param.name == f"param{i}"
         assert param.required is True
@@ -720,7 +816,7 @@ def test_unconsumed_path_parameters_are_documented() -> None:
 
 def test_type_alias_type() -> None:
     @get("/")
-    def handler(query_param: Annotated[TypeAliasType("IntAlias", int), Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
+    def handler(query_param: Annotated[TypeAliasType("IntAlias", int), QueryParameter(description="foo")]) -> None:  # type: ignore[valid-type]
         pass
 
     app = Litestar([handler])
@@ -737,7 +833,7 @@ def test_type_alias_type_keyword() -> None:
     annotation = ctx["IntAlias"]
 
     @get("/")
-    def handler(query_param: Annotated[annotation, Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
+    def handler(query_param: Annotated[annotation, QueryParameter(description="foo")]) -> None:  # type: ignore[valid-type]
         pass
 
     app = Litestar([handler])
@@ -745,3 +841,301 @@ def test_type_alias_type_keyword() -> None:
     assert param.schema.type is OpenAPIType.INTEGER  # type: ignore[union-attr]
     # ensure other attributes than the plain type are carried over correctly
     assert param.description == "foo"
+
+
+def test_decimal_schema_type() -> None:
+    from litestar._openapi.schema_generation.schema import create_schema_for_annotation
+
+    schema = create_schema_for_annotation(Decimal)
+    assert schema.type == OpenAPIType.STRING
+
+
+def test_not_generating_examples_preserves_schema_registry() -> None:
+    creator = SchemaCreator(generate_examples=True, plugins=openapi_schema_plugins)
+
+    assert creator.not_generating_examples.schema_registry is creator.schema_registry
+
+
+def test_constrained_collection_with_example_generation_registers_item_component() -> None:
+    class Color(Enum):
+        RED = "red"
+
+    @post("/items")
+    async def handler(data: Annotated[list[Color], Body(min_items=1)]) -> None:
+        return None
+
+    app = Litestar([handler], openapi_config=OpenAPIConfig(title="test", version="1.0.0", create_examples=True))
+    schema = app.openapi_schema.to_schema()
+
+    referenced = set(re.findall(r'"#/components/schemas/([^"]+)"', json.dumps(schema, default=str)))
+    assert referenced <= set(schema["components"]["schemas"])
+
+
+def test_enum_schema_respects_annotated_title_and_description() -> None:
+    class Color(Enum):
+        RED = "red"
+
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(
+            name="color",
+            annotation=Color,
+            kwarg_definition=QueryParameter(title="Custom Color", description="A custom color"),
+        )
+    )
+
+    assert schema.title == "Custom Color"
+    assert schema.description == "A custom color"
+
+
+def test_enum_schema_title_defaults_to_class_name() -> None:
+    class Flavour(Enum):
+        SWEET = "sweet"
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="flavour", annotation=Flavour))
+
+    assert schema.title == "Flavour"
+
+
+def test_new_type_preserves_constraints() -> None:
+    UserId = NewType("UserId", int)
+
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="user_id", annotation=UserId, kwarg_definition=QueryParameter(gt=0))
+    )
+
+    assert schema.exclusive_minimum == 0
+
+
+def test_optional_simple_field_uses_type_array() -> None:
+    @dataclass
+    class Model:
+        nickname: str | None
+
+    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Model)).properties
+    assert properties is not None
+    nickname = properties["nickname"]
+
+    assert isinstance(nickname, Schema)
+    assert nickname.type == [OpenAPIType.STRING, OpenAPIType.NULL]
+    assert nickname.one_of is None
+
+
+def test_optional_upload_file_model_field_keeps_binary_format() -> None:
+    from litestar.datastructures import UploadFile
+
+    @dataclass
+    class Form:
+        file: UploadFile | None
+
+    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Form)).properties
+    assert properties is not None
+    file_schema = properties["file"]
+
+    assert isinstance(file_schema, Schema)
+    assert file_schema.type == [OpenAPIType.STRING, OpenAPIType.NULL]
+    assert file_schema.format == OpenAPIFormat.BINARY
+
+
+def test_optional_reference_field_keeps_one_of() -> None:
+    @dataclass
+    class Model:
+        person: DataclassPerson | None
+
+    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Model)).properties
+    assert properties is not None
+    person = properties["person"]
+    assert isinstance(person, Schema)
+    one_of = person.one_of
+
+    assert one_of is not None
+    assert isinstance(one_of[0], Reference)
+    assert Schema(type=OpenAPIType.NULL) in one_of
+
+
+def test_optional_union_keeps_one_of() -> None:
+    @dataclass
+    class Model:
+        value: str | int | None
+
+    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Model)).properties
+    assert properties is not None
+    value = properties["value"]
+    assert isinstance(value, Schema)
+    one_of = value.one_of
+
+    assert one_of is not None
+    assert Schema(type=OpenAPIType.NULL) in one_of
+
+
+def test_optional_enum_keeps_one_of() -> None:
+    class Color(Enum):
+        RED = "red"
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Optional[Color]))
+
+    assert schema.one_of is not None
+    assert Schema(type=OpenAPIType.NULL) in schema.one_of
+
+
+@pytest.mark.parametrize(
+    "module_source",
+    [
+        pytest.param(
+            """
+from __future__ import annotations
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+@dataclass
+class Owner:
+    pet: DataclassPet
+""",
+            id="dataclass",
+        ),
+        pytest.param(
+            """
+from __future__ import annotations
+from typing import TYPE_CHECKING, TypedDict
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+class Owner(TypedDict):
+    pet: DataclassPet
+""",
+            id="typed_dict",
+        ),
+        pytest.param(
+            """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+import attrs
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+@attrs.define
+class Owner:
+    pet: DataclassPet
+""",
+            id="attrs",
+        ),
+        pytest.param(
+            """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+import msgspec
+
+if TYPE_CHECKING:
+    from tests.models import DataclassPet
+
+class Owner(msgspec.Struct):
+    pet: DataclassPet
+""",
+            id="struct",
+            marks=pytest.mark.xfail(
+                reason="msgspec.inspect resolves annotations internally without namespace support", strict=True
+            ),
+        ),
+    ],
+)
+def test_nested_hints_resolved_with_signature_namespace(
+    module_source: str, create_module: "Callable[[str], ModuleType]"
+) -> None:
+    module = create_module(module_source)
+
+    @get("/owner", signature_namespace={"DataclassPet": DataclassPet})
+    async def handler() -> module.Owner:  # type: ignore[name-defined]
+        return module.Owner(pet=DataclassPet(name="doggo", age=2))
+
+    schema = Litestar([handler]).openapi_schema.to_schema()
+
+    assert "DataclassPet" in schema["components"]["schemas"]
+
+
+def test_class_body_annotation_resolves_without_namespace(create_module: "Callable[[str], ModuleType]") -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+from dataclasses import dataclass
+
+@dataclass
+class Foo:
+    class Bar:
+        pass
+
+    bar: Bar
+"""
+    )
+
+    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(module.Foo))
+
+    assert schema.properties is not None
+    assert "bar" in schema.properties
+
+
+def test_not_generating_examples_preserves_signature_namespace() -> None:
+    creator = SchemaCreator(generate_examples=True, plugins=openapi_schema_plugins, signature_namespace={"Foo": int})
+
+    assert creator.not_generating_examples.signature_namespace == {"Foo": int}
+
+
+def test_reference_result_keeps_kwarg_metadata() -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    result = creator.for_field_definition(
+        FieldDefinition.from_kwarg(
+            name="person",
+            annotation=DataclassPerson,
+            kwarg_definition=QueryParameter(title="A person", description="The person to greet"),
+        )
+    )
+
+    assert isinstance(result, Schema)
+    assert result.title == "A person"
+    assert result.description == "The person to greet"
+    assert result.all_of is not None
+    assert len(result.all_of) == 1
+    assert isinstance(result.all_of[0], Reference)
+
+
+def test_reference_result_without_kwarg_metadata_stays_reference() -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    result = creator.for_field_definition(FieldDefinition.from_kwarg(name="person", annotation=DataclassPerson))
+
+    assert isinstance(result, Reference)
+
+
+def test_reference_result_keeps_kwarg_metadata_on_subsequent_use() -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    first = creator.for_field_definition(FieldDefinition.from_kwarg(name="a", annotation=DataclassPerson))
+    second = creator.for_field_definition(
+        FieldDefinition.from_kwarg(
+            name="b", annotation=DataclassPerson, kwarg_definition=QueryParameter(description="second use")
+        )
+    )
+
+    assert isinstance(first, Reference)
+    assert isinstance(second, Schema)
+    assert second.description == "second use"
+    assert second.all_of is not None
+    assert isinstance(second.all_of[0], Reference)
+
+
+def test_union_of_enums() -> None:
+    class Color(Enum):
+        RED = "red"
+
+    class Size(Enum):
+        SMALL = "small"
+
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    schema = creator.for_field_definition(FieldDefinition.from_annotation(Union[Color, Size]))
+
+    assert isinstance(schema, Schema)
+    assert schema.one_of is not None
+    assert len(schema.one_of) == 2
+    components = creator.schema_registry.generate_components_schemas()
+    assert {tuple(v.enum or ()) for v in components.values()} == {("red",), ("small",)}

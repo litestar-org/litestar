@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import re
@@ -12,7 +14,6 @@ from typing import (
     Optional,
     TypedDict,
     Union,
-    cast,
 )
 from uuid import UUID
 
@@ -30,8 +31,11 @@ from litestar.datastructures.url import URL
 from litestar.dto import AbstractDTO, DTOData
 from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
-from litestar.params import KwargDefinition, ParameterKwarg
-from litestar.typing import FieldDefinition  # noqa
+from litestar.params import (
+    KwargDefinition,
+    ParameterKwarg,
+)
+from litestar.typing import FieldDefinition  # noqa: TC001
 from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
 
@@ -116,7 +120,7 @@ class SignatureModel(Struct):
         Returns:
             An Exception
         """
-        method = connection.method if hasattr(connection, "method") else ScopeType.WEBSOCKET  # pyright: ignore
+        method = connection.method if hasattr(connection, "method") else ScopeType.WEBSOCKET  # pyright: ignore[reportAttributeAccessIssue]
         if client_errors := [
             err_message
             for err_message in messages
@@ -149,18 +153,16 @@ class SignatureModel(Struct):
             if keys[0].startswith("data"):
                 message["key"] = message["key"].replace("data.", "")
                 message["source"] = "body"
+            elif (
+                key in cls._fields
+                and not (field := cls._fields[key]).is_di_field
+                and isinstance(kwarg_definition := field.kwarg_definition, ParameterKwarg)
+            ):
+                message["source"] = kwarg_definition.param_type
             elif key in connection.query_params:
                 message["source"] = ParamType.QUERY
             elif key in connection.path_params:
                 message["source"] = ParamType.PATH
-
-            elif key in cls._fields and isinstance(cls._fields[key].kwarg_definition, ParameterKwarg):
-                if cast("ParameterKwarg", cls._fields[key].kwarg_definition).cookie:
-                    message["source"] = ParamType.COOKIE
-                elif cast("ParameterKwarg", cls._fields[key].kwarg_definition).header:
-                    message["source"] = ParamType.HEADER
-                else:
-                    message["source"] = ParamType.QUERY
 
         return message
 
@@ -317,6 +319,5 @@ class SignatureModel(Struct):
             setattr(annotation, "_decoder", decoder)
 
         if meta_data:
-            annotation = Annotated[annotation, meta_data]  # pyright: ignore
-
+            annotation = Annotated[annotation, meta_data]
         return annotation

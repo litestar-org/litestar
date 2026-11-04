@@ -71,7 +71,7 @@ As previously mentioned, the default ``media_type`` is ``MediaType.JSON``. which
 * models from libraries that extend pydantic models
 * :class:`UUIDs <uuid.UUID>`
 * :doc:`datetime objects <python:library/datetime>`
-* `msgspec.Struct <https://jcristharif.com/msgspec/structs.html>`_
+* `msgspec.Struct <https://msgspec.dev/structs>`_
 * container types such as :class:`dict` or :class:`list` containing supported types
 
 If you need to return other values and would like to extend serialization you can do
@@ -720,6 +720,28 @@ If you want to send a different event type, you can use a dictionary with the ke
 .. note::
 
     You can further customize all the sse parameters, add comments, and set the retry duration by using the :class:`ServerSentEvent <.response.ServerSentEvent>` class directly or by using the :class:`ServerSentEventMessage <.response.ServerSentEventMessage>` or dictionaries with the appropriate keys.
+
+To prevent reverse proxies or clients from closing idle SSE connections, use the ``ping_interval`` parameter:
+
+.. code-block:: python
+
+    @get("/stream")
+    async def stream_handler() -> ServerSentEvent:
+        async def generator():
+            while True:
+                data = await get_data()
+                yield data
+
+        return ServerSentEvent(generator(), ping_interval=15)
+
+The ``ping_interval`` value is in **seconds**. This sends an SSE comment (``: ping``) every 15 seconds to keep the
+connection alive. SSE comments are invisible to ``EventSource`` clients and will not trigger message events.
+Pings begin after the first interval elapses (no immediate ping on connect).
+
+.. tip::
+
+    Common values are 15–30 seconds, depending on your reverse proxy's idle timeout
+    (e.g., nginx defaults to 60 seconds, Telegram Mini Apps time out after 60 seconds).
 
 
 Template Responses

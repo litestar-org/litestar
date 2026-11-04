@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import io
 import os
 import re
@@ -632,7 +634,6 @@ def test_remove_default_schema_routes() -> None:
         "/schema/openapi.json",
         "/schema/openapi.yaml",
         "/schema/openapi.yml",
-        "/schema/rapidoc",
         "/schema/redoc",
         "/schema/swagger",
         "/destroy/all/foo/bar/schema",

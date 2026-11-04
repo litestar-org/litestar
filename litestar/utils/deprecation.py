@@ -12,6 +12,7 @@ from typing_extensions import ParamSpec
 
 __all__ = ("deprecated", "warn_deprecation")
 
+from litestar.exceptions import LitestarDeprecationWarning
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -66,7 +67,7 @@ def warn_deprecation(
         parts.append(info)
 
     text = ". ".join(parts)
-    warning_class = PendingDeprecationWarning if pending else DeprecationWarning
+    warning_class = PendingDeprecationWarning if pending else LitestarDeprecationWarning
 
     warn(text, warning_class, stacklevel=2)
 

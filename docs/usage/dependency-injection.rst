@@ -7,7 +7,7 @@ the application:
 .. code-block:: python
 
    from litestar import Controller, Router, Litestar, get
-   from litestar.di import Provide
+   from litestar.di import NamedDependency, Provide
 
 
    async def bool_fn() -> bool: ...
@@ -31,10 +31,10 @@ the application:
        @get(path="/handler", dependencies={"local_dependency": Provide(int_fn)})
        def my_route_handler(
            self,
-           app_dependency: bool,
-           router_dependency: dict,
-           controller_dependency: list,
-           local_dependency: int,
+           app_dependency: NamedDependency[bool],
+           router_dependency: NamedDependency[dict],
+           controller_dependency: NamedDependency[list],
+           local_dependency: NamedDependency[int],
        ) -> None: ...
 
 
@@ -73,10 +73,10 @@ Pre-requisites and scope
 
 The pre-requisites for dependency injection are these:
 
-
 #. dependencies must be callables.
 #. dependencies can receive kwargs and a ``self`` arg but not positional args.
-#. the kwarg name and the dependency key must be identical.
+#. the parameter receiving the dependency must be marked with
+   :data:`~litestar.di.NamedDependency`, and its name must match the dependency key.
 #. the dependency must be declared using the ``Provide`` class.
 #. the dependency must be in the *scope* of the handler function.
 
@@ -85,6 +85,9 @@ above example, the ``local_dependency`` can only be accessed within the specific
 The ``controller_dependency`` is available only for route handlers on that specific controller; And the ``router
 dependency`` is available only to the route handlers registered on that particular router. Only the ``app_dependency``
 is available to all route handlers.
+
+.. seealso::
+    :doc:`/topics/explicit_declarations`
 
 .. _yield_dependencies:
 
@@ -196,7 +199,7 @@ can :ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword 
 .. code-block:: python
 
    from litestar import Controller, patch
-   from litestar.di import Provide
+   from litestar.di import NamedDependency, Provide
    from pydantic import BaseModel, UUID4
 
 
@@ -213,7 +216,7 @@ can :ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword 
        dependencies = {"user": Provide(retrieve_db_user)}
 
        @patch(path="/{user_id:uuid}")
-       async def get_user(self, user: User) -> User: ...
+       async def get_user(self, user: NamedDependency[User]) -> User: ...
 
 In the above example we have a ``User`` model that we are persisting into a db. The model is fetched using the helper
 method ``retrieve_db_user`` which receives a ``user_id`` kwarg and retrieves the corresponding ``User`` instance.
@@ -232,7 +235,7 @@ very simple:
 .. code-block:: python
 
    from litestar import Controller, get
-   from litestar.di import Provide
+   from litestar.di import NamedDependency, Provide
 
 
    def bool_fn() -> bool: ...
@@ -250,7 +253,7 @@ very simple:
        @get(path="/handler", dependencies={"some_dependency": Provide(bool_fn)})
        def my_route_handler(
            self,
-           some_dependency: bool,
+           some_dependency: NamedDependency[bool],
        ) -> None: ...
 
 The lower scoped route handler function declares a dependency with the same key as the one declared on the higher scoped
@@ -267,7 +270,7 @@ it in ``Provide``:
 
    from random import randint
    from litestar import get
-   from litestar.di import Provide
+   from litestar.di import NamedDependency, Provide
 
 
    def my_dependency() -> int:
@@ -282,7 +285,7 @@ it in ``Provide``:
            )
        },
    )
-   def my_handler(my_dep: int) -> None: ...
+   def my_handler(my_dep: NamedDependency[int]) -> None: ...
 
 
 .. attention::
@@ -297,33 +300,34 @@ it in ``Provide``:
 Dependencies within dependencies
 --------------------------------
 
-You can inject dependencies into other dependencies - exactly like you would into regular functions.
+You can inject dependencies into other dependencies, exactly like you would into handler
+functions:
 
 .. code-block:: python
 
    from litestar import Litestar, get
-   from litestar.di import Provide
+   from litestar.di import NamedDependency, Provide
    from random import randint
 
 
-   def first_dependency() -> int:
+   async def first_dependency() -> int:
        return randint(1, 10)
 
 
-   def second_dependency(injected_integer: int) -> bool:
+   async def second_dependency(injected_integer: NamedDependency[int]) -> bool:
        return injected_integer % 2 == 0
 
 
    @get("/true-or-false")
-   def true_or_false_handler(injected_bool: bool) -> str:
-       return "its true!" if injected_bool else "nope, its false..."
+   def true_or_false_handler(injected_bool: NamedDependency[bool]) -> str:
+       return "it's true!" if injected_bool else "nope, it's false..."
 
 
    app = Litestar(
        route_handlers=[true_or_false_handler],
        dependencies={
-           "injected_integer": Provide(first_dependency),
-           "injected_bool": Provide(second_dependency),
+           "injected_integer": first_dependency,
+           "injected_bool": second_dependency,
        },
    )
 
@@ -332,50 +336,32 @@ You can inject dependencies into other dependencies - exactly like you would int
    The rules for `dependency overrides`_ apply here as well.
 
 
-The ``Dependency`` function
-----------------------------
+Marking dependencies
+~~~~~~~~~~~~~~~~~~~~~~
 
-Dependency validation
-~~~~~~~~~~~~~~~~~~~~~
+A parameter that should receive an injected dependency is marked with the
+:data:`~litestar.di.NamedDependency` generic. The parameter name is matched against the
+dependency keys in scope, and the type wrapped by ``NamedDependency`` is used to validate
+the injected value:
 
-By default, injected dependency values are validated by Litestar, for example, this application will raise an
-internal server error:
+.. code-block:: python
 
-.. literalinclude:: /examples/dependency_injection/dependency_validation_error.py
-    :caption: Dependency validation error
-    :language: python
-
-
-Dependency validation can be toggled using the :class:`Dependency <litestar.params.Dependency>` function.
-
-.. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
-    :caption: Dependency validation error
-    :language: python
+   from litestar import get
+   from litestar.di import NamedDependency, Provide
 
 
-This may be useful for reasons of efficiency, or if pydantic cannot validate a certain type, but use with caution!
+   async def my_dependency() -> int: ...
 
-Dependency function as a marker
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :class:`Dependency <litestar.params.Dependency>` function can also be used as a marker that gives us a bit more detail
-about your application.
+   @get("/", dependencies={"my_dep": my_dependency})
+   def handler(my_dep: NamedDependency[int]) -> None: ...
 
 Exclude dependencies with default values from OpenAPI docs
-***********************************************************
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Depending on your application design, it is possible to have a dependency declared in a handler or
 :class:`Provide <.di.Provide>` function that has a default value. If the dependency isn't provided for the route, the
 default should be used by the function.
-
-.. literalinclude:: /examples/dependency_injection/dependency_with_default.py
-    :caption: Dependency with default value
-    :language: python
-
-
-This doesn't fail, but due to the way the application determines parameter types, it is inferred to be a query
-parameter.
-
 
 By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:
 
@@ -385,13 +371,30 @@ By declaring the parameter to be a dependency, Litestar knows to exclude it from
 
 
 Early detection if a dependency isn't provided
-***********************************************
+++++++++++++++++++++++++++++++++++++++++++++++
 
-The other side of the same coin is when a dependency isn't provided, and no default is specified. Without the dependency
-marker, the parameter is assumed to be a query parameter and the route will most likely fail when accessed.
-
-If the parameter is marked as a dependency, this allows us to fail early instead:
+A parameter marked with :data:`~litestar.di.NamedDependency` that has no default and no
+provided dependency makes the application fail at startup, not at request time:
 
 .. literalinclude:: /examples/dependency_injection/dependency_non_optional_not_provided.py
    :caption: Dependency not provided error
    :language: python
+
+
+
+Bypassing validation
+--------------------
+
+By default, injected dependency values are validated by Litestar, for example, this
+application will raise an internal server error:
+
+.. literalinclude:: /examples/dependency_injection/dependency_validation_error.py
+    :caption: Dependency validation error
+    :language: python
+
+
+This validation can be bypassed using the :data:`~litestar.params.SkipValidation` marker:
+
+.. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
+    :caption: Bypassing dependency validation
+    :language: python

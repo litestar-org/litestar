@@ -48,10 +48,10 @@ def test_register_with_controller_class(controller: type[Controller]) -> None:
     for route in router.routes:
         if isinstance(route, HTTPRoute):
             if len(route.methods) == 2:
-                assert sorted(route.methods) == sorted(["GET", "OPTIONS"])  # pyright: ignore
+                assert sorted(route.methods) == sorted(["GET", "OPTIONS"])
                 assert route.path == "/base/test/{id:int}"
             elif len(route.methods) == 3:
-                assert sorted(route.methods) == sorted(["GET", "POST", "OPTIONS"])  # pyright: ignore
+                assert sorted(route.methods) == sorted(["GET", "POST", "OPTIONS"])
                 assert route.path == "/base/test"
 
 
@@ -63,10 +63,10 @@ def test_register_with_router_instance(controller: type[Controller]) -> None:
     for route in base_router.routes:
         if isinstance(route, HTTPRoute):
             if len(route.methods) == 2:
-                assert sorted(route.methods) == sorted(["GET", "OPTIONS"])  # pyright: ignore
+                assert sorted(route.methods) == sorted(["GET", "OPTIONS"])
                 assert route.path == "/base/top-level/test/{id:int}"
             elif len(route.methods) == 3:
-                assert sorted(route.methods) == sorted(["GET", "POST", "OPTIONS"])  # pyright: ignore
+                assert sorted(route.methods) == sorted(["GET", "POST", "OPTIONS"])
                 assert route.path == "/base/top-level/test"
 
 
@@ -92,10 +92,10 @@ def test_register_with_route_handler_functions() -> None:
     for route in router.routes:
         if isinstance(route, HTTPRoute):
             if len(route.methods) == 2:
-                assert sorted(route.methods) == sorted(["GET", "OPTIONS"])  # pyright: ignore
+                assert sorted(route.methods) == sorted(["GET", "OPTIONS"])
                 assert route.path == "/base/second"
             else:
-                assert sorted(route.methods) == sorted(["GET", "POST", "PATCH", "OPTIONS"])  # pyright: ignore
+                assert sorted(route.methods) == sorted(["GET", "POST", "PATCH", "OPTIONS"])
                 assert route.path == "/base/first"
                 assert route.path == "/base/first"
 

@@ -7,9 +7,7 @@ from litestar.testing.client.sync_client import TestClient
 
 
 def test_custom_websocket_class():
-    client = TestClient(app=custom_websocket_class_app)
-
-    with client.websocket_connect("/") as ws:
+    with TestClient(app=custom_websocket_class_app) as client, client.websocket_connect("/") as ws:
         ws.send({"data": "I should not be in response"})
         data = ws.receive()
         assert data["text"] == "Fixed response"

@@ -1,9 +1,11 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import dataclasses
 import secrets
 import string
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any, Optional, TypeAlias
+from typing import TYPE_CHECKING, Any, Final, Optional, TypeAlias
 from uuid import uuid4
 
 import jwt
@@ -13,6 +15,7 @@ from hypothesis import given, settings
 from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_from, text, timedeltas
 
 from litestar import Litestar, Request, Response, get
+from litestar.params import FromPath
 from litestar.security.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
@@ -20,6 +23,8 @@ from litestar.testing import TestClient, create_test_client
 from tests.models import User, UserFactory
 
 if TYPE_CHECKING:
+    from time_machine import Traveller
+
     from litestar.connection import ASGIConnection
 
 
@@ -383,7 +388,7 @@ async def test_path_exclusion() -> None:
     )
 
     @get("/north/{value:int}")
-    def north_handler(value: int) -> dict[str, int]:
+    def north_handler(value: FromPath[int]) -> dict[str, int]:
         return {"value": value}
 
     @get("/south")
@@ -415,7 +420,6 @@ def test_jwt_auth_openapi() -> None:
             "BearerToken": {
                 "type": "http",
                 "description": "JWT api-key authentication and authorization.",
-                "name": "Authorization",
                 "scheme": "Bearer",
                 "bearerFormat": "JWT",
             }
@@ -436,7 +440,6 @@ def test_jwt_auth_openapi() -> None:
                 "BearerToken": {
                     "type": "http",
                     "description": "JWT api-key authentication and authorization.",
-                    "name": "Authorization",
                     "scheme": "Bearer",
                     "bearerFormat": "JWT",
                 }
@@ -769,7 +772,7 @@ def create_jwt_app(auth_cls: Any, request: pytest.FixtureRequest) -> CreateJWTAp
         client = create_test_client(route_handlers=[handler]).__enter__()
         request.addfinalizer(client.__exit__)
 
-        return jwt_auth, client  # pyright: ignore
+        return jwt_auth, client  # pyright: ignore[reportReturnType]
 
     return create
 
@@ -889,6 +892,41 @@ async def test_jwt_auth_verify_nbf(
     jwt_auth, client = create_jwt_app(verify_not_before=verify_not_before, token_cls=CustomToken)
 
     header = jwt_auth.format_auth_header(jwt_auth.create_token("foo", nbf=token_nbf))
+
+    response = client.get("/", headers={"Authorization": header})
+    assert response.status_code == expected_status_code
+
+
+_LEEWAY: Final = 2
+
+
+@pytest.mark.time_machine(datetime(2026, 9, 3))
+@pytest.mark.parametrize(
+    "seconds, expected_status_code",
+    [
+        pytest.param(_LEEWAY - 1, 200, id="with_leeway"),
+        pytest.param(_LEEWAY, 401, id="at_leeway"),
+        pytest.param(_LEEWAY + 1, 401, id="past_leeway"),
+    ],
+)
+async def test_jwt_auth_leeway(
+    seconds: int,
+    expected_status_code: int,
+    create_jwt_app: CreateJWTApp,
+    frozen_datetime: "Traveller",
+) -> None:
+    # According to RFC 7519 and PyJWT implementation, a token is expired ON OR AFTER (exp + leeway).
+    # So the exact moment it hits the deadline, it must return 401.
+    jwt_auth, client = create_jwt_app(leeway=_LEEWAY)
+
+    header = jwt_auth.format_auth_header(
+        Token(
+            sub="foo",
+            exp=datetime.now(tz=UTC),
+        ).encode(jwt_auth.token_secret, jwt_auth.algorithm),
+    )
+
+    frozen_datetime.shift(seconds)
 
     response = client.get("/", headers={"Authorization": header})
     assert response.status_code == expected_status_code

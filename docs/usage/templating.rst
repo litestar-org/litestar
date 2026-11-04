@@ -80,7 +80,7 @@ The above example will create a jinja Environment instance, but you can also pas
 
 
     from litestar import Litestar
-    from litestar.contrib.jinja import JinjaTemplateEngine
+    from litestar.plugins.jinja import JinjaTemplateEngine
     from litestar.template import TemplateConfig
     from jinja2 import Environment, DictLoader
 

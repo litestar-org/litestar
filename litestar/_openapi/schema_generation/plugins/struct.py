@@ -9,7 +9,6 @@ from litestar.plugins import OpenAPISchemaPlugin
 from litestar.plugins.core._msgspec import kwarg_definition_from_field
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.predicates import is_optional_union
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
@@ -25,7 +24,9 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
         return field.required or field.default_factory is Empty
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
-        type_hints = field_definition.get_type_hints(include_extras=True, resolve_generics=True)
+        type_hints = field_definition.get_type_hints(
+            include_extras=True, resolve_generics=True, namespace=schema_creator.signature_namespace
+        )
         struct_info: msgspec.inspect.StructType = msgspec.inspect.type_info(field_definition.type_)  # type: ignore[assignment]
         struct_fields = struct_info.fields
 
@@ -42,20 +43,16 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
                 **field_definition_kwargs,
             )
 
-        required = [
-            field.encode_name
-            for field in struct_fields
-            if self._is_field_required(field=field) and not is_optional_union(type_hints[field.name])
-        ]
+        required = [field.encode_name for field in struct_fields if self._is_field_required(field=field)]
 
-        # Support tagged unions: https://jcristharif.com/msgspec/structs.html#tagged-unions
+        # Support tagged unions: https://msgspec.dev/structs#tagged-unions
         # These structs contain a tag_field and a tag. Since these fields are added
         # dynamically, they are not present within the regular struct fields and don't
         # have any type annotation associated with them, so we create a FieldDefinition
         # manually
         if struct_info.tag_field:
             # using a Literal here will set these as a const in the schema
-            property_fields[struct_info.tag_field] = FieldDefinition.from_annotation(Literal[struct_info.tag])  # pyright: ignore
+            property_fields[struct_info.tag_field] = FieldDefinition.from_annotation(Literal[struct_info.tag])
             required.append(struct_info.tag_field)
 
         return schema_creator.create_component_schema(

@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import select
+from advanced_alchemy.extensions.litestar import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
+from sqlalchemy import literal, select
 
 from litestar import Litestar, post
-from litestar.plugins.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
+from litestar.di import NamedDependency
 
 if TYPE_CHECKING:
     from sqlalchemy import Engine
@@ -13,11 +14,11 @@ if TYPE_CHECKING:
 
 
 @post("/", sync_to_thread=True)
-def handler(db_session: Session, db_engine: Engine) -> tuple[int, int]:
-    one = db_session.execute(select(1)).scalar()
+def handler(db_session: NamedDependency[Session], db_engine: NamedDependency[Engine]) -> tuple[int, int]:
+    one = db_session.scalars(select(literal(1))).one()
 
     with db_engine.begin() as conn:
-        two = conn.execute(select(2)).scalar()
+        two = conn.scalars(select(literal(2))).one()
 
     return one, two
 

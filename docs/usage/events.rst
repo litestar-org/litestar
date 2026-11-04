@@ -10,6 +10,7 @@ Litestar supports a simple implementation of the event emitter / listener patter
     from litestar import Request, post
     from litestar.events import listener
     from litestar import Litestar
+    from litestar.params import JSONBody
 
     from db import user_repository
     from utils.email import send_welcome_mail
@@ -29,13 +30,13 @@ Litestar supports a simple implementation of the event emitter / listener patter
 
 
     @post("/users")
-    async def create_user_handler(data: UserDTO, request: Request) -> None:
+    async def create_user_handler(data: JSONBody[UserDTO], request: Request) -> None:
         # do something here to create a new user
         # e.g. insert the user into a database
         await user_repository.insert(data)
 
         # assuming we have now inserted a user, we want to send a welcome email.
-        # To do this in a none-blocking fashion, we will emit an event to a listener, which will send the email,
+        # To do this in a non-blocking fashion, we will emit an event to a listener, which will send the email,
         # using a different async block than the one where we are returning a response.
         request.app.emit("user_created", email=data.email)
 
@@ -79,6 +80,7 @@ You can also listen to the same events using multiple listeners:
 
     from litestar import Request, post
     from litestar.events import listener
+    from litestar.params import JSONBody
 
     from db import user_repository
     from utils.client import client
@@ -104,7 +106,7 @@ You can also listen to the same events using multiple listeners:
 
 
     @post("/users")
-    async def delete_user_handler(data: UserDTO, request: Request) -> None:
+    async def delete_user_handler(data: JSONBody[UserDTO], request: Request) -> None:
         await user_repository.delete({"email": email})
         request.app.emit("user_deleted", email=data.email, reason="deleted")
 
@@ -124,7 +126,7 @@ The method :meth:`emit <litestar.events.BaseEventEmitterBackend.emit>` has the f
 
 
 
-This means that it expects a string for ``event_id`` following by any number of positional and keyword arguments. While
+This means that it expects a string for ``event_id`` followed by any number of positional and keyword arguments. While
 this is highly flexible, it also means you need to ensure the listeners for a given event can handle all the expected args
 and kwargs.
 
@@ -150,7 +152,7 @@ For example, the following would raise an exception in python:
 
 
     @post("/users")
-    async def delete_user_handler(data: UserDTO, request: Request) -> None:
+    async def delete_user_handler(data: JSONBody[UserDTO], request: Request) -> None:
         await user_repository.delete({"email": email})
         request.app.emit("user_deleted", email=data.email, reason="deleted")
 

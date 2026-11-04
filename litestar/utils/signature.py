@@ -7,7 +7,8 @@ from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
 from typing import TYPE_CHECKING, Annotated, Any, Self, Union, get_args, get_origin, get_type_hints
 
-from litestar import connection, datastructures, types
+from litestar import connection, datastructures, params, types
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import expand_type_var_in_type_hint, unwrap_annotation
@@ -29,9 +30,13 @@ __all__ = (
 _GLOBAL_NAMES = {
     namespace: export
     for namespace, export in chain(
-        tuple(getmembers(types)), tuple(getmembers(connection)), tuple(getmembers(datastructures))
+        tuple(getmembers(types)),
+        tuple(getmembers(connection)),
+        tuple(getmembers(datastructures)),
+        tuple(getmembers(params)),
     )
-    if namespace[0].isupper() and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)  # pyright: ignore
+    if namespace[0].isupper()
+    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__, params.__all__)
 }
 """A mapping of names used for handler signature forward-ref resolution.
 
@@ -146,8 +151,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
 
     # inspect the underlying function for methods
     if hasattr(fn_to_inspect, "__func__"):
-        fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore
-
+        fn_to_inspect = fn_to_inspect.__func__  # pyright: ignore[reportFunctionMemberAccess]
     # Order important. If a litestar name has been overridden in the function module, we want
     # to use that instead of the litestar one.
     namespace = {
@@ -197,6 +201,25 @@ class ParsedSignature:
         return cls.from_signature(signature, expanded_type_hints)
 
     @classmethod
+    def from_property(cls, prop: property, signature_namespace: dict[str, Any]) -> Self:
+        """Parse a 'property' signature. The signature will be that of 'property.fget'
+
+        Args:
+            prop: A :func:`property` instance.
+            signature_namespace: mapping of names to types for forward reference resolution
+
+        Returns:
+            ParsedSignature
+        """
+        fn = prop.fget
+        if fn is None:
+            raise ImproperlyConfiguredException(f"Property {prop} has no getter function")
+        signature = Signature()
+        fn_type_hints = get_fn_type_hints(fn, namespace=signature_namespace)
+        expanded_type_hints = expand_type_var_in_type_hint(fn_type_hints, signature_namespace)
+        return cls.from_signature(signature, expanded_type_hints)
+
+    @classmethod
     def from_signature(cls, signature: Signature, fn_type_hints: dict[str, type]) -> Self:
         """Parse an :class:`inspect.Signature` instance.
 
@@ -211,7 +234,6 @@ class ParsedSignature:
         parameters = tuple(
             FieldDefinition.from_parameter(parameter=parameter, fn_type_hints=fn_type_hints)
             for name, parameter in signature.parameters.items()
-            if name not in ("self", "cls")
         )
 
         return_type = FieldDefinition.from_annotation(fn_type_hints.get("return", Any))

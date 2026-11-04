@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -29,11 +31,12 @@ __all__ = ("litestar_group",)
 def litestar_group(ctx: click.Context, app_path: str | None, app_dir: Path | None = None) -> None:
     """Litestar CLI.
 
-    The application to will be automatically discovered if it's in one of these
-    canonical paths: 'app.py', 'asgi.py', 'application.py' or 'app/__init__.py'.
-    When auto-discovering application factories, functions with the name 'create_app'
-    are considered, or functions that are annotated as returning a 'Litestar'
-    instance.
+    The application will be automatically discovered if it's in one of these
+    canonical paths: 'app.py', 'app/', 'application.py' or 'application/'.
+    Submodules within 'app/' and 'application/' directories are also scanned.
+    When auto-discovering application factories, functions with the name
+    'create_app' are considered, or functions that are annotated as returning
+    a 'Litestar' instance.
 
     Alternatively, the application can be specified explicitly via the '--app' option
     ('litestar --app=<module name>.<submodule>:<app instance or factory>') or the
@@ -45,9 +48,9 @@ def litestar_group(ctx: click.Context, app_path: str | None, app_dir: Path | Non
 
 # add sub commands here
 
-litestar_group.add_command(core.info_command)  # pyright: ignore
-litestar_group.add_command(core.run_command)  # pyright: ignore
-litestar_group.add_command(core.routes_command)  # pyright: ignore
-litestar_group.add_command(core.version_command)  # pyright: ignore
-litestar_group.add_command(sessions.sessions_group)  # pyright: ignore
-litestar_group.add_command(schema.schema_group)  # pyright: ignore
+litestar_group.add_command(core.info_command)  # pyright: ignore[reportArgumentType]
+litestar_group.add_command(core.run_command)  # pyright: ignore[reportArgumentType]
+litestar_group.add_command(core.routes_command)  # pyright: ignore[reportArgumentType]
+litestar_group.add_command(core.version_command)  # pyright: ignore[reportArgumentType]
+litestar_group.add_command(sessions.sessions_group)
+litestar_group.add_command(schema.schema_group)

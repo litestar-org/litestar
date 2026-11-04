@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -69,7 +71,7 @@ def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMa
 
         alias_and_key_tuples.append((alias, param.field_name))
 
-        if not (param.is_required or param.default is Ellipsis):
+        if not param.is_required:
             alias_defaults[alias] = param.default
 
         alias_to_params[alias] = param
@@ -124,7 +126,7 @@ def create_connection_value_extractor(
 
 @lru_cache(1024)
 def create_query_default_dict(
-    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...]
+    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: frozenset[str]
 ) -> defaultdict[str, list[str] | str]:
     """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
 
@@ -204,9 +206,7 @@ async def headers_extractor(values: dict[str, Any], connection: ASGIConnection) 
     Returns:
         None
     """
-    # TODO: This should be removed in 3.0 and instead Headers should be injected
-    # directly. We are only keeping this one around to not break things
-    values["headers"] = dict(connection.headers.items())
+    values["headers"] = connection.headers
 
 
 async def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
@@ -374,7 +374,7 @@ async def _extract_multipart(
         if value == "" and is_optional_union(tp):
             inner: Any = make_non_optional_union(tp)
             if isinstance(inner, type) and issubclass(inner, UploadFile):
-                form_values[name] = None  # pyright: ignore
+                form_values[name] = None  # pyright: ignore[reportArgumentType]
                 continue
         if (
             value is not None
@@ -384,8 +384,7 @@ async def _extract_multipart(
                 or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
             )
         ):
-            form_values[name] = [value]  # pyright: ignore
-
+            form_values[name] = [value]  # pyright: ignore[reportArgumentType]
     return form_values
 
 

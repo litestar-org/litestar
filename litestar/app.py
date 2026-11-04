@@ -62,12 +62,12 @@ if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
-    from litestar.contrib.opentelemetry import OpenTelemetryPlugin
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
+    from litestar.plugins.opentelemetry import OpenTelemetryPlugin
     from litestar.response import Response
     from litestar.stores.base import Store
     from litestar.types import (
@@ -180,7 +180,7 @@ class Litestar(Router):
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
         csrf_config: CSRFConfig | None = None,
-        dto: type[AbstractDTO] | None | EmptyType = Empty,
+        dto: type[AbstractDTO] | EmptyType | None = Empty,
         debug: bool | None = None,
         dependencies: Dependencies | None = None,
         etag: ETag | None = None,
@@ -205,7 +205,7 @@ class Litestar(Router):
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
-        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
+        return_dto: type[AbstractDTO] | EmptyType | None = Empty,
         security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         signature_types: Sequence[Any] | None = None,
@@ -246,7 +246,7 @@ class Litestar(Router):
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
                 defined Compression middleware.
             cors_config: If set, configures CORS handling for the application.
-            csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
+            csrf_config: If set, enables CSRF protection.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
@@ -275,7 +275,7 @@ class Litestar(Router):
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <litestar.connection.request.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
-            parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
+            parameters: A mapping of :class:`Parameter <.params.ParameterKwarg>` definitions available to all application
                 paths.
             path: A path fragment that is prefixed to all route handlers, controllers and routers associated
                 with the application instance.
@@ -386,7 +386,7 @@ class Litestar(Router):
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
             [self._patch_opentelemetry_middleware],
         ):
-            config = handler(config)  # pyright: ignore
+            config = handler(config)
 
         self.plugins = PluginRegistry(config.plugins)
 
@@ -493,7 +493,7 @@ class Litestar(Router):
         # workaround to support otel middleware priority. Should be replaced by regular
         # middleware priorities once available
         try:
-            from litestar.contrib.opentelemetry import OpenTelemetryPlugin
+            from litestar.plugins.opentelemetry import OpenTelemetryPlugin
 
             if not any(isinstance(p, OpenTelemetryPlugin) for p in config.plugins):
                 config.middleware, otel_middleware = OpenTelemetryPlugin._pop_otel_middleware(config.middleware)
@@ -511,7 +511,7 @@ class Litestar(Router):
 
         plugins.append(MsgspecDIPlugin())
 
-        with suppress(MissingDependencyException):
+        with suppress(MissingDependencyException, ImportError):
             from litestar.plugins.pydantic import (
                 PydanticDIPlugin,
                 PydanticInitPlugin,
@@ -531,7 +531,7 @@ class Litestar(Router):
                 plugins.append(PydanticInitPlugin())
             if not pydantic_plugin_found and not pydantic_serialization_plugin_found:
                 plugins.append(PydanticDIPlugin())
-        with suppress(MissingDependencyException):
+        with suppress(MissingDependencyException, ImportError):
             from litestar.plugins.attrs import AttrsSchemaPlugin
 
             pre_configured = any(isinstance(plugin, AttrsSchemaPlugin) for plugin in plugins)
@@ -583,7 +583,7 @@ class Litestar(Router):
     async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
         ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore[call-arg]
 
-        if is_async_callable(hook):  # pyright: ignore
+        if is_async_callable(hook):  # pyright: ignore[reportArgumentType]
             await ret
 
     @asynccontextmanager
@@ -657,7 +657,7 @@ class Litestar(Router):
 
         return route_map
 
-    def _build_routes(self, route_handlers: Iterable[BaseRouteHandler]) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:
+    def _build_routes(self, route_handlers: Iterable[BaseRouteHandler]) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:  # noqa: C901
         """Create routes for all the handlers"""
         routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
 
@@ -683,11 +683,19 @@ class Litestar(Router):
                 HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers, root=self))
             )
 
+        registered_route_handlers = set()
+
         for finalized_route in routes:
             route_handlers = get_route_handlers(finalized_route)
 
             for route_handler in route_handlers:
-                route_handler.on_registration(route=finalized_route, app=self)
+                # handlers can be registered multiple times, if they define multiple
+                # paths. in these cases, we don't want to call 'on_registration' more
+                # than once, so we keep track of the handlers we've already called this
+                # hook
+                if route_handler not in registered_route_handlers:
+                    route_handler.on_registration(route=finalized_route, app=self)
+                    registered_route_handlers.add(route_handler)
 
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(finalized_route)
@@ -778,8 +786,7 @@ class Litestar(Router):
 
         # this narrows down to an ABC, but we assume a non-abstract subclass of the ABC superclass
         if is_class_and_subclass(value, WebsocketListener):
-            return value().to_handler()  # pyright: ignore
-
+            return value().to_handler()  # pyright: ignore[reportAbstractUsage]
         if isinstance(value, Router):
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
@@ -939,8 +946,17 @@ class Litestar(Router):
         """
         asgi_handler = wrap_in_exception_handler(app=self.asgi_router)
 
-        if self.cors_config:
-            asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
+        if cors_config := self.cors_config:
+            cors_middleware = CORSMiddleware(
+                allow_origins=cors_config.allow_origins,
+                allow_methods=cors_config.allow_methods,
+                allow_headers=cors_config.allow_headers,
+                allow_credentials=cors_config.allow_credentials,
+                allow_origin_regex=cors_config.allow_origin_regex,
+                expose_headers=cors_config.expose_headers,
+                max_age=cors_config.max_age,
+            )
+            asgi_handler = cors_middleware(asgi_handler)
 
         try:
             otel_plugin: OpenTelemetryPlugin = self.plugins.get("OpenTelemetryPlugin")
@@ -976,7 +992,9 @@ class Litestar(Router):
         Returns:
             None
         """
-        self.plugins.get(OpenAPIPlugin)._build_openapi()
+        plugin = self.plugins.get(OpenAPIPlugin)
+        plugin.invalidate_schema_cache()
+        plugin.provide_openapi_schema()
 
     def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
@@ -997,7 +1015,7 @@ def _maybe_add_options_handler(
 ) -> list[HTTPRouteHandler]:
     handler_methods = {method for handler in http_handlers for method in handler.http_methods}
     if "OPTIONS" not in handler_methods:
-        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore
+        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore[reportArgumentType]
         options_handler = options_handler.merge(root)
         return [*http_handlers, options_handler]
     return http_handlers

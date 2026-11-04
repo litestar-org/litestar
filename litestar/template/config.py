@@ -47,7 +47,7 @@ class TemplateConfig(Generic[EngineType]):
         """Instantiate the template engine."""
         template_engine = cast(
             "EngineType",
-            self.engine(directory=self.directory, engine_instance=None) if isclass(self.engine) else self.engine,  # pyright: ignore
+            self.engine(directory=self.directory, engine_instance=None) if isclass(self.engine) else self.engine,  # pyright: ignore[reportArgumentType]
         )
         if callable(self.engine_callback):
             self.engine_callback(template_engine)

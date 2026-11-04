@@ -44,10 +44,10 @@ def _encode_headers(headers: Iterable[tuple[str, str]]) -> "RawHeadersList":
     return [(key.lower().encode("latin-1"), value.encode("latin-1")) for key, value in headers]
 
 
-class Headers(CIMultiDictProxy[str], MultiMixin[str]):  # pyright: ignore
+class Headers(CIMultiDictProxy[str], MultiMixin[str]):  # pyright: ignore[reportIncompatibleMethodOverride]
     """An immutable, case-insensitive multi dict for HTTP headers."""
 
-    def __init__(self, headers: Union[Mapping[str, str], "RawHeaders", MultiDict[str]] | None = None) -> None:  # pyright: ignore
+    def __init__(self, headers: Union[Mapping[str, str], "RawHeaders", MultiDict[str]] | None = None) -> None:
         """Initialize ``Headers``.
 
         Args:
@@ -57,7 +57,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):  # pyright: ignore
             headers_: Union[Mapping[str, str], list[tuple[str, str]]] = {}
             if headers:
                 if isinstance(headers, Mapping):
-                    headers_ = headers  # pyright: ignore
+                    headers_ = headers  # pyright: ignore[reportAssignmentType]
                 else:
                     headers_ = [(key.decode("latin-1"), value.decode("latin-1")) for key, value in headers]
 
@@ -169,9 +169,9 @@ class MutableScopeHeaders(MutableMapping):
             if header_name.decode("latin-1").lower() == name
         ]
         if not values:
-            if default:
+            if default is not None:
                 return default
-            raise KeyError
+            raise KeyError(key)
         return values
 
     def extend_header_value(self, key: str, value: str) -> None:
@@ -199,7 +199,7 @@ class MutableScopeHeaders(MutableMapping):
         for header in self.headers:
             if header[0].decode("latin-1").lower() == name:
                 return header[1].decode("latin-1")
-        raise KeyError
+        raise KeyError(key)
 
     def _find_indices(self, key: str) -> list[int]:
         name = key.lower()

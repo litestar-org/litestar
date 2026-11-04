@@ -1,9 +1,16 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated
 from uuid import UUID
 
+from advanced_alchemy.extensions.litestar import (
+    SQLAlchemyInitPlugin,
+    SQLAlchemySyncConfig,
+    base,
+    repository,
+)
+from advanced_alchemy.filters import LimitOffset
 from pydantic import BaseModel as _BaseModel
 from pydantic import TypeAdapter
 from sqlalchemy import ForeignKey, select
@@ -11,17 +18,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
 from litestar.controller import Controller
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
-from litestar.params import Parameter
-from litestar.plugins.sqlalchemy import (
-    SQLAlchemyInitPlugin,
-    SQLAlchemySyncConfig,
-    base,
-    repository,
-)
-from litestar.repository.filters import LimitOffset
+from litestar.params import JSONBody, PathParameter, QueryParameter
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -37,7 +37,7 @@ class BaseModel(_BaseModel):
 # The `UUIDBase` class includes a `UUID` based primary key (`id`)
 class AuthorModel(base.UUIDBase):
     # we can optionally provide the table name instead of auto-generating it
-    __tablename__ = "author"  #  type: ignore[assignment]
+    __tablename__ = "author"
     name: Mapped[str]
     dob: Mapped[date | None]
     books: Mapped[list[BookModel]] = relationship(back_populates="author", lazy="noload")
@@ -47,7 +47,7 @@ class AuthorModel(base.UUIDBase):
 # additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
 # record created, and `updated_at` is the last time the record was modified.
 class BookModel(base.UUIDAuditBase):
-    __tablename__ = "book"  #  type: ignore[assignment]
+    __tablename__ = "book"
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
     author: Mapped[AuthorModel] = relationship(lazy="joined", innerjoin=True, viewonly=True)
@@ -78,14 +78,14 @@ class AuthorRepository(repository.SQLAlchemySyncRepository[AuthorModel]):
     model_type = AuthorModel
 
 
-async def provide_authors_repo(db_session: Session) -> AuthorRepository:
+async def provide_authors_repo(db_session: NamedDependency[Session]) -> AuthorRepository:
     """This provides the default Authors repository."""
     return AuthorRepository(session=db_session)
 
 
 # we can optionally override the default `select` used for the repository to pass in
 # specific SQL options such as join details
-async def provide_author_details_repo(db_session: Session) -> AuthorRepository:
+async def provide_author_details_repo(db_session: NamedDependency[Session]) -> AuthorRepository:
     """This provides a simple example demonstrating how to override the join options
     for the repository."""
     return AuthorRepository(
@@ -95,13 +95,8 @@ async def provide_author_details_repo(db_session: Session) -> AuthorRepository:
 
 
 def provide_limit_offset_pagination(
-    current_page: int = Parameter(ge=1, query="currentPage", default=1, required=False),
-    page_size: int = Parameter(
-        query="pageSize",
-        ge=1,
-        default=10,
-        required=False,
-    ),
+    current_page: Annotated[int, QueryParameter(name="currentPage", ge=1, required=False)] = 1,
+    page_size: Annotated[int, QueryParameter(name="pageSize", ge=1, required=False)] = 10,
 ) -> LimitOffset:
     """Add offset/limit pagination.
 
@@ -125,8 +120,8 @@ class AuthorController(Controller):
     @get(path="/authors")
     def list_authors(
         self,
-        authors_repo: AuthorRepository,
-        limit_offset: LimitOffset,
+        authors_repo: NamedDependency[AuthorRepository],
+        limit_offset: NamedDependency[LimitOffset],
     ) -> OffsetPagination[Author]:
         """List authors."""
         results, total = authors_repo.list_and_count(limit_offset)
@@ -141,8 +136,8 @@ class AuthorController(Controller):
     @post(path="/authors")
     def create_author(
         self,
-        authors_repo: AuthorRepository,
-        data: AuthorCreate,
+        authors_repo: NamedDependency[AuthorRepository],
+        data: JSONBody[AuthorCreate],
     ) -> Author:
         """Create a new author."""
         obj = authors_repo.add(
@@ -158,11 +153,14 @@ class AuthorController(Controller):
     )
     def get_author(
         self,
-        authors_repo: AuthorRepository,
-        author_id: UUID = Parameter(
-            title="Author ID",
-            description="The author to retrieve.",
-        ),
+        authors_repo: NamedDependency[AuthorRepository],
+        author_id: Annotated[
+            UUID,
+            PathParameter(
+                title="Author ID",
+                description="The author to retrieve.",
+            ),
+        ],
     ) -> Author:
         """Get an existing author."""
         obj = authors_repo.get(author_id)
@@ -174,12 +172,15 @@ class AuthorController(Controller):
     )
     def update_author(
         self,
-        authors_repo: AuthorRepository,
-        data: AuthorUpdate,
-        author_id: UUID = Parameter(
-            title="Author ID",
-            description="The author to update.",
-        ),
+        authors_repo: NamedDependency[AuthorRepository],
+        data: JSONBody[AuthorUpdate],
+        author_id: Annotated[
+            UUID,
+            PathParameter(
+                title="Author ID",
+                description="The author to update.",
+            ),
+        ],
     ) -> Author:
         """Update an author."""
         raw_obj = data.model_dump(exclude_unset=True, exclude_none=True)
@@ -191,11 +192,14 @@ class AuthorController(Controller):
     @delete(path="/authors/{author_id:uuid}")
     def delete_author(
         self,
-        authors_repo: AuthorRepository,
-        author_id: UUID = Parameter(
-            title="Author ID",
-            description="The author to delete.",
-        ),
+        authors_repo: NamedDependency[AuthorRepository],
+        author_id: Annotated[
+            UUID,
+            PathParameter(
+                title="Author ID",
+                description="The author to delete.",
+            ),
+        ],
     ) -> None:
         """Delete a author from the system."""
         _ = authors_repo.delete(author_id)

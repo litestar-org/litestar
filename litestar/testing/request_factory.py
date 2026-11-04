@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 import json
@@ -240,7 +242,7 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: dict[str, Any] | DataContainerType | None = None,  # pyright: ignore
+        data: dict[str, Any] | DataContainerType | None = None,
         files: dict[str, FileTypes] | list[tuple[str, FileTypes]] | None = None,
         query_params: dict[str, str | list[str]] | None = None,
         state: dict[str, Any] | None = None,
@@ -365,7 +367,7 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: dict[str, Any] | DataContainerType | None = None,  # pyright: ignore
+        data: dict[str, Any] | DataContainerType | None = None,
         query_params: dict[str, str | list[str]] | None = None,
         state: dict[str, Any] | None = None,
         path_params: dict[str, str] | None = None,
@@ -419,7 +421,7 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: dict[str, Any] | DataContainerType | None = None,  # pyright: ignore
+        data: dict[str, Any] | DataContainerType | None = None,
         query_params: dict[str, str | list[str]] | None = None,
         state: dict[str, Any] | None = None,
         path_params: dict[str, str] | None = None,
@@ -473,7 +475,7 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: dict[str, Any] | DataContainerType | None = None,  # pyright: ignore
+        data: dict[str, Any] | DataContainerType | None = None,
         query_params: dict[str, str | list[str]] | None = None,
         state: dict[str, Any] | None = None,
         path_params: dict[str, str] | None = None,

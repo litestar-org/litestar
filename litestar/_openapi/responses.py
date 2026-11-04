@@ -42,12 +42,19 @@ if TYPE_CHECKING:
 
 __all__ = ("create_responses_for_handler",)
 
-CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")
+WORD_BOUNDARY_PATTERN = re.compile(
+    r"""
+    (?<=[a-z0-9])(?=[A-Z])      # a lowercase letter or digit, followed by an uppercase letter
+    |
+    (?<=[A-Z])(?=[A-Z][a-z])    # an uppercase run, followed by a new capitalized word
+    """,
+    re.VERBOSE,
+)
 
 
 def pascal_case_to_text(string: str) -> str:
     """Given a 'PascalCased' string, return its split form- 'Pascal Cased'."""
-    return " ".join(re.split(CAPITAL_LETTERS_PATTERN, string)).strip()
+    return " ".join(re.split(WORD_BOUNDARY_PATTERN, string)).strip()
 
 
 def create_cookie_schema(cookie: Cookie) -> Schema:
@@ -78,7 +85,9 @@ class ResponseFactory:
         self.context = context
         self.route_handler = route_handler
         self.field_definition = route_handler.parsed_fn_signature.return_type
-        self.schema_creator = SchemaCreator.from_openapi_context(context, prefer_alias=False)
+        self.schema_creator = SchemaCreator.from_openapi_context(
+            context, prefer_alias=False, signature_namespace=route_handler.signature_namespace
+        )
 
     def create_responses(self, raises_validation_error: bool) -> Responses | None:
         """Create the schema for responses, if any.
@@ -209,7 +218,9 @@ class ResponseFactory:
         if not self.schema_creator.generate_examples:
             schema_creator = self.schema_creator
         else:
-            schema_creator = SchemaCreator.from_openapi_context(self.context, generate_examples=False)
+            schema_creator = SchemaCreator.from_openapi_context(
+                self.context, generate_examples=False, signature_namespace=self.route_handler.signature_namespace
+            )
 
         for response_header in self.route_handler.response_headers:
             header = OpenAPIHeader()
@@ -242,6 +253,7 @@ class ResponseFactory:
                 self.context,
                 prefer_alias=False,
                 generate_examples=additional_response.generate_examples,
+                signature_namespace=self.route_handler.signature_namespace,
             )
             field_def = FieldDefinition.from_annotation(additional_response.data_container)
 

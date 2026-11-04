@@ -14,8 +14,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 class UUIDAuthor(base.UUIDAuditBase):
     """The UUIDAuthor domain object."""
 
-    name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
-    dob: Mapped[date] = mapped_column(nullable=True)  # pyright: ignore
+    name: Mapped[str] = mapped_column(String(length=100))
+    dob: Mapped[date] = mapped_column(nullable=True)
     books: Mapped[list[UUIDBook]] = relationship(
         lazy="selectin",
         back_populates="author",
@@ -26,23 +26,23 @@ class UUIDAuthor(base.UUIDAuditBase):
 class UUIDBook(base.UUIDBase):
     """The Book domain object."""
 
-    title: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
-    author_id: Mapped[UUID] = mapped_column(ForeignKey("uuid_author.id"))  # pyright: ignore
-    author: Mapped[UUIDAuthor] = relationship(lazy="joined", innerjoin=True, back_populates="books")  # pyright: ignore
+    title: Mapped[str] = mapped_column(String(length=250))
+    author_id: Mapped[UUID] = mapped_column(ForeignKey("uuid_author.id"))
+    author: Mapped[UUIDAuthor] = relationship(lazy="joined", innerjoin=True, back_populates="books")
 
 
 class UUIDEventLog(base.UUIDAuditBase):
     """The event log domain object."""
 
-    logged_at: Mapped[datetime] = mapped_column(default=datetime.now())  # pyright: ignore
-    payload: Mapped[dict] = mapped_column(default={})  # pyright: ignore
+    logged_at: Mapped[datetime] = mapped_column(default=datetime.now())
+    payload: Mapped[dict] = mapped_column(default={})
 
 
 class UUIDModelWithFetchedValue(base.UUIDBase):
     """The ModelWithFetchedValue UUIDBase."""
 
-    val: Mapped[int]  # pyright: ignore
-    updated: Mapped[datetime] = mapped_column(  # pyright: ignore
+    val: Mapped[int]
+    updated: Mapped[datetime] = mapped_column(
         server_default=func.current_timestamp(),
         onupdate=func.current_timestamp(),
         server_onupdate=FetchedValue(),
@@ -58,23 +58,23 @@ uuid_item_tag = Table(
 
 
 class UUIDItem(base.UUIDBase):
-    name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
-    description: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
+    name: Mapped[str] = mapped_column(String(length=50))
+    description: Mapped[str] = mapped_column(String(length=100), nullable=True)
     tags: Mapped[list[UUIDTag]] = relationship(secondary=lambda: uuid_item_tag, back_populates="items")
 
 
 class UUIDTag(base.UUIDAuditBase):
     """The event log domain object."""
 
-    name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
+    name: Mapped[str] = mapped_column(String(length=50))
     items: Mapped[list[UUIDItem]] = relationship(secondary=lambda: uuid_item_tag, back_populates="tags")
 
 
 class UUIDRule(base.UUIDAuditBase):
     """The rule domain object."""
 
-    name: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
-    config: Mapped[dict] = mapped_column(default=lambda: {})  # pyright: ignore
+    name: Mapped[str] = mapped_column(String(length=250))
+    config: Mapped[dict] = mapped_column(default=lambda: {})
 
 
 class RuleAsyncRepository(SQLAlchemyAsyncRepository[UUIDRule]):

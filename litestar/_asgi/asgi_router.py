@@ -11,8 +11,8 @@ from litestar._asgi.routing_trie import validate_node
 from litestar._asgi.routing_trie.mapping import add_route_to_trie
 from litestar._asgi.routing_trie.traversal import parse_path_to_route
 from litestar._asgi.routing_trie.types import create_node
-from litestar._asgi.utils import get_route_handlers
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar._asgi.utils import get_route_handlers, is_valid_host
+from litestar.exceptions import ClientException, ImproperlyConfiguredException
 from litestar.utils import normalize_path
 from litestar.utils.scope.state import ScopeState
 
@@ -55,6 +55,7 @@ class ASGIRouter:
         "_static_routes",
         "_trie_initialized",
         "app",
+        "handle_routing",
         "root_route_map_node",
         "route_handler_index",
         "route_mapping",
@@ -73,6 +74,10 @@ class ASGIRouter:
         self._registered_routes: set[HTTPRoute | WebSocketRoute | ASGIRoute] = set()
         self._trie_initialized = False
         self.app = app
+        # The routing cache is created per instance: a class-level lru_cache would
+        # act as a GC root keeping every router (and through it, every app) alive
+        # forever. See https://github.com/litestar-org/litestar/issues/4876
+        self.handle_routing = lru_cache(1024)(self._handle_routing)
         self.root_route_map_node: RouteTrieNode = create_node()
         self.route_handler_index: dict[str, RouteHandlerType] = {}
         self.route_mapping: dict[str, list[BaseRoute]] = defaultdict(list)
@@ -90,6 +95,13 @@ class ASGIRouter:
         normalized_path = normalize_path(path)
 
         try:
+            try:
+                host = next((value for name, value in scope["headers"] if name == b"host"), None)
+                if host is not None and not is_valid_host(host):
+                    raise ClientException("Invalid host header")
+            except KeyError:
+                pass
+
             asgi_app, route_handler, scope["path"], scope["path_params"], path_template = self.handle_routing(
                 path=normalized_path, method=scope.get("method")
             )
@@ -102,11 +114,13 @@ class ASGIRouter:
             scope["path_template"] = path_template
         await asgi_app(scope, receive, send)
 
-    @lru_cache(1024)  # noqa: B019
-    def handle_routing(
+    def _handle_routing(
         self, path: str, method: Method | None
     ) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
         """Handle routing for a given path / method combo. This method is meant to allow easy caching.
+
+        The cached version of this method is available as ``self.handle_routing``,
+        set up in ``__init__``.
 
         Args:
             path: The path of the request.
@@ -170,7 +184,12 @@ class ASGIRouter:
 
         validate_node(node=self.root_route_map_node)
         if self._mount_routes:
-            self._mount_paths_regex = re.compile("|".join(sorted(set(self._mount_routes))))  # pyright: ignore
+            self._mount_paths_regex = re.compile(
+                "|".join(
+                    "/" if path == "/" else rf"{re.escape(path)}(?=/|\Z)"
+                    for path in sorted(self._mount_routes, key=len, reverse=True)
+                )
+            )
 
     async def lifespan(self, receive: LifeSpanReceive, send: LifeSpanSend) -> None:
         """Handle the ASGI "lifespan" event on application startup and shutdown.

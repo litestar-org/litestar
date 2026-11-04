@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, post
 from litestar.dto import DTOConfig, dto_field
+from litestar.params import JSONBody
 
 from .my_lib import Base
 
@@ -44,7 +45,7 @@ ReadUserDTO = SQLAlchemyDTO[Annotated[User, config]]
 
 
 @post("/users", dto=UserDTO, return_dto=ReadUserDTO, sync_to_thread=False)
-def create_user(data: User) -> User:
+def create_user(data: JSONBody[User]) -> User:
     data.created_at = datetime.min
     data.address = Address(street="123 Main St", city="Anytown", state="NY", zip="12345")
     data.pets = [Pets(id=1, name="Fido"), Pets(id=2, name="Spot")]

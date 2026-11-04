@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from collections import defaultdict, deque
@@ -144,7 +146,7 @@ def is_generic(annotation: Any) -> bool:
     Returns:
         True if the annotation is a subclass of :data:`Generic <typing.Generic>` otherwise ``False``.
     """
-    return is_class_and_subclass(annotation, Generic)  # pyright: ignore
+    return is_class_and_subclass(annotation, Generic)  # pyright: ignore[reportArgumentType]
 
 
 def is_mapping(annotation: Any) -> TypeGuard[Mapping[Any, Any]]:
