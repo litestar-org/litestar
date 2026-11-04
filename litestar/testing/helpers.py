@@ -167,7 +167,7 @@ def create_test_client(
         compression_config: Configures compression behaviour of the application, this enabled a builtin or user
             defined Compression middleware.
         cors_config: If set, configures CORS handling for the application.
-        csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
+        csrf_config: If set, enables CSRF protection.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
@@ -418,7 +418,7 @@ def create_async_test_client(
         compression_config: Configures compression behaviour of the application, this enabled a builtin or user
             defined Compression middleware.
         cors_config: If set, configures CORS handling for the application.
-        csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
+        csrf_config: If set, enables CSRF protection.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and

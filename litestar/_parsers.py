@@ -47,18 +47,23 @@ def parse_query_string(query_string: bytes) -> tuple[tuple[str, str], ...]:
 def parse_cookie_string(cookie_string: str) -> dict[str, str]:
     """Parse a cookie string into a dictionary of values.
 
+    A name occurring more than once keeps its first value. For the ``Cookie`` header this
+    name is sent in, :rfc:`6265` has a user agent serialise a cookie of a longer path
+    first, so the first value is the one of the cookie scoped to the more specific path.
+    Of two cookies of the same path, it is the one set first.
+
     Args:
         cookie_string: A cookie string.
 
     Returns:
         A string keyed dictionary of values
     """
-    cookies = [cookie.split("=", 1) if "=" in cookie else ("", cookie) for cookie in cookie_string.split(";")]
-    output: dict[str, str] = {
-        k: unquote(unquote_cookie(v))
-        for k, v in filter(
-            lambda x: x[0] or x[1],
-            ((k.strip(), v.strip()) for k, v in cookies),
-        )
-    }
+    output: dict[str, str] = {}
+    for cookie in cookie_string.split(";"):
+        key, separator, value = cookie.partition("=")
+        if not separator:
+            key, value = "", key
+        key, value = key.strip(), value.strip()
+        if (key or value) and key not in output:
+            output[key] = unquote(unquote_cookie(value))
     return output

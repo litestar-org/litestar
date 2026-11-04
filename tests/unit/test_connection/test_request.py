@@ -22,10 +22,11 @@ from litestar.exceptions import (
     SerializationException,
 )
 from litestar.middleware import MiddlewareProtocol
+from litestar.params import RawBody
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json, encode_msgpack
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_413_REQUEST_ENTITY_TOO_LARGE
-from litestar.testing import create_test_client
+from litestar.testing import RequestFactory, create_test_client
 
 if TYPE_CHECKING:
     from litestar.types import ASGIApp, Receive, Scope, Send
@@ -396,6 +397,23 @@ def test_request_cookies() -> None:
         assert response.text == "Hello, cookies!"
 
 
+def test_request_cookies_from_multiple_cookie_headers_in_scope() -> None:
+    scope = RequestFactory().get().scope
+    scope["headers"] = [(b"cookie", b"a=1; dup=first"), (b"cookie", b"dup=second; b=2")]
+
+    assert Request[Any, Any, Any](scope).cookies == {"a": "1", "dup": "first", "b": "2"}
+
+
+def test_request_cookies_from_multiple_cookie_headers() -> None:
+    @get("/")
+    def handler(request: Request) -> dict[str, str]:
+        return request.cookies
+
+    with create_test_client(handler) as client:
+        response = client.get("/", headers=[("cookie", "a=1; dup=first"), ("cookie", "dup=second; b=2")])
+        assert response.json() == {"a": "1", "dup": "first", "b": "2"}
+
+
 def test_chunked_encoding() -> None:
     @post("/")
     async def handler(request: Request) -> bytes:
@@ -496,7 +514,7 @@ def test_request_body_exceeding_content_length_is_allowed() -> None:
     """
 
     @post("/", request_max_body_size=10)
-    def handler(body: bytes) -> bytes:
+    def handler(body: RawBody) -> bytes:
         return body
 
     with create_test_client([handler]) as client:
@@ -509,7 +527,7 @@ def test_request_body_exceeding_content_length_still_enforces_max_body_size() ->
     """Content-length mismatch is allowed, but request_max_body_size is still enforced."""
 
     @post("/", request_max_body_size=1)
-    def handler(body: bytes) -> bytes:
+    def handler(body: RawBody) -> bytes:
         return body
 
     with create_test_client([handler]) as client:
@@ -523,7 +541,7 @@ def test_request_body_exceeds_max_request_body_size() -> None:
         await request.body()
 
     @post("/two", request_max_body_size=1)
-    async def handler_two(body: bytes) -> None:
+    async def handler_two(body: RawBody) -> None:
         pass
 
     with create_test_client([handler_one, handler_two]) as client:
@@ -541,7 +559,7 @@ def test_request_body_exceeds_max_request_body_size_chunked() -> None:
         await request.body()
 
     @post("/two", request_max_body_size=1)
-    async def handler_two(body: bytes, request: Request) -> None:
+    async def handler_two(body: RawBody, request: Request) -> None:
         assert request.headers["transfer-encoding"] == "chunked"
         await request.body()
 

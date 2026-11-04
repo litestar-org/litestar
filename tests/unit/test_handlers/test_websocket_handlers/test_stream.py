@@ -50,6 +50,17 @@ def test_websocket_stream_without_socket() -> None:
         assert ws.receive_text(timeout=0.1) == "foo"
 
 
+def test_websocket_stream_without_socket_declares_socket_in_original_signature() -> None:
+    @websocket_stream("/")
+    async def handler() -> AsyncGenerator[str, None]:
+        yield "foo"
+
+    app = Litestar([handler])
+    parsed_signature = app.route_handler_method_map["/"]["websocket"].parsed_fn_signature
+
+    assert list(parsed_signature.original_signature.parameters) == list(parsed_signature.parameters) == ["socket"]
+
+
 def test_websocket_stream_dependency_injection() -> None:
     async def provide_hello() -> str:
         return "hello"

@@ -246,7 +246,7 @@ class Litestar(Router):
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
                 defined Compression middleware.
             cors_config: If set, configures CORS handling for the application.
-            csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
+            csrf_config: If set, enables CSRF protection.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
@@ -511,7 +511,7 @@ class Litestar(Router):
 
         plugins.append(MsgspecDIPlugin())
 
-        with suppress(MissingDependencyException):
+        with suppress(MissingDependencyException, ImportError):
             from litestar.plugins.pydantic import (
                 PydanticDIPlugin,
                 PydanticInitPlugin,
@@ -531,7 +531,7 @@ class Litestar(Router):
                 plugins.append(PydanticInitPlugin())
             if not pydantic_plugin_found and not pydantic_serialization_plugin_found:
                 plugins.append(PydanticDIPlugin())
-        with suppress(MissingDependencyException):
+        with suppress(MissingDependencyException, ImportError):
             from litestar.plugins.attrs import AttrsSchemaPlugin
 
             pre_configured = any(isinstance(plugin, AttrsSchemaPlugin) for plugin in plugins)

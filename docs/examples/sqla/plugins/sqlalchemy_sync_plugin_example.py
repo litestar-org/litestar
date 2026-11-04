@@ -9,6 +9,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
 from litestar.di import NamedDependency
+from litestar.params import JSONBody
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -24,7 +25,7 @@ class TodoItem(Base):
 
 
 @post("/", sync_to_thread=True)
-def add_item(data: TodoItem, db_session: NamedDependency[Session]) -> Sequence[TodoItem]:
+def add_item(data: JSONBody[TodoItem], db_session: NamedDependency[Session]) -> Sequence[TodoItem]:
     with db_session.begin():
         db_session.add(data)
     return db_session.execute(select(TodoItem)).scalars().all()
