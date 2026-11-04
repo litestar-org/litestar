@@ -6,6 +6,52 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Parse every ``cookie`` header of a request
+        :type: bugfix
+        :breaking:
+        :issue: 5177
+
+        Only the first ``cookie`` header was parsed into
+        :attr:`~litestar.connection.ASGIConnection.cookies`. Over HTTP/2 and HTTP/3 the
+        header may repeat, and browsers send one per cookie, so every cookie but those in
+        the first header went missing. All ``cookie`` headers are now parsed, joined with
+        the ``"; "`` delimiter :rfc:`9113` and :rfc:`9114` prescribe.
+
+        A cookie name sent more than once now keeps its first value, where it kept its last
+        one before, following the :rfc:`6265` ordering that serialises the cookie of the
+        longer path first. Scope a cookie holding a session or a CSRF token with the
+        ``__Host-`` prefix so that a cookie of the same name, set under a longer path,
+        cannot take precedence over it. ``cookies`` of
+        :class:`~litestar.middleware.logging.LoggingMiddleware`'s response log likewise
+        holds the first of several ``set-cookie`` headers of one name, not the last.
+
+    .. change:: Restore a session split across several cookies over HTTP/2 and HTTP/3
+        :type: bugfix
+        :issue: 5177
+
+        A session too large for one cookie is stored across several, named ``session-0``,
+        ``session-1`` and so on. Over HTTP/2 and HTTP/3 only the chunks carried by the first
+        ``cookie`` header were read, and
+        :class:`~litestar.middleware.session.client_side.ClientSideSessionBackend` yields an
+        empty session when it cannot decode the value in full, so such a session was
+        silently dropped and the user logged out. Every chunk is now read.
+
+    .. change:: Send repeated headers separately from the test client
+        :type: bugfix
+        :breaking:
+        :issue: 5177
+
+        The test client merged headers of the same name into one comma-joined header, which
+        is invalid for ``cookie``, and left a request carrying a repeated header impossible
+        to simulate. Repeated headers now reach the application as they were given, on
+        requests and on :meth:`~litestar.testing.TestClient.websocket_connect`, which
+        dropped all but the last of them.
+
+        A test passing a header of the same name twice is affected: the application now
+        receives the two values it was given, rather than one comma-joined value. Header
+        values are also passed on as the bytes they were given in, where they were decoded
+        and re-encoded as UTF-8 before.
+
     .. change:: Fix ``Optional`` / ``Any`` + ``required=False`` + without default parameters receiving ``Empty``
         :type: bugfix
         :breaking:
