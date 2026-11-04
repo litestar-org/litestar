@@ -5,7 +5,7 @@ Each benchmark sends 10 requests per measured call; see ``ASGIRunner.request_man
 
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Iterator
 from dataclasses import dataclass
 from typing import Annotated, Any
 
@@ -19,6 +19,7 @@ from litestar.di import NamedDependency, Provide
 from litestar.exceptions import NotFoundException
 from litestar.middleware import ASGIMiddleware
 from litestar.params import CookieParameter, FromPath, FromQuery, HeaderParameter, JSONBody
+from litestar.response import Stream
 from litestar.types import ASGIApp, Receive, Scope, Send
 from tests.benchmarks.helpers import ASGIRunner, make_scope, response_body, response_status
 
@@ -153,14 +154,26 @@ async def raise_not_found() -> None:
     raise NotFoundException("missing")
 
 
+STREAM_CHUNKS = [f"chunk-{index}".encode() for index in range(10)]
+
+
+@get("/stream", media_type=MediaType.TEXT)
+async def stream_chunks() -> Stream:
+    async def produce() -> AsyncGenerator[bytes, None]:
+        for chunk in STREAM_CHUNKS:
+            yield chunk
+
+    return Stream(produce())
+
+
 class NoopMiddleware(ASGIMiddleware):
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         await next_app(scope, receive, send)
 
 
 @pytest.fixture(scope="module")
-def app() -> Litestar:
-    return Litestar(
+def app(runner: ASGIRunner) -> Iterator[Litestar]:
+    litestar_app = Litestar(
         route_handlers=[
             plaintext,
             plaintext_sync,
@@ -175,27 +188,34 @@ def app() -> Litestar:
             di_sync,
             di_generator,
             raise_not_found,
+            stream_chunks,
         ],
         openapi_config=None,
     )
+    with runner.lifespan(litestar_app):
+        yield litestar_app
 
 
 @pytest.fixture(scope="module")
-def cors_app() -> Litestar:
-    return Litestar(
+def cors_app(runner: ASGIRunner) -> Iterator[Litestar]:
+    litestar_app = Litestar(
         route_handlers=[json_dict],
         cors_config=CORSConfig(allow_origins=["https://example.com"]),
         openapi_config=None,
     )
+    with runner.lifespan(litestar_app):
+        yield litestar_app
 
 
 @pytest.fixture(scope="module")
-def middleware_app() -> Litestar:
-    return Litestar(
+def middleware_app(runner: ASGIRunner) -> Iterator[Litestar]:
+    litestar_app = Litestar(
         route_handlers=[json_dict],
         middleware=[NoopMiddleware(), NoopMiddleware(), NoopMiddleware()],
         openapi_config=None,
     )
+    with runner.lifespan(litestar_app):
+        yield litestar_app
 
 
 def test_plaintext_get(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
@@ -280,6 +300,16 @@ def test_di_generator_cleanup(app: Litestar, runner: ASGIRunner, benchmark: Benc
     messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert response_body(messages) == b'{"value":1}'
+
+
+def test_stream_response(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
+    """Also covers the harness: a streaming response listens for a disconnect while it is
+    still producing, which is the one request shape ``_Exchange`` exists for.
+    """
+    scope = make_scope("/stream")
+    messages = benchmark(runner.request_many, app, scope)
+    assert response_status(messages) == 200
+    assert response_body(messages) == b"".join(STREAM_CHUNKS)
 
 
 def test_cors_simple_request(cors_app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:

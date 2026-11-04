@@ -1,4 +1,9 @@
-"""Serialization, DTO and signature-model benchmarks (no network, no event loop unless noted)."""
+"""Serialization, DTO and signature-model benchmarks.
+
+Only ``test_dto_request_roundtrip`` goes through the ASGI interface; it starts the app and
+sends 10 requests per measured call like the request-path benchmarks. The rest call the
+libraries directly.
+"""
 
 from __future__ import annotations
 
@@ -129,7 +134,8 @@ def test_dto_request_roundtrip(
         method="POST",
         headers=[(b"content-type", b"application/json"), (b"content-length", str(len(body)).encode())],
     )
-    messages = benchmark(runner.request, app, scope, body)
+    with runner.lifespan(app):
+        messages = benchmark(runner.request_many, app, scope, body)
     assert response_status(messages) == 201
 
 
