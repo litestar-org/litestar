@@ -476,13 +476,10 @@ Test clients are based on ``httpx2``, installed via the ``testing`` extra
 -------------------------------------------------------------------------
 
 The :doc:`test clients </usage/testing>` were based on
-`httpx <https://www.python-httpx.org/>`_, which was a default dependency. Two things
-changed in 3.0:
-
-- ``httpx`` moved out of the default dependencies into the ``litestar[testing]``
-  package extra. It is also included in ``litestar[full]``.
-- That extra now installs `httpx2 <https://github.com/pydantic/httpx2>`_, the fork of
-  ``httpx`` maintained by Pydantic, instead of ``httpx``.
+`httpx <https://www.python-httpx.org/>`_, which was a default dependency. In 3.0 they
+are based on `httpx2 <https://pydantic.dev/docs/httpx2/>`_, the fork of ``httpx``
+maintained by Pydantic, and it is installed by the ``litestar[testing]`` extra rather
+than by default.
 
 Importing anything from :mod:`litestar.testing` without the extra installed raises a
 :class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
@@ -493,22 +490,48 @@ naming the extra to install:
 
     pip install 'litestar[testing]'
 
-``httpx2`` is a fork of ``httpx`` 0.28.1 and keeps its public API, so test code
-generally works unchanged. Four things are worth checking:
+``httpx2`` keeps the public API of ``httpx`` 0.28.1, but it is a distinct module, so
+every reference in a test suite has to be renamed:
+
+.. code-block:: python
+
+    # before
+    response: httpx.Response = client.get("/")
+    with pytest.raises(httpx.HTTPStatusError):
+        response.raise_for_status()
+
+    # after
+    response: httpx2.Response = client.get("/")
+    with pytest.raises(httpx2.HTTPStatusError):
+        response.raise_for_status()
+
+If you cannot rename a test suite yet, ``httpx2.alias_httpx()`` makes ``import httpx``
+resolve to ``httpx2`` process-wide. It has to be called before anything imports
+``httpx`` or ``httpcore``, and raises :exc:`RuntimeError` otherwise. Litestar never
+calls it for you.
+
+Beyond the rename, these are worth checking:
 
 - :class:`~litestar.testing.TestClient` and
   :class:`~litestar.testing.AsyncTestClient` now subclass ``httpx2.Client`` and
   ``httpx2.AsyncClient``, and :func:`~litestar.testing.subprocess_sync_client` /
   :func:`~litestar.testing.subprocess_async_client` return ``httpx2`` clients.
-  Annotations such as ``response: httpx.Response`` need updating.
+- ``httpx2`` raises its own exceptions, which do not inherit from the ``httpx`` ones.
+  An ``except httpx.HTTPError`` around a test client call stops matching, and does so
+  silently if ``httpx`` is still installed for other reasons.
 - The logger is named ``httpx2``. Logging configuration and ``caplog`` assertions
   that reference the ``httpx`` logger need updating.
-- The ``User-Agent`` header sent by the clients is now ``python-httpx2/<version>``.
-- The extra pulls ``anyio>=4.10`` and ``idna>=3.18``, and uses ``truststore`` (the
-  operating system trust store) rather than ``certifi``.
-
-If you cannot update a test suite yet, ``httpx2.alias_httpx()`` makes ``import httpx``
-resolve to ``httpx2`` process-wide. Litestar never calls it for you.
+- The clients inherit ``httpx2``'s ``sse()``, which works through the test transport,
+  so ``httpx-sse`` is no longer needed. The inherited ``websocket()`` does not work
+  against the test transport; use
+  :meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>` instead.
+- :func:`~litestar.testing.subprocess_sync_client` and
+  :func:`~litestar.testing.subprocess_async_client` send
+  ``User-Agent: python-httpx2/<version>``. :class:`~litestar.testing.TestClient` and
+  :class:`~litestar.testing.AsyncTestClient` keep sending ``testclient``.
+- The extra pulls ``anyio>=4.10`` and ``idna>=3.18``, neither of which can be
+  satisfied alongside a lower pin. TLS verification uses the operating system trust
+  store via ``truststore`` rather than ``certifi``.
 
 
 ``rich-click>=1.9`` is now required by the CLI

@@ -215,7 +215,8 @@ be cleaned up properly without issues.
 Testing websockets
 ++++++++++++++++++
 
-Litestar's test client enhances the httpx2 client to support websockets. To test a websocket endpoint, you can use the
+Litestar's test client adds websocket support that routes through the ASGI app rather than over a real connection, so
+``httpx2``'s own ``websocket()`` method does not apply. To test a websocket endpoint, use the
 :meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>` method on the test client. The method returns
 a websocket connection object that you can use to send and receive messages, see an example below for json:
 
@@ -316,19 +317,19 @@ in isolation.
 Running a live server
 ---------------------
 
-The test clients make use of HTTPX's ability to directly call into an ASGI app, without
+The test clients make use of ``httpx2``'s ability to directly call into an ASGI app, without
 having to run an actual server. In most cases this is sufficient but there are some
 exceptions where this won't work, due to the limitations of the emulated client-server
 communication.
 
 For example, when using server-sent events with an infinite generator, it will lock up
-the test client, since HTTPX tries to consume the full response before returning a
+the test client, since ``httpx2`` tries to consume the full response before returning a
 request.
 
 Litestar offers two helper functions,
 :func:`litestar.testing.subprocess_sync_client` and
 :func:`litestar.testing.subprocess_async_client` that will
-launch a Litestar instance with in a subprocess and set up an httpx2 client for running
+launch a Litestar instance with in a subprocess and set up an ``httpx2`` client for running
 tests. You can either load your actual app file or create subsets from it as you would
 with the regular test client setup:
 
