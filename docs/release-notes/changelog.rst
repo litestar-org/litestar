@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix ``SyntaxError`` raised by the codegen DTO backend for nested models
+        :type: bugfix
+        :pr: 4670
+
+        An application failed to start with a :exc:`SyntaxError` when a DTO nested models
+        more than one level deep, since the codegen backend - the default backend - derived
+        a local variable name from an access expression without stripping the attribute and
+        item access syntax from it. The same derivation raised a :exc:`ValueError` for a
+        model holding a field whose name carries a character that is not a word character,
+        such as ``a·b``.
+
     .. change:: Parse every ``cookie`` header of a request
         :type: bugfix
         :breaking:

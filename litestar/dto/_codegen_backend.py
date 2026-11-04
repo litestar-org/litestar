@@ -41,6 +41,8 @@ if TYPE_CHECKING:
 
 __all__ = ("DTOCodegenBackend",)
 
+IDENTIFIER_PARTS_PATTERN = re.compile(r"\w+")
+
 
 class DTOCodegenBackend(DTOBackend):
     __slots__ = (
@@ -200,7 +202,6 @@ class TransferFunctionFactory:
         self._body = ""
         self.names: set[str] = set()
         self.nested_as_dict = nested_as_dict
-        self._re_index_access = re.compile(r"\[['\"](\w+?)['\"]]")
 
     def _add_to_fn_globals(self, name: str, value: Any) -> str:
         unique_name = unique_name_for_scope(name, self._fn_locals)
@@ -208,7 +209,7 @@ class TransferFunctionFactory:
         return unique_name
 
     def _create_local_name(self, name: str) -> str:
-        unique_name = unique_name_for_scope(name, self.names)
+        unique_name = unique_name_for_scope("_".join(IDENTIFIER_PARTS_PATTERN.findall(name)), self.names)
         self.names.add(unique_name)
         return unique_name
 
@@ -431,17 +432,7 @@ class TransferFunctionFactory:
                 # regular attributes, but can be quite significant for properties or
                 # other types of descriptors, where I/O may be involved, such as the
                 # case for lazy loaded relationships in SQLAlchemy
-                if "." in source_instance_name:
-                    level_1, level_2 = source_instance_name.split(".", 1)
-                else:
-                    level_1, level_2, *_ = self._re_index_access.split(source_instance_name, maxsplit=1)
-
-                # Sanitize to a valid identifier: bracket accesses like ['key'] or dots
-                # can appear in components when source_instance_name is itself an
-                # expression (e.g. "source_instance_0['wrapper'].inner") rather than a
-                # plain variable name.
-                combined = re.sub(r"[^a-zA-Z0-9_]", "_", f"{level_1}_{level_2}")
-                new_source_instance_name = self._create_local_name(combined)
+                new_source_instance_name = self._create_local_name(source_instance_name)
                 self._add_stmt(f"{new_source_instance_name} = {source_instance_name}")
                 source_instance_name = new_source_instance_name
 
