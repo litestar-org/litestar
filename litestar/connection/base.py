@@ -199,8 +199,9 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """Return the ``cookies`` of this connection's ``Scope``.
 
         Every ``cookie`` header is parsed: a client may send one per cookie over HTTP/2 and
-        HTTP/3, where :rfc:`9113` has them reassembled with the ``"; "`` delimiter. A cookie
-        name sent more than once keeps the first value it was sent with.
+        HTTP/3, where :rfc:`9113` and :rfc:`9114` respectively have them reassembled with the
+        ``"; "`` delimiter. A cookie name sent more than once keeps the first value it was
+        sent with.
 
         Returns:
             Returns any cookies stored in the header as a parsed dictionary.

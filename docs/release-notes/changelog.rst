@@ -15,7 +15,7 @@
         :attr:`~litestar.connection.ASGIConnection.cookies`. Over HTTP/2 and HTTP/3 the
         header may repeat, and browsers send one per cookie, so every cookie but those in
         the first header went missing. All ``cookie`` headers are now parsed, joined with
-        the ``"; "`` delimiter :rfc:`9113` prescribes.
+        the ``"; "`` delimiter :rfc:`9113` and :rfc:`9114` prescribe.
 
         A cookie name sent more than once now keeps its first value, where it kept its last
         one before, following the :rfc:`6265` ordering that serialises the cookie of the
