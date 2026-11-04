@@ -6,6 +6,18 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix the codegen DTO backend crashing for nested models
+        :type: bugfix
+        :pr: 4670
+
+        An application failed to start with a :exc:`SyntaxError` when a DTO nested models
+        more than one level deep behind an intermediate model holding a single field, or
+        behind any intermediate model when it declared a custom ``attribute_accessor``. The
+        codegen backend -- the default backend -- derived a local variable name from an
+        access expression without stripping the attribute and item access syntax from it,
+        and raised a :exc:`ValueError` instead for a field name holding a character that is
+        not a word character, such as ``a·b``.
+
     .. change:: Parse every ``cookie`` header of a request
         :type: bugfix
         :breaking:
