@@ -10,7 +10,7 @@ import pytest
 from litestar.exceptions import MissingDependencyException
 
 
-def test_testing_requires_httpx(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_testing_requires_httpx2(monkeypatch: pytest.MonkeyPatch) -> None:
     """``litestar.testing`` must point at the ``testing`` extra when httpx2 is missing.
 
     ``httpx2`` is only installed by the ``testing`` extra, so importing the public test
@@ -21,5 +21,5 @@ def test_testing_requires_httpx(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "httpx2", None)
     monkeypatch.delitem(sys.modules, "litestar.testing", raising=False)
 
-    with pytest.raises(MissingDependencyException, match=r"litestar\[testing\]"):
+    with pytest.raises(MissingDependencyException, match=r"httpx2.*litestar\[testing\]"):
         importlib.import_module("litestar.testing")

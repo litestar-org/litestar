@@ -50,9 +50,9 @@ async def test_subprocess_async_client(async_client: httpx2.AsyncClient) -> None
     """
 
     async with async_client.sse("/notify/hello") as event_source:
-        async for event in event_source:
-            assert event.data == "hello"
-            break
+        event = await anext(aiter(event_source))
+
+    assert event.data == "hello"
 
 
 def test_subprocess_sync_client(sync_client: httpx2.Client) -> None:
@@ -61,9 +61,9 @@ def test_subprocess_sync_client(sync_client: httpx2.Client) -> None:
     """
 
     with sync_client.sse("/notify/hello") as event_source:
-        for event in event_source:
-            assert event.data == "hello"
-            break
+        event = next(iter(event_source))
+
+    assert event.data == "hello"
 
 
 def test_log_endpoint_capture_output_true(capfd: pytest.CaptureFixture[str]) -> None:

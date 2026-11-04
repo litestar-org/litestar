@@ -11,7 +11,7 @@ from litestar import get
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response import ServerSentEvent
 from litestar.response.sse import ASGIStreamingSSEResponse, ServerSentEventMessage
-from litestar.testing import create_async_test_client
+from litestar.testing import create_async_test_client, create_test_client
 from litestar.types import SSEData
 
 if TYPE_CHECKING:
@@ -99,6 +99,17 @@ async def test_various_sse_inputs(input: str, expected_events: list[HTTPXServerS
                 assert events[i].data == expected_events[i].data
                 assert events[i].id == expected_events[i].id
                 assert events[i].retry == expected_events[i].retry
+
+
+def test_sse_streaming_response_sync_client() -> None:
+    @get("/test")
+    def handler() -> ServerSentEvent:
+        return ServerSentEvent(content=["1", "2", "3"], event_id="123", event_type="special", retry_duration=1000)
+
+    with create_test_client(handler) as client, client.sse(f"{client.base_url}/test") as event_source:
+        events = list(event_source)
+
+    assert events == [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 4)]
 
 
 def test_invalid_content_type_raises() -> None:
