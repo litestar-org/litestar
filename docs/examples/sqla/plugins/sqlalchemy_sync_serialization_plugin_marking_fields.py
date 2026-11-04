@@ -5,6 +5,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
 from litestar.dto import dto_field
+from litestar.params import JSONBody
 
 
 class Base(DeclarativeBase): ...
@@ -18,7 +19,7 @@ class TodoItem(Base):
 
 
 @post("/", sync_to_thread=False)
-def add_item(data: TodoItem) -> list[TodoItem]:
+def add_item(data: JSONBody[TodoItem]) -> list[TodoItem]:
     data.super_secret_value = "This is a secret"
     return [data]
 

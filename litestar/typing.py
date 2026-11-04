@@ -46,7 +46,7 @@ except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg, ParameterMarker
+from litestar.params import KwargDefinition, ParameterKwarg, ParameterMarker
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
     is_any,
@@ -495,13 +495,10 @@ class FieldDefinition:
                     existing_kwargs_definition, **kwarg_definition_merge_args
                 )
             # if not, create a new KwargDefinition
-            else:
-                if kwargs.get("name") == "data":
-                    kwargs["kwarg_definition"] = BodyKwarg(**kwarg_definition_merge_args)
-                elif kwarg_definition_merge_args:
-                    # a parameter is only ever declared via an explicit marker, so plain
-                    # constraint metadata becomes a plain 'KwargDefinition'
-                    kwargs["kwarg_definition"] = KwargDefinition(**kwarg_definition_merge_args)
+            elif kwarg_definition_merge_args:
+                # a parameter or body is only ever declared via an explicit marker, so plain
+                # constraint metadata becomes a plain 'KwargDefinition'
+                kwargs["kwarg_definition"] = KwargDefinition(**kwarg_definition_merge_args)
 
         kwargs.setdefault("annotation", unwrapped)
         kwargs.setdefault("args", annotation_args)

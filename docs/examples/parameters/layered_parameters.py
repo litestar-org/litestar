@@ -37,7 +37,7 @@ router = Router(
     path="/router",
     route_handlers=[MyController],
     parameters={
-        "router_param": HeaderParameter(annotation=str, name="MyHeader", pattern="^[a-zA-Z]$", required=False),
+        "router_param": HeaderParameter(annotation=str, name="MyHeader", pattern="^[a-zA-Z]$"),
     },
 )
 

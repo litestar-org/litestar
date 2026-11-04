@@ -54,14 +54,14 @@ represents a todo item in our SQLite database.
         .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 6,16-25
+            :lines: 6,17-26
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 6,16-25
+            :lines: 6,17-26
 
 Setting Up an API Endpoint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,14 +75,14 @@ Next, we set up an API endpoint at the root  (``"/"``)  that allows adding a ``T
         .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 3-5,8-9,11-15,26-32
+            :lines: 3-5,8-9,11-16,27-33
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 3-5,8-9,11-15,26-32
+            :lines: 3-5,8-9,11-16,27-33
 
 Initializing the Database
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -101,14 +101,14 @@ We create a function ``init_db`` that we'll use to initialize the database when 
         .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 10,32-36
+            :lines: 10,33-37
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 10,32-34
+            :lines: 10,33-35
 
 Setting Up the Plugin and the App
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -122,14 +122,14 @@ Finally, we set up the SQLAlchemy Plugin and the Litestar app.
         .. literalinclude:: /examples/sqla/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 8,32-36
+            :lines: 8,33-37
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/sqla/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 10,32-34
+            :lines: 10,33-35
 
 This configures the app with the plugin, sets up a route handler for adding items, and specifies that the ``init_db``
 function should be run when the app starts up.

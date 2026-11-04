@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from litestar import Litestar, patch, post, put
 from litestar.dto import DataclassDTO, DTOConfig, DTOData
-from litestar.params import FromPath
+from litestar.params import FromPath, JSONBody
 
 
 @dataclass
@@ -28,20 +28,20 @@ class PatchDTO(DataclassDTO[Person]):
 
 
 @post("/person", dto=WriteDTO, return_dto=ReadDTO, sync_to_thread=False)
-def create_person(data: DTOData[Person]) -> Person:
+def create_person(data: JSONBody[DTOData[Person]]) -> Person:
     # Logic for persisting the person goes here
     return data.create_instance(id=1)
 
 
 @put("/person/{person_id:int}", dto=WriteDTO, return_dto=ReadDTO, sync_to_thread=False)
-def update_person(person_id: FromPath[int], data: DTOData[Person]) -> Person:
+def update_person(person_id: FromPath[int], data: JSONBody[DTOData[Person]]) -> Person:
     # Usually the Person would be retrieved from a database
     person = Person(id=person_id, name="John", age=50, email="email_of_john@example.com")
     return data.update_instance(person)
 
 
 @patch("/person/{person_id:int}", dto=PatchDTO, return_dto=ReadDTO, sync_to_thread=False)
-def patch_person(person_id: FromPath[int], data: DTOData[Person]) -> Person:
+def patch_person(person_id: FromPath[int], data: JSONBody[DTOData[Person]]) -> Person:
     # Usually the Person would be retrieved from a database
     person = Person(id=person_id, name="John", age=50, email="email_of_john@example.com")
     return data.update_instance(person)

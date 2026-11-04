@@ -7,6 +7,7 @@ from uuid import UUID
 
 from litestar import Request, Response, get, post
 from litestar.connection import ASGIConnection
+from litestar.params import JSONBody
 from litestar.security.jwt import JWTAuth, Token
 from litestar.status_codes import HTTP_204_NO_CONTENT
 from litestar.testing import create_test_client
@@ -34,7 +35,7 @@ jwt_auth = JWTAuth[User](
 
 
 @post("/login")
-async def login_handler(data: User) -> Response[User]:
+async def login_handler(data: JSONBody[User]) -> Response[User]:
     MOCK_DB[str(data.id)] = data
     return jwt_auth.login(identifier=str(data.id), response_body=data)
 
