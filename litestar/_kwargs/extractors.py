@@ -71,7 +71,7 @@ def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMa
 
         alias_and_key_tuples.append((alias, param.field_name))
 
-        if not (param.is_required or param.default is Ellipsis):
+        if not param.is_required:
             alias_defaults[alias] = param.default
 
         alias_to_params[alias] = param

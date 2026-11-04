@@ -202,6 +202,43 @@ If you were relying on this utility, you can define it yourself as follows:
         return isgeneratorfunction(obj) or isasyncgenfunction(obj)
 
 
+Deprecated ``DTOField`` declaration via Pydantic's ``Field.extra`` removed
+--------------------------------------------------------------------------
+
+Declaring a :class:`~.dto.field.DTOField` through Pydantic's ``Field.extra``, that is
+``Field(**dto_field("read-only"))``, is no longer supported. The mark was already being
+ignored in 2.x and only produced a deprecation warning.
+
+Remove the declaration: it leaves an internal key in the field's ``json_schema_extra``,
+which can make OpenAPI schema generation fail.
+
+Before:
+
+.. code-block:: python
+
+    import pydantic
+
+    from litestar.dto import dto_field
+
+
+    class User(pydantic.BaseModel):
+        id: int = pydantic.Field(**dto_field("read-only"))
+
+After:
+
+.. code-block:: python
+
+    from typing import Annotated
+
+    import pydantic
+
+    from litestar.dto import DTOField
+
+
+    class User(pydantic.BaseModel):
+        id: Annotated[int, DTOField(mark="read-only")]
+
+
 Removal of semantic HTTP route handler classes
 ----------------------------------------------
 
@@ -504,3 +541,41 @@ startup.
 .. seealso::
 
     :ref:`usage/middleware/creating-middleware:Configuration constraints`
+
+
+``copy_scope`` defaults to ``True`` for ASGI handlers
+-----------------------------------------------------
+
+Every :func:`~.handlers.asgi` handler, mounted or not, now receives a copy of the ASGI
+``scope``, so the wrapped application can no longer add, replace or remove top-level scope
+keys seen by the outer application. In 2.x the default was ``None``, which passed the
+original scope through, warned at registration and warned again when the wrapped
+application mutated the scope. Both warnings are gone.
+
+The copy is shallow, so nested values such as ``scope["state"]`` are still shared with the
+outer scope.
+
+Set ``copy_scope=False`` where the wrapped application is meant to communicate with the
+outer application through the scope:
+
+.. code-block:: python
+
+    @asgi("/some/sub-path", is_mount=True, copy_scope=False)
+    async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None: ...
+
+You need the opt-out if the wrapped application writes a top-level scope key the outer
+application reads, such as ``scope["user"]``, or calls
+:meth:`~.connection.ASGIConnection.set_session` or
+:meth:`~.connection.ASGIConnection.clear_session`, both of which rebind
+``scope["session"]``. A mounted Starlette or FastAPI application also sets
+``scope["endpoint"]`` and ``scope["route"]``, which outer Sentry or OpenTelemetry layers
+read after the response to name the transaction. All of these now fail silently.
+
+``copy_scope`` is set per handler; there is no router- or application-level equivalent, so
+an application with several mounts opts out on each handler. A ``handler_class`` subclass
+that pinned ``copy_scope`` by passing it to ``super().__init__()`` must now accept it as a
+parameter and forward it, because :func:`~.handlers.asgi` always passes it.
+
+.. seealso::
+
+    :ref:`usage/routing/handlers:ASGI route handler considerations`

@@ -6,6 +6,150 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Parse every ``cookie`` header of a request
+        :type: bugfix
+        :breaking:
+        :issue: 5177
+
+        Only the first ``cookie`` header was parsed into
+        :attr:`~litestar.connection.ASGIConnection.cookies`. Over HTTP/2 and HTTP/3 the
+        header may repeat, and browsers send one per cookie, so every cookie but those in
+        the first header went missing. All ``cookie`` headers are now parsed, joined with
+        the ``"; "`` delimiter :rfc:`9113` and :rfc:`9114` prescribe.
+
+        A cookie name sent more than once now keeps its first value, where it kept its last
+        one before, following the :rfc:`6265` ordering that serialises the cookie of the
+        longer path first. Scope a cookie holding a session or a CSRF token with the
+        ``__Host-`` prefix so that a cookie of the same name, set under a longer path,
+        cannot take precedence over it. ``cookies`` of
+        :class:`~litestar.middleware.logging.LoggingMiddleware`'s response log likewise
+        holds the first of several ``set-cookie`` headers of one name, not the last.
+
+    .. change:: Restore a session split across several cookies over HTTP/2 and HTTP/3
+        :type: bugfix
+        :issue: 5177
+
+        A session too large for one cookie is stored across several, named ``session-0``,
+        ``session-1`` and so on. Over HTTP/2 and HTTP/3 only the chunks carried by the first
+        ``cookie`` header were read, and
+        :class:`~litestar.middleware.session.client_side.ClientSideSessionBackend` yields an
+        empty session when it cannot decode the value in full, so such a session was
+        silently dropped and the user logged out. Every chunk is now read.
+
+    .. change:: Send repeated headers separately from the test client
+        :type: bugfix
+        :breaking:
+        :issue: 5177
+
+        The test client merged headers of the same name into one comma-joined header, which
+        is invalid for ``cookie``, and left a request carrying a repeated header impossible
+        to simulate. Repeated headers now reach the application as they were given, on
+        requests and on :meth:`~litestar.testing.TestClient.websocket_connect`, which
+        dropped all but the last of them.
+
+        A test passing a header of the same name twice is affected: the application now
+        receives the two values it was given, rather than one comma-joined value. Header
+        values are also passed on as the bytes they were given in, where they were decoded
+        and re-encoded as UTF-8 before.
+
+    .. change:: Fix ``Optional`` / ``Any`` + ``required=False`` + without default parameters receiving ``Empty``
+        :type: bugfix
+        :breaking:
+        :pr: 5185
+
+        Fix a bug that would cause a request parameter typed ``Optional`` or ``Any``,
+        *and* declared without a default *and* annotated as ``required=False`` to
+        receive the ``Empty`` sentinel when that parameter was missing from the request.
+
+        A parameter annotated ``required=False`` that is consumed by any handler or
+        dependency, and does not have a default, now raises
+        :class:`~litestar.exceptions.ImproperlyConfiguredException` at startup.
+
+        This includes a marker for a parameter also declared as a layer parameter
+        with ``required=False``. Layer parameters that are *not* consumed are not
+        affected by this.
+
+    .. change:: Fix ``ModuleNotFoundError`` when Pydantic or attrs are not installed
+        :type: bugfix
+        :issue: 5142
+
+        Fix a bug that would raise :exc:`ModuleNotFoundError` when attrs or Pydantic
+        were not installed.
+
+    .. change:: ServerSideSessionBackend: Prevent storing empty sessions and session cookies for every request
+        :type: bugfix
+        :issue: 5182
+        :pr: 5172
+
+        Fix a bug where ``ServerSideSessionBackend`` would store an empty session under
+        a new session ID and set a session cookie for every request, even when that
+        request did not have a session cookie attached.
+
+        The fixed backend will now only store a session if the client has a session
+        cookie set. Empty sessions for a request with a session cookie will now also
+        be deleted reliably.
+
+    .. change:: Apply ``allow_symlinks_outside_directory=False`` to every part of a static file's path
+        :type: bugfix
+        :pr: 5181
+
+        Fix a bug that would resolve symlinks only for the directory path, not the file
+        path, when ``allow_symlinks_outside_directory=False``. The whole path is now
+        always resolved.
+
+    .. change:: Match mounted ASGI apps on path segments
+        :type: bugfix
+        :pr: 5178
+        :issue: 5173
+        :breaking:
+
+        A mount matched any path merely *starting with* its path string, so a mount on
+        ``/admin`` served ``/administrator``, handing the mounted app ``istrator/`` as its
+        path. A mount now matches only its own path and sub-paths of it, ``/admin`` and
+        ``/admin/...``, and ``/`` still mounts everything that no more specific mount
+        claims.
+
+        Of several mounts matching a path, the longest one now receives the request, so a
+        mount nested under another, e.g. ``/admin/inner`` under ``/admin``, is reachable.
+        This also fixes mounts sharing a prefix shadowing one another, and mount paths
+        containing regex metacharacters, which raised ``500 - Internal Server Error`` or
+        failed application startup.
+
+        An application relying on a mount absorbing sibling paths that merely share its
+        prefix now receives ``404 - Not Found`` for them. Mount the application one path
+        segment higher, or declare the sibling path as a further path of the mount, e.g.
+        ``@asgi(["/admin", "/administrator"], is_mount=True)``.
+
+    .. change:: Default ``copy_scope`` to ``True`` for ASGI handlers
+        :type: feature
+        :breaking:
+        :pr: 5164
+
+        Every ``asgi`` handler, mounted or not, now receives a copy of the ASGI ``scope``,
+        so the wrapped application can no longer add, replace or remove top-level scope
+        keys seen by the outer application. The default was ``None``, which passed the
+        original scope through, warned at registration and warned again when the wrapped
+        application mutated the scope; both warnings are gone.
+
+        The copy is shallow, so nested values such as ``scope["state"]`` are still shared
+        with the outer scope.
+
+        Set ``copy_scope=False`` where the wrapped application is meant to communicate with
+        the outer application through the scope, for example by writing ``scope["user"]``
+        for outer middleware to read, or by calling ``Request.set_session`` or
+        ``Request.clear_session``. All of these now fail silently.
+
+    .. change:: Remove support for declaring ``DTOField`` via Pydantic's ``Field.extra``
+        :type: feature
+        :breaking:
+        :pr: 5163
+
+        Declaring a ``DTOField`` through Pydantic's ``Field.extra``, that is
+        ``Field(**dto_field("read-only"))``, is no longer supported. The mark was already
+        ignored in 2.x and only emitted a deprecation warning. Remove the declaration and
+        use ``Annotated[int, DTOField(mark="read-only")]`` instead; leaving it in place can
+        make OpenAPI schema generation fail.
+
     .. change:: Declare ``socket`` in the original signature of a ``websocket_stream`` handler
         :type: bugfix
         :pr: 5161

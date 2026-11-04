@@ -262,36 +262,28 @@ async def _get_fs_info(
         try:
             joined_path = Path(directory, file_path)
             file_info = await fs.info(joined_path)
-            if not file_info.get("is_symlink"):
-                # not a symlink, just normalize the path
-                normalized_file_path = os.path.normpath(joined_path)
-            elif allow_symlinks_outside_directory:
-                # we want to read 'through' a symlink. in both
-                # cases we can just get the normpath.
-                normalized_file_path = os.path.normpath(joined_path)
-            else:
-                # file *is* a symlink, *and* we do not want to read 'through' it, so ask
-                # the fs to resolve potential symlinks and return the real path to the
-                # file. this means that if our path is '/path/to/file' and a symlink
-                # pointing to '/some/other/location', the latter part will be used to
-                # check if we are allowed to serve this file. in this example, if the
-                # configured base directory is '/path/to', we would not serve the file
-                # located at '/path/to/file', since it links to '/some/other/location',
-                # which is *not* a subpath of '/path/to'
-                resolver = LinkableFileSystem.get_symlink_resolver(fs)
-                if resolver is None:
-                    raise TypeError(
-                        f"path {joined_path} contains a symlink, but the file system "
-                        f"{fs} does not support resolving symlinks."
-                    )
-
-                normalized_file_path = await resolver(fs, joined_path)
-
             directory_path = str(directory)
+            resolver = None if allow_symlinks_outside_directory else LinkableFileSystem.get_symlink_resolver(fs)
+            if resolver is not None:
+                # compare real paths. a real path below 'directory' means 'directory' is
+                # its own real path, so 'directory' is only resolved if that check fails
+                normalized_file_path = await resolver(fs, joined_path)
+                normalized_directory_path = directory_path
+                if os.path.commonpath([directory_path, normalized_file_path]) != directory_path:
+                    normalized_directory_path = await resolver(fs, directory)
+            elif file_info.get("is_symlink") and not allow_symlinks_outside_directory:
+                raise TypeError(
+                    f"path {joined_path} contains a symlink, but the file system "
+                    f"{fs} does not support resolving symlinks."
+                )
+            else:
+                normalized_file_path = os.path.normpath(joined_path)
+                normalized_directory_path = directory_path
+
             if (
                 file_info
                 and commonpath([directory_path, file_info["name"], joined_path]) == directory_path
-                and os.path.commonpath([directory, normalized_file_path]) == directory_path
+                and os.path.commonpath([normalized_directory_path, normalized_file_path]) == normalized_directory_path
             ):
                 return joined_path, file_info
         except FileNotFoundError:
