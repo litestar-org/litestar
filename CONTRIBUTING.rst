@@ -135,23 +135,14 @@ Benchmarks
 ++++++++++
 
 Benchmarks live in ``tests/benchmarks`` and are measured by
-`CodSpeed <https://codspeed.io/litestar-org/litestar>`_ on every pull request that touches the
-library (``litestar/``, the benchmarks, ``pyproject.toml`` or ``uv.lock``). They are ordinary pytest tests
-marked with ``@pytest.mark.benchmark``, so ``make test`` runs each of them once as a smoke
-test. The measurement itself only happens in CI, where CodSpeed counts instructions under
-Valgrind and compares them against ``main``.
+`CodSpeed <https://codspeed.io/litestar-org/litestar>`_ in CI. They are ordinary pytest
+tests, so ``make test`` runs each of them once.
 
-The CodSpeed check on a pull request is informational. A reported regression is a prompt
-to look at the flame graph linked from the CodSpeed comment, not a merge blocker; results
-can shift by a few percent for reasons unrelated to a change.
-
-When adding a benchmark, keep the measured call free of I/O and ``TestClient`` (drive the
-app with ``ASGIRunner.request_many`` from ``tests/benchmarks/helpers.py``, which sends 10
-requests per measured call so the event-loop entry does not dominate), start the app with
-``ASGIRunner.lifespan`` as the existing app fixtures do, make it do at least ~100 µs of
-work, and assert on its result so it keeps working as a regular test.
-Pass positional arguments or wrap the call in a ``lambda``: ``pytest-codspeed`` forwards
-keyword arguments to its own measuring function, so a keyword named ``fn`` collides with it.
+When adding one, drive the app with ``ASGIRunner`` from ``tests/benchmarks/helpers.py``
+rather than ``TestClient``, and assert on the result so it keeps working as a test.
+``pytest-codspeed`` forwards keyword arguments to its own measuring function, so pass the
+call's arguments positionally or wrap it in a ``lambda`` -- a keyword named ``target``,
+``fn``, ``name``, ``uri`` or ``marker_options`` collides with it.
 
 Running type checkers
 +++++++++++++++++++++

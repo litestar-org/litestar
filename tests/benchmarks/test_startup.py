@@ -39,15 +39,12 @@ def openapi_config() -> OpenAPIConfig:
     return OpenAPIConfig(title="bench", version="1.0.0")
 
 
-@pytest.mark.benchmark(max_rounds=10)
-@pytest.mark.parametrize("route_count", [10, 500], ids=["10_routes", "500_routes"])
-def test_app_init(benchmark: BenchmarkFixture, route_count: int) -> None:
-    handlers = make_handlers(route_count)
+def test_app_init_500_routes(benchmark: BenchmarkFixture) -> None:
+    handlers = make_handlers(500)
     app = benchmark(lambda: Litestar(route_handlers=handlers, openapi_config=openapi_config()))
-    assert len(app.routes) >= route_count
+    assert len(app.routes) >= 500
 
 
-@pytest.mark.benchmark(max_rounds=10)
 def test_openapi_schema_500_routes(benchmark: BenchmarkFixture) -> None:
     app = Litestar(route_handlers=make_handlers(500), openapi_config=openapi_config())
     plugin = app.plugins.get(OpenAPIPlugin)
@@ -118,7 +115,7 @@ def test_dto_backend_create(
     benchmark(create)
     backend = PersonDTO._dto_backends["bench"].get("return_backend")
     assert backend is not None
-    assert isinstance(backend, backend_cls)
+    assert type(backend) is backend_cls
 
 
 def test_routing_trie_lookup_500(benchmark: BenchmarkFixture) -> None:

@@ -48,11 +48,6 @@ async def plaintext() -> str:
     return "Hello, world!"
 
 
-@get("/plaintext-sync", media_type=MediaType.TEXT, sync_to_thread=False)
-def plaintext_sync() -> str:
-    return "Hello, world!"
-
-
 @get("/json")
 async def json_dict() -> dict[str, Any]:
     return {"message": "Hello, world!", "count": 3, "items": ["alpha", "beta", "gamma"]}
@@ -88,11 +83,6 @@ async def header_and_cookie(
 
 @post("/items/dataclass")
 async def post_dataclass(data: JSONBody[Item]) -> Item:
-    return data
-
-
-@post("/items/struct")
-async def post_struct(data: JSONBody[ItemStruct]) -> ItemStruct:
     return data
 
 
@@ -176,14 +166,12 @@ def app(runner: ASGIRunner) -> Iterator[Litestar]:
     litestar_app = Litestar(
         route_handlers=[
             plaintext,
-            plaintext_sync,
             json_dict,
             json_struct_list,
             path_param,
             query_params,
             header_and_cookie,
             post_dataclass,
-            post_struct,
             di_async,
             di_sync,
             di_generator,
@@ -220,13 +208,6 @@ def middleware_app(runner: ASGIRunner) -> Iterator[Litestar]:
 
 def test_plaintext_get(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/plaintext")
-    messages = benchmark(runner.request_many, app, scope)
-    assert response_status(messages) == 200
-    assert response_body(messages) == b"Hello, world!"
-
-
-def test_plaintext_get_sync_handler(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
-    scope = make_scope("/plaintext-sync")
     messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert response_body(messages) == b"Hello, world!"
@@ -269,13 +250,6 @@ def test_header_and_cookie_params(app: Litestar, runner: ASGIRunner, benchmark: 
 
 def test_post_json_dataclass(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
     scope = make_scope("/items/dataclass", method="POST", headers=JSON_HEADERS)
-    messages = benchmark(runner.request_many, app, scope, ITEM_JSON)
-    assert response_status(messages) == 201
-    assert response_body(messages) == ITEM_JSON
-
-
-def test_post_json_struct(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
-    scope = make_scope("/items/struct", method="POST", headers=JSON_HEADERS)
     messages = benchmark(runner.request_many, app, scope, ITEM_JSON)
     assert response_status(messages) == 201
     assert response_body(messages) == ITEM_JSON

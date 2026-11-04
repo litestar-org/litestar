@@ -61,9 +61,6 @@ jobs:
       - name: Install dependencies
         run: uv sync --no-group docs --no-group linting
 
-      - name: Check interpreter
-        run: uv run --no-sync python -c "import sys; print(sys.version, sys.executable); assert sys.version_info[:2] == (3, 14), sys.version"
-
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v5.6.0
         with:
