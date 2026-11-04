@@ -18,11 +18,6 @@ def runner() -> Iterator[ASGIRunner]:
 
 @pytest.fixture
 def reset_dto_backends() -> Iterator[None]:
-    """Clear the class-level DTO backend registry.
-
-    Opt-in (not autouse): the registry is keyed by handler id, and clearing it would break
-    module-scoped apps whose handlers use DTOs.
-    """
     DTOBackend._seen_model_names = set()
     AbstractDTO._dto_backends = {}
     yield

@@ -303,9 +303,6 @@ def test_di_generator_cleanup(app: Litestar, runner: ASGIRunner, benchmark: Benc
 
 
 def test_stream_response(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
-    """Also covers the harness: a streaming response listens for a disconnect while it is
-    still producing, which is the one request shape ``_Exchange`` exists for.
-    """
     scope = make_scope("/stream")
     messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200

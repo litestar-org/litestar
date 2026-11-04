@@ -74,7 +74,6 @@ def test_signature_model_create(benchmark: BenchmarkFixture) -> None:
         return None
 
     parsed_signature = ParsedSignature.from_fn(fn, {})
-    # lambda: pytest-codspeed's measure() has its own `fn` parameter, which collides with `fn=fn`
     model = benchmark(
         lambda: SignatureModel.create(
             dependency_name_set=set(),
@@ -123,9 +122,6 @@ def test_dto_backend_create(
 
 
 def test_routing_trie_lookup_500(benchmark: BenchmarkFixture) -> None:
-    """Measures the uncached trie traversal (``_handle_routing``); production requests
-    normally hit the per-instance ``lru_cache`` in front of it.
-    """
     app = Litestar(route_handlers=make_handlers(500), openapi_config=None)
     router = app.asgi_router
     paths = ["/resource0/1", "/resource250/42", "/resource499/7"]
