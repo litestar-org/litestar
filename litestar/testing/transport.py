@@ -127,7 +127,7 @@ class TestClientTransport(AsyncBaseTransport, Generic[T]):
 
         host_header = request.headers.pop("host", host if port == default_port else f"{host}:{port}")
 
-        headers = [(k.lower().encode(), v.encode()) for k, v in (("host", host_header), *request.headers.items())]
+        headers = [(b"host", host_header.encode()), *((k.lower(), v) for k, v in request.headers.raw)]
 
         return {
             "type": "websocket" if scheme in {"ws", "wss"} else "http",
