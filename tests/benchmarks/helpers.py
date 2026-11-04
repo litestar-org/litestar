@@ -69,7 +69,7 @@ def response_body(messages: list[Message]) -> bytes:
     return b"".join(cast("dict[str, Any]", message).get("body", b"") for message in messages[1:])
 
 
-class _Exchange:
+class _SendReceive:
     __slots__ = ("_body", "_body_pending", "_response_complete", "_waiter", "messages")
 
     def __init__(self, body: bytes | None, messages: list[Message]) -> None:
@@ -185,12 +185,12 @@ class ASGIRunner:
 
     def request_many(self, app: ASGIApp, scope: HTTPScope, body: bytes | None = None, count: int = 10) -> list[Message]:
         messages: list[Message] = []
-        exchange = _Exchange(body, messages)
-        receive, send = exchange.receive, exchange.send
+        send_receive = _SendReceive(body, messages)
+        receive, send = send_receive.receive, send_receive.send
 
         async def call() -> None:
             for _ in range(count):
-                exchange.reset()
+                send_receive.reset()
                 await app(cast("Scope", {**scope, "state": {}}), receive, send)
 
         self._run(call())
