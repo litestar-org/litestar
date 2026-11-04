@@ -128,7 +128,10 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
 
         cookie_params = dict(extract_dataclass_items(self.config, exclude_none=True, include=Cookie.__dict__.keys()))
 
-        if scope_session is Empty:
+        if scope_session is Empty or not scope_session:
+            session_cookie = connection.cookies.get(self.config.key)
+            if not session_cookie or session_cookie == "null":
+                return
             await self.delete(session_id, store=store)
             headers.add(
                 "Set-Cookie",

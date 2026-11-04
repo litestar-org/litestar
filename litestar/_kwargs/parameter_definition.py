@@ -27,12 +27,15 @@ class ParameterDefinition(NamedTuple):
 def create_parameter_definition(
     field_definition: FieldDefinition,
     field_name: str,
+    *,
+    requires_default: bool = True,
 ) -> ParameterDefinition:
     """Create a ParameterDefinition for the given FieldDefinition.
 
     Args:
         field_definition: FieldDefinition instance.
         field_name: The field's name.
+        requires_default: Whether a parameter that is not required must declare a default
 
     Returns:
         A ParameterDefinition tuple.
@@ -46,6 +49,9 @@ def create_parameter_definition(
         # means a dependency / body / undeclared field leaked through the caller's filter
         raise ImproperlyConfiguredException(f"Field {field_name!r} does not declare an HTTP parameter source")
 
+    if requires_default and not field_definition.is_required and not field_definition.has_default:
+        raise ImproperlyConfiguredException(f"Parameter {field_name!r} is not required but declares no default")
+
     param_type = kwarg_definition.param_type
     field_alias = kwarg_definition.name or field_name
 
@@ -54,7 +60,7 @@ def create_parameter_definition(
         field_name=field_name,
         field_alias=field_alias,
         default=field_definition.default,
-        is_required=field_definition.is_required and not field_definition.is_optional and not field_definition.is_any,
+        is_required=field_definition.is_required,
         is_sequence=field_definition.is_non_string_sequence,
     )
 
