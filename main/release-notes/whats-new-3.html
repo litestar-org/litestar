@@ -461,6 +461,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#deprecated-app-parameter-for-response-to-asgi-response-has-been-removed">Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate">to_asgi_response</span></code> has been removed</a></li>
 <li><a class="reference internal" href="#deprecated-scope-state-utilities-removed">Deprecated scope state utilities removed</a></li>
 <li><a class="reference internal" href="#deprecated-utility-function-is-sync-or-async-generator-removed">Deprecated utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> removed</a></li>
+<li><a class="reference internal" href="#deprecated-dtofield-declaration-via-pydantic-s-field-extra-removed">Deprecated <code class="docutils literal notranslate"><span class="pre">DTOField</span></code> declaration via Pydantic&#8217;s <code class="docutils literal notranslate">extra</span></code> removed</a></li>
 <li><a class="reference internal" href="#removal-of-semantic-http-route-handler-classes">Removal of semantic HTTP route handler classes</a></li>
 <li><a class="reference internal" href="#id1">Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate">to_asgi_response</span></code> has been removed</a></li>
 <li><a class="reference internal" href="#removal-of-deprecated-litestar-middleware-exceptions-module-and-exceptionhandlermiddleware">Removal of deprecated <code class="docutils literal notranslate">middleware.exceptions</span></code> module and <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code></a></li>
@@ -750,6 +751,36 @@ using a namespace that is unique to your application and unlikely to conflict wi
 </span><span data-line="2">
 </span><span data-line="3"><span class="k">def</span><span class="w"> </span><span class="nf">is_sync_or_async_generator</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 </span><span data-line="4">    <span class="k">return</span> <span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">or</span> <span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="deprecated-dtofield-declaration-via-pydantic-s-field-extra-removed">
+<h2>Deprecated <code class="docutils literal notranslate"><span class="pre">DTOField</span></code> declaration via Pydantic’s <code class="docutils literal notranslate"><span class="pre">Field.extra</span></code> removed<a class="headerlink" href="#deprecated-dtofield-declaration-via-pydantic-s-field-extra-removed" title="Link to this heading">¶</a></h2>
+<p>Declaring a <a class="reference internal" href="../reference/dto/field.html#litestar.dto.field.DTOField" title="litestar.dto.field.DTOField"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOField</span></code></a> through Pydantic’s <code class="docutils literal notranslate"><span class="pre">Field.extra</span></code>, that is
+<code class="docutils literal notranslate"><span class="pre">Field(**dto_field(&quot;read-only&quot;))</span></code>, is no longer supported. The mark was already being
+ignored in 2.x and only produced a deprecation warning.</p>
+<p>Remove the declaration: it leaves an internal key in the field’s <code class="docutils literal notranslate"><span class="pre">json_schema_extra</span></code>,
+which can make OpenAPI schema generation fail.</p>
+<p>Before:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">dto_field</span>
+</span><span data-line="4">
+</span><span data-line="5">
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="7">    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="o">**</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;read-only&quot;</span><span class="p">))</span>
+</span></pre></div>
+</div>
+<p>After:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOField</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="9">    <span class="nb">id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DTOField</span><span class="p">(</span><span class="n">mark</span><span class="o">=</span><span class="s2">&quot;read-only&quot;</span><span class="p">)]</span>
 </span></pre></div>
 </div>
 </section>

@@ -562,6 +562,15 @@ for outer middleware to read, or by calling <code class="docutils literal notran
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5164">https://github.com/litestar-org/litestar/pull/5164</a></span></p>
 </div>
 </dd>
+<dt>Remove support for declaring <code class="docutils literal notranslate"><span class="pre">DTOField</span></code> via Pydantic’s <code class="docutils literal notranslate"><span class="pre">Field.extra</span></code><a class="headerlink reference internal" href="#3.0.0-remove support for declaring" id="3.0.0-remove support for declaring">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Declaring a <code class="docutils literal notranslate"><span class="pre">DTOField</span></code> through Pydantic’s <code class="docutils literal notranslate"><span class="pre">Field.extra</span></code>, that is
+<code class="docutils literal notranslate"><span class="pre">Field(**dto_field(&quot;read-only&quot;))</span></code>, is no longer supported. The mark was already
+ignored in 2.x and only emitted a deprecation warning. Remove the declaration and
+use <code class="docutils literal notranslate"><span class="pre">Annotated[int,</span> <span class="pre">DTOField(mark=&quot;read-only&quot;)]</span></code> instead; leaving it in place can
+make OpenAPI schema generation fail.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5163">https://github.com/litestar-org/litestar/pull/5163</a></span></p>
+</div>
+</dd>
 <dt>Require “reserved kwargs” to be declared with their type<a class="headerlink reference internal" href="#3.0.0-require &quot;reserved kwargs&quot; to be declared with their type" id="3.0.0-require &quot;reserved kwargs&quot; to be declared with their type">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Declaring the “reserved kwargs” <code class="docutils literal notranslate"><span class="pre">body</span></code>, <code class="docutils literal notranslate"><span class="pre">cookies</span></code>, <code class="docutils literal notranslate"><span class="pre">data</span></code>,
 <code class="docutils literal notranslate"><span class="pre">headers</span></code>, <code class="docutils literal notranslate"><span class="pre">query</span></code>, <code class="docutils literal notranslate"><span class="pre">request</span></code>, <code class="docutils literal notranslate"><span class="pre">scope</span></code> and <code class="docutils literal notranslate"><span class="pre">socket</span></code> without the type
