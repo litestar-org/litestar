@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 import httpx2
-from httpx2._client import USE_CLIENT_DEFAULT, UseClientDefault
+from httpx2 import USE_CLIENT_DEFAULT
 
 
 def fake_http_send_message(headers: MutableScopeHeaders) -> HTTPResponseStartEvent:

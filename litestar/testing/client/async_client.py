@@ -5,7 +5,7 @@ import contextlib
 from typing import TYPE_CHECKING, Generic
 
 import anyio
-from httpx2 import AsyncClient
+from httpx2 import USE_CLIENT_DEFAULT, AsyncClient
 
 from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
@@ -29,8 +29,6 @@ if TYPE_CHECKING:
 
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
-
-from httpx2._client import USE_CLIENT_DEFAULT, UseClientDefault
 
 from litestar.testing.client._base import _get_session_data, _prepare_ws_connect_request, _set_session_data
 from litestar.types import ASGIApp

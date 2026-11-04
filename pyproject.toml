@@ -92,7 +92,7 @@ standard = [
   "litestar[cli]",
   "jinja2",
 ]
-testing = ["httpx2>=2.5"]
+testing = ["httpx2>=2.9.1"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
 yaml = ["pyyaml"]
 
