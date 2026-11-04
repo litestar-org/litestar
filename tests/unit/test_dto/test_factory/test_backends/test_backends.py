@@ -5,7 +5,7 @@ from __future__ import annotations
 import inspect
 import re
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, make_dataclass
 from types import ModuleType
 from typing import TYPE_CHECKING, Optional
 from unittest.mock import MagicMock
@@ -52,12 +52,12 @@ class OptionalNestedOuter:
     inner: Optional[OptionalNestedInner] = None
 
 
-@dataclass(frozen=True)
+@dataclass
 class DeepNestedMiddle:
     inner: NestedDC
 
 
-@dataclass(frozen=True)
+@dataclass
 class DeepNestedOuter:
     name: str
     middle: DeepNestedMiddle
@@ -368,7 +368,11 @@ def test_backend_encode_optional_nested_none(backend_cls: type[DTOBackend]) -> N
     assert result["inner"] is None
 
 
-@pytest.mark.parametrize("accessor", [getattr, lambda obj, attr: getattr(obj, attr)], ids=["getattr", "custom"])
+def _custom_accessor(obj: object, attr: str) -> Any:
+    return getattr(obj, attr)
+
+
+@pytest.mark.parametrize("accessor", [getattr, _custom_accessor])
 def test_backend_transfer_nested_model_through_access_chain(
     asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend], accessor: Callable[[object, str], Any]
 ) -> None:
@@ -391,6 +395,27 @@ def test_backend_transfer_nested_model_through_access_chain(
 
     assert to_builtins(backend.encode_data(structured)) == destructured
     assert backend.populate_data_from_builtins(destructured, asgi_connection) == structured
+
+
+def test_backend_transfer_nested_model_behind_non_word_field_name(backend_cls: type[DTOBackend]) -> None:
+    """Field names may hold a non-word character, https://github.com/litestar-org/litestar/pull/4670."""
+
+    class Factory(DataclassDTO):
+        config = DTOConfig()
+
+    model_type = make_dataclass("NonWordFieldName", [("name", str), ("a·b", NestedDC)])
+    backend = backend_cls(
+        handler_id="test",
+        dto_factory=Factory,
+        field_definition=FieldDefinition.from_annotation(model_type),
+        model_type=model_type,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+
+    instance = model_type(name="test", **{"a·b": NestedDC(a=1, b="two")})
+
+    assert to_builtins(backend.encode_data(instance)) == {"name": "test", "a·b": {"a": 1, "b": "two"}}
 
 
 def test_transfer_only_touches_included_attributes(backend_cls: type[DTOBackend]) -> None:

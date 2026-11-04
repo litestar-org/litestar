@@ -209,6 +209,7 @@ class TransferFunctionFactory:
         return unique_name
 
     def _create_local_name(self, name: str) -> str:
+        """Create a unique local name from ``name``, which may be an access expression rather than an identifier."""
         unique_name = unique_name_for_scope("_".join(IDENTIFIER_PARTS_PATTERN.findall(name)), self.names)
         self.names.add(unique_name)
         return unique_name
