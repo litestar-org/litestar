@@ -2,16 +2,19 @@
 
 from __future__ import annotations
 
+import sys
 from collections import deque  # noqa: F401
 from typing import Annotated, Any, Dict, Generic, List, Optional, TypeVar, Union  # noqa: UP035
 
 import pytest
+from typing_extensions import TypeAliasType as TeTypeAliasType
 
 from litestar.utils.typing import (
     expand_type_var_in_type_hint,
     get_origin_or_inner_type,
     get_type_hints_with_generics_resolved,
     make_non_optional_union,
+    unwrap_type_alias_type,
 )
 from tests.models import DataclassPerson, DataclassPet  # noqa: F401
 
@@ -163,3 +166,46 @@ def test_get_type_hints_with_generics_resolved_without_parameters_attribute() ->
 
     delattr(NoParams, "__parameters__")
     assert get_type_hints_with_generics_resolved(NoParams) == {"foo": int}
+
+
+IntAlias = TeTypeAliasType("IntAlias", int)
+NestedIntAlias = TeTypeAliasType("NestedIntAlias", IntAlias)  # pyright: ignore[reportGeneralTypeIssues]
+AnnotatedIntAlias = TeTypeAliasType("AnnotatedIntAlias", Annotated[int, "meta"])
+ListAlias = TeTypeAliasType("ListAlias", List[T], type_params=(T,))
+
+
+@pytest.mark.parametrize(
+    ("annotation", "expected"),
+    (
+        (int, int),
+        (IntAlias, int),
+        (NestedIntAlias, int),
+        (AnnotatedIntAlias, Annotated[int, "meta"]),
+        (ListAlias[int], ListAlias[int]),
+        (Annotated[IntAlias, "meta"], Annotated[IntAlias, "meta"]),
+    ),
+)
+def test_unwrap_type_alias_type(annotation: Any, expected: Any) -> None:
+    assert unwrap_type_alias_type(annotation) == expected
+
+
+def _declare_alias(source: str, name: str = "Alias") -> Any:
+    """Declare an alias with the ``type`` keyword, whose value is evaluated lazily"""
+    namespace: dict[str, Any] = {}
+    exec(source, namespace, namespace)
+    return namespace[name]
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+@pytest.mark.timeout(10)
+def test_unwrap_type_alias_type_returns_cyclic_alias_unchanged() -> None:
+    alias = _declare_alias("type Alias = Other\ntype Other = Alias")
+
+    assert unwrap_type_alias_type(alias) is alias
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+def test_unwrap_type_alias_type_returns_alias_of_unresolvable_name_unchanged() -> None:
+    alias = _declare_alias("type Alias = OnlyImportedUnderTypeChecking")
+
+    assert unwrap_type_alias_type(alias) is alias

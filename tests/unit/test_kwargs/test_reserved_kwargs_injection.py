@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, call
 import annotated_types
 import msgspec.json
 import pytest
+from typing_extensions import TypeAliasType
 
 from litestar import (
     Controller,
@@ -26,7 +27,17 @@ from litestar.datastructures import Headers
 from litestar.datastructures.state import ImmutableState, State
 from litestar.di import NamedDependency, Provide
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import FromPath, FromQuery, JSONBody, MsgPackBody, QueryParams, RawBody, RequestCookies
+from litestar.params import (
+    Body,
+    FromPath,
+    FromQuery,
+    JSONBody,
+    MsgPackBody,
+    QueryParams,
+    RawBody,
+    RequestCookies,
+    URLEncodedBody,
+)
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -691,3 +702,153 @@ def test_data_kwarg_type_mismatch_between_dependencies_raises() -> None:
         match=re.escape("'data' fields have mismatched types: 'dict[str, str]' <> 'list[str]'"),
     ):
         Litestar([handler])
+
+
+class AliasedPerson(msgspec.Struct):
+    name: str
+
+
+RequestAlias = TypeAliasType("RequestAlias", Request[Any, Any, State])
+NestedRequestAlias = TypeAliasType("NestedRequestAlias", RequestAlias)
+SocketAlias = TypeAliasType("SocketAlias", WebSocket[Any, Any, State])
+HeadersAlias = TypeAliasType("HeadersAlias", Headers)
+QueryAlias = TypeAliasType("QueryAlias", QueryParams)
+CookiesAlias = TypeAliasType("CookiesAlias", RequestCookies)
+ScopeAlias = TypeAliasType("ScopeAlias", Scope)
+BodyAlias = TypeAliasType("BodyAlias", RawBody)
+StateAlias = TypeAliasType("StateAlias", CustomState)
+JSONDataAlias = TypeAliasType("JSONDataAlias", JSONBody[AliasedPerson])
+FormDataAlias = TypeAliasType("FormDataAlias", URLEncodedBody[AliasedPerson])
+MistypedAlias = TypeAliasType("MistypedAlias", str)
+
+
+def test_reserved_kwargs_typed_through_type_alias_are_injected() -> None:
+    received: dict[str, Any] = {}
+
+    async def provide_value(
+        request: NestedRequestAlias,
+        headers: HeadersAlias,
+        query: QueryAlias,
+        cookies: CookiesAlias,
+        scope: ScopeAlias,
+        body: BodyAlias,
+        data: JSONDataAlias,
+    ) -> str:
+        return "value"
+
+    @post("/", dependencies={"value": Provide(provide_value)})
+    async def handler(
+        request: NestedRequestAlias,
+        headers: HeadersAlias,
+        query: QueryAlias,
+        cookies: CookiesAlias,
+        scope: ScopeAlias,
+        state: StateAlias,
+        data: JSONDataAlias,
+        value: NamedDependency[str],
+    ) -> None:
+        received.update(
+            request=request, headers=headers, query=query, cookies=cookies, scope=scope, state=state, data=data
+        )
+
+    with create_test_client([handler]) as client:
+        assert client.post("/", json={"name": "n"}).status_code == HTTP_201_CREATED
+
+    assert isinstance(received["request"], Request)
+    assert isinstance(received["headers"], Headers)
+    assert isinstance(received["state"], CustomState)
+    assert isinstance(received["data"], AliasedPerson)
+    assert received["scope"]["path"] == "/"
+
+
+def test_body_typed_through_type_alias_is_injected() -> None:
+    @post("/")
+    async def handler(body: BodyAlias) -> bytes:
+        return body
+
+    with create_test_client([handler]) as client:
+        assert client.post("/", content=b"raw").content == b"raw"
+
+
+def test_socket_typed_through_type_alias_is_injected() -> None:
+    @websocket("/")
+    async def handler(socket: SocketAlias) -> None:
+        await socket.accept()
+        await socket.send_text("ok")
+
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
+        assert ws.receive_text() == "ok"
+
+
+def test_json_data_typed_through_type_alias_keeps_its_body_marker() -> None:
+    @post("/")
+    async def handler(data: JSONDataAlias) -> str:  # pyright: ignore
+        return data.name
+
+    with create_test_client([handler]) as client:
+        assert client.post("/", json={"name": "n"}).text == "n"
+        schema = client.get("/schema/openapi.json").json()
+        assert "application/json" in schema["paths"]["/"]["post"]["requestBody"]["content"]
+
+
+def test_form_data_typed_through_type_alias_keeps_its_body_marker() -> None:
+    @post("/")
+    async def handler(data: FormDataAlias) -> str:  # pyright: ignore
+        return data.name
+
+    with create_test_client([handler]) as client:
+        assert client.post("/", data={"name": "n"}).text == "n"
+        schema = client.get("/schema/openapi.json").json()
+        assert "application/x-www-form-urlencoded" in schema["paths"]["/"]["post"]["requestBody"]["content"]
+
+
+def test_data_constraints_through_type_alias_are_enforced() -> None:
+    ConstrainedAlias = TypeAliasType("ConstrainedAlias", Annotated[str, Body(min_length=5)])
+
+    @post("/")
+    async def handler(data: ConstrainedAlias) -> str:  # pyright: ignore
+        return data
+
+    with create_test_client([handler]) as client:
+        assert client.post("/", json="ab").status_code == HTTP_400_BAD_REQUEST
+        assert client.post("/", json="abcdef").status_code == HTTP_201_CREATED
+
+
+def test_request_mistyped_through_type_alias_raises() -> None:
+    @get("/")
+    async def handler(request: MistypedAlias) -> None: ...  # pyright: ignore
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=re.escape("Reserved kwarg 'request' declared as 'str'. Declare it as 'request: Request' instead"),
+    ):
+        Litestar([handler])
+
+
+def test_headers_mistyped_through_type_alias_raises() -> None:
+    @get("/")
+    async def handler(headers: MistypedAlias) -> None: ...  # pyright: ignore
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=re.escape("Reserved kwarg 'headers' declared as 'str'. Use 'request.headers' instead"),
+    ):
+        Litestar([handler])
+
+
+def test_socket_mistyped_through_type_alias_raises() -> None:
+    @websocket("/")
+    async def handler(socket: MistypedAlias) -> None: ...  # pyright: ignore
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=re.escape("Reserved kwarg 'socket' declared as 'str'. Declare it as 'socket: WebSocket'"),
+    ):
+        Litestar([handler])
+
+
+def test_reserved_kwarg_typed_through_annotated_type_alias_does_not_raise() -> None:
+    @get("/")
+    async def handler(state: Annotated[StateAlias, annotated_types.MinLen(0)]) -> None: ...  # pyright: ignore
+
+    Litestar([handler], openapi_config=None)

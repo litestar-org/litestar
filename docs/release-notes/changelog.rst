@@ -6,6 +6,23 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Resolve PEP 695 type aliases in handler and dependency signatures
+        :type: bugfix
+        :issue: 5192
+
+        A parameter typed through a PEP 695 ``type`` alias was handled as the alias rather than as
+        the type it aliases, so a reserved parameter such as ``request`` declared as
+        ``type AppRequest = Request[User, Token, State]`` was refused as improperly configured.
+        Aliases are now resolved when a signature is parsed, so every parameter and return
+        annotation is handled as the type it aliases, in dependencies as well as handlers. This
+        also fixes a ``@websocket_listener`` receiving JSON for a ``data`` typed through an alias,
+        a return type behind an alias being served as ``application/json``, and a parameter marker
+        such as ``FromQuery`` being lost behind one.
+
+        Only an alias standing on its own is resolved. A subscripted generic alias, an alias
+        nested inside another type such as the ``int`` of ``list[IntAlias]``, and an alias that
+        aliases itself are all left as they are, and are refused as they were before.
+
     .. change:: Parse every ``cookie`` header of a request
         :type: bugfix
         :breaking:

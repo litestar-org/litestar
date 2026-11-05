@@ -32,18 +32,8 @@ from typing import NewType, NotRequired, Required, get_args, get_origin, get_typ
 
 from msgspec import UnsetType
 from typing_extensions import (
-    TypeAliasType as TeTypeAliasType,
-)
-from typing_extensions import (
     is_typeddict,
 )
-
-try:
-    from typing import TypeAliasType  # type: ignore[attr-defined]
-
-    TypeAliasTypes = (TypeAliasType, TeTypeAliasType)
-except ImportError:
-    TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import KwargDefinition, ParameterKwarg, ParameterMarker
@@ -60,6 +50,7 @@ from litestar.utils.typing import (
     get_instantiable_origin,
     get_safe_generic_origin,
     get_type_hints_with_generics_resolved,
+    is_type_alias_type,
     make_non_optional_union,
     unwrap_annotation,
 )
@@ -311,7 +302,7 @@ class FieldDefinition:
     @property
     def is_type_alias_type(self) -> bool:
         """Whether the annotation is a ``TypeAliasType``"""
-        return isinstance(self.annotation, TypeAliasTypes)
+        return is_type_alias_type(self.annotation)
 
     @property
     def is_type_var(self) -> bool:

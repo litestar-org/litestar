@@ -11,7 +11,7 @@ from litestar import connection, datastructures, params, types
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.typing import expand_type_var_in_type_hint, unwrap_annotation
+from litestar.utils.typing import expand_type_var_in_type_hint, unwrap_annotation, unwrap_type_alias_type
 from litestar.utils.warnings import warn_signature_namespace_override
 
 if TYPE_CHECKING:
@@ -128,6 +128,15 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
     return hints
 
 
+def _resolve_type_aliases(hint: Any) -> Any:
+    """Resolve PEP 695 type aliases in a type hint, including one behind ``Annotated``"""
+    resolved = unwrap_type_alias_type(hint)
+    if get_origin(resolved) is Annotated:
+        inner, *meta = get_args(resolved)
+        return Annotated[unwrap_type_alias_type(inner), *meta]
+    return resolved
+
+
 def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
     """Resolve type hints for ``fn``.
 
@@ -162,7 +171,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     }
     hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
 
-    return hints
+    return {name: _resolve_type_aliases(hint) for name, hint in hints.items()}
 
 
 @dataclass(frozen=True)
