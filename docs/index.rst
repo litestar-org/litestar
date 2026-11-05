@@ -161,6 +161,7 @@ where you can pledge an amount towards an issue or feature you would like to see
     :caption: Guides
     :hidden:
 
+    upgrading/index
     onboarding/index
     topics/index
     tutorials/index
