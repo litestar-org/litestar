@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from pytest_lazy_fixtures import lf
+from typing_extensions import TypeAliasType
 
 from litestar import Controller, Litestar, Request, WebSocket
 from litestar.connection import ASGIConnection
@@ -20,6 +21,8 @@ from litestar.params import FromPath, QueryParams
 from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import WebSocketMode
+
+StrAlias = TypeAliasType("StrAlias", str)
 
 
 @pytest.fixture
@@ -88,6 +91,18 @@ def test_listener_receive_bytes(receive_mode: WebSocketMode, mock: MagicMock) ->
 def test_listener_receive_string(receive_mode: WebSocketMode, mock: MagicMock) -> None:
     @websocket_listener("/", receive_mode=receive_mode)
     def handler(data: str) -> None:
+        mock(data)
+
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
+        ws.send("foo", mode=receive_mode)
+
+    mock.assert_called_once_with("foo")
+
+
+@pytest.mark.parametrize("receive_mode", ["text", "binary"])
+def test_listener_receive_string_through_type_alias(receive_mode: WebSocketMode, mock: MagicMock) -> None:
+    @websocket_listener("/", receive_mode=receive_mode)
+    def handler(data: StrAlias) -> None:
         mock(data)
 
     with create_test_client([handler]) as client, client.websocket_connect("/") as ws:

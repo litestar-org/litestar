@@ -2,6 +2,7 @@ from enum import Enum, StrEnum
 from typing import Any, AnyStr
 
 import pytest
+from typing_extensions import TypeAliasType
 
 from litestar import Litestar, MediaType, get
 from tests.models import DataclassPerson
@@ -18,6 +19,10 @@ class CustomStrEnum(StrEnum):
     foo = "FOO"
 
 
+StrAlias = TypeAliasType("StrAlias", str)
+DictAlias = TypeAliasType("DictAlias", dict)
+
+
 @pytest.mark.parametrize(
     "annotation, expected_media_type",
     (
@@ -29,6 +34,8 @@ class CustomStrEnum(StrEnum):
         (MyEnum, MediaType.JSON),
         (dict, MediaType.JSON),
         (DataclassPerson, MediaType.JSON),
+        (StrAlias, MediaType.TEXT),
+        (DictAlias, MediaType.JSON),
     ),
 )
 def test_media_type_inference(annotation: Any, expected_media_type: MediaType) -> None:

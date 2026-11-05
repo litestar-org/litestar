@@ -169,7 +169,7 @@ def test_get_type_hints_with_generics_resolved_without_parameters_attribute() ->
 
 
 IntAlias = TeTypeAliasType("IntAlias", int)
-NestedIntAlias = TeTypeAliasType("NestedIntAlias", IntAlias)  # pyright: ignore[reportGeneralTypeIssues]
+NestedIntAlias = TeTypeAliasType("NestedIntAlias", IntAlias)
 AnnotatedIntAlias = TeTypeAliasType("AnnotatedIntAlias", Annotated[int, "meta"])
 ListAlias = TeTypeAliasType("ListAlias", List[T], type_params=(T,))
 
@@ -205,7 +205,14 @@ def test_unwrap_type_alias_type_returns_cyclic_alias_unchanged() -> None:
 
 
 @pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
-def test_unwrap_type_alias_type_returns_alias_of_unresolvable_name_unchanged() -> None:
-    alias = _declare_alias("type Alias = OnlyImportedUnderTypeChecking")
+@pytest.mark.parametrize(
+    "source",
+    (
+        pytest.param("type Alias = OnlyImportedUnderTypeChecking", id="NameError"),
+        pytest.param("type Alias = int[str]", id="TypeError"),
+    ),
+)
+def test_unwrap_type_alias_type_returns_alias_of_unevaluable_value_unchanged(source: str) -> None:
+    alias = _declare_alias(source)
 
     assert unwrap_type_alias_type(alias) is alias

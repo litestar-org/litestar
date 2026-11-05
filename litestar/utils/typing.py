@@ -50,12 +50,13 @@ from typing_extensions import TypeAliasType as TeTypeAliasType
 
 from litestar.types.builtin_types import NoneType, UnionTypes
 
+TypeAliasTypes: tuple[type, ...]
 try:
     from typing import TypeAliasType  # type: ignore[attr-defined]
 
     TypeAliasTypes = (TypeAliasType, TeTypeAliasType)
 except ImportError:
-    TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
+    TypeAliasTypes = (TeTypeAliasType,)
 
 __all__ = (
     "get_instantiable_origin",
@@ -202,8 +203,10 @@ def is_type_alias_type(annotation: Any) -> bool:
 def unwrap_type_alias_type(annotation: Any) -> Any:
     """Unwrap a (nested) PEP 695 ``TypeAliasType`` to the type it aliases.
 
-    An alias whose value cannot be resolved, because it aliases itself or names a type that is
-    only imported under :data:`typing.TYPE_CHECKING`, is returned as it was given.
+    An alias whose value cannot be resolved is returned as it was given, so that the annotation
+    is handled as it was before it could be resolved. A value is evaluated lazily and may fail to
+    evaluate at all, for instance when it names a type that is only imported under
+    :data:`typing.TYPE_CHECKING`, or when the alias aliases itself.
     """
     inner = annotation
     seen: set[Any] = set()
@@ -211,7 +214,7 @@ def unwrap_type_alias_type(annotation: Any) -> Any:
         seen.add(inner)
         try:
             inner = inner.__value__
-        except NameError:
+        except Exception:  # noqa: BLE001
             return annotation
     return annotation if is_type_alias_type(inner) else inner
 

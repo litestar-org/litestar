@@ -128,17 +128,8 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
     return hints
 
 
-def _resolve_type_aliases(hint: Any) -> Any:
-    """Resolve PEP 695 type aliases in a type hint, including one behind ``Annotated``"""
-    resolved = unwrap_type_alias_type(hint)
-    if get_origin(resolved) is Annotated:
-        inner, *meta = get_args(resolved)
-        return Annotated[unwrap_type_alias_type(inner), *meta]
-    return resolved
-
-
 def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Resolve type hints for ``fn``.
+    """Resolve type hints for ``fn``, with any PEP 695 type alias resolved to the type it aliases.
 
     Args:
         fn: Callable that is being inspected
@@ -171,7 +162,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     }
     hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
 
-    return {name: _resolve_type_aliases(hint) for name, hint in hints.items()}
+    return {name: unwrap_type_alias_type(hint) for name, hint in hints.items()}
 
 
 @dataclass(frozen=True)
@@ -180,7 +171,8 @@ class ParsedSignature:
 
     This object is the primary source of handler/dependency signature information.
 
-    The only post-processing that occurs is the conversion of any forward referenced type annotations.
+    The only post-processing that occurs is the conversion of any forward referenced type
+    annotations, and the resolution of any PEP 695 type alias.
     """
 
     __slots__ = ("original_signature", "parameters", "return_type")

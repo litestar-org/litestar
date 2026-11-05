@@ -719,7 +719,8 @@ BodyAlias = TypeAliasType("BodyAlias", RawBody)
 StateAlias = TypeAliasType("StateAlias", CustomState)
 JSONDataAlias = TypeAliasType("JSONDataAlias", JSONBody[AliasedPerson])
 FormDataAlias = TypeAliasType("FormDataAlias", URLEncodedBody[AliasedPerson])
-MistypedAlias = TypeAliasType("MistypedAlias", str)
+StrAlias = TypeAliasType("StrAlias", str)
+ConstrainedAlias = TypeAliasType("ConstrainedAlias", Annotated[str, Body(min_length=5)])
 
 
 def test_reserved_kwargs_typed_through_type_alias_are_injected() -> None:
@@ -803,8 +804,6 @@ def test_form_data_typed_through_type_alias_keeps_its_body_marker() -> None:
 
 
 def test_data_constraints_through_type_alias_are_enforced() -> None:
-    ConstrainedAlias = TypeAliasType("ConstrainedAlias", Annotated[str, Body(min_length=5)])
-
     @post("/")
     async def handler(data: ConstrainedAlias) -> str:  # pyright: ignore
         return data
@@ -816,7 +815,7 @@ def test_data_constraints_through_type_alias_are_enforced() -> None:
 
 def test_request_mistyped_through_type_alias_raises() -> None:
     @get("/")
-    async def handler(request: MistypedAlias) -> None: ...  # pyright: ignore
+    async def handler(request: StrAlias) -> None: ...  # pyright: ignore
 
     with pytest.raises(
         ImproperlyConfiguredException,
@@ -827,7 +826,7 @@ def test_request_mistyped_through_type_alias_raises() -> None:
 
 def test_headers_mistyped_through_type_alias_raises() -> None:
     @get("/")
-    async def handler(headers: MistypedAlias) -> None: ...  # pyright: ignore
+    async def handler(headers: StrAlias) -> None: ...  # pyright: ignore
 
     with pytest.raises(
         ImproperlyConfiguredException,
@@ -838,17 +837,10 @@ def test_headers_mistyped_through_type_alias_raises() -> None:
 
 def test_socket_mistyped_through_type_alias_raises() -> None:
     @websocket("/")
-    async def handler(socket: MistypedAlias) -> None: ...  # pyright: ignore
+    async def handler(socket: StrAlias) -> None: ...  # pyright: ignore
 
     with pytest.raises(
         ImproperlyConfiguredException,
         match=re.escape("Reserved kwarg 'socket' declared as 'str'. Declare it as 'socket: WebSocket'"),
     ):
         Litestar([handler])
-
-
-def test_reserved_kwarg_typed_through_annotated_type_alias_does_not_raise() -> None:
-    @get("/")
-    async def handler(state: Annotated[StateAlias, annotated_types.MinLen(0)]) -> None: ...  # pyright: ignore
-
-    Litestar([handler], openapi_config=None)

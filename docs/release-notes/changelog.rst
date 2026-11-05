@@ -8,20 +8,23 @@
 
     .. change:: Resolve PEP 695 type aliases in handler and dependency signatures
         :type: bugfix
-        :issue: 5192
+        :breaking:
+        :issue: 5192 3912
 
         A parameter typed through a PEP 695 ``type`` alias was handled as the alias rather than as
         the type it aliases, so a reserved parameter such as ``request`` declared as
-        ``type AppRequest = Request[User, Token, State]`` was refused as improperly configured.
-        Aliases are now resolved when a signature is parsed, so every parameter and return
-        annotation is handled as the type it aliases, in dependencies as well as handlers. This
-        also fixes a ``@websocket_listener`` receiving JSON for a ``data`` typed through an alias,
-        a return type behind an alias being served as ``application/json``, and a parameter marker
-        such as ``FromQuery`` being lost behind one.
+        ``type AppRequest = Request[User, Token, State]`` was refused as improperly configured, and
+        a marker such as ``FromQuery`` declared by an alias was lost along with the constraints the
+        OpenAPI schema went on documenting. An alias standing on its own is now resolved when a
+        signature is parsed, for every parameter and return annotation, in handlers and in the
+        dependencies they resolve. A subscripted generic alias, an alias nested inside another type,
+        and an alias behind an ``Annotated`` are left as they are.
 
-        Only an alias standing on its own is resolved. A subscripted generic alias, an alias
-        nested inside another type such as the ``int`` of ``list[IntAlias]``, and an alias that
-        aliases itself are all left as they are, and are refused as they were before.
+        An application declaring such an alias changes behaviour, in each case matching the
+        equivalent ``TypeAlias``: a handler returning an alias of ``str`` or ``bytes`` is served as
+        ``text/plain`` rather than ``application/json``, and a
+        :func:`~litestar.handlers.websocket_listener` receives its ``data`` as the raw text or bytes
+        it declares rather than JSON decoded from them.
 
     .. change:: Parse every ``cookie`` header of a request
         :type: bugfix
