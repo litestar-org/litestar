@@ -113,7 +113,7 @@ class TestClientTransport(Generic[T]):
         path = request.url.path
         raw_path = request.url.raw_path
         query = request.url.query.decode(encoding="ascii")
-        default_port = 433 if scheme in {"https", "wss"} else 80
+        default_port = 443 if scheme in {"https", "wss"} else 80
 
         if ":" in netloc:
             host, port_string = netloc.split(":", 1)
@@ -124,7 +124,7 @@ class TestClientTransport(Generic[T]):
 
         host_header = request.headers.pop("host", host if port == default_port else f"{host}:{port}")
 
-        headers = [(k.lower().encode(), v.encode()) for k, v in (("host", host_header), *request.headers.items())]
+        headers = [(b"host", host_header.encode()), *((k.lower(), v) for k, v in request.headers.raw)]
 
         return {
             "type": "websocket" if scheme in {"ws", "wss"} else "http",

@@ -1,5 +1,5 @@
 from queue import Empty
-from typing import TYPE_CHECKING, Callable, Dict, NoReturn, Optional, Union, cast
+from typing import TYPE_CHECKING, Callable, Dict, List, NoReturn, Optional, Tuple, Union, cast
 
 from _pytest.fixtures import FixtureRequest
 
@@ -326,3 +326,42 @@ async def test_websocket_connect_async(anyio_backend: "AnyIOBackend") -> None:
             ws.send_json({"data": "123"})
             data = ws.receive_json()
             assert data == {"data": "123"}
+
+
+def test_client_sends_repeated_headers_separately() -> None:
+    @get("/")
+    def handler(request: Request) -> List[Tuple[str, str]]:
+        return [(key.decode(), value.decode()) for key, value in request.scope["headers"]]
+
+    with create_test_client(handler) as client:
+        response = client.get("/", headers=[("host", "example.org"), ("x-trace", "1"), ("x-trace", "2")])
+
+    scope_headers = [(key, value) for key, value in response.json()]
+    assert [value for key, value in scope_headers if key == "host"] == ["example.org"]
+    assert [value for key, value in scope_headers if key == "x-trace"] == ["1", "2"]
+
+
+def test_client_uses_the_default_https_port_in_scope() -> None:
+    @get("/")
+    def handler(request: Request) -> int:
+        return request.scope["server"][1]
+
+    with create_test_client(handler, base_url="https://example.org") as client:
+        assert client.get("/").json() == 443
+
+    with create_test_client(handler, base_url="https://example.org:8443") as client:
+        assert client.get("/").json() == 8443
+
+
+def test_websocket_connect_sends_repeated_headers_separately() -> None:
+    @websocket("/")
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        await socket.send_json({"cookies": socket.cookies, "trace": socket.headers.getall("x-trace", [])})
+        await socket.close()
+
+    with create_test_client(handler) as client:
+        with client.websocket_connect(
+            "/", headers=[("cookie", "a=1; b=2"), ("cookie", "c=3"), ("x-trace", "1"), ("x-trace", "2")]
+        ) as ws:
+            assert ws.receive_json() == {"cookies": {"a": "1", "b": "2", "c": "3"}, "trace": ["1", "2"]}

@@ -26,7 +26,7 @@ from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json, encode_msgpack
 from litestar.static_files.config import StaticFilesConfig
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_413_REQUEST_ENTITY_TOO_LARGE
-from litestar.testing import TestClient, create_test_client
+from litestar.testing import RequestFactory, TestClient, create_test_client
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -440,6 +440,33 @@ def test_request_cookies() -> None:
     assert response.text == "Hello, world!"
     response = client.get("/")
     assert response.text == "Hello, cookies!"
+
+
+def test_request_cookies_from_multiple_cookie_headers_in_scope() -> None:
+    """Every ``cookie`` header is parsed, in the order the client sent them.
+
+    A name repeated across headers therefore keeps its last value, as it does within a single
+    header. ``main`` deliberately diverges and resolves it to the first value instead.
+    """
+    scope = RequestFactory().get().scope
+    scope["headers"] = [(b"cookie", b"a=1; b=2"), (b"cookie", b"c=3")]
+
+    assert Request[Any, Any, State](scope).cookies == {"a": "1", "b": "2", "c": "3"}
+
+    ordered_scope = RequestFactory().get().scope
+    ordered_scope["headers"] = [(b"cookie", b"dup=first"), (b"cookie", b"dup=last")]
+
+    assert Request[Any, Any, State](ordered_scope).cookies == {"dup": "last"}
+
+
+def test_request_cookies_from_multiple_cookie_headers() -> None:
+    @get("/")
+    def handler(request: Request) -> Dict[str, str]:  # noqa: UP006
+        return request.cookies
+
+    with create_test_client(handler) as client:
+        response = client.get("/", headers=[("cookie", "a=1; b=2"), ("cookie", "c=3")])
+        assert response.json() == {"a": "1", "b": "2", "c": "3"}
 
 
 def test_chunked_encoding() -> None:
