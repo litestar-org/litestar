@@ -300,6 +300,38 @@ def test_deprecated_implicit_style_dependency() -> None:
         Litestar([path_handler])
 
 
+def test_deprecated_implicit_layer_style_handler() -> None:
+    @get("/")
+    async def handler(limit: int) -> int:
+        return limit
+
+    with pytest.warns(
+        LitestarDeprecationWarning,
+        match=r"query parameter 'limit' declared using deprecated inferred style, by the name of a layer "
+        r"parameter. Use 'FromQuery\[<type>\]' instead",
+    ):
+        app = Litestar([handler], parameters={"limit": QueryParameter(annotation=int)})
+
+    with TestClient(app) as client:
+        assert client.get("/", params={"limit": "3"}).json() == 3
+
+
+def test_deprecated_implicit_layer_style_dependency() -> None:
+    def dependency(limit: int) -> None:
+        pass
+
+    @get("/", dependencies={"value": dependency})
+    def handler(value: NamedDependency[None]) -> None:
+        pass
+
+    with pytest.warns(
+        LitestarDeprecationWarning,
+        match=r"query parameter 'limit' declared using deprecated inferred style, by the name of a layer "
+        r"parameter. Use 'FromQuery\[<type>\]' instead",
+    ):
+        Litestar([handler], parameters={"limit": QueryParameter(annotation=int)})
+
+
 def test_annotated_metadata_does_not_shadow_dependency() -> None:
     # https://github.com/litestar-org/litestar/issues/4804
     async def provide_foo() -> str:

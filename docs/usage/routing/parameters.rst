@@ -383,6 +383,8 @@ in 3.0.
       - ``def h(name: FromQuery[str])``
     * - ``def h(user_id: int)`` *(implicit path parameter)*
       - ``def h(user_id: FromPath[int])``
+    * - ``def h(limit: int)`` *(named like a layer parameter)*
+      - ``def h(limit: FromQuery[int])``, with the marker of the layer parameter's type
     * - ``Annotated[str, Parameter(query="alias")]``
       - ``Annotated[str, QueryParameter(name="alias")]``
     * - ``Annotated[str, Parameter(header="X-API-KEY")]``
