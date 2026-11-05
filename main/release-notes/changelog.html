@@ -1200,6 +1200,13 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>DI: Correctly set <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code> dependency fields as required without a default<a class="headerlink reference internal" href="#3.0.0-di: correctly set" id="3.0.0-di: correctly set">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would implicitly give a field of an <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code> used as
+a dependency a default of <code class="docutils literal notranslate"><span class="pre">msgspec.NODEFAULT</span></code> and mark it as optional.
+Struct fields without a default are now correctly marked as required.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5194">https://github.com/litestar-org/litestar/pull/5194</a></span></p>
+</div>
+</dd>
 <dt>Parse every <code class="docutils literal notranslate"><span class="pre">cookie</span></code> header of a request<a class="headerlink reference internal" href="#3.0.0-parse every" id="3.0.0-parse every">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Only the first <code class="docutils literal notranslate"><span class="pre">cookie</span></code> header was parsed into
 <a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection.cookies" title="litestar.connection.ASGIConnection.cookies"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cookies</span></code></a>. Over HTTP/2 and HTTP/3 the
