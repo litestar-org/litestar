@@ -6,6 +6,14 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DI: Correctly set ``msgspec.Struct`` dependency fields as required without a default
+        :type: bugfix
+        :pr: 5194
+
+        Fix a bug that would implicitly give a field of an ``msgspec.Struct`` used as
+        a dependency a default of ``msgspec.NODEFAULT`` and mark it as optional.
+        Struct fields without a default are now correctly marked as required.
+
     .. change:: Parse every ``cookie`` header of a request
         :type: bugfix
         :breaking:

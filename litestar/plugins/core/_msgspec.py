@@ -10,12 +10,11 @@ import msgspec
 
 from litestar.di import NamedDependency
 from litestar.openapi.spec import Example
-from litestar.params import KwargDefinition, ParameterKwarg
+from litestar.params import KwargDefinition
 from litestar.plugins import DIPlugin
+from litestar.typing import FieldDefinition
 
 __all__ = ("MsgspecDIPlugin", "kwarg_definition_from_field")
-
-from litestar.utils.typing import unwrap_annotation
 
 
 class MsgspecDIPlugin(DIPlugin):
@@ -26,9 +25,8 @@ class MsgspecDIPlugin(DIPlugin):
         parameters = []
         type_hints = {}
         for field_info in msgspec.structs.fields(type_):
-            metadata = unwrap_annotation(field_info.type)[1]
             type_ = field_info.type
-            if not any(isinstance(m, ParameterKwarg) for m in metadata):
+            if not FieldDefinition.from_annotation(type_).is_marker_field:
                 type_ = NamedDependency[type_]  # type: ignore[misc]
 
             type_hints[field_info.name] = type_
@@ -37,7 +35,7 @@ class MsgspecDIPlugin(DIPlugin):
                     name=field_info.name,
                     kind=inspect.Parameter.KEYWORD_ONLY,
                     annotation=type_,
-                    default=field_info.default,
+                    default=inspect.Parameter.empty if field_info.default is msgspec.NODEFAULT else field_info.default,
                 )
             )
         return inspect.Signature(parameters), type_hints
