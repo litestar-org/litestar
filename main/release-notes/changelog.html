@@ -1200,6 +1200,14 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>DI: Correctly set Pydantic dependency fields as required without a default<a class="headerlink reference internal" href="#3.0.0-di: correctly set pydantic dependency fields as required without a default" id="3.0.0-di: correctly set pydantic dependency fields as required without a default">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug, causing a Pydantic model used as a dependency to fail at startup with
+<code class="docutils literal notranslate"><span class="pre">Missing</span> <span class="pre">declaration</span> <span class="pre">for</span> <span class="pre">parameter</span></code> for each of its fields without a marker,
+since <code class="docutils literal notranslate"><span class="pre">PydanticDIPlugin</span></code> marked them as dependencies only in the signature,
+not in the type hints used by the rest of the machinery.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5195">https://github.com/litestar-org/litestar/pull/5195</a></span></p>
+</div>
+</dd>
 <dt>DI: Correctly set <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code> dependency fields as required without a default<a class="headerlink reference internal" href="#3.0.0-di: correctly set" id="3.0.0-di: correctly set">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that would implicitly give a field of an <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code> used as
 a dependency a default of <code class="docutils literal notranslate"><span class="pre">msgspec.NODEFAULT</span></code> and mark it as optional.
