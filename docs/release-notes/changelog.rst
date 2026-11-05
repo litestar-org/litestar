@@ -6,6 +6,15 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DI: Correctly set Pydantic dependency fields as required without a default
+        :type: bugfix
+        :pr: 5195
+
+        Fix a bug, causing a Pydantic model used as a dependency to fail at startup with
+        ``Missing declaration for parameter`` for each of its fields without a marker,
+        since ``PydanticDIPlugin`` marked them as dependencies only in the signature,
+        not in the type hints used by the rest of the machinery.
+
     .. change:: DI: Correctly set ``msgspec.Struct`` dependency fields as required without a default
         :type: bugfix
         :pr: 5194
