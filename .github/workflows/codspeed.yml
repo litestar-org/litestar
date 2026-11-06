@@ -62,7 +62,7 @@ jobs:
         run: uv sync --no-group docs --no-group linting
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v5.6.0
+        uses: CodSpeedHQ/action@v5.6.1
         with:
           mode: simulation,memory
           run: uv run --no-sync pytest tests/benchmarks --codspeed -n 0
