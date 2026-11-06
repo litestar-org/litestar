@@ -2,7 +2,7 @@ from collections.abc import Callable
 from typing import Any
 
 from litestar import Litestar, Request
-from litestar.plugins.prometheus import PrometheusConfig, PrometheusController
+from litestar.plugins.prometheus import PrometheusController, PrometheusMiddleware
 
 
 # We can modify the path of our custom handler and override the metrics format by subclassing the PrometheusController.
@@ -32,10 +32,10 @@ def custom_exemplar(request: Request[Any, Any, Any]) -> dict[str, str]:
     return {"trace_id": "1234"}
 
 
-# Creating the instance of PrometheusConfig with our own custom options.
+# Creating the instance of PrometheusMiddleware with our own custom options.
 # The given options are not necessary, you can use the default ones
-# as well by just creating a raw instance PrometheusConfig()
-prometheus_config = PrometheusConfig(
+# as well by just creating a raw instance PrometheusMiddleware()
+prometheus_middleware = PrometheusMiddleware(
     app_name="litestar-example",
     prefix="litestar",
     labels=extra_labels,
@@ -45,5 +45,5 @@ prometheus_config = PrometheusConfig(
 )
 
 
-# Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.
-app = Litestar(route_handlers=[CustomPrometheusController], middleware=[prometheus_config.middleware])
+# Creating the litestar app instance with our custom PrometheusMiddleware and PrometheusController.
+app = Litestar(route_handlers=[CustomPrometheusController], middleware=[prometheus_middleware])
