@@ -6,6 +6,24 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Remove the ``litestar.pagination`` module
+        :type: feature
+        :breaking:
+        :issue: 4009
+
+        The ``ClassicPagination``, ``OffsetPagination`` and ``CursorPagination`` containers,
+        the six abstract paginator base classes and the internal OpenAPI schema plugin for
+        the containers have been removed.
+
+        ``OffsetPagination`` was re-exported from ``advanced_alchemy.service`` whenever that
+        package was installed, so import it from there instead; applications that did not
+        install the ``advanced-alchemy`` extra now need it as a dependency. The other two
+        containers and the paginator bases have no replacement; declare the container you
+        need as a generic dataclass of your own. A
+        handler returning Advanced Alchemy's ``OffsetPagination`` keeps working, but its
+        OpenAPI schema is now a ``$ref`` component with ``required`` fields and without the
+        plugin's per-field descriptions.
+
     .. change:: DI: Correctly set Pydantic dependency fields as required without a default
         :type: bugfix
         :pr: 5195

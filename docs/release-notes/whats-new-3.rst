@@ -42,6 +42,8 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``litestar.contrib.sqlalchemy``                    | ``advanced_alchemy.extensions.litestar``                               |
 +----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.pagination.OffsetPagination``           | ``advanced_alchemy.service.OffsetPagination``                          |
++----------------------------------------------------+------------------------------------------------------------------------+
 
 
 Removal of ``StaticFileConfig``
@@ -230,6 +232,63 @@ After:
 
     class User(pydantic.BaseModel):
         id: Annotated[int, DTOField(mark="read-only")]
+
+
+Removal of the ``litestar.pagination`` module
+---------------------------------------------
+
+The ``litestar.pagination`` module has been removed, together with the internal OpenAPI
+schema plugin that gave its containers a schema of their own:
+
+- ``ClassicPagination``
+- ``OffsetPagination``
+- ``CursorPagination``
+- ``AbstractSyncClassicPaginator``
+- ``AbstractAsyncClassicPaginator``
+- ``AbstractSyncOffsetPaginator``
+- ``AbstractAsyncOffsetPaginator``
+- ``AbstractSyncCursorPaginator``
+- ``AbstractAsyncCursorPaginator``
+
+``OffsetPagination`` has a direct replacement: Litestar re-exported Advanced Alchemy's
+container whenever the package was installed, so the class is the same one and only the
+import changes, to ``from advanced_alchemy.service import OffsetPagination``. It is
+exported from ``advanced_alchemy.service``, not from
+``advanced_alchemy.extensions.litestar``. Applications that did not install the
+``advanced-alchemy`` extra need it as a dependency now.
+
+The other two containers and the six paginator base classes have no replacement in
+Litestar or in Advanced Alchemy. Declare the container you need as a generic dataclass of
+your own, and implement the paginating logic in the handler or in a dependency. OpenAPI
+schema generation resolves a generic dataclass wrapping a collection the same way, and
+DTOs still apply to the models it holds.
+
+.. code-block:: python
+
+    from dataclasses import dataclass
+    from typing import Generic, TypeVar
+
+    T = TypeVar("T")
+
+
+    @dataclass
+    class ClassicPagination(Generic[T]):
+        items: list[T]
+        page_size: int
+        current_page: int
+        total_pages: int
+
+``CursorPagination`` was generic over two parameters -- the cursor type, constrained to
+``int``, ``str`` or ``UUID``, and the item type -- with ``items: list[T]``,
+``results_per_page: int`` and ``cursor: Optional[C]`` fields, in that order.
+
+The OpenAPI document changes even for applications that never imported
+``litestar.pagination``, because the removed plugin matched Advanced Alchemy's
+``OffsetPagination`` as well. A handler returning it now gets a reusable component
+referenced with ``$ref`` instead of a schema inlined per handler, with a ``required``
+entry for each of its four fields and without the per-field descriptions the plugin
+wrote. Behaviour and the response body are unchanged, but regenerate any client generated
+from the document.
 
 
 Removal of semantic HTTP route handler classes
