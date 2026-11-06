@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import structlog
 from pytest import CaptureFixture
-from structlog import BytesLoggerFactory, get_logger
+from structlog import BytesLoggerFactory, WriteLoggerFactory, get_logger
 from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger, WrappedLogger
 
@@ -218,3 +218,53 @@ def test_structlog_disable_stack_trace(
             assert mock_handler.called, "Structlog exception handler should have been called"
         else:
             assert not mock_handler.called, "Structlog exception handler should not have been called"
+
+
+@pytest.mark.parametrize(
+    "isatty, processors, expected_factory",
+    [
+        # Default processors: factory tracks as_json (JSONRenderer -> bytes when non-TTY).
+        (False, None, BytesLoggerFactory),
+        (True, None, WriteLoggerFactory),
+        # A user-supplied str-emitting renderer must not be paired with BytesLoggerFactory,
+        # even when non-TTY (as_json is True) -- regression test for #4617.
+        (False, [structlog.processors.KeyValueRenderer()], WriteLoggerFactory),
+        (True, [structlog.processors.KeyValueRenderer()], WriteLoggerFactory),
+        # A user-supplied bytes-emitting renderer still gets BytesLoggerFactory.
+        (False, [JSONRenderer(serializer=default_json_serializer)], BytesLoggerFactory),
+    ],
+)
+def test_structlog_config_logger_factory_matches_renderer_output(
+    isatty: bool,
+    processors: "list[structlog.types.Processor] | None",
+    expected_factory: type,
+) -> None:
+    """The default logger factory must match the renderer's output type (bytes vs str).
+
+    Regression test for #4617: a ``str``-emitting renderer such as ``KeyValueRenderer``
+    or ``ConsoleRenderer`` was paired with the bytes-only ``BytesLoggerFactory`` whenever
+    stderr was not a TTY, raising ``TypeError`` on every log record.
+    """
+    with patch("litestar.logging.config.sys.stderr.isatty") as isatty_mock:
+        isatty_mock.return_value = isatty
+        logging_config = StructLoggingConfig(processors=processors)
+        assert isinstance(logging_config.logger_factory, expected_factory)
+
+
+def test_structlog_config_str_renderer_does_not_crash_when_not_a_tty(capsys: CaptureFixture) -> None:
+    """A str-emitting renderer logs cleanly when stderr is not a TTY.
+
+    Regression test for #4617: under ``nohup``/a service manager (non-TTY), a
+    ``KeyValueRenderer`` used to be paired with ``BytesLoggerFactory``, so every log
+    record raised ``TypeError: can only concatenate str (not "bytes") to str``.
+    """
+    with patch("litestar.logging.config.sys.stderr.isatty") as isatty_mock:
+        isatty_mock.return_value = False
+        logging_config = StructLoggingConfig(processors=[structlog.processors.KeyValueRenderer()])
+        assert logging_config.as_json() is True
+        assert isinstance(logging_config.logger_factory, WriteLoggerFactory)
+
+        logger = logging_config.configure()()
+        logger.info("inside a request", key="value")
+
+    assert "event='inside a request'" in capsys.readouterr().out
