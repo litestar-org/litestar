@@ -35,9 +35,10 @@ from litestar.params import (
     KwargDefinition,
     ParameterKwarg,
 )
-from litestar.typing import FieldDefinition  # noqa: TC001
+from litestar.typing import FieldDefinition
 from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
+from litestar.utils.typing import unwrap_new_type
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -98,6 +99,46 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
         return decoder(target_type, value)
 
     return default_deserializer(target_type, value)
+
+
+def _extract_meta_attrs(meta: Meta, meta_kwargs: dict[str, Any]) -> None:
+    for attr in (*MSGSPEC_CONSTRAINT_FIELDS, "title", "description", "tz"):
+        if (val := getattr(meta, attr, None)) is not None:
+            meta_kwargs[attr] = val
+    if meta.examples:
+        meta_kwargs["examples"] = meta.examples
+    if meta.extra:
+        meta_kwargs["extra"].update(meta.extra)
+    if meta.extra_json_schema:
+        meta_kwargs["extra_json_schema"] = meta.extra_json_schema
+
+
+def _create_meta_data(field_definition: FieldDefinition, base_meta: Meta | None = None) -> Meta | None:
+    meta_kwargs: dict[str, Any] = {"extra": {}}
+
+    if base_meta is not None:
+        _extract_meta_attrs(base_meta, meta_kwargs)
+
+    for meta in field_definition.metadata:
+        if isinstance(meta, Meta):
+            _extract_meta_attrs(meta, meta_kwargs)
+
+    if isinstance(field_definition.kwarg_definition, KwargDefinition):
+        kwarg_dict = simple_asdict(field_definition.kwarg_definition, exclude_empty=True)
+        if min_items := kwarg_dict.pop("min_items", None):
+            meta_kwargs["min_length"] = min_items
+        if max_items := kwarg_dict.pop("max_items", None):
+            meta_kwargs["max_length"] = max_items
+
+        for k, v in kwarg_dict.items():
+            if hasattr(Meta, k) and v is not None:
+                meta_kwargs[k] = v
+            elif v is not None:
+                meta_kwargs["extra"][k] = v
+
+    if meta_kwargs["extra"] or len(meta_kwargs) > 1:
+        return Meta(**meta_kwargs)
+    return None
 
 
 class SignatureModel(Struct):
@@ -242,24 +283,7 @@ class SignatureModel(Struct):
         struct_fields: list[tuple[str, Any, Any]] = []
 
         for field_definition in parsed_signature.parameters.values():
-            meta_data: Meta | None = None
-
-            if isinstance(field_definition.kwarg_definition, KwargDefinition):
-                meta_kwargs: dict[str, Any] = {"extra": {}}
-
-                kwarg_definition = simple_asdict(field_definition.kwarg_definition, exclude_empty=True)
-                if min_items := kwarg_definition.pop("min_items", None):
-                    meta_kwargs["min_length"] = min_items
-                if max_items := kwarg_definition.pop("max_items", None):
-                    meta_kwargs["max_length"] = max_items
-
-                for k, v in kwarg_definition.items():
-                    if hasattr(Meta, k) and v is not None:
-                        meta_kwargs[k] = v
-                    else:
-                        meta_kwargs["extra"][k] = v
-
-                meta_data = Meta(**meta_kwargs)
+            meta_data = _create_meta_data(field_definition)
 
             annotation = cls._create_annotation(
                 field_definition=field_definition,
@@ -297,6 +321,36 @@ class SignatureModel(Struct):
         if field_definition.name == "data" and data_dto:
             return Any
 
+        if field_definition.is_new_type:
+            inner_ann = unwrap_new_type(field_definition.annotation)
+            inner_field = FieldDefinition.from_kwarg(
+                annotation=inner_ann,
+                name=field_definition.name,
+                default=field_definition.default,
+                kwarg_definition=field_definition.kwarg_definition,
+            )
+            return cls._create_annotation(
+                field_definition=inner_field,
+                type_decoders=type_decoders,
+                meta_data=_create_meta_data(inner_field, base_meta=meta_data),
+                data_dto=data_dto,
+            )
+
+        if field_definition.is_type_alias_type:
+            inner_ann = field_definition.annotation.__value__
+            inner_field = FieldDefinition.from_kwarg(
+                annotation=inner_ann,
+                name=field_definition.name,
+                default=field_definition.default,
+                kwarg_definition=field_definition.kwarg_definition,
+            )
+            return cls._create_annotation(
+                field_definition=inner_field,
+                type_decoders=type_decoders,
+                meta_data=_create_meta_data(inner_field, base_meta=meta_data),
+                data_dto=data_dto,
+            )
+
         annotation = _normalize_annotation(field_definition=field_definition)
 
         if annotation is Any:
@@ -307,7 +361,7 @@ class SignatureModel(Struct):
                 cls._create_annotation(
                     field_definition=inner_type,
                     type_decoders=type_decoders,
-                    meta_data=meta_data,
+                    meta_data=_create_meta_data(inner_type, base_meta=meta_data),
                 )
                 for inner_type in field_definition.inner_types
                 if not inner_type.is_none_type
@@ -317,6 +371,8 @@ class SignatureModel(Struct):
         if decoder := _get_decoder_for_type(annotation, type_decoders=type_decoders):
             # FIXME: temporary (hopefully) hack, see: https://github.com/jcrist/msgspec/issues/497
             setattr(annotation, "_decoder", decoder)
+
+        meta_data = _create_meta_data(field_definition, base_meta=meta_data)
 
         if meta_data:
             annotation = Annotated[annotation, meta_data]
