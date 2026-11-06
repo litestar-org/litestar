@@ -6,8 +6,8 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def disable_httpx_logging() -> Generator[None, None, None]:
-    # ensure that httpx logging is not interfering with our test client
-    httpx_logger = logging.getLogger("httpx")
+    # ensure that httpx2 logging is not interfering with our test client
+    httpx_logger = logging.getLogger("httpx2")
     initial_level = httpx_logger.level
     httpx_logger.setLevel(logging.WARNING)
     yield
