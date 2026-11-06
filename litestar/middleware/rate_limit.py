@@ -22,7 +22,8 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Callable
+    from collections.abc import Awaitable, Callable, Sequence
+    from typing import TypeGuard
 
     from litestar import Litestar
     from litestar.connection import Request
@@ -33,6 +34,10 @@ if TYPE_CHECKING:
 DurationUnit = Literal["second", "minute", "hour", "day"]
 
 DURATION_VALUES: dict[DurationUnit, int] = {"second": 1, "minute": 60, "hour": 3600, "day": 86400}
+
+
+def _is_rate_limit(value: object) -> TypeGuard[tuple[DurationUnit, int]]:
+    return isinstance(value, tuple) and len(value) == 2 and value[0] in DURATION_VALUES and isinstance(value[1], int)
 
 
 @dataclass
@@ -72,8 +77,10 @@ class RateLimitMiddleware(AbstractMiddleware):
         )
         self.check_throttle_handler = cast("Callable[[Request], Awaitable[bool]] | None", config.check_throttle_handler)
         self.config = config
-        self.max_requests: int = config.rate_limit[1]
-        self.unit: DurationUnit = config.rate_limit[0]
+        self._rate_limits = config._rate_limits
+        self.unit: DurationUnit
+        self.max_requests: int
+        self.unit, self.max_requests = self._rate_limits[0]
         self.get_identifier_for_request = config.identifier_for_request
         self._lock = anyio.Lock()
 
@@ -95,22 +102,59 @@ class RateLimitMiddleware(AbstractMiddleware):
             identifier = self.get_identifier_for_request(request)
             key = f"{type(self).__name__}::{identifier}"
             route_handler = request.scope["route_handler"]
-            if getattr(route_handler, "is_mount", False):
-                key += "::mount"
+            is_mount = getattr(route_handler, "is_mount", False)
+            is_multi_window = len(self._rate_limits) > 1
 
             async with self._lock:
-                cache_object = await self.retrieve_cached_history(key, store)
-                if len(cache_object.history) >= self.max_requests:
-                    raise TooManyRequestsException(
-                        headers=self.create_response_headers(cache_object=cache_object)
-                        if self.config.set_rate_limit_headers
-                        else None
+                cache_objects: list[tuple[DurationUnit, int, CacheObject]] = []
+                for unit, max_requests in self._rate_limits:
+                    cache_key = self._create_cache_key(key=key, unit=unit, is_mount=is_mount)
+                    cache_object = (
+                        await self._retrieve_cached_history(key=cache_key, store=store, unit=unit)
+                        if is_multi_window
+                        else await self.retrieve_cached_history(key=cache_key, store=store)
                     )
-                await self.set_cached_history(key=key, cache_object=cache_object, store=store)
+                    cache_objects.append((unit, max_requests, cache_object))
+
+                for unit, max_requests, cache_object in cache_objects:
+                    if len(cache_object.history) >= max_requests:
+                        headers = None
+                        if self.config.set_rate_limit_headers:
+                            headers = (
+                                self._create_response_headers(
+                                    cache_object=cache_object, unit=unit, max_requests=max_requests
+                                )
+                                if is_multi_window
+                                else self.create_response_headers(cache_object=cache_object)
+                            )
+                        raise TooManyRequestsException(headers=headers)
+                for unit, _, cache_object in cache_objects:
+                    cache_key = self._create_cache_key(key=key, unit=unit, is_mount=is_mount)
+                    if is_multi_window:
+                        await self._set_cached_history(key=cache_key, cache_object=cache_object, store=store, unit=unit)
+                    else:
+                        await self.set_cached_history(key=cache_key, cache_object=cache_object, store=store)
             if self.config.set_rate_limit_headers:
-                send = self.create_send_wrapper(send=send, cache_object=cache_object)
+                unit, max_requests, cache_object = min(
+                    cache_objects, key=lambda item: (item[1] - len(item[2].history), item[2].reset)
+                )
+                send = (
+                    self._create_send_wrapper(
+                        send=send, cache_object=cache_object, unit=unit, max_requests=max_requests
+                    )
+                    if is_multi_window
+                    else self.create_send_wrapper(send=send, cache_object=cache_object)
+                )
 
         await self.app(scope, receive, send)
+
+    def _create_cache_key(self, key: str, unit: DurationUnit, is_mount: bool) -> str:
+        """Create a cache key for a rate-limit window."""
+        if len(self._rate_limits) > 1:
+            key = f"{key}::{unit}"
+        if is_mount:
+            key += "::mount"
+        return key
 
     def create_send_wrapper(self, send: Send, cache_object: CacheObject) -> Send:
         """Create a ``send`` function that wraps the original send to inject response headers.
@@ -122,7 +166,15 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             Send wrapper callable.
         """
+        return self._create_send_wrapper(send=send, cache_object=cache_object)
 
+    def _create_send_wrapper(
+        self,
+        send: Send,
+        cache_object: CacheObject,
+        unit: DurationUnit | None = None,
+        max_requests: int | None = None,
+    ) -> Send:
         async def send_wrapper(message: Message) -> None:
             """Wrap the ASGI ``Send`` callable.
 
@@ -135,7 +187,12 @@ class RateLimitMiddleware(AbstractMiddleware):
             if message["type"] == "http.response.start":
                 message.setdefault("headers", [])
                 headers = MutableScopeHeaders(message)
-                for key, value in self.create_response_headers(cache_object=cache_object).items():
+                response_headers = (
+                    self._create_response_headers(cache_object=cache_object, unit=unit, max_requests=max_requests)
+                    if unit is not None and max_requests is not None
+                    else self.create_response_headers(cache_object=cache_object)
+                )
+                for key, value in response_headers.items():
                     headers[key] = value
             await send(message)
 
@@ -151,7 +208,10 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             An :class:`CacheObject`.
         """
-        duration = DURATION_VALUES[self.unit]
+        return await self._retrieve_cached_history(key=key, store=store, unit=self.unit)
+
+    async def _retrieve_cached_history(self, key: str, store: Store, unit: DurationUnit) -> CacheObject:
+        duration = DURATION_VALUES[unit]
         now = int(time())
         cached_string = await store.get(key)
         if cached_string:
@@ -173,8 +233,11 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             None
         """
+        await self._set_cached_history(key=key, cache_object=cache_object, store=store, unit=self.unit)
+
+    async def _set_cached_history(self, key: str, cache_object: CacheObject, store: Store, unit: DurationUnit) -> None:
         cache_object.history = [int(time()), *cache_object.history]
-        await store.set(key, encode_json(cache_object), expires_in=DURATION_VALUES[self.unit])
+        await store.set(key, encode_json(cache_object), expires_in=DURATION_VALUES[unit])
 
     async def should_check_request(self, request: Request[Any, Any, Any]) -> bool:
         """Return a boolean indicating if a request should be checked for rate limiting.
@@ -201,13 +264,17 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             A dict of http headers.
         """
-        remaining_requests = str(
-            self.max_requests - len(cache_object.history) if len(cache_object.history) <= self.max_requests else 0
-        )
+        return self._create_response_headers(cache_object=cache_object, unit=self.unit, max_requests=self.max_requests)
+
+    def _create_response_headers(
+        self, cache_object: CacheObject, unit: DurationUnit, max_requests: int
+    ) -> dict[str, str]:
+        remaining_requests = str(max(max_requests - len(cache_object.history), 0))
+        policy = ", ".join(f"{limit}; w={DURATION_VALUES[rate_unit]}" for rate_unit, limit in self._rate_limits)
 
         return {
-            self.config.rate_limit_policy_header_key: f"{self.max_requests}; w={DURATION_VALUES[self.unit]}",
-            self.config.rate_limit_limit_header_key: str(self.max_requests),
+            self.config.rate_limit_policy_header_key: policy,
+            self.config.rate_limit_limit_header_key: str(max_requests),
             self.config.rate_limit_remaining_header_key: remaining_requests,
             self.config.rate_limit_reset_header_key: str(cache_object.reset - int(time())),
         }
@@ -217,8 +284,8 @@ class RateLimitMiddleware(AbstractMiddleware):
 class RateLimitConfig:
     """Configuration for ``RateLimitMiddleware``"""
 
-    rate_limit: tuple[DurationUnit, int]
-    """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
+    rate_limit: tuple[DurationUnit, int] | Sequence[tuple[DurationUnit, int]]
+    """One or more rate limits, e.g. ("minute", 5) or [("second", 1), ("minute", 5)]."""
     exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the rate limiting middleware."""
     exclude_opt_key: str | None = field(default=None)
@@ -253,8 +320,17 @@ class RateLimitConfig:
     """Key to use for the rate limit limit header."""
     store: str = "rate_limit"
     """Name of the :class:`Store <.stores.base.Store>` to use"""
+    _rate_limits: tuple[tuple[DurationUnit, int], ...] = field(init=False, repr=False)
 
     def __post_init__(self) -> None:
+        rate_limits: tuple[tuple[DurationUnit, int], ...]
+        if _is_rate_limit(self.rate_limit):
+            rate_limits = (self.rate_limit,)
+        else:
+            rate_limits = tuple(cast("Sequence[tuple[DurationUnit, int]]", self.rate_limit))
+        if not rate_limits:
+            raise ValueError("rate_limit must contain at least one rate limit")
+        self._rate_limits = rate_limits
         if self.check_throttle_handler:
             self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore[arg-type]
 
@@ -268,8 +344,11 @@ class RateLimitConfig:
                 from litestar import Litestar, Request, get
                 from litestar.middleware.rate_limit import RateLimitConfig
 
-                # limit to 10 requests per minute, excluding the schema path
-                throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
+                # reject a client when either window is exhausted
+                throttle_config = RateLimitConfig(
+                    rate_limit=[("second", 2), ("minute", 10)],
+                    exclude=["/schema"],
+                )
 
 
                 @get("/")
