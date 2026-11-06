@@ -179,6 +179,14 @@ def test_abstract_middleware_deprecation_warning() -> None:
             pass
 
 
+def test_define_middleware_deprecation_warning() -> None:
+    def middleware_factory(app: "ASGIApp") -> "ASGIApp":
+        return app
+
+    with pytest.warns(DeprecationWarning, match="DefineMiddleware"):
+        DefineMiddleware(middleware_factory)
+
+
 def test_asgi_middleware() -> None:
     class SubclassMiddleware(ASGIMiddleware):
         async def handle(self, scope: "Scope", receive: "Receive", send: "Send", next_app: "ASGIApp") -> None:

@@ -53,7 +53,12 @@ class MiddlewareProtocol(Protocol):
 
 
 class DefineMiddleware:
-    """Container enabling passing ``*args`` and ``**kwargs`` to Middleware class constructors and factory functions."""
+    """Container enabling passing ``*args`` and ``**kwargs`` to Middleware class constructors and factory functions.
+
+    .. deprecated:: 2.25
+        Use :class:`~litestar.middleware.ASGIMiddleware` instead, which allows passing configuration directly to the
+        middleware instance. ``DefineMiddleware`` will be removed in Litestar 3.0.
+    """
 
     __slots__ = ("args", "kwargs", "middleware")
 
@@ -69,6 +74,13 @@ class DefineMiddleware:
             The callable will be passed a kwarg ``app``, which is the next ASGI app to call in the middleware stack.
             It therefore must define such a kwarg.
         """
+        warn_deprecation(
+            version="2.25",
+            deprecated_name="DefineMiddleware",
+            kind="class",
+            alternative="litestar.middleware.ASGIMiddleware",
+        )
+
         self.middleware = middleware
         self.args = args
         self.kwargs = kwargs
