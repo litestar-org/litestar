@@ -121,11 +121,27 @@ def test_is_non_string_sequence(value: Any, expected: bool) -> None:
     assert is_non_string_sequence(value) is expected
 
 
+T = TypeVar("T")
+
+
+@dataclass
+class NonGenericDataclass:
+    foo: int
+
+
+@dataclass
+class GenericDataclass(Generic[T]):
+    foo: T
+
+
+class NonDataclass: ...
+
+
 @pytest.mark.parametrize(
     "value, expected",
     (
-        (Response[str], True),
-        (Response, True),
+        (GenericDataclass[int], True),
+        (GenericDataclass, True),
         (list[str], False),
         (dict[str, int], False),
         (dict, False),
@@ -263,22 +279,6 @@ def test_not_undefined_sentinel() -> None:
     assert is_undefined_sentinel([]) is False
     assert is_undefined_sentinel({}) is False
     assert is_undefined_sentinel(None) is False
-
-
-T = TypeVar("T")
-
-
-@dataclass
-class NonGenericDataclass:
-    foo: int
-
-
-@dataclass
-class GenericDataclass(Generic[T]):
-    foo: T
-
-
-class NonDataclass: ...
 
 
 @pytest.mark.parametrize(

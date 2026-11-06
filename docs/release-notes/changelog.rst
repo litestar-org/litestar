@@ -40,13 +40,12 @@
         the containers have been removed.
 
         ``OffsetPagination`` was re-exported from ``advanced_alchemy.service`` whenever that
-        package was installed, so import it from there instead; applications that did not
-        install the ``advanced-alchemy`` extra now need it as a dependency. The other two
-        containers and the paginator bases have no replacement; declare the container you
-        need as a generic dataclass of your own. A
-        handler returning Advanced Alchemy's ``OffsetPagination`` keeps working, but its
-        OpenAPI schema is now a ``$ref`` component with ``required`` fields and without the
-        plugin's per-field descriptions.
+        package was installed, so import it from there instead, adding Advanced Alchemy as a
+        dependency if the application did not already have it. The other two containers and
+        the paginator bases have no replacement; declare the container you need as a generic
+        dataclass of your own. Every paginated handler's OpenAPI schema is now a ``$ref``
+        component with ``required`` fields and without the plugin's per-field descriptions,
+        so regenerate any client generated from the document.
 
     .. change:: DI: Correctly set Pydantic dependency fields as required without a default
         :type: bugfix

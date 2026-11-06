@@ -526,7 +526,7 @@ def test_dto_concrete_builtin_collection_types(use_experimental_dto_backend: boo
 
 
 @dataclass
-class PaginatedUser:
+class WrappedUser:
     name: str
     age: int
 
@@ -546,13 +546,13 @@ def test_dto_generic_dataclass_wrapped_list_response(use_experimental_dto_backen
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
             ]
         ]
     )
-    def handler() -> Wrapped[list[PaginatedUser], int]:
+    def handler() -> Wrapped[list[WrappedUser], int]:
         return Wrapped(
-            data=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
+            data=[WrappedUser(name="John", age=42), WrappedUser(name="Jane", age=43)],
             other=2,
         )
 
@@ -571,13 +571,13 @@ def test_dto_generic_dataclass_wrapped_collection_response(use_experimental_dto_
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
             ]
         ]
     )
-    def handler() -> WrappedWithCollection[PaginatedUser, int]:
+    def handler() -> WrappedWithCollection[WrappedUser, int]:
         return WrappedWithCollection(
-            items=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
+            items=[WrappedUser(name="John", age=42), WrappedUser(name="Jane", age=43)],
             other=2,
         )
 
@@ -590,13 +590,13 @@ def test_dto_generic_dataclass_wrapped_scalar_response(use_experimental_dto_back
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
             ]
         ]
     )
-    def handler() -> Wrapped[PaginatedUser, int]:
+    def handler() -> Wrapped[WrappedUser, int]:
         return Wrapped(
-            data=PaginatedUser(name="John", age=42),
+            data=WrappedUser(name="John", age=42),
             other=2,
         )
 
@@ -617,13 +617,13 @@ def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_d
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
             ]
         ]
     )
-    def handler() -> WrappedWithDict[str, int, PaginatedUser]:
+    def handler() -> WrappedWithDict[str, int, WrappedUser]:
         return WrappedWithDict(
-            data=PaginatedUser(name="John", age=42),
+            data=WrappedUser(name="John", age=42),
             other={"a": 1, "b": 2},
         )
 
@@ -636,12 +636,12 @@ def test_dto_response_wrapped_scalar_return_type(use_experimental_dto_backend: b
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
             ]
         ]
     )
-    def handler() -> Response[PaginatedUser]:
-        return Response(content=PaginatedUser(name="John", age=42))
+    def handler() -> Response[WrappedUser]:
+        return Response(content=WrappedUser(name="John", age=42))
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -650,19 +650,19 @@ def test_dto_response_wrapped_scalar_return_type(use_experimental_dto_backend: b
         schema_response = client.get("/schema/openapi.json")
         schemas = list(schema_response.json()["components"]["schemas"].values())
         assert len(schemas) == 1
-        assert schemas[0]["title"] == "HandlerPaginatedUserResponseBody"
+        assert schemas[0]["title"] == "HandlerWrappedUserResponseBody"
 
 
 def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
             ]
         ]
     )
-    def handler() -> Response[list[PaginatedUser]]:
-        return Response(content=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)])
+    def handler() -> Response[list[WrappedUser]]:
+        return Response(content=[WrappedUser(name="John", age=42), WrappedUser(name="Jane", age=43)])
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -671,7 +671,7 @@ def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backen
         schema_response = client.get("/schema/openapi.json")
         schemas = list(schema_response.json()["components"]["schemas"].values())
         assert len(schemas) == 1
-        assert schemas[0]["title"] == "HandlerPaginatedUserResponseBody"
+        assert schemas[0]["title"] == "HandlerWrappedUserResponseBody"
 
 
 def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: bool) -> None:
