@@ -842,72 +842,42 @@ allows background tasks to run concurrently, using an `anyio.task_group <https:/
 
    Setting ``run_in_task_group`` to ``True`` will not preserve execution order.
 
+
 Pagination
------------
+----------
 
-When you need to return a large number of items from an endpoint it is common practice to use pagination to ensure
-clients can request a specific subset or "page" from the total dataset. Litestar supports three types of pagination out
-of the box:
+Litestar does not provide pagination containers or paginator base classes. Return a
+generic container of your own -- a dataclass, a ``msgspec.Struct`` or a Pydantic model --
+whose collection field holds the current page, and compute the page in the handler or in a
+:doc:`dependency </usage/dependency-injection>`:
 
-* classic pagination
-* limit / offset pagination
-* cursor pagination
+.. code-block:: python
 
-Classic Pagination
-++++++++++++++++++
+    from dataclasses import dataclass
+    from typing import Generic, TypeVar
 
-In classic pagination the dataset is divided into pages of a specific size and the consumer then requests a specific page.
+    from litestar import get
 
-.. literalinclude:: /examples/pagination/using_classic_pagination.py
-    :caption: Classic Pagination
-    :language: python
-
-The data container for this pagination is called :class:`ClassicPagination <.pagination.ClassicPagination>`, which is
-what will be returned by the paginator in the above example This will also generate the corresponding OpenAPI
-documentation.
-
-If you require async logic, you can implement
-the :class:`AbstractAsyncClassicPaginator <.pagination.AbstractAsyncClassicPaginator>` instead of the
-:class:`AbstractSyncClassicPaginator <.pagination.AbstractSyncClassicPaginator>`.
-
-Offset Pagination
-+++++++++++++++++
-
-In offset pagination the consumer requests a number of items specified by ``limit`` and the ``offset`` from the beginning of the dataset.
-For example, given a list of 50 items, you could request ``limit=10``, ``offset=39`` to request items 40-50.
-
-.. literalinclude:: /examples/pagination/using_offset_pagination.py
-    :caption: Offset Pagination
-    :language: python
-
-The data container for this pagination is
-called :class:`OffsetPagination <.pagination.OffsetPagination>`, which is what will be returned by the paginator in the
-above example This will also generate the corresponding OpenAPI documentation.
-
-If you require async logic, you can implement
-the :class:`AbstractAsyncOffsetPaginator <.pagination.AbstractAsyncOffsetPaginator>` instead of the
-:class:`AbstractSyncOffsetPaginator <.pagination.AbstractSyncOffsetPaginator>`.
-
-Offset Pagination With SQLAlchemy
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
-instance to make queries. This can be achieved with :doc:`/usage/dependency-injection`
+    T = TypeVar("T")
 
 
-Cursor Pagination
-+++++++++++++++++
+    @dataclass
+    class Page(Generic[T]):
+        items: list[T]
+        limit: int
+        offset: int
+        total: int
 
-In cursor pagination the consumer requests a number of items specified by ``results_per_page`` and a ``cursor`` after which results are given.
-Cursor is unique identifier within the dataset that serves as a way to point the starting position.
 
-.. literalinclude:: /examples/pagination/using_cursor_pagination.py
-    :caption: Cursor Pagination
-    :language: python
+    @get("/users")
+    async def list_users(limit: int = 10, offset: int = 0) -> Page[User]:
+        users, total = await fetch_users(limit=limit, offset=offset)
+        return Page(items=users, limit=limit, offset=offset, total=total)
 
-The data container for this pagination is called :class:`CursorPagination <.pagination.CursorPagination>`, which is what
-will be returned by the paginator in the above example This will also generate the corresponding OpenAPI documentation.
+The container is resolved like any other generic wrapper, so its schema is included in the
+OpenAPI document and a :doc:`DTO </usage/dto/index>` declared on the handler applies to the
+models held in the collection field.
 
-If you require async logic, you can implement
-the :class:`AbstractAsyncCursorPaginator <.pagination.AbstractAsyncCursorPaginator>` instead of the
-:class:`AbstractSyncCursorPaginator <.pagination.AbstractSyncCursorPaginator>`.
+Applications using :doc:`Advanced Alchemy </usage/databases/sqlalchemy/index>` can return
+its ``advanced_alchemy.service.OffsetPagination`` instead, which declares the same four
+fields.

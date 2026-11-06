@@ -25,7 +25,6 @@ API reference
     handlers
     middleware/index
     openapi/index
-    pagination
     params
     plugins/index
     repository/index
