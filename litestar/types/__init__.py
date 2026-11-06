@@ -160,11 +160,9 @@ __all__ = (
     "WebSocketDisconnectEvent",
     "WebSocketReceiveEvent",
     "WebSocketReceiveMessage",
-    "WebSocketReceiveMessage",
     "WebSocketResponseBodyEvent",
     "WebSocketResponseStartEvent",
     "WebSocketScope",
     "WebSocketSendEvent",
-    "WebSocketSendMessage",
     "WebSocketSendMessage",
 )

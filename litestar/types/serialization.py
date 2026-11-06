@@ -1,30 +1,28 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
-
+from collections.abc import Collection
+from ipaddress import (
+    IPv4Address,
+    IPv4Interface,
+    IPv4Network,
+    IPv6Address,
+    IPv6Interface,
+    IPv6Network,
+)
 from typing import TYPE_CHECKING, Any
+
+from msgspec import Raw, Struct
+from msgspec.msgpack import Ext
+from typing_extensions import TypeAliasType
 
 if TYPE_CHECKING:
     from collections import deque
-    from collections.abc import Collection
     from datetime import date, datetime, time
     from decimal import Decimal
     from enum import Enum, IntEnum
-    from ipaddress import (
-        IPv4Address,
-        IPv4Interface,
-        IPv4Network,
-        IPv6Address,
-        IPv6Interface,
-        IPv6Network,
-    )
     from pathlib import Path, PurePath
     from re import Pattern
-    from typing import TypeAlias
     from uuid import UUID
-
-    from msgspec import Raw, Struct
-    from msgspec.msgpack import Ext
 
     from litestar.types import DataclassProtocol
 
@@ -43,14 +41,19 @@ __all__ = (
     "LitestarEncodableType",
 )
 
-EncodableBuiltinType: TypeAlias = "None | bool | int | float | str | bytes | bytearray"
-EncodableBuiltinCollectionType: TypeAlias = "list | tuple | set | frozenset | dict | Collection"
-EncodableStdLibType: TypeAlias = (
-    "date | datetime | deque | time | UUID | Decimal | Enum | IntEnum | DataclassProtocol | Path | PurePath | Pattern"
+EncodableBuiltinType = TypeAliasType("EncodableBuiltinType", None | bool | int | float | str | bytes | bytearray)
+EncodableBuiltinCollectionType = TypeAliasType(
+    "EncodableBuiltinCollectionType", list | tuple | set | frozenset | dict | Collection
 )
-EncodableStdLibIPType: TypeAlias = (
-    "IPv4Address | IPv4Interface | IPv4Network | IPv6Address | IPv6Interface | IPv6Network"
+EncodableStdLibType = TypeAliasType(
+    "EncodableStdLibType",
+    (
+        "date | datetime | deque | time | UUID | Decimal | Enum | IntEnum | DataclassProtocol | Path | PurePath | Pattern"
+    ),
 )
-EncodableMsgSpecType: TypeAlias = "Ext | Raw | Struct"
-LitestarEncodableType: TypeAlias = "Any"  # pyright: ignore # TODO: Remove this
-DataContainerType: TypeAlias = "Any"  # pyright: ignore  # TODO: Remove this
+EncodableStdLibIPType = TypeAliasType(
+    "EncodableStdLibIPType", IPv4Address | IPv4Interface | IPv4Network | IPv6Address | IPv6Interface | IPv6Network
+)
+EncodableMsgSpecType = TypeAliasType("EncodableMsgSpecType", Ext | Raw | Struct)
+LitestarEncodableType = TypeAliasType("LitestarEncodableType", Any)  # pyright: ignore # TODO: Remove this)
+DataContainerType = TypeAliasType("DataContainerType", Any)  # pyright: ignore  # TODO: Remove this)

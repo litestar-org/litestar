@@ -1,14 +1,17 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
 
 import inspect
+from collections.abc import Coroutine, Iterable, Set
 from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
 
 from litestar._parsers import parse_cookie_string
+from litestar.connection import ASGIConnection
 from litestar.connection.request import Request
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import HttpMethod, RequestEncodingType
+from litestar.types import Method
+from litestar.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
 __all__ = (
     "ConnectionDataExtractor",
@@ -21,11 +24,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine, Iterable, Set
-
-    from litestar.connection import ASGIConnection
-    from litestar.types import Method
-    from litestar.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
+    from collections.abc import Callable
 
 
 def _obfuscate(values: dict[str, Any], fields_to_obfuscate: set[str]) -> dict[str, Any]:
