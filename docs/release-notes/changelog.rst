@@ -32,6 +32,7 @@
     .. change:: Remove the ``litestar.pagination`` module
         :type: feature
         :breaking:
+        :pr: 5199
         :issue: 4009
 
         The ``ClassicPagination``, ``OffsetPagination`` and ``CursorPagination`` containers,
