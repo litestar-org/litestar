@@ -230,7 +230,6 @@ nitpick_ignore_regex = [
     (PY_RE, r"litestar\.connection\.base\.HandlerT"),
     (PY_RE, r"litestar\.connection\.base\.StateT"),
     (PY_RE, r"litestar\.connection\.base\.UserT"),
-    (PY_RE, r"litestar\.pagination\.C"),
     (PY_RE, r"multidict\..*"),
     (PY_RE, r"advanced_alchemy.*\.T"),
     (PY_RE, r"advanced_alchemy\.config.common\.EngineT"),
