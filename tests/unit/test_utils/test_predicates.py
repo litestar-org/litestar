@@ -17,7 +17,6 @@ from typing import (
 import pytest
 
 from litestar import Response, get
-from litestar.pagination import CursorPagination
 from litestar.types import Empty
 from litestar.utils import is_any, is_async_callable, is_class_and_subclass, is_optional_union, is_union
 from litestar.utils.predicates import (
@@ -124,7 +123,14 @@ def test_is_non_string_sequence(value: Any, expected: bool) -> None:
 
 @pytest.mark.parametrize(
     "value, expected",
-    ((CursorPagination[str, str], True), (dict, False)),
+    (
+        (Response[str], True),
+        (Response, True),
+        (list[str], False),
+        (dict[str, int], False),
+        (dict, False),
+        (int, False),
+    ),
 )
 def test_is_generic(value: Any, expected: bool) -> None:
     assert is_generic(value) is expected
