@@ -478,7 +478,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#pyyaml-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">pyyaml</span></code> package removed from default dependencies</a></li>
 <li><a class="reference internal" href="#litestar-htmx-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">litestar-htmx</span></code> package removed from default dependencies</a></li>
 <li><a class="reference internal" href="#click-rich-and-rich-click-packages-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">click</span></code>, <code class="docutils literal notranslate"><span class="pre">rich</span></code> and <code class="docutils literal notranslate"><span class="pre">rich-click</span></code> packages removed from default dependencies</a></li>
-<li><a class="reference internal" href="#httpx-package-removed-from-default-dependencies"><code class="docutils literal notranslate"><span class="pre">httpx</span></code> package removed from default dependencies</a></li>
+<li><a class="reference internal" href="#test-clients-are-based-on-httpx2-installed-via-the-testing-extra">Test clients are based on <code class="docutils literal notranslate"><span class="pre">httpx2</span></code>, installed via the <code class="docutils literal notranslate"><span class="pre">testing</span></code> extra</a></li>
 <li><a class="reference internal" href="#rich-click-1-9-is-now-required-by-the-cli"><code class="docutils literal notranslate"><span class="pre">rich-click&gt;=1.9</span></code> is now required by the CLI</a></li>
 <li><a class="reference internal" href="#improved-file-system-handling-fsspec-integration">Improved file system handling / fsspec integration</a></li>
 <li><a class="reference internal" href="#removal-of-resolve-symlinks-parameter-to-create-static-files-router">Removal of <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code></a></li>
@@ -979,12 +979,13 @@ naming the extra to install:</p>
 </div>
 </div>
 </section>
-<section id="httpx-package-removed-from-default-dependencies">
-<h2><code class="docutils literal notranslate"><span class="pre">httpx</span></code> package removed from default dependencies<a class="headerlink" href="#httpx-package-removed-from-default-dependencies" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference external" href="https://www.python-httpx.org/">httpx</a> library, on which the
-<a class="reference internal" href="../usage/testing.html"><span class="doc">test clients</span></a> are based, has been moved from the default
-dependencies to the <code class="docutils literal notranslate"><span class="pre">litestar[testing]</span></code> package extra. It is also included in
-<code class="docutils literal notranslate"><span class="pre">litestar[full]</span></code>.</p>
+<section id="test-clients-are-based-on-httpx2-installed-via-the-testing-extra">
+<h2>Test clients are based on <code class="docutils literal notranslate"><span class="pre">httpx2</span></code>, installed via the <code class="docutils literal notranslate"><span class="pre">testing</span></code> extra<a class="headerlink" href="#test-clients-are-based-on-httpx2-installed-via-the-testing-extra" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../usage/testing.html"><span class="doc">test clients</span></a> were based on
+<a class="reference external" href="https://www.python-httpx.org/">httpx</a>, which was a default dependency. In 3.0 they
+are based on <a class="reference external" href="https://pydantic.dev/docs/httpx2/">httpx2</a>, the fork of <code class="docutils literal notranslate"><span class="pre">httpx</span></code>
+maintained by Pydantic, and it is installed by the <code class="docutils literal notranslate"><span class="pre">litestar[testing]</span></code> extra rather
+than by default.</p>
 <p>Importing anything from <a class="reference internal" href="../reference/testing.html#module-litestar.testing" title="litestar.testing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">litestar.testing</span></code></a> without the extra installed raises a
 <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.MissingDependencyException" title="litestar.exceptions.MissingDependencyException"><code class="xref py py-class docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a>
 naming the extra to install:</p>
@@ -994,6 +995,46 @@ naming the extra to install:</p>
 </span></pre></div>
 </div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">httpx2</span></code> keeps the public API of <code class="docutils literal notranslate"><span class="pre">httpx</span></code> 0.28.1, but it is a distinct module, so
+every reference in a test suite has to be renamed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># before</span>
+</span><span data-line="2"><span class="n">response</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="3"><span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">httpx</span><span class="o">.</span><span class="n">HTTPStatusError</span><span class="p">):</span>
+</span><span data-line="4">    <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># after</span>
+</span><span data-line="7"><span class="n">response</span><span class="p">:</span> <span class="n">httpx2</span><span class="o">.</span><span class="n">Response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="8"><span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">httpx2</span><span class="o">.</span><span class="n">HTTPStatusError</span><span class="p">):</span>
+</span><span data-line="9">    <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+</span></pre></div>
+</div>
+<p>If you cannot rename a test suite yet, <code class="docutils literal notranslate"><span class="pre">httpx2.alias_httpx()</span></code> makes <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">httpx</span></code>
+resolve to <code class="docutils literal notranslate"><span class="pre">httpx2</span></code> process-wide. It has to be called before anything imports
+<code class="docutils literal notranslate"><span class="pre">httpx</span></code> or <code class="docutils literal notranslate"><span class="pre">httpcore</span></code>, and raises <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.15)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RuntimeError</span></code></a> otherwise. Litestar never
+calls it for you.</p>
+<p>Beyond the rename, these are worth checking:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> and
+<a class="reference internal" href="../reference/testing.html#litestar.testing.AsyncTestClient" title="litestar.testing.AsyncTestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncTestClient</span></code></a> now subclass <code class="docutils literal notranslate"><span class="pre">httpx2.Client</span></code> and
+<code class="docutils literal notranslate"><span class="pre">httpx2.AsyncClient</span></code>, and <a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_sync_client" title="litestar.testing.subprocess_sync_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">subprocess_sync_client()</span></code></a> /
+<a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_async_client" title="litestar.testing.subprocess_async_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">subprocess_async_client()</span></code></a> return <code class="docutils literal notranslate"><span class="pre">httpx2</span></code> clients.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">httpx2</span></code> raises its own exceptions, which do not inherit from the <code class="docutils literal notranslate"><span class="pre">httpx</span></code> ones.
+An <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">httpx.HTTPError</span></code> around a test client call stops matching, and does so
+silently if <code class="docutils literal notranslate"><span class="pre">httpx</span></code> is still installed for other reasons.</p></li>
+<li><p>The logger is named <code class="docutils literal notranslate"><span class="pre">httpx2</span></code>. Logging configuration and <code class="docutils literal notranslate"><span class="pre">caplog</span></code> assertions
+that reference the <code class="docutils literal notranslate"><span class="pre">httpx</span></code> logger need updating.</p></li>
+<li><p>The clients inherit <code class="docutils literal notranslate"><span class="pre">httpx2</span></code>’s <code class="docutils literal notranslate"><span class="pre">sse()</span></code>, which works through the test transport,
+so <code class="docutils literal notranslate"><span class="pre">httpx-sse</span></code> is no longer needed. The inherited <code class="docutils literal notranslate"><span class="pre">websocket()</span></code> does not work
+against the test transport; use
+<a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient.websocket_connect" title="litestar.testing.TestClient.websocket_connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">websocket_connect</span></code></a> instead.</p></li>
+<li><p><a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_sync_client" title="litestar.testing.subprocess_sync_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">subprocess_sync_client()</span></code></a> and
+<a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_async_client" title="litestar.testing.subprocess_async_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">subprocess_async_client()</span></code></a> send
+<code class="docutils literal notranslate"><span class="pre">User-Agent:</span> <span class="pre">python-httpx2/&lt;version&gt;</span></code>. <a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> and
+<a class="reference internal" href="../reference/testing.html#litestar.testing.AsyncTestClient" title="litestar.testing.AsyncTestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncTestClient</span></code></a> keep sending <code class="docutils literal notranslate"><span class="pre">testclient</span></code>.</p></li>
+<li><p>The extra pulls <code class="docutils literal notranslate"><span class="pre">anyio&gt;=4.10</span></code> and <code class="docutils literal notranslate"><span class="pre">idna&gt;=3.18</span></code>, neither of which can be
+satisfied alongside a lower pin. TLS verification uses the operating system trust
+store via <code class="docutils literal notranslate"><span class="pre">truststore</span></code> rather than <code class="docutils literal notranslate"><span class="pre">certifi</span></code>.</p></li>
+</ul>
 </section>
 <section id="rich-click-1-9-is-now-required-by-the-cli">
 <h2><code class="docutils literal notranslate"><span class="pre">rich-click&gt;=1.9</span></code> is now required by the CLI<a class="headerlink" href="#rich-click-1-9-is-now-required-by-the-cli" title="Link to this heading">¶</a></h2>

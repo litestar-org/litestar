@@ -510,8 +510,8 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
 </span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlencode</span>
 </span><span data-line="9">
-</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">httpx._content</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_json</span> <span class="k">as</span> <span class="n">httpx_encode_json</span>
-</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">httpx._content</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_multipart_data</span><span class="p">,</span> <span class="n">encode_urlencoded_data</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">httpx2._content</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_json</span> <span class="k">as</span> <span class="n">httpx_encode_json</span>
+</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">httpx2._content</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_multipart_data</span><span class="p">,</span> <span class="n">encode_urlencoded_data</span>
 </span><span data-line="12">
 </span><span data-line="13"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
 </span><span data-line="14"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
@@ -525,7 +525,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="22"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.scope.state</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScopeState</span>
 </span><span data-line="23">
 </span><span data-line="24"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="25">    <span class="kn">from</span><span class="w"> </span><span class="nn">httpx._types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileTypes</span>
+</span><span data-line="25">    <span class="kn">from</span><span class="w"> </span><span class="nn">httpx2._types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileTypes</span>
 </span><span data-line="26">
 </span><span data-line="27">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures.cookie</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cookie</span>
 </span><span data-line="28">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers.http_handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPRouteHandler</span>

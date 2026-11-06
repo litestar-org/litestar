@@ -450,13 +450,51 @@
         dynamic ``LISTEN`` and ``UNLISTEN`` operations no longer contend with the listener.
         Psycopg 3.2.4 or newer is now required for development and documentation builds.
 
+    .. change:: Base the test clients on ``httpx2``
+        :type: feature
+        :pr: 4974
+        :breaking:
+
+        The ``litestar[testing]`` extra now installs `httpx2 <https://pydantic.dev/docs/httpx2/>`_,
+        the fork of ``httpx`` maintained by Pydantic, instead of ``httpx``.
+
+        ``httpx2`` keeps the public API of ``httpx`` 0.28.1, but it is a distinct module,
+        so every ``httpx`` reference in a test suite has to be renamed, including
+        annotations such as ``response: httpx.Response``. Its exceptions no longer
+        inherit from the ``httpx`` ones, so an ``except httpx.HTTPError`` around a test
+        client call stops matching, silently where ``httpx`` remains installed for other
+        reasons. Beyond the rename:
+
+        - ``TestClient`` and ``AsyncTestClient`` now subclass ``httpx2.Client`` and
+          ``httpx2.AsyncClient``, and ``subprocess_sync_client`` /
+          ``subprocess_async_client`` return ``httpx2`` clients.
+        - The logger is named ``httpx2``, which affects logging configuration and
+          ``caplog`` assertions that reference the ``httpx`` logger.
+        - The clients inherit ``httpx2``'s ``sse()``, so ``httpx-sse`` is no longer
+          needed. The inherited ``websocket()`` does not work against the test
+          transport; use :meth:`~litestar.testing.TestClient.websocket_connect` instead.
+        - The subprocess clients send ``User-Agent: python-httpx2/<version>``;
+          ``TestClient`` and ``AsyncTestClient`` keep sending ``testclient``.
+        - The extra pulls ``anyio>=4.10`` and ``idna>=3.18``, neither of which can be
+          satisfied alongside a lower pin, and verifies TLS against the operating system
+          trust store via ``truststore`` rather than ``certifi``.
+
+        ``httpx2.alias_httpx()``, which must run before anything imports ``httpx`` or
+        ``httpcore``, makes ``import httpx`` resolve to ``httpx2`` process-wide for
+        suites that cannot be renamed yet. Litestar never calls it.
+
+        .. seealso::
+            :doc:`/usage/testing`
+
     .. change:: Move ``httpx`` to the ``testing`` extra
         :type: feature
         :pr: 4950
         :breaking:
 
         ``httpx``, used by the test clients, has been moved from the default dependencies
-        to the ``litestar[testing]`` extra. It remains included in ``litestar[full]``.
+        to the ``litestar[testing]`` extra, which is included in ``litestar[full]``. The
+        extra went on to replace ``httpx`` with ``httpx2`` altogether, so 3.0 ships no
+        dependency on ``httpx``.
 
         Importing anything from ``litestar.testing`` without the extra installed now
         raises a ``MissingDependencyException`` naming the extra to install.

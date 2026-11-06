@@ -508,7 +508,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Iterator</span>
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span><span class="p">,</span> <span class="n">contextmanager</span>
 </span><span data-line="7">
-</span><span data-line="8"><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+</span><span data-line="8"><span class="kn">import</span><span class="w"> </span><span class="nn">httpx2</span>
 </span><span data-line="9">
 </span><span data-line="10">
 </span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">StartupError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
@@ -556,10 +556,10 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="53">
 </span><span data-line="54">        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">retry_count</span><span class="p">):</span>
 </span><span data-line="55">            <span class="k">try</span><span class="p">:</span>
-</span><span data-line="56">                <span class="n">httpx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</span><span data-line="56">                <span class="n">httpx2</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 </span><span data-line="57">                <span class="n">application_started</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span data-line="58">                <span class="k">break</span>
-</span><span data-line="59">            <span class="k">except</span> <span class="n">httpx</span><span class="o">.</span><span class="n">TransportError</span><span class="p">:</span>
+</span><span data-line="59">            <span class="k">except</span> <span class="n">httpx2</span><span class="o">.</span><span class="n">TransportError</span><span class="p">:</span>
 </span><span data-line="60">                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_timeout</span><span class="p">)</span>
 </span><span data-line="61">
 </span><span data-line="62">        <span class="k">if</span> <span class="ow">not</span> <span class="n">application_started</span><span class="p">:</span>
@@ -575,8 +575,8 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="70"><span class="nd">@asynccontextmanager</span>
 </span><span data-line="71"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">subprocess_async_client</span><span class="p">(</span>
 </span><span data-line="72">    <span class="n">workdir</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">capture_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="73"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
-</span><span data-line="74"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Provides an async httpx client for a litestar app launched in a subprocess.</span>
+</span><span data-line="73"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx2</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
+</span><span data-line="74"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Provides an async httpx2 client for a litestar app launched in a subprocess.</span>
 </span><span data-line="75">
 </span><span data-line="76"><span class="sd">    Args:</span>
 </span><span data-line="77"><span class="sd">        workdir: Path to the directory in which the app module resides.</span>
@@ -584,7 +584,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="79"><span class="sd">        capture_output: Whether to capture output from the subprocess in the main process stdout/stderr</span>
 </span><span data-line="80"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="81">    <span class="k">with</span> <span class="n">run_app</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">workdir</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="n">capture_output</span><span class="p">)</span> <span class="k">as</span> <span class="n">url</span><span class="p">:</span>
-</span><span data-line="82">        <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+</span><span data-line="82">        <span class="k">async</span> <span class="k">with</span> <span class="n">httpx2</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="83">            <span class="k">yield</span> <span class="n">client</span></div>
 
 </span><span data-line="84">
@@ -592,15 +592,15 @@ data-aria-dark="Switch to auto color mode">
 <div class="viewcode-block" id="subprocess_sync_client">
 <a class="viewcode-back" href="../../../../reference/testing.html#litestar.testing.subprocess_sync_client">[docs]</a>
 </span><span data-line="86"><span class="nd">@contextmanager</span>
-</span><span data-line="87"><span class="k">def</span><span class="w"> </span><span class="nf">subprocess_sync_client</span><span class="p">(</span><span class="n">workdir</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">capture_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">]:</span>
-</span><span data-line="88"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Provides a sync httpx client for a litestar app launched in a subprocess.</span>
+</span><span data-line="87"><span class="k">def</span><span class="w"> </span><span class="nf">subprocess_sync_client</span><span class="p">(</span><span class="n">workdir</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">capture_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">httpx2</span><span class="o">.</span><span class="n">Client</span><span class="p">]:</span>
+</span><span data-line="88"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Provides a sync httpx2 client for a litestar app launched in a subprocess.</span>
 </span><span data-line="89">
 </span><span data-line="90"><span class="sd">    Args:</span>
 </span><span data-line="91"><span class="sd">        workdir: Path to the directory in which the app module resides.</span>
 </span><span data-line="92"><span class="sd">        app: Uvicorn app string that can be resolved in the provided working directory, e.g.: &quot;app:app&quot;</span>
 </span><span data-line="93"><span class="sd">        capture_output: Whether to capture output from the subprocess in the main process stdout/stderr</span>
 </span><span data-line="94"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="95">    <span class="k">with</span> <span class="n">run_app</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">workdir</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="n">capture_output</span><span class="p">)</span> <span class="k">as</span> <span class="n">url</span><span class="p">,</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+</span><span data-line="95">    <span class="k">with</span> <span class="n">run_app</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">workdir</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="n">capture_output</span><span class="p">)</span> <span class="k">as</span> <span class="n">url</span><span class="p">,</span> <span class="n">httpx2</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
 </span><span data-line="96">        <span class="k">yield</span> <span class="n">client</span></div>
 
 </span></pre></div>

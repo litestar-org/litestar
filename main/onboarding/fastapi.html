@@ -1676,8 +1676,8 @@ WebSocket route handlers that publish incoming events to subscribed clients.</p>
 </section>
 <section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
-<p>Both frameworks ship an <code class="docutils literal notranslate"><span class="pre">httpx</span></code>-based <code class="docutils literal notranslate"><span class="pre">TestClient</span></code>. The Litestar one is
-<a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a>. For unit testing, Litestar also provides
+<p>Both frameworks ship a <code class="docutils literal notranslate"><span class="pre">TestClient</span></code>. The Litestar one is
+<a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a>, based on <code class="docutils literal notranslate"><span class="pre">httpx2</span></code>. For unit testing, Litestar also provides
 <a class="reference internal" href="../reference/testing.html#litestar.testing.create_test_client" title="litestar.testing.create_test_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_test_client()</span></code></a> and
 <a class="reference internal" href="../reference/testing.html#litestar.testing.create_async_test_client" title="litestar.testing.create_async_test_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_async_test_client()</span></code></a>, which take the same
 arguments as <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> and return a configured client.</p>

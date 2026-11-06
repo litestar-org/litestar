@@ -508,7 +508,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 </span><span data-line="6">
 </span><span data-line="7"><span class="kn">import</span><span class="w"> </span><span class="nn">anyio.from_thread</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">httpx</span><span class="w"> </span><span class="kn">import</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,</span> <span class="n">Client</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">httpx2</span><span class="w"> </span><span class="kn">import</span> <span class="n">USE_CLIENT_DEFAULT</span><span class="p">,</span> <span class="n">Client</span>
 </span><span data-line="9">
 </span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.testing.client._base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 </span><span data-line="11">    <span class="n">_get_session_data</span><span class="p">,</span>
@@ -526,8 +526,8 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="23">    <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">TracebackType</span>
 </span><span data-line="24">    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 </span><span data-line="25">
-</span><span data-line="26">    <span class="kn">from</span><span class="w"> </span><span class="nn">httpx._client</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseClientDefault</span>
-</span><span data-line="27">    <span class="kn">from</span><span class="w"> </span><span class="nn">httpx._types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="26">    <span class="kn">from</span><span class="w"> </span><span class="nn">httpx2._client</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseClientDefault</span>
+</span><span data-line="27">    <span class="kn">from</span><span class="w"> </span><span class="nn">httpx2._types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 </span><span data-line="28">        <span class="n">AuthTypes</span><span class="p">,</span>
 </span><span data-line="29">        <span class="n">CookieTypes</span><span class="p">,</span>
 </span><span data-line="30">        <span class="n">HeaderTypes</span><span class="p">,</span>
