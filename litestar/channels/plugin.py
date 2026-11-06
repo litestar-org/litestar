@@ -178,8 +178,16 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
             ChannelsException: If a channel in ``channels`` has not been declared on this backend and
                 ``arbitrary_channels_allowed`` has not been set to ``True``
         """
-        if isinstance(channels, str):
-            channels = [channels]
+        channels = [channels] if isinstance(channels, str) else list(channels)
+        if (
+            history is not None
+            and self._max_backlog is not None
+            and self._backlog_strategy == "backoff"
+            and self._max_backlog < history * len(channels)
+        ):
+            raise ImproperlyConfiguredException(
+                "History amount cannot be greater than max backlog to prevent deadlocks with backoff strategy"
+            )
 
         subscriber = self._subscriber_class(
             plugin=self,
@@ -288,14 +296,12 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         # the ternary operator triggers a mypy bug: https://github.com/python/mypy/issues/10740
         on_event: EventCallback = socket.send_text if self._socket_send_mode == "text" else socket.send_bytes  # type: ignore[assignment]
 
-        async with self.start_subscription(channel_name) as subscriber:
+        async with self.start_subscription(channel_name) as subscriber, subscriber.run_in_background(on_event):
+            # use the background task, so we can block on receive(), breaking the loop when a connection closes
             if self._handler_should_send_history:
                 await self.put_subscriber_history(subscriber, channels=channel_name, limit=self._history_limit)
-
-            # use the background task, so we can block on receive(), breaking the loop when a connection closes
-            async with subscriber.run_in_background(on_event):
-                while (await socket.receive())["type"] != "websocket.disconnect":
-                    continue
+            while (await socket.receive())["type"] != "websocket.disconnect":
+                continue
 
     def _create_ws_handler_func(self, channel_name: str) -> Callable[[WebSocket], Awaitable[None]]:
         async def ws_handler_func(socket: WebSocket) -> None:
