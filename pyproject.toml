@@ -92,7 +92,7 @@ standard = [
   "litestar[cli]",
   "jinja2",
 ]
-testing = ["httpx>=0.22"]
+testing = ["httpx2>=2.9.1"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
 yaml = ["pyyaml"]
 
@@ -144,7 +144,6 @@ dev = [
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
   "opentelemetry-sdk",
-  "httpx-sse",
   "structlog",
 ]
 
@@ -183,6 +182,7 @@ test = [
   "covdefaults",
   "pytest>=8.4",
   "pytest-asyncio>0.24.0",
+  "pytest-codspeed>=5.0.3",
   "pytest-cov",
   "pytest-lazy-fixtures",
   "pytest-mock",
@@ -191,6 +191,7 @@ test = [
   "pytest-xdist",
   "time-machine",
   "zstandard",
+  "trio",  # required to run against trio anyio backend
 ]
 
 [build-system]
@@ -234,6 +235,7 @@ filterwarnings = [
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
   "server_integration: Test integration with ASGI server",
+  "benchmark: CodSpeed benchmark (see tests/benchmarks)",
 ]
 testpaths = ["tests", "docs/examples/testing"]
 xfail_strict = true

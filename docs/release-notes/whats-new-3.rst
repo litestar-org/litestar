@@ -195,6 +195,43 @@ If you were relying on this utility, you can define it yourself as follows:
         return isgeneratorfunction(obj) or isasyncgenfunction(obj)
 
 
+Deprecated ``DTOField`` declaration via Pydantic's ``Field.extra`` removed
+--------------------------------------------------------------------------
+
+Declaring a :class:`~.dto.field.DTOField` through Pydantic's ``Field.extra``, that is
+``Field(**dto_field("read-only"))``, is no longer supported. The mark was already being
+ignored in 2.x and only produced a deprecation warning.
+
+Remove the declaration: it leaves an internal key in the field's ``json_schema_extra``,
+which can make OpenAPI schema generation fail.
+
+Before:
+
+.. code-block:: python
+
+    import pydantic
+
+    from litestar.dto import dto_field
+
+
+    class User(pydantic.BaseModel):
+        id: int = pydantic.Field(**dto_field("read-only"))
+
+After:
+
+.. code-block:: python
+
+    from typing import Annotated
+
+    import pydantic
+
+    from litestar.dto import DTOField
+
+
+    class User(pydantic.BaseModel):
+        id: Annotated[int, DTOField(mark="read-only")]
+
+
 Removal of semantic HTTP route handler classes
 -----------------------------------------------
 
@@ -435,13 +472,14 @@ naming the extra to install:
     pip install 'litestar[cli]'
 
 
-``httpx`` package removed from default dependencies
-----------------------------------------------------
+Test clients are based on ``httpx2``, installed via the ``testing`` extra
+-------------------------------------------------------------------------
 
-The `httpx <https://www.python-httpx.org/>`_ library, on which the
-:doc:`test clients </usage/testing>` are based, has been moved from the default
-dependencies to the ``litestar[testing]`` package extra. It is also included in
-``litestar[full]``.
+The :doc:`test clients </usage/testing>` were based on
+`httpx <https://www.python-httpx.org/>`_, which was a default dependency. In 3.0 they
+are based on `httpx2 <https://pydantic.dev/docs/httpx2/>`_, the fork of ``httpx``
+maintained by Pydantic, and it is installed by the ``litestar[testing]`` extra rather
+than by default.
 
 Importing anything from :mod:`litestar.testing` without the extra installed raises a
 :class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
@@ -451,6 +489,49 @@ naming the extra to install:
     :caption: Install the testing extra
 
     pip install 'litestar[testing]'
+
+``httpx2`` keeps the public API of ``httpx`` 0.28.1, but it is a distinct module, so
+every reference in a test suite has to be renamed:
+
+.. code-block:: python
+
+    # before
+    response: httpx.Response = client.get("/")
+    with pytest.raises(httpx.HTTPStatusError):
+        response.raise_for_status()
+
+    # after
+    response: httpx2.Response = client.get("/")
+    with pytest.raises(httpx2.HTTPStatusError):
+        response.raise_for_status()
+
+If you cannot rename a test suite yet, ``httpx2.alias_httpx()`` makes ``import httpx``
+resolve to ``httpx2`` process-wide. It has to be called before anything imports
+``httpx`` or ``httpcore``, and raises :exc:`RuntimeError` otherwise. Litestar never
+calls it for you.
+
+Beyond the rename, these are worth checking:
+
+- :class:`~litestar.testing.TestClient` and
+  :class:`~litestar.testing.AsyncTestClient` now subclass ``httpx2.Client`` and
+  ``httpx2.AsyncClient``, and :func:`~litestar.testing.subprocess_sync_client` /
+  :func:`~litestar.testing.subprocess_async_client` return ``httpx2`` clients.
+- ``httpx2`` raises its own exceptions, which do not inherit from the ``httpx`` ones.
+  An ``except httpx.HTTPError`` around a test client call stops matching, and does so
+  silently if ``httpx`` is still installed for other reasons.
+- The logger is named ``httpx2``. Logging configuration and ``caplog`` assertions
+  that reference the ``httpx`` logger need updating.
+- The clients inherit ``httpx2``'s ``sse()``, which works through the test transport,
+  so ``httpx-sse`` is no longer needed. The inherited ``websocket()`` does not work
+  against the test transport; use
+  :meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>` instead.
+- :func:`~litestar.testing.subprocess_sync_client` and
+  :func:`~litestar.testing.subprocess_async_client` send
+  ``User-Agent: python-httpx2/<version>``. :class:`~litestar.testing.TestClient` and
+  :class:`~litestar.testing.AsyncTestClient` keep sending ``testclient``.
+- The extra pulls ``anyio>=4.10`` and ``idna>=3.18``, neither of which can be
+  satisfied alongside a lower pin. TLS verification uses the operating system trust
+  store via ``truststore`` rather than ``certifi``.
 
 
 ``rich-click>=1.9`` is now required by the CLI

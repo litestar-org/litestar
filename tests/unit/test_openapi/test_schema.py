@@ -171,7 +171,7 @@ def test_dependency_schema_generation() -> None:
         return query_param
 
     async def mid_level_dependency(
-        header_param: Annotated[str, HeaderParameter(name="header_param", required=False)],
+        header_param: Annotated[str, HeaderParameter(name="header_param", required=False)] = "",
     ) -> int:
         return 5
 
