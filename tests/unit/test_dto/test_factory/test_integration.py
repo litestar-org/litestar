@@ -562,12 +562,12 @@ def test_dto_generic_dataclass_wrapped_list_response(use_experimental_dto_backen
 
 
 @dataclass
-class CollectionWrapped(Generic[T, V]):
+class WrappedWithCollection(Generic[T, V]):
     items: list[T]
     other: V
 
 
-def test_dto_generic_dataclass_with_collection_attribute(use_experimental_dto_backend: bool) -> None:
+def test_dto_generic_dataclass_wrapped_collection_response(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
             Annotated[
@@ -575,8 +575,8 @@ def test_dto_generic_dataclass_with_collection_attribute(use_experimental_dto_ba
             ]
         ]
     )
-    def handler() -> CollectionWrapped[PaginatedUser, int]:
-        return CollectionWrapped(
+    def handler() -> WrappedWithCollection[PaginatedUser, int]:
+        return WrappedWithCollection(
             items=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
             other=2,
         )
