@@ -841,3 +841,43 @@ allows background tasks to run concurrently, using an `anyio.task_group <https:/
 .. note::
 
    Setting ``run_in_task_group`` to ``True`` will not preserve execution order.
+
+
+Pagination
+----------
+
+Litestar does not provide pagination containers or paginator base classes. Return a
+generic container of your own -- a dataclass, a ``msgspec.Struct`` or a Pydantic model --
+whose collection field holds the current page, and compute the page in the handler or in a
+:doc:`dependency </usage/dependency-injection>`:
+
+.. code-block:: python
+
+    from dataclasses import dataclass
+    from typing import Generic, TypeVar
+
+    from litestar import get
+
+    T = TypeVar("T")
+
+
+    @dataclass
+    class Page(Generic[T]):
+        items: list[T]
+        limit: int
+        offset: int
+        total: int
+
+
+    @get("/users")
+    async def list_users(limit: int = 10, offset: int = 0) -> Page[User]:
+        users, total = await fetch_users(limit=limit, offset=offset)
+        return Page(items=users, limit=limit, offset=offset, total=total)
+
+The container is resolved like any other generic wrapper, so its schema is included in the
+OpenAPI document and a :doc:`DTO </usage/dto/index>` declared on the handler applies to the
+models held in the collection field.
+
+Applications using :doc:`Advanced Alchemy </usage/databases/sqlalchemy/index>` can return
+its ``advanced_alchemy.service.OffsetPagination`` instead, which declares the same four
+fields.

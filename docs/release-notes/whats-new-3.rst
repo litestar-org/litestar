@@ -251,17 +251,22 @@ schema plugin that gave its containers a schema of their own:
 - ``AbstractAsyncCursorPaginator``
 
 ``OffsetPagination`` has a direct replacement: Litestar re-exported Advanced Alchemy's
-container whenever the package was installed, so the class is the same one and only the
-import changes, to ``from advanced_alchemy.service import OffsetPagination``. It is
-exported from ``advanced_alchemy.service``, not from
-``advanced_alchemy.extensions.litestar``. Applications that did not install the
-``advanced-alchemy`` extra need it as a dependency now.
+container whenever the package was installed, so for an application that already depended
+on it the class is the same one and only the import changes, to
+``from advanced_alchemy.service import OffsetPagination``. It is exported from
+``advanced_alchemy.service``, not from ``advanced_alchemy.extensions.litestar``. An
+application that did not depend on Advanced Alchemy has to add it, directly or through the
+``litestar[sqlalchemy]`` extra, or declare the same four-field container itself --
+``items``, ``limit``, ``offset`` and ``total`` -- which serialises identically. Note that
+Advanced Alchemy declares ``items`` as a ``Sequence[T]``, where the removed fallback
+declared it as a ``list[T]``.
 
 The other two containers and the six paginator base classes have no replacement in
 Litestar or in Advanced Alchemy. Declare the container you need as a generic dataclass of
-your own, and implement the paginating logic in the handler or in a dependency. OpenAPI
-schema generation resolves a generic dataclass wrapping a collection the same way, and
-DTOs still apply to the models it holds.
+your own, and implement the paginating logic in the handler, or in a dependency whose
+parameter is marked with :data:`~litestar.di.NamedDependency`. OpenAPI schema generation
+resolves a generic dataclass wrapping a collection the same way, and DTOs still apply to
+the models it holds.
 
 .. code-block:: python
 
@@ -278,17 +283,27 @@ DTOs still apply to the models it holds.
         current_page: int
         total_pages: int
 
-``CursorPagination`` was generic over two parameters -- the cursor type, constrained to
-``int``, ``str`` or ``UUID``, and the item type -- with ``items: list[T]``,
-``results_per_page: int`` and ``cursor: Optional[C]`` fields, in that order.
+``CursorPagination`` was generic over the cursor type first and the item type second, so a
+handler annotated it as ``CursorPagination[str, Person]``:
 
-The OpenAPI document changes even for applications that never imported
-``litestar.pagination``, because the removed plugin matched Advanced Alchemy's
-``OffsetPagination`` as well. A handler returning it now gets a reusable component
-referenced with ``$ref`` instead of a schema inlined per handler, with a ``required``
-entry for each of its four fields and without the per-field descriptions the plugin
-wrote. Behaviour and the response body are unchanged, but regenerate any client generated
-from the document.
+.. code-block:: python
+
+    C = TypeVar("C", int, str, UUID)
+
+
+    @dataclass
+    class CursorPagination(Generic[C, T]):
+        items: list[T]
+        results_per_page: int
+        cursor: Optional[C]
+
+The OpenAPI document changes for every paginated handler, including those of applications
+that never imported ``litestar.pagination``, since the removed plugin matched Advanced
+Alchemy's ``OffsetPagination`` as well. The response schema is now a reusable component
+referenced with ``$ref``, named after the container and its type argument, instead of a
+schema inlined per handler, with a ``required`` entry for each field and without the
+per-field descriptions the plugin wrote. Behaviour and the response body are unchanged,
+but regenerate any client generated from the document.
 
 
 Removal of semantic HTTP route handler classes
