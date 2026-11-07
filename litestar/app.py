@@ -246,7 +246,7 @@ class Litestar(Router):
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
                 defined Compression middleware.
             cors_config: If set, configures CORS handling for the application.
-            csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
+            csrf_config: If set, enables CSRF protection.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
@@ -275,7 +275,7 @@ class Litestar(Router):
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <litestar.connection.request.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
-            parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
+            parameters: A mapping of :class:`Parameter <.params.ParameterKwarg>` definitions available to all application
                 paths.
             path: A path fragment that is prefixed to all route handlers, controllers and routers associated
                 with the application instance.
@@ -511,7 +511,7 @@ class Litestar(Router):
 
         plugins.append(MsgspecDIPlugin())
 
-        with suppress(MissingDependencyException):
+        with suppress(MissingDependencyException, ImportError):
             from litestar.plugins.pydantic import (
                 PydanticDIPlugin,
                 PydanticInitPlugin,
@@ -531,7 +531,7 @@ class Litestar(Router):
                 plugins.append(PydanticInitPlugin())
             if not pydantic_plugin_found and not pydantic_serialization_plugin_found:
                 plugins.append(PydanticDIPlugin())
-        with suppress(MissingDependencyException):
+        with suppress(MissingDependencyException, ImportError):
             from litestar.plugins.attrs import AttrsSchemaPlugin
 
             pre_configured = any(isinstance(plugin, AttrsSchemaPlugin) for plugin in plugins)
@@ -946,8 +946,17 @@ class Litestar(Router):
         """
         asgi_handler = wrap_in_exception_handler(app=self.asgi_router)
 
-        if self.cors_config:
-            asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
+        if cors_config := self.cors_config:
+            cors_middleware = CORSMiddleware(
+                allow_origins=cors_config.allow_origins,
+                allow_methods=cors_config.allow_methods,
+                allow_headers=cors_config.allow_headers,
+                allow_credentials=cors_config.allow_credentials,
+                allow_origin_regex=cors_config.allow_origin_regex,
+                expose_headers=cors_config.expose_headers,
+                max_age=cors_config.max_age,
+            )
+            asgi_handler = cors_middleware(asgi_handler)
 
         try:
             otel_plugin: OpenTelemetryPlugin = self.plugins.get("OpenTelemetryPlugin")
@@ -983,7 +992,9 @@ class Litestar(Router):
         Returns:
             None
         """
-        self.plugins.get(OpenAPIPlugin)._build_openapi()
+        plugin = self.plugins.get(OpenAPIPlugin)
+        plugin.invalidate_schema_cache()
+        plugin.provide_openapi_schema()
 
     def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.

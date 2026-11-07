@@ -1,5 +1,3 @@
-from typing import Any
-
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile
 from litestar.params import MultipartBody
@@ -8,7 +6,7 @@ from litestar.params import MultipartBody
 @post(path="/")
 async def handle_file_upload(
     data: MultipartBody[list[UploadFile]],
-) -> dict[str, tuple[str, str, Any]]:
+) -> dict[str, tuple[int, str, dict[str, str]]]:
     result = {}
     for file in data:
         content = await file.read()

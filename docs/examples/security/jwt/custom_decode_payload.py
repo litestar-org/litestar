@@ -1,6 +1,6 @@
 import dataclasses
 from collections.abc import Sequence
-from typing import Any, Union
+from typing import Any
 
 from litestar.security.jwt.token import JWTDecodeOptions, Token
 
@@ -11,11 +11,12 @@ class CustomToken(Token):
     def decode_payload(
         cls,
         encoded_token: str,
-        secret: str,
+        secret: str | bytes,
         algorithms: list[str],
-        issuer: list[str] | None = None,
-        audience: Union[str, Sequence[str], None] = None,
+        issuer: str | Sequence[str] | None = None,
+        audience: str | Sequence[str] | None = None,
         options: JWTDecodeOptions | None = None,
+        leeway: int = 0,
     ) -> Any:
         payload = super().decode_payload(
             encoded_token=encoded_token,
@@ -24,6 +25,7 @@ class CustomToken(Token):
             issuer=issuer,
             audience=audience,
             options=options,
+            leeway=leeway,
         )
         payload["sub"] = payload["sub"].split("@", maxsplit=1)[1]
         return payload

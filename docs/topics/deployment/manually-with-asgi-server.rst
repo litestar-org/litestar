@@ -37,7 +37,7 @@ Choosing an ASGI Server
     .. tab-item:: Uvicorn
         :sync: uvicorn
 
-        `Uvicorn <https://www.uvicorn.org/>`_ is an ASGI server that supports ``HTTP/1.1`` and WebSocket.
+        `Uvicorn <https://uvicorn.dev/>`_ is an ASGI server that supports ``HTTP/1.1`` and WebSocket.
 
     .. tab-item:: Hypercorn
         :sync: hypercorn

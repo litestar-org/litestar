@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import contextlib
 import dataclasses
-import warnings
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, get_origin
 
 from anyio import create_task_group
 
@@ -31,11 +31,13 @@ from litestar._kwargs.parameter_definition import (
     create_parameter_definition,
     merge_parameter_sets,
 )
+from litestar.connection import ASGIConnection, WebSocket
 from litestar.constants import RESERVED_KWARGS
+from litestar.datastructures.headers import Headers
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.exceptions.base_exceptions import LitestarDeprecationWarning
-from litestar.params import BodyKwarg, ParameterKwarg
+from litestar.params import BodyKwarg, ParameterKwarg, QueryParams, RawBody, RequestCookies
+from litestar.types import Scope
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_exception_group
 
@@ -43,9 +45,10 @@ __all__ = ("KwargsModel",)
 
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+
     from litestar._kwargs.types import Extractor
     from litestar._signature import SignatureModel
-    from litestar.connection import ASGIConnection
     from litestar.di import Provide
     from litestar.dto import AbstractDTO
     from litestar.handlers import BaseRouteHandler
@@ -60,6 +63,25 @@ class HandlerContext:
     handler: str
     paths: list[str]
     dependencies: list[str] = dataclasses.field(default_factory=list)
+    connection_class: type[ASGIConnection] | None = None
+
+    def format(self, msg: str | None = None) -> str:
+        paths = ",".join(sorted(self.paths))
+        out = f"[paths={paths!r}, handler={self.handler!r}"
+        if self.dependencies:
+            out += f", dependencies={' -> '.join(self.dependencies[::-1])!r}"
+        out += "]"
+        if msg:
+            out = f"{out} {msg}"
+        return out
+
+    @contextlib.contextmanager
+    def wrap_config_exception(self) -> Generator[None]:
+        try:
+            yield
+        except ImproperlyConfiguredException as exc:
+            new_msg = self.format(exc.detail)
+            raise ImproperlyConfiguredException(new_msg) from exc
 
 
 class KwargsModel:
@@ -122,7 +144,7 @@ class KwargsModel:
         self.expected_query_params = expected_query_params
         self.expected_reserved_kwargs = expected_reserved_kwargs
         self.expected_data_dto = expected_data_dto
-        self.sequence_query_parameter_names = tuple(sequence_query_parameter_names)
+        self.sequence_query_parameter_names = frozenset(sequence_query_parameter_names)
 
         self.has_kwargs = (
             expected_cookie_params
@@ -199,7 +221,6 @@ class KwargsModel:
     @classmethod
     def _get_param_definitions(
         cls,
-        path_parameters: set[str],
         layered_parameters: dict[str, FieldDefinition],
         dependencies: dict[str, Provide],
         field_definitions: dict[str, FieldDefinition],
@@ -207,7 +228,6 @@ class KwargsModel:
         """Get parameter_definitions for the construction of KwargsModel instance.
 
         Args:
-            path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
             dependencies: A string keyed dictionary mapping dependency providers.
             field_definitions: The SignatureModel fields.
@@ -224,22 +244,26 @@ class KwargsModel:
 
         param_definitions = {
             *(
+                # no function parameter receives the value of a layer parameter none of them declares
                 create_parameter_definition(
                     field_definition=field_definition,
                     field_name=field_name,
-                    path_parameters=path_parameters,
+                    requires_default=False,
                 )
                 for field_name, field_definition in layered_parameters.items()
-                if field_name not in ignored_keys and field_name not in field_definitions
+                if field_name not in ignored_keys
+                and field_name not in field_definitions
+                and not field_definition.is_di_field
             ),
             *(
                 create_parameter_definition(
                     field_definition=field_definition,
                     field_name=field_name,
-                    path_parameters=path_parameters,
                 )
                 for field_name, field_definition in field_definitions.items()
-                if field_name not in ignored_keys and field_name not in layered_parameters
+                if field_name not in ignored_keys
+                and field_name not in layered_parameters
+                and not field_definition.is_di_field
             ),
         }
 
@@ -261,21 +285,20 @@ class KwargsModel:
                         extra=field.extra,
                     ),
                     field_name=field_name,
-                    path_parameters=path_parameters,
                 )
             )
 
         return param_definitions, expected_dependencies
 
     @classmethod
-    def create_for_signature_model(
+    def create_for_signature_model(  # noqa: C901
         cls,
         signature_model: type[SignatureModel],
         parsed_signature: ParsedSignature,
         dependencies: dict[str, Provide],
         path_parameters: set[str],
         layered_parameters: dict[str, FieldDefinition],
-        ctx: BaseRouteHandler | HandlerContext | None = None,
+        ctx: BaseRouteHandler | HandlerContext,
     ) -> KwargsModel:
         """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
         during the application bootstrap process.
@@ -292,10 +315,23 @@ class KwargsModel:
             An instance of KwargsModel
         """
 
-        if ctx is not None and not isinstance(ctx, HandlerContext):
-            ctx = HandlerContext(handler=ctx.name or ctx.handler_name, paths=sorted(ctx.paths))
+        if not isinstance(ctx, HandlerContext):
+            ctx = HandlerContext(
+                handler=ctx.name or ctx.handler_name,
+                paths=sorted(ctx.paths),
+                connection_class=_resolve_connection_class(ctx),
+            )
 
         field_definitions = signature_model._fields
+
+        for field_name, field_def in field_definitions.items():
+            if (
+                field_name not in RESERVED_KWARGS
+                and field_name not in layered_parameters
+                and not field_def.is_marker_field
+            ):
+                msg = ctx.format(f"Missing declaration for parameter {field_name!r}")
+                raise ImproperlyConfiguredException(msg)
 
         cls._validate_raw_kwargs(
             path_parameters=path_parameters,
@@ -304,12 +340,16 @@ class KwargsModel:
             layered_parameters=layered_parameters,
         )
 
-        param_definitions, expected_dependencies = cls._get_param_definitions(
-            path_parameters=path_parameters,
-            layered_parameters=layered_parameters,
-            dependencies=dependencies,
-            field_definitions=field_definitions,
-        )
+        # 'state' is refused at parse time unless it's typed
+        for field_name in sorted((RESERVED_KWARGS - {"state"}).intersection(field_definitions)):
+            _validate_reserved_kwarg_type(field_name, field_definitions[field_name], ctx)
+
+        with ctx.wrap_config_exception():
+            param_definitions, expected_dependencies = cls._get_param_definitions(
+                layered_parameters=layered_parameters,
+                dependencies=dependencies,
+                field_definitions=field_definitions,
+            )
 
         expected_reserved_kwargs = {field_name for field_name in field_definitions if field_name in RESERVED_KWARGS}
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}
@@ -317,22 +357,6 @@ class KwargsModel:
         expected_cookie_parameters = {p for p in param_definitions if p.param_type == ParamType.COOKIE}
         expected_query_parameters = {p for p in param_definitions if p.param_type == ParamType.QUERY}
         sequence_query_parameter_names = {p.field_alias for p in expected_query_parameters if p.is_sequence}
-
-        for param in param_definitions:
-            # legacy quirk: when using implicit style, dependencies with no providers
-            # but a default value are actually treated as query parameters by the
-            # injection mechanism, so we add them back as such
-            if param.param_type == ParamType.DEPENDENCY:
-                expected_query_parameters.add(param)
-
-            if legacy_style := param.legacy_style:
-                _warn_deprecated_param_style(
-                    style=legacy_style,
-                    param_type=param.param_type,
-                    field_name=param.field_name,
-                    stacklevel=3,
-                    ctx=ctx,
-                )
 
         expected_form_data: tuple[RequestEncodingType | str, FieldDefinition] | None = None
         expected_msgpack_data: FieldDefinition | None = None
@@ -352,6 +376,8 @@ class KwargsModel:
             elif media_type == RequestEncodingType.MESSAGEPACK:
                 expected_msgpack_data = data_field_definition
 
+        expected_data_field_defs = []
+
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
                 signature_model=dependency.provide.signature_model,
@@ -359,7 +385,7 @@ class KwargsModel:
                 dependencies=dependencies,
                 path_parameters=path_parameters,
                 layered_parameters=layered_parameters,
-                ctx=dataclasses.replace(ctx, dependencies=[*ctx.dependencies, dependency.key]) if ctx else None,
+                ctx=dataclasses.replace(ctx, dependencies=[*ctx.dependencies, dependency.key]),
             )
 
             expected_path_parameters = merge_parameter_sets(
@@ -375,14 +401,22 @@ class KwargsModel:
                 expected_header_parameters, dependency_kwargs_model.expected_header_params
             )
 
-            if "data" in expected_reserved_kwargs and "data" in dependency_kwargs_model.expected_reserved_kwargs:
-                cls._validate_dependency_data(
-                    expected_form_data=expected_form_data,
-                    dependency_kwargs_model=dependency_kwargs_model,
-                )
+            if "data" in dependency_kwargs_model.expected_reserved_kwargs:
+                if "data" in expected_reserved_kwargs:
+                    cls._validate_dependency_data(
+                        expected_form_data=expected_form_data,
+                        dependency_kwargs_model=dependency_kwargs_model,
+                    )
+                expected_data_field_defs.append(dependency.provide.signature_model._fields["data"])
 
             expected_reserved_kwargs.update(dependency_kwargs_model.expected_reserved_kwargs)
             sequence_query_parameter_names.update(dependency_kwargs_model.sequence_query_parameter_names)
+
+        if handler_data_field := field_definitions.get("data"):
+            expected_data_field_defs.append(handler_data_field)
+
+        if expected_data_field_defs:
+            cls._validate_data_field_definitions(expected_data_field_defs, ctx)
 
         is_data_optional = (
             field_definitions["data"].is_optional
@@ -405,8 +439,7 @@ class KwargsModel:
         )
 
     async def to_kwargs(self, connection: ASGIConnection) -> dict[str, Any]:
-        """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
-        sync.
+        """Return a dictionary of kwargs.
 
         Args:
             connection: An instance of :class:`Request <litestar.connection.Request>` or
@@ -477,6 +510,28 @@ class KwargsModel:
                 )
 
     @classmethod
+    def _validate_data_field_definitions(
+        cls,
+        field_definitions: list[FieldDefinition],
+        ctx: HandlerContext | None,
+    ) -> None:
+        expected_raw_types = []
+        seen = set()
+        for field_def in field_definitions:
+            if field_def.is_any:
+                continue
+            if field_def.type_ not in seen:
+                expected_raw_types.append(field_def.annotation)
+            seen.add(field_def.type_)
+
+        if len(seen) > 1:
+            expected_types_repr = " <> ".join([f"'{t}'" for t in sorted(expected_raw_types, key=str)])
+            msg = f"'data' fields have mismatched types: {expected_types_repr}"
+            if ctx is not None:
+                msg = ctx.format(msg)
+            raise ImproperlyConfiguredException(msg)
+
+    @classmethod
     def _validate_raw_kwargs(
         cls,
         path_parameters: set[str],
@@ -488,6 +543,7 @@ class KwargsModel:
         places.
         """
         dependency_keys = set(dependencies.keys())
+        layered_parameter_names = set(layered_parameters.keys())
 
         parameter_names = {
             *(
@@ -499,12 +555,12 @@ class KwargsModel:
                     and f.kwarg_definition.name is not None
                 )
             ),
-            *list(layered_parameters.keys()),
+            *layered_parameter_names,
         }
 
         intersection = (
             path_parameters.intersection(dependency_keys)
-            or path_parameters.intersection(parameter_names)
+            or path_parameters.intersection(layered_parameter_names)
             or dependency_keys.intersection(parameter_names)
         )
         if intersection:
@@ -524,51 +580,72 @@ class KwargsModel:
             )
 
 
-def _warn_deprecated_param_style(
-    *,
-    style: str,
-    param_type: ParamType,
-    field_name: str,
-    stacklevel: int = 2,
-    ctx: HandlerContext | None,
-) -> None:
-    if param_type == ParamType.DEPENDENCY:
+_RESERVED_KWARG_TYPES: dict[str, Any] = {
+    "headers": Headers,
+    "query": QueryParams,
+    "cookies": RequestCookies,
+    "scope": Scope,
+    "body": RawBody,
+}
+
+# reserved kwargs with a connection attribute that handlers use instead
+_CONNECTION_ATTRIBUTES = {"headers": "headers", "query": "query_params", "cookies": "cookies", "scope": "scope"}
+
+
+def _resolve_connection_class(handler: BaseRouteHandler) -> type[ASGIConnection] | None:
+    from litestar.handlers import HTTPRouteHandler, WebsocketRouteHandler
+
+    if isinstance(handler, HTTPRouteHandler):
+        return handler.request_class
+    if isinstance(handler, WebsocketRouteHandler):
+        return handler.websocket_class
+    return None
+
+
+def _type_repr(annotation: Any) -> str:
+    return annotation.__name__ if isinstance(annotation, type) else repr(annotation)
+
+
+def _has_reserved_kwarg_type(name: str, field_definition: FieldDefinition, ctx: HandlerContext) -> bool:
+    """Whether a reserved kwarg is declared with the type Litestar resolves it by"""
+    if name == "data":
+        return isinstance(field_definition.kwarg_definition, BodyKwarg)
+
+    annotation = field_definition.annotation
+    if name in _RESERVED_KWARG_TYPES:
+        expected = _RESERVED_KWARG_TYPES[name]
+        return annotation == expected if name == "scope" else annotation is expected
+
+    # 'request' and 'socket': the handler's connection class or a class it inherits from
+    origin = get_origin(annotation) or annotation
+    if not isinstance(origin, type):
+        return False
+    connection_class = ctx.connection_class
+    return issubclass(origin, ASGIConnection) and (connection_class is None or issubclass(connection_class, origin))
+
+
+def _validate_reserved_kwarg_type(name: str, field_definition: FieldDefinition, ctx: HandlerContext) -> None:
+    if _has_reserved_kwarg_type(name, field_definition, ctx):
+        return
+
+    connection_class = ctx.connection_class
+    in_handler = not ctx.dependencies
+    declared = _type_repr(field_definition.annotation)
+    if name == "data":
         msg = (
-            f"Dependency parameter {field_name!r} declared using deprecated default "
-            "'param: <type> = Dependency(...)' style. Use "
-            "'Annotated[<type>, Dependency(...)]' instead"
+            f"Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[{declared}]' or "
+            "another body marker instead"
+        )
+    elif name in _CONNECTION_ATTRIBUTES and in_handler and connection_class is not None:
+        variable = "socket" if issubclass(connection_class, WebSocket) else "request"
+        msg = (
+            f"Reserved kwarg {name!r} declared as {declared!r}. Use '{variable}.{_CONNECTION_ATTRIBUTES[name]}' instead"
         )
     else:
-        alternatives = {
-            ParamType.QUERY: "FromQuery",
-            ParamType.HEADER: "FromHeader",
-            ParamType.COOKIE: "FromCookie",
-            ParamType.PATH: "FromPath",
-        }
-        short_alternative = alternatives[param_type]
-        param_type_name = param_type.name.lower()
-        if style == "inferred":
-            msg = (
-                f"{param_type_name} parameter {field_name!r} declared using deprecated inferred "
-                f"style. Use '{short_alternative}[<type>]' or "
-                f"'Annotated[<type>, {param_type.title()}Parameter(...)]' instead"
-            )
-        elif style == "annotated":
-            msg = (
-                f"{param_type_name} parameter {field_name!r} declared using deprecated annotated "
-                f"'param: Annotated[<type>, Parameter(...)]' style. Use "
-                f"'{short_alternative}[<type>]' or "
-                f"'Annotated[<type>, {param_type_name.title()}Parameter(...)]' instead"
-            )
+        if name in _RESERVED_KWARG_TYPES:
+            expected = "Scope" if name == "scope" else _RESERVED_KWARG_TYPES[name].__name__
         else:
-            raise ValueError(f"Unknown style {style!r}")
+            expected = connection_class.__name__ if connection_class else "ASGIConnection"
+        msg = f"Reserved kwarg {name!r} declared as {declared!r}. Declare it as '{name}: {expected}' instead"
 
-    if ctx is not None:
-        paths = ",".join(sorted(ctx.paths))
-        out = f"[paths={paths!r}, handler={ctx.handler!r}"
-        if ctx.dependencies:
-            out += f", dependencies={' -> '.join(ctx.dependencies[::-1])!r}"
-        out += f"] {msg}"
-        msg = out
-
-    warnings.warn(msg, category=LitestarDeprecationWarning, stacklevel=stacklevel)
+    raise ImproperlyConfiguredException(ctx.format(msg))

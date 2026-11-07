@@ -1,7 +1,7 @@
 from random import randint
 
 from litestar import Controller, MediaType, get
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.params import FromPath, FromQuery
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
@@ -14,7 +14,9 @@ def test_inter_dependencies() -> None:
     async def mid_level_dependency() -> int:
         return 5
 
-    async def local_dependency(path_param: FromPath[int], mid_level: int, top_level: int) -> int:
+    async def local_dependency(
+        path_param: FromPath[int], mid_level: NamedDependency[int], top_level: NamedDependency[int]
+    ) -> int:
         return path_param + mid_level + top_level
 
     class MyController(Controller):
@@ -28,7 +30,7 @@ def test_inter_dependencies() -> None:
             },
             media_type=MediaType.TEXT,
         )
-        def test_function(self, summed: int) -> str:
+        def test_function(self, summed: NamedDependency[int]) -> str:
             return str(summed)
 
     with create_test_client(MyController, dependencies={"top_level": Provide(top_dependency)}) as client:
@@ -40,11 +42,11 @@ def test_inter_dependencies_on_same_app_level() -> None:
     async def first_dependency() -> int:
         return randint(1, 10)
 
-    async def second_dependency(injected_integer: int) -> bool:
+    async def second_dependency(injected_integer: NamedDependency[int]) -> bool:
         return injected_integer % 2 == 0
 
     @get("/true-or-false")
-    def true_or_false_handler(injected_bool: bool) -> str:
+    def true_or_false_handler(injected_bool: NamedDependency[bool]) -> str:
         return "its true!" if injected_bool else "nope, its false..."
 
     with create_test_client(

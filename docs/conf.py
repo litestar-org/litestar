@@ -54,7 +54,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "msgspec": ("https://jcristharif.com/msgspec/", None),
+    "msgspec": ("https://msgspec.dev", None),
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
     "cryptography": ("https://cryptography.io/en/latest/", None),
@@ -165,14 +165,6 @@ nitpick_ignore = [
     # types in changelog that no longer exist
     (PY_ATTR, "litestar.dto.factory.DTOConfig.underscore_fields_private"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"),
-    (PY_CLASS, "litestar.contrib.msgspec.MsgspecDTO"),
-    (PY_CLASS, "litestar.contrib.repository.filters.NotInCollectionFilter"),
-    (PY_CLASS, "litestar.contrib.repository.filters.NotInSearchFilter"),
-    (PY_CLASS, "litestar.contrib.repository.filters.OnBeforeAfter"),
-    (PY_CLASS, "litestar.contrib.repository.filters.OrderBy"),
-    (PY_CLASS, "litestar.contrib.repository.filters.SearchFilter"),
     (PY_CLASS, "litestar.dto.base_factory.AbstractDTOFactory"),
     (PY_CLASS, "litestar.dto.factory.DTOConfig"),
     (PY_CLASS, "litestar.dto.factory.DTOData"),
@@ -231,7 +223,7 @@ nitpick_ignore_regex = [
     (PY_RE, r"litestar.*\.T"),
     (PY_RE, r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (PY_RE, r"litestar\.types.*"),
-    (PY_RE, r"httpx.*"),
+    (PY_RE, r"httpx2.*"),
     # type vars
     (PY_RE, r"litestar.middleware.session.base.ConfigT"),
     (PY_RE, r"litestar\.connection\.base\.AuthT"),
@@ -266,10 +258,7 @@ ignore_missing_refs = {
     "litestar.response.file.async_file_iterator": {"FileSystemAdapter"},
     re.compile("litestar.response.redirect.*"): {"RedirectStatusType"},
     re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
-    re.compile(r"litestar\.(contrib|repository)\.*"): re.compile(".*T"),
-    re.compile(r"litestar\.contrib\.sqlalchemy\.*"): re.compile(
-        ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase)"
-    ),
+    re.compile(r"litestar\.repository\.*"): re.compile(".*T"),
     re.compile(r"litestar\.dto.*"): re.compile(".*T|.*FieldDefinition|Empty"),
     re.compile(r"litestar\.template\.(config|TemplateConfig).*"): re.compile(".*EngineType"),
     "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
@@ -371,7 +360,7 @@ html_theme_options = {
                 {
                     "title": "Litestar Organization",
                     "summary": "Details about the Litestar organization",
-                    "url": "https://litestar.dev/about/organization",
+                    "url": "https://litestar.dev/about",
                     "icon": "org",
                 },
                 {

@@ -1,6 +1,7 @@
 from attrs import define
 
 from litestar import post
+from litestar.params import JSONBody
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import create_test_client
 
@@ -12,7 +13,7 @@ def test_parse_attrs_data_in_signature() -> None:
         email: str
 
     @post("/")
-    async def attrs_data(data: AttrsUser) -> AttrsUser:
+    async def attrs_data(data: JSONBody[AttrsUser]) -> AttrsUser:
         return data
 
     with create_test_client([attrs_data]) as client:

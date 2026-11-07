@@ -30,7 +30,7 @@ jwt_auth = JWTAuth[User](
 )
 
 
-@get("/")
+@get("/", sync_to_thread=False)
 def handler(request: Request[User, CustomToken, Any]) -> dict[str, Any]:
     return {"id": request.user.id, "token_flag": request.auth.token_flag}
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import html
-import itertools
 from mimetypes import guess_type
 from pathlib import PurePath
 from typing import TYPE_CHECKING, Any, cast
@@ -114,7 +113,6 @@ class Template(Response[bytes]):
             raise ImproperlyConfiguredException("Template engine is not configured")
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         media_type = self.media_type or media_type
         if not media_type:
@@ -142,7 +140,7 @@ class Template(Response[bytes]):
             background=self.background or background,
             body=body,
             content_length=None,
-            cookies=cookies,
+            cookies=self._merge_cookies(cookies),
             encoding=self.encoding,
             headers=headers,
             is_head_response=is_head_response,

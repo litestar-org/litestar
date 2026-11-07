@@ -29,7 +29,7 @@ def test_schema_generation_with_generic_classes(model: type[PydanticV2Generic]) 
     field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
     properties = get_schema_for_field_definition(field_definition, plugins=[PydanticSchemaPlugin()]).properties
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
+    expected_optional_foo_schema = Schema(type=[OpenAPIType.INTEGER, OpenAPIType.NULL])
 
     assert properties
     assert properties["foo"] == expected_foo_schema
@@ -201,3 +201,15 @@ def test_root_model_schema_generation() -> None:
     assert lizard_schema.properties["name"] == Schema(type=OpenAPIType.STRING)
     assert lizard_schema.properties["pet_type"] == Schema(type=OpenAPIType.STRING, enum=["reptile", "lizard"])
     assert lizard_schema.properties["scales"] == Schema(type=OpenAPIType.BOOLEAN)
+
+
+def test_optional_field_does_not_mutate_shared_type_map_schema() -> None:
+    optional = get_schema_for_field_definition(
+        FieldDefinition.from_annotation(Optional[pydantic_v2.ByteSize]), plugins=[PydanticSchemaPlugin()]
+    )
+    required = get_schema_for_field_definition(
+        FieldDefinition.from_annotation(pydantic_v2.ByteSize), plugins=[PydanticSchemaPlugin()]
+    )
+
+    assert optional.type == [OpenAPIType.INTEGER, OpenAPIType.NULL]
+    assert required.type == OpenAPIType.INTEGER

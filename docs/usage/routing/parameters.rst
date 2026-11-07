@@ -8,7 +8,7 @@ Request parameters are parts of the request that can be injected into a handler 
 or dependency. They allow type-coercion, validation, and will show up in the generated
 OpenAPI schema.
 
-There are for request parameter types supported, which can be specified in two different
+There are four request parameter types supported, which can be specified in two different
 forms:
 
 +--------+----------------------------+---------------------------------------------------------------------------+
@@ -83,6 +83,10 @@ is needed.
     the parameters and generate the OpenAPI schema
 
 
+.. seealso::
+    :doc:`/topics/explicit_declarations`
+
+
 Optional, required and nullable
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -93,6 +97,7 @@ have a default value.
 - Parameters declared with a default are optional
 - Parameters declared with ``| None`` are *nullable*, i.e. the may take a ``None``
   value; they are still required, unless they are given a default value
+- Parameters declared ``required=False`` must be given a default value
 
 Defaults work exactly like defaults in regular function parameters: If the value is
 missing from the request, the handler is called with the default:
@@ -266,7 +271,7 @@ A request to ``http://127.0.0.1:8000?camelCase=foo`` will be received as
 ``snake_case="foo"`` inside the handler.
 
 The same pattern applies to
-:class:`~.params.HeaderParameter`,:class:`~.params.CookieParameter` and
+:class:`~.params.HeaderParameter`, :class:`~.params.CookieParameter` and
 :class:`~.params.PathParameter`.
 
 
@@ -344,11 +349,11 @@ declared in the route handler. Examine these more closely:
   validated at the application level even though the handler never sees it.
 
 * ``router_param`` is a header parameter with the key ``MyHeader``, declared via :class:`~.params.HeaderParameter`
-  on the router. It is declared ``required=False`` on the router, so it does not fail validation if absent — unless
-  the handler explicitly opts in by re-declaring it (as this one does).
+  on the router. On the handler, it is declared as :class:`FromHeader[str] <.params.FromHeader>`, taking on
+  the router's declaration. If a value *is* provided, it is also tested against the router-declared regex.
 
-  The handler types it as :class:`FromHeader[str] <.params.FromHeader>` (rather than ``str | None``), making it
-  required at the handler level. If a value *is* provided, it is also tested against the router-declared regex.
+  Had the router declared it ``required=False``, the handler would have to give it a default, e.g.
+  ``router_param: FromHeader[str] = "a"``.
 
 * ``controller_param`` is a query parameter with the key ``controller_param``, declared via
   :class:`~.params.QueryParameter` on the controller with ``lt=100`` (value must be less than 100). The handler
@@ -358,37 +363,3 @@ declared in the route handler. Examine these more closely:
 * ``local_param`` is a route-handler-local :ref:`query parameter <usage/routing/parameters:query parameters>`
   (``FromQuery[str]``), and ``path_param`` is a :ref:`path parameter <usage/routing/parameters:path parameters>`
   (``FromPath[int]``).
-
-
-.. _deprecated-parameter-styles:
-
-Deprecated declaration styles
------------------------------
-
-Earlier 2.x releases accepted several other ways of declaring handler parameters. These continue to work for the
-remainder of the 2.x line, but they now emit a :class:`~.exceptions.LitestarDeprecationWarning` and will be removed
-in 3.0.
-
-.. list-table::
-    :header-rows: 1
-    :widths: 45 55
-
-    * - Deprecated
-      - Use instead
-    * - ``def h(name: str)`` *(implicit query parameter)*
-      - ``def h(name: FromQuery[str])``
-    * - ``def h(user_id: int)`` *(implicit path parameter)*
-      - ``def h(user_id: FromPath[int])``
-    * - ``Annotated[str, Parameter(query="alias")]``
-      - ``Annotated[str, QueryParameter(name="alias")]``
-    * - ``Annotated[str, Parameter(header="X-API-KEY")]``
-      - ``Annotated[str, HeaderParameter(name="X-API-KEY")]``
-    * - ``Annotated[str, Parameter(cookie="session")]``
-      - ``Annotated[str, CookieParameter(name="session")]``
-    * - ``name: str = Parameter(...)`` *(default-value style)*
-      - ``name: Annotated[str, QueryParameter(...)]``
-
-The :func:`~.params.Parameter` function itself is **not** removed and can still be used to attach pure metadata
-(``description``, ``gt``, etc.) when wrapped in :class:`~typing.Annotated`. Only its ``header``, ``cookie``, and
-``query`` keyword arguments are deprecated — passing any of those emits a :exc:`DeprecationWarning` independently of
-the handler-level warning.

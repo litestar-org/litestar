@@ -16,9 +16,31 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``2.x``                                            | ``3.x``                                                                |
 +====================================================+========================================================================+
-| **SECTION**                                                                                                                 |
+| ``litestar.contrib.attrs``                         | ``litestar.plugins.attrs``                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| Put your changes here from v2                         | Put your changes here from v3                                       |
+| ``litestar.contrib.htmx``                          | ``litestar_htmx``                                                      |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.jinja``                         | ``litestar.plugins.jinja``                                             |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.jwt``                           | ``litestar.security.jwt``                                              |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.mako``                          | ``litestar.plugins.mako``                                              |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.minijinja``                     | ``litestar.plugins.minijinja``                                         |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.minijnja``                      | ``litestar.plugins.minijinja``                                         |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.opentelemetry``                 | ``litestar.plugins.opentelemetry``                                     |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.piccolo``                       | ``litestar_piccolo``                                                   |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.prometheus``                    | ``litestar.plugins.prometheus``                                        |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.pydantic``                      | ``litestar.plugins.pydantic``                                          |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.repository``                    | ``litestar.repository``                                                |
++----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.contrib.sqlalchemy``                    | ``advanced_alchemy.extensions.litestar``                               |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
@@ -61,6 +83,25 @@ must explicitly set it:
     @get("/")
     def my_handler(param: int | None = None) -> ...:
         ...
+
+
+Path parameters must be marked
+------------------------------
+
+Only a parameter marked with :data:`~.params.FromPath` or :class:`~.params.PathParameter`
+is read from the path. In v2, a parameter whose name matched a path segment was read from
+the path even when it was marked as a query, header or cookie parameter. In v3 it is read
+from the location it is marked with:
+
+.. code-block:: python
+
+    @get("/{item_id:int}")
+    def my_handler(item_id: FromQuery[int]) -> ...:  # read from the query string
+        ...
+
+A parameter named like a path segment that declares no location, such as the deprecated
+``item_id: int``, raises :exc:`~.exceptions.ImproperlyConfiguredException` when the
+application is created. Declare it as ``item_id: FromPath[int]``.
 
 
 OpenAPI Controller Replaced by Plugins
@@ -107,6 +148,16 @@ For those previously using the ``root_schema_site`` attribute, the migration inv
 be served at the ``/schema`` endpoint is the first plugin listed in the :attr:`OpenAPIConfig.render_plugins`.
 
 
+Removal of the RapiDoc OpenAPI UI plugin
+----------------------------------------
+
+The ``RapidocRenderPlugin`` has been removed due to lack of upstream maintenance.
+
+If you were using ``RapidocRenderPlugin``, migrate to one of the other bundled UI plugins
+via :attr:`OpenAPIConfig.render_plugins`, e.g. :class:`ScalarRenderPlugin` (the default),
+:class:`SwaggerRenderPlugin`, :class:`RedocRenderPlugin` or :class:`StoplightRenderPlugin`.
+
+
 Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
 -------------------------------------------------------------------------------
 
@@ -142,6 +193,43 @@ If you were relying on this utility, you can define it yourself as follows:
 
     def is_sync_or_async_generator(obj: Any) -> bool:
         return isgeneratorfunction(obj) or isasyncgenfunction(obj)
+
+
+Deprecated ``DTOField`` declaration via Pydantic's ``Field.extra`` removed
+--------------------------------------------------------------------------
+
+Declaring a :class:`~.dto.field.DTOField` through Pydantic's ``Field.extra``, that is
+``Field(**dto_field("read-only"))``, is no longer supported. The mark was already being
+ignored in 2.x and only produced a deprecation warning.
+
+Remove the declaration: it leaves an internal key in the field's ``json_schema_extra``,
+which can make OpenAPI schema generation fail.
+
+Before:
+
+.. code-block:: python
+
+    import pydantic
+
+    from litestar.dto import dto_field
+
+
+    class User(pydantic.BaseModel):
+        id: int = pydantic.Field(**dto_field("read-only"))
+
+After:
+
+.. code-block:: python
+
+    from typing import Annotated
+
+    import pydantic
+
+    from litestar.dto import DTOField
+
+
+    class User(pydantic.BaseModel):
+        id: Annotated[int, DTOField(mark="read-only")]
 
 
 Removal of semantic HTTP route handler classes
@@ -264,6 +352,64 @@ callable as its only argument and returns another ASGI callable:
     :doc:`/usage/middleware/index`
 
 
+Built-in middleware migrated to ``ASGIMiddleware``
+--------------------------------------------------
+
+Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
+``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
+``CORSMiddleware``, ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have made this
+move. ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
+``litestar.middleware._internal``, removing them from the public API; for CSRF this
+includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
+``generate_csrf_hash`` helpers.
+
+These classes are constructed by Litestar itself from their configuration objects (for
+CSRF, via a ``from_config`` classmethod on the middleware), so applications that only
+configure them - for CORS, via
+:class:`~litestar.config.cors.CORSConfig`, for response caching, via
+:class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
+``cache`` argument, and for CSRF, via :class:`~litestar.config.csrf.CSRFConfig` - are
+unaffected, with one exception: :attr:`~litestar.config.csrf.CSRFConfig.exclude`
+patterns are now matched against the **handler's path template**
+(e.g. ``/user/{user_id:int}``) at startup, instead of the request path
+(e.g. ``/user/1``) at runtime. Patterns targeting literal paths keep working; patterns
+written to match expanded path parameters must be rewritten against the template.
+
+Code that composed one of them directly into an ASGI stack must drop the ``app``
+argument, pass the settings as keyword arguments rather than a configuration object, and
+apply the instance to the next ASGI app:
+
+.. code-block:: python
+
+    # before
+    middleware = CORSMiddleware(app=next_app, config=cors_config)
+
+    # after
+    middleware = CORSMiddleware(
+        allow_origins=cors_config.allow_origins,
+        allow_methods=cors_config.allow_methods,
+        allow_headers=cors_config.allow_headers,
+        allow_credentials=cors_config.allow_credentials,
+        allow_origin_regex=cors_config.allow_origin_regex,
+        expose_headers=cors_config.expose_headers,
+        max_age=cors_config.max_age,
+    )
+    asgi_app = middleware(next_app)
+
+The settings are copied on construction, so mutating ``CORSConfig`` after the application
+has been created no longer affects the middleware.
+
+Because ``ASGIMiddleware.__call__`` returns a closure rather than the middleware
+instance, a middleware stack can no longer be introspected by walking the ``.app``
+attribute of each layer.
+
+Subclasses must also rename ``__call__`` to ``handle``, which receives the next ASGI app
+as an additional ``next_app`` argument in place of ``self.app``.
+
+.. seealso::
+    :ref:`asgi-middleware-migration`
+
+
 Removal of ``SerializationPluginProtocol``
 ------------------------------------------
 
@@ -306,6 +452,98 @@ The `litestar-htmx <https://github.com/litestar-org/litestar-htmx/>`_ package po
 the :doc:`HTMX plugin </usage/htmx>` has been moved to the ``litestar[htmx]`` extra.
 
 
+``click``, ``rich`` and ``rich-click`` packages removed from default dependencies
+---------------------------------------------------------------------------------
+
+The `click <https://click.palletsprojects.com/>`_, `rich <https://rich.readthedocs.io>`_
+and `rich-click <https://github.com/ewels/rich-click>`_ libraries powering the
+:doc:`CLI </usage/cli>` have been moved from the default dependencies to the
+``litestar[cli]`` package extra. They are also included in ``litestar[standard]`` and
+``litestar[full]``.
+
+Installing ``litestar`` on its own therefore no longer provides the ``litestar`` command.
+Invoking it without the extra raises a
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
+naming the extra to install:
+
+.. code-block:: shell
+    :caption: Install the CLI
+
+    pip install 'litestar[cli]'
+
+
+Test clients are based on ``httpx2``, installed via the ``testing`` extra
+-------------------------------------------------------------------------
+
+The :doc:`test clients </usage/testing>` were based on
+`httpx <https://www.python-httpx.org/>`_, which was a default dependency. In 3.0 they
+are based on `httpx2 <https://pydantic.dev/docs/httpx2/>`_, the fork of ``httpx``
+maintained by Pydantic, and it is installed by the ``litestar[testing]`` extra rather
+than by default.
+
+Importing anything from :mod:`litestar.testing` without the extra installed raises a
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
+naming the extra to install:
+
+.. code-block:: shell
+    :caption: Install the testing extra
+
+    pip install 'litestar[testing]'
+
+``httpx2`` keeps the public API of ``httpx`` 0.28.1, but it is a distinct module, so
+every reference in a test suite has to be renamed:
+
+.. code-block:: python
+
+    # before
+    response: httpx.Response = client.get("/")
+    with pytest.raises(httpx.HTTPStatusError):
+        response.raise_for_status()
+
+    # after
+    response: httpx2.Response = client.get("/")
+    with pytest.raises(httpx2.HTTPStatusError):
+        response.raise_for_status()
+
+If you cannot rename a test suite yet, ``httpx2.alias_httpx()`` makes ``import httpx``
+resolve to ``httpx2`` process-wide. It has to be called before anything imports
+``httpx`` or ``httpcore``, and raises :exc:`RuntimeError` otherwise. Litestar never
+calls it for you.
+
+Beyond the rename, these are worth checking:
+
+- :class:`~litestar.testing.TestClient` and
+  :class:`~litestar.testing.AsyncTestClient` now subclass ``httpx2.Client`` and
+  ``httpx2.AsyncClient``, and :func:`~litestar.testing.subprocess_sync_client` /
+  :func:`~litestar.testing.subprocess_async_client` return ``httpx2`` clients.
+- ``httpx2`` raises its own exceptions, which do not inherit from the ``httpx`` ones.
+  An ``except httpx.HTTPError`` around a test client call stops matching, and does so
+  silently if ``httpx`` is still installed for other reasons.
+- The logger is named ``httpx2``. Logging configuration and ``caplog`` assertions
+  that reference the ``httpx`` logger need updating.
+- The clients inherit ``httpx2``'s ``sse()``, which works through the test transport,
+  so ``httpx-sse`` is no longer needed. The inherited ``websocket()`` does not work
+  against the test transport; use
+  :meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>` instead.
+- :func:`~litestar.testing.subprocess_sync_client` and
+  :func:`~litestar.testing.subprocess_async_client` send
+  ``User-Agent: python-httpx2/<version>``. :class:`~litestar.testing.TestClient` and
+  :class:`~litestar.testing.AsyncTestClient` keep sending ``testclient``.
+- The extra pulls ``anyio>=4.10`` and ``idna>=3.18``, neither of which can be
+  satisfied alongside a lower pin. TLS verification uses the operating system trust
+  store via ``truststore`` rather than ``certifi``.
+
+
+``rich-click>=1.9`` is now required by the CLI
+-----------------------------------------------
+
+The ``litestar[cli]`` extra now requires ``rich-click>=1.9``, which is needed for the
+themed :doc:`CLI </usage/cli>` output. Previously ``rich-click`` was capped at ``<1.9``,
+which silently disabled the theme, as the underlying option only exists from 1.9 onwards.
+
+This only affects applications that additionally pin ``rich-click<1.9`` themselves.
+
+
 Improved file system handling / fsspec integration
 ---------------------------------------------------
 
@@ -344,3 +582,41 @@ startup.
 .. seealso::
 
     :ref:`usage/middleware/creating-middleware:Configuration constraints`
+
+
+``copy_scope`` defaults to ``True`` for ASGI handlers
+-----------------------------------------------------
+
+Every :func:`~.handlers.asgi` handler, mounted or not, now receives a copy of the ASGI
+``scope``, so the wrapped application can no longer add, replace or remove top-level scope
+keys seen by the outer application. In 2.x the default was ``None``, which passed the
+original scope through, warned at registration and warned again when the wrapped
+application mutated the scope. Both warnings are gone.
+
+The copy is shallow, so nested values such as ``scope["state"]`` are still shared with the
+outer scope.
+
+Set ``copy_scope=False`` where the wrapped application is meant to communicate with the
+outer application through the scope:
+
+.. code-block:: python
+
+    @asgi("/some/sub-path", is_mount=True, copy_scope=False)
+    async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None: ...
+
+You need the opt-out if the wrapped application writes a top-level scope key the outer
+application reads, such as ``scope["user"]``, or calls
+:meth:`~.connection.ASGIConnection.set_session` or
+:meth:`~.connection.ASGIConnection.clear_session`, both of which rebind
+``scope["session"]``. A mounted Starlette or FastAPI application also sets
+``scope["endpoint"]`` and ``scope["route"]``, which outer Sentry or OpenTelemetry layers
+read after the response to name the transaction. All of these now fail silently.
+
+``copy_scope`` is set per handler; there is no router- or application-level equivalent, so
+an application with several mounts opts out on each handler. A ``handler_class`` subclass
+that pinned ``copy_scope`` by passing it to ``super().__init__()`` must now accept it as a
+parameter and forward it, because :func:`~.handlers.asgi` always passes it.
+
+.. seealso::
+
+    :ref:`usage/routing/handlers:ASGI route handler considerations`

@@ -10,6 +10,8 @@ deployment strategies, ASGI and WSGI, and so on.
 .. toctree::
     :titlesonly:
     :caption: Articles
+    :maxdepth: 2
 
     sync-vs-async
+    explicit_declarations
     deployment/index

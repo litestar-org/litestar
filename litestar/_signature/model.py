@@ -35,7 +35,7 @@ from litestar.params import (
     KwargDefinition,
     ParameterKwarg,
 )
-from litestar.typing import FieldDefinition  # noqa
+from litestar.typing import FieldDefinition  # noqa: TC001
 from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
 
@@ -153,15 +153,16 @@ class SignatureModel(Struct):
             if keys[0].startswith("data"):
                 message["key"] = message["key"].replace("data.", "")
                 message["source"] = "body"
+            elif (
+                key in cls._fields
+                and not (field := cls._fields[key]).is_di_field
+                and isinstance(kwarg_definition := field.kwarg_definition, ParameterKwarg)
+            ):
+                message["source"] = kwarg_definition.param_type
             elif key in connection.query_params:
                 message["source"] = ParamType.QUERY
             elif key in connection.path_params:
                 message["source"] = ParamType.PATH
-
-            elif key in cls._fields and isinstance(
-                kwarg_definition := cls._fields[key].kwarg_definition, ParameterKwarg
-            ):
-                message["source"] = kwarg_definition.param_type
 
         return message
 

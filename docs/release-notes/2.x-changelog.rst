@@ -910,7 +910,7 @@
         :issue: 2812
         :pr: 2818
 
-        Fix a bug where an incorrect OpenAPI schema was generated generated when any
+        Fix a bug where an incorrect OpenAPI schema was generated when any
         ``Literal | None``-union was present in an annotation.
 
         For example
@@ -1330,7 +1330,7 @@
         additional validation was added to generate a more user friendly CLI errors.
 
         The other SSL-related flags (like password or CA) were not added (yet). See
-        `uvicorn CLI docs <https://www.uvicorn.org/#command-line-options>`_
+        `uvicorn CLI docs <https://uvicorn.dev/#command-line-options>`_
 
         **Generating of a self-signed certificate**
 
@@ -2700,7 +2700,7 @@
         :pr: 1712
         :issue: 1531, 1532
 
-        DTO factories for `msgspec <https://jcristharif.com/msgspec/>`_ and
+        DTO factories for `msgspec <https://msgspec.dev>`_ and
         `Pydantic <https://docs.pydantic.dev/latest/>`_ have been added:
 
         - :class:`~litestar.dto.msgspec_dto.MsgspecDTO`
@@ -3338,7 +3338,7 @@
         :pr: 1487
 
         Support OpenAPI schema generation for `attrs <https://www.attrs.org>`_ classes and
-        `msgspec <https://jcristharif.com/msgspec/>`_ ``Struct``\ s.
+        `msgspec <https://msgspec.dev>`_ ``Struct``\ s.
 
     .. change:: SQLAlchemy repository: Add ``ModelProtocol``
         :type: feature

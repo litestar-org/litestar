@@ -149,7 +149,7 @@ class AppConfig:
     Can be overridden by routers and router handlers.
     """
     parameters: ParametersMap = field(default_factory=dict)
-    """A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application paths."""
+    """A mapping of :class:`Parameter <.params.ParameterKwarg>` definitions available to all application paths."""
     path: str = field(default="")
     """A base path that prefixed to all route handlers, controllers and routers associated with the
     application instance.

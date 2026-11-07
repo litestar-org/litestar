@@ -46,7 +46,7 @@ except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
+from litestar.params import KwargDefinition, ParameterKwarg, ParameterMarker
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
     is_any,
@@ -244,11 +244,6 @@ class FieldDefinition:
         )
 
     @property
-    def is_parameter_field(self) -> bool:
-        """Check if the field type is a parameter kwarg value."""
-        return isinstance(self.kwarg_definition, ParameterKwarg)
-
-    @property
     def is_non_marker_parameter_field(self) -> bool:
         """Check if the field type is a ParameterKwarg that's not a marker only.
 
@@ -256,6 +251,14 @@ class FieldDefinition:
         applied, usually produced by 'FromQuery[]', 'FromPath[]', etc.
         """
         return isinstance(self.kwarg_definition, ParameterKwarg) and not self.kwarg_definition.is_marker
+
+    @property
+    def is_marker_field(self) -> bool:
+        """Check if the field declares its source explicitly, either via a parameter /
+        body marker ('FromQuery[]', 'Body(...)', etc.) or a dependency marker
+        ('NamedDependency[]').
+        """
+        return isinstance(self.kwarg_definition, ParameterMarker) or self.is_di_field
 
     @property
     def is_const(self) -> bool:
@@ -420,23 +423,31 @@ class FieldDefinition:
         """
         return any(t.is_subclass_of(cl) for t in self.inner_types)
 
-    def get_type_hints(self, *, include_extras: bool = False, resolve_generics: bool = False) -> dict[str, Any]:
+    def get_type_hints(
+        self, *, include_extras: bool = False, resolve_generics: bool = False, namespace: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Get the type hints for the annotation.
 
         Args:
             include_extras: Flag to indicate whether to include ``Annotated[T, ...]`` or not.
             resolve_generics: Flag to indicate whether to resolve the generic types in the type hints or not.
+            namespace: Additional names to use when resolving forward references.
 
         Returns:
             The type hints.
         """
 
+        # an empty dict must become None: get_type_hints only merges class-body
+        # locals (vars of each base) when localns is None
+        localns = namespace or None
         if self.origin is not None or self.is_generic:
             if resolve_generics:
-                return get_type_hints_with_generics_resolved(self.annotation, include_extras=include_extras)
-            return get_type_hints(self.origin or self.annotation, include_extras=include_extras)
+                return get_type_hints_with_generics_resolved(
+                    self.annotation, include_extras=include_extras, localns=localns
+                )
+            return get_type_hints(self.origin or self.annotation, include_extras=include_extras, localns=localns)
 
-        return get_type_hints(self.annotation, include_extras=include_extras)
+        return get_type_hints(self.annotation, include_extras=include_extras, localns=localns)
 
     @classmethod
     def from_annotation(cls, annotation: Any, **kwargs: Any) -> FieldDefinition:
@@ -484,14 +495,10 @@ class FieldDefinition:
                     existing_kwargs_definition, **kwarg_definition_merge_args
                 )
             # if not, create a new KwargDefinition
-            else:
-                if (name := kwargs.get("name")) == "data":
-                    model: type[KwargDefinition] = BodyKwarg
-                elif name is None:
-                    model = KwargDefinition
-                else:
-                    model = ParameterKwarg
-                kwargs["kwarg_definition"] = model(**kwarg_definition_merge_args)
+            elif kwarg_definition_merge_args:
+                # a parameter or body is only ever declared via an explicit marker, so plain
+                # constraint metadata becomes a plain 'KwargDefinition'
+                kwargs["kwarg_definition"] = KwargDefinition(**kwarg_definition_merge_args)
 
         kwargs.setdefault("annotation", unwrapped)
         kwargs.setdefault("args", annotation_args)

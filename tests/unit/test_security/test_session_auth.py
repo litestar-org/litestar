@@ -14,6 +14,7 @@ from litestar.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
+from litestar.params import JSONBody
 from litestar.security.session_auth import SessionAuth
 from litestar.testing import create_test_client
 from tests.models import User, UserFactory
@@ -38,7 +39,7 @@ def test_authentication(session_backend_config_memory: ServerSideSessionConfig) 
     )
 
     @post("/login")
-    def login_handler(request: "Request[Any, Any, Any]", data: User) -> None:
+    def login_handler(request: "Request[Any, Any, Any]", data: JSONBody[User]) -> None:
         request.set_session(msgspec.to_builtins(data))
 
     @delete("/user/{user_id:str}")

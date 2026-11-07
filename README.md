@@ -95,12 +95,11 @@ litestar run
 - [OpenAPI 3.1 schema generation](#openapi)
 - [Life Cycle Hooks](#request-life-cycle-hooks)
 - [Route Guards based Authorization](#route-guards)
-- Support for `dataclasses`, `TypedDict`, [`msgspec`](https://jcristharif.com/msgspec/), [pydantic version 1 and version 2 (even within the same application)](https://docs.pydantic.dev/latest/) and [(c)attrs](https://catt.rs/en/stable/)
+- Support for `dataclasses`, `TypedDict`, [`msgspec`](https://msgspec.dev), [pydantic version 1 and version 2 (even within the same application)](https://docs.pydantic.dev/latest/) and [(c)attrs](https://catt.rs/en/stable/)
 - Layered parameter declaration
 - Support for [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457) standardized "Problem Detail" error responses
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Scalar](https://github.com/scalar/scalar/)
-  - [RapiDoc](https://github.com/rapi-doc/RapiDoc)
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
@@ -228,7 +227,6 @@ Litestar serves the documentation from the generated OpenAPI schema with:
 - [ReDoc](https://redoc.ly/)
 - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Stoplight Elements](https://github.com/stoplightio/elements)
-- [RapiDoc](https://rapidocweb.com/)
 
 All these are available and enabled by default.
 
@@ -316,7 +314,7 @@ or read more about it [here](https://docs.litestar.dev/latest/benchmarks) in our
 Litestar is open to contributions big and small. You can always [join our discord](https://discord.gg/litestar) server
 or [join our Matrix](https://matrix.to/#/#litestar:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
-see [the contribution guide](CONTRIBUTING.rst).
+see [the contribution guide](https://github.com/litestar-org/litestar/blob/main/CONTRIBUTING.rst).
 
 <!-- contributors-start -->
 

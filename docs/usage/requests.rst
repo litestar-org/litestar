@@ -4,7 +4,8 @@ Requests
 Request body
 ------------
 
-The body of HTTP requests can be accessed using the special ``data`` parameter in a handler function.
+The body of HTTP requests can be accessed using the special ``data`` parameter in a handler function,
+declared with a body marker. For a JSON body, that's :data:`~litestar.params.JSONBody`.
 
 .. literalinclude:: /examples/request_data/request_data_1.py
     :language: python
@@ -17,7 +18,7 @@ The type of ``data`` can be any supported type, including
 * :class:`TypedDicts <typing.TypedDict>`
 * :func:`dataclasses <dataclasses.dataclass>`
 * Types supported via :doc:`plugins </usage/plugins/index>` ie.
-    - `Msgspec Struct <https://jcristharif.com/msgspec/structs.html>`_
+    - `Msgspec Struct <https://msgspec.dev/structs>`_
     - `Pydantic models <https://docs.pydantic.dev/usage/models/>`_
     - `Attrs classes <https://www.attrs.org/en/stable/>`_
 

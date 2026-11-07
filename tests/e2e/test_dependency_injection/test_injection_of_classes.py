@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import msgspec
 
 from litestar import Controller, get
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.params import FromPath, FromQuery
 from litestar.testing import create_test_client
 
@@ -17,7 +17,7 @@ def test_injection_of_classes() -> None:
             self.path_param = path_param
 
     class HandlerDependency:
-        def __init__(self, query_param: FromQuery[int], path_param_dependency: TopLevelDependency):
+        def __init__(self, query_param: FromQuery[int], path_param_dependency: NamedDependency[TopLevelDependency]):
             self.query_param = query_param
             self.path_param_dependency = path_param_dependency
 
@@ -31,7 +31,7 @@ def test_injection_of_classes() -> None:
                 "container": Provide(HandlerDependency, sync_to_thread=False),
             },
         )
-        def test_function(self, container: HandlerDependency) -> str:
+        def test_function(self, container: NamedDependency[HandlerDependency]) -> str:
             assert container
             assert isinstance(container, HandlerDependency)
             assert container.query_param == query_param_value
@@ -50,7 +50,7 @@ def test_inject_dataclass() -> None:
         bar: FromQuery[str]
 
     @get("/", dependencies={"foo": Provide(Foo, sync_to_thread=False)})
-    async def handler(foo: Foo) -> Foo:
+    async def handler(foo: NamedDependency[Foo]) -> Foo:
         return foo
 
     with create_test_client([handler]) as client:
@@ -64,7 +64,7 @@ def test_inject_msgspec_struct() -> None:
         bar: FromQuery[str]
 
     @get("/", dependencies={"foo": Provide(Foo, sync_to_thread=False)})
-    async def handler(foo: Foo) -> Foo:
+    async def handler(foo: NamedDependency[Foo]) -> Foo:
         return foo
 
     with create_test_client([handler]) as client:

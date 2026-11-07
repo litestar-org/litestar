@@ -14,7 +14,7 @@ from contextlib import contextmanager, redirect_stderr
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import httpx
+import httpx2
 import uvicorn
 from auto_pytabs.sphinx_ext import CodeBlockOverride, LiteralIncludeOverride
 from docutils.nodes import Node, admonition, literal_block, title
@@ -86,9 +86,9 @@ def run_app(path: Path) -> Generator[int, None, None]:
         try:
             for _ in range(100):
                 try:
-                    httpx.get(f"http://127.0.0.1:{port}", timeout=0.1)
+                    httpx2.get(f"http://127.0.0.1:{port}", timeout=0.1)
                     break
-                except httpx.TransportError:
+                except httpx2.TransportError:
                     time.sleep(0.1)
             else:
                 raise StartupError(f"App {path} failed to come online")

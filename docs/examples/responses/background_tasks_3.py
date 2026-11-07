@@ -5,7 +5,7 @@ from litestar.background_tasks import BackgroundTask, BackgroundTasks
 from litestar.params import FromQuery
 
 logger = logging.getLogger(__name__)
-greeted = set()
+greeted: set[str] = set()
 
 
 async def logging_task(name: str) -> None:

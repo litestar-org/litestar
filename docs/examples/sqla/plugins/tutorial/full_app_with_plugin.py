@@ -7,8 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, get, post, put
+from litestar.di import NamedDependency
 from litestar.exceptions import ClientException, NotFoundException
-from litestar.params import FromPath, FromQuery
+from litestar.params import FromPath, FromQuery, JSONBody
 from litestar.status_codes import HTTP_409_CONFLICT
 
 
@@ -22,7 +23,7 @@ class TodoItem(Base):
     done: Mapped[bool]
 
 
-async def provide_transaction(db_session: AsyncSession) -> AsyncGenerator[AsyncSession, None]:
+async def provide_transaction(db_session: NamedDependency[AsyncSession]) -> AsyncGenerator[AsyncSession, None]:
     try:
         async with db_session.begin():
             yield db_session
@@ -52,18 +53,20 @@ async def get_todo_list(done: FromQuery[bool | None], session: AsyncSession) -> 
 
 
 @get("/")
-async def get_list(transaction: AsyncSession, done: FromQuery[bool | None] = None) -> list[TodoItem]:
+async def get_list(transaction: NamedDependency[AsyncSession], done: FromQuery[bool | None] = None) -> list[TodoItem]:
     return await get_todo_list(done, transaction)
 
 
 @post("/")
-async def add_item(data: TodoItem, transaction: AsyncSession) -> TodoItem:
+async def add_item(data: JSONBody[TodoItem], transaction: NamedDependency[AsyncSession]) -> TodoItem:
     transaction.add(data)
     return data
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: FromPath[str], data: TodoItem, transaction: AsyncSession) -> TodoItem:
+async def update_item(
+    item_title: FromPath[str], data: JSONBody[TodoItem], transaction: NamedDependency[AsyncSession]
+) -> TodoItem:
     todo_item = await get_todo_by_title(item_title, transaction)
     todo_item.title = data.title
     todo_item.done = data.done

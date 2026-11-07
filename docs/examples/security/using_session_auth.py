@@ -8,6 +8,7 @@ from litestar.connection import ASGIConnection
 from litestar.exceptions import NotAuthorizedException
 from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 from litestar.openapi.config import OpenAPIConfig
+from litestar.params import JSONBody
 from litestar.security.session_auth import SessionAuth
 from litestar.stores.memory import MemoryStore
 
@@ -57,18 +58,18 @@ async def retrieve_user_handler(
 
 
 @post("/login")
-async def login(data: UserLoginPayload, request: "Request[Any, Any, Any]") -> User:
+async def login(data: JSONBody[UserLoginPayload], request: "Request[Any, Any, Any]") -> User:
     # we received log-in data via post.
     # our login handler should retrieve from persistence (a db etc.)
     # the user data and verify that the login details
     # are correct. If we are using passwords, we should check that
     # the password hashes match etc. We will simply assume that we
     # have done all of that we now have a user value:
-    user_id = await memory_store.get(data.email)
+    encoded_user_id = await memory_store.get(data.email)
 
-    if not user_id:
+    if not encoded_user_id:
         raise NotAuthorizedException
-    user_id = user_id.decode("utf-8")
+    user_id = encoded_user_id.decode("utf-8")
 
     # once verified we can create a session.
     # to do this we simply need to call the Litestar
@@ -82,7 +83,7 @@ async def login(data: UserLoginPayload, request: "Request[Any, Any, Any]") -> Us
 
 
 @post("/signup")
-async def signup(data: UserCreatePayload, request: Request[Any, Any, Any]) -> User:
+async def signup(data: JSONBody[UserCreatePayload], request: Request[Any, Any, Any]) -> User:
     # this is similar to the login handler, except here we should
     # insert into persistence - after doing whatever extra
     # validation we might require. We will assume that this is done,

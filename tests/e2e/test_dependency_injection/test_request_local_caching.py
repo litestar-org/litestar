@@ -1,5 +1,5 @@
 from litestar import get
-from litestar.di import Provide
+from litestar.di import NamedDependency, Provide
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -13,11 +13,11 @@ def test_caching_per_request() -> None:
         value += 1
         return tmp
 
-    async def second_dependency(first: int) -> int:
+    async def second_dependency(first: NamedDependency[int]) -> int:
         return first + 5
 
     @get()
-    def route(first: int, second: int) -> int:
+    def route(first: NamedDependency[int], second: NamedDependency[int]) -> int:
         return first + second
 
     with create_test_client(

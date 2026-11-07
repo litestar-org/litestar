@@ -15,6 +15,7 @@ from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.responses import (
     ResponseFactory,
     create_error_responses,
+    pascal_case_to_text,
 )
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar.datastructures import Cookie, ResponseHeader
@@ -29,6 +30,7 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.datastructures import ResponseSpec
 from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, OpenAPIResponse, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
+from litestar.params import JSONBody
 from litestar.response import File, Redirect, Stream, Template
 from litestar.routes import HTTPRoute
 from litestar.status_codes import (
@@ -149,6 +151,37 @@ def test_create_error_responses() -> None:
         assert schema.properties
         assert schema.required
         assert schema.type
+
+
+@pytest.mark.parametrize(
+    ("string", "expected"),
+    [
+        ("PetException", "Pet Exception"),
+        ("InvalidAPIKeyError", "Invalid API Key Error"),
+        ("HTTPException", "HTTP Exception"),
+        ("ValidationException", "Validation Exception"),
+        ("API", "API"),
+        ("Error", "Error"),
+        ("error", "error"),
+        ("HTTP404Error", "HTTP404 Error"),
+        ("Base64Decoder", "Base64 Decoder"),
+        ("", ""),
+    ],
+)
+def test_pascal_case_to_text(string: str, expected: str) -> None:
+    assert pascal_case_to_text(string) == expected
+
+
+def test_create_error_responses_preserves_acronyms_in_description() -> None:
+    class InvalidAPIKeyError(HTTPException):
+        status_code = 401
+
+    _, response = next(create_error_responses(exceptions=[InvalidAPIKeyError]))
+
+    assert response.content
+    schema = response.content[MediaType.JSON].schema
+    assert isinstance(schema, Schema)
+    assert schema.description == "Invalid API Key Error"
 
 
 def test_create_error_responses_with_non_http_status_code() -> None:
@@ -554,7 +587,7 @@ def test_response_generation_with_dto(create_factory: CreateFactoryFixture) -> N
     mock_dto.create_openapi_schema.return_value = Schema()
 
     @post(path="/form-upload", return_dto=mock_dto)
-    async def handler(data: dict[str, Any]) -> dict[str, Any]:
+    async def handler(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
         return data
 
     app = Litestar(route_handlers=[handler])

@@ -40,14 +40,18 @@ class AsyncPgChannelsBackend(ChannelsBackend):
         self._exit_stack = AsyncExitStack()
         self._connect = make_connection or partial(asyncpg.connect, dsn=dsn)
         self._queue: asyncio.Queue[tuple[str, bytes]] | None = None
+        self._listener_lock = asyncio.Lock()
 
     async def on_startup(self) -> None:
-        self._queue = asyncio.Queue()
-        self._listener_conn = await self._connect()
+        async with self._listener_lock:
+            self._queue = asyncio.Queue()
+            self._listener_conn = await self._connect()
 
     async def on_shutdown(self) -> None:
-        await self._listener_conn.close()
-        self._queue = None
+        async with self._listener_lock:
+            await self._listener_conn.close()
+            self._subscribed_channels.clear()
+            self._queue = None
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         if self._queue is None:
@@ -63,14 +67,18 @@ class AsyncPgChannelsBackend(ChannelsBackend):
             await conn.close()
 
     async def subscribe(self, channels: Iterable[str]) -> None:
-        for channel in set(channels) - self._subscribed_channels:
-            await self._listener_conn.add_listener(channel, self._listener)  # type: ignore[arg-type]
-            self._subscribed_channels.add(channel)
+        requested_channels = set(channels)
+        async with self._listener_lock:
+            for channel in requested_channels - self._subscribed_channels:
+                await self._listener_conn.add_listener(channel, self._listener)  # type: ignore[arg-type]
+                self._subscribed_channels.add(channel)
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
-        for channel in channels:
-            await self._listener_conn.remove_listener(channel, self._listener)  # type: ignore[arg-type]
-        self._subscribed_channels = self._subscribed_channels - set(channels)
+        requested_channels = set(channels)
+        async with self._listener_lock:
+            for channel in requested_channels & self._subscribed_channels:
+                await self._listener_conn.remove_listener(channel, self._listener)  # type: ignore[arg-type]
+                self._subscribed_channels.remove(channel)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
         if self._queue is None:

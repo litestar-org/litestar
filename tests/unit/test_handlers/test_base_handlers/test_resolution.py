@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 
 from litestar import Controller, Litestar, Router, get
 from litestar.di import Provide
-from litestar.params import Parameter
+from litestar.params import QueryParameter
 
 
 def test_resolve_dependencies_without_provide() -> None:
@@ -75,7 +75,7 @@ def test_resolve_type_decoders() -> None:
 
 
 def test_resolve_parameters() -> None:
-    parameters = {"foo": Parameter()}
+    parameters = {"foo": QueryParameter()}
 
     @get("/")
     def handler() -> None:

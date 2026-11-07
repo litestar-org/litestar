@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import itertools
 from email.utils import formatdate
 from mimetypes import encodings_map, guess_type
 from typing import TYPE_CHECKING, Literal
@@ -317,7 +316,6 @@ class File(Response):
         """
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         media_type = self.media_type or media_type
         if media_type is not None:
@@ -340,7 +338,7 @@ class File(Response):
             chunk_size=self.chunk_size,
             content_disposition_type=self.content_disposition_type,  # pyright: ignore[reportArgumentType]
             content_length=0,
-            cookies=cookies,
+            cookies=self._merge_cookies(cookies),
             encoding=self.encoding,
             etag=self.etag,
             file_info=self.file_info,

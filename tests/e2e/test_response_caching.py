@@ -15,7 +15,6 @@ from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.enums import CompressionEncoding
-from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
@@ -152,6 +151,25 @@ async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str, mock: 
         assert await store.exists("/cached:::cached")
 
 
+async def test_config_cache_key_builder(mock: MagicMock) -> None:
+    def config_cache_key_builder(request: Request[Any, Any, State]) -> str:
+        return f"{request.url.path}:::config"
+
+    @get("/cached", cache=True)
+    def handler() -> str:
+        return mock()  # type: ignore[no-any-return]
+
+    app = Litestar([handler], response_cache_config=ResponseCacheConfig(key_builder=config_cache_key_builder))
+
+    with TestClient(app) as client:
+        assert client.get("/cached").text == mock.return_value
+        assert client.get("/cached").text == mock.return_value
+
+        assert mock.call_count == 1
+
+    assert await app.stores.get("response_cache").exists("/cached:::config")
+
+
 async def test_non_default_store_name(mock: MagicMock) -> None:
     @get(cache=True)
     def handler() -> str:
@@ -206,6 +224,26 @@ def test_does_not_apply_to_non_cached_routes(mock: MagicMock) -> None:
         assert mock.call_count == 2
 
 
+async def test_does_not_cache_non_cached_handler_on_cached_route() -> None:
+    @get("/mix", cache=True)
+    async def cached() -> str:
+        return "cached"
+
+    @post("/mix")
+    async def uncached() -> str:
+        return "uncached"
+
+    app = Litestar([cached, uncached])
+
+    with TestClient(app) as client:
+        client.get("/mix")
+        client.post("/mix")
+
+    store = app.stores.get("response_cache")
+    assert await store.exists("GET/mix")
+    assert not await store.exists("POST/mix")
+
+
 @pytest.mark.parametrize(
     "cache,expect_applied",
     [
@@ -215,21 +253,15 @@ def test_does_not_apply_to_non_cached_routes(mock: MagicMock) -> None:
         (CACHE_FOREVER, True),
     ],
 )
-def test_middleware_not_applied_to_non_cached_routes(
+async def test_middleware_not_applied_to_non_cached_routes(
     cache: Union[bool, int, type[CACHE_FOREVER]], expect_applied: bool
 ) -> None:
     @get(path="/", cache=cache)
     def handler() -> None: ...
 
-    client = create_test_client(route_handlers=[handler])
-    unpacked_middleware = []
-    cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
-    while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
-        cur = cur.app  # pyright: ignore[reportFunctionMemberAccess]
-    unpacked_middleware.append(cur)
-
-    assert len([m for m in unpacked_middleware if isinstance(m, ResponseCacheMiddleware)]) == int(expect_applied)
+    with create_test_client(route_handlers=[handler]) as client:
+        client.get("/")
+        assert await client.app.stores.get("response_cache").exists("GET/") is expect_applied
 
 
 async def test_compression_applies_before_cache() -> None:
