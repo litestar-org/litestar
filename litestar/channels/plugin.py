@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
 from functools import partial
@@ -28,6 +29,9 @@ if TYPE_CHECKING:
     from litestar.params import FromPath
     from litestar.types import LitestarEncodableType, TypeEncodersMap
     from litestar.types.asgi_types import WebSocketMode
+
+
+logger = logging.getLogger(__name__)
 
 
 class ChannelsException(LitestarException):
@@ -306,7 +310,10 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
     async def _pub_worker(self) -> None:
         while self._pub_queue:
             data, channels = await self._pub_queue.get()
-            await self._backend.publish(data, channels)
+            try:
+                await self._backend.publish(data, channels)
+            except Exception as exc:
+                logger.exception("Error while publishing event: %s", exc)
             self._pub_queue.task_done()
 
     async def _sub_worker(self) -> None:
