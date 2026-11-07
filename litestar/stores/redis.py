@@ -204,7 +204,7 @@ class RedisStore(NamespacedStore):
         key = self._make_key(key)
         if renew_for:
             if isinstance(renew_for, timedelta):
-                renew_for = renew_for.seconds
+                renew_for = int(renew_for.total_seconds())
             data = await self._get_and_renew_script(keys=[key], args=[renew_for])
             return cast("bytes | None", data)
         return await self._redis.get(key)
