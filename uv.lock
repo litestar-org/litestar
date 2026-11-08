@@ -16,16 +16,12 @@ resolution-markers = [
 [[package]]
 name = "advanced-alchemy"
 version = "1.10.0"
-source = { registry = "https://pypi.org/simple" }
+source = { git = "https://github.com/litestar-org/advanced-alchemy.git?rev=main#bbe68ddd3a8dd32618c5117a98cf74d269b480fc" }
 dependencies = [
     { name = "alembic" },
     { name = "greenlet" },
     { name = "sqlalchemy" },
     { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/8d/3e/45eb6f1fdb6f17b58e587e14910cf5e8ef94b77ea3afef35ae615ad2a814/advanced_alchemy-1.10.0.tar.gz", hash = "sha256:5b4b3a4ea430a49609f97821072be0fc0e2e043ad74f9624ebdd23f86cd0951a", size = 1222244, upload-time = "2026-05-23T22:30:54.457Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/37/09/5ce39b476613003295723519bb268637bf8273bb7b6f7f2a9e96ee4dff49/advanced_alchemy-1.10.0-py3-none-any.whl", hash = "sha256:fde685fc0f5e8c7486281c9c29a6aaecfb5ab418c3b0cbbe1081962d4a75fe07", size = 326634, upload-time = "2026-05-23T22:30:52.494Z" },
 ]
 
 [[package]]
@@ -2134,7 +2130,7 @@ wheels = [
 
 [[package]]
 name = "litestar"
-version = "3.0.0b1"
+version = "3.0.0b0"
 source = { editable = "." }
 default-groups = ["dev", "docs", "linting", "test"]
 dependencies = [
@@ -2331,7 +2327,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'", specifier = ">=1.10.0" },
+    { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'", git = "https://github.com/litestar-org/advanced-alchemy.git?rev=main" },
     { name = "annotated-types", marker = "extra == 'annotated-types'" },
     { name = "anyio", specifier = ">=3" },
     { name = "attrs", marker = "extra == 'attrs'" },
