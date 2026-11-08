@@ -100,7 +100,6 @@ litestar run
   - [Redoc](https://github.com/Redocly/redoc)
   - [Stoplight Elements](https://github.com/stoplightio/elements)
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
-- [Trio](https://trio.readthedocs.io/en/stable/) support (built-in, via [AnyIO](https://anyio.readthedocs.io/))
 - Ultra-fast validation, serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
 - [SQLAlchemy integration](https://advanced-alchemy.litestar.dev/latest/)
 

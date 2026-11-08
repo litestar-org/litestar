@@ -11,7 +11,6 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import FromPath
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
-from litestar.types import AnyIOBackend
 
 
 @pytest.fixture()
@@ -38,14 +37,12 @@ def async_listener(mock: MagicMock) -> EventListener:
 
 
 @pytest.mark.parametrize("event_listener", [lf("sync_listener"), lf("async_listener")])
-def test_event_listener(mock: MagicMock, event_listener: EventListener, anyio_backend: AnyIOBackend) -> None:
+def test_event_listener(mock: MagicMock, event_listener: EventListener) -> None:
     @get("/")
     def route_handler(request: Request[Any, Any, Any]) -> None:
         request.app.emit("test_event", "positional", keyword="keyword-value")
 
-    with create_test_client(
-        route_handlers=[route_handler], listeners=[event_listener], backend=anyio_backend
-    ) as client:
+    with create_test_client(route_handlers=[route_handler], listeners=[event_listener]) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
@@ -60,23 +57,19 @@ async def test_shutdown_awaits_pending(async_listener: EventListener, mock: Magi
     assert mock.call_count == 100
 
 
-def test_multiple_event_listeners(
-    async_listener: EventListener, sync_listener: EventListener, mock: MagicMock, anyio_backend: AnyIOBackend
-) -> None:
+def test_multiple_event_listeners(async_listener: EventListener, sync_listener: EventListener, mock: MagicMock) -> None:
     @get("/")
     def route_handler(request: Request[Any, Any, Any]) -> None:
         request.app.emit("test_event")
 
-    with create_test_client(
-        route_handlers=[route_handler], listeners=[async_listener, sync_listener], backend=anyio_backend
-    ) as client:
+    with create_test_client(route_handlers=[route_handler], listeners=[async_listener, sync_listener]) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
     assert mock.call_count == 2
 
 
-def test_multiple_event_ids(mock: MagicMock, anyio_backend: AnyIOBackend) -> None:
+def test_multiple_event_ids(mock: MagicMock) -> None:
     @listener("test_event_1", "test_event_2")
     def event_handler() -> None:
         mock()
@@ -85,7 +78,7 @@ def test_multiple_event_ids(mock: MagicMock, anyio_backend: AnyIOBackend) -> Non
     def route_handler(request: Request[Any, Any, Any], event_id: FromPath[int]) -> None:
         request.app.emit(f"test_event_{event_id}")
 
-    with create_test_client(route_handlers=[route_handler], listeners=[event_handler], backend=anyio_backend) as client:
+    with create_test_client(route_handlers=[route_handler], listeners=[event_handler]) as client:
         response_1 = client.get("/1")
         response_2 = client.get("/2")
         assert response_1.status_code == HTTP_200_OK
