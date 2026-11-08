@@ -348,9 +348,7 @@ def _get_latest_tag(gh_token: str | None = None) -> str:
     if gh_token:
         headers["Authorization"] = f"Bearer {gh_token}"
     try:
-        res = httpx2.get(
-            f"https://api.github.com/repos/{_SOURCE_REPO}/releases/latest", headers=headers, timeout=15
-        )
+        res = httpx2.get(f"https://api.github.com/repos/{_SOURCE_REPO}/releases/latest", headers=headers, timeout=15)
         res.raise_for_status()
         return res.json()["tag_name"]  # type: ignore[no-any-return]
     except Exception as exc:  # fall back to local tags if the API is unreachable
