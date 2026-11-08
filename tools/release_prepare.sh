@@ -20,6 +20,10 @@ fi
 
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 if [ "${CURRENT_BRANCH}" != "main" ]; then
+	if [ ! -t 0 ]; then
+		echo "✖ not on main (on \"${CURRENT_BRANCH}\") — refusing to prepare a release unattended." >&2
+		exit 1
+	fi
 	printf '⚠ not on main (on "%s"). Continue anyway? [y/N] ' "${CURRENT_BRANCH}"
 	read -r reply
 	case "${reply}" in [yY]*) ;; *) echo "aborted." >&2; exit 1 ;; esac
@@ -40,7 +44,7 @@ fi
 echo "→ preparing ${TAG} (${ARG}) on a new branch — nothing will be pushed"
 git switch -c "${TAG}"
 uv version "${UV_ARGS[@]}" --no-sync
-uvx --from 'towncrier>=24,<26' towncrier build --yes --version "${NEW_VERSION}"
+towncrier build --yes --version "${NEW_VERSION}"
 
 # Pre-releases keep their own section; at a FINAL release, fold the pre-release
 # sections (aN/bN/rcN/.devN) of this version into a single consolidated section.

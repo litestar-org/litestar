@@ -68,33 +68,17 @@ jobs:
         run: bash tools/release_preview.sh "${EXPLICIT_VERSION:-$BUMP}" "$BASE"
 
       # ------------------------------------------------------------ real release
-      - name: Bump version
+      - name: Prepare the release commit
         if: ${{ !inputs.dry_run }}
         env:
           BUMP: ${{ inputs.bump }}
           EXPLICIT_VERSION: ${{ inputs.version }}
         run: |
-          if [ -n "$EXPLICIT_VERSION" ]; then
-            uv version "$EXPLICIT_VERSION" --no-sync
-          else
-            uv version --bump "$BUMP" --no-sync
-          fi
-          VERSION="$(uv version --short)"
-          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-          # final release => fold pre-release sections into one; pre-release => keep its own section
-          if printf '%s' "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(\.post[0-9]+)?$'; then
-            echo "IS_FINAL=true" >> "$GITHUB_ENV"
-          else
-            echo "IS_FINAL=false" >> "$GITHUB_ENV"
-          fi
-
-      - name: Assemble changelog from fragments
-        if: ${{ !inputs.dry_run }}
-        run: uvx --from 'towncrier>=24,<26' towncrier build --yes --version "$VERSION"
-
-      - name: Consolidate pre-release sections (final releases only)
-        if: ${{ !inputs.dry_run && env.IS_FINAL == 'true' }}
-        run: python tools/consolidate_prereleases.py "$VERSION"
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          bash tools/release_prepare.sh "${EXPLICIT_VERSION:-$BUMP}"
+          echo "VERSION=$(uv version --short)" >> "$GITHUB_ENV"
 
       # The GitHub draft release is created by finalize-release.yml once this PR is
       # merged, so its notes reflect the final state of main.
@@ -103,14 +87,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          BRANCH="v$VERSION"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch -c "$BRANCH"
-          git commit -am "chore(release): prepare release v$VERSION"
-          git push origin "$BRANCH"
+          set -euo pipefail
+          git push origin "v$VERSION"
           # --repo pins the PR to the repo running the workflow (a fork would otherwise
           # default to opening the PR against its upstream parent).
-          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" \
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "v$VERSION" \
             --title "chore(release): v$VERSION" \
             --body "Automated release PR for v$VERSION. Review, merge, then **Publish** the draft release (→ \`publish.yml\` → PyPI)."

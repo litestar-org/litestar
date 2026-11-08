@@ -2,6 +2,13 @@
 # Shared helpers for the release scripts. Source from a bash script that has already
 # run `set -euo pipefail`.
 
+# towncrier <args...>
+#   The pinned towncrier. Single definition so the scripts and the workflows cannot drift
+#   onto different versions.
+towncrier() {
+	uvx --from 'towncrier>=24,<26' towncrier "$@"
+}
+
 # resolve_version <arg>
 #   <arg> is EITHER an explicit version (leading digit, optional leading "v"), e.g.
 #   "4.0.0b1" / "v4.0.0", OR one or more space-separated bump components

@@ -38,7 +38,7 @@ else
 	check "tag ${TAG} does not exist yet" 0
 fi
 
-if CHANGELOG_PREVIEW="$(uvx --from 'towncrier>=24,<26' towncrier build --draft --version "${NEW_VERSION}" 2>/dev/null)"; then
+if CHANGELOG_PREVIEW="$(towncrier build --draft --version "${NEW_VERSION}" 2>/dev/null)"; then
 	check "news fragments parse" 0
 else
 	check "news fragments parse" 1

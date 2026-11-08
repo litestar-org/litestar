@@ -56,7 +56,9 @@ jobs:
           CHANGE_TYPE: ${{ steps.gate.outputs.change_type }}
           SUMMARY: ${{ steps.gate.outputs.summary }}
         run: |
-          if uvx --from 'towncrier>=24,<26' towncrier check --compare-with "origin/${BASE_REF}"; then
+          # shellcheck source=tools/release_lib.sh
+          source tools/release_lib.sh
+          if towncrier check --compare-with "origin/${BASE_REF}"; then
             echo "✅ Changelog fragment present."
             exit 0
           fi
