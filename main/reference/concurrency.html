@@ -448,9 +448,7 @@ data-aria-dark="Switch to auto color mode">
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#litestar.concurrency.get_asyncio_executor"><code class="docutils literal notranslate"><span class="pre">get_asyncio_executor()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.concurrency.get_trio_capacity_limiter"><code class="docutils literal notranslate"><span class="pre">get_trio_capacity_limiter()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.concurrency.set_asyncio_executor"><code class="docutils literal notranslate"><span class="pre">set_asyncio_executor()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.concurrency.set_trio_capacity_limiter"><code class="docutils literal notranslate"><span class="pre">set_trio_capacity_limiter()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.concurrency.sync_to_thread"><code class="docutils literal notranslate"><span class="pre">sync_to_thread()</span></code></a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
@@ -554,13 +552,6 @@ context</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="litestar.concurrency.get_trio_capacity_limiter">
-<span class="sig-prename descclassname"><span class="pre">litestar.concurrency.</span></span><span class="sig-name descname"><span class="pre">get_trio_capacity_limiter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://trio.readthedocs.io/en/stable/reference-core.html#trio.CapacityLimiter" title="(in Trio v0.35.0)"><span class="pre">trio.CapacityLimiter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/concurrency.html#get_trio_capacity_limiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.concurrency.get_trio_capacity_limiter" title="Link to this definition">¶</a></dt>
-<dd><p>Get the capacity limiter used when running synchronous callable within a trio
-context</p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="litestar.concurrency.set_asyncio_executor">
 <span class="sig-prename descclassname"><span class="pre">litestar.concurrency.</span></span><span class="sig-name descname"><span class="pre">set_asyncio_executor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">executor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ThreadPoolExecutor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/concurrency.html#set_asyncio_executor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.concurrency.set_asyncio_executor" title="Link to this definition">¶</a></dt>
 <dd><p>Set the executor in which synchronous callables will be run within an asyncio
@@ -568,25 +559,13 @@ context</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="litestar.concurrency.set_trio_capacity_limiter">
-<span class="sig-prename descclassname"><span class="pre">litestar.concurrency.</span></span><span class="sig-name descname"><span class="pre">set_trio_capacity_limiter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://trio.readthedocs.io/en/stable/reference-core.html#trio.CapacityLimiter" title="(in Trio v0.35.0)"><span class="pre">trio.CapacityLimiter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/concurrency.html#set_trio_capacity_limiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.concurrency.set_trio_capacity_limiter" title="Link to this definition">¶</a></dt>
-<dd><p>Set the capacity limiter used when running synchronous callable within a trio
-context</p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="litestar.concurrency.sync_to_thread">
 <span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.concurrency.</span></span><span class="sig-name descname"><span class="pre">sync_to_thread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">P.args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">P.kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="../_modules/litestar/concurrency.html#sync_to_thread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.concurrency.sync_to_thread" title="Link to this definition">¶</a></dt>
 <dd><p>Run the synchronous callable <code class="docutils literal notranslate"><span class="pre">fn</span></code> asynchronously in a worker thread.</p>
-<p>When called from asyncio, uses <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.run_in_executor" title="(in Python v3.15)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.loop.run_in_executor()</span></code></a> to
-run the callable. No executor is specified by default so the current loop’s executor
-is used. A specific executor can be set using
-<a class="reference internal" href="#litestar.concurrency.set_asyncio_executor" title="litestar.concurrency.set_asyncio_executor"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_asyncio_executor()</span></code></a>. This does not affect the loop’s
-default executor.</p>
-<p>When called from trio, uses <a class="reference external" href="https://trio.readthedocs.io/en/stable/reference-core.html#trio.to_thread.run_sync" title="(in Trio v0.35.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> to run the callable. No
-capacity limiter is specified by default, but one can be set using
-<a class="reference internal" href="#litestar.concurrency.set_trio_capacity_limiter" title="litestar.concurrency.set_trio_capacity_limiter"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_trio_capacity_limiter()</span></code></a>. This does not affect trio’s
-default capacity limiter.</p>
+<p>Uses <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.run_in_executor" title="(in Python v3.15)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.loop.run_in_executor()</span></code></a> to run the callable. No executor is
+specified by default so the current loop’s executor is used. A specific executor can be
+set using <a class="reference internal" href="#litestar.concurrency.set_asyncio_executor" title="litestar.concurrency.set_asyncio_executor"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_asyncio_executor()</span></code></a>. This does not affect the
+loop’s default executor.</p>
 </dd></dl>
 
 </section>

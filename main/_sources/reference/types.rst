@@ -145,8 +145,6 @@ Helper types are useful generic types that can be used.
 
 .. autoclass:: litestar.types.SyncOrAsyncUnion
 
-.. autoclass:: litestar.types.AnyIOBackend
-
 .. autoclass:: litestar.types.OptionalSequence
 
 

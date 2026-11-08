@@ -6,6 +6,18 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Remove support for trio
+        :type: feature
+        :breaking:
+        :pr: XXXX
+
+        Trio is no longer supported. ``set_trio_capacity_limiter`` and
+        ``get_trio_capacity_limiter`` are removed from :mod:`litestar.concurrency`, along with
+        ``litestar.types.AnyIOBackend`` and the ``backend`` parameter of
+        :class:`~litestar.testing.TestClient` and :func:`~litestar.testing.create_test_client`.
+        :func:`~litestar.concurrency.sync_to_thread` raises ``RuntimeError`` when called from
+        trio. ``sniffio`` is no longer a dependency.
+
     .. change:: DI: Correctly set Pydantic dependency fields as required without a default
         :type: bugfix
         :pr: 5195

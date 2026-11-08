@@ -547,6 +547,16 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Remove support for trio<a class="headerlink reference internal" href="#3.0.0-remove support for trio" id="3.0.0-remove support for trio">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Trio is no longer supported. <code class="docutils literal notranslate"><span class="pre">set_trio_capacity_limiter</span></code> and
+<code class="docutils literal notranslate"><span class="pre">get_trio_capacity_limiter</span></code> are removed from <a class="reference internal" href="../reference/concurrency.html#module-litestar.concurrency" title="litestar.concurrency"><code class="xref py py-mod docutils literal notranslate"><span class="pre">litestar.concurrency</span></code></a>, along with
+<code class="docutils literal notranslate"><span class="pre">litestar.types.AnyIOBackend</span></code> and the <code class="docutils literal notranslate"><span class="pre">backend</span></code> parameter of
+<a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> and <a class="reference internal" href="../reference/testing.html#litestar.testing.create_test_client" title="litestar.testing.create_test_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_test_client()</span></code></a>.
+<a class="reference internal" href="../reference/concurrency.html#litestar.concurrency.sync_to_thread" title="litestar.concurrency.sync_to_thread"><code class="xref py py-func docutils literal notranslate"><span class="pre">sync_to_thread()</span></code></a> raises <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> when called from
+trio. <code class="docutils literal notranslate"><span class="pre">sniffio</span></code> is no longer a dependency.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/XXXX">https://github.com/litestar-org/litestar/pull/XXXX</a></span></p>
+</div>
+</dd>
 <dt>Default <code class="docutils literal notranslate"><span class="pre">copy_scope</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> for ASGI handlers<a class="headerlink reference internal" href="#3.0.0-default" id="3.0.0-default">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Every <code class="docutils literal notranslate"><span class="pre">asgi</span></code> handler, mounted or not, now receives a copy of the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code>,
 so the wrapped application can no longer add, replace or remove top-level scope
