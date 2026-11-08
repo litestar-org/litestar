@@ -17,29 +17,19 @@ _polar = "[Polar.sh](https://polar.sh/litestar-org)"
 _open_collective = "[OpenCollective](https://opencollective.com/litestar)"
 _github_sponsors = "[GitHub Sponsors](https://github.com/sponsors/litestar-org/)"
 
-# Read PR/tag/contributor data and build the note links from the canonical project
-# (override with RELEASE_SOURCE_REPO); create the release on the repo running the workflow
-# (a fork sets GITHUB_REPOSITORY) — so the data stays real while the actions land on the fork.
-_SOURCE_REPO = os.getenv("RELEASE_SOURCE_REPO", "litestar-org/litestar")
-_TARGET_REPO = os.getenv("GITHUB_REPOSITORY", _SOURCE_REPO)
-_OWNER, _, _NAME = _SOURCE_REPO.partition("/")
+_REPO = "litestar-org/litestar"
 
 
 class PullRequest(msgspec.Struct, kw_only=True):
     title: str
     number: int
-    body: str
     created_at: str
     user: RepoUser
-    merge_commit_sha: str | None = None
 
 
 class Comp(msgspec.Struct):
-    sha: str
-
     class _Commit(msgspec.Struct):
         message: str
-        url: str
 
     commit: _Commit
 
@@ -53,13 +43,10 @@ class RepoUser(msgspec.Struct):
 @dataclass
 class PRInfo:
     url: str
-    title: str
     clean_title: str
     cc_type: str
     number: int
-    closes: list[int]
     created_at: datetime.datetime
-    description: str
     user: RepoUser
 
 
@@ -73,7 +60,7 @@ class ReleaseInfo:
 
     @property
     def compare_url(self) -> str:
-        return f"https://github.com/{_SOURCE_REPO}/compare/{self.base}...{self.release_tag}"
+        return f"https://github.com/{_REPO}/compare/{self.base}...{self.release_tag}"
 
 
 def _pr_number_from_commit(comp: Comp) -> int | None:
@@ -88,48 +75,18 @@ def _pr_number_from_commit(comp: Comp) -> int | None:
 
 class _Thing:
     def __init__(self, *, gh_token: str, base: str, release_branch: str, tag: str, version: str) -> None:
-        self._gh_token = gh_token
         self._base = base
         self._new_release_tag = tag
         self._release_branch = release_branch
         self._new_release_version = version
-        self._base_client = httpx2.AsyncClient(
-            headers={
-                "Authorization": f"Bearer {gh_token}",
-            }
-        )
         self._api_client = httpx2.AsyncClient(
             headers={
-                **self._base_client.headers,
+                "Authorization": f"Bearer {gh_token}",
                 "X-GitHub-Api-Version": "2022-11-28",
                 "Accept": "application/vnd.github+json",
             },
-            base_url=f"https://api.github.com/repos/{_SOURCE_REPO}/",
+            base_url=f"https://api.github.com/repos/{_REPO}/",
         )
-
-    async def get_closing_issues_references(self, pr_number: int) -> list[int]:
-        graphql_query = """{
-        repository(owner: "%s", name: "%s") {
-            pullRequest(number: %d) {
-                id
-                closingIssuesReferences (first: 10) {
-                    edges {
-                        node {
-                            number
-                        }
-                    }
-                }
-            }
-        }
-    }"""
-        query = graphql_query % (_OWNER, _NAME, pr_number)
-        res = await self._base_client.post("https://api.github.com/graphql", json={"query": query})
-        res.raise_for_status()
-        data = res.json()
-        return [
-            edge["node"]["number"]
-            for edge in data["data"]["repository"]["pullRequest"]["closingIssuesReferences"]["edges"]
-        ]
 
     async def _get_pr_info_for_pr(self, number: int) -> PRInfo | None:
         res = await self._api_client.get(f"/pulls/{number}")
@@ -140,26 +97,17 @@ class _Thing:
             )
             return None
         res.raise_for_status()
-        data = res.json()
-        if not data["body"]:
-            data["body"] = ""
-        if not data:
-            return None
-        pr = msgspec.convert(data, type=PullRequest)
+        pr = msgspec.convert(res.json(), type=PullRequest)
 
         cc_prefix, clean_title = pr.title.split(":", maxsplit=1)
         cc_type = cc_prefix.split("(", maxsplit=1)[0].lower()
-        closes_issues = await self.get_closing_issues_references(pr_number=pr.number)
 
         return PRInfo(
             number=pr.number,
             cc_type=cc_type,
             clean_title=clean_title.strip(),
-            url=f"https://github.com/{_SOURCE_REPO}/pull/{pr.number}",
-            closes=closes_issues,
-            title=pr.title,
+            url=f"https://github.com/{_REPO}/pull/{pr.number}",
             created_at=datetime.datetime.strptime(pr.created_at, "%Y-%m-%dT%H:%M:%S%z"),
-            description=pr.body,
             user=pr.user,
         )
 
@@ -223,9 +171,8 @@ class _Thing:
     async def create_draft_release(self, body: str, release_branch: str) -> str:
         # mark alpha/beta/rc/dev versions as a GitHub pre-release (the API won't derive this)
         is_prerelease = bool(re.search(r"(a|b|rc)\d+|\.dev\d+", self._new_release_version))
-        # reads use the source base_url; the release is created on the target repo (the fork)
         res = await self._api_client.post(
-            f"https://api.github.com/repos/{_TARGET_REPO}/releases",
+            "/releases",
             json={
                 "tag_name": self._new_release_tag,
                 "target_commitish": release_branch,
@@ -348,7 +295,7 @@ def _get_latest_tag(gh_token: str | None = None) -> str:
     if gh_token:
         headers["Authorization"] = f"Bearer {gh_token}"
     try:
-        res = httpx2.get(f"https://api.github.com/repos/{_SOURCE_REPO}/releases/latest", headers=headers, timeout=15)
+        res = httpx2.get(f"https://api.github.com/repos/{_REPO}/releases/latest", headers=headers, timeout=15)
         res.raise_for_status()
         return res.json()["tag_name"]  # type: ignore[no-any-return]
     except Exception as exc:  # fall back to local tags if the API is unreachable
