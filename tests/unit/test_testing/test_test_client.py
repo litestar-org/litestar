@@ -16,7 +16,6 @@ from litestar.testing.websocket_test_session import AsyncWebSocketTestSession
 
 if TYPE_CHECKING:
     from litestar.types import (
-        AnyIOBackend,
         Receive,
         Scope,
         Send,
@@ -44,9 +43,8 @@ def test_client_cls(request: FixtureRequest) -> type[AnyTestClient]:
     return cast(type[AnyTestClient], request.param)
 
 
-@pytest.mark.parametrize("anyio_backend", ["asyncio", "trio"])
-def test_test_client_get_set_session_data_no_backend(anyio_backend: "AnyIOBackend") -> None:
-    with create_test_client(backend=anyio_backend) as client:
+def test_test_client_get_set_session_data_no_backend() -> None:
+    with create_test_client() as client:
         with pytest.raises(RuntimeError, match="Session backend not configured"):
             client.set_session_data({})
 
@@ -63,14 +61,8 @@ async def test_test_client_get_set_session_data_no_backend_async() -> None:
             await client.get_session_data()
 
 
-@pytest.mark.parametrize("anyio_backend", ["asyncio", "trio"])
 @pytest.mark.parametrize("with_domain", [False, True])
-def test_test_client_set_session_data(
-    with_domain: bool,
-    anyio_backend: str,
-    session_backend_config: "BaseBackendConfig",
-    test_client_backend: "AnyIOBackend",
-) -> None:
+def test_test_client_set_session_data(with_domain: bool, session_backend_config: "BaseBackendConfig") -> None:
     session_data = {"foo": "bar"}
 
     if with_domain:
@@ -82,25 +74,14 @@ def test_test_client_set_session_data(
 
     app = Litestar(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])
 
-    with TestClient(app=app, session_config=session_backend_config, backend=test_client_backend) as client:
+    with TestClient(app=app, session_config=session_backend_config) as client:
         client.set_session_data(session_data)
         assert client.get("/test").json() == session_data
 
 
-@pytest.mark.parametrize(
-    "anyio_backend",
-    [
-        pytest.param("asyncio"),
-        pytest.param("trio", marks=pytest.mark.xfail(reason="Known issue with trio backend", strict=False)),
-    ],
-)
 @pytest.mark.parametrize("with_domain", [True, False])
 def test_test_client_get_session_data(
-    with_domain: bool,
-    anyio_backend: str,
-    session_backend_config: "BaseBackendConfig",
-    test_client_backend: "AnyIOBackend",
-    store: Store,
+    with_domain: bool, session_backend_config: "BaseBackendConfig", store: Store
 ) -> None:
     session_data = {"foo": "bar"}
 
@@ -115,7 +96,7 @@ def test_test_client_get_session_data(
         route_handlers=[set_session_data], middleware=[session_backend_config.middleware], stores={"session": store}
     )
 
-    with TestClient(app=app, session_config=session_backend_config, backend=test_client_backend) as client:
+    with TestClient(app=app, session_config=session_backend_config) as client:
         client.post("/test")
         assert client.get_session_data() == session_data
 
@@ -165,7 +146,7 @@ async def test_test_client_get_session_data_async(
         assert await client.get_session_data() == session_data
 
 
-async def test_use_testclient_in_endpoint(test_client_backend: "AnyIOBackend") -> None:
+async def test_use_testclient_in_endpoint() -> None:
     """this test is taken from starlette."""
 
     @get("/")
@@ -234,15 +215,15 @@ async def test_error_handling_on_startup_async() -> None:
             pass
 
 
-def test_error_handling_on_startup(test_client_backend: "AnyIOBackend") -> None:
+def test_error_handling_on_startup() -> None:
     with pytest.raises(_ExceptionGroup):
-        with TestClient(Litestar(on_startup=[raise_error]), backend=test_client_backend):
+        with TestClient(Litestar(on_startup=[raise_error])):
             pass
 
 
-def test_error_handling_on_shutdown(test_client_backend: "AnyIOBackend") -> None:
+def test_error_handling_on_shutdown() -> None:
     with pytest.raises(RuntimeError):
-        with TestClient(Litestar(on_shutdown=[raise_error]), backend=test_client_backend):
+        with TestClient(Litestar(on_shutdown=[raise_error])):
             pass
 
 
@@ -258,7 +239,7 @@ def test_warns_problematic_domain(test_client_cls: type[AnyTestClient]) -> None:
 
 
 @pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
-def test_client_interface_context_manager(method: str, test_client_backend: "AnyIOBackend") -> None:
+def test_client_interface_context_manager(method: str) -> None:
     class MockController(Controller):
         @get("/")
         def mock_service_endpoint_get(self) -> dict:
@@ -281,7 +262,7 @@ def test_client_interface_context_manager(method: str, test_client_backend: "Any
         def mock_service_endpoint_head(self) -> None: ...
 
     mock_service = Litestar(route_handlers=[MockController])
-    with TestClient(mock_service, backend=test_client_backend) as client:
+    with TestClient(mock_service) as client:
         if method == "get":
             response = client.get("/")
             assert response.status_code == HTTP_200_OK
@@ -397,23 +378,23 @@ def test_websocket_receive_no_data_no_timeout_no_block(receive_method: Callable[
             receive_method(ws, timeout=None, block=False)
 
 
-def test_websocket_accept_timeout(anyio_backend: "AnyIOBackend") -> None:
+def test_websocket_accept_timeout() -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
         pass
 
-    with create_test_client(handler, backend=anyio_backend) as client:
+    with create_test_client(handler) as client:
         with pytest.RaisesGroup(pytest.RaisesExc(TimeoutError)):
             with client.websocket_connect("/", timeout=0.1):
                 pass
 
 
-def test_unexpected_message_before_accept(anyio_backend: "AnyIOBackend") -> None:
+def test_unexpected_message_before_accept() -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
         await socket.send({"type": "something.else"})  # type: ignore[typeddict-item]
 
-    with create_test_client(handler, backend=anyio_backend) as client:
+    with create_test_client(handler) as client:
         with pytest.RaisesGroup(
             pytest.RaisesExc(RuntimeError, match=r"Unexpected ASGI message.*Received 'something\.else'")
         ):
@@ -421,7 +402,7 @@ def test_unexpected_message_before_accept(anyio_backend: "AnyIOBackend") -> None
                 pass
 
 
-def test_websocket_connect(anyio_backend: "AnyIOBackend") -> None:
+def test_websocket_connect() -> None:
     @websocket()
     async def handler(socket: WebSocket) -> None:
         await socket.accept()
@@ -429,7 +410,7 @@ def test_websocket_connect(anyio_backend: "AnyIOBackend") -> None:
         await socket.send_json(data)
         await socket.close()
 
-    with create_test_client(handler, backend=anyio_backend, timeout=0.1) as client:
+    with create_test_client(handler, timeout=0.1) as client:
         with client.websocket_connect("/", subprotocols="wamp") as ws:
             ws.send_json({"data": "123"})
             data = ws.receive_json()

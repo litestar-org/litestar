@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any
 
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.controller import Controller
@@ -58,7 +58,6 @@ def create_test_client(
     after_request: AfterRequestHookHandler | None = None,
     after_response: AfterResponseHookHandler | None = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
-    backend: Literal["asyncio", "trio"] = "asyncio",
     backend_options: dict[str, Any] | None = None,
     base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
@@ -138,8 +137,7 @@ def create_test_client(
         route_handlers: A single handler or a sequence of route handlers, which can include instances of
             :class:`Router <litestar.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or
             any function decorated by the route handler decorators.
-        backend: The async backend to use, options are "asyncio" or "trio".
-        backend_options: ``anyio`` options.
+        backend_options: ``anyio`` options of the asyncio backend.
         base_url: URL scheme and domain for test request paths, e.g. ``http://testserver``.
         raise_server_exceptions: Flag for underlying the test client to raise server exceptions instead of wrapping them
             in an HTTP response.
@@ -296,7 +294,6 @@ def create_test_client(
 
     return TestClient[Litestar](
         app=app,
-        backend=backend,
         backend_options=backend_options,
         base_url=base_url,
         raise_server_exceptions=raise_server_exceptions,

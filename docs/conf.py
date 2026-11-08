@@ -130,7 +130,6 @@ nitpick_ignore = [
     (PY_CLASS, "ClientRequestHookHandler"),
     (PY_CLASS, "ClientResponseHookHandler"),
     (PY_CLASS, "ServerRequestHookHandler"),
-    (PY_CLASS, "AnyIOBackend"),
     (PY_CLASS, "BaseSessionBackendT"),
     (PY_CLASS, "C"),
     (PY_CLASS, "CollectionT"),
