@@ -168,6 +168,22 @@ class TestConventionalCommitType:
         assert pr.breaking is expected_breaking
 
 
+class TestRateLimitedPullRequest:
+    @pytest.mark.parametrize("status", [403, 429])
+    async def test_a_rate_limited_pr_aborts_rather_than_vanishing(self, status: int) -> None:
+        def handler(request: httpx2.Request) -> httpx2.Response:
+            return httpx2.Response(status, json={"message": "rate limited"})
+
+        with pytest.raises(ClickException, match="Refusing to build release notes"):
+            await _thing(handler)._get_pr_info_for_pr(1)
+
+    async def test_a_genuine_404_is_still_skipped(self) -> None:
+        def handler(request: httpx2.Request) -> httpx2.Response:
+            return httpx2.Response(404, json={"message": "Not Found"})
+
+        assert await _thing(handler)._get_pr_info_for_pr(1) is None
+
+
 class TestBreakingChangesSection:
     def test_breaking_changes_lead_the_notes(self) -> None:
         notes = build_gh_release_notes(

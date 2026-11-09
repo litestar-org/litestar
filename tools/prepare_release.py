@@ -82,6 +82,7 @@ class _Thing:
         self._new_release_tag = tag
         self._release_branch = release_branch
         self._new_release_version = version
+        self._requests = asyncio.Semaphore(10)
         self._api_client = httpx2.AsyncClient(
             headers={
                 "Authorization": f"Bearer {gh_token}",
@@ -92,7 +93,13 @@ class _Thing:
         )
 
     async def _get_pr_info_for_pr(self, number: int) -> PRInfo | None:
-        res = await self._api_client.get(f"/pulls/{number}")
+        async with self._requests:
+            res = await self._api_client.get(f"/pulls/{number}")
+        if res.status_code in {403, 429}:
+            raise click.ClickException(
+                f"PR {number}: {res.status_code} from the API (rate limit or permissions). Refusing to "
+                "build release notes that would silently omit it."
+            )
         if res.is_client_error:
             click.secho(
                 f"Could not get PR info for {number}.  Fetch request returned a status of {res.status_code}",
@@ -176,15 +183,16 @@ class _Thing:
 
         async def is_user_first_commit(user_login: str) -> None:
             first_pr = sorted(prs_by_user_login[user_login], key=lambda p: p.created_at)[0]
-            res = await self._api_client.get(
-                "/commits",
-                params={
-                    "author": user_login,
-                    "sha": "main",
-                    "until": first_pr.created_at.isoformat(),
-                    "per_page": 1,
-                },
-            )
+            async with self._requests:
+                res = await self._api_client.get(
+                    "/commits",
+                    params={
+                        "author": user_login,
+                        "sha": "main",
+                        "until": first_pr.created_at.isoformat(),
+                        "per_page": 1,
+                    },
+                )
             res.raise_for_status()
 
             if len(res.json()) == 0:
