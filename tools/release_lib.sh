@@ -84,3 +84,15 @@ has_news_fragments() {
 	towncrier build --draft --version 0.0.0 2>/dev/null \
 		| grep -q '\.\. change::'
 }
+
+# is_final_version <version>
+#   Succeeds for a final release (X.Y.Z, optionally .postN); fails for a pre-release.
+is_final_version() {
+	printf '%s' "$1" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(\.post[0-9]+)?$'
+}
+
+# warn_review_notes
+#   Reminder that the generated notes need a read before the draft is published.
+warn_review_notes() {
+	printf '\n\033[1;33m⚠ Review the GitHub release notes before publishing — especially the "Other changes" section: not all of those entries belong in the final notes.\033[0m\n'
+}

@@ -52,7 +52,7 @@ fi
 
 # Pre-releases keep their own section; at a FINAL release, fold the pre-release
 # sections (aN/bN/rcN/.devN) of this version into a single consolidated section.
-if printf '%s' "${NEW_VERSION}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(\.post[0-9]+)?$'; then
+if is_final_version "${NEW_VERSION}"; then
 	python3 tools/consolidate_prereleases.py "${NEW_VERSION}"
 fi
 
@@ -71,4 +71,4 @@ Next:
 (Or skip all of the above and just run the "Release" workflow with dry_run off.)
 EOF
 
-printf '\n\033[1;33m⚠ When you create the release, review the generated notes before publishing — especially the "Other changes" section: not all of those entries belong in the final notes.\033[0m\n'
+warn_review_notes

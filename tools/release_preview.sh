@@ -64,7 +64,7 @@ else
 fi
 
 printf '\nChangelog preview (towncrier --draft, not written):\n'
-if printf '%s' "${NEW_VERSION}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(\.post[0-9]+)?$'; then
+if is_final_version "${NEW_VERSION}"; then
 	ESC="${NEW_VERSION//./\\.}"
 	PRE_COUNT="$(grep -cE "^\.\. changelog:: ${ESC}((a|b|rc)[0-9]+|\.dev[0-9]+)\$" docs/release-notes/changelog.rst 2>/dev/null)" || PRE_COUNT=0
 	if [ "${PRE_COUNT}" -gt 0 ]; then
@@ -84,7 +84,7 @@ if [ "${HAVE_TOKEN}" -eq 1 ]; then
 	printf -- '------------------------------------------------------------\n'
 fi
 
-printf '\n\033[1;33m⚠ Review the GitHub release notes before publishing — especially the "Other changes" section: not all of those entries belong in the final notes.\033[0m\n'
+warn_review_notes
 
 printf '\n'
 if [ "${fail}" -eq 0 ]; then
