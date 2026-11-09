@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Call ``after_exception`` hooks once for an exception on a route with middleware
+        :type: bugfix
+        :pr: 5203
+
+        Fix a bug that, on a route with middleware, an exception that no exception
+        handler creates a response for, ``after_exception`` hooks and
+        ``pdb_on_exception`` would be called multiple times (once by the exception
+        handling layer of the middleware and once by the application's).
+
+        They are called exactly once per exception instance now.
+
     .. change:: Remove support for trio
         :type: feature
         :breaking:

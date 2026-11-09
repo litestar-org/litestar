@@ -134,15 +134,22 @@ class ExceptionHandlerMiddleware:
 
             litestar_app = scope["litestar_app"]
 
-            for hook in litestar_app.after_exception:
-                await hook(exc, scope)
-
-            if litestar_app.pdb_on_exception:
-                litestar_app.debugger_module.post_mortem()
-
             # collapse ExceptionGroups with one exception, so we can properly handle
             # them for dispatching
-            exc = _collapse_exception_groups(exc)
+            collapsed = _collapse_exception_groups(exc)
+
+            # an exception an instance of this middleware further in could not create a
+            # response for is re-raised by it and reaches this one too. the hooks run once
+            if scope_state.exception_hooks_called_for is not collapsed:
+                scope_state.exception_hooks_called_for = collapsed
+
+                for hook in litestar_app.after_exception:
+                    await hook(exc, scope)
+
+                if litestar_app.pdb_on_exception:
+                    litestar_app.debugger_module.post_mortem()
+
+            exc = collapsed
 
             if scope["type"] == ScopeType.HTTP:
                 await self.handle_request_exception(
