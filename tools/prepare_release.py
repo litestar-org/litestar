@@ -223,19 +223,10 @@ class _Thing:
         return res.json()["html_url"]  # type: ignore[no-any-return]
 
 
-class GHReleaseWriter:
-    def __init__(self) -> None:
-        self.text = ""
-
-    def add_line(self, line: str) -> None:
-        self.text += line + "\n"
-
-    def add_pr_descriptions(self, infos: list[PRInfo]) -> None:
-        for info in infos:
-            # clean_title drops the conventional-commit prefix (e.g. "docs: ");
-            # capitalize only the first char (not .capitalize(), which mangles acronyms like "OpenAPI")
-            title = info.clean_title[:1].upper() + info.clean_title[1:]
-            self.add_line(f"* {title} by @{info.user.login} in {info.url}")
+def _pr_lines(infos: list[PRInfo]) -> list[str]:
+    # clean_title drops the conventional-commit prefix (e.g. "docs: "); capitalize only the
+    # first char (not .capitalize(), which mangles acronyms like "OpenAPI")
+    return [f"* {i.clean_title[:1].upper() + i.clean_title[1:]} by @{i.user.login} in {i.url}" for i in infos]
 
 
 def build_gh_release_notes(release_info: ReleaseInfo) -> str:
@@ -245,9 +236,6 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
     # 2. The conventional commit type is stripped from the title
     # 3. It works with our release branch process. GitHub doesn't pick up (all) commits
     #    made there depending on how things were merged
-    doc = GHReleaseWriter()
-
-    # conventional-commit type -> release-notes section, in display order
     sections = (
         ("feat", "### New features"),
         ("fix", "### Bugfixes"),
@@ -257,21 +245,19 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
     )
     titled_types = {cc_type for cc_type, _ in sections}
     ignored_types = {"ci", "chore"}  # internal noise, kept out of the notes
-
-    doc.add_line("## What's changed")
-
     section_order = {cc_type: index for index, (cc_type, _) in enumerate(sections)}
+
+    lines = ["## What's changed"]
+
     if breaking := sorted(
         (pr for prs in release_info.pull_requests.values() for pr in prs if pr.breaking),
         key=lambda pr: (section_order.get(pr.cc_type, len(section_order)), pr.number),
     ):
-        doc.add_line("\n### Breaking changes")
-        doc.add_pr_descriptions(breaking)
+        lines += ["", "### Breaking changes", *_pr_lines(breaking)]
 
     for cc_type, title in sections:
         if prs := [pr for pr in release_info.pull_requests.get(cc_type, []) if not pr.breaking]:
-            doc.add_line(f"\n{title}")
-            doc.add_pr_descriptions(prs)
+            lines += ["", title, *_pr_lines(prs)]
 
     if other := [
         pr
@@ -280,39 +266,38 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
         for pr in prs
         if not pr.breaking
     ]:
-        doc.add_line("\n### Other changes")
-        doc.add_pr_descriptions(other)
+        lines += ["", "### Other changes", *_pr_lines(other)]
 
     if release_info.first_time_prs:
-        doc.add_line("\n## New contributors")
-        for pr in release_info.first_time_prs:
-            doc.add_line(f"* @{pr.user.login} made their first contribution in {pr.url}")
+        lines += ["", "## New contributors"]
+        lines += [f"* @{pr.user.login} made their first contribution in {pr.url}" for pr in release_info.first_time_prs]
 
-    doc.add_line("\n**Full Changelog**")
-    doc.add_line(release_info.compare_url)
+    version = release_info.version
+    # the sponsor handles are NOT auto-fetched (no single API across the three platforms) —
+    # maintainers fill the empty slots from the dashboards before publishing the draft.
+    lines.append(f"""
+**Full Changelog**
+{release_info.compare_url}
 
-    doc.add_line("\n## Installation")
-    doc.add_line(f"Install or upgrade to `{release_info.version}`:")
-    doc.add_line("```shell")
-    doc.add_line("# uv")
-    doc.add_line(f'uv add "litestar=={release_info.version}"')
-    doc.add_line("# pip")
-    doc.add_line(f'pip install --upgrade "litestar=={release_info.version}"')
-    doc.add_line("```")
+## Installation
+Install or upgrade to `{version}`:
+```shell
+# uv
+uv add "litestar=={version}"
+# pip
+pip install --upgrade "litestar=={version}"
+```
 
-    # sponsors at the end. The handles are NOT auto-fetched (no single API across the three
-    # platforms) — maintainers fill the empty slots from the Polar / GitHub Sponsors /
-    # OpenCollective dashboards before publishing the draft.
-    doc.add_line("\n## Sponsors")
-    doc.add_line("Thanks to these incredible business sponsors:")
-    doc.add_line("- ")
-    doc.add_line("")
-    doc.add_line("Thanks to these incredible personal sponsors:")
-    doc.add_line(f"- {_polar}: ")
-    doc.add_line(f"- {_github_sponsors}: ")
-    doc.add_line(f"- {_open_collective}: ")
+## Sponsors
+Thanks to these incredible business sponsors:
+-{" "}
 
-    return doc.text
+Thanks to these incredible personal sponsors:
+- {_polar}:{" "}
+- {_github_sponsors}:{" "}
+- {_open_collective}:{" "}""")
+
+    return "\n".join(lines) + "\n"
 
 
 def _get_gh_token() -> str:
