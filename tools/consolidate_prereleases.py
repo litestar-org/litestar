@@ -1,10 +1,16 @@
 """Fold pre-release changelog sections into the final version's section.
 
 At a FINAL release, towncrier has just created a ``.. changelog:: <final>`` section from
-the fragments accumulated since the last pre-release. This merges the ``.. change::``
-blocks from every section of the same release line — the final itself plus any
-``<final>aN`` / ``<final>bN`` / ``<final>rcN`` / ``<final>.devN`` pre-releases — into a
-single ``.. changelog:: <final>`` section, and removes the separate pre-release sections.
+the fragments accumulated since the last pre-release (or no section at all, when there were
+no fragments). This merges the ``.. change::`` blocks from every section of the same release
+line — the final itself plus any pre-release or dev release of it, in any PEP 440 spelling —
+into a single ``.. changelog:: <final>`` section, and removes the now-empty sections.
+A ``.. changelog:: <final>.postN`` section is left alone: a post-release is cut after the
+final and keeps its own entry.
+
+Sections belonging to OTHER release lines are preserved wherever they sit, including between
+two sections of the line being folded (towncrier inserts newest-first, so a patch shipped
+during a beta cycle lands in the middle).
 
 The Sphinx ``changelog`` directive regroups changes by ``:type:`` at render time, so the
 order in which the blocks are concatenated does not affect the rendered page.
@@ -14,20 +20,25 @@ Usage: python tools/consolidate_prereleases.py <final_version>     e.g. 3.0.0
 
 from __future__ import annotations
 
+import datetime
 import pathlib
 import re
 import sys
 
-CHANGELOG = pathlib.Path("docs/release-notes/changelog.rst")
+CHANGELOG = pathlib.Path(__file__).resolve().parents[1] / "docs" / "release-notes" / "changelog.rst"
 _HEADER = re.compile(r"^\.\. changelog:: (?P<version>\S+)\s*$")
+# every PEP 440 spelling, because the 2.x cycle really shipped `2.0.0alpha1` / `2.0.0beta1`
+_PRE_RELEASE = r"(?:[-_.]?(?:a|alpha|b|beta|c|rc|pre|preview)[-_.]?\d*)"
+_DEV = r"(?:[-_.]?dev[-_.]?\d*)"
 
 
 def _same_line(version: str, final: str) -> bool:
-    # the final itself, or a PEP 440 pre-release of it (aN / bN / rcN / .devN)
-    return version == final or re.fullmatch(rf"{re.escape(final)}(?:(?:a|b|rc)\d+|\.dev\d+)", version) is not None
+    # the final itself, or any pre-release/dev release of it; NOT a post-release, which is
+    # cut after the final and keeps its own section
+    return re.fullmatch(rf"v?{re.escape(final)}(?:{_PRE_RELEASE})?(?:{_DEV})?", version) is not None
 
 
-def consolidate(text: str, final: str) -> str:
+def consolidate(text: str, final: str, *, date: str | None = None) -> str:
     lines = text.split("\n")
     headers = [(i, m.group("version")) for i, line in enumerate(lines) if (m := _HEADER.match(line))]
     if not headers:
@@ -39,20 +50,17 @@ def consolidate(text: str, final: str) -> str:
         spans.append((version, start, end))
 
     line_spans = [(v, s, e) for (v, s, e) in spans if _same_line(v, final)]
-    if len(line_spans) < 2:
-        return text  # nothing to merge (towncrier inserts newest first, so these are contiguous)
+    if not line_spans or (len(line_spans) == 1 and line_spans[0][0] == final):
+        return text  # nothing to fold
 
-    first, last = line_spans[0][1], line_spans[-1][2]
-    date = ""
+    final_date = date or ""
     change_blocks: list[str] = []
     for version, s, e in line_spans:
         body = lines[s + 1 : e]
         i = 0
         while i < len(body) and (body[i].strip().startswith(":date:") or body[i].strip() == ""):
-            if body[i].strip().startswith(":date:"):
-                d = body[i].strip()[len(":date:") :].strip()
-                if version == final or not date:
-                    date = d
+            if body[i].strip().startswith(":date:") and version == final:
+                final_date = body[i].strip()[len(":date:") :].strip()
             i += 1
         block = body[i:]
         while block and block[-1].strip() == "":
@@ -65,13 +73,19 @@ def consolidate(text: str, final: str) -> str:
         change_blocks.pop()
 
     merged = [f".. changelog:: {final}"]
-    if date:
-        merged.append(f"    :date: {date}")
+    if final_date:
+        merged.append(f"    :date: {final_date}")
     merged.append("")
     merged.extend(change_blocks)
     merged.append("")
 
-    return "\n".join(lines[:first] + merged + lines[last:])
+    # Replace each section on its own, working bottom-up so the earlier offsets stay valid.
+    # Splicing the whole first..last range instead would delete any section of ANOTHER release
+    # line that towncrier interleaved between them (a patch shipped during a beta cycle).
+    out = list(lines)
+    for index, (_, start, end) in reversed(list(enumerate(line_spans))):
+        out[start:end] = merged if index == 0 else []
+    return "\n".join(out)
 
 
 def main(final: str) -> int:
@@ -79,7 +93,7 @@ def main(final: str) -> int:
         print(f"refusing to consolidate into non-final version {final!r}", file=sys.stderr)  # noqa: T201
         return 1
     text = CHANGELOG.read_text()
-    new = consolidate(text, final)
+    new = consolidate(text, final, date=datetime.datetime.now(tz=datetime.UTC).date().isoformat())
     if new != text:
         CHANGELOG.write_text(new)
         print(f"Consolidated pre-release sections into '.. changelog:: {final}'")  # noqa: T201
