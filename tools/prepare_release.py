@@ -192,7 +192,8 @@ class _Thing:
 
         await asyncio.gather(*map(is_user_first_commit, prs_by_user_login.keys()))
 
-        return first_prs
+        # the coroutines append in completion order, so sort for a stable set of notes
+        return sorted(first_prs, key=lambda pr: pr.created_at)
 
     async def get_release_info(self) -> ReleaseInfo:
         prs = await self.get_prs()
