@@ -33,8 +33,7 @@ _DEV = r"(?:[-_.]?dev[-_.]?\d*)"
 
 
 def _same_line(version: str, final: str) -> bool:
-    # the final itself, or any pre-release/dev release of it; NOT a post-release, which is
-    # cut after the final and keeps its own section
+    # a post-release is cut AFTER the final, so it keeps its own section
     return re.fullmatch(rf"v?{re.escape(final)}(?:{_PRE_RELEASE})?(?:{_DEV})?", version) is not None
 
 

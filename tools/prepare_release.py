@@ -68,8 +68,7 @@ class ReleaseInfo:
 
 
 def _pr_number_from_commit(comp: Comp) -> int | None:
-    # this is an ugly hack, but it appears to actually be the most reliably way to
-    # extract the most "reliable" way to extract the info we want from GH ¯\_(ツ)_/¯
+    # squash-merge subjects carry the PR number; the API offers no better link
     message_head = comp.commit.message.split("\n\n")[0]
     match = re.search(r"\(#(\d+)\)$", message_head)
     if not match:
@@ -164,10 +163,7 @@ class _Thing:
         return prs
 
     async def _get_first_time_contributions(self, prs: dict[str, list[PRInfo]]) -> list[PRInfo]:
-        # there's probably a way to peel this information out of the GraphQL API but
-        # this was easier to implement, and it works well enough ¯\_(ツ)_/¯
-        # the logic is: if we don't find a commit to the main branch, dated before the
-        # first commit within this release, it's the user's first contribution
+        # no commit on main before this release's first commit => first contribution
         prs_by_user_login: dict[str, list[PRInfo]] = defaultdict(list)
         for pr in [p for type_prs in prs.values() for p in type_prs]:
             prs_by_user_login[pr.user.login].append(pr)
@@ -192,7 +188,6 @@ class _Thing:
 
         await asyncio.gather(*map(is_user_first_commit, prs_by_user_login.keys()))
 
-        # the coroutines append in completion order, so sort for a stable set of notes
         return sorted(first_prs, key=lambda pr: pr.created_at)
 
     async def get_release_info(self) -> ReleaseInfo:
@@ -225,8 +220,7 @@ class _Thing:
 
 
 def _pr_lines(infos: list[PRInfo]) -> list[str]:
-    # clean_title drops the conventional-commit prefix (e.g. "docs: "); capitalize only the
-    # first char (not .capitalize(), which mangles acronyms like "OpenAPI")
+    # not .capitalize(), which lowercases acronyms like "OpenAPI"
     return [f"* {i.clean_title[:1].upper() + i.clean_title[1:]} by @{i.user.login} in {i.url}" for i in infos]
 
 

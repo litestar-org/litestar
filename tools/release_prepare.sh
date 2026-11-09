@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
-# Prepare a release LOCALLY: create a vX.Y.Z branch, bump the version, assemble the
-# changelog from news fragments, and commit. Does NOT push and does NOT touch GitHub.
-# Review the result, then push + open a PR (or run the "Release" workflow with
-# dry_run off). Pairs with tools/release_preview.sh (which writes nothing).
-#
-# Usage: tools/release_prepare.sh [bump|version]   (default: patch)
-#   bump:    patch | minor | major | stable | alpha | beta | rc  (combinable, e.g. "major beta")
-#   version: an explicit version, e.g. 4.0.0b1
+# Prepares a release branch and commit locally. Does NOT push and does NOT touch GitHub.
 set -euo pipefail
 
 ARG="${1:-patch}"
@@ -50,8 +43,6 @@ else
 	echo "⚠ no news fragments — skipping the changelog build (no entry for ${NEW_VERSION})"
 fi
 
-# Pre-releases keep their own section; at a FINAL release, fold the pre-release
-# sections (aN/bN/rcN/.devN) of this version into a single consolidated section.
 if is_final_version "${NEW_VERSION}"; then
 	python3 tools/consolidate_prereleases.py "${NEW_VERSION}"
 fi

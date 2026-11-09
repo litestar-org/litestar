@@ -2,19 +2,10 @@
 # Shared helpers for the release scripts. Source from a bash script that has already
 # run `set -euo pipefail`.
 
-# towncrier <args...>
-#   The pinned towncrier. Single definition so the scripts and the workflows cannot drift
-#   onto different versions.
 towncrier() {
 	uvx --from 'towncrier>=24,<26' towncrier "$@"
 }
 
-# resolve_version <arg>
-#   <arg> is EITHER an explicit version (leading digit, optional leading "v"), e.g.
-#   "4.0.0b1" / "v4.0.0", OR one or more space-separated bump components
-#   (patch|minor|major|stable|alpha|beta|rc|post|dev), e.g. "patch" or "major beta".
-#   Sets globals: CUR_VERSION, NEW_VERSION, and the array UV_ARGS (to pass to uv version).
-#   Exits 1 with a clear message on an invalid value or a non-increasing version.
 resolve_version() {
 	local arg="$1" component explicit=0
 	CUR_VERSION="$(uv version --short)"
@@ -27,7 +18,6 @@ resolve_version() {
 		for component in $arg; do UV_ARGS+=(--bump "$component"); done
 	fi
 
-	# uv validates the value (bad component / malformed version) and writes nothing here.
 	if ! NEW_VERSION="$(uv version --dry-run "${UV_ARGS[@]}" --output-format json 2>/dev/null \
 		| python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])' 2>/dev/null)" \
 		|| [ -z "${NEW_VERSION}" ]; then
@@ -71,8 +61,6 @@ PY
 	fi
 }
 
-# release_final_of <version>
-#   Print the final release a version belongs to: 3.0.0b1 -> 3.0.0, 3.0.0 -> 3.0.0.
 release_final_of() {
 	printf '%s' "${1#v}" | sed -E 's/((a|b|rc)[0-9]+|\.dev[0-9]+|\.post[0-9]+).*$//'
 }
@@ -85,14 +73,10 @@ has_news_fragments() {
 		| grep -q '\.\. change::'
 }
 
-# is_final_version <version>
-#   Succeeds for a final release (X.Y.Z, optionally .postN); fails for a pre-release.
 is_final_version() {
 	printf '%s' "$1" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(\.post[0-9]+)?$'
 }
 
-# warn_review_notes
-#   Reminder that the generated notes need a read before the draft is published.
 warn_review_notes() {
 	printf '\n\033[1;33m⚠ Review the GitHub release notes before publishing — especially the "Other changes" section: not all of those entries belong in the final notes.\033[0m\n'
 }

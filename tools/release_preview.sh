@@ -1,16 +1,9 @@
 #!/usr/bin/env bash
-# Release preview / readiness check. Writes NOTHING (no version bump, no changelog
-# build, no tag, no push). Shared by `make release-preview` (local) and the dry-run
-# path of .github/workflows/release.yml (CI).
-#
-# Usage: tools/release_preview.sh [bump|version] [base]   (default: patch)
-#   bump:    patch | minor | major | stable | alpha | beta | rc  (combinable, e.g. "major beta")
-#   version: an explicit version, e.g. 4.0.0b1
-#   base:    optional tag for the GH-notes compare base (default: latest tag, e.g. v2.23.0)
+# Release readiness check. Writes NOTHING.
 set -euo pipefail
 
 ARG="${1:-patch}"
-BASE="${2:-}" # optional override for the GitHub-notes compare base
+BASE="${2:-}"
 # shellcheck source=tools/release_lib.sh
 source "$(dirname "$0")/release_lib.sh"
 fail=0
