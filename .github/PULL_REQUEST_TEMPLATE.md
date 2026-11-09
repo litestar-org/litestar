@@ -22,16 +22,7 @@ https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-
 ## Changelog
 
 <!--
-For user-facing changes (feat/fix/perf/refactor), add a news fragment:
-  docs/release-notes/fragments/<PR_NUMBER>.change.rst
-
-  .. change:: Short summary
-      :type: bugfix    # feature | bugfix | misc
-      :pr: <PR_NUMBER>
-
-      Longer description.
-
-The CI "Changelog Fragment" check prints a ready-to-paste skeleton if it's missing.
-Not needed for docs/chore/ci/test-only PRs — apply the `skip-changelog` label instead.
+User-facing changes need a news fragment in docs/release-notes/fragments/.
+The CI "Changelog Fragment" check posts a ready-to-paste skeleton with your PR number.
 See CONTRIBUTING → "Changelog fragments".
 -->

@@ -516,11 +516,9 @@ filename = "docs/release-notes/changelog.rst"
 template = "docs/release-notes/_template.jinja"
 start_string = ".. towncrier release notes start\n"
 title_format = false
-issue_format = "{issue}"
 wrap = false
 all_bullets = false
 
 [[tool.towncrier.type]]
 directory = "change"
 name = "Changes"
-showcontent = true

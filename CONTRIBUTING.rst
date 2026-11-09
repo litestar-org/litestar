@@ -334,69 +334,32 @@ This is equivalent to:
 Creating a New Release
 ----------------------
 
-#. Check out and update ``main``:
+Run the `Release workflow <https://github.com/litestar-org/litestar/actions/workflows/release.yml>`_
+from the Actions tab:
 
-   .. code-block:: shell
+#. Run it with ``dry_run: true``. Nothing is written — it reports readiness, previews the
+   changelog entry and prints the GitHub release notes. Read the notes, especially the
+   *Other changes* section: not every entry belongs in the final notes.
+#. Run it again with ``dry_run: false``. It bumps the version, assembles the changelog,
+   folds pre-release sections into a final release, and opens a ``vX.Y.Z`` pull request.
+#. Review and merge that PR. Merging creates a **draft** GitHub release with the generated
+   notes.
+#. Open the draft release, edit the notes if needed, and click "Publish release". That
+   triggers ``publish.yml``; approve it if prompted and check that it succeeds.
 
-       git checkout main && git pull
+While a pre-release is pending, a bump may only continue that line (``alpha`` / ``beta`` /
+``rc``) or finish it (``stable``). Pass an explicit ``version`` to override. Versions follow
+`semantic versioning <https://semver.org/>`_, `PEP 440 <https://peps.python.org/pep-0440/>`_
+and the `versioning scheme <https://litestar.dev/about/litestar-releases#version-numbering>`_.
 
-#. Bump the version with ``uv`` (updates both ``pyproject.toml`` and ``uv.lock``):
+Locally
+~~~~~~~
 
-   .. code-block:: shell
+The same two steps, without touching GitHub:
 
-       uv version --bump patch   # or: minor | major | stable | beta | rc
+.. code-block:: shell
 
-   Use ``uv version --dry-run --bump <part>`` to preview, and ``uv version --short`` to
-   read the result. Versions follow the
-   `versioning scheme <https://litestar.dev/about/litestar-releases#version-numbering>`_.
+    make release-preview BUMP=patch        # writes nothing; VERSION=3.0.0rc1 also works
+    make release-prepare BUMP=patch        # branch + bump + changelog + commit, no push
 
-#. Assemble the changelog from the news fragments with ``towncrier``:
-
-   .. code-block:: shell
-
-       uvx --from 'towncrier>=24,<26' towncrier build --version "$(uv version --short)"
-
-   This consumes the fragments in ``docs/release-notes/fragments/`` into a new
-   ``.. changelog::`` entry. Review it in :doc:`/release-notes/changelog`.
-
-   Pre-releases (``aN`` / ``bN`` / ``rcN`` / ``devN``) each keep their own section. At a
-   **final** release, fold those pre-release sections into the final version's section:
-
-   .. code-block:: shell
-
-       python tools/consolidate_prereleases.py "$(uv version --short)"
-
-   ``make release-prepare`` and the *Release* workflow run this automatically for final releases.
-
-#. Generate the GitHub release notes and a draft release:
-
-   .. code-block:: shell
-
-       python tools/prepare_release.py "$(uv version --short)" --create-draft-release
-
-   This creates a draft GitHub release (sponsors, categorized PRs, first-time
-   contributors, full-changelog link). It no longer edits the changelog or the version
-   — those are handled by the two previous steps.
-
-#. Commit the version bump and assembled changelog:
-
-   .. code-block:: shell
-
-       git commit -am "chore(release): prepare release v$(uv version --short)"
-
-#. Push to a ``vX.Y.Z`` branch and open a pull request to ``main``:
-
-   .. code-block:: shell
-
-       git switch -c "v$(uv version --short)" && git push origin HEAD
-
-#. Once approved and merged, open the draft release on GitHub (the script prints its
-   link), review the notes, and click "Publish release".
-#. Approve the `release workflow <https://github.com/litestar-org/litestar/actions/workflows/publish.yml>`_
-   if necessary, and check that it runs successfully.
-
-.. note:: Versions follow `semantic versioning <https://semver.org/>`_ and
-   `PEP 440 <https://peps.python.org/pep-0440/>`_.
-
-.. note:: This manual flow will be automated by a one-click ``release.yml`` workflow
-   (with a dry-run preview). Until then, follow the steps above.
+Then push the branch and open the PR; merging it creates the draft release as above.
