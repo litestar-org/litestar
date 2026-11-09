@@ -69,13 +69,13 @@ def _pr(cc_type: str, *, breaking: bool = False, title: str = "A change", number
     )
 
 
-def _release_info(**pull_requests: list[PRInfo]) -> ReleaseInfo:
+def _release_info(*, first_time_prs: list[PRInfo] | None = None, **pull_requests: list[PRInfo]) -> ReleaseInfo:
     return ReleaseInfo(
         base="v2.25.0",
         release_tag="v3.0.0",
         version="3.0.0",
         pull_requests=dict(pull_requests),
-        first_time_prs=[],
+        first_time_prs=first_time_prs or [],
     )
 
 
@@ -132,14 +132,21 @@ class TestCompareCommitPagination:
         with pytest.raises(ClickException, match="no `total_commits`"):
             await _thing(handler)._get_compare_commits()
 
-    async def test_a_range_that_shrinks_mid_run_does_not_abort(self) -> None:
+    async def test_only_the_first_page_total_drives_the_fetching(self) -> None:
+        # a later page claiming more must not pull extra pages: page 1's total is authoritative
+        pages: list[int] = []
+
         def handler(request: httpx2.Request) -> httpx2.Response:
             page = int(request.url.params["page"])
+            pages.append(page)
             if page == 1:
                 return httpx2.Response(200, json={"total_commits": 150, "commits": [_commit(i) for i in range(100)]})
-            return httpx2.Response(200, json={"total_commits": 90, "commits": [_commit(i) for i in range(100, 150)]})
+            return httpx2.Response(
+                200, json={"total_commits": 10_000, "commits": [_commit(i) for i in range(100, 150)]}
+            )
 
         assert len(await _thing(handler)._get_compare_commits()) == 150
+        assert pages == [1, 2]
 
 
 class TestConventionalCommitType:
@@ -413,6 +420,39 @@ class TestReleaseFinalOf:
 
     def test_a_pending_final_is_distinguished_from_the_next_patch(self) -> None:
         assert self._final_of("3.0.0b0") != self._final_of("3.0.1")
+
+
+class TestNotesBody:
+    def test_acronyms_keep_their_casing(self) -> None:
+        # the rule the code comments warn about: .capitalize() would give "Openapi"
+        notes = build_gh_release_notes(_release_info(fix=[_pr("fix", title="openAPI schema is wrong")]))
+
+        assert "* OpenAPI schema is wrong by @contributor" in notes
+
+    def test_sections_appear_in_display_order(self) -> None:
+        notes = build_gh_release_notes(
+            _release_info(
+                docs=[_pr("docs", number=1)],
+                fix=[_pr("fix", number=2)],
+                feat=[_pr("feat", number=3)],
+                perf=[_pr("perf", number=4)],
+                refactor=[_pr("refactor", number=5)],
+            )
+        )
+
+        assert [line for line in notes.splitlines() if line.startswith("### ")] == [
+            "### New features",
+            "### Bugfixes",
+            "### Performance",
+            "### Refactors",
+            "### Documentation",
+        ]
+
+    def test_first_time_contributors_are_credited(self) -> None:
+        notes = build_gh_release_notes(_release_info(first_time_prs=[_pr("feat", number=7)]))
+
+        assert "## New contributors" in notes
+        assert "* @contributor made their first contribution in" in notes
 
 
 class TestReleaseLine:

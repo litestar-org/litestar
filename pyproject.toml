@@ -489,33 +489,7 @@ known-first-party = ["litestar", "tests", "examples"]
   "UP045",
   "RUF043",
 ]
-"tools/tests/**/*.*" = [
-  "A",
-  "ARG",
-  "B",
-  "BLE",
-  "C901",
-  "D",
-  "DTZ",
-  "EM",
-  "FBT",
-  "G",
-  "N",
-  "PGH",
-  "PIE",
-  "PLR",
-  "PLW",
-  "PTH",
-  "RSE",
-  "S",
-  "S101",
-  "SIM",
-  "TC",
-  "TRY",
-  "E721",
-  "UP045",
-  "RUF043",
-]
+"tools/tests/**/*.*" = ["S"]
 "tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]
 "tests/unit/test_typing.py" = ["UP006", "UP035"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
