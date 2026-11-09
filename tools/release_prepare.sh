@@ -37,11 +37,16 @@ fi
 echo "→ preparing ${TAG} (${ARG}) on a new branch — nothing will be pushed"
 git switch -c "${TAG}"
 uv version "${UV_ARGS[@]}" --no-sync
-if has_news_fragments; then
-	towncrier build --yes --version "${NEW_VERSION}"
-else
-	echo "⚠ no news fragments — skipping the changelog build (no entry for ${NEW_VERSION})"
-fi
+fragments_rc=0
+has_news_fragments || fragments_rc=$?
+case "${fragments_rc}" in
+0) towncrier build --yes --version "${NEW_VERSION}" ;;
+1) echo "⚠ no news fragments — skipping the changelog build (no entry for ${NEW_VERSION})" ;;
+*)
+	echo "✖ could not ask towncrier for the news fragments — refusing to release without a changelog." >&2
+	exit 1
+	;;
+esac
 
 if is_final_version "${NEW_VERSION}"; then
 	python3 tools/consolidate_prereleases.py "${NEW_VERSION}"

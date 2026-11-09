@@ -66,11 +66,18 @@ release_final_of() {
 }
 
 # has_news_fragments
-#   Succeeds when towncrier has at least one fragment to build. A build with none writes a
-#   content-less `.. changelog::` section, which the Sphinx directive rejects under -W.
+#   0 = fragments to build, 1 = none, 2 = towncrier could not be asked. A build with no
+#   fragments writes a content-less `.. changelog::` section, which the Sphinx directive
+#   rejects under -W, so the caller must skip the build — but it must NOT mistake a broken
+#   towncrier for an empty one. Matched in-shell rather than through `grep -q`, which exits on
+#   the first match and SIGPIPEs its writer; under `pipefail` that made a large draft look empty.
 has_news_fragments() {
-	towncrier build --draft --version 0.0.0 2>/dev/null \
-		| grep -q '\.\. change::'
+	local draft
+	draft="$(towncrier build --draft --version 0.0.0 2>/dev/null)" || return 2
+	case "${draft}" in
+	*".. change::"*) return 0 ;;
+	*) return 1 ;;
+	esac
 }
 
 is_final_version() {

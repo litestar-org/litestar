@@ -314,6 +314,37 @@ class TestBaseResolution:
 
 
 @pytest.mark.skipif(os.name != "posix" or shutil.which("bash") is None, reason="the release scripts need a POSIX shell")
+class TestHasNewsFragments:
+    """``has_news_fragments`` must tell "none" apart from "could not ask towncrier"."""
+
+    @staticmethod
+    def _rc(towncrier_body: str) -> int:
+        script = (
+            "set -euo pipefail\n"
+            "source tools/release_lib.sh\n"
+            f"towncrier() {{ {towncrier_body} }}\n"
+            "rc=0; has_news_fragments || rc=$?\n"
+            "exit $rc\n"
+        )
+        return subprocess.run(
+            ["bash", "-c", script], cwd=Path(__file__).parents[2], capture_output=True, text=True, check=False
+        ).returncode
+
+    def test_a_draft_too_large_for_the_pipe_buffer_still_counts(self) -> None:
+        # grep -q exits on the first match; the SIGPIPE that caused under `pipefail` used to
+        # make any draft bigger than the pipe buffer look empty, skipping the changelog build.
+        body = 'echo ".. change:: first"; for i in $(seq 1 200000); do echo "padding $i"; done;'
+
+        assert self._rc(body) == 0
+
+    def test_no_fragments(self) -> None:
+        assert self._rc('echo ".. changelog:: 0.0.0";') == 1
+
+    def test_towncrier_failing_is_not_reported_as_no_fragments(self) -> None:
+        assert self._rc("return 127;") == 2
+
+
+@pytest.mark.skipif(os.name != "posix" or shutil.which("bash") is None, reason="the release scripts need a POSIX shell")
 class TestReleaseFinalOf:
     """``release_final_of`` in tools/release_lib.sh guards against skipping a pending final."""
 
