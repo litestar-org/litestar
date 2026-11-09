@@ -237,7 +237,7 @@ markers = [
   "server_integration: Test integration with ASGI server",
   "benchmark: CodSpeed benchmark (see tests/benchmarks)",
 ]
-testpaths = ["tests", "docs/examples/testing"]
+testpaths = ["tests", "tools/tests", "docs/examples/testing"]
 xfail_strict = true
 
 [tool.mypy]
@@ -463,6 +463,33 @@ known-first-party = ["litestar", "tests", "examples"]
 "litestar/utils/typing.py" = ["UP006", "UP035"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tests/**/*.*" = [
+  "A",
+  "ARG",
+  "B",
+  "BLE",
+  "C901",
+  "D",
+  "DTZ",
+  "EM",
+  "FBT",
+  "G",
+  "N",
+  "PGH",
+  "PIE",
+  "PLR",
+  "PLW",
+  "PTH",
+  "RSE",
+  "S",
+  "S101",
+  "SIM",
+  "TC",
+  "TRY",
+  "E721",
+  "UP045",
+  "RUF043",
+]
+"tools/tests/**/*.*" = [
   "A",
   "ARG",
   "B",

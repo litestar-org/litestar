@@ -1,6 +1,4 @@
-import sys
 from collections.abc import Generator
-from pathlib import Path
 from typing import cast
 
 import pytest
@@ -8,12 +6,6 @@ from _pytest.fixtures import FixtureRequest
 
 from litestar.dto import AbstractDTO
 from litestar.dto._backend import DTOBackend
-
-# the release scripts run as `python tools/<script>.py`, so they import their siblings as
-# top-level modules; `tools/` has to be importable the same way for the tests to load them.
-_TOOLS_DIR = str(Path(__file__).parents[2] / "tools")
-if _TOOLS_DIR not in sys.path:
-    sys.path.append(_TOOLS_DIR)
 
 
 @pytest.fixture(autouse=True)
