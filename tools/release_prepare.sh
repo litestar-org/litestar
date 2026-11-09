@@ -35,6 +35,18 @@ if git show-ref -q --verify "refs/heads/${TAG}"; then
 fi
 
 echo "→ preparing ${TAG} (${ARG}) on a new branch — nothing will be pushed"
+
+# Anything between here and the commit leaves the tree half-prepared on a new branch, and
+# the leftover branch then blocks the retry. Undo it on any failure.
+ORIGINAL_BRANCH="${CURRENT_BRANCH}"
+rollback() {
+	git checkout -q HEAD -- . 2>/dev/null || true # HEAD, not the index: towncrier `git rm`s the fragments
+	git switch -q "${ORIGINAL_BRANCH}" 2>/dev/null || true
+	git branch -q -D "${TAG}" 2>/dev/null || true
+	echo "↩ rolled back; still on ${ORIGINAL_BRANCH}" >&2
+}
+trap rollback ERR
+
 git switch -c "${TAG}"
 uv version "${UV_ARGS[@]}" --no-sync
 fragments_rc=0
@@ -53,6 +65,7 @@ if is_final_version "${NEW_VERSION}"; then
 fi
 
 git commit -am "chore(release): prepare release ${TAG}"
+trap - ERR
 
 cat <<EOF
 
