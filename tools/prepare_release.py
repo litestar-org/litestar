@@ -18,6 +18,7 @@ _open_collective = "[OpenCollective](https://opencollective.com/litestar)"
 _github_sponsors = "[GitHub Sponsors](https://github.com/sponsors/litestar-org/)"
 
 _REPO = "litestar-org/litestar"
+_PRERELEASE_RE = re.compile(r"(a|b|rc)\d+|\.dev\d+")
 
 
 class PullRequest(msgspec.Struct, kw_only=True):
@@ -28,6 +29,8 @@ class PullRequest(msgspec.Struct, kw_only=True):
 
 
 class Comp(msgspec.Struct):
+    sha: str
+
     class _Commit(msgspec.Struct):
         message: str
 
@@ -48,6 +51,7 @@ class PRInfo:
     number: int
     created_at: datetime.datetime
     user: RepoUser
+    breaking: bool = False
 
 
 @dataclass
@@ -100,21 +104,54 @@ class _Thing:
         pr = msgspec.convert(res.json(), type=PullRequest)
 
         cc_prefix, clean_title = pr.title.split(":", maxsplit=1)
-        cc_type = cc_prefix.split("(", maxsplit=1)[0].lower()
+        cc_prefix = cc_prefix.strip()
+        cc_type = cc_prefix.split("(", maxsplit=1)[0].rstrip("!").lower()
 
         return PRInfo(
             number=pr.number,
             cc_type=cc_type,
             clean_title=clean_title.strip(),
+            breaking=cc_prefix.endswith("!"),
             url=f"https://github.com/{_REPO}/pull/{pr.number}",
             created_at=datetime.datetime.strptime(pr.created_at, "%Y-%m-%dT%H:%M:%S%z"),
             user=pr.user,
         )
 
+    async def _get_compare_commits(self) -> list[Comp]:
+        collected: list[Comp] = []
+        seen: set[str] = set()
+        total: int | None = None
+        page = 1
+        while True:
+            res = await self._api_client.get(
+                f"/compare/{self._base}...{self._release_branch}",
+                params={"per_page": 100, "page": page},
+            )
+            res.raise_for_status()
+            payload = res.json()
+            if total is None:
+                total = payload.get("total_commits")
+                if total is None:
+                    raise click.ClickException(
+                        f"{self._base}...{self._release_branch}: the compare response carries no "
+                        "`total_commits`, so the range cannot be verified as complete."
+                    )
+            fresh = [comp for comp in msgspec.convert(payload["commits"], list[Comp]) if comp.sha not in seen]
+            seen.update(comp.sha for comp in fresh)
+            collected.extend(fresh)
+            if not fresh or len(collected) >= total:
+                break
+            page += 1
+
+        if len(collected) < total:
+            raise click.ClickException(
+                f"{self._base}...{self._release_branch}: the API reports {total} commits but only "
+                f"{len(collected)} could be collected — refusing to build incomplete release notes."
+            )
+        return collected
+
     async def get_prs(self) -> dict[str, list[PRInfo]]:
-        res = await self._api_client.get(f"/compare/{self._base}...{self._release_branch}")
-        res.raise_for_status()
-        compares = msgspec.convert(res.json()["commits"], list[Comp])
+        compares = await self._get_compare_commits()
         pr_numbers = [n for n in (_pr_number_from_commit(c) for c in compares) if n is not None]
         pulls = await asyncio.gather(*map(self._get_pr_info_for_pr, pr_numbers))
 
@@ -170,7 +207,7 @@ class _Thing:
 
     async def create_draft_release(self, body: str, release_branch: str) -> str:
         # mark alpha/beta/rc/dev versions as a GitHub pre-release (the API won't derive this)
-        is_prerelease = bool(re.search(r"(a|b|rc)\d+|\.dev\d+", self._new_release_version))
+        is_prerelease = bool(_PRERELEASE_RE.search(self._new_release_version))
         res = await self._api_client.post(
             "/releases",
             json={
@@ -222,8 +259,17 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
     ignored_types = {"ci", "chore"}  # internal noise, kept out of the notes
 
     doc.add_line("## What's changed")
+
+    section_order = {cc_type: index for index, (cc_type, _) in enumerate(sections)}
+    if breaking := sorted(
+        (pr for prs in release_info.pull_requests.values() for pr in prs if pr.breaking),
+        key=lambda pr: (section_order.get(pr.cc_type, len(section_order)), pr.number),
+    ):
+        doc.add_line("\n### Breaking changes")
+        doc.add_pr_descriptions(breaking)
+
     for cc_type, title in sections:
-        if prs := release_info.pull_requests.get(cc_type):
+        if prs := [pr for pr in release_info.pull_requests.get(cc_type, []) if not pr.breaking]:
             doc.add_line(f"\n{title}")
             doc.add_pr_descriptions(prs)
 
@@ -232,6 +278,7 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
         for cc_type, prs in release_info.pull_requests.items()
         if cc_type not in titled_types and cc_type not in ignored_types
         for pr in prs
+        if not pr.breaking
     ]:
         doc.add_line("\n### Other changes")
         doc.add_pr_descriptions(other)
@@ -286,29 +333,53 @@ def _get_gh_token() -> str:
     quit(1)
 
 
-def _get_latest_tag(gh_token: str | None = None) -> str:
-    click.secho("Using latest release tag", fg="blue")
-    # Detect the latest release from the SOURCE repo (the canonical project), so the compare
-    # base reflects official litestar even when this runs on a fork whose local tags may have
-    # drifted (e.g. test tags from dry runs). /releases/latest = newest non-prerelease, non-draft.
+def _release_line(version: str) -> str | None:
+    match = re.match(r"v?(\d+)\.", version)
+    return match[1] if match else None
+
+
+def _get_latest_tag(gh_token: str | None = None, version: str | None = None) -> str:
+    click.secho("Resolving the previous release", fg="blue")
     headers = {"Accept": "application/vnd.github+json"}
     if gh_token:
         headers["Authorization"] = f"Bearer {gh_token}"
     try:
-        res = httpx2.get(f"https://api.github.com/repos/{_REPO}/releases/latest", headers=headers, timeout=15)
+        res = httpx2.get(
+            f"https://api.github.com/repos/{_REPO}/releases",
+            headers=headers,
+            params={"per_page": 100},
+            timeout=15,
+        )
         res.raise_for_status()
-        return res.json()["tag_name"]  # type: ignore[no-any-return]
+        tags: list[str] = [release["tag_name"] for release in res.json() if not release["draft"]]
+        if not tags:
+            raise ValueError("the repository has no published release")
     except Exception as exc:  # fall back to local tags if the API is unreachable
-        click.secho(f"  (API latest-release lookup failed, using local git tags: {exc})", fg="yellow")
-        # The highest version tag = the latest release. NOT `--sort=taggerdate`, which wrongly
-        # orders litestar's many lightweight tags (no tagger date); and NOT `git describe`, which
-        # only sees tags reachable from HEAD (the 3.0 branch diverged at v2.17.0).
-        out = subprocess.run(  # noqa: S602
-            "git tag --sort=-v:refname", check=False, capture_output=True, text=True, shell=True
+        click.secho(f"  (API release lookup failed, using local git tags: {exc})", fg="yellow")
+        # `creatordate` matches the API order (a release's `created_at` is its tagged commit's
+        # date) and, unlike `taggerdate`, is populated for litestar's many lightweight tags.
+        # NOT `v:refname`, which ranks a final release below its own pre-releases.
+        out = subprocess.run(
+            ["git", "tag", "--sort=-creatordate"], check=False, capture_output=True, text=True
         ).stdout.strip()
         if not out:
-            raise ValueError("no git tags found") from exc
-        return out.splitlines()[0]
+            raise click.ClickException("no release or tag found to use as a compare base") from exc
+        tags = out.splitlines()
+
+    # a final release compares against the previous FINAL, so its notes carry the whole line
+    # (matching the changelog, which consolidate_prereleases.py folds the same way); a
+    # pre-release compares against its immediate predecessor to stay a delta.
+    eligible = tags
+    if not _PRERELEASE_RE.search(version or ""):
+        eligible = [tag for tag in tags if not _PRERELEASE_RE.search(tag)] or tags
+
+    if (line := _release_line(version or "")) and (
+        candidates := [tag for tag in eligible if _release_line(tag) == line]
+    ):
+        click.secho(f"  using {candidates[0]} (latest {line}.x release)", fg="blue")
+        return candidates[0]
+    click.secho(f"  using {eligible[0]} (latest release; no {version} line predecessor)", fg="blue")
+    return eligible[0]
 
 
 @click.command()
@@ -331,7 +402,7 @@ def cli(
     if gh_token is None:
         gh_token = _get_gh_token()
     if base is None:
-        base = _get_latest_tag(gh_token)
+        base = _get_latest_tag(gh_token, version)
 
     if not re.match(r"\d+\.\d+\.\d+", version):
         click.secho(f"Invalid version: {version!r}")
