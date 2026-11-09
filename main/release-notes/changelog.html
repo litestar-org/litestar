@@ -1246,6 +1246,15 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Call <code class="docutils literal notranslate"><span class="pre">after_exception</span></code> hooks once for an exception on a route with middleware<a class="headerlink reference internal" href="#3.0.0-call" id="3.0.0-call">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that, on a route with middleware, an exception that no exception
+handler creates a response for, <code class="docutils literal notranslate"><span class="pre">after_exception</span></code> hooks and
+<code class="docutils literal notranslate"><span class="pre">pdb_on_exception</span></code> would be called multiple times (once by the exception
+handling layer of the middleware and once by the application’s).</p>
+<p>They are called exactly once per exception instance now.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5203">https://github.com/litestar-org/litestar/pull/5203</a></span></p>
+</div>
+</dd>
 <dt>DI: Correctly set Pydantic dependency fields as required without a default<a class="headerlink reference internal" href="#3.0.0-di: correctly set pydantic dependency fields as required without a default" id="3.0.0-di: correctly set pydantic dependency fields as required without a default">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug, causing a Pydantic model used as a dependency to fail at startup with
 <code class="docutils literal notranslate"><span class="pre">Missing</span> <span class="pre">declaration</span> <span class="pre">for</span> <span class="pre">parameter</span></code> for each of its fields without a marker,
