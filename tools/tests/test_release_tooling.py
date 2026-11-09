@@ -153,6 +153,8 @@ class TestConventionalCommitType:
             ("feat(openapi)!: change the schema", "feat", True),
             ("docs!: update to v3 style", "docs", True),
             ("FEAT: shouty", "feat", False),
+            ("Update cli docs", "", False),
+            ("Added path name in ImproperlyConfiguredException", "", False),
         ],
     )
     async def test_type_and_breaking_marker(self, title: str, expected_type: str, expected_breaking: bool) -> None:

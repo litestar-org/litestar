@@ -102,7 +102,11 @@ class _Thing:
         res.raise_for_status()
         pr = msgspec.convert(res.json(), type=PullRequest)
 
-        cc_prefix, clean_title = pr.title.split(":", maxsplit=1)
+        # 553 of the last 3000 merged PRs have no conventional-commit prefix; they belong in
+        # "Other changes", not in a crash that takes the whole run down.
+        cc_prefix, separator, clean_title = pr.title.partition(":")
+        if not separator:
+            cc_prefix, clean_title = "", pr.title
         cc_prefix = cc_prefix.strip()
         cc_type = cc_prefix.split("(", maxsplit=1)[0].rstrip("!").lower()
 
