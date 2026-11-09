@@ -1,6 +1,8 @@
 """Offline tests for the release-notes generator in ``tools/prepare_release.py``."""
 
 import datetime
+import os
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -311,6 +313,7 @@ class TestBaseResolution:
         assert prepare_release._get_latest_tag("token", "3.0.0") == "v3.0.0rc1"
 
 
+@pytest.mark.skipif(os.name != "posix" or shutil.which("bash") is None, reason="the release scripts need a POSIX shell")
 class TestReleaseFinalOf:
     """``release_final_of`` in tools/release_lib.sh guards against skipping a pending final."""
 
