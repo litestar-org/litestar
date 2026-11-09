@@ -103,10 +103,6 @@ is_release_version() {
 	printf '%s' "${1#v}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+((a|b|rc)[0-9]+|\.(post|dev)[0-9]+)?$'
 }
 
-is_final_version() {
-	printf '%s' "$1" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(\.post[0-9]+)?$'
-}
-
 warn_review_notes() {
 	printf '\n\033[1;33m⚠ Review the GitHub release notes before publishing — especially the "Other changes" section: not all of those entries belong in the final notes.\033[0m\n'
 }

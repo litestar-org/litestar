@@ -341,7 +341,7 @@ from the Actions tab:
    changelog entry and prints the GitHub release notes. Read the notes, especially the
    *Other changes* section: not every entry belongs in the final notes.
 #. Run it again with ``dry_run: false``. It bumps the version, assembles the changelog,
-   folds pre-release sections into a final release, and opens a ``vX.Y.Z`` pull request.
+   and opens a ``vX.Y.Z`` pull request. Each pre-release keeps its own changelog section.
 #. Review and merge that PR. Merging creates a **draft** GitHub release with the generated
    notes.
 #. Open the draft release, edit the notes if needed, and click "Publish release". That

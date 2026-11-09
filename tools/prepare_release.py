@@ -358,9 +358,8 @@ def _get_latest_tag(gh_token: str | None = None, version: str | None = None) -> 
             raise click.ClickException("no release or tag found to use as a compare base") from exc
         tags = out.splitlines()
 
-    # a final release compares against the previous FINAL, so its notes carry the whole line
-    # (matching the changelog, which consolidate_prereleases.py folds the same way); a
-    # pre-release compares against its immediate predecessor to stay a delta.
+    # a final release compares against the previous FINAL, so its notes tell the whole story
+    # of the line; a pre-release compares against its immediate predecessor to stay a delta.
     eligible = tags
     if not _PRERELEASE_RE.search(version or ""):
         eligible = [tag for tag in tags if not _PRERELEASE_RE.search(tag)] or tags

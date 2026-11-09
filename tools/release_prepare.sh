@@ -70,10 +70,6 @@ case "${fragments_rc}" in
 	;;
 esac
 
-if is_final_version "${NEW_VERSION}"; then
-	python3 tools/consolidate_prereleases.py "${NEW_VERSION}"
-fi
-
 git commit -am "chore(release): prepare release ${TAG}"
 trap - ERR
 
