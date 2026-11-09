@@ -45,6 +45,13 @@ else
 	CHANGELOG_PREVIEW="(towncrier build --draft failed)"
 fi
 
+FRAGMENTS="$(printf '%s' "${CHANGELOG_PREVIEW}" | grep -c '\.\. change::' || true)"
+if [ "${FRAGMENTS}" -gt 0 ]; then
+	check "news fragments present (${FRAGMENTS})" 0
+else
+	printf '  \033[33m⚠\033[0m  no news fragments — %s will get no changelog entry\n' "${NEW_VERSION}"
+fi
+
 HAVE_TOKEN=0
 if [ -n "${GH_TOKEN:-}" ] || gh auth token >/dev/null 2>&1; then
 	check "GitHub token available" 0

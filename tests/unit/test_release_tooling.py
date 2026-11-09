@@ -2,6 +2,7 @@
 
 import datetime
 import subprocess
+from pathlib import Path
 from typing import Any
 
 import httpx2
@@ -308,6 +309,42 @@ class TestBaseResolution:
         )
 
         assert prepare_release._get_latest_tag("token", "3.0.0") == "v3.0.0rc1"
+
+
+class TestReleaseFinalOf:
+    """``release_final_of`` in tools/release_lib.sh guards against skipping a pending final."""
+
+    @staticmethod
+    def _final_of(version: str) -> str:
+        script = f'source tools/release_lib.sh; release_final_of "{version}"'
+        return subprocess.run(
+            ["bash", "-c", script],
+            cwd=Path(__file__).parents[2],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+
+    @pytest.mark.parametrize(
+        ("version", "expected"),
+        [
+            ("3.0.0", "3.0.0"),
+            ("3.0.0b0", "3.0.0"),
+            ("3.0.0b1", "3.0.0"),
+            ("3.0.0a1", "3.0.0"),
+            ("3.0.0rc2", "3.0.0"),
+            ("3.0.0.dev1", "3.0.0"),
+            ("3.0.0.post1", "3.0.0"),
+            ("v3.0.0rc1", "3.0.0"),
+            ("3.1.0", "3.1.0"),
+            ("10.2.3b1", "10.2.3"),
+        ],
+    )
+    def test_strips_pre_release_suffixes(self, version: str, expected: str) -> None:
+        assert self._final_of(version) == expected
+
+    def test_a_pending_final_is_distinguished_from_the_next_patch(self) -> None:
+        assert self._final_of("3.0.0b0") != self._final_of("3.0.1")
 
 
 class TestReleaseLine:

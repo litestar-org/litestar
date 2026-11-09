@@ -44,7 +44,11 @@ fi
 echo "→ preparing ${TAG} (${ARG}) on a new branch — nothing will be pushed"
 git switch -c "${TAG}"
 uv version "${UV_ARGS[@]}" --no-sync
-towncrier build --yes --version "${NEW_VERSION}"
+if has_news_fragments; then
+	towncrier build --yes --version "${NEW_VERSION}"
+else
+	echo "⚠ no news fragments — skipping the changelog build (no entry for ${NEW_VERSION})"
+fi
 
 # Pre-releases keep their own section; at a FINAL release, fold the pre-release
 # sections (aN/bN/rcN/.devN) of this version into a single consolidated section.
@@ -60,10 +64,9 @@ cat <<EOF
 
 Next:
   git push origin ${TAG}
-  gh pr create --base main --title "chore(release): ${TAG}"
-  # after the PR is merged:
-  python tools/prepare_release.py ${NEW_VERSION} --create-draft-release
-  # then click "Publish" on the draft release  ->  publish.yml  ->  PyPI
+  gh pr create --base main --head ${TAG} --title "chore(release): ${TAG}" --body ""
+  # merging the PR triggers finalize-release.yml, which creates the draft GitHub release.
+  # then review and click "Publish" on the draft release  ->  publish.yml  ->  PyPI
 
 (Or skip all of the above and just run the "Release" workflow with dry_run off.)
 EOF
