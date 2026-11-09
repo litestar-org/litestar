@@ -86,6 +86,15 @@ has_news_fragments() {
 	esac
 }
 
+# unrecognised_fragments
+#   Print any file in the fragments directory that towncrier will not consume. The only type
+#   is `change`, but the directive's `:type:` values are feature|bugfix|misc, so `123.bugfix.rst`
+#   is the natural wrong guess — and towncrier ignores it silently, losing the entry.
+unrecognised_fragments() {
+	find docs/release-notes/fragments -type f \
+		! -name '.gitkeep' ! -name 'README*' ! -name '*.change.rst' 2>/dev/null || true
+}
+
 # is_release_version <version>
 #   The shapes the whole chain understands: resolve_version, the vX.Y.Z branch name, and
 #   finalize-release.yml's head-ref guard. `uv version` accepts more than this (e.g. "4.0"),

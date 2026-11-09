@@ -41,6 +41,14 @@ else
 	CHANGELOG_PREVIEW="(towncrier build --draft failed)"
 fi
 
+STRAY="$(unrecognised_fragments)"
+if [ -z "${STRAY}" ]; then
+	check "no unrecognised news fragments" 0
+else
+	check "no unrecognised news fragments" 1
+	printf '%s\n' "${STRAY}" | sed 's/^/      /'
+fi
+
 FRAGMENTS="$(printf '%s' "${CHANGELOG_PREVIEW}" | grep -c '\.\. change::' || true)"
 if [ "${FRAGMENTS}" -gt 0 ]; then
 	check "news fragments present (${FRAGMENTS})" 0

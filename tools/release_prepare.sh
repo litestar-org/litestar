@@ -34,6 +34,16 @@ if git show-ref -q --verify "refs/heads/${TAG}"; then
 	exit 1
 fi
 
+STRAY="$(unrecognised_fragments)"
+if [ -n "${STRAY}" ]; then
+	{
+		echo "✖ towncrier will not consume these fragments, so their entries would be lost:"
+		printf '%s\n' "${STRAY}" | sed 's/^/    /'
+		echo "  rename them to <issue>.change.rst"
+	} >&2
+	exit 1
+fi
+
 echo "→ preparing ${TAG} (${ARG}) on a new branch — nothing will be pushed"
 
 # Anything between here and the commit leaves the tree half-prepared on a new branch, and
