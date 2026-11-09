@@ -48,7 +48,9 @@ jobs:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           # only act on real vX.Y.Z release branches
-          if ! printf '%s' "$HEAD_REF" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+'; then
+          # shellcheck source=tools/release_lib.sh
+          source tools/release_lib.sh
+          if ! is_release_version "$HEAD_REF"; then
             echo "Head branch '$HEAD_REF' is not a vX.Y.Z release branch — skipping."
             exit 0
           fi

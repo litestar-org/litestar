@@ -29,6 +29,12 @@ resolve_version() {
 		exit 1
 	fi
 
+	if ! is_release_version "${NEW_VERSION}"; then
+		echo "✖ ${NEW_VERSION} is not a release shape the workflows recognise." >&2
+		echo "  expected X.Y.Z, optionally aN | bN | rcN | .postN | .devN" >&2
+		exit 1
+	fi
+
 	# Monotonic guard: the target must be greater than the current version. Uses uv to get
 	# `packaging` for a correct PEP 440 comparison; if that can't run, the guard is skipped
 	# (the malformed check above still applies).
@@ -78,6 +84,14 @@ has_news_fragments() {
 	*".. change::"*) return 0 ;;
 	*) return 1 ;;
 	esac
+}
+
+# is_release_version <version>
+#   The shapes the whole chain understands: resolve_version, the vX.Y.Z branch name, and
+#   finalize-release.yml's head-ref guard. `uv version` accepts more than this (e.g. "4.0"),
+#   and anything else silently produces no draft release.
+is_release_version() {
+	printf '%s' "${1#v}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+((a|b|rc)[0-9]+|\.(post|dev)[0-9]+)?$'
 }
 
 is_final_version() {
