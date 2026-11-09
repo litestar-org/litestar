@@ -297,6 +297,22 @@ class TestBaseResolution:
 
         assert prepare_release._get_latest_tag("token", "3.0.1") == "v3.0.0"
 
+    def test_a_new_major_uses_the_highest_line_below_it_not_the_newest_tag(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # newest-first by date; v2.27.0 is a maintenance release cut after the 3.x line opened
+        self._releases(
+            monkeypatch,
+            [
+                {"tag_name": "v2.27.0", "draft": False},
+                {"tag_name": "v3.2.0", "draft": False},
+                {"tag_name": "v3.1.0", "draft": False},
+                {"tag_name": "v2.26.0", "draft": False},
+            ],
+        )
+
+        assert prepare_release._get_latest_tag("token", "4.0.0b1") == "v3.2.0"
+
     def test_an_empty_release_list_falls_back_to_local_tags(self, monkeypatch: pytest.MonkeyPatch) -> None:
         self._releases(monkeypatch, [])
         monkeypatch.setattr(

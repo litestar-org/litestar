@@ -370,6 +370,16 @@ def _get_latest_tag(gh_token: str | None = None, version: str | None = None) -> 
     ):
         click.secho(f"  using {candidates[0]} (latest {line}.x release)", fg="blue")
         return candidates[0]
+
+    # No release on this line yet. `eligible` is newest-first by date, which for a project
+    # that maintains several majors in parallel is a maintenance tag off an older branch —
+    # so pick the highest line below this one and take its newest release.
+    if line and (lower := [tag for tag in eligible if (tag_line := _release_line(tag)) and int(tag_line) < int(line)]):
+        highest = max(int(_release_line(tag) or 0) for tag in lower)
+        predecessor = next(tag for tag in lower if _release_line(tag) == str(highest))
+        click.secho(f"  using {predecessor} (latest {highest}.x release; {line}.x has none yet)", fg="blue")
+        return predecessor
+
     click.secho(f"  using {eligible[0]} (latest release; no {version} line predecessor)", fg="blue")
     return eligible[0]
 
