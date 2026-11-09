@@ -25,8 +25,11 @@ TAG="v${NEW_VERSION}"
 printf '\nRelease preview: %s --(%s)--> %s\n\n' "$CUR_VERSION" "$ARG" "$NEW_VERSION"
 echo "Readiness checks"
 
-git diff --quiet && git diff --cached --quiet
-check "working tree clean" $?
+if ! git diff --quiet || ! git diff --cached --quiet; then
+	check "working tree clean" 1
+else
+	check "working tree clean" 0
+fi
 
 uv lock --check >/dev/null 2>&1
 check "uv.lock up to date" $?
