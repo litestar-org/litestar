@@ -561,7 +561,7 @@ to make working with models easier.</p>
 <h1>Modelling<a class="headerlink" href="#modelling" title="Link to this heading">¶</a></h1>
 <p>We’ll begin by modelling the entities and relationships between authors and books.
 We’ll start by creating the <code class="docutils literal notranslate"><span class="pre">Author</span></code> table, utilizing the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDBase</span></code> class. To keep things
+<a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.UUIDBase" title="(in Advanced Alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDBase</span></code></a> class. To keep things
 simple, our first model will encompass only three fields: <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, and <code class="docutils literal notranslate"><span class="pre">dob</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">app.py</span></code></span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
@@ -596,7 +596,7 @@ key constraints when using the <code class="docutils literal notranslate"><span 
 <p>By using the audit model, we can automatically record the time a record was created and
 last updated.</p>
 <p>To implement this, we will define a new <code class="docutils literal notranslate"><span class="pre">Book</span></code> model via the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code> class. Observe
+<a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.UUIDAuditBase" title="(in Advanced Alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code></a> class. Observe
 that the only modification here is the parent class from which we inherit. This minor
 change endows the <cite>book</cite> table with automatic timestamp columns
 (<cite>created</cite> and <cite>updated</cite>) upon deployment!</p>
@@ -604,8 +604,8 @@ change endows the <cite>book</cite> table with automatic timestamp columns
 <p class="admonition-title">Note</p>
 <p>If your application requires integer-based primary keys, equivalent base model
 and base audit model implementations can be found at
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntBase</span></code> and
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code>
+<a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.BigIntAuditBase" title="(in Advanced Alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntBase</span></code></a> and
+<a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.UUIDAuditBase" title="(in Advanced Alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code></a>
 respectively.</p>
 </div>
 <div class="admonition important">
@@ -624,14 +624,14 @@ with various popular database engines. As of now, six database engines are suppo
 Postgres, SQLite, MySQL, DuckDB, Oracle, and Spanner.</p></li>
 <li><p>Automatic table name deduction from model name. For instance, a model named
 <code class="docutils literal notranslate"><span class="pre">EventLog</span></code> would correspond to the <code class="docutils literal notranslate"><span class="pre">event_log</span></code> database table.</p></li>
-<li><p>A <a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/types.html#advanced_alchemy.types.GUID" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">GUID</span></code></a> database type that
+<li><p>A <a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/types.html#advanced_alchemy.types.GUID" title="(in Advanced Alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">GUID</span></code></a> database type that
 establishes a native UUID in supported engines or a <code class="docutils literal notranslate"><span class="pre">Binary(16)</span></code> as a fallback.</p></li>
 <li><p>A <code class="docutils literal notranslate"><span class="pre">BigInteger</span></code> variant
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntIdentity</span></code> that
+<a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/types.html#advanced_alchemy.types.BigIntIdentity" title="(in Advanced Alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntIdentity</span></code></a> that
 reverts to an <code class="docutils literal notranslate"><span class="pre">Integer</span></code> for unsupported variants.</p></li>
-<li><p>A custom <code class="xref py py-class docutils literal notranslate"><span class="pre">JsonB</span></code> type that uses
+<li><p>A custom <a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/types.html#advanced_alchemy.types.JsonB" title="(in Advanced Alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonB</span></code></a> type that uses
 native <code class="docutils literal notranslate"><span class="pre">JSONB</span></code> where possible and <code class="docutils literal notranslate"><span class="pre">Binary</span></code> or <code class="docutils literal notranslate"><span class="pre">Blob</span></code> as an alternative.</p></li>
-<li><p>A custom <a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/types.html#advanced_alchemy.types.EncryptedString" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EncryptedString</span></code></a> encrypted string that supports multiple cryptography backends.</p></li>
+<li><p>A custom <a class="reference external" href="https://advanced-alchemy.litestar.dev/latest/reference/types.html#advanced_alchemy.types.EncryptedString" title="(in Advanced Alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EncryptedString</span></code></a> encrypted string that supports multiple cryptography backends.</p></li>
 </ul>
 <p>Let’s build on this as we look at the repository classes.</p>
 </section>
