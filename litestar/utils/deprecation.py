@@ -28,6 +28,7 @@ def warn_deprecation(
     alternative: str | None = None,
     info: str | None = None,
     pending: bool = False,
+    stacklevel: int = 2,
 ) -> None:
     """Warn about a call to a (soon to be) deprecated function.
 
@@ -39,6 +40,7 @@ def warn_deprecation(
         info: Additional information
         pending: Use ``PendingDeprecationWarning`` instead of ``DeprecationWarning``
         kind: Type of the deprecated thing
+        stacklevel: Frame the warning is attributed to, ``1`` being this function and ``2`` its caller
     """
     parts = []
 
@@ -69,7 +71,7 @@ def warn_deprecation(
     text = ". ".join(parts)
     warning_class = PendingDeprecationWarning if pending else LitestarDeprecationWarning
 
-    warn(text, warning_class, stacklevel=2)
+    warn(text, warning_class, stacklevel=stacklevel)
 
 
 def deprecated(
