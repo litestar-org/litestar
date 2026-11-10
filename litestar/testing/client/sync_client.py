@@ -15,7 +15,7 @@ from litestar.testing.client._base import (
 from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import ConnectionUpgradeExceptionError, SyncTestClientTransport
 from litestar.testing.websocket_test_session import WebSocketTestSession
-from litestar.types import AnyIOBackend, ASGIApp
+from litestar.types import ASGIApp
 from litestar.utils._exceptions import _collapse_exception_groups
 
 if TYPE_CHECKING:
@@ -48,7 +48,6 @@ class TestClient(Client, Generic[T]):
         root_path: str = "",
         timeout: float | None = None,
         cookies: CookieTypes | None = None,
-        backend: AnyIOBackend = "asyncio",
         backend_options: dict[str, Any] | None = None,
         session_config: BaseBackendConfig | None = None,
     ) -> None:
@@ -62,8 +61,7 @@ class TestClient(Client, Generic[T]):
             root_path: Path prefix for requests.
             timeout: Request timeout
             cookies: Cookies to set on the client.
-            backend: The async backend to use, options are "asyncio" or "trio".
-            backend_options: ``anyio`` options.
+            backend_options: ``anyio`` options of the asyncio backend.
             session_config: Session backend configuration
         """
         if "." not in base_url:
@@ -82,7 +80,7 @@ class TestClient(Client, Generic[T]):
         self.exit_stack = contextlib.ExitStack()
         self.blocking_portal = self.exit_stack.enter_context(
             anyio.from_thread.start_blocking_portal(
-                backend=backend,
+                backend="asyncio",
                 backend_options=backend_options,
                 name="test_client",
             )

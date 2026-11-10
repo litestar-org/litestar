@@ -45,7 +45,6 @@ if TYPE_CHECKING:
 
     from litestar import Litestar
     from litestar.types import (
-        AnyIOBackend,
         ASGIApp,
         ASGIVersion,
         Receive,
@@ -67,11 +66,6 @@ def mock() -> MagicMock:
 @pytest.fixture()
 def async_mock() -> AsyncMock:
     return AsyncMock()
-
-
-@pytest.fixture(params=[pytest.param("asyncio", id="asyncio"), pytest.param("trio", id="trio")])
-def anyio_backend(request: pytest.FixtureRequest) -> str:
-    return request.param  # type: ignore[no-any-return]
 
 
 @pytest.fixture()
@@ -180,11 +174,6 @@ def cookie_session_middleware(
     cookie_session_backend: ClientSideSessionBackend, mock_asgi_app: ASGIApp
 ) -> SessionMiddleware[ClientSideSessionBackend]:
     return SessionMiddleware(app=mock_asgi_app, backend=cookie_session_backend)
-
-
-@pytest.fixture
-def test_client_backend(anyio_backend_name: str) -> AnyIOBackend:
-    return cast("AnyIOBackend", anyio_backend_name)
 
 
 @pytest.fixture

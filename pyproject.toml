@@ -40,7 +40,6 @@ dependencies = [
   "multidict>=6.0.2",
   "typing-extensions",
   "multipart>=1.3.1",
-  "sniffio>=1.3.1",
 ]
 
 [project.optional-dependencies]
@@ -133,7 +132,6 @@ dev = [
   "hypothesis",
   "python-dotenv",
   "starlette",
-  "trio",
   "aiosqlite",
   "duckdb-engine",
   "asyncpg>=0.29.0",
@@ -191,7 +189,6 @@ test = [
   "pytest-xdist",
   "time-machine",
   "zstandard",
-  "trio",  # required to run against trio anyio backend
 ]
 
 [build-system]
@@ -217,7 +214,6 @@ filterwarnings = [
   "error",
   # https://github.com/pytest-dev/pytest-asyncio/issues/724
   "default:.*socket.socket:pytest.PytestUnraisableExceptionWarning",
-  "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
   "ignore::DeprecationWarning:pkg_resources.*",
   "ignore::DeprecationWarning:google.rpc",
   "ignore::DeprecationWarning:google.gcloud",
@@ -349,8 +345,6 @@ exclude-classes = """
   |(^litestar.dto.base_dto:AbstractDTO)
   |(^litestar.dto.data_structures:DTOData)
   |(^litestar.middleware.session.base:BaseSessionBackend)
-  |(^litestar.pagination:ClassicPagination)
-  |(^litestar.pagination:CursorPagination)
   |(^litestar.response.base:Response)
   |(^litestar.testing.client.base:BaseTestClient)
   |(^litestar.testing.life_span_handler:LifeSpanHandler)
