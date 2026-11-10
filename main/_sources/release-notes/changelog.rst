@@ -20,7 +20,7 @@
     .. change:: Remove support for trio
         :type: feature
         :breaking:
-        :pr: XXXX
+        :pr: 5201
 
         Trio is no longer supported. ``set_trio_capacity_limiter`` and
         ``get_trio_capacity_limiter`` are removed from :mod:`litestar.concurrency`, along with
