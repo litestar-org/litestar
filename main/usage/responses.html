@@ -307,7 +307,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/attrs.html">attrs</a></li>
@@ -506,15 +505,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#executing-multiple-background-tasks">Executing Multiple Background Tasks</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#pagination">Pagination</a><ul>
-<li><a class="reference internal" href="#classic-pagination">Classic Pagination</a></li>
-<li><a class="reference internal" href="#offset-pagination">Offset Pagination</a><ul>
-<li><a class="reference internal" href="#offset-pagination-with-sqlalchemy">Offset Pagination With SQLAlchemy</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cursor-pagination">Cursor Pagination</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#pagination">Pagination</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -2095,201 +2086,70 @@ allows background tasks to run concurrently, using an <a class="reference extern
 </section>
 <section id="pagination">
 <h2>Pagination<a class="headerlink" href="#pagination" title="Link to this heading">¶</a></h2>
-<p>When you need to return a large number of items from an endpoint it is common practice to use pagination to ensure
-clients can request a specific subset or “page” from the total dataset. Litestar supports three types of pagination out
-of the box:</p>
-<ul class="simple">
-<li><p>classic pagination</p></li>
-<li><p>limit / offset pagination</p></li>
-<li><p>cursor pagination</p></li>
-</ul>
-<section id="classic-pagination">
-<h3>Classic Pagination<a class="headerlink" href="#classic-pagination" title="Link to this heading">¶</a></h3>
-<p>In classic pagination the dataset is divided into pages of a specific size and the consumer then requests a specific page.</p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Classic Pagination</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">polyfactory.factories.dataclass_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassFactory</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractSyncClassicPaginator</span><span class="p">,</span> <span class="n">ClassicPagination</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
-</span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
-</span><span data-line="12">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="13">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="14">
-</span><span data-line="15">
-</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">PersonFactory</span><span class="p">(</span><span class="n">DataclassFactory</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-</span><span data-line="17">    <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
-</span><span data-line="18">
-</span><span data-line="19">
-</span><span data-line="20"><span class="c1"># we will implement a paginator - the paginator must implement two methods &#39;get_total&#39; and &#39;get_items&#39;</span>
-</span><span data-line="21"><span class="c1"># we would usually use a database for this, but for our case we will &quot;fake&quot; the dataset using a factory.</span>
-</span><span data-line="22">
-</span><span data-line="23">
-</span><span data-line="24"><span class="k">class</span><span class="w"> </span><span class="nc">PersonClassicPaginator</span><span class="p">(</span><span class="n">AbstractSyncClassicPaginator</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-</span><span data-line="25">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="26">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">PersonFactory</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-</span><span data-line="27">
-</span><span data-line="28">    <span class="k">def</span><span class="w"> </span><span class="nf">get_total</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span data-line="29">        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">page_size</span><span class="p">)</span>
-</span><span data-line="30">
-</span><span data-line="31">    <span class="k">def</span><span class="w"> </span><span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">current_page</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
-</span><span data-line="32">        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">page_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="n">page_size</span><span class="p">)][</span><span class="n">current_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-</span><span data-line="33">
-</span><span data-line="34">
-</span><span data-line="35"><span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonClassicPaginator</span><span class="p">()</span>
-</span><span data-line="36">
-</span><span data-line="37">
-</span><span data-line="38"><span class="c1"># we now create a regular handler. The handler will receive two query parameters - &#39;page_size&#39; and &#39;current_page&#39;, which</span>
-</span><span data-line="39"><span class="c1"># we will pass to the paginator.</span>
-</span><span data-line="40"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="41"><span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span><span class="n">page_size</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">current_page</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ClassicPagination</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
-</span><span data-line="42">    <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span> <span class="n">current_page</span><span class="o">=</span><span class="n">current_page</span><span class="p">)</span>
-</span><span data-line="43">
-</span><span data-line="44">
-</span><span data-line="45"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">people_handler</span><span class="p">])</span>
-</span></pre></div>
-</div>
-</div>
-<p>The data container for this pagination is called <a class="reference internal" href="../reference/pagination.html#litestar.pagination.ClassicPagination" title="litestar.pagination.ClassicPagination"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassicPagination</span></code></a>, which is
-what will be returned by the paginator in the above example This will also generate the corresponding OpenAPI
-documentation.</p>
-<p>If you require async logic, you can implement
-the <a class="reference internal" href="../reference/pagination.html#litestar.pagination.AbstractAsyncClassicPaginator" title="litestar.pagination.AbstractAsyncClassicPaginator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAsyncClassicPaginator</span></code></a> instead of the
-<a class="reference internal" href="../reference/pagination.html#litestar.pagination.AbstractSyncClassicPaginator" title="litestar.pagination.AbstractSyncClassicPaginator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSyncClassicPaginator</span></code></a>.</p>
-</section>
-<section id="offset-pagination">
-<h3>Offset Pagination<a class="headerlink" href="#offset-pagination" title="Link to this heading">¶</a></h3>
-<p>In offset pagination the consumer requests a number of items specified by <code class="docutils literal notranslate"><span class="pre">limit</span></code> and the <code class="docutils literal notranslate"><span class="pre">offset</span></code> from the beginning of the dataset.
-For example, given a list of 50 items, you could request <code class="docutils literal notranslate"><span class="pre">limit=10</span></code>, <code class="docutils literal notranslate"><span class="pre">offset=39</span></code> to request items 40-50.</p>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Offset Pagination</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">islice</span>
+<p>Litestar does not provide pagination containers or paginator base classes. Return a
+generic container of your own – a dataclass, a <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code> or a Pydantic model –
+whose collection field holds the current page, and compute the page in the handler or in a
+<a class="reference internal" href="dependency-injection.html"><span class="doc">dependency</span></a>:</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.11" for="sd-tab-item-4">
+Python 3.11+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">polyfactory.factories.dataclass_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassFactory</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractSyncOffsetPaginator</span><span class="p">,</span> <span class="n">OffsetPagination</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
-</span><span data-line="9">
-</span><span data-line="10">
-</span><span data-line="11"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
-</span><span data-line="13">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="14">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="6"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@dataclass</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">Page</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+</span><span data-line="11">    <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+</span><span data-line="12">    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="13">    <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="14">    <span class="n">total</span><span class="p">:</span> <span class="nb">int</span>
 </span><span data-line="15">
 </span><span data-line="16">
-</span><span data-line="17"><span class="k">class</span><span class="w"> </span><span class="nc">PersonFactory</span><span class="p">(</span><span class="n">DataclassFactory</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-</span><span data-line="18">    <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
-</span><span data-line="19">
-</span><span data-line="20">
-</span><span data-line="21"><span class="c1"># we will implement a paginator - the paginator must implement two methods &#39;get_total&#39; and &#39;get_items&#39;</span>
-</span><span data-line="22"><span class="c1"># we would usually use a database for this, but for our case we will &quot;fake&quot; the dataset using a factory.</span>
-</span><span data-line="23">
-</span><span data-line="24">
-</span><span data-line="25"><span class="k">class</span><span class="w"> </span><span class="nc">PersonOffsetPaginator</span><span class="p">(</span><span class="n">AbstractSyncOffsetPaginator</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-</span><span data-line="26">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="27">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">PersonFactory</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-</span><span data-line="28">
-</span><span data-line="29">    <span class="k">def</span><span class="w"> </span><span class="nf">get_total</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span data-line="30">        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-</span><span data-line="31">
-</span><span data-line="32">    <span class="k">def</span><span class="w"> </span><span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
-</span><span data-line="33">        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">limit</span><span class="p">))</span>
-</span><span data-line="34">
-</span><span data-line="35">
-</span><span data-line="36"><span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonOffsetPaginator</span><span class="p">()</span>
-</span><span data-line="37">
-</span><span data-line="38">
-</span><span data-line="39"><span class="c1"># we now create a regular handler. The handler will receive two query parameters - &#39;limit&#39; and &#39;offset&#39;, which</span>
-</span><span data-line="40"><span class="c1"># we will pass to the paginator.</span>
-</span><span data-line="41"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="42"><span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">offset</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">OffsetPagination</span><span class="p">[</span><span class="n">Person</span><span class="p">]:</span>
-</span><span data-line="43">    <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
-</span><span data-line="44">
-</span><span data-line="45">
-</span><span data-line="46"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">people_handler</span><span class="p">])</span>
+</span><span data-line="17"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+</span><span data-line="18"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Page</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="19">    <span class="n">users</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fetch_users</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+</span><span data-line="20">    <span class="k">return</span> <span class="n">Page</span><span class="p">(</span><span class="n">items</span><span class="o">=</span><span class="n">users</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
-<p>The data container for this pagination is
-called <a class="reference internal" href="../reference/pagination.html#litestar.pagination.OffsetPagination" title="litestar.pagination.OffsetPagination"><code class="xref py py-class docutils literal notranslate"><span class="pre">OffsetPagination</span></code></a>, which is what will be returned by the paginator in the
-above example This will also generate the corresponding OpenAPI documentation.</p>
-<p>If you require async logic, you can implement
-the <a class="reference internal" href="../reference/pagination.html#litestar.pagination.AbstractAsyncOffsetPaginator" title="litestar.pagination.AbstractAsyncOffsetPaginator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAsyncOffsetPaginator</span></code></a> instead of the
-<a class="reference internal" href="../reference/pagination.html#litestar.pagination.AbstractSyncOffsetPaginator" title="litestar.pagination.AbstractSyncOffsetPaginator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSyncOffsetPaginator</span></code></a>.</p>
-<section id="offset-pagination-with-sqlalchemy">
-<h4>Offset Pagination With SQLAlchemy<a class="headerlink" href="#offset-pagination-with-sqlalchemy" title="Link to this heading">¶</a></h4>
-<p>When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
-instance to make queries. This can be achieved with <a class="reference internal" href="dependency-injection.html"><span class="doc">Dependency Injection</span></a></p>
-</section>
-</section>
-<section id="cursor-pagination">
-<h3>Cursor Pagination<a class="headerlink" href="#cursor-pagination" title="Link to this heading">¶</a></h3>
-<p>In cursor pagination the consumer requests a number of items specified by <code class="docutils literal notranslate"><span class="pre">results_per_page</span></code> and a <code class="docutils literal notranslate"><span class="pre">cursor</span></code> after which results are given.
-Cursor is unique identifier within the dataset that serves as a way to point the starting position.</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">polyfactory.factories.dataclass_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassFactory</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractSyncCursorPaginator</span><span class="p">,</span> <span class="n">CursorPagination</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromQuery</span>
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.12" for="sd-tab-item-5">
+Python 3.12+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-</span><span data-line="11"><span class="k">class</span><span class="w"> </span><span class="nc">Person</span><span class="p">:</span>
-</span><span data-line="12">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="13">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="14">
+</span><span data-line="9"><span class="nd">@dataclass</span>
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">Page</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+</span><span data-line="11">    <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+</span><span data-line="12">    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="13">    <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="14">    <span class="n">total</span><span class="p">:</span> <span class="nb">int</span>
 </span><span data-line="15">
-</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">PersonFactory</span><span class="p">(</span><span class="n">DataclassFactory</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-</span><span data-line="17">    <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
-</span><span data-line="18">
-</span><span data-line="19">
-</span><span data-line="20"><span class="c1"># we will implement a paginator - the paginator must implement the method &#39;get_items&#39;.</span>
-</span><span data-line="21">
-</span><span data-line="22">
-</span><span data-line="23"><span class="k">class</span><span class="w"> </span><span class="nc">PersonCursorPaginator</span><span class="p">(</span><span class="n">AbstractSyncCursorPaginator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]):</span>
-</span><span data-line="24">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="25">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">PersonFactory</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-</span><span data-line="26">
-</span><span data-line="27">    <span class="k">def</span><span class="w"> </span><span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">results_per_page</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Person</span><span class="p">],</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-</span><span data-line="28">        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="n">results_per_page</span><span class="p">]</span>
-</span><span data-line="29">        <span class="k">return</span> <span class="n">results</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
-</span><span data-line="30">
-</span><span data-line="31">
-</span><span data-line="32"><span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonCursorPaginator</span><span class="p">()</span>
-</span><span data-line="33">
-</span><span data-line="34">
-</span><span data-line="35"><span class="c1"># we now create a regular handler. The handler will receive a single query parameter - &#39;cursor&#39;, which</span>
-</span><span data-line="36"><span class="c1"># we will pass to the paginator.</span>
-</span><span data-line="37"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="38"><span class="k">def</span><span class="w"> </span><span class="nf">people_handler</span><span class="p">(</span>
-</span><span data-line="39">    <span class="n">results_per_page</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-</span><span data-line="40">    <span class="n">cursor</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="41"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CursorPagination</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]:</span>
-</span><span data-line="42">    <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">,</span> <span class="n">results_per_page</span><span class="o">=</span><span class="n">results_per_page</span><span class="p">)</span>
-</span><span data-line="43">
-</span><span data-line="44">
-</span><span data-line="45"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">people_handler</span><span class="p">])</span>
+</span><span data-line="16">
+</span><span data-line="17"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">)</span>
+</span><span data-line="18"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Page</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+</span><span data-line="19">    <span class="n">users</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fetch_users</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+</span><span data-line="20">    <span class="k">return</span> <span class="n">Page</span><span class="p">(</span><span class="n">items</span><span class="o">=</span><span class="n">users</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
-<p>The data container for this pagination is called <a class="reference internal" href="../reference/pagination.html#litestar.pagination.CursorPagination" title="litestar.pagination.CursorPagination"><code class="xref py py-class docutils literal notranslate"><span class="pre">CursorPagination</span></code></a>, which is what
-will be returned by the paginator in the above example This will also generate the corresponding OpenAPI documentation.</p>
-<p>If you require async logic, you can implement
-the <a class="reference internal" href="../reference/pagination.html#litestar.pagination.AbstractAsyncCursorPaginator" title="litestar.pagination.AbstractAsyncCursorPaginator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAsyncCursorPaginator</span></code></a> instead of the
-<a class="reference internal" href="../reference/pagination.html#litestar.pagination.AbstractSyncCursorPaginator" title="litestar.pagination.AbstractSyncCursorPaginator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSyncCursorPaginator</span></code></a>.</p>
-</section>
+</div>
+<p>The container is resolved like any other generic wrapper, so its schema is included in the
+OpenAPI document and a <a class="reference internal" href="dto/index.html"><span class="doc">DTO</span></a> declared on the handler applies to the
+models held in the collection field.</p>
+<p>Applications using <a class="reference internal" href="databases/sqlalchemy/index.html"><span class="doc">Advanced Alchemy</span></a> can return
+its <code class="docutils literal notranslate"><span class="pre">advanced_alchemy.service.OffsetPagination</span></code> instead, which declares the same four
+fields.</p>
 </section>
 </section>
 

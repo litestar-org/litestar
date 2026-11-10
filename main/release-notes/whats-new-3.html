@@ -307,7 +307,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/attrs.html">attrs</a></li>
@@ -462,6 +461,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#deprecated-scope-state-utilities-removed">Deprecated scope state utilities removed</a></li>
 <li><a class="reference internal" href="#deprecated-utility-function-is-sync-or-async-generator-removed">Deprecated utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> removed</a></li>
 <li><a class="reference internal" href="#deprecated-dtofield-declaration-via-pydantic-s-field-extra-removed">Deprecated <code class="docutils literal notranslate"><span class="pre">DTOField</span></code> declaration via Pydantic&#8217;s <code class="docutils literal notranslate">extra</span></code> removed</a></li>
+<li><a class="reference internal" href="#removal-of-the-litestar-pagination-module">Removal of the <code class="docutils literal notranslate">pagination</span></code> module</a></li>
 <li><a class="reference internal" href="#removal-of-semantic-http-route-handler-classes">Removal of semantic HTTP route handler classes</a></li>
 <li><a class="reference internal" href="#id1">Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate">to_asgi_response</span></code> has been removed</a></li>
 <li><a class="reference internal" href="#removal-of-deprecated-litestar-middleware-exceptions-module-and-exceptionhandlermiddleware">Removal of deprecated <code class="docutils literal notranslate">middleware.exceptions</span></code> module and <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code></a></li>
@@ -630,6 +630,9 @@ For a detailed list of all changes, including changes between versions leading u
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">advanced_alchemy.extensions.litestar</span></code></p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">litestar.pagination.OffsetPagination</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">advanced_alchemy.service.OffsetPagination</span></code></p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -783,6 +786,95 @@ which can make OpenAPI schema generation fail.</p>
 </span><span data-line="9">    <span class="nb">id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">DTOField</span><span class="p">(</span><span class="n">mark</span><span class="o">=</span><span class="s2">&quot;read-only&quot;</span><span class="p">)]</span>
 </span></pre></div>
 </div>
+</section>
+<section id="removal-of-the-litestar-pagination-module">
+<h2>Removal of the <code class="docutils literal notranslate"><span class="pre">litestar.pagination</span></code> module<a class="headerlink" href="#removal-of-the-litestar-pagination-module" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">litestar.pagination</span></code> module has been removed, together with the internal OpenAPI
+schema plugin that gave its containers a schema of their own:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ClassicPagination</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OffsetPagination</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CursorPagination</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AbstractSyncClassicPaginator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AbstractAsyncClassicPaginator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AbstractSyncOffsetPaginator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AbstractAsyncOffsetPaginator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AbstractSyncCursorPaginator</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AbstractAsyncCursorPaginator</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">OffsetPagination</span></code> has a direct replacement: Litestar re-exported Advanced Alchemy’s
+container whenever the package was installed, so for an application that already depended
+on it the class is the same one and only the import changes, to
+<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">advanced_alchemy.service</span> <span class="pre">import</span> <span class="pre">OffsetPagination</span></code>. It is exported from
+<code class="docutils literal notranslate"><span class="pre">advanced_alchemy.service</span></code>, not from <code class="docutils literal notranslate"><span class="pre">advanced_alchemy.extensions.litestar</span></code>. An
+application that did not depend on Advanced Alchemy has to add it, directly or through the
+<code class="docutils literal notranslate"><span class="pre">litestar[sqlalchemy]</span></code> extra, or declare the same four-field container itself –
+<code class="docutils literal notranslate"><span class="pre">items</span></code>, <code class="docutils literal notranslate"><span class="pre">limit</span></code>, <code class="docutils literal notranslate"><span class="pre">offset</span></code> and <code class="docutils literal notranslate"><span class="pre">total</span></code> – which serialises identically. Note that
+Advanced Alchemy declares <code class="docutils literal notranslate"><span class="pre">items</span></code> as a <code class="docutils literal notranslate"><span class="pre">Sequence[T]</span></code>, where the removed fallback
+declared it as a <code class="docutils literal notranslate"><span class="pre">list[T]</span></code>.</p>
+<p>The other two containers and the six paginator base classes have no replacement in
+Litestar or in Advanced Alchemy. Declare the container you need as a generic dataclass of
+your own, and implement the paginating logic in the handler, or in a dependency whose
+parameter is marked with <a class="reference internal" href="../reference/di.html#litestar.di.NamedDependency" title="litestar.di.NamedDependency"><code class="xref py py-data docutils literal notranslate"><span class="pre">NamedDependency</span></code></a>. OpenAPI schema generation
+resolves a generic dataclass wrapping a collection the same way, and DTOs still apply to
+the models it holds.</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.11" for="sd-tab-item-0">
+Python 3.11+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@dataclass</span>
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">ClassicPagination</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+</span><span data-line="9">    <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+</span><span data-line="10">    <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="11">    <span class="n">current_page</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="12">    <span class="n">total_pages</span><span class="p">:</span> <span class="nb">int</span>
+</span></pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="3.12" for="sd-tab-item-1">
+Python 3.12+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@dataclass</span>
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">ClassicPagination</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+</span><span data-line="9">    <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+</span><span data-line="10">    <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="11">    <span class="n">current_page</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="12">    <span class="n">total_pages</span><span class="p">:</span> <span class="nb">int</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">CursorPagination</span></code> was generic over the cursor type first and the item type second, so a
+handler annotated it as <code class="docutils literal notranslate"><span class="pre">CursorPagination[str,</span> <span class="pre">Person]</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">C</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">UUID</span><span class="p">)</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@dataclass</span>
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">CursorPagination</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">C</span><span class="p">,</span> <span class="n">T</span><span class="p">]):</span>
+</span><span data-line="6">    <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+</span><span data-line="7">    <span class="n">results_per_page</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="8">    <span class="n">cursor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">C</span><span class="p">]</span>
+</span></pre></div>
+</div>
+<p>The OpenAPI document changes for every paginated handler, including those of applications
+that never imported <code class="docutils literal notranslate"><span class="pre">litestar.pagination</span></code>, since the removed plugin matched Advanced
+Alchemy’s <code class="docutils literal notranslate"><span class="pre">OffsetPagination</span></code> as well. The response schema is now a reusable component
+referenced with <code class="docutils literal notranslate"><span class="pre">$ref</span></code>, named after the container and its type argument, instead of a
+schema inlined per handler, with a <code class="docutils literal notranslate"><span class="pre">required</span></code> entry for each field and without the
+per-field descriptions the plugin wrote. Behaviour and the response body are unchanged,
+but regenerate any client generated from the document.</p>
 </section>
 <section id="removal-of-semantic-http-route-handler-classes">
 <h2>Removal of semantic HTTP route handler classes<a class="headerlink" href="#removal-of-semantic-http-route-handler-classes" title="Link to this heading">¶</a></h2>

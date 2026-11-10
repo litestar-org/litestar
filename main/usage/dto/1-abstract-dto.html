@@ -307,7 +307,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../reference/openapi/spec.html">spec</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/attrs.html">attrs</a></li>
@@ -461,7 +460,6 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#dto-factory-and-patch-requests">DTO Factory and PATCH requests</a></li>
 <li><a class="reference internal" href="#implicit-private-fields">Implicit Private Fields</a></li>
 <li><a class="reference internal" href="#wrapping-return-data">Wrapping Return Data</a></li>
-<li><a class="reference internal" href="#working-with-litestar-s-pagination-types">Working with Litestar&#8217;s Pagination Types</a></li>
 <li><a class="reference internal" href="#using-litestar-s-response-type-with-dto-factory">Using Litestar&#8217;s Response Type with DTO Factory</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
@@ -612,7 +610,7 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Litestar User&quot;,&quot;password&quot;:&quot;xyz&quot;,&quot;created_at&quot;:&quot;2023-04-24T00:00:00Z&quot;}&#39;</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;d6b05db9-aa1c-421b-844a-6a7f2db1179b&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;2fc79a51-2829-4d0d-8b4d-027d58e93e0d&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -675,7 +673,7 @@ configuration.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Litestar User&quot;,&quot;password&quot;:&quot;xyz&quot;,&quot;created_at&quot;:&quot;2023-04-24T00:00:00Z&quot;}&#39;</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;5af63196-2eb8-4738-bce0-933dea2c9112&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;cb14ad00-be6b-41f4-bdcf-869801423601&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -823,7 +821,7 @@ type parameter of <code class="docutils literal notranslate"><span class="pre">a
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;userName&quot;:&quot;Litestar User&quot;,&quot;password&quot;:&quot;xyz&quot;,&quot;created_at&quot;:&quot;2023-04-24T00:00:00Z&quot;}&#39;</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;228c43d4-ce30-495d-b851-46961a113e49&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;834d3c74-5bdf-4475-a446-d4d752c2920d&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -869,7 +867,7 @@ type parameter of <code class="docutils literal notranslate"><span class="pre">a
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;firstName&quot;:&quot;Litestar User&quot;,&quot;password&quot;:&quot;xyz&quot;,&quot;createdAt&quot;:&quot;2023-04-24T00:00:00Z&quot;}&#39;</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;efea7cae-8bdc-4fea-b4b0-401957072cff&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;8d5b490a-4714-4604-abef-30008906f114&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1084,7 +1082,7 @@ handler.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Peter&quot;,&quot;email&quot;: &quot;peter@example.com&quot;, &quot;age&quot;:41}&#39;</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;4d74d636-9755-4c0f-a678-36aab2bd7114&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;7cadca36-336c-42d0-8c2c-b20b22bcaef2&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1131,7 +1129,7 @@ type of the data that it will contain, and provides useful methods for interacti
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Peter&quot;, &quot;email&quot;: &quot;peter@example.com&quot;, &quot;age&quot;:41}&#39;</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;f52068fb-011b-408e-a320-9acfdd00a718&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;c68e53b3-2d20-4728-88a4-0760738ad696&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1528,104 +1526,11 @@ the attribute on the wrapper type that holds the data and perform its serializat
 generic wrapper that is a type supported by the DTO.</p></li>
 </ol>
 </section>
-<section id="working-with-litestar-s-pagination-types">
-<h2>Working with Litestar’s Pagination Types<a class="headerlink" href="#working-with-litestar-s-pagination-types" title="Link to this heading">¶</a></h2>
-<p>Litestar offers paginated response wrapper types, and DTO Factory types can handle this out of the box.</p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Paginated Return Data</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-</span><span data-line="2"><span class="linenos"> 2</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span>
-</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span>
-</span><span data-line="5"><span class="linenos"> 5</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassicPagination</span>
-</span><span data-line="8"><span class="linenos"> 8</span>
-</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">.my_lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
-</span><span data-line="10"><span class="linenos">10</span>
-</span><span data-line="11"><span class="linenos">11</span>
-</span><span data-line="12"><span class="linenos">12</span><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-</span><span data-line="13"><span class="linenos">13</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-</span><span data-line="14"><span class="linenos">14</span>    <span class="n">password</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-</span><span data-line="15"><span class="linenos">15</span>    <span class="n">created_at</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span>
-</span><span data-line="16"><span class="linenos">16</span>
-</span><span data-line="17"><span class="linenos">17</span>
-</span><span data-line="18"><span class="linenos">18</span><span class="k">class</span><span class="w"> </span><span class="nc">UserDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
-</span><span data-line="19"><span class="linenos">19</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">})</span>
-</span><span data-line="20"><span class="linenos">20</span>
-</span><span data-line="21"><span class="linenos">21</span>
-</span><span data-line="22"><span class="linenos">22</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="23"><span class="linenos">23</span><span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ClassicPagination</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
-</span><span data-line="24"><span class="linenos">24</span>    <span class="k">return</span> <span class="n">ClassicPagination</span><span class="p">(</span>
-</span><span data-line="25"><span class="linenos">25</span>        <span class="n">page_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-</span><span data-line="26"><span class="linenos">26</span>        <span class="n">total_pages</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="27"><span class="linenos">27</span>        <span class="n">current_page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="28"><span class="linenos">28</span>        <span class="n">items</span><span class="o">=</span><span class="p">[</span>
-</span><span data-line="29"><span class="linenos">29</span>            <span class="n">User</span><span class="p">(</span>
-</span><span data-line="30"><span class="linenos">30</span>                <span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="31"><span class="linenos">31</span>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Litestar User&quot;</span><span class="p">,</span>
-</span><span data-line="32"><span class="linenos">32</span>                <span class="n">password</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
-</span><span data-line="33"><span class="linenos">33</span>                <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-</span><span data-line="34"><span class="linenos">34</span>            <span class="p">),</span>
-</span><span data-line="35"><span class="linenos">35</span>        <span class="p">],</span>
-</span><span data-line="36"><span class="linenos">36</span>    <span class="p">)</span>
-</span><span data-line="37"><span class="linenos">37</span>
-</span><span data-line="38"><span class="linenos">38</span>
-</span><span data-line="39"><span class="linenos">39</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_users</span><span class="p">])</span>
-</span></pre></div>
-</div>
-</div>
-<div class="admonition">
-<p class="admonition-title">Run it</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;items&quot;</span>:<span class="o">[{</span><span class="s2">&quot;id&quot;</span>:1,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}]</span>,<span class="s2">&quot;page_size&quot;</span>:10,<span class="s2">&quot;current_page&quot;</span>:1,<span class="s2">&quot;total_pages&quot;</span>:1<span class="o">}</span>
-</span></pre></div>
-</div>
-</div>
-<p>The DTO is defined and configured, in our example, we’re excluding <code class="docutils literal notranslate"><span class="pre">password</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> fields from the final
-representation of our users.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span>
-</span><span data-line="3">
-</span><span data-line="4">
-</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">UserDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
-</span><span data-line="6">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">})</span>
-</span></pre></div>
-</div>
-<p>The example sets up a <code class="docutils literal notranslate"><span class="pre">/users</span></code> endpoint, where a paginated list of <code class="docutils literal notranslate"><span class="pre">User</span></code> objects is returned, wrapped in
-<a class="reference internal" href="../../reference/pagination.html#litestar.pagination.ClassicPagination" title="litestar.pagination.ClassicPagination"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassicPagination</span></code></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.pagination</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassicPagination</span>
-</span><span data-line="3">
-</span><span data-line="4">
-</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">def</span><span class="w"> </span><span class="nf">get_users</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ClassicPagination</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
-</span><span data-line="7">    <span class="k">return</span> <span class="n">ClassicPagination</span><span class="p">(</span>
-</span><span data-line="8">        <span class="n">page_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-</span><span data-line="9">        <span class="n">total_pages</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="10">        <span class="n">current_page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="11">        <span class="n">items</span><span class="o">=</span><span class="p">[</span>
-</span><span data-line="12">            <span class="n">User</span><span class="p">(</span>
-</span><span data-line="13">                <span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-</span><span data-line="14">                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Litestar User&quot;</span><span class="p">,</span>
-</span><span data-line="15">                <span class="n">password</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
-</span><span data-line="16">                <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-</span><span data-line="17">            <span class="p">),</span>
-</span><span data-line="18">        <span class="p">],</span>
-</span><span data-line="19">    <span class="p">)</span>
-</span></pre></div>
-</div>
-<p>The <a class="reference internal" href="../../reference/pagination.html#litestar.pagination.ClassicPagination" title="litestar.pagination.ClassicPagination"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassicPagination</span></code></a> class contains <code class="docutils literal notranslate"><span class="pre">page_size</span></code> (number of items per page),
-<code class="docutils literal notranslate"><span class="pre">total_pages</span></code> (total number of pages), <code class="docutils literal notranslate"><span class="pre">current_page</span></code> (current page number), and <code class="docutils literal notranslate"><span class="pre">items</span></code> (items for the current
-page).</p>
-<p>The DTO operates on the data contained in the <code class="docutils literal notranslate"><span class="pre">items</span></code> attribute, and the pagination wrapper is handled automatically
-by Litestar’s serialization process.</p>
-</section>
 <section id="using-litestar-s-response-type-with-dto-factory">
 <h2>Using Litestar’s Response Type with DTO Factory<a class="headerlink" href="#using-litestar-s-response-type-with-dto-factory" title="Link to this heading">¶</a></h2>
 <p>Litestar’s DTO (Data Transfer Object) Factory Types can handle data wrapped in a <code class="docutils literal notranslate"><span class="pre">Response</span></code> type.</p>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Response Wrapped Return Data</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Response Wrapped Return Data</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 </span><span data-line="2"><span class="linenos"> 2</span>
 </span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">advanced_alchemy.extensions.litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyDTO</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span>

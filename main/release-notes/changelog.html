@@ -307,7 +307,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/attrs.html">attrs</a></li>
@@ -555,6 +554,20 @@ data-aria-dark="Switch to auto color mode">
 <a class="reference internal" href="../reference/concurrency.html#litestar.concurrency.sync_to_thread" title="litestar.concurrency.sync_to_thread"><code class="xref py py-func docutils literal notranslate"><span class="pre">sync_to_thread()</span></code></a> raises <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> when called from
 trio. <code class="docutils literal notranslate"><span class="pre">sniffio</span></code> is no longer a dependency.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/XXXX">https://github.com/litestar-org/litestar/pull/XXXX</a></span></p>
+</div>
+</dd>
+<dt>Remove the <code class="docutils literal notranslate"><span class="pre">litestar.pagination</span></code> module<a class="headerlink reference internal" href="#3.0.0-remove the" id="3.0.0-remove the">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The <code class="docutils literal notranslate"><span class="pre">ClassicPagination</span></code>, <code class="docutils literal notranslate"><span class="pre">OffsetPagination</span></code> and <code class="docutils literal notranslate"><span class="pre">CursorPagination</span></code> containers,
+the six abstract paginator base classes and the internal OpenAPI schema plugin for
+the containers have been removed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">OffsetPagination</span></code> was re-exported from <code class="docutils literal notranslate"><span class="pre">advanced_alchemy.service</span></code> whenever that
+package was installed, so import it from there instead, adding Advanced Alchemy as a
+dependency if the application did not already have it. The other two containers and
+the paginator bases have no replacement; declare the container you need as a generic
+dataclass of your own. Every paginated handler’s OpenAPI schema is now a <code class="docutils literal notranslate"><span class="pre">$ref</span></code>
+component with <code class="docutils literal notranslate"><span class="pre">required</span></code> fields and without the plugin’s per-field descriptions,
+so regenerate any client generated from the document.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4009">https://github.com/litestar-org/litestar/issues/4009</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5199">https://github.com/litestar-org/litestar/pull/5199</a></span></p>
 </div>
 </dd>
 <dt>Default <code class="docutils literal notranslate"><span class="pre">copy_scope</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> for ASGI handlers<a class="headerlink reference internal" href="#3.0.0-default" id="3.0.0-default">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
