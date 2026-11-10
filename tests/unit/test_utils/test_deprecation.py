@@ -13,6 +13,13 @@ def test_warn_deprecation() -> None:
         warn_deprecation("3", deprecated_name="something", kind="function")
 
 
+def test_warn_deprecation_attributes_warning_to_stacklevel_frame() -> None:
+    with pytest.warns(DeprecationWarning) as record:
+        warn_deprecation("3", deprecated_name="something", kind="function", stacklevel=1)
+
+    assert record[0].filename == warn_deprecation.__code__.co_filename
+
+
 def test_warn_pending_deprecation() -> None:
     with pytest.warns(
         PendingDeprecationWarning,
