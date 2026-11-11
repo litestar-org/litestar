@@ -669,7 +669,7 @@ class SchemaCreator:
         if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
             schema.const = field.default
 
-        if ref is None or isinstance(field.kwarg_definition, BodyKwarg):
+        if ref is None:
             self._apply_kwarg_definition_metadata(field, schema)
 
         if isinstance(field.kwarg_definition, KwargDefinition) and (extra := field.kwarg_definition.schema_extra):

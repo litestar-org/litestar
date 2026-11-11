@@ -82,6 +82,33 @@ def test_request_body_schema_extra() -> None:
     assert resp["title"] == "Overridden title"
 
 
+def test_request_body_descriptions_do_not_mutate_shared_component_schema() -> None:
+    @dataclass
+    class RequestBody:
+        foo: str
+
+    @post("/first")
+    async def first(data: Annotated[RequestBody, Body(description="first description")]) -> Any:
+        return data
+
+    @post("/second")
+    async def second(data: Annotated[RequestBody, Body(description="second description")]) -> Any:
+        return data
+
+    for handlers in ([first, second], [second, first]):
+        app = Litestar(handlers)
+        schema = app.openapi_schema.to_schema()
+        component_key = next(k for k in schema["components"]["schemas"] if k.endswith("RequestBody"))
+        assert schema["components"]["schemas"][component_key].get("description") is None
+
+        first_schema = schema["paths"]["/first"]["post"]["requestBody"]["content"]["application/json"]["schema"]
+        second_schema = schema["paths"]["/second"]["post"]["requestBody"]["content"]["application/json"]["schema"]
+        assert first_schema["description"] == "first description"
+        assert second_schema["description"] == "second description"
+        assert first_schema["allOf"] == [{"$ref": f"#/components/schemas/{component_key}"}]
+        assert second_schema["allOf"] == [{"$ref": f"#/components/schemas/{component_key}"}]
+
+
 def test_upload_single_file_schema_generation() -> None:
     @post(path="/file-upload")
     async def handle_file_upload(data: MultipartBody[UploadFile]) -> None:
