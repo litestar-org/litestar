@@ -329,7 +329,6 @@ html_theme_options = {
     "navigation_with_keys": True,
     "nav_links": [  # TODO(provinzkraut): I need a guide on extra_navbar_items and its magic :P
         {"title": "Home", "url": "index"},
-        {"title": "litestar.dev", "url": "https://litestar.dev", "external": True},
         {
             "title": "Community",
             "children": [
@@ -356,6 +355,12 @@ html_theme_options = {
         {
             "title": "About",
             "children": [
+                {
+                    "title": "Official Website",
+                    "summary": "The Litestar project website",
+                    "url": "https://litestar.dev",
+                    "icon": "org",
+                },
                 {
                     "title": "Litestar Organization",
                     "summary": "Details about the Litestar organization",
