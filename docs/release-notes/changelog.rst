@@ -6,6 +6,14 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix the paths of the ``OPTIONS`` handler added under an app with a ``path``
+        :type: bugfix
+        :pr: 5208
+
+        Fix a bug that gave the ``OPTIONS`` handler Litestar adds to a route the app's
+        ``path`` twice in its ``paths``, e.g. ``/api/api/members`` on an app with
+        ``path="/api"``. The handler was served under the correct path.
+
     .. change:: Call ``after_exception`` hooks once for an exception on a route with middleware
         :type: bugfix
         :pr: 5203

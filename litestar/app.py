@@ -1016,6 +1016,7 @@ def _maybe_add_options_handler(
     handler_methods = {method for handler in http_handlers for method in handler.http_methods}
     if "OPTIONS" not in handler_methods:
         options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore[reportArgumentType]
-        options_handler = options_handler.merge(root)
+        # merging prepends the root's path, which 'path' already starts with
+        options_handler = options_handler.merge(root)._with_changes(path=path)
         return [*http_handlers, options_handler]
     return http_handlers
