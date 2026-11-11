@@ -2,9 +2,12 @@ version = 1
 revision = 5
 requires-python = ">=3.11"
 resolution-markers = [
-    "python_full_version >= '3.13' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
-    "python_full_version >= '3.13' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and platform_python_implementation != 'PyPy'",
+    "python_full_version >= '3.15' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
+    "python_full_version >= '3.13' and python_full_version < '3.15' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
+    "python_full_version >= '3.15' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and python_full_version < '3.15' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
+    "python_full_version >= '3.15' and platform_python_implementation != 'PyPy'",
+    "python_full_version >= '3.13' and python_full_version < '3.15' and platform_python_implementation != 'PyPy'",
     "python_full_version == '3.12.*' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
     "python_full_version == '3.12.*' and platform_python_implementation != 'PyPy'",
@@ -753,8 +756,10 @@ name = "cbor2"
 version = "5.9.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version >= '3.13' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
-    "python_full_version >= '3.13' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
+    "python_full_version >= '3.15' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
+    "python_full_version >= '3.13' and python_full_version < '3.15' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
+    "python_full_version >= '3.15' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and python_full_version < '3.15' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
     "python_full_version == '3.12.*' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
     "python_full_version < '3.12' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
@@ -798,7 +803,8 @@ name = "cbor2"
 version = "6.1.5"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version >= '3.13' and platform_python_implementation != 'PyPy'",
+    "python_full_version >= '3.15' and platform_python_implementation != 'PyPy'",
+    "python_full_version >= '3.13' and python_full_version < '3.15' and platform_python_implementation != 'PyPy'",
     "python_full_version == '3.12.*' and platform_python_implementation != 'PyPy'",
     "python_full_version < '3.12' and platform_python_implementation != 'PyPy'",
 ]
@@ -2599,6 +2605,7 @@ requires-dist = [
     { name = "rich", marker = "extra == 'cli'", specifier = ">=13.0.0" },
     { name = "rich-click", marker = "extra == 'cli'", specifier = ">=1.9.9" },
     { name = "typing-extensions" },
+    { name = "typing-extensions", marker = "python_full_version >= '3.15'", specifier = ">=4.14.0" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'cli'" },
     { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
@@ -4612,9 +4619,12 @@ name = "sphinx"
 version = "9.1.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version >= '3.13' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
-    "python_full_version >= '3.13' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and platform_python_implementation != 'PyPy'",
+    "python_full_version >= '3.15' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
+    "python_full_version >= '3.13' and python_full_version < '3.15' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
+    "python_full_version >= '3.15' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and python_full_version < '3.15' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
+    "python_full_version >= '3.15' and platform_python_implementation != 'PyPy'",
+    "python_full_version >= '3.13' and python_full_version < '3.15' and platform_python_implementation != 'PyPy'",
     "python_full_version == '3.12.*' and platform_python_implementation == 'PyPy' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and platform_python_implementation == 'PyPy' and sys_platform != 'win32'",
     "python_full_version == '3.12.*' and platform_python_implementation != 'PyPy'",
