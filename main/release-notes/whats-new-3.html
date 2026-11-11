@@ -63,7 +63,10 @@
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev/about">
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev">
+                <span>Official Website</span>
+                <small>The Litestar project website</small>
+              </a></li><li><a href="https://litestar.dev/about">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -96,9 +99,6 @@
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
                 <span>GitHub Discussions</span>
                 <small>GitHub Discussions</small>
-              </a></li><li><a href="https://stackoverflow.com/questions/tagged/litestar">
-                <span>Stack Overflow</span>
-                <small>We monitor the <code><b>litestar</b></code> tag on Stack Overflow</small>
               </a></li></ul>
       </li><li class="link">
           <a href="https://github.com/sponsors/Litestar-Org">
@@ -958,7 +958,7 @@ this functionality are now required to inherit from
 </section>
 <section id="dropped-support-for-starlette-middleware-protocol">
 <h2>Dropped support for starlette middleware protocol<a class="headerlink" href="#dropped-support-for-starlette-middleware-protocol" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference external" href="https://www.starlette.io/middleware">starlette middleware protocol</a> is no longer
+<p>The <a class="reference external" href="https://starlette.dev/middleware/">starlette middleware protocol</a> is no longer
 supported.</p>
 <p>Only the “factory” pattern will now be supported, i.e. a callable that receives an ASGI
 callable as its only argument and returns another ASGI callable:</p>
