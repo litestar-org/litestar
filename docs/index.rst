@@ -135,16 +135,12 @@ A huge thank you to our current sponsors:
          `Telemetry Sports <https://telemetrysports.com/>`_
 
 We invite organizations and individuals to join our sponsorship program.
-By becoming a sponsor on platforms like `Polar <sponsor-polar_>`_, `GitHub <sponsor-github_>`_
-and `Open Collective <sponsor-oc_>`_, you can play a pivotal role in our project's growth.
-
-On top of regular sponsorship, we engage in pledge-based sponsorship opportunities through `Polar <sponsor-polar_>`_,
-where you can pledge an amount towards an issue or feature you would like to see implemented.
+By becoming a sponsor on `GitHub <sponsor-github_>`_ or `Open Collective <sponsor-oc_>`_,
+you can play a pivotal role in our project's growth.
 
 
 .. _sponsor-github: https://github.com/sponsors/litestar-org
 .. _sponsor-oc: https://opencollective.com/litestar
-.. _sponsor-polar: https://polar.sh/litestar-org
 
 .. toctree::
     :titlesonly:
