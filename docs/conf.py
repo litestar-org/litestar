@@ -356,6 +356,12 @@ html_theme_options = {
             "title": "About",
             "children": [
                 {
+                    "title": "Official Website",
+                    "summary": "The Litestar project website",
+                    "url": "https://litestar.dev",
+                    "icon": "org",
+                },
+                {
                     "title": "Litestar Organization",
                     "summary": "Details about the Litestar organization",
                     "url": "https://litestar.dev/about",
@@ -402,12 +408,6 @@ html_theme_options = {
                     "title": "GitHub Discussions",
                     "summary": "GitHub Discussions",
                     "url": "https://github.com/orgs/litestar-org/discussions",
-                    "icon": "coc",
-                },
-                {
-                    "title": "Stack Overflow",
-                    "summary": "We monitor the <code><b>litestar</b></code> tag on Stack Overflow",
-                    "url": "https://stackoverflow.com/questions/tagged/litestar",
                     "icon": "coc",
                 },
             ],

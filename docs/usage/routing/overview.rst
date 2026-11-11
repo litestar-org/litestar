@@ -275,7 +275,7 @@ application is meant to communicate with the outer application through the scope
 
 Mounting is especially useful when you need to combine components of other ASGI applications - for example, for third
 party libraries. The following example is identical in principle to the one above, but it uses
-`Starlette <https://www.starlette.io/>`_:
+`Starlette <https://starlette.dev/>`_:
 
 .. dropdown:: Click to see an example of mounting a Starlette app
 
