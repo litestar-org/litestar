@@ -404,12 +404,6 @@ html_theme_options = {
                     "url": "https://github.com/orgs/litestar-org/discussions",
                     "icon": "coc",
                 },
-                {
-                    "title": "Stack Overflow",
-                    "summary": "We monitor the <code><b>litestar</b></code> tag on Stack Overflow",
-                    "url": "https://stackoverflow.com/questions/tagged/litestar",
-                    "icon": "coc",
-                },
             ],
         },
         {"title": "Sponsor", "url": "https://github.com/sponsors/Litestar-Org", "icon": "heart"},
