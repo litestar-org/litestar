@@ -329,6 +329,7 @@ html_theme_options = {
     "navigation_with_keys": True,
     "nav_links": [  # TODO(provinzkraut): I need a guide on extra_navbar_items and its magic :P
         {"title": "Home", "url": "index"},
+        {"title": "litestar.dev", "url": "https://litestar.dev", "external": True},
         {
             "title": "Community",
             "children": [
