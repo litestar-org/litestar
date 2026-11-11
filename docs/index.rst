@@ -39,7 +39,7 @@
             .. image:: https://img.shields.io/pypi/dm/litestar?logo=python&label=litestar%20downloads&labelColor=202235&color=edb641&logoColor=edb641
                :alt: PyPI Downloads
 
-            .. image:: https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-edb641?labelColor=202235&logo=python&logoColor=edb641
+            .. image:: https://img.shields.io/pypi/pyversions/litestar?labelColor=202235&color=edb641&logo=python&logoColor=edb641
                :alt: Supported Python Versions
 
 .. rst-class:: lead
