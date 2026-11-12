@@ -6,6 +6,14 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Only strip ``root_path`` from the start of the request path
+        :type: bugfix
+        :pr: 5209
+
+        Fix a bug that removed the ``root_path`` from anywhere in the request path when
+        routing, instead of only from its start. With a ``root_path`` of ``/api``, a
+        request to ``/public/api/admin`` was routed to ``/admin``.
+
     .. change:: Fix the paths of the ``OPTIONS`` handler added under an app with a ``path``
         :type: bugfix
         :pr: 5208

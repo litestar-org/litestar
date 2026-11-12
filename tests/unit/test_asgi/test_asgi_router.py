@@ -297,3 +297,28 @@ def test_routing_cache_does_not_prevent_garbage_collection() -> None:
     app_id = make_app_and_request()
     gc.collect()
     assert not any(id(obj) == app_id for obj in gc.get_objects() if type(obj) is Litestar)
+
+
+@pytest.mark.parametrize("path", ["/admin", "/api/admin"])
+async def test_root_path_is_stripped(path: str, scope: Scope) -> None:
+    @get("/admin")
+    async def handler() -> None:
+        return None
+
+    scope["path"] = path
+    scope["root_path"] = "/api"
+    await Litestar(route_handlers=[handler]).asgi_router(scope, AsyncMock(), AsyncMock())
+
+    assert scope["path"] == "/admin"
+
+
+@pytest.mark.parametrize("path", ["/x/api/admin", "/apiadmin", "/public/api/admin"])
+async def test_root_path_is_only_stripped_as_prefix(path: str, scope: Scope) -> None:
+    @get("/admin")
+    async def handler() -> None:
+        return None
+
+    scope["path"] = path
+    scope["root_path"] = "/api"
+    with pytest.raises(NotFoundException):
+        await Litestar(route_handlers=[handler]).asgi_router(scope, AsyncMock(), AsyncMock())
