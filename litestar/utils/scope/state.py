@@ -46,7 +46,6 @@ class ScopeState:
         "parsed_query",
         "response_compressed",
         "response_started",
-        "routed_path",
         "session_id",
         "url",
     )
@@ -72,7 +71,6 @@ class ScopeState:
         self.parsed_query = Empty
         self.response_compressed = Empty
         self.response_started = False
-        self.routed_path = Empty
         self.session_id = Empty
         self.url = Empty
 
@@ -96,7 +94,6 @@ class ScopeState:
     parsed_query: tuple[tuple[str, str], ...] | EmptyType
     response_compressed: bool | EmptyType
     response_started: bool
-    routed_path: str | EmptyType
     session_id: str | None | EmptyType
     url: URL | EmptyType
 

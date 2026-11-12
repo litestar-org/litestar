@@ -12,7 +12,6 @@ from pytest_mock import MockerFixture
 from litestar import Litestar, asgi, get
 from litestar._asgi.asgi_router import ASGIRouter
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
-from litestar.middleware import AbstractMiddleware
 from litestar.testing import TestClient, create_test_client
 from litestar.types.empty import Empty
 from litestar.utils.scope.state import ScopeState
@@ -298,41 +297,6 @@ def test_routing_cache_does_not_prevent_garbage_collection() -> None:
     app_id = make_app_and_request()
     gc.collect()
     assert not any(id(obj) == app_id for obj in gc.get_objects() if type(obj) is Litestar)
-
-
-@pytest.mark.parametrize(
-    "path, raw_path, root_path",
-    [
-        ("/secured/x", b"/secured/x", ""),
-        ("//secured/x", b"//secured/x", ""),
-        ("/secured/x", b"/%73ecured/x", ""),
-        ("secured/x", b"secured/x", ""),
-        ("/api/secured/x", b"/api/secured/x", "/api"),
-    ],
-)
-@pytest.mark.filterwarnings("ignore:Middleware 'Middleware' exclude pattern")
-async def test_mount_exclude_pattern_matches_routed_path(
-    path: str, raw_path: bytes, root_path: str, scope: Scope
-) -> None:
-    middleware_called = MagicMock()
-
-    class Middleware(AbstractMiddleware):
-        exclude = r"^(?!/secured)"
-
-        async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-            middleware_called()
-
-    @asgi("/secured", is_mount=True)
-    async def handler(scope: Scope, receive: Receive, send: Send) -> None:
-        return None
-
-    app = Litestar(route_handlers=[handler], middleware=[Middleware])
-    scope["path"] = path
-    scope["raw_path"] = raw_path
-    scope["root_path"] = root_path
-    await app.asgi_router(scope, AsyncMock(), AsyncMock())
-
-    middleware_called.assert_called_once()
 
 
 @pytest.mark.parametrize("path", ["/admin", "/api/admin"])

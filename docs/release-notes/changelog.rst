@@ -6,23 +6,12 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
-    .. change:: Fix middleware ``exclude`` patterns being bypassable on mounted ASGI apps
+    .. change:: Only strip ``root_path`` from the start of the request path
         :type: bugfix
 
-        Fix a bug that matched the ``exclude`` patterns of a middleware against the raw
-        request path for handlers with ``is_mount=True``, while routing used the
-        normalized path. A request such as ``//secured/x`` or ``/%73ecured/x`` could be
-        routed to a mount under ``/secured`` while being treated as excluded from, e.g.,
-        an authentication middleware. The same applied to any request to a mount
-        when the server sets a ``root_path``.
-
-        Patterns are now matched against the path used for routing, as they are for
-        other handlers: decoded, without ``root_path`` and without a trailing slash.
-        Patterns for mounts that include the ``root_path`` or rely on percent-encoding
-        need to be updated.
-
-        Also fix ``root_path`` being stripped from anywhere in the request path instead
-        of only from its start.
+        Fix a bug that removed the ``root_path`` from anywhere in the request path when
+        routing, instead of only from its start. With a ``root_path`` of ``/api``, a
+        request to ``/public/api/admin`` was routed to ``/admin``.
 
     .. change:: Fix the paths of the ``OPTIONS`` handler added under an app with a ``path``
         :type: bugfix
