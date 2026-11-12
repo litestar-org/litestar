@@ -9,6 +9,8 @@ from litestar.exceptions import ImproperlyConfiguredException
 
 __all__ = ("build_exclude_path_pattern", "should_bypass_middleware")
 
+from litestar.utils.empty import value_or_default
+from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_middleware_excluded_on_all_routes
 
 if TYPE_CHECKING:
@@ -49,13 +51,10 @@ def build_exclude_path_pattern(
 
 
 def match_exclude_path(exclude_path_pattern: Pattern, scope: Scope) -> bool:
-    return bool(
-        exclude_path_pattern.findall(
-            scope["raw_path"].decode()
-            if getattr(scope.get("route_handler", None), "is_mount", False)
-            else scope["path"]
-        )
-    )
+    path = scope["path"]
+    if getattr(scope.get("route_handler", None), "is_mount", False):
+        path = value_or_default(ScopeState.from_scope(scope).routed_path, path)
+    return bool(exclude_path_pattern.findall(path))
 
 
 def should_bypass_middleware(

@@ -90,8 +90,9 @@ class ASGIRouter:
         scope.setdefault("path_params", {})
 
         path = scope["path"]
-        if root_path := scope.get("root_path", ""):
-            path = path.split(root_path, maxsplit=1)[-1]
+        root_path = scope.get("root_path", "").rstrip("/")
+        if root_path and (path == root_path or path.startswith(f"{root_path}/")):
+            path = path[len(root_path) :]
         normalized_path = normalize_path(path)
 
         try:
@@ -109,7 +110,9 @@ class ASGIRouter:
             ScopeState.from_scope(scope).exception_handlers = self._app_exception_handlers
             raise
         else:
-            ScopeState.from_scope(scope).exception_handlers = route_handler.exception_handlers
+            state = ScopeState.from_scope(scope)
+            state.exception_handlers = route_handler.exception_handlers
+            state.routed_path = normalized_path
             scope["route_handler"] = route_handler
             scope["path_template"] = path_template
         await asgi_app(scope, receive, send)
