@@ -1,12 +1,15 @@
 from litestar import Litestar, MediaType, get
 from litestar.middleware.rate_limit import RateLimitConfig
 
-rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=["/schema"])
+rate_limit_config = RateLimitConfig(
+    rate_limit=[("second", 1), ("minute", 10)],
+    exclude=["/schema"],
+)
 
 
 @get("/", media_type=MediaType.TEXT, sync_to_thread=False)
 def handler() -> str:
-    """Handler which should not be accessed more than once per minute."""
+    """Handler limited by both the per-second and per-minute windows."""
     return "ok"
 
 
