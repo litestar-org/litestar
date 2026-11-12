@@ -10,6 +10,7 @@ from litestar.constants import OPENAPI_JSON_HANDLER_NAME
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.handlers import get
 from litestar.serialization import encode_json, get_serializer
+from litestar.utils.deprecation import warn_deprecation
 
 if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig
@@ -193,7 +194,12 @@ class YamlRenderPlugin(OpenAPIRenderPlugin):
 
 
 class RapidocRenderPlugin(OpenAPIRenderPlugin):
-    """Render an OpenAPI schema using Rapidoc."""
+    """Render an OpenAPI schema using Rapidoc.
+
+    .. deprecated:: 2.24.0
+        RapiDoc is unmaintained and its former domain has been hijacked. This plugin will be removed in
+        3.0; use another render plugin, such as :class:`ScalarRenderPlugin`, instead.
+    """
 
     def __init__(
         self,
@@ -212,6 +218,14 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
             path: Path to serve the OpenAPI UI at.
             **kwargs: Additional arguments to pass to the base class.
         """
+        warn_deprecation(
+            version="2.24.0",
+            deprecated_name="RapidocRenderPlugin",
+            kind="class",
+            removal_in="3.0",
+            alternative="ScalarRenderPlugin",
+            info="RapiDoc is unmaintained and its former domain has been hijacked.",
+        )
         self.js_url = js_url or f"https://unpkg.com/rapidoc@{version}/dist/rapidoc-min.js"
         super().__init__(path=path, **kwargs)
 

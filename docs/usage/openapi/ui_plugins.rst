@@ -10,7 +10,7 @@ to understand and interact with your API.
 Litestar maintains and ships with UI plugins for a range of popular popular OpenAPI documentation tools:
 
 - `Scalar <https://github.com/scalar/scalar/>`_
-- `RapiDoc <https://rapidocweb.com/>`_
+- `RapiDoc <https://github.com/rapi-doc/RapiDoc>`_
 - `ReDoc <https://redocly.com/>`_
 - `Stoplight Elements <https://stoplight.io/open-source/elements>`_
 - `Swagger UI <https://swagger.io/tools/swagger-ui/>`_
@@ -18,6 +18,11 @@ Litestar maintains and ships with UI plugins for a range of popular popular Open
 
 Each plugin is easily configurable, allowing developers to customize aspects like version, paths, CSS and JavaScript
 resources.
+
+.. deprecated:: 2.24.0
+    RapiDoc is unmaintained and its former domain has been hijacked. The
+    :class:`~litestar.openapi.plugins.RapidocRenderPlugin` will be removed in 3.0; use another UI plugin,
+    such as Scalar, Swagger UI or ReDoc, instead.
 
 
 Using OpenAPI UI Plugins
