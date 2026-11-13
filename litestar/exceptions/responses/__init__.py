@@ -6,6 +6,7 @@ from typing import Any
 from litestar import MediaType, Request, Response
 from litestar.exceptions import HTTPException, LitestarException
 from litestar.exceptions.responses import _debug_response
+from litestar.response.base import MEDIA_TYPE_APPLICATION_JSON_PATTERN
 from litestar.serialization import encode_json, get_serializer
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -89,6 +90,8 @@ def create_exception_response(request: Request[Any, Any, Any], exc: Exception) -
     try:
         media_type = request.route_handler.media_type
     except (KeyError, AttributeError):
+        media_type = MediaType.JSON
+    if media_type != MediaType.TEXT and not MEDIA_TYPE_APPLICATION_JSON_PATTERN.match(media_type):
         media_type = MediaType.JSON
 
     content = ExceptionResponseContent(
