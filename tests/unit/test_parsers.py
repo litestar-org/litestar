@@ -48,6 +48,11 @@ def test_parse_utf8_form_data() -> None:
     assert result == {"value": "äüß"}
 
 
+def test_parse_form_data_does_not_retain_body() -> None:
+    body = b"value=" + b"x" * 1024
+    assert parse_url_encoded_form_data(body) is not parse_url_encoded_form_data(body)
+
+
 @pytest.mark.parametrize(
     "cookie_string, expected",
     (

@@ -6,6 +6,14 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Do not cache parsed url-encoded form bodies
+        :type: bugfix
+        :pr: 5212
+
+        Fix a bug that kept up to 1024 url-encoded request bodies and their parsed
+        values in memory, so distinct large form submissions could grow memory until
+        the process ran out. Url-encoded bodies are no longer cached.
+
     .. change:: Fix the paths of the ``OPTIONS`` handler added under an app with a ``path``
         :type: bugfix
         :pr: 5208
