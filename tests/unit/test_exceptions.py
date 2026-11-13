@@ -17,6 +17,7 @@ from litestar.exceptions.responses._debug_response import (
     create_html_response_content,
     create_plain_text_response_content,
 )
+from litestar.params import FromPath, FromQuery
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, create_test_client
 
@@ -143,6 +144,34 @@ def test_create_exception_response_utility_non_http_exception(media_type: MediaT
         assert response.content == {"status_code": 500, "detail": "Internal Server Error"}
     else:
         assert response.content == b'{"status_code":500,"detail":"Internal Server Error"}'
+
+
+@pytest.mark.parametrize(
+    "handler_media_type, expected_media_type",
+    [
+        (MediaType.HTML, MediaType.JSON),
+        (MediaType.XML, MediaType.JSON),
+        ("image/svg+xml", MediaType.JSON),
+        ("text/html; profile=json", MediaType.JSON),
+        ("application/vnd.api+json", "application/vnd.api+json"),
+    ],
+)
+def test_create_exception_response_media_type(handler_media_type: str, expected_media_type: str) -> None:
+    request = RequestFactory(handler_kwargs={"media_type": handler_media_type}).get()
+    response = create_exception_response(request=request, exc=ValidationException("<script>"))
+    assert response.media_type == expected_media_type
+
+
+def test_validation_error_on_html_handler_is_not_served_as_html() -> None:
+    @get("/page/{name:str}", media_type=MediaType.HTML, sync_to_thread=False)
+    def handler(name: FromPath[str], n: FromQuery[int]) -> str:
+        return name
+
+    with create_test_client(handler) as client:
+        response = client.get("/page/%3Csvg%20onload=alert(1)%3E?n=x")
+
+    assert response.status_code == HTTP_400_BAD_REQUEST
+    assert response.headers["content-type"] == MediaType.JSON
 
 
 def test_missing_dependency_exception() -> None:

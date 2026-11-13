@@ -6,6 +6,15 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Do not send default error responses as HTML
+        :type: bugfix
+
+        Fix a bug that sent the JSON body of the default exception response with the
+        route handler's media type, e.g. ``text/html``, without escaping. Request
+        values echoed in ``detail`` could then be rendered by the browser. The handler's
+        media type is now kept only for ``text/plain`` and JSON media types; the
+        response is sent as ``application/json`` otherwise.
+
     .. change:: Fix the paths of the ``OPTIONS`` handler added under an app with a ``path``
         :type: bugfix
         :pr: 5208
