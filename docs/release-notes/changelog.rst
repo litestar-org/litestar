@@ -8,6 +8,7 @@
 
     .. change:: Do not send default error responses as HTML
         :type: bugfix
+        :pr: 5210
 
         Fix a bug that sent the JSON body of the default exception response with the
         route handler's media type, e.g. ``text/html``, without escaping. Request
