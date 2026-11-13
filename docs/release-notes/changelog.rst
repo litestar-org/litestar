@@ -26,6 +26,7 @@
 
     .. change:: Only accept known charsets for multipart form fields
         :type: bugfix
+        :pr: 5211
 
         Fix a bug that decoded multipart form fields with any Python codec named in the
         part's ``charset``. Codecs such as ``punycode`` decode in quadratic time and
