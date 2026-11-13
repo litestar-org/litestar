@@ -24,6 +24,15 @@
         values in memory, so distinct large form submissions could grow memory until
         the process ran out. Url-encoded bodies are no longer cached.
 
+    .. change:: Only accept known charsets for multipart form fields
+        :type: bugfix
+
+        Fix a bug that decoded multipart form fields with any Python codec named in the
+        part's ``charset``. Codecs such as ``punycode`` decode in quadratic time and
+        blocked the event loop, and an unknown charset or undecodable data caused a
+        500. Only UTF-8, ASCII and Latin-1 are accepted now; other charsets and
+        invalid data return a 400.
+
     .. change:: Fix the paths of the ``OPTIONS`` handler added under an app with a ``path``
         :type: bugfix
         :pr: 5208

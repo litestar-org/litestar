@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import codecs
 import re
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any
@@ -29,6 +30,7 @@ _token = r"([\w!#$%&'*+\-.^_`|~]+)"  # noqa: S105
 _quoted = r'"([^"]*)"'
 _param = re.compile(rf";\s*{_token}=(?:{_token}|{_quoted})", re.ASCII)
 _firefox_quote_escape = re.compile(r'\\"(?!; |\s*$)')
+_allowed_charsets = frozenset({"utf-8", "ascii", "iso8859-1"})
 
 
 def parse_content_header(value: str) -> tuple[str, dict[str, str]]:
@@ -50,6 +52,16 @@ def parse_content_header(value: str) -> tuple[str, dict[str, str]]:
         }
         value = value[:pos]
     return value.strip().lower(), options
+
+
+def _decode(data: bytearray, charset: str) -> str:
+    try:
+        codec = codecs.lookup(charset).name
+        if codec not in _allowed_charsets:
+            raise LookupError(codec)
+        return data.decode(codec)
+    except (LookupError, ValueError) as exc:
+        raise ParserError(f"Invalid charset {charset!r}") from exc
 
 
 async def _close_upload_files(fields: dict[str, list[Any]]) -> None:
@@ -115,7 +127,9 @@ async def parse_multipart_form(  # noqa: C901
                             fields[segment.name].append(data)
                         else:
                             # Always decode as string, even for empty data
-                            fields[segment.name].append(data.decode(segment.charset or "utf-8"))
+                            fields[segment.name].append(
+                                data.decode() if segment.charset is None else _decode(data, segment.charset)
+                            )
 
                         # reset for next part
                         data = bytearray()
@@ -123,7 +137,7 @@ async def parse_multipart_form(  # noqa: C901
 
                 chunk = await anext(stream, b"")
 
-    except ParserError as exc:
+    except (ParserError, UnicodeDecodeError) as exc:
         # if an exception is raised, make sure that all 'UploadFile's are closed
         if isinstance(data, UploadFile):
             await data.close()

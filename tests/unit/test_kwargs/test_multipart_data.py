@@ -275,6 +275,55 @@ def test_multipart_request_with_charset_for_filename() -> None:
         }
 
 
+@pytest.mark.parametrize(
+    "charset, content, expected",
+    [
+        (b"UTF8", b"\xc3\xa9", "é"),
+        (b"us-ascii", b"e", "e"),
+        (b"latin1", b"\xe9", "é"),
+    ],
+)
+def test_multipart_request_field_charset(charset: bytes, content: bytes, expected: str) -> None:
+    with create_test_client(form_handler) as client:
+        response = client.post(
+            "/form",
+            content=(
+                b"--a7f7ac8d4e2e437c877bb7b8d7cc549c\r\n"
+                b'Content-Disposition: form-data; name="field"\r\n'
+                b"Content-Type: text/plain; charset=" + charset + b"\r\n\r\n" + content + b"\r\n"
+                b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
+            ),
+            headers={"Content-Type": "multipart/form-data; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c"},
+        )
+        assert response.json() == {"field": expected}
+
+
+@pytest.mark.parametrize(
+    "charset, content",
+    [
+        (b"punycode", b"a"),
+        (b"unknown", b"a"),
+        (b'"utf-8\x00"', b"a"),
+        (b"utf-8", b"\xff"),
+        (None, b"\xff"),
+    ],
+)
+def test_multipart_request_field_invalid_charset(charset: Optional[bytes], content: bytes) -> None:
+    content_type = b"text/plain" if charset is None else b"text/plain; charset=" + charset
+    with create_test_client(form_handler) as client:
+        response = client.post(
+            "/form",
+            content=(
+                b"--a7f7ac8d4e2e437c877bb7b8d7cc549c\r\n"
+                b'Content-Disposition: form-data; name="field"\r\n'
+                b"Content-Type: " + content_type + b"\r\n\r\n" + content + b"\r\n"
+                b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
+            ),
+            headers={"Content-Type": "multipart/form-data; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c"},
+        )
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+
 def test_multipart_request_without_charset_for_filename() -> None:
     with create_test_client(form_handler) as client:
         response = client.post(
