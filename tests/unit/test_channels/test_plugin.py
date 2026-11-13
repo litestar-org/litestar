@@ -415,6 +415,29 @@ async def test_backlog(
     assert [call.args[0] for call in async_mock.call_args_list] == expected_messages
 
 
+async def test_pub_worker_survives_backend_error(
+    memory_backend: MemoryChannelsBackend, mocker: MockerFixture, caplog: pytest.LogCaptureFixture
+) -> None:
+    publish = memory_backend.publish
+
+    async def failing_publish(data: bytes, channels: list[str]) -> None:
+        if data == b"bad":
+            raise RuntimeError("boom")
+        await publish(data, channels)
+
+    mocker.patch.object(memory_backend, "publish", side_effect=failing_publish)
+    plugin = ChannelsPlugin(backend=memory_backend, channels=["something"])
+    await plugin._on_startup()
+    subscriber = await plugin.subscribe("something")
+
+    plugin.publish(b"bad", "something")
+    plugin.publish(b"good", "something")
+
+    assert await get_from_stream(subscriber, 1) == [b"good"]
+    assert "boom" in caplog.text
+    await asyncio.wait_for(plugin._on_shutdown(), timeout=1)
+
+
 async def test_shutdown_idempotent(memory_backend: MemoryChannelsBackend) -> None:
     # calling shutdown repeatedly or before startup shouldn't cause any issues
     plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
