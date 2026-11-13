@@ -1259,6 +1259,13 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Do not cache parsed url-encoded form bodies<a class="headerlink reference internal" href="#3.0.0-do not cache parsed url-encoded form bodies" id="3.0.0-do not cache parsed url-encoded form bodies">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that kept up to 1024 url-encoded request bodies and their parsed
+values in memory, so distinct large form submissions could grow memory until
+the process ran out. Url-encoded bodies are no longer cached.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5212">https://github.com/litestar-org/litestar/pull/5212</a></span></p>
+</div>
+</dd>
 <dt>Fix the paths of the <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> handler added under an app with a <code class="docutils literal notranslate"><span class="pre">path</span></code><a class="headerlink reference internal" href="#3.0.0-fix the paths of the" id="3.0.0-fix the paths of the">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that gave the <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> handler Litestar adds to a route the app’s
 <code class="docutils literal notranslate"><span class="pre">path</span></code> twice in its <code class="docutils literal notranslate"><span class="pre">paths</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">/api/api/members</span></code> on an app with
