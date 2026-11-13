@@ -8,6 +8,7 @@
 
     .. change:: Do not cache parsed url-encoded form bodies
         :type: bugfix
+        :pr: 5212
 
         Fix a bug that kept up to 1024 url-encoded request bodies and their parsed
         values in memory, so distinct large form submissions could grow memory until
