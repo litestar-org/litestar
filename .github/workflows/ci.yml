@@ -89,11 +89,17 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
+        include:
+          # msgspec, pyyaml, zstandard and autobahn have no cp315 manylinux wheels
+          # yet, so uv builds them from sdist. Allow headroom for a cold uv cache.
+          - python-version: "3.15"
+            timeout: 20
     uses: ./.github/workflows/test.yml
     with:
       coverage: true
       python-version: ${{ matrix.python-version }}
+      timeout: ${{ matrix.timeout || 10 }}
 
   # add an aggregate step here to check if any of the steps of the matrix 'test' job
   # failed. this allows us to have dynamic or diverging steps in the matrix, while still
@@ -114,7 +120,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        python-version: ["3.14", "3.15"]
         typing-extensions: ["4.12.1", "4.13.1", "4.14.0", "latest"]
+        exclude:
+          - python-version: "3.15"
+            typing-extensions: "4.12.1"
+          - python-version: "3.15"
+            typing-extensions: "4.13.1"
     steps:
       - name: Check out repository
         uses: actions/checkout@v7.0.1
@@ -122,7 +134,7 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v7.1.0
         with:
-          python-version: 3.14
+          python-version: ${{ matrix.python-version }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v10.3.2
