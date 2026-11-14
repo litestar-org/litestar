@@ -18,7 +18,8 @@ from sphinx.environment import BuildEnvironment
 from sphinx.ext.autodoc import DataDocumenter, ModuleLevelDocumenter
 from sphinx.util.typing import stringify_annotation
 from sqlalchemy.exc import SAWarning
-from typing_extensions import TypeAliasType
+
+from litestar.typing import TypeAliasTypes
 
 warnings.filterwarnings("ignore", category=SAWarning)
 
@@ -305,18 +306,18 @@ class TypeAliasTypeDocumenter(ModuleLevelDocumenter):
 
     @classmethod
     def can_document_member(cls, member: Any, membername: str, isattr: bool, parent: Any) -> bool:
-        return isinstance(member, TypeAliasType)
+        return isinstance(member, TypeAliasTypes)
 
     def add_directive_header(self, sig: str) -> None:
         super().add_directive_header(sig)
-        self.add_line(f"   :canonical: {stringify_annotation(self.object.__value__)}", self.get_sourcename())
+        self.add_line(f"   :canonical: {stringify_annotation(self.object.__value__, 'smart')}", self.get_sourcename())
 
     def get_object_members(self, want_all: bool) -> tuple[bool, list[Any]]:
         return False, []
 
     def get_doc(self) -> list[list[str]] | None:
         doc = super().get_doc()
-        if doc and doc[0] and TypeAliasType.__doc__ and TypeAliasType.__doc__.startswith(doc[0][0]):
+        if doc and doc[0] and any(t.__doc__ and t.__doc__.startswith(doc[0][0]) for t in TypeAliasTypes):
             return None
         return doc
 

@@ -55,5 +55,5 @@ EncodableStdLibIPType = TypeAliasType(
     "EncodableStdLibIPType", IPv4Address | IPv4Interface | IPv4Network | IPv6Address | IPv6Interface | IPv6Network
 )
 EncodableMsgSpecType = TypeAliasType("EncodableMsgSpecType", Ext | Raw | Struct)
-LitestarEncodableType = TypeAliasType("LitestarEncodableType", Any)  # pyright: ignore # TODO: Remove this)
-DataContainerType = TypeAliasType("DataContainerType", Any)  # pyright: ignore  # TODO: Remove this)
+LitestarEncodableType = TypeAliasType("LitestarEncodableType", Any)
+DataContainerType = TypeAliasType("DataContainerType", Any)
