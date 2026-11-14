@@ -13,8 +13,11 @@ import pytest
 from litestar import Litestar, Request, Response, get, post
 from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
-from litestar.datastructures import State
+from litestar.datastructures import Cookie, State
 from litestar.enums import CompressionEncoding
+from litestar.middleware.session.base import BaseBackendConfig
+from litestar.middleware.session.client_side import CookieBackendConfig
+from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
@@ -262,6 +265,28 @@ async def test_middleware_not_applied_to_non_cached_routes(
     with create_test_client(route_handlers=[handler]) as client:
         client.get("/")
         assert await client.app.stores.get("response_cache").exists("GET/") is expect_applied
+
+
+@pytest.mark.parametrize("session_config", [ServerSideSessionConfig(), CookieBackendConfig(secret=b"x" * 16)])
+def test_cached_response_does_not_replay_set_cookie(session_config: BaseBackendConfig) -> None:
+    @post("/login", sync_to_thread=False)
+    def login(request: Request) -> None:
+        request.set_session({"user": "admin"})
+
+    @get("/public", cache=True, sync_to_thread=False)
+    def public() -> Response[str]:
+        return Response("public", cookies=[Cookie(key="handler", value="first")])
+
+    app = Litestar([login, public], middleware=[session_config.middleware])
+
+    with TestClient(app) as client:
+        client.post("/login")
+        victim_cookies = client.get("/public").headers.get_list("set-cookie")
+        client.cookies.clear()
+        other_cookies = client.get("/public").headers.get_list("set-cookie")
+
+    assert any(c.startswith("handler=first") for c in victim_cookies)
+    assert not set(victim_cookies) & set(other_cookies)
 
 
 async def test_compression_applies_before_cache() -> None:

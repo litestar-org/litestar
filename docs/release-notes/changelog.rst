@@ -6,6 +6,13 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Do not replay ``Set-Cookie`` headers from cached responses
+        :type: bugfix
+
+        Fix a bug where the response cache stored ``Set-Cookie`` headers, including the
+        session and CSRF cookies, and sent them to every later client. Cookies are now
+        only sent when the response is generated, not when served from the cache.
+
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
         :pr: 5213

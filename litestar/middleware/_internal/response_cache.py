@@ -85,9 +85,10 @@ class ResponseCacheMiddleware(ASGIMiddleware):
                         cast("HTTPScope", scope), message["status"]
                     )
                     if do_cache:
-                        messages.append(message)
+                        headers = [h for h in message.get("headers", ()) if h[0].lower() != b"set-cookie"]
+                        messages.append({**message, "headers": headers})
                 elif value_or_default(connection_state.do_cache, False):
-                    messages.append(message)
+                    messages.append(message.copy())
 
                 if messages and message["type"] == HTTP_RESPONSE_BODY and not message.get("more_body"):
                     key = (route_handler.cache_key_builder or self.key_builder)(Request(scope))
