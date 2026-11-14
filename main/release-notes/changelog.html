@@ -1275,6 +1275,20 @@ the process ran out. Url-encoded bodies are no longer cached.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5212">https://github.com/litestar-org/litestar/pull/5212</a></span></p>
 </div>
 </dd>
+<dt>Only accept known charsets for multipart form fields<a class="headerlink reference internal" href="#3.0.0-only accept known charsets for multipart form fields" id="3.0.0-only accept known charsets for multipart form fields">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that decoded multipart form fields with any Python codec named in the
+part’s <code class="docutils literal notranslate"><span class="pre">charset</span></code>. Codecs such as <code class="docutils literal notranslate"><span class="pre">punycode</span></code> decode in quadratic time and
+blocked the event loop, every unknown charset name was cached for the lifetime
+of the process, and an unknown charset or undecodable data caused a 500.</p>
+<p>Only charsets listed in the new <code class="docutils literal notranslate"><span class="pre">multipart_form_allowed_charsets</span></code> parameter of
+<a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> are accepted now; other charsets and invalid data
+return a 400. The default,
+<code class="docutils literal notranslate"><span class="pre">litestar.constants.DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS</span></code>, accepts UTF-8,
+ASCII and ISO-8859-1, and any alias Python knows for them. Other charsets, such
+as <code class="docutils literal notranslate"><span class="pre">windows-1252</span></code> or <code class="docutils literal notranslate"><span class="pre">shift_jis</span></code>, must now be added explicitly.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5211">https://github.com/litestar-org/litestar/pull/5211</a></span></p>
+</div>
+</dd>
 <dt>Fix the paths of the <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> handler added under an app with a <code class="docutils literal notranslate"><span class="pre">path</span></code><a class="headerlink reference internal" href="#3.0.0-fix the paths of the" id="3.0.0-fix the paths of the">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that gave the <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> handler Litestar adds to a route the app’s
 <code class="docutils literal notranslate"><span class="pre">path</span></code> twice in its <code class="docutils literal notranslate"><span class="pre">paths</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">/api/api/members</span></code> on an app with

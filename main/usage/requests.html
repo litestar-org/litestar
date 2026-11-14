@@ -781,6 +781,18 @@ how to test</label><div class="sd-tab-content docutils">
 to pass additional OpenAPI metadata or constraints, use the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code> form</p>
 </div>
+<p>Text fields without a <code class="docutils literal notranslate"><span class="pre">charset</span></code> are decoded as UTF-8. A text field declaring a <code class="docutils literal notranslate"><span class="pre">charset</span></code>
+is decoded with it if it is listed in the <code class="docutils literal notranslate"><span class="pre">multipart_form_allowed_charsets</span></code> parameter of
+<a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>, and rejected with a <code class="docutils literal notranslate"><span class="pre">400</span> <span class="pre">Bad</span> <span class="pre">Request</span></code> otherwise. Any
+alias Python knows for a listed charset is accepted too, e.g. <code class="docutils literal notranslate"><span class="pre">latin1</span></code> for
+<code class="docutils literal notranslate"><span class="pre">iso-8859-1</span></code>. By default, UTF-8, ASCII and ISO-8859-1 are accepted. To accept additional
+charsets, extend the default list:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">multipart_form_allowed_charsets</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS</span><span class="p">,</span> <span class="s2">&quot;shift_jis&quot;</span><span class="p">])</span>
+</span></pre></div>
+</div>
 </section>
 </section>
 <section id="file-uploads">
