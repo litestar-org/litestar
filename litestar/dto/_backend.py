@@ -927,16 +927,33 @@ def _should_exclude_field(
     return not is_data_field and field_definition.dto_field.mark is Mark.WRITE_ONLY
 
 
-def _create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:
+def _create_transfer_model_type_annotation(transfer_type: TransferType, *, is_member: bool = False) -> Any:
     """Create a type annotation for a transfer model.
 
     Uses the parsed type that originates from the data model and the transfer model generated to represent a nested
     type to reconstruct the type annotation for the transfer model.
+
+    Args:
+        transfer_type: The transfer type to build an annotation for.
+        is_member: ``True`` when ``transfer_type`` is a member of a union, collection, tuple or mapping,
+            rather than a field's outer type. A field's own ``msgspec.Meta`` constraints are reattached
+            by the caller (see ``_create_struct_for_field_definitions``) via ``kwarg_definition``, but that
+            only ever inspects the outer field, so a member's own inline ``Meta`` (e.g. one arm of
+            ``Union[Annotated[str, Meta(min_length=5)], int]``) would otherwise be silently dropped.
     """
     if isinstance(transfer_type, SimpleType):
         if transfer_type.nested_field_info:
             return transfer_type.nested_field_info.model
-        return transfer_type.field_definition.annotation
+
+        annotation = transfer_type.field_definition.annotation
+        if is_member:
+            meta = next(
+                (m for m in transfer_type.field_definition.metadata if isinstance(m, msgspec.Meta)),
+                None,
+            )
+            if meta is not None:
+                return Annotated[annotation, meta]
+        return annotation
 
     if isinstance(transfer_type, CollectionType):
         return _create_transfer_model_collection_type(transfer_type)
@@ -955,23 +972,23 @@ def _create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:
 
 def _create_transfer_model_collection_type(transfer_type: CollectionType) -> Any:
     generic_collection_type = transfer_type.field_definition.safe_generic_origin
-    inner_type = _create_transfer_model_type_annotation(transfer_type.inner_type)
+    inner_type = _create_transfer_model_type_annotation(transfer_type.inner_type, is_member=True)
     if transfer_type.field_definition.origin is tuple:
         return generic_collection_type[inner_type, ...]
     return generic_collection_type[inner_type]
 
 
 def _create_transfer_model_tuple_type(transfer_type: TupleType) -> Any:
-    inner_types = tuple(_create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
+    inner_types = tuple(_create_transfer_model_type_annotation(t, is_member=True) for t in transfer_type.inner_types)
     return transfer_type.field_definition.safe_generic_origin[inner_types]
 
 
 def _create_transfer_model_union_type(transfer_type: UnionType) -> Any:
-    inner_types = tuple(_create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
+    inner_types = tuple(_create_transfer_model_type_annotation(t, is_member=True) for t in transfer_type.inner_types)
     return transfer_type.field_definition.safe_generic_origin[inner_types]
 
 
 def _create_transfer_model_mapping_type(transfer_type: MappingType) -> Any:
-    key_type = _create_transfer_model_type_annotation(transfer_type.key_type)
-    value_type = _create_transfer_model_type_annotation(transfer_type.value_type)
+    key_type = _create_transfer_model_type_annotation(transfer_type.key_type, is_member=True)
+    value_type = _create_transfer_model_type_annotation(transfer_type.value_type, is_member=True)
     return transfer_type.field_definition.safe_generic_origin[key_type, value_type]
