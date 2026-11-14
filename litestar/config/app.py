@@ -7,12 +7,13 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
+from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
 from litestar.datastructures import State
 from litestar.events.emitter import SimpleEventEmitter
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Sequence
     from contextlib import AbstractAsyncContextManager
 
     from litestar import Litestar, Response
@@ -216,6 +217,9 @@ class AppConfig:
     multipart_form_part_limit: int = field(default=1000)
     """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from
     DoS attacks."""
+    multipart_form_allowed_charsets: Sequence[str] = field(default=DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS)
+    """Charsets accepted for multipart/formdata text fields; others are rejected with a 400. Fields without a charset
+    are decoded as UTF-8."""
     experimental_features: list[ExperimentalFeatures] | None = None
 
     def __post_init__(self) -> None:

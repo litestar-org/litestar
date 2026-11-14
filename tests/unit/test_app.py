@@ -448,3 +448,9 @@ def test_handler_registration_on_registration_called_only_once(mocker: MockerFix
         )
         == 1
     )
+
+
+@pytest.mark.parametrize("charset", ["not-a-charset", "rot13", "base64", "undefined"])
+def test_multipart_form_allowed_charsets_invalid(charset: str) -> None:
+    with pytest.raises(ImproperlyConfiguredException, match="Invalid multipart form charset"):
+        Litestar(multipart_form_allowed_charsets=["utf-8", charset])

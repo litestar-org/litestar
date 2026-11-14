@@ -12,6 +12,8 @@ from litestar.types import Empty
 
 DEFAULT_ALLOWED_CORS_HEADERS: Final = {"Accept", "Accept-Language", "Content-Language", "Content-Type"}
 DEFAULT_CHUNK_SIZE: Final = 1024 * 128  # 128KB
+DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS: Final[tuple[str, ...]] = ("utf-8", "us-ascii", "iso-8859-1")
+"""Charsets accepted for multipart text fields by default."""
 HTTP_DISCONNECT: Final = "http.disconnect"
 HTTP_RESPONSE_BODY: Final = "http.response.body"
 HTTP_RESPONSE_START: Final = "http.response.start"
