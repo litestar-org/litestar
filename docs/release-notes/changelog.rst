@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix channel subscriptions hanging after a send error or a full backlog
+        :type: bugfix
+
+        Fix a bug where a channel subscription could hang forever, keeping the
+        subscriber registered: after an error while sending an event (for example to a
+        disconnected WebSocket client), after a ``dropleft`` backlog had overflowed,
+        when unsubscribing or replaying history with a full ``backoff`` backlog, or when
+        a WebSocket client stopped reading before disconnecting. The send error is now
+        logged, a full backlog no longer blocks, and the WebSocket handler no longer
+        waits to send queued events after the client disconnects.
+
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
         :pr: 5213
