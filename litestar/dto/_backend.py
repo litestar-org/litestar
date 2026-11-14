@@ -710,6 +710,9 @@ def _transfer_type_data(
             attribute_accessor=attribute_accessor,
         )
 
+    if isinstance(transfer_type, SimpleType):
+        return source_value
+
     if isinstance(transfer_type, UnionType) and transfer_type.has_nested:
         return _transfer_nested_union_type_data(
             transfer_type=transfer_type,
@@ -732,6 +735,18 @@ def _transfer_type_data(
             )
 
         return transfer_type.field_definition.instantiable_origin(source_value)
+
+    if isinstance(transfer_type, TupleType) and transfer_type.has_nested:
+        return transfer_type.field_definition.instantiable_origin(
+            _transfer_type_data(
+                source_value=item,
+                transfer_type=inner_type,
+                nested_as_dict=False,
+                is_data_field=is_data_field,
+                attribute_accessor=attribute_accessor,
+            )
+            for item, inner_type in zip(source_value, transfer_type.inner_types, strict=True)
+        )
 
     if isinstance(transfer_type, MappingType):
         if transfer_type.has_nested:

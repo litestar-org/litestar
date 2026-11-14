@@ -217,6 +217,36 @@ class NestingBar:
     foo: NestedFoo
 
 
+@dataclass
+class TupleItem:
+    bar: str
+    baz: str = "secret"
+
+
+@dataclass
+class TupleNestingBar:
+    foo: tuple[TupleItem, int]
+
+
+def test_dto_nested_model_in_fixed_length_tuple(use_experimental_dto_backend: bool) -> None:
+    @post(
+        dto=DataclassDTO[
+            Annotated[
+                TupleNestingBar,
+                DTOConfig(exclude={"foo.0.baz"}, experimental_codegen_backend=use_experimental_dto_backend),
+            ]
+        ],
+    )
+    def handler(data: JSONBody[TupleNestingBar]) -> TupleNestingBar:
+        assert isinstance(data.foo[0], TupleItem)
+        return data
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.post("/", json={"foo": [{"bar": "hello"}, 1]})
+        assert response.status_code == 201
+        assert response.json() == {"foo": [{"bar": "hello"}, 1]}
+
+
 def test_dto_data_injection_with_nested_model(use_experimental_dto_backend: bool) -> None:
     @post(
         dto=DataclassDTO[
