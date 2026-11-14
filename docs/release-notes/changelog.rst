@@ -24,6 +24,23 @@
         values in memory, so distinct large form submissions could grow memory until
         the process ran out. Url-encoded bodies are no longer cached.
 
+    .. change:: Only accept known charsets for multipart form fields
+        :type: bugfix
+        :pr: 5211
+        :breaking:
+
+        Fix a bug that decoded multipart form fields with any Python codec named in the
+        part's ``charset``. Codecs such as ``punycode`` decode in quadratic time and
+        blocked the event loop, every unknown charset name was cached for the lifetime
+        of the process, and an unknown charset or undecodable data caused a 500.
+
+        Only charsets listed in the new ``multipart_form_allowed_charsets`` parameter of
+        :class:`~litestar.app.Litestar` are accepted now; other charsets and invalid data
+        return a 400. The default,
+        ``litestar.constants.DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS``, accepts UTF-8,
+        ASCII and ISO-8859-1, and any alias Python knows for them. Other charsets, such
+        as ``windows-1252`` or ``shift_jis``, must now be added explicitly.
+
     .. change:: Fix the paths of the ``OPTIONS`` handler added under an app with a ``path``
         :type: bugfix
         :pr: 5208
