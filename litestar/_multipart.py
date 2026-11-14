@@ -76,9 +76,10 @@ def parse_content_header(value: str) -> tuple[str, dict[str, str]]:
 
 
 def _decode(data: bytearray, charset: str, charsets: Mapping[str, str]) -> str:
-    codec = charsets.get(_charset_key(charset))
-    if codec is None:
-        raise ParserError("Invalid charset")
+    try:
+        codec = charsets[_charset_key(charset)]
+    except KeyError as exc:
+        raise ParserError("Invalid charset") from exc
     try:
         return data.decode(codec)
     except (LookupError, UnicodeError) as exc:
