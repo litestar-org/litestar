@@ -218,12 +218,8 @@ class AppConfig:
     """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from
     DoS attacks."""
     multipart_form_allowed_charsets: Sequence[str] = field(default=DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS)
-    """Charsets accepted for text fields of a multipart/formdata request. A text field declaring any other charset is
-    rejected with a 400 response. Fields without a charset are decoded as UTF-8. Allowing a codec that decodes in
-    super-linear time, such as ``punycode``, exposes the application to denial of service.
-
-    .. versionadded:: 3.0.0
-    """
+    """Charsets accepted for multipart/formdata text fields; others are rejected with a 400. Fields without a charset
+    are decoded as UTF-8."""
     experimental_features: list[ExperimentalFeatures] | None = None
 
     def __post_init__(self) -> None:

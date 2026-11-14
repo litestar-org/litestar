@@ -184,9 +184,8 @@ def create_test_client(
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
         multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
             is intended to protect from DoS attacks.
-        multipart_form_allowed_charsets: Charsets accepted for text fields of a multipart/formdata request. A text
-            field declaring any other charset is rejected with a 400 response. Fields without a charset are decoded as
-            UTF-8.
+        multipart_form_allowed_charsets: Charsets accepted for multipart/formdata text fields; others are rejected
+            with a 400. Fields without a charset are decoded as UTF-8.
         on_app_init: A sequence of :class:`OnAppInitHandler <.types.OnAppInitHandler>` instances. Handlers receive
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
@@ -439,9 +438,8 @@ def create_async_test_client(
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
         multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
             is intended to protect from DoS attacks.
-        multipart_form_allowed_charsets: Charsets accepted for text fields of a multipart/formdata request. A text
-            field declaring any other charset is rejected with a 400 response. Fields without a charset are decoded as
-            UTF-8.
+        multipart_form_allowed_charsets: Charsets accepted for multipart/formdata text fields; others are rejected
+            with a 400. Fields without a charset are decoded as UTF-8.
         on_app_init: A sequence of :class:`OnAppInitHandler <.types.OnAppInitHandler>` instances. Handlers receive
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
