@@ -116,6 +116,20 @@ Content-Type header by specifying the data with :data:`~litestar.params.Multipar
     to pass additional OpenAPI metadata or constraints, use the
     :class:`~typing.Annotated` form
 
+Text fields without a ``charset`` are decoded as UTF-8. A text field declaring a ``charset``
+is decoded with it if it is listed in the ``multipart_form_allowed_charsets`` parameter of
+:class:`~litestar.app.Litestar`, and rejected with a ``400 Bad Request`` otherwise. Any
+alias Python knows for a listed charset is accepted too, e.g. ``latin1`` for
+``iso-8859-1``. By default, UTF-8, ASCII and ISO-8859-1 are accepted. To accept additional
+charsets, extend the default list:
+
+.. code-block:: python
+
+    from litestar import Litestar
+    from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
+
+    app = Litestar(multipart_form_allowed_charsets=[*DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS, "shift_jis"])
+
 
 File uploads
 ------------
