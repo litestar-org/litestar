@@ -860,6 +860,10 @@ whose collection field holds the current page, and compute the page in the handl
 
     T = TypeVar("T")
 
+.. literalinclude:: /examples/pagination/using_offset_pagination_with_sqlalchemy.py
+    :caption: Offset Pagination with SQLAlchemy
+    :language: python
+
 
     @dataclass
     class Page(Generic[T]):
