@@ -233,7 +233,7 @@ markers = [
   "server_integration: Test integration with ASGI server",
   "benchmark: CodSpeed benchmark (see tests/benchmarks)",
 ]
-testpaths = ["tests", "docs/examples/testing"]
+testpaths = ["tests", "tools/tests", "docs/examples/testing"]
 xfail_strict = true
 
 [tool.mypy]
@@ -483,6 +483,7 @@ known-first-party = ["litestar", "tests", "examples"]
   "UP045",
   "RUF043",
 ]
+"tools/tests/**/*.*" = ["S"]
 "tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]
 "tests/unit/test_typing.py" = ["UP006", "UP035"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
@@ -503,3 +504,16 @@ ruff_fix = true
 [tool.unasyncd.per_file_add_replacements."litestar/repository/abc/_async.py"]
 "AbstractAsyncRepository" = "AbstractSyncRepository"
 "AsyncRepoT" = "SyncRepoT"
+
+[tool.towncrier]
+directory = "docs/release-notes/fragments"
+filename = "docs/release-notes/changelog.rst"
+template = "docs/release-notes/_template.jinja"
+start_string = ".. towncrier release notes start\n"
+title_format = false
+wrap = false
+all_bullets = false
+
+[[tool.towncrier.type]]
+directory = "change"
+name = "Changes"

@@ -50,7 +50,7 @@ extensions = [
     "sphinx.ext.viewcode",
 ]
 
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "release-notes/fragments/*"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),

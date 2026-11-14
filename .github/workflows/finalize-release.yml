@@ -1,0 +1,58 @@
+name: "Finalize release"
+
+# When a release PR (head branch vX.Y.Z, opened by release.yml) is merged into main,
+# create the DRAFT GitHub release with generated notes — so the notes reflect the final
+# state of main. A maintainer reviews and clicks "Publish" (kept MANUAL for security),
+# which triggers publish.yml -> PyPI.
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: read
+  issues: read
+
+jobs:
+  draft-release:
+    name: Create draft release
+    # only when a release PR is actually merged (coarse filter; refined in the step below)
+    if: >-
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          version: "0.8.8"
+          enable-cache: true
+
+      - name: Create draft GitHub release with generated notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          # only act on real vX.Y.Z release branches
+          # shellcheck source=tools/release_lib.sh
+          source tools/release_lib.sh
+          if ! is_release_version "$HEAD_REF"; then
+            echo "Head branch '$HEAD_REF' is not a vX.Y.Z release branch — skipping."
+            exit 0
+          fi
+          VERSION="$(uv version --short)"
+          uv run python tools/prepare_release.py "$VERSION" --branch main --create-draft-release

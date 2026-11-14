@@ -1,0 +1,96 @@
+name: "Release"
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Version bump (ignored if 'version' is set)"
+        type: choice
+        required: true
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+          - stable
+          - alpha
+          - beta
+          - rc
+      version:
+        description: "Explicit version (overrides bump; e.g. 4.0.0b1 for a major beta)"
+        type: string
+        required: false
+        default: ""
+      dry_run:
+        description: "Dry run — preview only, write nothing"
+        type: boolean
+        required: true
+        default: true
+      base:
+        description: "Previous release tag (optional; needed for the first 3.x release)"
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: ${{ inputs.dry_run && 'Preview release' || 'Cut release' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          version: "0.8.8" # >= 0.7 for `uv version`
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      # ---------------------------------------------------------------- dry run
+      - name: Preview release (writes nothing)
+        if: ${{ inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUMP: ${{ inputs.bump }}
+          EXPLICIT_VERSION: ${{ inputs.version }}
+          BASE: ${{ inputs.base }}
+        run: bash tools/release_preview.sh "${EXPLICIT_VERSION:-$BUMP}" "$BASE"
+
+      # ------------------------------------------------------------ real release
+      - name: Prepare the release commit
+        if: ${{ !inputs.dry_run }}
+        env:
+          BUMP: ${{ inputs.bump }}
+          EXPLICIT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          bash tools/release_prepare.sh "${EXPLICIT_VERSION:-$BUMP}"
+          echo "VERSION=$(uv version --short)" >> "$GITHUB_ENV"
+
+      # The GitHub draft release is created by finalize-release.yml once this PR is
+      # merged, so its notes reflect the final state of main.
+      - name: Open release PR
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git push origin "v$VERSION"
+          # --repo pins the PR to the repo running the workflow (a fork would otherwise
+          # default to opening the PR against its upstream parent).
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "v$VERSION" \
+            --title "chore(release): v$VERSION" \
+            --body "Automated release PR for v$VERSION. Review, merge, then **Publish** the draft release (→ \`publish.yml\` → PyPI)."

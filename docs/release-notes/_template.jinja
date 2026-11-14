@@ -1,0 +1,6 @@
+.. changelog:: {{ versiondata.version }}
+    :date: {{ versiondata.date }}
+{% for _s, section in sections.items() %}{% for _c, changes in section.items() %}{% for text, values in changes.items() %}
+
+{{ text | indent(4, true) }}
+{% endfor %}{% endfor %}{% endfor %}
