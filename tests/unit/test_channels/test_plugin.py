@@ -7,6 +7,7 @@ from secrets import token_hex
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
 
+import anyio
 import pytest
 from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
@@ -50,6 +51,14 @@ def channels_backend_with_history(request: FixtureRequest) -> ChannelsBackend:
 def test_channels_no_channels_arbitrary_not_allowed_raises(memory_backend: MemoryChannelsBackend) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         ChannelsPlugin(backend=memory_backend)
+
+
+async def test_subscribe_incorrect_history_raises(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(
+        backend=memory_backend, channels=["foo"], subscriber_max_backlog=1, subscriber_backlog_strategy="backoff"
+    )
+    with pytest.raises(ImproperlyConfiguredException):
+        await plugin.subscribe("foo", 2)
 
 
 def test_broadcast_not_initialized_raises(memory_backend: MemoryChannelsBackend) -> None:
@@ -154,6 +163,27 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
         ws.send("bar")
         # the subscription should still be alive
         assert ws.receive_json(timeout=2) == ["foo"]
+
+
+async def test_ws_route_publish_if_history_exceeds_max_backlog(memory_backend_with_history: ChannelsBackend) -> None:
+    channels_plugin = ChannelsPlugin(
+        backend=memory_backend_with_history,
+        create_ws_route_handlers=True,
+        ws_handler_send_history=3,
+        channels=["foo"],
+        subscriber_max_backlog=2,
+    )
+    app = Litestar(plugins=[channels_plugin])
+
+    async with AsyncTestClient(app) as client:
+        for i in range(3):
+            await channels_plugin.wait_published(i, "foo")
+        try:
+            with anyio.fail_after(1):
+                async with await client.websocket_connect("/foo") as ws:
+                    await ws.receive_text()
+        except TimeoutError as exc:
+            raise AssertionError("Deadlock in websocket connection") from exc
 
 
 @pytest.mark.flaky(reruns=5)
