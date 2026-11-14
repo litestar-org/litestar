@@ -8,6 +8,7 @@
 
     .. change:: Run dependencies and ``before_request`` hooks before serving a cached response
         :type: bugfix
+        :pr: 5217
 
         Fix a bug where a cached response was served before ``before_request`` hooks,
         parameter parsing and dependencies ran, so access checks done there were
