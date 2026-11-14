@@ -1259,6 +1259,15 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Keep publishing channel messages after a backend error<a class="headerlink reference internal" href="#3.0.0-keep publishing channel messages after a backend error" id="3.0.0-keep publishing channel messages after a backend error">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that stopped <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a> from publishing
+any further messages after the backend raised an error for one of them, for
+example a payload over the PostgreSQL <code class="docutils literal notranslate"><span class="pre">NOTIFY</span></code> size limit. Messages were
+queued but never sent, and shutting down the application hung. The error is
+now logged and publishing continues.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5213">https://github.com/litestar-org/litestar/pull/5213</a></span></p>
+</div>
+</dd>
 <dt>Do not cache parsed url-encoded form bodies<a class="headerlink reference internal" href="#3.0.0-do not cache parsed url-encoded form bodies" id="3.0.0-do not cache parsed url-encoded form bodies">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that kept up to 1024 url-encoded request bodies and their parsed
 values in memory, so distinct large form submissions could grow memory until

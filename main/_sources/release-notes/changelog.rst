@@ -6,6 +6,16 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Keep publishing channel messages after a backend error
+        :type: bugfix
+        :pr: 5213
+
+        Fix a bug that stopped :class:`~litestar.channels.plugin.ChannelsPlugin` from publishing
+        any further messages after the backend raised an error for one of them, for
+        example a payload over the PostgreSQL ``NOTIFY`` size limit. Messages were
+        queued but never sent, and shutting down the application hung. The error is
+        now logged and publishing continues.
+
     .. change:: Do not cache parsed url-encoded form bodies
         :type: bugfix
         :pr: 5212
