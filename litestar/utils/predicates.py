@@ -112,7 +112,7 @@ def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
         annotation = origin or annotation
 
         return isclass(annotation) and is_dataclass(annotation)
-    except TypeError:  # pragma: no cover
+    except TypeError:
         return False
 
 
@@ -133,7 +133,7 @@ def is_class_and_subclass(annotation: Any, type_or_type_tuple: type[T] | tuple[t
         return False
     try:
         return issubclass(origin or annotation, type_or_type_tuple)
-    except TypeError:  # pragma: no cover
+    except TypeError:
         return False
 
 
@@ -179,7 +179,7 @@ def is_non_string_iterable(annotation: Any) -> TypeGuard[Iterable[Any]]:
             issubclass(origin or annotation, (Iterable, CollectionsIterable, Dict, dict, Mapping))
             or is_non_string_sequence(annotation)
         )
-    except TypeError:  # pragma: no cover
+    except TypeError:
         return False
 
 
@@ -212,7 +212,7 @@ def is_non_string_sequence(annotation: Any) -> TypeGuard[Sequence[Any]]:
                 frozenset,
             ),
         )
-    except TypeError:  # pragma: no cover
+    except TypeError:
         return False
 
 
