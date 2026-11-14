@@ -491,3 +491,21 @@ def test_components_schemas_in_alphabetical_order() -> None:
         "test_components_schemas_in_alphabetical_order.C",
     ]
     assert list(openapi.components.schemas.keys()) == expected_keys
+
+
+def test_dto_component_schema_names_are_stable_across_app_instances() -> None:
+    # https://github.com/litestar-org/litestar/issues/4699
+
+    @dataclass
+    class Item:
+        name: str
+
+    @get("/items", return_dto=DataclassDTO[Item], sync_to_thread=False)
+    def handler() -> Item:
+        return Item(name="item")
+
+    first_app_schemas = Litestar([handler], signature_types=[Item]).openapi_schema.to_schema()["components"]["schemas"]
+    second_app_schemas = Litestar([handler], signature_types=[Item]).openapi_schema.to_schema()["components"]["schemas"]
+
+    assert first_app_schemas.keys() == second_app_schemas.keys()
+    assert "HandlerItemResponseBody" in first_app_schemas
