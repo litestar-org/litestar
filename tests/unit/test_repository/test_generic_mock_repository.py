@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Protocol, Union, cast
+from typing import Any, Protocol, Union, cast
 from uuid import uuid4
 
 import pytest
@@ -10,7 +11,7 @@ from advanced_alchemy.extensions.litestar import base
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from litestar.repository.exceptions import ConflictError, RepositoryError
+from litestar.repository.exceptions import ConflictError, NotFoundError, RepositoryError
 from litestar.repository.filters import LimitOffset
 from litestar.repository.testing.generic_mock_repository import (
     GenericAsyncMockRepository,
@@ -441,3 +442,67 @@ async def test_get_or_create_match_fields(
     assert await maybe_async(mock_repo.count()) == 2
     assert inserted_instances[0] == fetched_instance
     assert fetched_created is False
+
+
+async def test_update_many_with_detached_instances(
+    repository_type: type[GenericAsyncMockRepository], create_audit_model_type: CreateAuditModelFixture
+) -> None:
+    """Test that update_many applies the values of the given instances to the stored ones."""
+
+    Model = create_audit_model_type({"random_column": Mapped[str]})
+
+    mock_repo = repository_type[Model]()  # type: ignore[index]
+    inserted_instances = await maybe_async(mock_repo.add_many([Model(random_column="A"), Model(random_column="B")]))
+    updated_instances = await maybe_async(
+        mock_repo.update_many([Model(id=instance.id, random_column="C") for instance in inserted_instances])
+    )
+
+    assert [instance.random_column for instance in updated_instances] == ["C", "C"]
+    assert [instance.random_column for instance in await maybe_async(mock_repo.list())] == ["C", "C"]
+
+
+async def test_add_many_with_allow_ids_on_add(
+    repository_type: type[GenericAsyncMockRepository], model_type: ModelType
+) -> None:
+    """Test that add_many stores instances that already carry an id when ``allow_ids_on_add`` is set."""
+
+    mock_repo = repository_type[model_type](allow_ids_on_add=True)  # type: ignore[index]
+    instances = [model_type(id=uuid4()), model_type(id=uuid4())]
+    inserted_instances = await maybe_async(mock_repo.add_many(instances))
+
+    assert inserted_instances == instances
+    assert await maybe_async(mock_repo.count()) == 2
+    assert await maybe_async(mock_repo.get(instances[0].id)) is instances[0]
+
+
+async def test_add_many_with_iterator(repository_type: type[GenericAsyncMockRepository], model_type: ModelType) -> None:
+    """Test that add_many returns the added instances when given a single-pass iterator."""
+
+    mock_repo = repository_type[model_type]()  # type: ignore[index]
+    inserted_instances = await maybe_async(mock_repo.add_many(model_type() for _ in range(2)))
+
+    assert len(inserted_instances) == 2
+    assert await maybe_async(mock_repo.list()) == inserted_instances
+
+
+async def test_delete_raises_not_found(
+    repository_type: type[GenericAsyncMockRepository], audit_model_type: AuditModelType
+) -> None:
+    """Test that deleting an unknown id raises ``NotFoundError``."""
+
+    mock_repo = repository_type[audit_model_type]()  # type: ignore[index]
+    with pytest.raises(NotFoundError):
+        await maybe_async(mock_repo.delete(uuid4()))
+
+
+@dataclass
+class CreatedAtOnlyModel:
+    id: Any = None
+    created_at: datetime | None = None
+
+
+async def test_sets_created_at_without_updated_at(repository_type: type[GenericAsyncMockRepository]) -> None:
+    """Test that 'created_at' is set on add for models that have no 'updated_at' attribute."""
+
+    instance = await maybe_async(repository_type[CreatedAtOnlyModel]().add(CreatedAtOnlyModel()))  # type: ignore[index]
+    assert instance.created_at is not None
