@@ -1,27 +1,26 @@
-from __future__ import annotations
-
+from collections.abc import Callable, Coroutine
 from functools import wraps
 from inspect import Parameter, Signature
 from typing import TYPE_CHECKING, Any
 
 from msgspec.json import Encoder as JsonEncoder
 
+from litestar.connection import WebSocket
 from litestar.di import NamedDependency, Provide
 from litestar.serialization import decode_json
+from litestar.types import AnyCallable
 from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
 from litestar.utils.helpers import unwrap_partial
+from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine
-
-    from litestar import WebSocket
     from litestar.handlers.websocket_handlers.listener import WebsocketListenerRouteHandler
-    from litestar.types import AnyCallable
-    from litestar.utils.signature import ParsedSignature
 
 
-def create_handle_receive(listener: WebsocketListenerRouteHandler) -> Callable[[WebSocket], Coroutine[Any, None, None]]:
+def create_handle_receive(
+    listener: "WebsocketListenerRouteHandler",
+) -> Callable[[WebSocket], Coroutine[Any, None, None]]:
     if data_dto := listener.data_dto:
 
         async def handle_receive(socket: WebSocket) -> Any:
@@ -52,7 +51,7 @@ def create_handle_receive(listener: WebsocketListenerRouteHandler) -> Callable[[
 
 
 def create_handle_send(
-    listener: WebsocketListenerRouteHandler,
+    listener: "WebsocketListenerRouteHandler",
 ) -> Callable[[WebSocket, Any], Coroutine[None, None, None]]:
     json_encoder = JsonEncoder(enc_hook=listener.default_serializer)
 
@@ -86,7 +85,7 @@ class ListenerHandler:
 
     def __init__(
         self,
-        listener: WebsocketListenerRouteHandler,
+        listener: "WebsocketListenerRouteHandler",
         fn: AnyCallable,
         parsed_signature: ParsedSignature,
         namespace: dict[str, Any],

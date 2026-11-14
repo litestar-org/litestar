@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 import abc
 import os
 import os.path
 import pathlib
+from collections.abc import AsyncGenerator, Mapping
 from datetime import datetime
 from stat import S_ISDIR
 from typing import TYPE_CHECKING, Any, ClassVar, Final, NotRequired, TypeAlias, Union, cast
@@ -13,6 +12,7 @@ from typing_extensions import TypedDict
 
 from litestar.concurrency import sync_to_thread
 from litestar.plugins import InitPlugin
+from litestar.types import PathType
 
 __all__ = (
     "AnyFileSystem",
@@ -29,12 +29,10 @@ __all__ = (
 
 if TYPE_CHECKING:
     import io
-    from collections.abc import AsyncGenerator, Awaitable, Callable, Mapping
+    from collections.abc import Awaitable, Callable
 
     from fsspec import AbstractFileSystem as FsspecFileSystem
     from fsspec.asyn import AsyncFileSystem as FsspecAsyncFileSystem
-
-    from litestar.types import PathType
 
 
 AnyFileSystem: TypeAlias = "Union[BaseFileSystem, FsspecFileSystem, FsspecAsyncFileSystem]"
@@ -119,7 +117,7 @@ class LinkableFileSystem(BaseFileSystem, abc.ABC):
         cls._registry[fs_type] = resolver
 
     @classmethod
-    def get_symlink_resolver(cls, fs: AnyFileSystem) -> SymlinkResolver | None:
+    def get_symlink_resolver(cls, fs: AnyFileSystem) -> Union[SymlinkResolver, None]:
         """For a given file system, get a function to resolve potential symlinks in a path.
 
         For classes implementing :class:`~litestar.file_system.LinkableFileSystem`,
@@ -241,7 +239,7 @@ class BaseLocalFileSystem(LinkableFileSystem):
 
 
 class FsspecSyncWrapper(BaseFileSystem):
-    def __init__(self, fs: FsspecFileSystem) -> None:
+    def __init__(self, fs: "FsspecFileSystem") -> None:
         """Wrap a :class:`fsspec.spec.AbstractFileSystem` to provide a
         :class:`litestar.file_system.BaseFileSystem` compatible interface
         """
@@ -319,7 +317,7 @@ class FsspecSyncWrapper(BaseFileSystem):
 
 
 class FsspecAsyncWrapper(BaseFileSystem):
-    def __init__(self, fs: FsspecAsyncFileSystem) -> None:
+    def __init__(self, fs: "FsspecAsyncFileSystem") -> None:
         """Wrap a :class:`fsspec.asyn.AsyncFileSystem` to provide a
         class:`litestar.file_system.BaseFileSystem` compatible interface
 
@@ -440,7 +438,7 @@ class FileSystemRegistry(InitPlugin):
     def __init__(
         self,
         file_systems: Mapping[str, AnyFileSystem] | None = None,
-        default: AnyFileSystem | None = None,
+        default: Union[AnyFileSystem, None] = None,
     ) -> None:
         """File system registry
 
