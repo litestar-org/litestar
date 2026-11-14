@@ -12,6 +12,7 @@ from litestar.connection import WebSocket
 from litestar.di import NamedDependency
 from litestar.dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
+from litestar.router import Router
 from litestar.routes import BaseRoute
 from litestar.types import (
     AnyCallable,
@@ -38,7 +39,7 @@ from ._utils import (
 from .route_handler import WebsocketRouteHandler
 
 if TYPE_CHECKING:
-    from litestar import Litestar, Router
+    from litestar import Litestar
 
 __all__ = ("WebsocketListener", "WebsocketListenerRouteHandler", "websocket_listener")
 
@@ -222,7 +223,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             **kwargs,
         )
 
-    def _get_merge_opts(self, others: tuple["Router", ...]) -> dict[str, Any]:
+    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
         merge_opts.update(
             receive_mode=self._receive_mode,

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
+from litestar.router import Router
 from litestar.routes import BaseRoute
 from litestar.types import AsyncAnyCallable, Dependencies, Empty, ExceptionHandler, Guard, Middleware, ParametersMap
 from litestar.types.builtin_types import NoneType
@@ -11,7 +12,7 @@ from litestar.utils import deprecated
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
-    from litestar import Litestar, Router
+    from litestar import Litestar
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.types import EmptyType
@@ -76,7 +77,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-    def _get_merge_opts(self, others: tuple["Router", ...]) -> dict[str, Any]:
+    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
         merge_opts["websocket_class"] = self._websocket_class or next(
             (o.websocket_class for o in others if o.websocket_class), None

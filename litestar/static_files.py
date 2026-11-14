@@ -4,7 +4,7 @@ from os.path import commonpath
 from pathlib import Path, PurePath
 from typing import Any, Literal, Union
 
-from litestar import Request
+from litestar.connection import Request
 from litestar.datastructures import CacheControlHeader
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.file_system import (

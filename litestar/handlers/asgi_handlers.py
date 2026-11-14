@@ -1,9 +1,10 @@
 from collections.abc import Callable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from litestar.connection import ASGIConnection
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
+from litestar.router import Router
 from litestar.types import (
     AsyncAnyCallable,
     ExceptionHandlersMap,
@@ -12,9 +13,6 @@ from litestar.types import (
 )
 from litestar.types.builtin_types import NoneType
 from litestar.utils.predicates import is_async_callable
-
-if TYPE_CHECKING:
-    from litestar import Router
 
 __all__ = ("ASGIRouteHandler", "asgi")
 
@@ -81,7 +79,7 @@ class ASGIRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-    def _get_merge_opts(self, others: tuple["Router", ...]) -> dict[str, Any]:
+    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
         merge_opts["is_mount"] = self.is_mount
         merge_opts["copy_scope"] = self.copy_scope

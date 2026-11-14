@@ -38,6 +38,7 @@ from litestar.openapi.spec import Operation, SecurityRequirement
 from litestar.params import RawBody
 from litestar.response import File, Response
 from litestar.response.file import ASGIFileResponse
+from litestar.router import Router
 from litestar.routes import BaseRoute
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
@@ -76,7 +77,7 @@ from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
-    from litestar import Litestar, Router
+    from litestar import Litestar
     from litestar.types.callable_types import (
         AsyncAfterRequestHookHandler,
         AsyncAfterResponseHookHandler,
@@ -341,7 +342,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
 
-    def _get_merge_opts(self, others: tuple["Router", ...]) -> dict[str, Any]:
+    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
 
         # these only exist on the handler, and therefore don't need merging

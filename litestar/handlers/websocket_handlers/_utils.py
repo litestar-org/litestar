@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from msgspec.json import Encoder as JsonEncoder
 
+from litestar.connection import WebSocket
 from litestar.di import NamedDependency, Provide
 from litestar.serialization import decode_json
 from litestar.types import AnyCallable
@@ -14,16 +15,15 @@ from litestar.utils.helpers import unwrap_partial
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
-    from litestar import WebSocket
     from litestar.handlers.websocket_handlers.listener import WebsocketListenerRouteHandler
 
 
 def create_handle_receive(
     listener: "WebsocketListenerRouteHandler",
-) -> Callable[["WebSocket"], Coroutine[Any, None, None]]:
+) -> Callable[[WebSocket], Coroutine[Any, None, None]]:
     if data_dto := listener.data_dto:
 
-        async def handle_receive(socket: "WebSocket") -> Any:
+        async def handle_receive(socket: WebSocket) -> Any:
             received_data = await socket.receive_data(mode=listener._receive_mode)
             return data_dto(socket).decode_bytes(
                 received_data.encode("utf-8") if isinstance(received_data, str) else received_data
@@ -31,19 +31,19 @@ def create_handle_receive(
 
     elif listener.parsed_data_field and listener.parsed_data_field.annotation is str:
 
-        async def handle_receive(socket: "WebSocket") -> Any:
+        async def handle_receive(socket: WebSocket) -> Any:
             received_data = await socket.receive_data(mode=listener._receive_mode)
             return received_data.decode("utf-8") if isinstance(received_data, bytes) else received_data
 
     elif listener.parsed_data_field and listener.parsed_data_field.annotation is bytes:
 
-        async def handle_receive(socket: "WebSocket") -> Any:
+        async def handle_receive(socket: WebSocket) -> Any:
             received_data = await socket.receive_data(mode=listener._receive_mode)
             return received_data.encode("utf-8") if isinstance(received_data, str) else received_data
 
     else:
 
-        async def handle_receive(socket: "WebSocket") -> Any:
+        async def handle_receive(socket: WebSocket) -> Any:
             received_data = await socket.receive_data(mode=listener._receive_mode)
             return decode_json(value=received_data, type_decoders=socket.route_handler.type_decoders)
 
@@ -52,12 +52,12 @@ def create_handle_receive(
 
 def create_handle_send(
     listener: "WebsocketListenerRouteHandler",
-) -> Callable[["WebSocket", Any], Coroutine[None, None, None]]:
+) -> Callable[[WebSocket, Any], Coroutine[None, None, None]]:
     json_encoder = JsonEncoder(enc_hook=listener.default_serializer)
 
     if return_dto := listener.return_dto:
 
-        async def handle_send(socket: "WebSocket", data: Any) -> None:
+        async def handle_send(socket: WebSocket, data: Any) -> None:
             encoded_data = return_dto(socket).data_to_encodable_type(data)
             data = json_encoder.encode(encoded_data)
             await socket.send_data(data=data, mode=listener._send_mode)
@@ -66,13 +66,13 @@ def create_handle_send(
         listener.parsed_return_field.is_optional and listener.parsed_return_field.has_inner_subclass_of((str, bytes))
     ):
 
-        async def handle_send(socket: "WebSocket", data: Any) -> None:
+        async def handle_send(socket: WebSocket, data: Any) -> None:
             if data is not None:
                 await socket.send_data(data=data, mode=listener._send_mode)
 
     else:
 
-        async def handle_send(socket: "WebSocket", data: Any) -> None:
+        async def handle_send(socket: WebSocket, data: Any) -> None:
             if data is not None:
                 data = json_encoder.encode(data)
                 await socket.send_data(data=data, mode=listener._send_mode)
@@ -99,7 +99,7 @@ class ListenerHandler:
     async def __call__(
         self,
         *args: Any,
-        socket: "WebSocket",
+        socket: WebSocket,
         connection_lifespan_dependencies: NamedDependency[dict[str, Any]],
         **kwargs: Any,
     ) -> None:
