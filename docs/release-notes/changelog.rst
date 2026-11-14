@@ -8,6 +8,7 @@
 
     .. change:: Fix channel subscriptions hanging after a send error or a full backlog
         :type: bugfix
+        :pr: 5218
 
         Fix a bug where a channel subscription could hang forever, keeping the
         subscriber registered: after an error while sending an event (for example to a
