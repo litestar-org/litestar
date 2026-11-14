@@ -15,6 +15,7 @@ from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.client_side import (
     AAD,
     CHUNK_SIZE,
+    MAX_COOKIE_SIZE,
     ClientSideSessionBackend,
     CookieBackendConfig,
 )
@@ -87,8 +88,8 @@ def test_dump_and_load_data(session: dict, cookie_session_backend: ClientSideSes
     ciphertext = cookie_session_backend.dump_data(session)
     assert isinstance(ciphertext, list)
 
-    for text in ciphertext:
-        assert len(text) <= CHUNK_SIZE
+    for cookie in cookie_session_backend._create_session_cookies(ciphertext):
+        assert len(cookie.to_header(header="")) <= MAX_COOKIE_SIZE
 
     plain_text = cookie_session_backend.load_data(ciphertext)
     assert plain_text == session
@@ -222,6 +223,85 @@ def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backe
 
     with pytest.raises(InvalidTag):
         cookie_session_backend.load_data(encoded)
+
+
+def test_get_cookie_keys_are_ordered_by_chunk_index(cookie_session_backend: ClientSideSessionBackend) -> None:
+    """Chunk cookies must be ordered by their numeric index, not by name.
+
+    A lexicographic sort places ``session-10`` between ``session-1`` and ``session-2``, so the two orders
+    only agree while there are fewer than ten chunks.
+    """
+    expected = [f"session-{i}" for i in range(12)]
+    connection = RequestFactory().get("/", headers={"Cookie": "; ".join(f"{key}=x" for key in expected)})
+
+    assert cookie_session_backend.get_cookie_keys(connection) == expected
+
+
+@pytest.mark.parametrize("key", ["session", "my-session"])
+def test_large_session_round_trips(key: str) -> None:
+    """A session spread over more than ten cookies must be reassembled in the right order."""
+    payload = "x" * 40_000
+
+    @get("/set")
+    def set_handler(request: Request) -> None:
+        request.session["payload"] = payload
+
+    @get("/get")
+    def get_handler(request: Request) -> dict[str, Any]:
+        return request.session
+
+    config = CookieBackendConfig(secret=os.urandom(16), key=key)
+    with create_test_client([set_handler, get_handler], middleware=[config.middleware]) as client:
+        response = client.get("/set")
+        # more than ten cookies, otherwise the ordering this asserts on is not exercised
+        assert len(response.headers.get_list("set-cookie")) > 10
+
+        assert client.get("/get").json() == {"payload": payload}
+
+
+@pytest.mark.parametrize("session_size", [8, 3_000, 60_000])
+@pytest.mark.parametrize(
+    "cookie_params",
+    [
+        {},
+        {"secure": True},
+        {"secure": True, "domain": "example.com", "path": "/a/rather/long/path/segment"},
+    ],
+)
+@pytest.mark.parametrize("key", ["session", "s" * 60, "k" * 250])
+def test_session_cookies_do_not_exceed_max_cookie_size(
+    key: str, cookie_params: dict[str, Any], session_size: int
+) -> None:
+    """Every emitted ``Set-Cookie`` header must stay within the :rfc:`6265` limit.
+
+    The cookie name and its attributes count towards that limit, so the space left for the value depends
+    on the configured key and cookie parameters.
+    """
+
+    @get("/")
+    def handler(request: Request) -> None:
+        request.session["payload"] = "x" * session_size
+
+    config = CookieBackendConfig(secret=os.urandom(16), key=key, **cookie_params)
+    with create_test_client([handler], middleware=[config.middleware]) as client:
+        headers = client.get("/").headers.get_list("set-cookie")
+
+    assert headers
+    for header in headers:
+        assert len(header) <= MAX_COOKIE_SIZE
+
+
+def test_dump_data_raises_when_cookie_attributes_leave_no_room() -> None:
+    """A configuration whose cookie name and attributes fill the entire size limit must fail loudly.
+
+    Emitting no cookies at all would log every user out with nothing in the response, and nothing in the
+    logs, to point at the cause.
+    """
+    config = CookieBackendConfig(secret=os.urandom(16), path="/" + "p" * MAX_COOKIE_SIZE)
+    backend = ClientSideSessionBackend(config=config)
+
+    with pytest.raises(ImproperlyConfiguredException, match="leaving no room for session data"):
+        backend.dump_data(create_session())
 
 
 async def test_store_in_message_clears_cookies_when_session_grows_gt_chunk_size(
