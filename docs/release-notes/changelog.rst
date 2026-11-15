@@ -8,6 +8,7 @@
 
     .. change:: Prefix server-side session keys in the store
         :type: bugfix
+        :pr: 5219
         :breaking:
 
         :class:`~litestar.middleware.session.server_side.ServerSideSessionBackend` used the
