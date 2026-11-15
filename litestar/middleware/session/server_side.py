@@ -46,7 +46,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             The session data, if existing, otherwise ``None``.
         """
         max_age = int(self.config.max_age) if self.config.max_age is not None else None
-        return await store.get(session_id, renew_for=max_age if self.config.renew_on_access else None)
+        return await store.get(f"session::{session_id}", renew_for=max_age if self.config.renew_on_access else None)
 
     async def set(self, session_id: str, data: bytes, store: Store) -> None:
         """Store ``data`` under the ``session_id`` for later retrieval.
@@ -63,7 +63,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             None
         """
         expires_in = int(self.config.max_age) if self.config.max_age is not None else None
-        await store.set(session_id, data, expires_in=expires_in)
+        await store.set(f"session::{session_id}", data, expires_in=expires_in)
 
     async def delete(self, session_id: str, store: Store) -> None:
         """Delete the data associated with ``session_id``. Fails silently if no such session-ID exists.
@@ -75,14 +75,13 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Returns:
             None
         """
-        await store.delete(session_id)
+        await store.delete(f"session::{session_id}")
 
     def get_session_id(self, connection: ASGIConnection) -> str:
         """Try to fetch session id from the connection. If one does not exist, generate one.
 
-        If a session ID already exists in the cookies, it is returned.
-        If there is no ID in the cookies but one in the connection state, then the session exists but has not yet
-        been returned to the user.
+        If a session ID exists in the connection state, it is returned.
+        Otherwise, the ID from the cookies is returned, if there is one.
         Otherwise, a new session must be created.
 
         Args:
@@ -90,10 +89,10 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Returns:
             Session id str or None if the concept of a session id does not apply.
         """
-        session_id = connection.cookies.get(self.config.key)
-        if not session_id or session_id == "null":
-            session_id = connection.get_session_id()
-            if not session_id:
+        session_id = connection.get_session_id()
+        if not session_id:
+            session_id = connection.cookies.get(self.config.key)
+            if not session_id or session_id == "null":
                 session_id = self.generate_session_id()
         return session_id
 
@@ -132,12 +131,15 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             session_cookie = connection.cookies.get(self.config.key)
             if not session_cookie or session_cookie == "null":
                 return
-            await self.delete(session_id, store=store)
+            await self.delete(session_cookie, store=store)
             headers.add(
                 "Set-Cookie",
                 Cookie(value="null", key=self.config.key, expires=0, **cookie_params).to_header(header=""),
             )
         else:
+            if not connection.get_session_id():
+                await self.delete(session_id, store=store)
+                session_id = self.generate_session_id()
             serialised_data = self.serialize_data(scope_session, scope)
             await self.set(session_id=session_id, data=serialised_data, store=store)
             headers.add(
@@ -152,7 +154,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         :attr:`BaseBackendConfig.key`. If a cookie is found, its value will be used as the session-ID and data associated
         with this ID will be loaded using :meth:`get <ServerSideSessionBackend.get>`.
         If no cookie was found or no data was loaded from the store, this will return an
-        empty dictionary.
+        empty dictionary, and a new session-ID will be used if the session is saved.
 
         Args:
             connection: An ASGIConnection instance
@@ -165,6 +167,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             data = await self.get(session_id, store=store)
             if data is not None:
                 return self.deserialize_data(data)
+            connection._connection_state.session_id = self.generate_session_id()
         return {}
 
 

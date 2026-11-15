@@ -50,7 +50,7 @@ def test_delete_session(
 
     mock_confirm_ask.assert_called_once_with("Delete session 'foo'?")
     assert not result.exception
-    mock_delete.assert_called_once_with("foo")
+    mock_delete.assert_called_once_with("session::foo")
 
 
 def test_clear_sessions_no_backend(runner: CliRunner, monkeypatch: MonkeyPatch) -> None:
