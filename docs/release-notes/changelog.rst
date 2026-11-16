@@ -8,6 +8,7 @@
 
     .. change:: Use matched route templates in OpenTelemetry spans and metrics
         :type: bugfix
+        :pr: 5222
         :issue: 5120
         :breaking:
 
@@ -29,6 +30,7 @@
 
     .. change:: Set the mount path as ``path_template`` for mounted ASGI apps
         :type: bugfix
+        :pr: 5222
 
         Fix a bug that left ``scope["path_template"]`` empty for requests routed to a
         mounted ASGI app. It now holds the mount path, e.g. ``/mount``, which also
