@@ -6,6 +6,14 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Set the mount path as ``path_template`` for mounted ASGI apps
+        :type: bugfix
+
+        Fix a bug that left ``scope["path_template"]`` empty for requests routed to a
+        mounted ASGI app. It now holds the mount path, e.g. ``/mount``, which also
+        changes the ``path`` label of Prometheus metrics with ``group_path=True`` for
+        these requests.
+
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
         :pr: 5213

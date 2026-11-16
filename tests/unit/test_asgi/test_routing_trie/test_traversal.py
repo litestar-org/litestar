@@ -112,3 +112,13 @@ def test_websocket_upgrade_to_http_only_route_is_bad_request() -> None:
 
     assert isinstance(exc_info.value.exceptions[0], WebSocketDisconnect)
     assert exc_info.value.exceptions[0].detail == "Bad Request"
+
+
+def test_parse_path_to_route_mounted_app_path_template() -> None:
+    @asgi("/foobar", is_mount=True)
+    async def mounted_handler(scope: Any, receive: Any, send: Any) -> None:
+        response = ASGIResponse(body=scope["path_template"])
+        await response(scope, receive, send)
+
+    with create_test_client([Router(path="/base", route_handlers=[mounted_handler])]) as client:
+        assert client.get("/base/foobar/123").text == "/base/foobar"

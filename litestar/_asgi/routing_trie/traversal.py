@@ -159,7 +159,7 @@ def parse_path_to_route(
                 asgi_app, handler = parse_node_handlers(node=mount_node, method=method)
                 remaining_path = remaining_path or "/"
                 remaining_path = remaining_path if remaining_path.endswith("/") else f"{remaining_path}/"
-                return asgi_app, handler, remaining_path, {}, root_node.path_template
+                return asgi_app, handler, remaining_path, {}, mount_node.path_template
 
         node, path_parameters, path = traverse_route_map(
             root_node=root_node,
