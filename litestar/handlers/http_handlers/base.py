@@ -767,14 +767,10 @@ class HTTPRouteHandler(BaseRouteHandler):
             if self.cache and isawaitable(response_data):
                 response_data = await response_data
 
-            if not (
-                self.cache
-                and is_cacheable(response_data)
-                and (rendered := create_cache_entry(self, response_data, request)) is not None
-            ):
+            if not (self.cache and is_cacheable(self, response_data)):
                 return await self.to_response(data=response_data, request=request)
 
-            cache_entry, background = rendered
+            cache_entry, background = create_cache_entry(self, response_data, request)
             response = await self._response_from_cache_entry(
                 cache_entry=cache_entry, request=request, background=background
             )

@@ -57,6 +57,13 @@ class _EnvelopeResponse(Response):
         return asgi_response
 
 
+class _RequestIdResponse(Response):
+    def to_asgi_response(self, request: Request, **kwargs: Any) -> ASGIResponse:  # type: ignore[override]
+        asgi_response = super().to_asgi_response(request, **kwargs)
+        asgi_response.headers["x-request-id"] = request.headers.get("x-request-id", "")
+        return asgi_response
+
+
 @dataclass
 class _User:
     name: str
@@ -448,19 +455,63 @@ def test_background_task_runs_on_every_hit(mock: MagicMock) -> None:
     assert mock.call_count == 1
 
 
-def test_custom_response_class_is_cached(mock: MagicMock) -> None:
-    @get("/", cache=True, sync_to_thread=False, response_class=_EnvelopeResponse)
+def test_custom_response_class_not_cached(mock: MagicMock) -> None:
+    @get("/", cache=True, sync_to_thread=False, response_class=_RequestIdResponse)
     def handler() -> dict[str, int]:
         mock()
         return {"a": 1}
 
     with create_test_client([handler]) as client:
-        first = client.get("/")
-        second = client.get("/")
+        first = client.get("/", headers={"x-request-id": "r1"})
+        second = client.get("/", headers={"x-request-id": "r2"})
 
-    assert mock.call_count == 1
-    assert first.json() == second.json() == {"data": {"a": 1}}
-    assert second.headers["x-envelope"] == "1"
+    assert mock.call_count == 2
+    assert first.headers["x-request-id"] == "r1"
+    assert second.headers["x-request-id"] == "r2"
+
+
+def test_own_and_layered_headers_match_uncached_route(mock: MagicMock) -> None:
+    def make(cache: bool) -> Any:
+        @get(
+            "/cached" if cache else "/uncached",
+            cache=cache,
+            sync_to_thread=False,
+            response_headers=[
+                ResponseHeader(name="Cache-Control", value="public"),
+                ResponseHeader(name="x-a", value="layered"),
+            ],
+        )
+        def handler() -> Response[str]:
+            mock()
+            return Response("x", headers={"cache-control": "no-store", "x-a": "own"})
+
+        return handler
+
+    with create_test_client([make(True), make(False)]) as client:
+        expected = client.get("/uncached").headers
+        first = client.get("/cached").headers
+        second = client.get("/cached").headers
+
+    for headers in (first, second):
+        assert headers.get_list("cache-control") == expected.get_list("cache-control")
+        assert headers.get_list("x-a") == expected.get_list("x-a") == ["own"]
+    assert mock.call_count == 2
+
+
+def test_shared_response_background_not_mutated() -> None:
+    task = MagicMock()
+    shared = Response("x", background=BackgroundTask(task))
+
+    @get("/{value:str}", cache=True, sync_to_thread=False)
+    def handler(value: FromPath[str]) -> Response[str]:
+        return shared
+
+    with create_test_client([handler]) as client:
+        for value in ("a", "b", "c", "a"):
+            client.get(f"/{value}")
+
+    assert task.call_count == 3
+    assert shared.background is not None
 
 
 def test_csrf_cookie_not_replayed() -> None:
@@ -485,6 +536,8 @@ def test_csrf_cookie_not_replayed() -> None:
     [
         lambda: Stream(iter([b"a", b"b"])),
         lambda: Response("x", cookies=[Cookie(key="a", value="b")]),
+        lambda: Response("x", headers={"Set-Cookie": "a=b"}),
+        lambda: _EnvelopeResponse("x"),
     ],
 )
 def test_streams_templates_and_own_cookies_not_cached(mock: MagicMock, make_response: Callable[[], Response]) -> None:
@@ -602,7 +655,7 @@ async def test_compression_applied_per_request_on_cached_route() -> None:
     assert plain.text == return_value
     stored = await app.response_cache_config.get_store_from_app(app).get("GET/::body")
     assert stored
-    assert msgspec.msgpack.decode(stored)[2] == return_value.encode()
+    assert msgspec.msgpack.decode(stored)[4] == return_value.encode()
 
 
 @pytest.mark.parametrize(

@@ -12,19 +12,20 @@
 
         Fix a bug where the response cache stored the complete response, including
         headers and cookies set by middleware such as the session and CSRF cookies, and
-        sent it to every later client. The cache now stores the status code, body and
-        headers of the response returned by the handler, never its cookies, and rebuilds
-        the response for every request: cookies, background tasks of the handler's
-        layers, ``after_request`` hooks, compression and other middleware run each time.
+        sent it to every later client. The cache now stores the status code, media type,
+        body and own headers of the response returned by the handler, and rebuilds the
+        response for every request: cookies, layered headers, background tasks,
+        ``after_request`` hooks, compression and other middleware run each time.
         ``ResponseCacheMiddleware`` has been removed.
 
         This changes what is cached:
 
-        - Handlers returning a :class:`~litestar.response.Stream`,
-          :class:`~litestar.response.File`, :class:`~litestar.response.Template`, a
-          :class:`~litestar.response.Response` with its own cookies, or an ASGI
-          application are no longer cached. Neither are responses created by exception
-          handlers.
+        - Only plain return values, :class:`~litestar.response.Response` and
+          :class:`~litestar.response.Redirect` are cached, and only with the default
+          ``response_class``. Other subclasses of :class:`~litestar.response.Response`
+          (such as :class:`~litestar.response.Stream`, :class:`~litestar.response.File`
+          or :class:`~litestar.response.Template`), responses that set cookies, ASGI
+          applications and responses created by exception handlers are no longer cached.
         - ``after_request`` hooks on cached routes receive the rendered body as
           ``bytes``, and also run when the response is served from the cache, where
           ``before_request`` hooks and dependencies do not.

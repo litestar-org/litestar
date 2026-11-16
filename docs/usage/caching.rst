@@ -15,17 +15,20 @@ By setting :paramref:`~litestar.handlers.HTTPRouteHandler.cache` to ``True``, th
 will be cached. If no ``cache_key_builder`` is set in the route handler, caching for the route handler will be
 enabled for the :attr:`~.config.response_cache.ResponseCacheConfig.default_expiration`.
 
-The status code, the body and the headers of the response returned by the handler are cached, but never its
-cookies. The response is rebuilt from them for every request, so cookies and background tasks configured on the
-handler or its layers, ``after_request`` hooks and middleware all run again each time. On cached routes,
-``after_request`` hooks receive the rendered body as ``bytes``. The handler, its dependencies and ``before_request``
-hooks are not called when a response is served from the cache, so an ``after_request`` hook must not depend on state
-set by them. A background task attached to the returned :class:`~litestar.response.Response` only runs when the
-response is not served from the cache.
+The status code, the media type, the body and the headers of the response returned by the handler are cached. The
+response is rebuilt from them for every request, so cookies, headers and background tasks configured on the handler or
+its layers, ``after_request`` hooks and middleware all run again each time. On cached routes, ``after_request`` hooks
+receive the rendered body as ``bytes``. The handler, its dependencies and ``before_request`` hooks are not called when
+a response is served from the cache, so an ``after_request`` hook must not depend on state set by them. A background
+task attached to the returned :class:`~litestar.response.Response` only runs when the response is not served from the
+cache.
 
-:class:`~litestar.response.Stream`, :class:`~litestar.response.File` and :class:`~litestar.response.Template`
-responses, a :class:`~litestar.response.Response` with its own cookies, ASGI applications and responses created by
-exception handlers are not cached.
+Only plain return values, :class:`~litestar.response.Response` and :class:`~litestar.response.Redirect` are cached,
+and only if the handler uses the default ``response_class``. Redirects are cached when the
+:attr:`~.config.response_cache.ResponseCacheConfig.cache_response_filter` accepts their status code, which by default
+is the case for ``301`` and ``308``. A response that sets cookies, other subclasses of
+:class:`~litestar.response.Response` (such as :class:`~litestar.response.Stream`, :class:`~litestar.response.File` and
+:class:`~litestar.response.Template`), ASGI applications and responses created by exception handlers are not cached.
 
 .. warning:: The default cache key is built from the request method, path and query parameters only, so a cached
     response is served to every user. Do not cache handlers whose response depends on the user, or set a
