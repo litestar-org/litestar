@@ -705,7 +705,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     ) -> ASGIApp:
         """Return a response for the request.
 
-        If caching is enabled and a response exist in the cache, a response is rebuilt from the cached body.
+        If caching is enabled and a response exists in the cache, a response is rebuilt from the cached body.
         If caching is enabled and a response does not exist in the cache, the body of the newly created
         response will be cached.
 
@@ -763,13 +763,14 @@ class HTTPRouteHandler(BaseRouteHandler):
 
                 response_data = self.fn(**parsed_kwargs) if self.has_sync_callable else await self.fn(**parsed_kwargs)
 
-            if self.cache and is_cacheable(self, response_data):
-                cache_entry = create_cache_entry(self, response_data, request)
-            else:
+            if not (self.cache and is_cacheable(self, response_data)):
                 return await self.to_response(data=response_data, request=request)
 
+            cache_entry = await create_cache_entry(self, response_data, request)
+            response = await self._response_from_cache_entry(cache_entry=cache_entry, request=request)
+
         await store_cache_entry(self, request, cache_entry)
-        return await self._response_from_cache_entry(cache_entry=cache_entry, request=request)
+        return response
 
     async def _response_from_cache_entry(self, cache_entry: CacheEntry, request: Request) -> ASGIApp:
         """Build the response for ``cache_entry``, applying headers, cookies, background tasks and ``after_request``.

@@ -15,7 +15,7 @@ By setting :paramref:`~litestar.handlers.HTTPRouteHandler.cache` to ``True``, th
 will be cached. If no ``cache_key_builder`` is set in the route handler, caching for the route handler will be
 enabled for the :attr:`~.config.response_cache.ResponseCacheConfig.default_expiration`.
 
-Only the status code, the media type and the body are cached. The response is rebuilt from them for every
+Only the status code, the media type, the encoding and the body are cached. The response is rebuilt from them for every
 request, so headers, cookies and background tasks configured on the handler or its layers, ``after_request`` hooks
 and middleware all run again each time. On cached routes, ``after_request`` hooks receive the rendered body as
 ``bytes``. The handler, its dependencies and ``before_request`` hooks are not called when a response is served from
@@ -30,6 +30,9 @@ created by exception handlers are not cached.
 .. warning:: The default cache key is built from the request method, path and query parameters only, so a cached
     response is served to every user. Do not cache handlers whose response depends on the user, or set a
     ``cache_key_builder`` that includes the user's identity.
+
+Entries are stored under the key returned by the key builder with a ``::body`` suffix, which has to be added when
+deleting an entry from the store directly.
 
 .. note:: If the default :paramref:`~litestar.config.response_cache.ResponseCacheConfig.default_expiration` is set to
     ``None``, setting up the route handler with :paramref:`~litestar.handlers.HTTPRouteHandler.cache` set to ``True``

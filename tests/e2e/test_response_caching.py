@@ -1,7 +1,7 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
 import random
-from collections.abc import Callable
+from collections.abc import AsyncGenerator, Awaitable, Callable
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import TYPE_CHECKING, Annotated, Any, Optional, TypeVar, Union
@@ -16,7 +16,8 @@ from litestar.background_tasks import BackgroundTask
 from litestar.config.compression import CompressionConfig
 from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
-from litestar.datastructures import ResponseHeader, State
+from litestar.datastructures import Cookie, ResponseHeader, State
+from litestar.di import NamedDependency, Provide
 from litestar.dto import DataclassDTO, DTOConfig
 from litestar.enums import CompressionEncoding
 from litestar.middleware.session.base import BaseBackendConfig
@@ -280,7 +281,7 @@ async def test_does_not_cache_non_cached_handler_on_cached_route() -> None:
         (CACHE_FOREVER, True),
     ],
 )
-async def test_middleware_not_applied_to_non_cached_routes(
+async def test_cache_only_applied_to_cached_handlers(
     cache: Union[bool, int, type[CACHE_FOREVER]], expect_applied: bool
 ) -> None:
     @get(path="/", cache=cache)
@@ -418,6 +419,8 @@ def test_csrf_cookie_not_replayed() -> None:
         lambda: Stream(iter([b"a", b"b"])),
         lambda: _MyResponse("x"),
         lambda: Response("x", headers={"Location": "/a"}, status_code=HTTP_301_MOVED_PERMANENTLY),
+        lambda: Response("x", cookies=[Cookie(key="a", value="b")]),
+        lambda: Response("x", background=BackgroundTask(lambda: None)),
     ],
 )
 def test_non_data_responses_not_cached(mock: MagicMock, make_response: Callable[[], Response]) -> None:
@@ -545,7 +548,7 @@ def test_default_do_response_cache_predicate(
     with create_test_client([handler]) as client:
         client.get("/")
         client.get("/")
-        assert mock.call_count == 1 if should_cache else 2
+        assert mock.call_count == (1 if should_cache else 2)
 
 
 def test_custom_do_response_cache_predicate(mock: MagicMock) -> None:
@@ -596,3 +599,39 @@ def test_on_multiple_handlers(mock: MagicMock) -> None:
         assert second_post_response.text == "post_response"
         assert first_post_response.headers["unique-identifier"] != second_post_response.headers["unique-identifier"]
         assert mock.call_count == 2
+
+
+def test_awaitable_return_value_is_cached(mock: MagicMock) -> None:
+    async def value() -> str:
+        return mock()  # type: ignore[no-any-return]
+
+    @get("/", cache=True, sync_to_thread=False)
+    def handler() -> Awaitable[str]:
+        return value()
+
+    with create_test_client([handler]) as client:
+        assert client.get("/").text == mock.return_value
+        assert client.get("/").text == mock.return_value
+
+    assert mock.call_count == 1
+
+
+def test_after_request_runs_before_dependency_cleanup_on_cached_route() -> None:
+    events: list[str] = []
+
+    async def dep() -> AsyncGenerator[None, None]:
+        yield
+        events.append("cleanup")
+
+    def after(response: Response) -> Response:
+        events.append("after_request")
+        return response
+
+    @get("/", cache=True, sync_to_thread=False, dependencies={"d": Provide(dep)}, after_request=after)
+    def handler(d: NamedDependency[None]) -> str:
+        return "ok"
+
+    with create_test_client([handler]) as client:
+        assert client.get("/").text == "ok"
+
+    assert events == ["after_request", "cleanup"]

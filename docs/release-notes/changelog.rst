@@ -12,7 +12,7 @@
 
         Fix a bug where the response cache stored the complete response, including
         headers and cookies set by middleware such as the session and CSRF cookies, and
-        sent it to every later client. Only the status code, media type and body are now
+        sent it to every later client. Only the status code, media type, encoding and body are now
         cached, and the response is rebuilt from them for every request: headers,
         cookies, background tasks, ``after_request`` hooks, compression and other
         middleware run each time. ``ResponseCacheMiddleware`` has been removed.

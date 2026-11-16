@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, TypeAlias
 
 from msgspec import DecodeError
@@ -41,7 +42,7 @@ def is_cacheable(handler: HTTPRouteHandler, data: Any) -> bool:
         data: The value returned by the route handler function
 
     Returns:
-        Whether the response for ``data`` is cached.
+        Whether the response for ``data`` can be cached.
     """
     if handler.response_class is not Response:
         return False
@@ -50,7 +51,7 @@ def is_cacheable(handler: HTTPRouteHandler, data: Any) -> bool:
     return not isinstance(data, Response) and not callable(data)
 
 
-def create_cache_entry(handler: HTTPRouteHandler, data: Any, request: Request) -> CacheEntry:
+async def create_cache_entry(handler: HTTPRouteHandler, data: Any, request: Request) -> CacheEntry:
     """Render ``data`` into a :data:`CacheEntry`, without headers, cookies, background tasks or ``after_request``.
 
     Args:
@@ -61,6 +62,9 @@ def create_cache_entry(handler: HTTPRouteHandler, data: Any, request: Request) -
     Returns:
         The cache entry for ``data``.
     """
+    if isawaitable(data):
+        data = await data
+
     if return_dto_type := handler.return_dto:
         data = return_dto_type(request).data_to_encodable_type(data)
 
