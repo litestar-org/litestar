@@ -1,9 +1,10 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-import gzip
 import random
+from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Annotated, Any, Optional, TypeVar, Union
 from unittest.mock import MagicMock
 from uuid import uuid4
 
@@ -12,13 +13,24 @@ import pytest
 
 from litestar import Litestar, Request, Response, get, post
 from litestar.config.compression import CompressionConfig
+from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
 from litestar.datastructures import Cookie, State
+from litestar.dto import DataclassDTO, DTOConfig
 from litestar.enums import CompressionEncoding
 from litestar.middleware.session.base import BaseBackendConfig
 from litestar.middleware.session.client_side import CookieBackendConfig
 from litestar.middleware.session.server_side import ServerSideSessionConfig
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.params import FromPath
+from litestar.response import Redirect, Stream
+from litestar.response.base import ASGIResponse
+from litestar.status_codes import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_301_MOVED_PERMANENTLY,
+    HTTP_400_BAD_REQUEST,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+)
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
 from litestar.testing import TestClient, create_test_client
@@ -28,6 +40,12 @@ if TYPE_CHECKING:
     from time_machine import Traveller
 
 T = TypeVar("T")
+
+
+@dataclass
+class _User:
+    name: str
+    secret: str
 
 
 @pytest.fixture()
@@ -59,7 +77,8 @@ def test_default_cache_response(sync_to_thread: bool, mock: MagicMock) -> None:
 
         assert first_response.status_code == 200
         assert second_response.status_code == 200
-        assert second_response.headers["unique-identifier"] == first_response_identifier
+        assert second_response.headers["unique-identifier"] != first_response_identifier
+        assert second_response.headers["content-type"] == first_response.headers["content-type"]
         assert first_response.text == second_response.text
         assert mock.call_count == 1
 
@@ -73,7 +92,7 @@ def test_handler_expiration(mock: MagicMock, frozen_datetime: "Traveller") -> No
         first_response = client.get("/cached-local")
         frozen_datetime.shift(delta=timedelta(seconds=5))
         second_response = client.get("/cached-local")
-        assert first_response.headers["unique-identifier"] == second_response.headers["unique-identifier"]
+        assert first_response.headers["unique-identifier"] != second_response.headers["unique-identifier"]
         assert mock.call_count == 1
 
         frozen_datetime.shift(delta=timedelta(seconds=11))
@@ -92,7 +111,7 @@ def test_default_expiration(mock: MagicMock, frozen_datetime: "Traveller") -> No
     ) as client:
         first_response = client.get("/cached-default")
         second_response = client.get("/cached-default")
-        assert first_response.headers["unique-identifier"] == second_response.headers["unique-identifier"]
+        assert first_response.headers["unique-identifier"] != second_response.headers["unique-identifier"]
         assert mock.call_count == 1
 
         frozen_datetime.shift(delta=timedelta(seconds=1))
@@ -289,7 +308,124 @@ def test_cached_response_does_not_replay_set_cookie(session_config: BaseBackendC
     assert not set(victim_cookies) & set(other_cookies)
 
 
-async def test_compression_applies_before_cache() -> None:
+def test_handler_response_headers_not_replayed(mock: MagicMock) -> None:
+    @get("/", cache=True, sync_to_thread=False)
+    def handler() -> Response[str]:
+        mock()
+        return Response("x", headers={"x-user": str(uuid4())})
+
+    with create_test_client([handler]) as client:
+        first = client.get("/")
+        second = client.get("/")
+
+    assert "x-user" in first.headers
+    assert "x-user" not in second.headers
+    assert second.text == "x"
+    assert mock.call_count == 1
+
+
+def test_csrf_cookie_not_replayed() -> None:
+    @get("/", cache=True, sync_to_thread=False)
+    def handler() -> str:
+        return "ok"
+
+    app = Litestar([handler], csrf_config=CSRFConfig(secret="x" * 32))
+
+    with TestClient(app) as client:
+        first = client.get("/").cookies.get("csrftoken")
+        client.cookies.clear()
+        second = client.get("/").cookies.get("csrftoken")
+
+    assert first
+    assert second
+    assert first != second
+
+
+@pytest.mark.parametrize(
+    "make_response",
+    [
+        lambda: Redirect("/elsewhere", status_code=HTTP_301_MOVED_PERMANENTLY),
+        lambda: Stream(iter([b"a", b"b"])),
+    ],
+)
+def test_non_data_responses_not_cached(mock: MagicMock, make_response: Callable[[], Response]) -> None:
+    @get("/", cache=True, sync_to_thread=False)
+    def handler() -> Response:
+        mock()
+        return make_response()
+
+    with create_test_client([handler]) as client:
+        client.get("/", follow_redirects=False)
+        client.get("/", follow_redirects=False)
+
+    assert mock.call_count == 2
+
+
+def test_asgi_response_not_cached(mock: MagicMock) -> None:
+    @get("/", cache=True, sync_to_thread=False)
+    def handler() -> ASGIResponse:
+        mock()
+        return ASGIResponse(body=b"x")
+
+    with create_test_client([handler]) as client:
+        client.get("/")
+        client.get("/")
+
+    assert mock.call_count == 2
+
+
+def test_cached_return_dto_body_matches(mock: MagicMock) -> None:
+    @get(
+        "/",
+        cache=True,
+        sync_to_thread=False,
+        return_dto=DataclassDTO[Annotated[_User, DTOConfig(exclude={"secret"})]],
+    )
+    def handler() -> _User:
+        mock()
+        return _User(name="n", secret="s")
+
+    with create_test_client([handler]) as client:
+        first = client.get("/")
+        second = client.get("/")
+
+    assert first.json() == second.json() == {"name": "n"}
+    assert second.headers["content-type"] == first.headers["content-type"]
+    assert mock.call_count == 1
+
+
+async def test_legacy_cache_entry_is_a_miss(mock: MagicMock) -> None:
+    @get("/", cache=True, sync_to_thread=False)
+    def handler() -> str:
+        return mock()  # type: ignore[no-any-return]
+
+    app = Litestar([handler])
+    legacy = [
+        {"type": "http.response.start", "status": 200, "headers": []},
+        {"type": "http.response.body", "body": b"stale"},
+    ]
+    await app.response_cache_config.get_store_from_app(app).set("GET/", msgspec.msgpack.encode(legacy))
+
+    with TestClient(app) as client:
+        assert client.get("/").text == mock.return_value
+        assert client.get("/").text == mock.return_value
+
+    assert mock.call_count == 1
+
+
+def test_does_not_leak_state_between_sequential_requests() -> None:
+    @get("/cached/{value:str}", cache=True)
+    def handler(value: FromPath[str]) -> str:
+        return value
+
+    with create_test_client([handler]) as client:
+        assert client.get("/cached/first").text == "first"
+        assert client.get("/cached/second").text == "second"
+        assert client.get("/cached/first").text == "first"
+        assert client.get("/cached/second").text == "second"
+
+
+async def test_compression_applied_per_request_on_cached_route() -> None:
     return_value = "_litestar_" * 4000
     mock = MagicMock(return_value=return_value)
 
@@ -297,18 +433,19 @@ async def test_compression_applies_before_cache() -> None:
     def handler_fn() -> str:
         return mock()  # type: ignore[no-any-return]
 
-    app = Litestar(
-        route_handlers=[handler_fn],
-        compression_config=CompressionConfig(backend="gzip"),
-    )
+    app = Litestar(route_handlers=[handler_fn], compression_config=CompressionConfig(backend="gzip"))
 
     with TestClient(app) as client:
-        client.get("/", headers={"Accept-Encoding": str(CompressionEncoding.GZIP.value)})
+        gzipped = client.get("/", headers={"Accept-Encoding": CompressionEncoding.GZIP.value})
+        plain = client.get("/", headers={"Accept-Encoding": "identity"})
 
-    stored_value = await app.response_cache_config.get_store_from_app(app).get("GET/")
-    assert stored_value
-    stored_messages = msgspec.msgpack.decode(stored_value)
-    assert gzip.decompress(stored_messages[1]["body"]).decode() == return_value
+    assert mock.call_count == 1
+    assert gzipped.headers["content-encoding"] == "gzip"
+    assert "content-encoding" not in plain.headers
+    assert plain.text == return_value
+    stored = await app.response_cache_config.get_store_from_app(app).get("GET/")
+    assert stored
+    assert msgspec.msgpack.decode(stored)[2] == return_value.encode()
 
 
 @pytest.mark.parametrize(
@@ -382,5 +519,5 @@ def test_on_multiple_handlers(mock: MagicMock) -> None:
         second_post_response = client.post("/cached-local")
         assert second_post_response.status_code == HTTP_201_CREATED
         assert second_post_response.text == "post_response"
-        assert first_post_response.headers["unique-identifier"] == second_post_response.headers["unique-identifier"]
+        assert first_post_response.headers["unique-identifier"] != second_post_response.headers["unique-identifier"]
         assert mock.call_count == 2

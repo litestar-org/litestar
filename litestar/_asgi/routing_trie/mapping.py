@@ -183,17 +183,12 @@ def build_route_middleware_stack(
         An ASGIApp that is composed of a "stack" of middlewares.
     """
     from litestar.middleware._internal.csrf import CSRFMiddleware
-    from litestar.middleware._internal.response_cache import ResponseCacheMiddleware
     from litestar.middleware.allowed_hosts import AllowedHostsMiddleware
     from litestar.middleware.base import ASGIMiddleware
-    from litestar.routes import HTTPRoute
 
     asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
     handler_middleware = route_handler.middleware
-    has_cached_route = isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers)
-    has_middleware = (
-        app.csrf_config or app.compression_config or has_cached_route or app.allowed_hosts or handler_middleware
-    )
+    has_middleware = app.csrf_config or app.compression_config or app.allowed_hosts or handler_middleware
 
     if has_middleware:
         # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
@@ -209,16 +204,6 @@ def build_route_middleware_stack(
 
         if compression_config := app.compression_config:
             asgi_handler = compression_config.middleware_class(app=asgi_handler, config=app.compression_config)
-
-        if has_cached_route:
-            response_cache_config = app.response_cache_config
-            response_cache_middleware = ResponseCacheMiddleware(
-                default_expiration=response_cache_config.default_expiration,
-                key_builder=response_cache_config.key_builder,
-                store=response_cache_config.store,
-                cache_response_filter=response_cache_config.cache_response_filter,
-            )
-            asgi_handler = response_cache_middleware(asgi_handler)
 
         if app.allowed_hosts:
             asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)

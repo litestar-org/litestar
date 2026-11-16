@@ -6,7 +6,9 @@ import contextlib
 from enum import Enum
 from typing import TYPE_CHECKING, AnyStr, TypedDict, cast
 
+from msgspec import DecodeError
 from msgspec.msgpack import decode as _decode_msgpack_plain
+from msgspec.msgpack import encode as _encode_msgpack_plain
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.connection import Request
@@ -31,6 +33,7 @@ from litestar.handlers.http_handlers._utils import (
 from litestar.openapi.spec import Operation
 from litestar.params import RawBody
 from litestar.response import File, Response
+from litestar.response.base import ASGIResponse
 from litestar.response.file import ASGIFileResponse
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
@@ -47,11 +50,8 @@ from litestar.types import (
     Guard,
     Method,
     Middleware,
-    Receive,
     ResponseCookies,
     ResponseHeaders,
-    Scope,
-    Send,
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
@@ -702,8 +702,8 @@ class HTTPRouteHandler(BaseRouteHandler):
     ) -> ASGIApp:
         """Return a response for the request.
 
-        If caching is enabled and a response exist in the cache, the cached response will be returned.
-        If caching is enabled and a response does not exist in the cache, the newly created
+        If caching is enabled and a response exist in the cache, a response is rebuilt from the cached body.
+        If caching is enabled and a response does not exist in the cache, the body of the newly created
         response will be cached.
 
         Args:
@@ -760,18 +760,24 @@ class HTTPRouteHandler(BaseRouteHandler):
 
                 response_data = self.fn(**parsed_kwargs) if self.has_sync_callable else await self.fn(**parsed_kwargs)
 
-            return await self.to_response(data=response_data, request=request)
+            response = await self.to_response(data=response_data, request=request)
+
+        if self.cache:
+            await self._set_cached_response(request=request, data=response_data, response=response)
+
+        return response
 
     async def _get_cached_response(self, request: Request) -> ASGIApp | None:
-        """Retrieve and un-pickle the cached response, if existing.
+        """Rebuild a response from the cached status code, content type and body, if existing.
+
+        Headers, cookies and ``after_request`` are applied again, as for an uncached response.
 
         Args:
             request: The :class:`Request <litestar.connection.Request>` instance
 
         Returns:
-            A cached response instance, if existing.
+            A response built from the cached body, if existing.
         """
-
         cache_config = request.app.response_cache_config
         cache_key = (self.cache_key_builder or cache_config.key_builder)(request)
         store = cache_config.get_store_from_app(request.app)
@@ -779,16 +785,54 @@ class HTTPRouteHandler(BaseRouteHandler):
         if not (cached_response_data := await store.get(key=cache_key)):
             return None
 
-        # we use the regular msgspec.msgpack.decode here since we don't need any of
-        # the added decoders
-        messages = _decode_msgpack_plain(cached_response_data)
+        try:
+            status_code, content_type, body = _decode_msgpack_plain(
+                cached_response_data, type=tuple[int, str | None, bytes]
+            )
+        except DecodeError:
+            return None
 
-        async def cached_response(scope: Scope, receive: Receive, send: Send) -> None:
-            ScopeState.from_scope(scope).is_cached = True
-            for message in messages:
-                await send(message)
+        response = Response(
+            content=body,
+            status_code=status_code,
+            headers={"content-type": content_type} if content_type else None,
+        )
+        return await cast("Callable[..., Awaitable[ASGIApp]]", self._response_type_handler)(
+            data=response, request=request
+        )
 
-        return cached_response
+    async def _set_cached_response(self, request: Request, data: Any, response: ASGIApp) -> None:
+        """Store the status code, content type and body of ``response``.
+
+        Only plain return values and plain :class:`Response <.response.Response>` instances are cached.
+
+        Args:
+            request: The :class:`Request <litestar.connection.Request>` instance
+            data: The value returned by the route handler function
+            response: The response created from ``data``
+        """
+        if not isinstance(response, ASGIResponse) or type(response) is not ASGIResponse:
+            return
+        if type(data) is not Response and (isinstance(data, Response) or callable(data)):
+            return
+
+        cache_config = request.app.response_cache_config
+        if not cache_config.cache_response_filter(request.scope, response.status_code):
+            return
+
+        expires_in: int | None
+        if self.cache is True:
+            expires_in = cache_config.default_expiration
+        elif isinstance(self.cache, int):
+            expires_in = self.cache
+        else:
+            expires_in = None
+
+        await cache_config.get_store_from_app(request.app).set(
+            (self.cache_key_builder or cache_config.key_builder)(request),
+            _encode_msgpack_plain((response.status_code, response.headers.get("content-type"), response.body)),
+            expires_in=expires_in,
+        )
 
     async def to_response(self, data: Any, request: Request) -> ASGIApp:
         """Return a :class:`Response <.response.Response>` from the handler by resolving and calling it.
