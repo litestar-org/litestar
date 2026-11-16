@@ -15,10 +15,20 @@ By setting :paramref:`~litestar.handlers.HTTPRouteHandler.cache` to ``True``, th
 will be cached. If no ``cache_key_builder`` is set in the route handler, caching for the route handler will be
 enabled for the :attr:`~.config.response_cache.ResponseCacheConfig.default_expiration`.
 
-Only the status code, the content type and the body are cached. Headers and cookies, including those set by
-middleware, ``after_request`` hooks or the returned :class:`~litestar.response.Response`, are created again for
-every request. Responses that stream their body (such as :class:`~litestar.response.Stream` and
-:class:`~litestar.response.File`), templates and redirects are not cached.
+Only the status code, the media type and the body are cached. The response is rebuilt from them for every
+request, so headers, cookies and background tasks configured on the handler or its layers, ``after_request`` hooks
+and middleware all run again each time. On cached routes, ``after_request`` hooks receive the rendered body as
+``bytes``.
+
+A response is only cached if the handler returns a plain value, or a :class:`~litestar.response.Response` without its
+own headers, cookies or background task, and uses the default ``response_class``. Subclasses of
+:class:`~litestar.response.Response` (such as :class:`~litestar.response.Stream`, :class:`~litestar.response.File`,
+:class:`~litestar.response.Template` and :class:`~litestar.response.Redirect`), ASGI applications and responses
+created by exception handlers are not cached.
+
+.. warning:: The default cache key is built from the request method, path and query parameters only, so a cached
+    response is served to every user. Do not cache handlers whose response depends on the user, or set a
+    ``cache_key_builder`` that includes the user's identity.
 
 .. note:: If the default :paramref:`~litestar.config.response_cache.ResponseCacheConfig.default_expiration` is set to
     ``None``, setting up the route handler with :paramref:`~litestar.handlers.HTTPRouteHandler.cache` set to ``True``

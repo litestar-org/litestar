@@ -7,7 +7,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, AnyStr, TypedDict, cast
 
 from msgspec import DecodeError
-from msgspec.msgpack import decode as _decode_msgpack_plain
+from msgspec.msgpack import Decoder as _MsgpackDecoder
 from msgspec.msgpack import encode as _encode_msgpack_plain
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
@@ -33,7 +33,6 @@ from litestar.handlers.http_handlers._utils import (
 from litestar.openapi.spec import Operation
 from litestar.params import RawBody
 from litestar.response import File, Response
-from litestar.response.base import ASGIResponse
 from litestar.response.file import ASGIFileResponse
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
@@ -58,6 +57,7 @@ from litestar.types.builtin_types import NoneType
 from litestar.utils import deprecated as litestar_deprecated
 from litestar.utils import ensure_async_callable
 from litestar.utils.empty import value_or_default
+from litestar.utils.helpers import get_enum_string_value
 from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
@@ -86,6 +86,9 @@ if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
 
 __all__ = ("HTTPRouteHandler",)
+
+_CACHE_KEY_SUFFIX = "::body"
+_decode_cache_entry = _MsgpackDecoder(tuple[int, str, str, bytes]).decode
 
 
 class ResponseHandlerMap(TypedDict):
@@ -760,64 +763,55 @@ class HTTPRouteHandler(BaseRouteHandler):
 
                 response_data = self.fn(**parsed_kwargs) if self.has_sync_callable else await self.fn(**parsed_kwargs)
 
-            response = await self.to_response(data=response_data, request=request)
+            if self.cache and self._is_cacheable(response_data):
+                cache_entry = self._create_cache_entry(data=response_data, request=request)
+            else:
+                return await self.to_response(data=response_data, request=request)
 
-        if self.cache:
-            await self._set_cached_response(request=request, data=response_data, response=response)
+        await self._store_cache_entry(cache_entry=cache_entry, request=request)
+        return await self._response_from_cache_entry(cache_entry=cache_entry, request=request)
 
-        return response
+    def _cache_key(self, request: Request) -> str:
+        return (self.cache_key_builder or request.app.response_cache_config.key_builder)(request) + _CACHE_KEY_SUFFIX
 
-    async def _get_cached_response(self, request: Request) -> ASGIApp | None:
-        """Rebuild a response from the cached status code, content type and body, if existing.
-
-        Headers, cookies and ``after_request`` are applied again, as for an uncached response.
+    def _is_cacheable(self, data: Any) -> bool:
+        """Return whether ``data`` can be served from the cached status code, media type and body alone.
 
         Args:
+            data: The value returned by the route handler function
+
+        Returns:
+            Whether the response for ``data`` is cached.
+        """
+        if self.response_class is not Response:
+            return False
+        if type(data) is Response:
+            return not (data.headers or data.cookies or data.background)
+        return not isinstance(data, Response) and not callable(data)
+
+    def _create_cache_entry(self, data: Any, request: Request) -> tuple[int, str, str, bytes]:
+        """Render ``data`` into the status code, media type, encoding and body that are cached.
+
+        Args:
+            data: The value returned by the route handler function
             request: The :class:`Request <litestar.connection.Request>` instance
 
         Returns:
-            A response built from the cached body, if existing.
+            The cache entry for ``data``.
         """
-        cache_config = request.app.response_cache_config
-        cache_key = (self.cache_key_builder or cache_config.key_builder)(request)
-        store = cache_config.get_store_from_app(request.app)
+        if return_dto_type := self.return_dto:
+            data = return_dto_type(request).data_to_encodable_type(data)
 
-        if not (cached_response_data := await store.get(key=cache_key)):
-            return None
-
-        try:
-            status_code, content_type, body = _decode_msgpack_plain(
-                cached_response_data, type=tuple[int, str | None, bytes]
-            )
-        except DecodeError:
-            return None
-
-        response = Response(
-            content=body,
-            status_code=status_code,
-            headers={"content-type": content_type} if content_type else None,
+        response = data if isinstance(data, Response) else Response(data)
+        media_type = get_enum_string_value(response.media_type or self.media_type or MediaType.JSON)
+        asgi_response = response.to_asgi_response(
+            request=request, media_type=media_type, status_code=self.status_code, type_encoders=self.type_encoders
         )
-        return await cast("Callable[..., Awaitable[ASGIApp]]", self._response_type_handler)(
-            data=response, request=request
-        )
+        return asgi_response.status_code, media_type, response.encoding, asgi_response.body
 
-    async def _set_cached_response(self, request: Request, data: Any, response: ASGIApp) -> None:
-        """Store the status code, content type and body of ``response``.
-
-        Only plain return values and plain :class:`Response <.response.Response>` instances are cached.
-
-        Args:
-            request: The :class:`Request <litestar.connection.Request>` instance
-            data: The value returned by the route handler function
-            response: The response created from ``data``
-        """
-        if not isinstance(response, ASGIResponse) or type(response) is not ASGIResponse:
-            return
-        if type(data) is not Response and (isinstance(data, Response) or callable(data)):
-            return
-
+    async def _store_cache_entry(self, cache_entry: tuple[int, str, str, bytes], request: Request) -> None:
         cache_config = request.app.response_cache_config
-        if not cache_config.cache_response_filter(request.scope, response.status_code):
+        if not cache_config.cache_response_filter(request.scope, cache_entry[0]):
             return
 
         expires_in: int | None
@@ -829,10 +823,37 @@ class HTTPRouteHandler(BaseRouteHandler):
             expires_in = None
 
         await cache_config.get_store_from_app(request.app).set(
-            (self.cache_key_builder or cache_config.key_builder)(request),
-            _encode_msgpack_plain((response.status_code, response.headers.get("content-type"), response.body)),
-            expires_in=expires_in,
+            self._cache_key(request), _encode_msgpack_plain(cache_entry), expires_in=expires_in
         )
+
+    async def _response_from_cache_entry(self, cache_entry: tuple[int, str, str, bytes], request: Request) -> ASGIApp:
+        status_code, media_type, encoding, body = cache_entry
+        response = Response(body, status_code=status_code, media_type=media_type, encoding=encoding)
+        return await cast("Callable[..., Awaitable[ASGIApp]]", self._response_type_handler)(
+            data=response, request=request
+        )
+
+    async def _get_cached_response(self, request: Request) -> ASGIApp | None:
+        """Rebuild a response from the cached status code, media type and body, if existing.
+
+        Headers, cookies, background tasks and ``after_request`` are applied again, as for an uncached response.
+
+        Args:
+            request: The :class:`Request <litestar.connection.Request>` instance
+
+        Returns:
+            A response built from the cached body, if existing.
+        """
+        store = request.app.response_cache_config.get_store_from_app(request.app)
+        if not (cached_response_data := await store.get(key=self._cache_key(request))):
+            return None
+
+        try:
+            cache_entry = _decode_cache_entry(cached_response_data)
+        except DecodeError:
+            return None
+
+        return await self._response_from_cache_entry(cache_entry=cache_entry, request=request)
 
     async def to_response(self, data: Any, request: Request) -> ASGIApp:
         """Return a :class:`Response <.response.Response>` from the handler by resolving and calling it.

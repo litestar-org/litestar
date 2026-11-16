@@ -12,10 +12,11 @@ import msgspec
 import pytest
 
 from litestar import Litestar, Request, Response, get, post
+from litestar.background_tasks import BackgroundTask
 from litestar.config.compression import CompressionConfig
 from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
-from litestar.datastructures import Cookie, State
+from litestar.datastructures import ResponseHeader, State
 from litestar.dto import DataclassDTO, DTOConfig
 from litestar.enums import CompressionEncoding
 from litestar.middleware.session.base import BaseBackendConfig
@@ -40,6 +41,10 @@ if TYPE_CHECKING:
     from time_machine import Traveller
 
 T = TypeVar("T")
+
+
+class _MyResponse(Response):
+    pass
 
 
 @dataclass
@@ -138,9 +143,9 @@ def test_default_expiration_none(
         client.get("/cached")
 
     if expected_expiration is None:
-        assert memory_store._store["GET/cached"].expires_at is None
+        assert memory_store._store["GET/cached::body"].expires_at is None
     else:
-        assert memory_store._store["GET/cached"].expires_at
+        assert memory_store._store["GET/cached::body"].expires_at
 
 
 def test_cache_forever(memory_store: MemoryStore) -> None:
@@ -153,7 +158,7 @@ def test_cache_forever(memory_store: MemoryStore) -> None:
     with TestClient(app) as client:
         client.get("/cached")
 
-    assert memory_store._store["GET/cached"].expires_at is None
+    assert memory_store._store["GET/cached::body"].expires_at is None
 
 
 @pytest.mark.parametrize("sync_to_thread", (True, False))
@@ -170,7 +175,7 @@ async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str, mock: 
     with TestClient(app) as client:
         client.get("/cached")
         store = app.stores.get("response_cache")
-        assert await store.exists("/cached:::cached")
+        assert await store.exists("/cached:::cached::body")
 
 
 async def test_config_cache_key_builder(mock: MagicMock) -> None:
@@ -189,7 +194,7 @@ async def test_config_cache_key_builder(mock: MagicMock) -> None:
 
         assert mock.call_count == 1
 
-    assert await app.stores.get("response_cache").exists("/cached:::config")
+    assert await app.stores.get("response_cache").exists("/cached:::config::body")
 
 
 async def test_non_default_store_name(mock: MagicMock) -> None:
@@ -210,7 +215,7 @@ async def test_non_default_store_name(mock: MagicMock) -> None:
 
         assert mock.call_count == 1
 
-    assert await app.stores.get("some_store").exists("GET/")
+    assert await app.stores.get("some_store").exists("GET/::body")
 
 
 async def test_with_stores(store: Store, mock: MagicMock) -> None:
@@ -262,8 +267,8 @@ async def test_does_not_cache_non_cached_handler_on_cached_route() -> None:
         client.post("/mix")
 
     store = app.stores.get("response_cache")
-    assert await store.exists("GET/mix")
-    assert not await store.exists("POST/mix")
+    assert await store.exists("GET/mix::body")
+    assert not await store.exists("POST/mix::body")
 
 
 @pytest.mark.parametrize(
@@ -283,7 +288,7 @@ async def test_middleware_not_applied_to_non_cached_routes(
 
     with create_test_client(route_handlers=[handler]) as client:
         client.get("/")
-        assert await client.app.stores.get("response_cache").exists("GET/") is expect_applied
+        assert await client.app.stores.get("response_cache").exists("GET/::body") is expect_applied
 
 
 @pytest.mark.parametrize("session_config", [ServerSideSessionConfig(), CookieBackendConfig(secret=b"x" * 16)])
@@ -293,8 +298,8 @@ def test_cached_response_does_not_replay_set_cookie(session_config: BaseBackendC
         request.set_session({"user": "admin"})
 
     @get("/public", cache=True, sync_to_thread=False)
-    def public() -> Response[str]:
-        return Response("public", cookies=[Cookie(key="handler", value="first")])
+    def public() -> str:
+        return "public"
 
     app = Litestar([login, public], middleware=[session_config.middleware])
 
@@ -304,11 +309,11 @@ def test_cached_response_does_not_replay_set_cookie(session_config: BaseBackendC
         client.cookies.clear()
         other_cookies = client.get("/public").headers.get_list("set-cookie")
 
-    assert any(c.startswith("handler=first") for c in victim_cookies)
+    assert victim_cookies
     assert not set(victim_cookies) & set(other_cookies)
 
 
-def test_handler_response_headers_not_replayed(mock: MagicMock) -> None:
+def test_response_with_own_headers_not_cached(mock: MagicMock) -> None:
     @get("/", cache=True, sync_to_thread=False)
     def handler() -> Response[str]:
         mock()
@@ -318,10 +323,75 @@ def test_handler_response_headers_not_replayed(mock: MagicMock) -> None:
         first = client.get("/")
         second = client.get("/")
 
-    assert "x-user" in first.headers
-    assert "x-user" not in second.headers
-    assert second.text == "x"
+    assert first.headers["x-user"] != second.headers["x-user"]
+    assert mock.call_count == 2
+
+
+def test_after_request_runs_once_on_cached_routes(mock: MagicMock) -> None:
+    def wrap(response: Response) -> Response:
+        response.content = b"[" + response.content + b"]"
+        return response
+
+    @get("/", cache=True, sync_to_thread=False, after_request=wrap)
+    def handler() -> list[int]:
+        mock()
+        return [1]
+
+    with create_test_client([handler]) as client:
+        first = client.get("/")
+        second = client.get("/")
+
+    assert first.text == second.text == "[[1]]"
     assert mock.call_count == 1
+
+
+def test_layered_content_type_not_duplicated(mock: MagicMock) -> None:
+    @get(
+        "/",
+        cache=True,
+        sync_to_thread=False,
+        response_headers=[ResponseHeader(name="Content-Type", value="application/vnd.api+json")],
+    )
+    def handler() -> dict[str, int]:
+        mock()
+        return {"a": 1}
+
+    with create_test_client([handler]) as client:
+        first = client.get("/")
+        second = client.get("/")
+
+    assert first.headers.get_list("content-type") == ["application/vnd.api+json"]
+    assert second.headers.get_list("content-type") == ["application/vnd.api+json"]
+    assert mock.call_count == 1
+
+
+def test_background_task_runs_on_every_hit(mock: MagicMock) -> None:
+    task = MagicMock()
+
+    @get("/", cache=True, sync_to_thread=False, background=BackgroundTask(task))
+    def handler() -> str:
+        mock()
+        return "ok"
+
+    with create_test_client([handler]) as client:
+        client.get("/")
+        client.get("/")
+
+    assert task.call_count == 2
+    assert mock.call_count == 1
+
+
+def test_custom_response_class_not_cached(mock: MagicMock) -> None:
+    @get("/", cache=True, sync_to_thread=False, response_class=_MyResponse)
+    def handler() -> str:
+        mock()
+        return "ok"
+
+    with create_test_client([handler]) as client:
+        client.get("/")
+        client.get("/")
+
+    assert mock.call_count == 2
 
 
 def test_csrf_cookie_not_replayed() -> None:
@@ -346,6 +416,8 @@ def test_csrf_cookie_not_replayed() -> None:
     [
         lambda: Redirect("/elsewhere", status_code=HTTP_301_MOVED_PERMANENTLY),
         lambda: Stream(iter([b"a", b"b"])),
+        lambda: _MyResponse("x"),
+        lambda: Response("x", headers={"Location": "/a"}, status_code=HTTP_301_MOVED_PERMANENTLY),
     ],
 )
 def test_non_data_responses_not_cached(mock: MagicMock, make_response: Callable[[], Response]) -> None:
@@ -404,13 +476,16 @@ async def test_legacy_cache_entry_is_a_miss(mock: MagicMock) -> None:
         {"type": "http.response.start", "status": 200, "headers": []},
         {"type": "http.response.body", "body": b"stale"},
     ]
-    await app.response_cache_config.get_store_from_app(app).set("GET/", msgspec.msgpack.encode(legacy))
+    store = app.response_cache_config.get_store_from_app(app)
+    await store.set("GET/", msgspec.msgpack.encode(legacy))
 
     with TestClient(app) as client:
         assert client.get("/").text == mock.return_value
         assert client.get("/").text == mock.return_value
 
     assert mock.call_count == 1
+    assert await store.exists("GET/::body")
+    assert await store.get("GET/") == msgspec.msgpack.encode(legacy)
 
 
 def test_does_not_leak_state_between_sequential_requests() -> None:
@@ -443,9 +518,9 @@ async def test_compression_applied_per_request_on_cached_route() -> None:
     assert gzipped.headers["content-encoding"] == "gzip"
     assert "content-encoding" not in plain.headers
     assert plain.text == return_value
-    stored = await app.response_cache_config.get_store_from_app(app).get("GET/")
+    stored = await app.response_cache_config.get_store_from_app(app).get("GET/::body")
     assert stored
-    assert msgspec.msgpack.decode(stored)[2] == return_value.encode()
+    assert msgspec.msgpack.decode(stored)[3] == return_value.encode()
 
 
 @pytest.mark.parametrize(

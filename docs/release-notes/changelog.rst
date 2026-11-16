@@ -12,11 +12,25 @@
 
         Fix a bug where the response cache stored the complete response, including
         headers and cookies set by middleware such as the session and CSRF cookies, and
-        sent it to every later client. Only the status code, content type and body are
-        now cached, and headers and cookies are created again for each request.
-        Handlers returning a :class:`~litestar.response.Stream`,
-        :class:`~litestar.response.File`, :class:`~litestar.response.Template` or
-        :class:`~litestar.response.Redirect` are no longer cached.
+        sent it to every later client. Only the status code, media type and body are now
+        cached, and the response is rebuilt from them for every request: headers,
+        cookies, background tasks, ``after_request`` hooks, compression and other
+        middleware run each time. ``ResponseCacheMiddleware`` has been removed.
+
+        This changes what is cached:
+
+        - Handlers returning a subclass of :class:`~litestar.response.Response` (such as
+          :class:`~litestar.response.Stream`, :class:`~litestar.response.File`,
+          :class:`~litestar.response.Template` or :class:`~litestar.response.Redirect`),
+          a :class:`~litestar.response.Response` with its own headers, cookies or
+          background task, or an ASGI application, and handlers using a custom
+          ``response_class``, are no longer cached. Neither are responses created by
+          exception handlers.
+        - ``after_request`` hooks on cached routes receive the rendered body as
+          ``bytes``.
+        - Cache entries are stored under the key returned by the key builder with a
+          ``::body`` suffix. Do not share the response cache store between this and
+          earlier versions, and add the suffix when deleting entries by key.
 
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
