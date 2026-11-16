@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Any, cast
+from contextlib import suppress
+from typing import TYPE_CHECKING
 
-from litestar.exceptions import MissingDependencyException
+from litestar.exceptions import ClientException, MissingDependencyException
 from litestar.middleware.base import AbstractMiddleware
 
 __all__ = ("OpenTelemetryInstrumentationMiddleware",)
@@ -59,9 +60,9 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        # Span names and metric attributes are set when the span starts, before the request is routed.
-        try:
-            *_, scope["path_template"] = scope["litestar_app"].asgi_router.resolve_route(scope)
-        except Exception:  # noqa: BLE001
-            cast("dict[str, Any]", scope).pop("path_template", None)
+        # Span names and metric attributes are set when the span starts. When the middleware wraps the whole app, the
+        # request is not routed yet; otherwise the router has already set the path template.
+        if (app := scope.get("litestar_app")) is not None and app.asgi_handler is self:
+            with suppress(ClientException):
+                *_, scope["path_template"] = app.asgi_router.resolve_route(scope)
         await self.open_telemetry_middleware(scope, receive, send)  # type: ignore[arg-type]

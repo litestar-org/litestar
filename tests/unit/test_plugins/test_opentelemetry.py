@@ -21,15 +21,16 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 from opentelemetry.trace import Span, SpanKind
 from pytest_mock import MockerFixture
 
-from litestar import Litestar, WebSocket, asgi, get, websocket
+from litestar import Litestar, Router, WebSocket, asgi, get, websocket
 from litestar.config.app import AppConfig
 from litestar.enums import ScopeType
 from litestar.exceptions import http_exceptions
 from litestar.params import FromPath, JSONBody
 from litestar.plugins.opentelemetry import OpenTelemetryConfig, OpenTelemetryPlugin
 from litestar.plugins.opentelemetry._utils import get_route_details_from_scope
+from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
+from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send
 
 
@@ -526,6 +527,49 @@ def test_parameterized_http_route(app_config: AppConfig, exporter: InMemorySpanE
     assert server_span.attributes["http.route"] == "/articles/{article_id}"
 
 
+@pytest.mark.parametrize("root_path", ["", "/api/v1"])
+def test_middleware_on_handlers_and_routers(
+    config: OpenTelemetryConfig, exporter: InMemorySpanExporter, root_path: str
+) -> None:
+    @get("/articles/{article_id:int}", middleware=[config.middleware])
+    async def handler(article_id: FromPath[int]) -> int:
+        return article_id
+
+    @get("/items/{item_id:int}")
+    async def router_handler(item_id: FromPath[int]) -> int:
+        return item_id
+
+    @asgi("/mount", is_mount=True, middleware=[config.middleware])
+    async def mount(scope: Scope, receive: Receive, send: Send) -> None:
+        await ASGIResponse(body=scope["path_template"])(scope, receive, send)
+
+    router = Router("/router", route_handlers=[router_handler], middleware=[config.middleware])
+    with create_test_client([handler, mount, router], root_path=root_path) as client:
+        assert client.get(f"{root_path}/articles/9041").json() == 9041
+        assert client.get(f"{root_path}/router/items/1").json() == 1
+        assert client.get(f"{root_path}/mount/sub/path").text == "/mount"
+
+    server_spans = [span for span in exporter.get_finished_spans() if span.kind == SpanKind.SERVER]
+    assert [span.name for span in server_spans] == [
+        "GET /articles/{article_id}",
+        "GET /router/items/{item_id}",
+        "GET /mount",
+    ]
+
+
+def test_middleware_wrapping_litestar_app(config: OpenTelemetryConfig, exporter: InMemorySpanExporter) -> None:
+    @get("/")
+    async def handler() -> str:
+        return "hello"
+
+    app = config.middleware_class(app=Litestar([handler]), config=config)
+    with TestClient(app) as client:
+        assert client.get("/").text == "hello"
+
+    server_span = next(span for span in exporter.get_finished_spans() if span.kind == SpanKind.SERVER)
+    assert server_span.name == "GET"
+
+
 async def test_unmatched_websocket_route(app_config: AppConfig, exporter: InMemorySpanExporter, scope: Scope) -> None:
     app = Litestar([], middleware=app_config.middleware, plugins=app_config.plugins)
     scope_dict = cast("dict[str, Any]", scope)
@@ -601,15 +645,15 @@ def test_http_metrics_use_route_templates(
 
 
 @pytest.mark.parametrize(
-    "child_path, child_template", [("/articles/9041", "/articles/{article_id}"), ("/missing", None)]
+    "child_path, child_template", [("/articles/9041", "/articles/{article_id}"), ("/missing", "/mount")]
 )
 def test_mounted_litestar_app(
-    config: OpenTelemetryConfig, app_config: AppConfig, child_path: str, child_template: str | None
+    config: OpenTelemetryConfig, app_config: AppConfig, child_path: str, child_template: str
 ) -> None:
-    templates: list[tuple[Litestar, str | None]] = []
+    templates: list[tuple[Litestar, str]] = []
 
     def request_hook(span: Span, scope: dict[str, Any]) -> None:
-        templates.append((scope["litestar_app"], scope.get("path_template")))
+        templates.append((scope["litestar_app"], scope["path_template"]))
 
     config.server_request_hook_handler = request_hook
 
