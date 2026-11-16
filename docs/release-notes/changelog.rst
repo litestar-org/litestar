@@ -6,6 +6,27 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Use matched route templates in OpenTelemetry spans and metrics
+        :type: bugfix
+        :issue: 5120
+        :breaking:
+
+        OpenTelemetry HTTP server span names now use ``{method} {route_template}``,
+        e.g. ``GET /articles/{article_id}``, instead of the raw request path. The
+        ``http.route`` attribute contains only the matched template, without the HTTP
+        method, and the HTTP server metrics use it too, instead of one series per URL.
+        When routing fails (404 or 405), the span name falls back to the method and
+        ``http.route`` is omitted. Methods unknown to OpenTelemetry are reported as
+        ``HTTP``. WebSocket spans use the matched template or ``websocket`` if no
+        route matches, following OpenTelemetry HTTP semantic conventions.
+
+        Dashboards, alerts and queries matching on span names or ``http.route`` values
+        must be updated.
+
+        The route is now resolved before the server span starts, so a custom
+        ``scope_span_details_extractor`` or ``server_request_hook_handler`` can read the
+        matched template from ``scope["path_template"]``.
+
     .. change:: Set the mount path as ``path_template`` for mounted ASGI apps
         :type: bugfix
 

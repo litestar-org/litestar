@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.base import AbstractMiddleware
@@ -59,4 +59,9 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
         Returns:
             None
         """
+        # Span names and metric attributes are set when the span starts, before the request is routed.
+        try:
+            *_, scope["path_template"] = scope["litestar_app"].asgi_router.resolve_route(scope)
+        except Exception:  # noqa: BLE001
+            cast("dict[str, Any]", scope).pop("path_template", None)
         await self.open_telemetry_middleware(scope, receive, send)  # type: ignore[arg-type]
