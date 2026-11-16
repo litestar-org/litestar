@@ -6,12 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
-    .. change:: Do not replay ``Set-Cookie`` headers from cached responses
+    .. change:: Do not replay headers and cookies from cached responses
         :type: bugfix
+        :breaking:
 
-        Fix a bug where the response cache stored ``Set-Cookie`` headers, including the
-        session and CSRF cookies, and sent them to every later client. Cookies are now
-        only sent when the response is generated, not when served from the cache.
+        Fix a bug where the response cache stored the complete response, including
+        headers and cookies set by middleware such as the session and CSRF cookies, and
+        sent it to every later client. Only the status code, content type and body are
+        now cached, and headers and cookies are created again for each request.
+        Handlers returning a :class:`~litestar.response.Stream`,
+        :class:`~litestar.response.File`, :class:`~litestar.response.Template` or
+        :class:`~litestar.response.Redirect` are no longer cached.
 
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix

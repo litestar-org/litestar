@@ -15,6 +15,11 @@ By setting :paramref:`~litestar.handlers.HTTPRouteHandler.cache` to ``True``, th
 will be cached. If no ``cache_key_builder`` is set in the route handler, caching for the route handler will be
 enabled for the :attr:`~.config.response_cache.ResponseCacheConfig.default_expiration`.
 
+Only the status code, the content type and the body are cached. Headers and cookies, including those set by
+middleware, ``after_request`` hooks or the returned :class:`~litestar.response.Response`, are created again for
+every request. Responses that stream their body (such as :class:`~litestar.response.Stream` and
+:class:`~litestar.response.File`), templates and redirects are not cached.
+
 .. note:: If the default :paramref:`~litestar.config.response_cache.ResponseCacheConfig.default_expiration` is set to
     ``None``, setting up the route handler with :paramref:`~litestar.handlers.HTTPRouteHandler.cache` set to ``True``
     will keep the response in cache indefinitely.

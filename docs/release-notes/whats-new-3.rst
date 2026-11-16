@@ -431,11 +431,11 @@ Built-in middleware migrated to ``ASGIMiddleware``
 
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``CORSMiddleware``, ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have made this
-move. ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
-``litestar.middleware._internal``, removing them from the public API; for CSRF this
-includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
-``generate_csrf_hash`` helpers.
+``CORSMiddleware`` and ``CSRFMiddleware`` have made this move. ``CSRFMiddleware`` has
+also been moved into ``litestar.middleware._internal``, removing it from the public API;
+this includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
+``generate_csrf_hash`` helpers. ``ResponseCacheMiddleware`` has been removed; response
+caching is now done by the route handler.
 
 These classes are constructed by Litestar itself from their configuration objects (for
 CSRF, via a ``from_config`` classmethod on the middleware), so applications that only
