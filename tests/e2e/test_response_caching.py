@@ -4,6 +4,7 @@ import random
 from collections.abc import AsyncGenerator, Awaitable, Callable
 from dataclasses import dataclass
 from datetime import timedelta
+from pathlib import Path
 from typing import TYPE_CHECKING, Annotated, Any, Optional, TypeVar, Union
 from unittest.mock import MagicMock
 from uuid import uuid4
@@ -24,7 +25,8 @@ from litestar.middleware.session.base import BaseBackendConfig
 from litestar.middleware.session.client_side import CookieBackendConfig
 from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.params import FromPath
-from litestar.response import Redirect, Stream
+from litestar.plugins.jinja import JinjaTemplateEngine
+from litestar.response import Redirect, Stream, Template
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import (
     HTTP_200_OK,
@@ -35,6 +37,7 @@ from litestar.status_codes import (
 )
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
+from litestar.template.config import TemplateConfig
 from litestar.testing import TestClient, create_test_client
 from litestar.types import HTTPScope
 
@@ -44,8 +47,14 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 
-class _MyResponse(Response):
-    pass
+class _EnvelopeResponse(Response):
+    def render(self, content: Any, media_type: str, enc_hook: Any = None) -> bytes:
+        return super().render({"data": content}, media_type)
+
+    def to_asgi_response(self, *args: Any, **kwargs: Any) -> ASGIResponse:
+        asgi_response = super().to_asgi_response(*args, **kwargs)
+        asgi_response.headers["x-envelope"] = "1"
+        return asgi_response
 
 
 @dataclass
@@ -314,18 +323,75 @@ def test_cached_response_does_not_replay_set_cookie(session_config: BaseBackendC
     assert not set(victim_cookies) & set(other_cookies)
 
 
-def test_response_with_own_headers_not_cached(mock: MagicMock) -> None:
-    @get("/", cache=True, sync_to_thread=False)
+def test_response_own_headers_are_cached_without_cookies(mock: MagicMock) -> None:
+    def after(response: Response) -> Response:
+        response.headers["x-after"] = str(uuid4())
+        return response
+
+    @get(
+        "/",
+        cache=True,
+        sync_to_thread=False,
+        after_request=after,
+        response_cookies=[Cookie(key="layered", value="1")],
+    )
     def handler() -> Response[str]:
         mock()
-        return Response("x", headers={"x-user": str(uuid4())})
+        return Response("x", headers={"x-handler": "1", "ETag": '"abc"'}, status_code=203)
 
     with create_test_client([handler]) as client:
         first = client.get("/")
         second = client.get("/")
 
-    assert first.headers["x-user"] != second.headers["x-user"]
-    assert mock.call_count == 2
+    assert mock.call_count == 1
+    assert second.status_code == first.status_code == 203
+    assert second.text == "x"
+    assert second.headers["x-handler"] == "1"
+    assert second.headers["etag"] == '"abc"'
+    assert first.headers["x-after"] != second.headers["x-after"]
+    assert (
+        second.headers.get_list("set-cookie")
+        == first.headers.get_list("set-cookie")
+        == ["layered=1; Path=/; SameSite=lax"]
+    )
+
+
+@pytest.mark.parametrize(
+    "make_response",
+    [
+        lambda: Redirect("/elsewhere", status_code=HTTP_301_MOVED_PERMANENTLY),
+        lambda: Response("", headers={"Location": "/a"}, status_code=HTTP_301_MOVED_PERMANENTLY),
+    ],
+)
+def test_redirects_are_cached_with_location(mock: MagicMock, make_response: Callable[[], Response]) -> None:
+    @get("/", cache=True, sync_to_thread=False)
+    def handler() -> Response:
+        mock()
+        return make_response()
+
+    with create_test_client([handler]) as client:
+        first = client.get("/", follow_redirects=False)
+        second = client.get("/", follow_redirects=False)
+
+    assert mock.call_count == 1
+    assert second.status_code == HTTP_301_MOVED_PERMANENTLY
+    assert second.headers["location"] == first.headers["location"]
+
+
+def test_returned_response_background_runs_on_miss_only(mock: MagicMock) -> None:
+    task = MagicMock()
+
+    @get("/", cache=True, sync_to_thread=False)
+    def handler() -> Response[str]:
+        mock()
+        return Response("x", background=BackgroundTask(task))
+
+    with create_test_client([handler]) as client:
+        client.get("/")
+        client.get("/")
+
+    assert mock.call_count == 1
+    assert task.call_count == 1
 
 
 def test_after_request_runs_once_on_cached_routes(mock: MagicMock) -> None:
@@ -382,17 +448,19 @@ def test_background_task_runs_on_every_hit(mock: MagicMock) -> None:
     assert mock.call_count == 1
 
 
-def test_custom_response_class_not_cached(mock: MagicMock) -> None:
-    @get("/", cache=True, sync_to_thread=False, response_class=_MyResponse)
-    def handler() -> str:
+def test_custom_response_class_is_cached(mock: MagicMock) -> None:
+    @get("/", cache=True, sync_to_thread=False, response_class=_EnvelopeResponse)
+    def handler() -> dict[str, int]:
         mock()
-        return "ok"
+        return {"a": 1}
 
     with create_test_client([handler]) as client:
-        client.get("/")
-        client.get("/")
+        first = client.get("/")
+        second = client.get("/")
 
-    assert mock.call_count == 2
+    assert mock.call_count == 1
+    assert first.json() == second.json() == {"data": {"a": 1}}
+    assert second.headers["x-envelope"] == "1"
 
 
 def test_csrf_cookie_not_replayed() -> None:
@@ -415,15 +483,11 @@ def test_csrf_cookie_not_replayed() -> None:
 @pytest.mark.parametrize(
     "make_response",
     [
-        lambda: Redirect("/elsewhere", status_code=HTTP_301_MOVED_PERMANENTLY),
         lambda: Stream(iter([b"a", b"b"])),
-        lambda: _MyResponse("x"),
-        lambda: Response("x", headers={"Location": "/a"}, status_code=HTTP_301_MOVED_PERMANENTLY),
         lambda: Response("x", cookies=[Cookie(key="a", value="b")]),
-        lambda: Response("x", background=BackgroundTask(lambda: None)),
     ],
 )
-def test_non_data_responses_not_cached(mock: MagicMock, make_response: Callable[[], Response]) -> None:
+def test_streams_templates_and_own_cookies_not_cached(mock: MagicMock, make_response: Callable[[], Response]) -> None:
     @get("/", cache=True, sync_to_thread=False)
     def handler() -> Response:
         mock()
@@ -432,6 +496,21 @@ def test_non_data_responses_not_cached(mock: MagicMock, make_response: Callable[
     with create_test_client([handler]) as client:
         client.get("/", follow_redirects=False)
         client.get("/", follow_redirects=False)
+
+    assert mock.call_count == 2
+
+
+def test_template_not_cached(mock: MagicMock, tmp_path: Path) -> None:
+    @get("/", cache=True, sync_to_thread=False)
+    def handler() -> Template:
+        mock()
+        return Template(template_str="hello")
+
+    with create_test_client(
+        [handler], template_config=TemplateConfig(directory=tmp_path, engine=JinjaTemplateEngine)
+    ) as client:
+        assert client.get("/").text == "hello"
+        assert client.get("/").text == "hello"
 
     assert mock.call_count == 2
 
@@ -523,7 +602,7 @@ async def test_compression_applied_per_request_on_cached_route() -> None:
     assert plain.text == return_value
     stored = await app.response_cache_config.get_store_from_app(app).get("GET/::body")
     assert stored
-    assert msgspec.msgpack.decode(stored)[3] == return_value.encode()
+    assert msgspec.msgpack.decode(stored)[2] == return_value.encode()
 
 
 @pytest.mark.parametrize(

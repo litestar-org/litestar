@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, TypeAlias
 
 from msgspec import DecodeError
 from msgspec.msgpack import Decoder, encode
 
-from litestar.enums import MediaType
-from litestar.response import Response
-from litestar.utils.helpers import get_enum_string_value
+from litestar.handlers.http_handlers._utils import normalize_headers
+from litestar.response import File, Response, Stream, Template
+from litestar.response.base import ASGIResponse
+from litestar.response.streaming import ASGIStreamingResponse
 
 if TYPE_CHECKING:
+    from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
     from litestar.handlers.http_handlers import HTTPRouteHandler
 
@@ -23,10 +24,11 @@ __all__ = (
     "store_cache_entry",
 )
 
-CacheEntry: TypeAlias = tuple[int, str, str, bytes]
-"""Status code, media type, encoding and body of a cached response."""
+CacheEntry: TypeAlias = tuple[int, list[tuple[str, str]], bytes]
+"""Status code, headers and body of a cached response."""
 
 _KEY_SUFFIX = "::body"
+_EXCLUDED_HEADERS = frozenset((b"content-length", b"set-cookie"))
 _cache_entry_decoder: Decoder[CacheEntry] = Decoder(CacheEntry)
 
 
@@ -34,25 +36,28 @@ def _cache_key(handler: HTTPRouteHandler, request: Request) -> str:
     return (handler.cache_key_builder or request.app.response_cache_config.key_builder)(request) + _KEY_SUFFIX
 
 
-def is_cacheable(handler: HTTPRouteHandler, data: Any) -> bool:
-    """Return whether the response for ``data`` can be rebuilt from a :data:`CacheEntry` alone.
+def is_cacheable(data: Any) -> bool:
+    """Return whether the response for ``data`` can be cached.
+
+    Streamed responses, templates, responses with their own cookies and ASGI applications are not cached.
 
     Args:
-        handler: The route handler that returned ``data``
         data: The value returned by the route handler function
 
     Returns:
         Whether the response for ``data`` can be cached.
     """
-    if handler.response_class is not Response:
+    if isinstance(data, (Stream, File, Template)):
         return False
-    if type(data) is Response:
-        return not (data.headers or data.cookies or data.background)
-    return not isinstance(data, Response) and not callable(data)
+    if isinstance(data, Response):
+        return not data.cookies
+    return not callable(data)
 
 
-async def create_cache_entry(handler: HTTPRouteHandler, data: Any, request: Request) -> CacheEntry:
-    """Render ``data`` into a :data:`CacheEntry`, without headers, cookies, background tasks or ``after_request``.
+def create_cache_entry(
+    handler: HTTPRouteHandler, data: Any, request: Request
+) -> tuple[CacheEntry, BackgroundTask | BackgroundTasks | None] | None:
+    """Render ``data`` into a :data:`CacheEntry`, without cookies, background tasks or ``after_request``.
 
     Args:
         handler: The route handler that returned ``data``
@@ -60,33 +65,58 @@ async def create_cache_entry(handler: HTTPRouteHandler, data: Any, request: Requ
         request: The :class:`Request <litestar.connection.Request>` instance
 
     Returns:
-        The cache entry for ``data``.
+        The cache entry and the background task of the returned response, or ``None`` if the rendered response
+        cannot be cached.
     """
-    if isawaitable(data):
-        data = await data
-
     if return_dto_type := handler.return_dto:
         data = return_dto_type(request).data_to_encodable_type(data)
 
-    response = data if isinstance(data, Response) else Response(data)
-    media_type = get_enum_string_value(response.media_type or handler.media_type or MediaType.JSON)
-    asgi_response = response.to_asgi_response(
-        request=request, media_type=media_type, status_code=handler.status_code, type_encoders=handler.type_encoders
+    response = (
+        data
+        if isinstance(data, Response)
+        else handler.response_class(
+            content=data,
+            media_type=handler.media_type,
+            status_code=handler.status_code,
+            type_encoders=handler.type_encoders,
+        )
     )
-    return asgi_response.status_code, media_type, response.encoding, asgi_response.body
+    background, response.background = response.background, None
+    layered_headers = normalize_headers(handler.response_headers)
+    asgi_response = response.to_asgi_response(
+        request=request,
+        headers=layered_headers,
+        media_type=handler.media_type,
+        status_code=handler.status_code,
+        type_encoders=handler.type_encoders,
+    )
+    if not isinstance(asgi_response, ASGIResponse) or isinstance(asgi_response, ASGIStreamingResponse):
+        response.background = background
+        return None
+
+    excluded = _EXCLUDED_HEADERS | {name.lower().encode("latin-1") for name in layered_headers}
+    headers = [
+        (name.decode("latin-1"), value.decode("latin-1"))
+        for name, value in asgi_response.headers.headers
+        if name.lower() not in excluded
+    ]
+    return (asgi_response.status_code, headers, asgi_response.body), background
 
 
-def cache_entry_to_response(cache_entry: CacheEntry) -> Response:
-    """Build the :class:`Response <litestar.response.Response>` that a :data:`CacheEntry` was rendered from.
+def cache_entry_to_response(
+    cache_entry: CacheEntry, background: BackgroundTask | BackgroundTasks | None = None
+) -> Response:
+    """Build a :class:`Response <litestar.response.Response>` from a :data:`CacheEntry`.
 
     Args:
         cache_entry: The cache entry
+        background: The background task of the response the entry was created from, run on a cache miss only
 
     Returns:
-        A response with the cached status code, media type, encoding and body.
+        A response with the cached status code, headers and body.
     """
-    status_code, media_type, encoding, body = cache_entry
-    return Response(body, status_code=status_code, media_type=media_type, encoding=encoding)
+    status_code, headers, body = cache_entry
+    return Response(body, status_code=status_code, headers=dict(headers), background=background)
 
 
 async def get_cache_entry(handler: HTTPRouteHandler, request: Request) -> CacheEntry | None:

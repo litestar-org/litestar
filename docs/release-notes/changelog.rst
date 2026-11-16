@@ -12,20 +12,19 @@
 
         Fix a bug where the response cache stored the complete response, including
         headers and cookies set by middleware such as the session and CSRF cookies, and
-        sent it to every later client. Only the status code, media type, encoding and body are now
-        cached, and the response is rebuilt from them for every request: headers,
-        cookies, background tasks, ``after_request`` hooks, compression and other
-        middleware run each time. ``ResponseCacheMiddleware`` has been removed.
+        sent it to every later client. The cache now stores the status code, body and
+        headers of the response returned by the handler, never its cookies, and rebuilds
+        the response for every request: cookies, background tasks of the handler's
+        layers, ``after_request`` hooks, compression and other middleware run each time.
+        ``ResponseCacheMiddleware`` has been removed.
 
         This changes what is cached:
 
-        - Handlers returning a subclass of :class:`~litestar.response.Response` (such as
-          :class:`~litestar.response.Stream`, :class:`~litestar.response.File`,
-          :class:`~litestar.response.Template` or :class:`~litestar.response.Redirect`),
-          a :class:`~litestar.response.Response` with its own headers, cookies or
-          background task, or an ASGI application, and handlers using a custom
-          ``response_class``, are no longer cached. Neither are responses created by
-          exception handlers.
+        - Handlers returning a :class:`~litestar.response.Stream`,
+          :class:`~litestar.response.File`, :class:`~litestar.response.Template`, a
+          :class:`~litestar.response.Response` with its own cookies, or an ASGI
+          application are no longer cached. Neither are responses created by exception
+          handlers.
         - ``after_request`` hooks on cached routes receive the rendered body as
           ``bytes``, and also run when the response is served from the cache, where
           ``before_request`` hooks and dependencies do not.
