@@ -618,7 +618,9 @@ def test_http_metrics_use_route_templates(
     )
     metric = next(metric for metric in scope_metrics.metrics if metric.name == "http.server.request.duration")
     assert isinstance(metric.data, Histogram)
-    routes = {point.attributes.get("http.route") for point in metric.data.data_points if point.attributes}
+    routes = {
+        cast("str | None", point.attributes.get("http.route")) for point in metric.data.data_points if point.attributes
+    }
     assert routes == {"/articles/{article_id}", None}
 
 
