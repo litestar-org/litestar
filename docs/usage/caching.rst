@@ -18,7 +18,8 @@ enabled for the :attr:`~.config.response_cache.ResponseCacheConfig.default_expir
 Only the status code, the media type and the body are cached. The response is rebuilt from them for every
 request, so headers, cookies and background tasks configured on the handler or its layers, ``after_request`` hooks
 and middleware all run again each time. On cached routes, ``after_request`` hooks receive the rendered body as
-``bytes``.
+``bytes``. The handler, its dependencies and ``before_request`` hooks are not called when a response is served from
+the cache, so an ``after_request`` hook must not depend on state set by them.
 
 A response is only cached if the handler returns a plain value, or a :class:`~litestar.response.Response` without its
 own headers, cookies or background task, and uses the default ``response_class``. Subclasses of
