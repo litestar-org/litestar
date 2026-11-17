@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, AnyStr, TypedDict, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar._response_cache import (
-    CacheEntry,
     cache_entry_to_response,
     create_cache_entry,
     get_cache_entry,
@@ -706,9 +705,8 @@ class HTTPRouteHandler(BaseRouteHandler):
     ) -> ASGIApp:
         """Return a response for the request.
 
-        If caching is enabled and a response exists in the cache, a response is rebuilt from the cached body.
-        If caching is enabled and a response does not exist in the cache, the body of the newly created
-        response will be cached.
+        If caching is enabled and an entry exists in the cache, the response is rebuilt from it.
+        If caching is enabled and no entry exists, the handler's output is cached.
 
         Args:
             request: The Request instance
@@ -717,7 +715,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             An instance of Response or a compatible ASGIApp or a subclass of it
         """
         if self.cache and (cache_entry := await get_cache_entry(self, request)) is not None:
-            return await self._response_from_cache_entry(cache_entry=cache_entry, request=request)
+            return await cache_entry_to_response(self, cache_entry, request)
 
         return await self._call_handler_function(request=request)
 
@@ -771,32 +769,10 @@ class HTTPRouteHandler(BaseRouteHandler):
                 return await self.to_response(data=response_data, request=request)
 
             cache_entry, background = create_cache_entry(self, response_data, request)
-            response = await self._response_from_cache_entry(
-                cache_entry=cache_entry, request=request, background=background
-            )
+            response = await cache_entry_to_response(self, cache_entry, request, background)
 
         await store_cache_entry(self, request, cache_entry)
         return response
-
-    async def _response_from_cache_entry(
-        self,
-        cache_entry: CacheEntry,
-        request: Request,
-        background: BackgroundTask | BackgroundTasks | None = None,
-    ) -> ASGIApp:
-        """Build the response for ``cache_entry``, applying cookies, background tasks and ``after_request``.
-
-        Args:
-            cache_entry: The cache entry
-            request: The :class:`Request <litestar.connection.Request>` instance
-            background: The background task of the returned response, on a cache miss
-
-        Returns:
-            The response for ``request``.
-        """
-        return await cast("Callable[..., Awaitable[ASGIApp]]", self._response_type_handler)(
-            data=cache_entry_to_response(cache_entry, background), request=request
-        )
 
     async def to_response(self, data: Any, request: Request) -> ASGIApp:
         """Return a :class:`Response <.response.Response>` from the handler by resolving and calling it.

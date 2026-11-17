@@ -34,9 +34,6 @@ is the case for ``301`` and ``308``. A response that sets cookies, other subclas
     response is served to every user. Do not cache handlers whose response depends on the user, or set a
     ``cache_key_builder`` that includes the user's identity.
 
-Entries are stored under the key returned by the key builder with a ``::body`` suffix, which has to be added when
-deleting an entry from the store directly.
-
 .. note:: If the default :paramref:`~litestar.config.response_cache.ResponseCacheConfig.default_expiration` is set to
     ``None``, setting up the route handler with :paramref:`~litestar.handlers.HTTPRouteHandler.cache` set to ``True``
     will keep the response in cache indefinitely.

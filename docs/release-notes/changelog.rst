@@ -29,9 +29,9 @@
         - ``after_request`` hooks on cached routes receive the rendered body as
           ``bytes``, and also run when the response is served from the cache, where
           ``before_request`` hooks and dependencies do not.
-        - Cache entries are stored under the key returned by the key builder with a
-          ``::body`` suffix. Do not share the response cache store between this and
-          earlier versions, and add the suffix when deleting entries by key.
+        - The cache entry format changed. Earlier versions fail on entries written by
+          this version, so do not share the response cache store between them, e.g.
+          during a rolling upgrade.
 
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
