@@ -132,7 +132,6 @@ nitpick_ignore = [
     (PY_METH, "litestar.typing.ParsedType.is_subclass_of"),
     (PY_METH, "type_engine"),
     # type vars and aliases / intentionally undocumented
-    (PY_CLASS, "OperationIDCreator"),  # (Kumzy) litestar.types.callable_types alias; xref fails on Sphinx 9
     (
         PY_CLASS,
         "ProblemDetailsExceptionHandlerType",
@@ -146,7 +145,6 @@ nitpick_ignore = [
     (PY_CLASS, "ControllerRouterHandler"),
     (PY_CLASS, "EmptyType"),
     (PY_CLASS, "ModelT"),
-    (PY_CLASS, "PathParameterDefinition"),
     (PY_CLASS, "RouteHandlerType"),
     (PY_CLASS, "SelectT"),
     (PY_CLASS, "T"),

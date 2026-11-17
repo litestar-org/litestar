@@ -182,4 +182,4 @@ Composite Types
 
 .. autotype:: litestar.types.ParametersMap
 
-.. autotype:: litestar.types.callable_types.OperationIDCreator
+.. autotype:: litestar.types.OperationIDCreator
