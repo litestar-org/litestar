@@ -21,22 +21,6 @@
         ``HTTP``. WebSocket spans use the matched template or ``websocket`` if no
         route matches, following OpenTelemetry HTTP semantic conventions.
 
-        Dashboards, alerts and queries matching on span names or ``http.route`` values
-        must be updated.
-
-        The route is now resolved before the server span starts, so a custom
-        ``scope_span_details_extractor`` or ``server_request_hook_handler`` can read the
-        matched template from ``scope["path_template"]``.
-
-    .. change:: Set the mount path as ``path_template`` for mounted ASGI apps
-        :type: bugfix
-        :pr: 5222
-
-        Fix a bug that left ``scope["path_template"]`` empty for requests routed to a
-        mounted ASGI app. It now holds the mount path, e.g. ``/mount``, which also
-        changes the ``path`` label of Prometheus metrics with ``group_path=True`` for
-        these requests.
-
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
         :pr: 5213
