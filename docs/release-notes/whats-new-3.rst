@@ -410,7 +410,7 @@ this functionality are now required to inherit from
 Dropped support for starlette middleware protocol
 -------------------------------------------------
 
-The `starlette middleware protocol <https://www.starlette.io/middleware>`_ is no longer
+The `starlette middleware protocol <https://starlette.dev/middleware/>`_ is no longer
 supported.
 
 Only the "factory" pattern will now be supported, i.e. a callable that receives an ASGI

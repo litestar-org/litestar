@@ -29,6 +29,7 @@ from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.connection import Request, WebSocket
+from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
 from litestar.datastructures import CacheControlHeader, ETag
 from litestar.datastructures.state import State
 from litestar.dto import AbstractDTO
@@ -148,6 +149,7 @@ class Litestar(Router):
         "debugger_module",
         "event_emitter",
         "experimental_features",
+        "multipart_form_allowed_charsets",
         "multipart_form_part_limit",
         "on_shutdown",
         "on_startup",
@@ -188,6 +190,7 @@ class Litestar(Router):
         listeners: Sequence[EventListener] | None = None,
         middleware: Sequence[Middleware] | None = None,
         multipart_form_part_limit: int = 1000,
+        multipart_form_allowed_charsets: Sequence[str] = DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS,
         on_app_init: Sequence[OnAppInitHandler] | None = None,
         on_shutdown: Sequence[LifespanHook] | None = None,
         on_startup: Sequence[LifespanHook] | None = None,
@@ -260,6 +263,8 @@ class Litestar(Router):
             middleware: A sequence of :class:`Middleware <.types.Middleware>`.
             multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
                 is intended to protect from DoS attacks.
+            multipart_form_allowed_charsets: Charsets accepted for multipart/formdata text fields; others are
+                rejected with a 400. Fields without a charset are decoded as UTF-8.
             on_app_init: A sequence of :class:`OnAppInitHandler <.types.OnAppInitHandler>` instances. Handlers receive
                 an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
                 the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
@@ -346,6 +351,7 @@ class Litestar(Router):
             listeners=list(listeners or []),
             middleware=list(middleware or []),
             multipart_form_part_limit=multipart_form_part_limit,
+            multipart_form_allowed_charsets=multipart_form_allowed_charsets,
             on_shutdown=list(on_shutdown or []),
             on_startup=list(on_startup or []),
             openapi_config=openapi_config,
@@ -415,6 +421,12 @@ class Litestar(Router):
         self.csrf_config = config.csrf_config
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
         self.multipart_form_part_limit = config.multipart_form_part_limit
+        self.multipart_form_allowed_charsets = tuple(config.multipart_form_allowed_charsets)
+        for charset in self.multipart_form_allowed_charsets:
+            try:
+                "a".encode(charset).decode(charset)
+            except (LookupError, ValueError) as exc:
+                raise ImproperlyConfiguredException(f"Invalid multipart form charset: {charset!r}") from exc
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
@@ -1013,6 +1025,7 @@ def _maybe_add_options_handler(
     handler_methods = {method for handler in http_handlers for method in handler.http_methods}
     if "OPTIONS" not in handler_methods:
         options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore[reportArgumentType]
-        options_handler = options_handler.merge(root)
+        # merging prepends the root's path, which 'path' already starts with
+        options_handler = options_handler.merge(root)._with_changes(path=path)
         return [*http_handlers, options_handler]
     return http_handlers
