@@ -30,14 +30,15 @@ if TYPE_CHECKING:
 
     from litestar.datastructures.cookie import Cookie
     from litestar.datastructures.response_header import ResponseHeader
-    from litestar.di import Provide
+    from litestar.di import Provide, Provider
     from litestar.enums import ScopeType
     from litestar.params import ParameterKwarg
 
     from .asgi_types import ASGIApp
     from .callable_types import AnyCallable, ExceptionHandler
 
-Dependencies: TypeAlias = "Mapping[str, Union[Provide, AnyCallable]]"
+# keys are names or types. a mapping's key type is invariant, so one keyed by their union would take no dict of names
+Dependencies: TypeAlias = "Union[Sequence[Provider], Mapping[Any, Union[Provider, Provide, AnyCallable]]]"
 ExceptionHandlersMap: TypeAlias = "MutableMapping[Union[int, type[Exception]], ExceptionHandler]"
 Middleware: TypeAlias = Callable[..., "ASGIApp"]
 MiddlewareFactory: TypeAlias = Callable[..., Middleware]

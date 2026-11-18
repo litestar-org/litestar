@@ -6,32 +6,23 @@ from types import ModuleType
 from typing import Annotated, Any, Optional, Union
 from unittest.mock import MagicMock
 
-import msgspec
 import pytest
 
-from litestar import get
-from litestar._signature import SignatureModel
+from litestar import get, post
 from litestar.dto import DataclassDTO
-from litestar.params import FromQuery, QueryParameter
-from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
+from litestar.params import FromQuery, JSONBody, QueryParameter
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import TestClient, create_test_client
 from litestar.types import Empty
 from litestar.utils.signature import ParsedSignature
 
 
-def test_create_function_signature_model_parameter_parsing() -> None:
+def test_parsed_signature_parameter_parsing() -> None:
     @get()
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
 
-    model = SignatureModel.create(
-        dependency_name_set=set(),
-        fn=my_fn.fn,
-        data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(my_fn.fn, {}),
-        type_decoders=[],
-    )
-    fields = model._fields
+    fields = ParsedSignature.from_fn(my_fn.fn, {}).parameters
     assert fields["a"].annotation is int
     assert not fields["a"].is_optional
     assert fields["b"].annotation is str
@@ -44,21 +35,6 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     assert fields["e"].annotation == Optional[dict]
     assert fields["e"].is_optional
     assert fields["e"].default is None
-
-
-def test_create_function_signature_model_ignore_return_annotation() -> None:
-    @get(path="/health", status_code=HTTP_204_NO_CONTENT)
-    async def health_check() -> None:
-        return None
-
-    signature_model_type = SignatureModel.create(
-        dependency_name_set=set(),
-        fn=health_check.fn,
-        data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(health_check.fn, {}),
-        type_decoders=[],
-    )
-    assert signature_model_type().to_dict() == {}
 
 
 def test_signature_model_resolves_forward_ref_annotations(create_module: Callable[[str], ModuleType]) -> None:
@@ -105,32 +81,20 @@ def test_field_definition_is_non_string_iterable() -> None:
     def fn(a: Iterable[int], b: Optional[Iterable[int]]) -> None:
         pass
 
-    model = SignatureModel.create(
-        dependency_name_set=set(),
-        fn=fn,
-        data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(fn, {}),
-        type_decoders=[],
-    )
+    fields = ParsedSignature.from_fn(fn, {}).parameters
 
-    assert model._fields["a"].is_non_string_iterable
-    assert model._fields["b"].is_non_string_iterable
+    assert fields["a"].is_non_string_iterable
+    assert fields["b"].is_non_string_iterable
 
 
 def test_field_definition_is_non_string_sequence() -> None:
     def fn(a: Sequence[int], b: Optional[Sequence[int]]) -> None:
         pass
 
-    model = SignatureModel.create(
-        dependency_name_set=set(),
-        fn=fn,
-        data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(fn, signature_namespace={}),
-        type_decoders=[],
-    )
+    fields = ParsedSignature.from_fn(fn, signature_namespace={}).parameters
 
-    assert model._fields["a"].is_non_string_sequence
-    assert model._fields["b"].is_non_string_sequence
+    assert fields["a"].is_non_string_sequence
+    assert fields["b"].is_non_string_sequence
 
 
 @pytest.mark.parametrize("query,expected", [("1", True), ("true", True), ("0", False), ("false", False)])
@@ -191,8 +155,8 @@ def test_collection_union_struct_fields(with_optional: bool) -> None:
     assert "TypeError: Type unions may not contain more than one array-like" in response.text
 
 
-def test_dto_data_typed_as_any() -> None:
-    """DTOs already validate the payload, we don't need the signature model to do it too.
+def test_dto_data_not_validated_again() -> None:
+    """DTOs already validate the payload, the request parameter validation doesn't do it too.
 
     https://github.com/litestar-org/litestar/issues/2149
     """
@@ -201,18 +165,16 @@ def test_dto_data_typed_as_any() -> None:
     class Test:
         a: str
 
-    dto = DataclassDTO[Test]
+    class DTO(DataclassDTO[Test]):
+        def decode_bytes(self, value: bytes) -> Any:
+            return {"a": 1}
 
-    def fn(data: Test) -> None:
-        pass
+    @post("/", dto=DTO, return_dto=None)
+    async def handler(data: JSONBody[Test]) -> Any:
+        return data
 
-    model = SignatureModel.create(
-        dependency_name_set=set(),
-        fn=fn,
-        data_dto=dto,
-        parsed_signature=ParsedSignature.from_fn(fn, signature_namespace={"Test": Test}),
-        type_decoders=[],
-    )
-    (field,) = msgspec.structs.fields(model)
-    assert field.name == "data"
-    assert field.type is Any
+    with create_test_client([handler]) as client:
+        response = client.post("/", json={})
+
+    assert response.status_code == HTTP_201_CREATED
+    assert response.json() == {"a": 1}

@@ -188,7 +188,12 @@ def build_route_middleware_stack(
     from litestar.middleware.base import ASGIMiddleware
     from litestar.routes import HTTPRoute
 
-    asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
+    # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
+    # exception will create the response and call send(). As middleware may wrap the send() callable, we need there
+    # to be an instance of ExceptionHandlerMiddleware in between the handler and the middleware so that any send
+    # wrappers instated by middleware are called. It is there for every route, so that an exception the handler
+    # raises leaves the route's stack only if no response is created for it, whether the route has middleware or not
+    asgi_handler: ASGIApp = wrap_in_exception_handler(app=route.handle)  # type: ignore[arg-type]
     handler_middleware = route_handler.middleware
     has_cached_route = isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers)
     has_middleware = (
@@ -196,12 +201,6 @@ def build_route_middleware_stack(
     )
 
     if has_middleware:
-        # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
-        # exception will create the response and call send(). As middleware may wrap the send() callable, we need there
-        # to be an instance of ExceptionHandlerMiddleware in between the handler and the middleware so that any send
-        # wrappers instated by middleware are called. If there is no middleware, we can skip this step.
-        asgi_handler = wrap_in_exception_handler(app=asgi_handler)
-
         if app.csrf_config:
             csrf_middleware = CSRFMiddleware.from_config(app.csrf_config)
             if not csrf_middleware.should_bypass_for_handler(route_handler):

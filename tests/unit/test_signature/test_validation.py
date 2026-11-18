@@ -7,11 +7,9 @@ import pytest
 from attr import define
 from typing_extensions import TypedDict
 
-from litestar import get, post
-from litestar._signature import SignatureModel
+from litestar import Litestar, get, post
 from litestar.di import NamedDependency, Provide
-from litestar.enums import ParamType
-from litestar.exceptions import ImproperlyConfiguredException, ValidationException
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import (
     CookieParameter,
     FromHeader,
@@ -21,48 +19,28 @@ from litestar.params import (
     PathParameter,
     QueryParameter,
 )
-from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
-from litestar.testing import RequestFactory, create_test_client
-from litestar.utils.signature import ParsedSignature
+from litestar.status_codes import HTTP_400_BAD_REQUEST
+from litestar.testing import create_test_client
 
 
-def test_parses_values_from_connection_kwargs_raises() -> None:
-    def fn(a: int) -> None:
-        pass
-
-    model = SignatureModel.create(
-        dependency_name_set=set(),
-        fn=fn,
-        data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(fn, {}),
-        type_decoders=[],
-    )
-    with pytest.raises(ValidationException):
-        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), kwargs={"a": "not an int"})
-
-
-def test_create_signature_validation() -> None:
+def test_parameter_without_annotation_raises() -> None:
     @get()
-    def my_fn(typed: int, untyped) -> None:  # type: ignore[no-untyped-def]
+    def my_fn(typed: FromQuery[int], untyped) -> None:  # type: ignore[no-untyped-def]
         pass
 
-    with pytest.raises(ImproperlyConfiguredException):
-        SignatureModel.create(
-            dependency_name_set=set(),
-            fn=my_fn.fn,
-            data_dto=None,
-            parsed_signature=ParsedSignature.from_fn(my_fn.fn, {}),
-            type_decoders=[],
-        )
+    with pytest.raises(ImproperlyConfiguredException, match="'untyped' does not have a type annotation"):
+        Litestar([my_fn])
 
 
-def test_dependency_validation_failure_raises_500() -> None:
+def test_dependency_value_is_not_validated() -> None:
     dependencies = {"dep": Provide(lambda: "thirteen", sync_to_thread=False)}
+    received: list[object] = []
 
     @get("/")
     def test(
-        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]
-    ) -> None: ...
+        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]] = None
+    ) -> None:
+        received.append(dep)
 
     with create_test_client(
         route_handlers=[test],
@@ -71,7 +49,8 @@ def test_dependency_validation_failure_raises_500() -> None:
     ) as client:
         response = client.get("/?param=13")
 
-    assert response.json() == {"detail": "Internal Server Error", "status_code": HTTP_500_INTERNAL_SERVER_ERROR}
+    assert response.status_code == 200
+    assert received == ["thirteen"]
 
 
 def test_validation_failure_raises_400() -> None:
@@ -79,7 +58,7 @@ def test_validation_failure_raises_400() -> None:
 
     @get("/")
     def test(
-        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]
+        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]] = None
     ) -> None: ...
 
     with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
@@ -120,27 +99,6 @@ def test_invalid_marked_parameter_named_like_path_parameter_reports_marked_sourc
     }
 
 
-def test_client_backend_error_precedence_over_server_error() -> None:
-    dependencies = {
-        "dep": Provide(lambda: "thirteen", sync_to_thread=False),
-        "optional_dep": Provide(lambda: "thirty-one", sync_to_thread=False),
-    }
-
-    @get("/")
-    def test(
-        dep: NamedDependency[int], param: FromQuery[int], optional_dep: NamedDependency[Optional[int]]
-    ) -> None: ...
-
-    with create_test_client(route_handlers=[test], dependencies=dependencies) as client:
-        response = client.get("/?param=thirteen")
-
-    assert response.json() == {
-        "detail": "Validation failed for GET /?param=thirteen",
-        "extra": [{"key": "param", "message": "Expected `int`, got `str`", "source": "query"}],
-        "status_code": 400,
-    }
-
-
 def test_validation_error_exception_key() -> None:
     from dataclasses import dataclass
 
@@ -158,25 +116,15 @@ def test_validation_error_exception_key() -> None:
         child: Child
         other_child: OtherChild
 
-    @get("/")
+    @post("/")
     def handler(data: JSONBody[Parent]) -> None:
         pass
 
-    model = SignatureModel.create(
-        dependency_name_set=set(),
-        fn=handler,  # type: ignore[arg-type]
-        data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(handler.fn, {}),
-        type_decoders=[],
-    )
+    with create_test_client([handler]) as client:
+        response = client.post("/", json={"child": {}, "other_child": {}})
 
-    with pytest.raises(ValidationException) as exc_info:
-        model.parse_values_from_connection_kwargs(
-            connection=RequestFactory().get(route_handler=handler), kwargs={"data": {"child": {}, "other_child": {}}}
-        )
-
-    assert isinstance(exc_info.value.extra, list)
-    assert exc_info.value.extra[0]["key"] == "child"
+    assert response.status_code == HTTP_400_BAD_REQUEST
+    assert response.json()["extra"][0]["key"] == "child"
 
 
 def test_invalid_input_attrs() -> None:
@@ -219,8 +167,8 @@ def test_invalid_input_attrs() -> None:
         assert data["extra"] == [
             {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
             {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
-            {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
-            {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
+            {"message": "Expected `int`, got `str`", "key": "X-SOME-INT", "source": "header"},
+            {"message": "Expected `int`, got `str`", "key": "int-cookie", "source": "cookie"},
         ]
 
 
@@ -266,8 +214,8 @@ def test_invalid_input_dataclass() -> None:
             {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
             {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
             {"message": "Expected `str` of length >= 2", "key": "length_param", "source": "query"},
-            {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
-            {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
+            {"message": "Expected `int`, got `str`", "key": "X-SOME-INT", "source": "header"},
+            {"message": "Expected `int`, got `str`", "key": "int-cookie", "source": "cookie"},
         ]
 
 
@@ -310,28 +258,23 @@ def test_invalid_input_typed_dict() -> None:
             {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
             {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
             {"message": "Expected `str` of length >= 2", "key": "length_param", "source": "query"},
-            {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
-            {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
+            {"message": "Expected `int`, got `str`", "key": "X-SOME-INT", "source": "header"},
+            {"message": "Expected `int`, got `str`", "key": "int-cookie", "source": "cookie"},
         ]
 
 
-def test_parse_values_from_connection_kwargs_with_multiple_errors() -> None:
-    def fn(a: Annotated[int, QueryParameter(gt=5)], b: Annotated[int, QueryParameter(lt=5)]) -> None:
+def test_constraint_violations_of_parameters_reported_together() -> None:
+    @get("/")
+    def handler(a: Annotated[int, QueryParameter(gt=5)], b: Annotated[int, QueryParameter(lt=5)]) -> None:
         pass
 
-    model = SignatureModel.create(
-        dependency_name_set=set(),
-        fn=fn,
-        data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(fn, {}),
-        type_decoders=[],
-    )
-    with pytest.raises(ValidationException) as exc:
-        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), kwargs={"a": 0, "b": 9})
+    with create_test_client([handler]) as client:
+        response = client.get("/?a=0&b=9")
 
-    assert exc.value.extra == [
-        {"message": "Expected `int` >= 6", "key": "a", "source": ParamType.QUERY},
-        {"message": "Expected `int` <= 4", "key": "b", "source": ParamType.QUERY},
+    assert response.status_code == HTTP_400_BAD_REQUEST
+    assert response.json()["extra"] == [
+        {"message": "Expected `int` >= 6", "key": "a", "source": "query"},
+        {"message": "Expected `int` <= 4", "key": "b", "source": "query"},
     ]
 
 
@@ -339,14 +282,18 @@ def test_validate_subscribed_generics() -> None:
     T = TypeVar("T")
 
     class Foo(Generic[T]):
-        pass
+        def __init__(self, value: str) -> None:
+            self.value = value
 
-    @get("/")
-    async def something(foo: FromQuery[Foo[str]] = Foo()) -> None:
-        return None
+    @get("/", type_decoders=[(lambda t: t == Foo[str], lambda _, v: Foo(v))])
+    async def something(foo: FromQuery[Foo[str]]) -> str:
+        return foo.value
 
     with create_test_client([something]) as client:
-        assert client.get("/").status_code == 200
+        response = client.get("/?foo=x")
+
+    assert response.status_code == 200
+    assert response.text == "x"
 
 
 def test_separate_model_namespace() -> None:
@@ -368,6 +315,4 @@ def test_separate_model_namespace() -> None:
 
     with create_test_client([get_connection, get_deserializer], raise_server_exceptions=True, debug=True) as client:
         assert client.get("/connection").text == "connection"
-        res = client.get("/deserializer")
-        assert res.status_code == 500
-        assert "Expected `int`, got `str` - at `$.deserializer`" in res.text
+        assert client.get("/deserializer").text == "deserializer"

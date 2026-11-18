@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
     from litestar import Response
     from litestar.connection import ASGIConnection
-    from litestar.di import Provide
+    from litestar.types import Dependencies
 
 
 UserType = TypeVar("UserType")
@@ -302,8 +302,8 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     processed."""
     route_handlers: Iterable[ControllerRouterHandler] | None = field(default=None)
     """An optional iterable of route handlers to register."""
-    dependencies: dict[str, Provide] | None = field(default=None)
-    """An optional dictionary of dependency providers."""
+    dependencies: Dependencies | None = field(default=None)
+    """A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables."""
 
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
@@ -395,8 +395,8 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """A sequence of http methods that do not require authentication. Defaults to ['OPTIONS', 'HEAD']"""
     route_handlers: Iterable[ControllerRouterHandler] | None = field(default=None)
     """An optional iterable of route handlers to register."""
-    dependencies: dict[str, Provide] | None = field(default=None)
-    """An optional dictionary of dependency providers."""
+    dependencies: Dependencies | None = field(default=None)
+    """A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables."""
 
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
@@ -636,8 +636,8 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     processed."""
     route_handlers: Iterable[ControllerRouterHandler] | None = field(default=None)
     """An optional iterable of route handlers to register."""
-    dependencies: dict[str, Provide] | None = field(default=None)
-    """An optional dictionary of dependency providers."""
+    dependencies: Dependencies | None = field(default=None)
+    """A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables."""
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
     algorithm: str = field(default="HS256")

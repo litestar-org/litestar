@@ -145,6 +145,18 @@ ASGI server with the following command:
             INFO - 2023-11-12 23:31:51,571 - daphne.cli - cli - Starting server at tcp:port=8000:interface=127.0.0.1
             INFO - 2023-11-12 23:31:51,572 - daphne.server - server - Listening on TCP address 127.0.0.1:8000
 
+        .. important::
+
+            Daphne does not support the ASGI lifespan protocol. Litestar requires the
+            lifespan protocol to support app-scoped dependencies, and the app will fail
+            to start if the lifespan does not run. To fix this, create ann app without
+            the ``app`` dependency scope, and make sure to not use any dependency
+            providers with that scope.
+
+            .. code-block:: python
+
+                app = Litestar(..., dependency_scopes=("request", "handler"))
+
     .. tab-item:: Granian
         :sync: granian
 

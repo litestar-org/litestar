@@ -134,15 +134,22 @@ def test_signature_model_invalid_input(base_model: BaseModelType, pydantic_versi
             {
                 "message": "Input should be a valid integer, unable to parse string as an integer",
                 "key": "child.val",
+                "source": "body",
             },
             {
                 "message": "Input should be a valid integer, unable to parse string as an integer",
                 "key": "child.other_val",
+                "source": "body",
             },
             {
                 "message": "Input should be a valid integer, unable to parse string as an integer",
                 "key": "other_child.val.1",
+                "source": "body",
             },
+            {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
+            {"message": "Expected `str` of length >= 2", "key": "length_param", "source": "query"},
+            {"message": "Expected `int`, got `str`", "key": "X-SOME-INT", "source": "header"},
+            {"message": "Expected `int`, got `str`", "key": "int-cookie", "source": "cookie"},
         ]
 
 

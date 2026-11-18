@@ -197,7 +197,7 @@ requires = ["hatchling"]
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
-omit = ["*/tests/*", "*/litestar/_kwargs/types.py"]
+omit = ["*/tests/*"]
 parallel = true
 plugins = ["covdefaults"]
 source = ["litestar"]

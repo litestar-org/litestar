@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from collections.abc import AsyncIterator
 from typing import TypedDict
 
 from litestar import Litestar, websocket_listener
@@ -11,7 +11,7 @@ class Message(TypedDict):
     client_count: int
 
 
-def socket_client_count(state: State) -> Iterator[int]:
+async def socket_client_count(state: State) -> AsyncIterator[int]:
     if not hasattr(state, "count"):
         state.count = 0
 

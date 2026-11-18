@@ -3,7 +3,7 @@ import pytest
 
 from litestar import Litestar, get, post
 from litestar.di import NamedDependency, Provide
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.di.exceptions import MissingProviderError
 from litestar.params import FromQuery, JSONBody
 from litestar.testing import create_test_client
 
@@ -44,7 +44,7 @@ def test_inject_msgspec_struct_required_field_without_provider_raises() -> None:
     async def handler(foo: NamedDependency[Foo]) -> Foo:
         return foo
 
-    with pytest.raises(ImproperlyConfiguredException, match="'bar'"):
+    with pytest.raises(MissingProviderError, match="has no provider for dependency 'bar'"):
         Litestar([handler])
 
 
@@ -59,7 +59,8 @@ def test_inject_msgspec_struct_required_query_field_missing_from_request() -> No
     with create_test_client([handler]) as client:
         res = client.get("/")
         assert res.status_code == 400
-        assert res.json()["detail"] == "Missing required query parameter 'bar' for path /"
+        assert res.json()["detail"] == "Validation failed for GET /"
+        assert res.json()["extra"] == [{"message": "Missing required query parameter", "key": "bar", "source": "query"}]
 
 
 def test_inject_msgspec_struct_body_field() -> None:

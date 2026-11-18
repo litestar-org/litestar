@@ -25,6 +25,7 @@ from litestar.connection import ASGIConnection, WebSocket
 from litestar.datastructures import Headers
 from litestar.datastructures.state import ImmutableState, State
 from litestar.di import NamedDependency, Provide
+from litestar.di.exceptions import DIRegistrationError, MissingProviderError
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import FromPath, FromQuery, JSONBody, MsgPackBody, QueryParams, RawBody, RequestCookies
 from litestar.status_codes import (
@@ -75,6 +76,32 @@ def test_application_state_injection(state_typing: type[State]) -> None:
         assert response.status_code == HTTP_200_OK
         assert response.text == "hello"
         assert client.app.state.called
+
+
+def test_state_subclass_in_cached_dependency() -> None:
+    async def provide_msg(state: CustomState) -> str:
+        return state.msg
+
+    @get("/", media_type=MediaType.TEXT, dependencies={"msg": Provide(provide_msg, use_cache=True)})
+    def handler(msg: NamedDependency[str]) -> str:
+        return msg
+
+    with create_test_client(handler, state=State({"msg": "hello"})) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "hello"
+
+
+@pytest.mark.parametrize("state_class", (State, CustomState, ImmutableState))
+def test_state_reflects_change_to_app_state(state_class: type[ImmutableState]) -> None:
+    @get("/", media_type=MediaType.TEXT)
+    def handler(state: state_class) -> str:  # type: ignore[valid-type]
+        return cast("str", state.msg)  # type: ignore[attr-defined]
+
+    with create_test_client(handler, state=State({"msg": "one"})) as client:
+        assert client.get("/").text == "one"
+        client.app.state.msg = "two"
+        assert client.get("/").text == "two"
 
 
 person_instance = DataclassPersonFactory.build()
@@ -280,7 +307,6 @@ def test_scope(decorator: Any, http_method: Any, expected_status_code: Any) -> N
 @pytest.mark.parametrize(
     "decorator, http_method, expected_status_code",
     [
-        (get, HttpMethod.GET, HTTP_200_OK),
         (post, HttpMethod.POST, HTTP_201_CREATED),
         (put, HttpMethod.PUT, HTTP_200_OK),
         (patch, HttpMethod.PATCH, HTTP_200_OK),
@@ -366,21 +392,13 @@ def test_untyped_reserved_kwargs_in_http_handler_raise() -> None:
     async def with_constrained_data(data: Annotated[int, annotated_types.Gt(0)]) -> None: ...
 
     for handler, message in [
-        (with_cookies, "Reserved kwarg 'cookies' declared as 'dict[str, str]'. Use 'request.cookies' instead"),
-        (with_headers, "Reserved kwarg 'headers' declared as 'dict[str, str]'. Use 'request.headers' instead"),
-        (with_query, "Reserved kwarg 'query' declared as 'dict[str, typing.Any]'. Use 'request.query_params' instead"),
-        (with_scope, "Reserved kwarg 'scope' declared as 'dict[str, typing.Any]'. Use 'request.scope' instead"),
-        (with_body, "Reserved kwarg 'body' declared as 'bytes'. Declare it as 'body: RawBody' instead"),
-        (
-            with_data,
-            "Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[DataclassPerson]' or "
-            "another body marker instead",
-        ),
-        (
-            with_constrained_data,
-            "Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[int]' or "
-            "another body marker instead",
-        ),
+        (with_cookies, "Missing declaration for parameter 'cookies'"),
+        (with_headers, "Missing declaration for parameter 'headers'"),
+        (with_query, "Missing declaration for parameter 'query'"),
+        (with_scope, "Missing declaration for parameter 'scope'"),
+        (with_body, "Missing declaration for parameter 'body'"),
+        (with_data, "Missing declaration for parameter 'data'"),
+        (with_constrained_data, "Missing declaration for parameter 'data'"),
     ]:
         with pytest.raises(ImproperlyConfiguredException) as exc_info:
             Litestar([handler])
@@ -401,10 +419,10 @@ def test_untyped_reserved_kwargs_in_websocket_handler_raise() -> None:
     async def with_scope(socket: WebSocket, scope: dict[str, Any]) -> None: ...
 
     for handler, message in [
-        (with_cookies, "Reserved kwarg 'cookies' declared as 'dict[str, str]'. Use 'socket.cookies' instead"),
-        (with_headers, "Reserved kwarg 'headers' declared as 'dict[str, str]'. Use 'socket.headers' instead"),
-        (with_query, "Reserved kwarg 'query' declared as 'dict[str, typing.Any]'. Use 'socket.query_params' instead"),
-        (with_scope, "Reserved kwarg 'scope' declared as 'dict[str, typing.Any]'. Use 'socket.scope' instead"),
+        (with_cookies, "Missing declaration for parameter 'cookies'"),
+        (with_headers, "Missing declaration for parameter 'headers'"),
+        (with_query, "Missing declaration for parameter 'query'"),
+        (with_scope, "Missing declaration for parameter 'scope'"),
     ]:
         with pytest.raises(ImproperlyConfiguredException) as exc_info:
             Litestar([handler])
@@ -436,30 +454,38 @@ def test_untyped_reserved_kwargs_in_dependency_raise() -> None:
     cases: list[tuple[Callable[..., Any], str]] = [
         (
             with_cookies,
-            "Reserved kwarg 'cookies' declared as 'dict[str, str]'. Declare it as 'cookies: RequestCookies' instead",
+            r"\[paths='/', handler='handler', dependencies='value'\] Parameter 'cookies' of provider .*with_cookies .* "
+            "is not marked as a dependency",
         ),
         (
             with_headers,
-            "Reserved kwarg 'headers' declared as 'dict[str, str]'. Declare it as 'headers: Headers' instead",
+            r"\[paths='/', handler='handler', dependencies='value'\] Parameter 'headers' of provider .*with_headers .* "
+            "is not marked as a dependency",
         ),
         (
             with_query,
-            "Reserved kwarg 'query' declared as 'dict[str, typing.Any]'. Declare it as 'query: QueryParams' instead",
+            r"\[paths='/', handler='handler', dependencies='value'\] Parameter 'query' of provider .*with_query .* "
+            "is not marked as a dependency",
         ),
         (
             with_scope,
-            "Reserved kwarg 'scope' declared as 'dict[str, typing.Any]'. Declare it as 'scope: Scope' instead",
+            r"\[paths='/', handler='handler', dependencies='value'\] Parameter 'scope' of provider .*with_scope .* "
+            "is not marked as a dependency",
         ),
-        (with_body, "Reserved kwarg 'body' declared as 'bytes'. Declare it as 'body: RawBody' instead"),
+        (
+            with_body,
+            r"\[paths='/', handler='handler', dependencies='value'\] Parameter 'body' of provider .*with_body .* "
+            "is not marked as a dependency",
+        ),
         (
             with_data,
-            "Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[DataclassPerson]' or "
-            "another body marker instead",
+            r"\[paths='/', handler='handler', dependencies='value'\] Parameter 'data' of provider .*with_data .* "
+            "is not marked as a dependency",
         ),
         (
             with_constrained_data,
-            "Reserved kwarg 'data' declared without a body marker. Use 'data: JSONBody[int]' or "
-            "another body marker instead",
+            r"\[paths='/', handler='handler', dependencies='value'\] Parameter 'data' of provider "
+            ".*with_constrained_data .* is not marked as a dependency",
         ),
     ]
     for provider, message in cases:
@@ -467,9 +493,8 @@ def test_untyped_reserved_kwargs_in_dependency_raise() -> None:
         @post("/", dependencies={"value": Provide(provider)})
         async def handler(value: NamedDependency[str]) -> None: ...
 
-        with pytest.raises(ImproperlyConfiguredException) as exc_info:
+        with pytest.raises(DIRegistrationError, match=message):
             Litestar([handler])
-        assert exc_info.value.detail == f"[paths='/', handler='handler', dependencies='value'] {message}"
 
 
 def test_typed_reserved_kwargs_do_not_raise() -> None:
@@ -507,22 +532,12 @@ class Item:
 Item.__module__, Item.__qualname__ = "myapp.typing", "Item"
 
 
-@pytest.mark.parametrize(
-    "annotation, declared",
-    [
-        (Any, "Any"),
-        (dict[str, Any], "dict[str, typing.Any]"),
-        (list[Item], "list[myapp.typing.Item]"),
-    ],
-)
-def test_request_kwarg_without_connection_type_raises(annotation: Any, declared: str) -> None:
+@pytest.mark.parametrize("annotation", [Any, dict[str, Any], list[Item]])
+def test_request_kwarg_without_connection_type_raises(annotation: Any) -> None:
     @get("/")
     async def handler(request: annotation) -> None: ...  # pyright: ignore
 
-    with pytest.raises(
-        ImproperlyConfiguredException,
-        match=re.escape(f"Reserved kwarg 'request' declared as '{declared}'. Declare it as 'request: Request'"),
-    ):
+    with pytest.raises(ImproperlyConfiguredException, match=re.escape("Missing declaration for parameter 'request'")):
         Litestar([handler])
 
 
@@ -530,21 +545,15 @@ def test_request_kwarg_typed_as_subclass_of_request_class_raises() -> None:
     @get("/")
     async def handler(request: CustomRequest) -> None: ...
 
-    with pytest.raises(
-        ImproperlyConfiguredException,
-        match=re.escape("Reserved kwarg 'request' declared as 'CustomRequest'. Declare it as 'request: Request'"),
-    ):
+    with pytest.raises(MissingProviderError, match="has no provider for dependency CustomRequest"):
         Litestar([handler])
 
 
-def test_request_kwarg_without_connection_type_names_custom_request_class() -> None:
+def test_request_kwarg_without_connection_type_raises_under_custom_request_class() -> None:
     @get("/")
     async def handler(request: Any) -> None: ...
 
-    with pytest.raises(
-        ImproperlyConfiguredException,
-        match=re.escape("Reserved kwarg 'request' declared as 'Any'. Declare it as 'request: CustomRequest'"),
-    ):
+    with pytest.raises(ImproperlyConfiguredException, match=re.escape("Missing declaration for parameter 'request'")):
         Litestar([handler], request_class=CustomRequest)
 
 
@@ -560,11 +569,42 @@ def test_socket_kwarg_without_connection_type_raises() -> None:
     @websocket("/")
     async def handler(socket: Any) -> None: ...
 
-    with pytest.raises(
-        ImproperlyConfiguredException,
-        match=re.escape("Reserved kwarg 'socket' declared as 'Any'. Declare it as 'socket: WebSocket'"),
-    ):
+    with pytest.raises(ImproperlyConfiguredException, match=re.escape("Missing declaration for parameter 'socket'")):
         Litestar([handler])
+
+
+@pytest.mark.parametrize("name", ["request", "scope", "headers", "query", "cookies", "state", "socket", "data", "body"])
+@pytest.mark.parametrize(
+    "annotation, handler_path, url",
+    [
+        pytest.param(FromQuery[int], "/", "/?{name}=3", id="query"),
+        pytest.param(FromPath[int], "/{{{name}:int}}", "/3", id="path"),
+    ],
+)
+def test_marked_parameter_named_like_reserved_value_is_request_parameter(
+    name: str, annotation: Any, handler_path: str, url: str
+) -> None:
+    namespace: dict[str, Any] = {"__name__": __name__, "annotation": annotation}
+    exec(f"async def handler({name}: annotation) -> int:\n    return {name}", namespace)
+
+    with create_test_client([get(handler_path.format(name=name))(namespace["handler"])]) as client:
+        response = client.get(url.format(name=name))
+
+    assert response.json() == 3
+
+
+@pytest.mark.parametrize("name", ["request", "scope", "headers", "query", "cookies", "state", "socket", "data", "body"])
+def test_dependency_key_named_like_reserved_value_is_dependency(name: str) -> None:
+    async def provide_value() -> int:
+        return 3
+
+    namespace: dict[str, Any] = {"__name__": __name__, "NamedDependency": NamedDependency}
+    exec(f"async def handler({name}: NamedDependency[int]) -> int:\n    return {name}", namespace)
+
+    with create_test_client([get("/", dependencies={name: provide_value})(namespace["handler"])]) as client:
+        response = client.get("/")
+
+    assert response.json() == 3
 
 
 def test_improper_use_of_state_kwarg() -> None:
@@ -582,21 +622,22 @@ def test_improper_use_of_state_kwarg() -> None:
         Litestar(route_handlers=[MyController], openapi_config=None)
 
 
-def test_improper_use_of_state_kwarg_with_annotated_metadata() -> None:
-    """``state`` typed as ``Annotated[<bad>, <KwargDefinition>]`` must surface the
-    same configuration error as ``state: <bad>``. Previously the ``Annotated`` wrapper
-    caused the subclass check to crash with ``TypeError`` before we could raise the
-    configuration error.
-    """
+def test_websocket_handler_declares_socket_under_other_name() -> None:
+    @websocket("/")
+    async def handler(connection: WebSocket) -> None:
+        await connection.accept()
+        await connection.send_text("hello")
+        await connection.close()
 
-    from litestar.params import QueryParameter
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
+        assert ws.receive_text() == "hello"
 
-    @get("/")
-    async def handler(state: Annotated[str, QueryParameter(name="alias")]) -> None:
-        return None
 
-    with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[handler], openapi_config=None)
+def test_websocket_handler_without_parameters_builds() -> None:
+    @websocket("/")
+    async def handler() -> None: ...
+
+    Litestar([handler], openapi_config=None)
 
 
 @pytest.mark.parametrize(
@@ -670,7 +711,10 @@ def test_data_kwarg_type_mismatch_between_handler_and_dependency_raises() -> Non
 
     with pytest.raises(
         ImproperlyConfiguredException,
-        match=re.escape("'data' fields have mismatched types: 'dict[str, str]' <> 'list[str]'"),
+        match=re.escape(
+            "parameter 'data' of handler 'handler' and parameter 'data' of provider 'some_data' declare the "
+            "request body differently: type 'dict[str, str]' and type 'list[str]'"
+        ),
     ):
         Litestar([handler])
 
@@ -688,6 +732,9 @@ def test_data_kwarg_type_mismatch_between_dependencies_raises() -> None:
 
     with pytest.raises(
         ImproperlyConfiguredException,
-        match=re.escape("'data' fields have mismatched types: 'dict[str, str]' <> 'list[str]'"),
+        match=re.escape(
+            "parameter 'data' of provider 'a' and parameter 'data' of provider 'b' declare the request body "
+            "differently: type 'list[str]' and type 'dict[str, str]'"
+        ),
     ):
         Litestar([handler])
