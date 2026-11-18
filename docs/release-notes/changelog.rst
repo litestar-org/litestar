@@ -8,6 +8,7 @@
 
     .. change:: Resolve forward references in Pydantic models for OpenAPI schemas
         :type: bugfix
+        :pr: 5226
         :issue: 5224
 
         Fix a bug that generated an empty schema for a Pydantic model field annotated
