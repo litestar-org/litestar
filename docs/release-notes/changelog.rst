@@ -8,6 +8,7 @@
 
     .. change:: Do not replay headers and cookies from cached responses
         :type: bugfix
+        :pr: 5225
         :breaking:
 
         Fix a bug where the response cache stored the complete response, including
