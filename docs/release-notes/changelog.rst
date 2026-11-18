@@ -6,6 +6,13 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Resolve forward references in Pydantic models for OpenAPI schemas
+        :type: bugfix
+        :issue: 5224
+
+        Fix a bug that generated an empty schema for a Pydantic model field annotated
+        with a forward reference to a class defined later in the module.
+
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
         :pr: 5213
