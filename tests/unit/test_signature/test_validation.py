@@ -371,3 +371,49 @@ def test_separate_model_namespace() -> None:
         res = client.get("/deserializer")
         assert res.status_code == 500
         assert "Expected `int`, got `str` - at `$.deserializer`" in res.text
+
+
+def test_parameter_constraints_type_alias_union_newtype_and_meta() -> None:
+    # https://github.com/litestar-org/litestar/issues/5127
+    from typing import NewType
+
+    from annotated_types import Interval
+    from msgspec import Meta
+    from typing_extensions import TypeAliasType
+
+    Bounded = Annotated[int, Interval(le=10)]
+    BoundedAlias = TypeAliasType("BoundedAlias", Annotated[int, Interval(le=10)])
+    BoundedNewType = NewType("BoundedNewType", Bounded)
+    BoundedMeta = Annotated[int, Meta(le=10)]
+
+    @get("/annotated")
+    async def annotated_handler(v: FromQuery[Bounded]) -> str:
+        return str(v)
+
+    @get("/type-alias")
+    async def type_alias_handler(v: FromQuery[BoundedAlias]) -> str:
+        return str(v)
+
+    @get("/optional")
+    async def optional_handler(v: FromQuery[Optional[Bounded]] = None) -> str:
+        return str(v)
+
+    @get("/newtype")
+    async def newtype_handler(v: FromQuery[BoundedNewType]) -> str:
+        return str(v)
+
+    @get("/meta")
+    async def meta_handler(v: FromQuery[BoundedMeta]) -> str:
+        return str(v)
+
+    with create_test_client(
+        [annotated_handler, type_alias_handler, optional_handler, newtype_handler, meta_handler]
+    ) as client:
+        for path in ("/annotated", "/type-alias", "/optional", "/newtype", "/meta"):
+            res_invalid = client.get(f"{path}?v=11")
+            assert res_invalid.status_code == 400
+            res_valid = client.get(f"{path}?v=5")
+            assert res_valid.status_code == 200
+            assert res_valid.text == "5"
+
+        assert client.get("/optional").status_code == 200
