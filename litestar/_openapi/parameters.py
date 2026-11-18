@@ -1,17 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.utils import get_formatted_examples
-from litestar.constants import RESERVED_KWARGS
 from litestar.enums import ParamType
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.parameter import Parameter
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
 from litestar.params import ParameterKwarg, PathParameter
-from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -22,233 +19,27 @@ if TYPE_CHECKING:
 __all__ = ("create_parameters_for_handler",)
 
 
-class ParameterCollection:
-    """Facilitates conditional deduplication of parameters.
+def _create_parameter(schema_creator: SchemaCreator, name: str, field_definition: FieldDefinition) -> Parameter:
+    kwarg_definition = cast("ParameterKwarg", field_definition.kwarg_definition)
+    result = schema_creator.for_field_definition(field_definition)
+    schema = result if isinstance(result, Schema) else schema_creator.schema_registry.from_reference(result).schema
 
-    If multiple parameters with the same name are produced for a handler, the condition is ignored if the two
-    ``Parameter`` instances are the same (the first is retained and any duplicates are ignored). If the ``Parameter``
-    instances are not the same, an exception is raised.
-    """
+    description = schema.description
+    if description is None and schema.all_of:
+        reference = next((s for s in schema.all_of if isinstance(s, Reference)), None)
+        if reference is not None:
+            description = schema_creator.schema_registry.from_reference(reference).schema.description
 
-    def __init__(self, route_handler: BaseRouteHandler) -> None:
-        """Initialize ``ParameterCollection``.
+    examples = get_formatted_examples(field_definition, kwarg_definition.examples or [])
 
-        Args:
-            route_handler: Associated route handler
-        """
-        self.route_handler = route_handler
-        self._parameters: dict[tuple[str, str], Parameter] = {}
-
-    def add(self, parameter: Parameter) -> None:
-        """Add a ``Parameter`` to the collection.
-
-        If an existing parameter with the same name and type already exists, the
-        parameter is ignored.
-
-        If an existing parameter with the same name but different type exists, raises
-        ``ImproperlyConfiguredException``.
-        """
-
-        if (parameter.name, parameter.param_in) not in self._parameters:
-            self._parameters[(parameter.name, parameter.param_in)] = parameter
-            return
-
-        pre_existing = self._parameters[(parameter.name, parameter.param_in)]
-        if parameter == pre_existing:
-            return
-
-        raise ImproperlyConfiguredException(
-            f"OpenAPI schema generation for handler `{self.route_handler}` detected multiple parameters named "
-            f"'{parameter.name}' with different types."
-        )
-
-    def list(self) -> list[Parameter]:
-        """Return a list of all ``Parameter``'s in the collection."""
-        return list(self._parameters.values())
-
-
-class ParameterFactory:
-    """Factory for creating OpenAPI Parameters for a given route handler."""
-
-    def __init__(
-        self,
-        context: OpenAPIContext,
-        route_handler: BaseRouteHandler,
-        path_parameters: dict[str, PathParameterDefinition],
-    ) -> None:
-        """Initialize ParameterFactory.
-
-        Args:
-            context: The OpenAPI context.
-            route_handler: The route handler.
-            path_parameters: The path parameters for the route.
-        """
-        self.context = context
-        self.schema_creator = SchemaCreator.from_openapi_context(
-            self.context, prefer_alias=True, signature_namespace=route_handler.signature_namespace
-        )
-        self.route_handler = route_handler
-        self.parameters = ParameterCollection(route_handler)
-        self.dependency_providers = route_handler.dependencies
-        self.layered_parameters = route_handler.parameter_field_definitions
-        self.path_parameters = path_parameters
-
-    def create_parameter(self, field_definition: FieldDefinition, parameter_name: str) -> Parameter:
-        """Create an OpenAPI Parameter instance for a field definition.
-
-        Args:
-            field_definition: The field definition.
-            parameter_name: The name of the parameter.
-        """
-
-        result: Schema | Reference | None = None
-        kwarg_definition = (
-            field_definition.kwarg_definition if isinstance(field_definition.kwarg_definition, ParameterKwarg) else None
-        )
-
-        if kwarg_definition is not None:
-            param_in = kwarg_definition.param_type
-            is_required = field_definition.is_required
-            parameter_name = kwarg_definition.name or parameter_name
-            if param_in == ParamType.PATH:
-                is_required = True
-                result = self.schema_creator.for_field_definition(field_definition)
-        else:
-            # callers only pass fields that declare an HTTP parameter source; reaching this
-            # means a dependency / body / undeclared field leaked through the caller's filter
-            raise ImproperlyConfiguredException(f"Field {parameter_name!r} does not declare an HTTP parameter source")
-
-        if not result:
-            result = self.schema_creator.for_field_definition(field_definition)
-
-        schema = result if isinstance(result, Schema) else self.context.schema_registry.from_reference(result).schema
-
-        description = schema.description
-        if description is None and schema.all_of:
-            reference = next((s for s in schema.all_of if isinstance(s, Reference)), None)
-            if reference is not None:
-                description = self.context.schema_registry.from_reference(reference).schema.description
-
-        examples_list = kwarg_definition.examples or []
-        examples = get_formatted_examples(field_definition, examples_list)
-
-        return Parameter(
-            description=description,
-            name=parameter_name,
-            param_in=param_in,
-            required=is_required,
-            schema=result,
-            examples=examples or None,
-        )
-
-    def get_layered_parameter(self, field_name: str, field_definition: FieldDefinition) -> Parameter:
-        """Create a parameter for a field definition that has a KwargDefinition defined on the layers.
-
-        Args:
-            field_name: The name of the field.
-            field_definition: The field definition.
-        """
-        layer_field = self.layered_parameters[field_name]
-
-        field = field_definition if field_definition.is_non_marker_parameter_field else layer_field
-        default = layer_field.default if field_definition.has_default else field_definition.default
-        annotation = field_definition.annotation if field_definition.annotation is not Empty else layer_field.annotation
-
-        parameter_name = field_name
-        if isinstance(field.kwarg_definition, ParameterKwarg):
-            parameter_name = field.kwarg_definition.name or field_name
-
-        field_definition = FieldDefinition.from_kwarg(
-            inner_types=field.inner_types,
-            default=default,
-            extra=field.extra,
-            annotation=annotation,
-            kwarg_definition=field.kwarg_definition,
-            name=field_name,
-        )
-        return self.create_parameter(field_definition=field_definition, parameter_name=parameter_name)
-
-    def create_parameters_for_field_definitions(self, fields: dict[str, FieldDefinition]) -> None:
-        """Add Parameter models to the handler's collection for the given field definitions.
-
-        Args:
-            fields: The field definitions.
-        """
-        unique_handler_fields = (
-            (k, v) for k, v in fields.items() if k not in RESERVED_KWARGS and k not in self.layered_parameters
-        )
-        unique_layered_fields = (
-            (k, v) for k, v in self.layered_parameters.items() if k not in RESERVED_KWARGS and k not in fields
-        )
-        intersection_fields = (
-            (k, v) for k, v in fields.items() if k not in RESERVED_KWARGS and k in self.layered_parameters
-        )
-
-        for field_name, field_definition in unique_handler_fields:
-            kwarg_definition = field_definition.kwarg_definition
-            if field_definition.is_di_field and field_name not in self.dependency_providers:
-                # never document explicit dependencies
-                continue
-
-            if isinstance(kwarg_definition, ParameterKwarg) and not kwarg_definition.include_in_schema:
-                # exclude parameters that are marked as not included in the schema
-                continue
-
-            if (
-                isinstance(kwarg_definition, ParameterKwarg)
-                and kwarg_definition.param_type == ParamType.PATH
-                and (kwarg_definition.name or field_name) not in self.path_parameters
-            ):
-                # explicit path parameter that isn't part of this route's URL
-                continue
-
-            if provider := self.dependency_providers.get(field_name):
-                self.create_parameters_for_field_definitions(fields=provider.parsed_fn_signature.parameters)
-            else:
-                self.parameters.add(self.create_parameter(field_definition=field_definition, parameter_name=field_name))
-
-        for field_name, field_definition in unique_layered_fields:
-            self.parameters.add(self.create_parameter(field_definition=field_definition, parameter_name=field_name))
-
-        for field_name, field_definition in intersection_fields:
-            self.parameters.add(self.get_layered_parameter(field_name=field_name, field_definition=field_definition))
-
-    def create_parameters_for_handler(self) -> list[Parameter]:
-        """Create a list of path/query/header Parameter models for the given PathHandler."""
-        handler_fields = self.route_handler.parsed_fn_signature.parameters
-        # not all path parameters have to be consumed by the handler. Because even not
-        # consumed path parameters must still be specified, we create stub parameters
-        # for the unconsumed ones so a correct OpenAPI schema can be generated.
-        # A field consumes a path parameter if it is marked as a path parameter, under
-        # its own name or the alias given via ``PathParameter(name=...)``.
-        consumed = _consumed_path_parameters(handler_fields) | {
-            name
-            for dependency in self.dependency_providers.values()
-            for name in _consumed_path_parameters(dependency.parsed_fn_signature.parameters)
-        }
-        unconsumed_path_parameters = set(self.path_parameters) - consumed
-        # a stub is keyed apart from the handler's fields, which may use the same name
-        # for a parameter read from another location
-        stubs = {
-            f"path:{param_name}": FieldDefinition.from_kwarg(
-                self.path_parameters[param_name].type,
-                name=param_name,
-                kwarg_definition=PathParameter(name=param_name),
-            )
-            for param_name in unconsumed_path_parameters
-        }
-
-        self.create_parameters_for_field_definitions({**handler_fields, **stubs})
-        return self.parameters.list()
-
-
-def _consumed_path_parameters(fields: dict[str, FieldDefinition]) -> set[str]:
-    """Return the names of the path parameters ``fields`` are marked to read."""
-    return {
-        field.kwarg_definition.name or field_name
-        for field_name, field in fields.items()
-        if isinstance(field.kwarg_definition, ParameterKwarg) and field.kwarg_definition.param_type == ParamType.PATH
-    }
+    return Parameter(
+        description=description,
+        name=name,
+        param_in=kwarg_definition.param_type,
+        required=kwarg_definition.param_type is ParamType.PATH or field_definition.is_required,
+        schema=result,
+        examples=examples or None,
+    )
 
 
 def create_parameters_for_handler(
@@ -256,10 +47,35 @@ def create_parameters_for_handler(
     route_handler: BaseRouteHandler,
     path_parameters: dict[str, PathParameterDefinition],
 ) -> list[Parameter]:
-    """Create a list of path/query/header Parameter models for the given PathHandler."""
-    factory = ParameterFactory(
-        context=context,
-        route_handler=route_handler,
-        path_parameters=path_parameters,
+    """Return the OpenAPI parameters of ``route_handler`` on a route with ``path_parameters``.
+
+    One parameter for each request parameter of the handler, in order, except the body, those
+    declared with ``include_in_schema=False`` and path parameters the route does not have;
+    followed by one for each of ``path_parameters`` no request parameter declares, typed by the
+    route.
+    """
+    schema_creator = SchemaCreator.from_openapi_context(
+        context, prefer_alias=True, signature_namespace=route_handler.signature_namespace
     )
-    return factory.create_parameters_for_handler()
+    parameters: list[Parameter] = []
+    declared_path_parameters: set[str] = set()
+    for definition in route_handler._injection_setup.request_parameter_definitions.values():
+        if definition.is_body:
+            continue
+        if definition.param_type is ParamType.PATH:
+            declared_path_parameters.add(definition.name)
+            if definition.name not in path_parameters:
+                continue
+        if cast("ParameterKwarg", definition.field_definition.kwarg_definition).include_in_schema:
+            parameters.append(_create_parameter(schema_creator, definition.name, definition.field_definition))
+
+    parameters.extend(
+        _create_parameter(
+            schema_creator,
+            name,
+            FieldDefinition.from_kwarg(path_parameter.type, name=name, kwarg_definition=PathParameter(name=name)),
+        )
+        for name, path_parameter in path_parameters.items()
+        if name not in declared_path_parameters
+    )
+    return parameters

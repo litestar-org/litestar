@@ -15,8 +15,15 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Sequence
 
     from litestar.connection import ASGIConnection
-    from litestar.di import Provide
-    from litestar.types import ControllerRouterHandler, Guard, Method, Scopes, SyncOrAsyncUnion, TypeEncodersMap
+    from litestar.types import (
+        ControllerRouterHandler,
+        Dependencies,
+        Guard,
+        Method,
+        Scopes,
+        SyncOrAsyncUnion,
+        TypeEncodersMap,
+    )
 
 
 @dataclass
@@ -57,8 +64,8 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
     processed."""
     route_handlers: Iterable[ControllerRouterHandler] | None = field(default=None)
     """An optional iterable of route handlers to register."""
-    dependencies: dict[str, Provide] | None = field(default=None)
-    """An optional dictionary of dependency providers."""
+    dependencies: Dependencies | None = field(default=None)
+    """A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables."""
 
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""

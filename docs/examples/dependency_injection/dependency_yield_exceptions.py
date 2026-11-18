@@ -1,4 +1,4 @@
-from collections.abc import Generator
+from collections.abc import AsyncGenerator
 
 from litestar import Litestar, get
 from litestar.di import NamedDependency, Provide
@@ -7,7 +7,7 @@ from litestar.params import FromPath
 STATE = {"result": None, "connection": "closed"}
 
 
-def generator_function() -> Generator[str, None, None]:
+async def generator_function() -> AsyncGenerator[str, None]:
     """Set the connection state to open and close it after the handler returns.
 
     If an error occurs, set `result` to `"error"`, else set it to `"OK"`.

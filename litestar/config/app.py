@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig
     from litestar.connection import Request, WebSocket
     from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.di import Provide
+    from litestar.di import DependencyKey, Provide, Provider
     from litestar.dto import AbstractDTO
     from litestar.events.emitter import BaseEventEmitterBackend
     from litestar.events.listener import EventListener
@@ -112,8 +112,12 @@ class AppConfig:
     """If set this enables the builtin CSRF middleware."""
     debug: bool = field(default=False)
     """If ``True``, app errors rendered as HTML with a stack trace."""
-    dependencies: dict[str, Provide | AnyCallable] = field(default_factory=dict)
-    """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
+    dependencies: dict[DependencyKey, Provider | Provide | AnyCallable] = field(default_factory=dict)
+    """A dictionary of names or types to :class:`Provider <.di.Provider>` instances, :class:`Provide <.di.Provide>` instances or callables."""
+    dependency_scopes: Sequence[str] | None = field(default=None)
+    """The scopes of the app's dependencies, outermost first. Defaults to ``("app", "request", "handler")``.
+    Without ``"app"``, HTTP and websocket requests are handled whether or not the lifespan is running.
+    """
     dto: type[AbstractDTO] | None | EmptyType = field(default=Empty)
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and validation of request data."""
     etag: ETag | None = field(default=None)

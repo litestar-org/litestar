@@ -19,7 +19,7 @@ from litestar.utils.scope.state import ScopeState
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
 
-    from litestar.types import Receive, Scope, Send
+    from litestar.types import Message, Receive, Scope, Send
 
 
 def test_add_mount_route_disallow_path_parameter() -> None:
@@ -266,11 +266,32 @@ async def test_asgi_router_set_exception_handlers_in_scope_successful_routing(
     app = Litestar(route_handlers=[handler], exception_handlers={RuntimeError: app_exception_handlers_mock})
     router = app.asgi_router
     scope["path"] = "/"
-    await router(scope, AsyncMock(), AsyncMock())
+    async with app.lifespan():
+        await router(scope, AsyncMock(), AsyncMock())
     state = ScopeState.from_scope(scope)
     assert state.exception_handlers is not Empty
     assert state.exception_handlers[RuntimeError] is app_exception_handlers_mock
     assert state.exception_handlers[TypeError] is handler_exception_handlers_mock
+
+
+async def test_handler_exception_with_matching_handler_is_turned_into_response_inside_route_without_middleware(
+    create_scope: Callable[..., Scope],
+) -> None:
+    @get("/")
+    async def handler() -> None:
+        raise NotFoundException()
+
+    app = Litestar(route_handlers=[handler])
+    messages: list[Message] = []
+
+    async def send(message: Message) -> None:
+        messages.append(message)
+
+    async with app.lifespan():
+        await app.asgi_router(create_scope(app=app, path="/"), AsyncMock(), send)
+
+    assert messages[0]["type"] == "http.response.start"
+    assert messages[0]["status"] == 404
 
 
 def test_routing_cache_does_not_prevent_garbage_collection() -> None:

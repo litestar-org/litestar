@@ -120,7 +120,7 @@ def parse_path_to_route(
     path: str,
     plain_routes: set[str],
     root_node: RouteTrieNode,
-) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
+) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str, bool]:
     """Given a scope object, retrieve the asgi_handlers and is_mount boolean values from correct trie node.
 
     Args:
@@ -136,13 +136,15 @@ def parse_path_to_route(
         NotFoundException: If no correlating node is found or if path params can not be parsed into values according to the node definition.
 
     Returns:
-        A tuple containing the stack of middlewares and the route handler that is wrapped by it.
+        A tuple containing the stack of middlewares and the route handler that is wrapped by it, the resolved path, the
+        parsed path parameters, the path template, and whether the route is an ASGI route.
     """
 
     try:
         if path in plain_routes:
-            asgi_app, handler = parse_node_handlers(node=root_node.children[path], method=method)
-            return asgi_app, handler, path, {}, path
+            node = root_node.children[path]
+            asgi_app, handler = parse_node_handlers(node=node, method=method)
+            return asgi_app, handler, path, {}, path, node.is_asgi
 
         if mount_paths_regex and (match := mount_paths_regex.match(path)):
             mount_path = path[: match.end()]
@@ -159,7 +161,7 @@ def parse_path_to_route(
                 asgi_app, handler = parse_node_handlers(node=mount_node, method=method)
                 remaining_path = remaining_path or "/"
                 remaining_path = remaining_path if remaining_path.endswith("/") else f"{remaining_path}/"
-                return asgi_app, handler, remaining_path, {}, root_node.path_template
+                return asgi_app, handler, remaining_path, {}, root_node.path_template, mount_node.is_asgi
 
         node, path_parameters, path = traverse_route_map(
             root_node=root_node,
@@ -175,6 +177,7 @@ def parse_path_to_route(
             path,
             parsed_path_parameters,
             node.path_template,
+            node.is_asgi,
         )
     except ValueError as e:
         raise NotFoundException() from e

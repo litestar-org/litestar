@@ -98,4 +98,4 @@ def test_example_builds(module: str, import_failures: dict[str, dict[str, Any]])
 
 
 def test_example_raising_on_purpose_raises(import_failures: dict[str, dict[str, Any]]) -> None:
-    assert import_failures[RAISES_ON_PURPOSE]["improperly_configured"]
+    assert import_failures[RAISES_ON_PURPOSE]["type"] == "MissingProviderError"

@@ -1,4 +1,4 @@
-"""Serialization, DTO and signature-model benchmarks.
+"""Serialization, DTO and request parameter validation benchmarks.
 
 Only ``test_dto_request_roundtrip`` goes through the ASGI interface; it starts the app and
 sends 10 requests per measured call like the request-path benchmarks. The rest call the
@@ -16,12 +16,12 @@ import pytest
 from pytest_codspeed import BenchmarkFixture
 
 from litestar import Litestar, get, post
+from litestar._request_parameters.validation import RequestParameterValidator
 from litestar.dto import DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
 from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.params import FromQuery, JSONBody
 from litestar.serialization import decode_json, encode_json
-from litestar.testing import RequestFactory
 from litestar.typing import FieldDefinition
 from tests.benchmarks.helpers import ASGIRunner, make_scope, response_status
 
@@ -139,7 +139,7 @@ def test_dto_request_roundtrip(
     assert response_status(messages) == 201
 
 
-def test_signature_model_parse(benchmark: BenchmarkFixture) -> None:
+def test_request_parameter_validation(benchmark: BenchmarkFixture) -> None:
     @get("/search")
     async def handler(
         page: FromQuery[int],
@@ -152,14 +152,21 @@ def test_signature_model_parse(benchmark: BenchmarkFixture) -> None:
 
     app = Litestar(route_handlers=[handler], openapi_config=None)
     route_handler = app.routes[0].route_handlers[0]  # type: ignore[union-attr]
-    model = route_handler.signature_model
-    connection = RequestFactory(app=app).get("/search")
-    kwargs = {"page": "2", "size": "50", "q": "hello", "active": "true", "ids": ["1", "2", "3"]}
+    definitions = route_handler._injection_setup.request_parameter_definitions.values()
+    validator = RequestParameterValidator(definitions, type_decoders=route_handler.type_decoders)
+    values = {"page": "2", "size": "50", "q": "hello", "active": "true", "ids": ["1", "2", "3"]}
+    raw = {definition.key: values[definition.name] for definition in definitions}
 
-    def parse_100_times() -> Any:
+    def validate_100_times() -> dict[str, Any]:
         for _ in range(99):
-            model.parse_values_from_connection_kwargs(connection, kwargs)
-        return model.parse_values_from_connection_kwargs(connection, kwargs)
+            validator.validate(raw)
+        return validator.validate(raw)
 
-    parsed = benchmark(parse_100_times)
-    assert parsed == {"page": 2, "size": 50, "q": "hello", "active": True, "ids": [1, 2, 3]}
+    validated = benchmark(validate_100_times)
+    assert {definition.name: validated[definition.key] for definition in definitions} == {
+        "page": 2,
+        "size": 50,
+        "q": "hello",
+        "active": True,
+        "ids": [1, 2, 3],
+    }

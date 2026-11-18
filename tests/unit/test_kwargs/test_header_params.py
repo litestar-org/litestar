@@ -13,7 +13,7 @@ from litestar.testing import create_test_client
     [
         (str, {"special-header": "123"}, HeaderParameter(name="special-header", min_length=1, max_length=3), False),
         (str, {"special-header": "123"}, HeaderParameter(name="special-header", min_length=1, max_length=2), True),
-        (str, {}, HeaderParameter(name="special-header", min_length=1, max_length=2), True),
+        (str, {}, HeaderParameter(name="special-header", min_length=1, max_length=2), False),
         (
             Optional[str],
             {},
@@ -22,7 +22,7 @@ from litestar.testing import create_test_client
         ),
         (int, {"special-header": "123"}, HeaderParameter(name="special-header", ge=100, le=201), False),
         (int, {"special-header": "123"}, HeaderParameter(name="special-header", ge=100, le=120), True),
-        (int, {}, HeaderParameter(name="special-header", ge=100, le=120), True),
+        (int, {}, HeaderParameter(name="special-header", ge=100, le=120), False),
         (
             Optional[int],
             {},

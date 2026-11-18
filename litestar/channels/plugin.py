@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import msgspec.json
 
-from litestar.di import Provide
+from litestar.di import Provider
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.handlers import WebsocketRouteHandler
 from litestar.plugins import InitPlugin
@@ -115,8 +115,13 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         return data.encode() if isinstance(data, str) else self._encode_json(data)
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
-        """Plugin hook. Set up a ``channels`` dependency, add route handlers and register application hooks"""
-        app_config.dependencies["channels"] = Provide(lambda: self, use_cache=True, sync_to_thread=False)
+        """Plugin hook. Set up a dependency under the name ``channels`` and the type ``ChannelsPlugin``, add route
+        handlers and register application hooks
+        """
+        app_config.dependencies["channels"] = Provider(lambda: self, key="channels", scope="app", sync_to_thread=False)
+        app_config.dependencies[ChannelsPlugin] = Provider(
+            lambda: self, key=ChannelsPlugin, scope="app", sync_to_thread=False
+        )
         app_config.lifespan.append(self)
         app_config.signature_namespace.update(ChannelsPlugin=ChannelsPlugin)
 

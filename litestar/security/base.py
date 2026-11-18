@@ -6,6 +6,7 @@ from dataclasses import field
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from litestar import Response
+from litestar._layers.utils import narrow_dependencies
 from litestar.utils.sync import ensure_async_callable
 
 if TYPE_CHECKING:
@@ -13,13 +14,13 @@ if TYPE_CHECKING:
 
     from litestar.config.app import AppConfig
     from litestar.connection import ASGIConnection
-    from litestar.di import Provide
     from litestar.enums import MediaType, OpenAPIMediaType
     from litestar.middleware.authentication import AbstractAuthenticationMiddleware
     from litestar.middleware.base import DefineMiddleware
     from litestar.openapi.spec import Components, SecurityRequirement
     from litestar.types import (
         ControllerRouterHandler,
+        Dependencies,
         Guard,
         Method,
         ResponseCookies,
@@ -60,8 +61,8 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     processed."""
     route_handlers: Iterable[ControllerRouterHandler] | None = None
     """An optional iterable of route handlers to register."""
-    dependencies: dict[str, Provide] | None = None
-    """An optional dictionary of dependency providers."""
+    dependencies: Dependencies | None = None
+    """A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables."""
     retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Any | None]]
     """Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.
 
@@ -103,7 +104,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
             app_config.guards.extend(self.guards)
 
         if self.dependencies:
-            app_config.dependencies.update(self.dependencies)
+            app_config.dependencies.update(narrow_dependencies(self.dependencies))
 
         if self.route_handlers:
             app_config.route_handlers.extend(self.route_handlers)

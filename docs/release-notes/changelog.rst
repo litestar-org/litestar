@@ -6,6 +6,124 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Drop reserved keyword arguments in handlers and DI
+        :type: feature
+        :breaking:
+        :pr: TBD
+
+        Drop the special meaning of the "reserved keyword arguments" in handlers and DI
+        providers.
+
+        The parameter names can now freely be used and assigned, as their meaning is
+        derived from their respective annotation:
+
+        - ``data``
+        - ``body``
+        - ``request``
+        - ``socket``
+        - ``state``
+
+        ``litestar.constants.RESERVED_KWARGS``, ``litestar.constants.SKIP_VALIDATION_NAMES``,
+        ``FieldDefinition.is_non_marker_parameter_field`` and ``ParameterKwarg.is_marker``
+        are removed.
+
+    .. change:: Don't overwrite a handler parameter with a dependency of the same name
+        :type: bugfix
+        :breaking:
+        :pr: TBD
+
+        Fix a bug that would overwrite a request parameter in a handler with
+        dependency of the same name. Request parameters now follow the same rule as
+        dependencies: Last declared wins. Since a parameter in a handler is always
+        declared last, it will always win against a dependency of the same name.
+
+        The OpenAPI schema already documented this correctly.
+
+    .. change:: OpenAPI: Exclude a layer parameter with ``include_in_schema=False`` from the schema
+        :type: bugfix
+        :pr: TBD
+
+        Fix a bug that would cause a layer parameter declared with
+        ``include_in_schema=False`` to still be included in the OpenAPI schema, if it
+        was also consumed by a handler of a dependency of that handler.
+
+    .. change:: OpenAPI: Include a layer parameter defined next to a handler parameter of the same name that doesn't bind it
+        :type: bugfix
+        :pr: TBD
+
+        A handler parameter named like a layer parameter, with a marker that sets a field, is a
+        parameter of its own, e.g. ``limit: Annotated[int, QueryParameter(ge=1)]`` under a layer
+        parameter ``limit`` declared with ``name="page-limit"``. The OpenAPI schema documents
+        both. Previously, it documented only the handler parameter.
+
+    .. change:: OpenAPI: Document header parameters case insensitively across handlers and dependencies
+        :type: bugfix
+        :pr: TBD
+
+        Fix a bug that would cause header parameters declared with different casings
+        (e.g. ``X-Token`` and ``x-token``) to be documented as two distinct parameters,
+        if one of them was declared in a dependency and one in a handler.
+
+    .. change:: OpenAPI: Fix schema generation for request body declared only in a dependency provider and a DTO set
+        :type: bugfix
+        :pr: TBD
+
+        Fix a bug that occurred when a request body was only declared in a dependency
+        provider of a handler, with that handler setting a ``dto=``. The schema would be
+        generated from the raw model, not the DTO transformed one. The schema now takes
+        the DTO into consideration, independent of the point the request body is
+        declared.
+
+    .. change:: OpenAPI: Document the default of a handler parameter that's also a layer parameter
+        :type: bugfix
+        :pr: TBD
+
+        Fix a bug that would document a handler / DI parameter declared with a default,
+        *and* corresponding to a layer parameter *without a default*, as required and
+        without a default.
+
+        The parameter is now correctly documented as not required, and with its default.
+
+    .. change:: Raise an exception at startup for variadic handler / DI parameters
+        :type: bugfix
+        :pr: TBD
+
+        Raise an exception at startup if a handler or DI provider declares variadic
+        parameters (``*args`` or ``**kwargs``).
+
+        Previously, ``*args`` would fail every request with a ``500`` error, and
+        ``**kwargs`` would implicitly declare a query parameter named ``kwargs``.
+
+    .. change:: Raise an exception if a generator dependency yields more than once
+        :type: bugfix
+        :breaking:
+        :pr: TBD
+
+        Raise an exception if a generator dependency ``yield``\ s more than once.
+        Previously, no exception was raised, and the code after the second ``yield``
+        never ran.
+
+    .. change:: Raise a startup exception if an unmarked handler parameter is named like a layer parameter
+        :type: bugfix
+        :breaking:
+        :pr: TBD
+
+        A handler parameter without a marker raises
+        :class:`~litestar.exceptions.ImproperlyConfiguredException` at startup. Ensure
+        this is also the case if it is named like a layer parameter.
+
+    .. change:: Raise a startup exception if a request body is declared in a ``GET`` or websocket handler, or any of its dependencies
+        :type: bugfix
+        :breaking:
+        :pr: TBD
+
+        Raise a startup exception if a ``GET`` HTTP or a WebSocket handler, or any of
+        their dependencies declare a request body.
+
+        Previously, declaring a body for such handlers in a dependency would work, and
+        the body would be passed as ``b""``, ignoring a possible default. Requests to
+        a WebSocket handler with such a declaration would fail.
+
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
         :pr: 5213

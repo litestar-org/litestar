@@ -10,11 +10,9 @@ from litestar.middleware._internal.exceptions import ExceptionHandlerMiddleware
 from litestar.routes import HTTPRoute
 
 
-def test_build_route_middleware_stack_no_middleware(monkeypatch: pytest.MonkeyPatch) -> None:
-    # if there is no middleware for the route, then we don't need to wrap route.handle in
-    # exception handling middleware. Exceptions can safely be caught by the outermost exception
-    # handling middleware.
-
+def test_build_route_middleware_stack_without_middleware_wraps_handle_in_exception_handler(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     @get("/")
     async def handler() -> None:
         pass
@@ -24,7 +22,8 @@ def test_build_route_middleware_stack_no_middleware(monkeypatch: pytest.MonkeyPa
     handle_mock = MagicMock()
     monkeypatch.setattr(type(route), "handle", handle_mock)
     asgi_app = build_route_middleware_stack(app=app, route=route, route_handler=handler)
-    assert asgi_app is handle_mock
+    assert isinstance(asgi_app, ExceptionHandlerMiddleware)
+    assert asgi_app.app is handle_mock
 
 
 def test_build_route_middleware_stack_with_middleware(monkeypatch: pytest.MonkeyPatch) -> None:
