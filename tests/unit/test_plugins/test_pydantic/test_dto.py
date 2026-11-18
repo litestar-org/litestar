@@ -178,7 +178,7 @@ def test_pydantic_dto_data_defers_nested_collection_validation(use_experimental_
         )
 
     @post(path="/", dto=WriteParentDto, signature_types=[Parent])
-    async def handler(data: DTOData[Parent]) -> dict[str, Any]:
+    async def handler(data: JSONBody[DTOData[Parent]]) -> dict[str, Any]:
         builtins = data.as_builtins()
         assert isinstance(builtins["children"][0], dict)
         assert isinstance(builtins["children"][0]["items"][0], dict)

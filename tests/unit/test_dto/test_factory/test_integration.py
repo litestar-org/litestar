@@ -281,10 +281,10 @@ def test_dto_data_nested_collection_as_builtins(use_experimental_dto_backend: bo
         dto=DataclassDTO[Annotated[NestedBasket, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
         return_dto=None,
     )
-    def handler(dto_data: DTOData[NestedBasket]) -> dict[str, Any]:
-        builtins = cast("dict[str, Any]", dto_data.as_builtins())
+    def handler(data: JSONBody[DTOData[NestedBasket]]) -> dict[str, Any]:
+        builtins = cast("dict[str, Any]", data.as_builtins())
         assert builtins == {"items": [{"name": "a"}, {"name": "b"}]}
-        instance = dto_data.create_instance()
+        instance = data.create_instance()
         assert isinstance(instance.items[0], BasketItem)
         assert instance.items[0].name == "a"
         return builtins
@@ -304,7 +304,7 @@ def test_dto_data_nested_mapping_as_builtins(use_experimental_dto_backend: bool)
         ],
         return_dto=None,
     )
-    def handler(data: DTOData[NestedMappingBasket]) -> dict[str, Any]:
+    def handler(data: JSONBody[DTOData[NestedMappingBasket]]) -> dict[str, Any]:
         builtins = cast("dict[str, Any]", data.as_builtins())
         assert builtins == {"items": {"k": {"name": "a"}}}
         instance = data.create_instance()
@@ -328,7 +328,7 @@ def test_dto_data_create_instance_rebuilds_optional_nested_model(use_experimenta
         return_dto=None,
         sync_to_thread=False,
     )
-    def handler(data: DTOData[UnionTopHolder]) -> dict[str, Any]:
+    def handler(data: JSONBody[DTOData[UnionTopHolder]]) -> dict[str, Any]:
         instance = data.create_instance()
         assert isinstance(instance.inner, UnionLeaf), f"got {type(instance.inner).__name__}"
         assert instance.inner.name == "a"
@@ -348,7 +348,7 @@ def test_dto_data_create_instance_rebuilds_optional_nested_model_none(use_experi
         return_dto=None,
         sync_to_thread=False,
     )
-    def handler(data: DTOData[UnionTopHolder]) -> dict[str, Any]:
+    def handler(data: JSONBody[DTOData[UnionTopHolder]]) -> dict[str, Any]:
         instance = data.create_instance()
         assert instance.inner is None
         return {"ok": True}
@@ -370,7 +370,7 @@ def test_dto_data_create_instance_rebuilds_model_in_union_with_scalar(
         return_dto=None,
         sync_to_thread=False,
     )
-    def handler(data: DTOData[UnionStrHolder]) -> dict[str, Any]:
+    def handler(data: JSONBody[DTOData[UnionStrHolder]]) -> dict[str, Any]:
         assert data.as_builtins() == {"inner": {"name": "a"}}
         assert isinstance(data.create_instance().inner, UnionLeaf)
         return {"ok": True}
@@ -387,7 +387,7 @@ def test_dto_data_create_instance_rebuilds_optional_nested_model_in_list(use_exp
         return_dto=None,
         sync_to_thread=False,
     )
-    def handler(data: DTOData[UnionListHolder]) -> dict[str, Any]:
+    def handler(data: JSONBody[DTOData[UnionListHolder]]) -> dict[str, Any]:
         instance = data.create_instance()
         assert isinstance(instance.items[0], UnionLeaf)
         assert instance.items[0].name == "a"
