@@ -272,10 +272,10 @@ def test_dto_data_nested_collection_as_builtins() -> None:
         dto=DataclassDTO[NestedBasket],
         return_dto=None,
     )
-    def handler(dto_data: JSONBody[DTOData[NestedBasket]]) -> dict[str, Any]:
-        builtins = cast("dict[str, Any]", dto_data.as_builtins())
+    def handler(data: JSONBody[DTOData[NestedBasket]]) -> dict[str, Any]:
+        builtins = cast("dict[str, Any]", data.as_builtins())
         assert builtins == {"items": [{"name": "a"}, {"name": "b"}]}
-        instance = dto_data.create_instance()
+        instance = data.create_instance()
         assert isinstance(instance.items[0], BasketItem)
         assert instance.items[0].name == "a"
         return builtins
