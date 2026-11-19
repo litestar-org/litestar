@@ -255,10 +255,10 @@
         ``Access-Control-Allow-Methods`` header when CORS allows all methods. ``QUERY`` handlers are documented in
         OpenAPI 3.2 documents and left out of OpenAPI 3.1 documents, which cannot describe them.
 
-        The cache key of a ``QUERY`` request includes a digest of the request body, so responses to different
-        queries are cached separately. A handler serving ``GET`` together with a method that carries a request body,
-        such as ``QUERY`` or ``POST``, can now declare ``data``; ``GET`` requests are validated against it as well,
-        so it should be optional.
+        As :rfc:`10008` requires, a ``QUERY`` request whose ``Content-Type`` is missing is answered with ``400``,
+        and one whose ``Content-Type`` does not match the body the handler declares with ``415`` and an
+        ``Accept-Query`` header. The cache key of a ``QUERY`` request includes a digest of the request body, its media
+        type and its content coding, so responses to different queries are cached separately.
 
     .. change:: OpenAPI: Keep ``HEAD`` operations of routes sharing a path
         :type: bugfix

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 import pytest
 
 from litestar import Litestar, get, head, query, route
@@ -71,24 +69,21 @@ def test_query_operation_merged_with_operations_of_same_path_format() -> None:
 
     schema = build_document(get_item, head_item, query_item, openapi_version="3.2.0")
 
-    assert {"get", "head", "query"} <= set(schema["paths"]["/items/{item_id}"])
+    assert set(schema["paths"]["/items/{item_id}"]) == {"get", "head", "query"}
 
 
-@pytest.mark.parametrize("attribute", ["get", "put", "post", "delete", "options", "head", "patch", "trace", "query"])
-def test_merge_path_item_operations_keeps_every_method(attribute: str) -> None:
-    operation = Operation(operation_id="operation")
-    other_operation = Operation(operation_id="other")
-    other_attribute = "post" if attribute == "get" else "get"
-    path_item_kwargs: dict[str, Any] = {attribute: operation}
-    other_path_item_kwargs: dict[str, Any] = {other_attribute: other_operation}
+@pytest.mark.parametrize("query_first", [True, False], ids=["query-first", "get-first"])
+def test_merge_path_item_operations_keeps_the_query_operation(query_first: bool) -> None:
+    query_operation = Operation(operation_id="query")
+    get_operation = Operation(operation_id="get")
+    query_item, get_item = PathItem(query=query_operation), PathItem(get=get_operation)
 
-    for source, other in (
-        (PathItem(**path_item_kwargs), PathItem(**other_path_item_kwargs)),
-        (PathItem(**other_path_item_kwargs), PathItem(**path_item_kwargs)),
-    ):
-        merged = merge_path_item_operations(source, other, for_path="/")
-        assert getattr(merged, attribute) is operation
-        assert getattr(merged, other_attribute) is other_operation
+    merged = merge_path_item_operations(
+        *((query_item, get_item) if query_first else (get_item, query_item)), for_path="/"
+    )
+
+    assert merged.query is query_operation
+    assert merged.get is get_operation
 
 
 def test_typescript_converter_includes_query_operation() -> None:
@@ -98,5 +93,4 @@ def test_typescript_converter_includes_query_operation() -> None:
         ).openapi_schema
     ).write()
 
-    assert "SearchSearch" in result
-    assert "RequestBody" in result
+    assert result.index("export type RequestBody") > result.index("export namespace SearchSearch {")

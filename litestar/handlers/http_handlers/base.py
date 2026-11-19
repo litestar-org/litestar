@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, AnyStr, TypedDict, cast
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
-from litestar.config.response_cache import build_cache_key
+from litestar.config.response_cache import _build_cache_key
 from litestar.connection import Request
 from litestar.datastructures import CacheControlHeader, ETag, FormMultiDict, Header
 from litestar.datastructures.response_header import ResponseHeader
@@ -566,10 +566,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         from litestar.di._route_handler import create_handler_injection_setup
 
         self._injection_setup = create_handler_injection_setup(
-            self,
-            app,
-            connection_class=self.request_class,
-            accepts_body="GET" not in self.http_methods or not self.http_methods <= {HttpMethod.GET, HttpMethod.HEAD},
+            self, app, connection_class=self.request_class, accepts_body="GET" not in self.http_methods
         )
 
     def _validate_handler_function(self) -> None:
@@ -752,7 +749,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
 
         cache_config = request.app.response_cache_config
-        cache_key = await build_cache_key(request, self.cache_key_builder or cache_config.key_builder)
+        cache_key = await _build_cache_key(request, self.cache_key_builder or cache_config.key_builder)
         store = cache_config.get_store_from_app(request.app)
 
         if not (cached_response_data := await store.get(key=cache_key)):
