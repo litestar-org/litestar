@@ -28,11 +28,6 @@ if TYPE_CHECKING:
 
     from litestar.types import DataclassProtocol
 
-    try:
-        from attrs import AttrsInstance
-    except ImportError:
-        AttrsInstance = Any  # type: ignore[assignment, misc]
-
 __all__ = (
     "DataContainerType",
     "EncodableBuiltinCollectionType",

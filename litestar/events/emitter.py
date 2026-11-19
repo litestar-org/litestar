@@ -59,7 +59,7 @@ class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], AB
 class SimpleEventEmitter(BaseEventEmitterBackend):
     """Event emitter the works only in the current process"""
 
-    __slots__ = ("_exit_stack", "_queue", "_receive_stream", "_send_stream")
+    __slots__ = ("_exit_stack", "_queue", "_send_stream")
 
     def __init__(self, listeners: Sequence[EventListener]) -> None:
         """Create an event emitter instance.
@@ -68,7 +68,6 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
             listeners: A list of listeners.
         """
         super().__init__(listeners=listeners)
-        self._receive_stream: MemoryObjectReceiveStream | None = None
         self._send_stream: MemoryObjectSendStream | None = None
         self._exit_stack: AsyncExitStack | None = None
 

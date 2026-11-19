@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 __all__ = ("DataclassDTO", "T")
 
 T = TypeVar("T", bound="DataclassProtocol | Collection[DataclassProtocol]")
-AnyDataclass = TypeVar("AnyDataclass", bound="DataclassProtocol")
 
 
 class DataclassDTO(AbstractDTO[T], Generic[T]):

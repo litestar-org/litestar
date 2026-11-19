@@ -198,7 +198,6 @@ def websocket_stream(
             return_dto=return_dto,
             type_encoders=type_encoders,
             stream_options=_WebSocketStreamOptions(
-                generator_fn=fn,
                 send_mode=mode,
                 listen_for_disconnect=listen_for_disconnect,
                 warn_on_data_discard=warn_on_data_discard,
@@ -226,7 +225,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
                 f"'AsyncGenerator', not {type(parsed_stream_fn_signature.return_type.raw)!r}"
             )
 
-        # important not to use 'self._ws_stream_options.generator_fn' here; This would
+        # important to use 'self.fn' and not the decorated function here; This would
         # break in cases the decorator has been used inside a controller, as it would
         # be a reference to the unbound method. The bound method is patched in later
         # after the controller has been initialized. This is a workaround that should
@@ -310,12 +309,10 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
 class _WebSocketStreamOptions:
     def __init__(
         self,
-        generator_fn: Callable[..., AsyncGenerator[Any, Any]],
         listen_for_disconnect: bool,
         warn_on_data_discard: bool,
         send_mode: WebSocketMode,
     ) -> None:
-        self.generator_fn = generator_fn
         self.listen_for_disconnect = listen_for_disconnect
         self.warn_on_data_discard = warn_on_data_discard
         self.send_mode = send_mode

@@ -38,7 +38,6 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
     model_type: type[ModelT]
     match_fields: list[str] | str | None = None
 
-    _model_has_created_at: bool
     _model_has_updated_at: bool
 
     def __init__(
@@ -62,7 +61,6 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             {
                 "collection": {},
                 "model_type": item,
-                "_model_has_created_at": hasattr(item, "created_at"),
                 "_model_has_updated_at": hasattr(item, "updated_at"),
             },
         )
@@ -414,7 +412,6 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
     model_type: type[ModelT]
     match_fields: list[str] | str | None = None
 
-    _model_has_created_at: bool
     _model_has_updated_at: bool
 
     def __init__(
@@ -442,7 +439,6 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
             {
                 "collection": {},
                 "model_type": item,
-                "_model_has_created_at": hasattr(item, "created_at"),
                 "_model_has_updated_at": hasattr(item, "updated_at"),
             },
         )

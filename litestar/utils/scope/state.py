@@ -32,11 +32,9 @@ class ScopeState:
         "content_type",
         "cookies",
         "csrf_token",
-        "dependency_cache",
         "do_cache",
         "exception_handlers",
         "exception_hooks_called_for",
-        "flash_messages",
         "form",
         "headers",
         "is_cached",
@@ -57,12 +55,10 @@ class ScopeState:
         self.content_type = Empty
         self.cookies = Empty
         self.csrf_token = Empty
-        self.dependency_cache = Empty
         self.do_cache = Empty
         self.exception_handlers = Empty
         self.exception_hooks_called_for = Empty
         self.form = Empty
-        self.flash_messages = []
         self.headers = Empty
         self.is_cached = Empty
         self.json = Empty
@@ -80,12 +76,10 @@ class ScopeState:
     content_type: tuple[str, dict[str, str]] | EmptyType
     cookies: dict[str, str] | EmptyType
     csrf_token: str | EmptyType
-    dependency_cache: dict[str, Any] | EmptyType
     do_cache: bool | EmptyType
     exception_handlers: ExceptionHandlersMap | EmptyType
     exception_hooks_called_for: Exception | EmptyType
     form: dict[str, str | list[str] | UploadFile] | EmptyType
-    flash_messages: list[dict[str, str]]
     headers: Headers | EmptyType
     is_cached: bool | EmptyType
     json: Any | EmptyType

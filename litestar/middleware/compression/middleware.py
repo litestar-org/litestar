@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from io import BytesIO
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Literal
 
 from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import CompressionEncoding, ScopeType
@@ -22,11 +22,6 @@ if TYPE_CHECKING:
         Scope,
         Send,
     )
-
-    try:
-        from brotli import Compressor
-    except ImportError:
-        Compressor = Any
 
 
 class CompressionMiddleware(AbstractMiddleware):

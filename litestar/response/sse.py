@@ -30,7 +30,7 @@ DEFAULT_SEPARATOR = "\r\n"
 
 
 class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
-    __slots__ = ("comment_message", "content_async_iterator", "event_id", "event_type", "retry_duration")
+    __slots__ = ("content_async_iterator", "event_id", "event_type", "retry_duration")
 
     content_async_iterator: AsyncIterable[SSEData]
 
@@ -42,7 +42,6 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         retry_duration: int | None = None,
         comment_message: str | None = None,
     ) -> None:
-        self.comment_message = comment_message
         self.event_id = event_id
         self.event_type = event_type
         self.retry_duration = retry_duration

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-from contextlib import AsyncExitStack
 from functools import partial
 from typing import TYPE_CHECKING, overload
 
@@ -37,7 +36,6 @@ class AsyncPgChannelsBackend(ChannelsBackend):
             raise ImproperlyConfiguredException("Need to specify dsn or make_connection")
 
         self._subscribed_channels: set[str] = set()
-        self._exit_stack = AsyncExitStack()
         self._connect = make_connection or partial(asyncpg.connect, dsn=dsn)
         self._queue: asyncio.Queue[tuple[str, bytes]] | None = None
         self._listener_lock = asyncio.Lock()

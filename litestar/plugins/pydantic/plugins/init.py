@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 from functools import partial
-from typing import TYPE_CHECKING, Any, TypeGuard, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeGuard, cast
 
 import pydantic
 
@@ -15,8 +15,6 @@ if TYPE_CHECKING:
 
     from litestar.config.app import AppConfig
     from litestar.plugins.pydantic.types import PydanticV2FieldsListType
-
-T = TypeVar("T")
 
 
 def _dec_pydantic_v2(model_type: type[pydantic.BaseModel], value: Any, strict: bool) -> pydantic.BaseModel:

@@ -4,7 +4,6 @@
 # pyright: reportGeneralTypeIssues=false
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Annotated, Any, Literal, NotRequired, get_type_hints
 
@@ -154,9 +153,6 @@ class PydanticModelInfo:
     title: str | None = None
     example: Any | None = None
     is_generic: bool = False
-
-
-_CreateFieldDefinition = Callable[..., FieldDefinition]
 
 
 def _create_field_definition_v2(  # noqa: C901

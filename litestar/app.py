@@ -139,7 +139,6 @@ class Litestar(Router):
         "_is_using_litestar_test_client",
         "_lifespan_managers",
         "_logger_shutdown",
-        "_openapi_schema",
         "_server_lifespan_managers",
         "after_exception",
         "allowed_hosts",
@@ -396,7 +395,6 @@ class Litestar(Router):
 
         self.plugins = PluginRegistry(config.plugins)
 
-        self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
         self.stores: StoreRegistry = (
             config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
