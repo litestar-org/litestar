@@ -200,7 +200,7 @@ class RedocRenderPlugin(OpenAPIRenderPlugin):
     def __init__(
         self,
         *,
-        version: str = "latest",
+        version: str = "v3.1.0",
         js_url: str | None = None,
         google_fonts: bool = True,
         path: str | Sequence[str] = "/redoc",
@@ -209,7 +209,8 @@ class RedocRenderPlugin(OpenAPIRenderPlugin):
         """Initialize the OpenAPI UI render plugin.
 
         Args:
-            version: Redoc version to download from the CDN. If js_url is provided, this is ignored.
+            version: Redoc version to download from the CDN, e.g. ``"v3.1.0"`` or ``"v3.x"``. If js_url is provided,
+                this is ignored. The page loads the bundle as an ES module, which requires Redoc 3 or newer.
             js_url: Download url for the Redoc JS bundle. If not provided, the version will be used to construct the url.
             google_fonts: Download google fonts via CDN. Should be set to False when not using a CDN.
             path: Path to serve the OpenAPI UI at.
@@ -246,16 +247,17 @@ class RedocRenderPlugin(OpenAPIRenderPlugin):
             """
 
         head += f"""
-            <script src="{self.js_url}" crossorigin></script>
             {self.style}
           </head>
         """
 
         body = b"".join(
             [
-                b"<body><div id='redoc-container'/><script type='text/javascript'>Redoc.init(",
+                b"<body><div id='redoc-container'></div><script type='module'>import { init } from '",
+                self.js_url.encode(),
+                b"';init(",
                 self.render_json(request, openapi_schema),
-                b",undefined,document.getElementById('redoc-container'))</script></body>",
+                b",{},document.getElementById('redoc-container'))</script></body>",
             ]
         )
 
@@ -366,7 +368,7 @@ class StoplightRenderPlugin(OpenAPIRenderPlugin):
     def __init__(
         self,
         *,
-        version: str = "7.7.18",
+        version: str = "9.0.29",
         js_url: str | None = None,
         css_url: str | None = None,
         path: str | Sequence[str] = "/elements",
@@ -435,7 +437,7 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
 
     def __init__(
         self,
-        version: str = "5.18.2",
+        version: str = "5.35.0",
         js_url: str | None = None,
         css_url: str | None = None,
         standalone_preset_js_url: str | None = None,

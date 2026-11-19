@@ -35,19 +35,19 @@ def config_factory() -> ConfigFactoryType:
 def test_default_redoc_cdn_urls(
     person_controller: type[Controller], pet_controller: type[Controller], config_factory: ConfigFactoryType
 ) -> None:
-    default_redoc_version = "latest"
+    default_redoc_version = "v3.1.0"
     default_redoc_js_bundle = f"https://cdn.redoc.ly/redoc/{default_redoc_version}/bundles/redoc.standalone.js"
     with create_test_client(
         [person_controller, pet_controller], openapi_config=config_factory((RedocRenderPlugin(),))
     ) as client:
         response = client.get("/schema/redoc")
-        assert default_redoc_js_bundle in response.text
+        assert f"<script type='module'>import {{ init }} from '{default_redoc_js_bundle}'" in response.text
 
 
 def test_default_swagger_ui_cdn_urls(
     person_controller: type[Controller], pet_controller: type[Controller], config_factory: ConfigFactoryType
 ) -> None:
-    default_swagger_ui_version = "5.18.2"
+    default_swagger_ui_version = "5.35.0"
     default_swagger_bundles = [
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{default_swagger_ui_version}/swagger-ui.css",
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{default_swagger_ui_version}/swagger-ui-bundle.js",
@@ -63,7 +63,7 @@ def test_default_swagger_ui_cdn_urls(
 def test_default_stoplight_elements_cdn_urls(
     person_controller: type[Controller], pet_controller: type[Controller], config_factory: ConfigFactoryType
 ) -> None:
-    default_stoplight_elements_version = "7.7.18"
+    default_stoplight_elements_version = "9.0.29"
     default_stoplight_elements_bundles = [
         f"https://unpkg.com/@stoplight/elements@{default_stoplight_elements_version}/styles.min.css",
         f"https://unpkg.com/@stoplight/elements@{default_stoplight_elements_version}/web-components.min.js",

@@ -243,7 +243,9 @@ With OpenAPI 3.2:
 
 .. note::
 
-    Not all documentation UIs and client generators support OpenAPI 3.2 yet.
+    Not all documentation UIs and client generators support OpenAPI 3.2 yet. Of the UIs Litestar provides, Swagger UI,
+    Redoc and Scalar render OpenAPI 3.2 documents, including ``QUERY`` operations. Stoplight Elements renders them
+    too, but leaves out ``QUERY`` operations.
 
 Customizing component schema names
 ----------------------------------
