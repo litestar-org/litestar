@@ -98,6 +98,10 @@ async def async_dep_c(b: NamedDependency[int]) -> int:
     return b + 1
 
 
+async def async_dep_independent() -> int:
+    return 2
+
+
 def sync_dep_a() -> int:
     return 1
 
@@ -120,6 +124,11 @@ async def generator_dep() -> AsyncGenerator[int, None]:
 )
 async def di_async(c: NamedDependency[int]) -> dict[str, int]:
     return {"c": c}
+
+
+@get("/di/independent", dependencies={"a": Provide(async_dep_a), "b": Provide(async_dep_independent)})
+async def di_independent(a: NamedDependency[int], b: NamedDependency[int]) -> dict[str, int]:
+    return {"a": a, "b": b}
 
 
 @get(
@@ -173,6 +182,7 @@ def app(runner: ASGIRunner) -> Iterator[Litestar]:
             header_and_cookie,
             post_dataclass,
             di_async,
+            di_independent,
             di_sync,
             di_generator,
             raise_not_found,
@@ -260,6 +270,13 @@ def test_di_nested_async_3(app: Litestar, runner: ASGIRunner, benchmark: Benchma
     messages = benchmark(runner.request_many, app, scope)
     assert response_status(messages) == 200
     assert response_body(messages) == b'{"c":3}'
+
+
+def test_di_independent_async_2(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
+    scope = make_scope("/di/independent")
+    messages = benchmark(runner.request_many, app, scope)
+    assert response_status(messages) == 200
+    assert response_body(messages) == b'{"a":1,"b":2}'
 
 
 def test_di_nested_sync_3(app: Litestar, runner: ASGIRunner, benchmark: BenchmarkFixture) -> None:
