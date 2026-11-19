@@ -46,3 +46,9 @@ class OpenAPIResponse(BaseSchemaObject):
     The key of the map is a short name for the link, following the naming constraints of the names for
     `Component Objects <https://spec.openapis.org/oas/v3.1.0#componentsObject>`_.
     """
+
+    summary: str | None = None
+    """A short summary of the meaning of the response.
+
+    Requires OpenAPI 3.2.
+    """

@@ -142,8 +142,8 @@ def parse_schema(schema: Schema) -> TypeScriptElement:
     """
     if schema.all_of:
         return TypeScriptIntersection(tuple(parse_schema(s) for s in schema.all_of if is_schema_value(s)))
-    if schema.one_of:
-        return TypeScriptUnion(tuple(parse_schema(s) for s in schema.one_of if is_schema_value(s)))
+    if members := schema.one_of or schema.any_of:
+        return TypeScriptUnion(tuple(parse_schema(s) for s in members if is_schema_value(s)))
     if is_schema_value(schema.items):
         return TypeScriptArray(parse_schema(schema.items))
     if schema.type == OpenAPIType.OBJECT:

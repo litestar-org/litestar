@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+import re
 from copy import deepcopy
 from dataclasses import dataclass, field, fields
 from typing import TYPE_CHECKING
 
-from litestar._openapi.utils import default_operation_id_creator
+from litestar._openapi.utils import (
+    default_operation_id_creator,
+    default_schema_component_name_creator,
+    supports_openapi_3_2,
+)
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.plugins import ScalarRenderPlugin
 from litestar.openapi.spec import (
     Components,
@@ -22,11 +28,13 @@ from litestar.openapi.spec import (
 from litestar.utils.path import normalize_path
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Callable, Sequence
 
+    from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.plugins import OpenAPIRenderPlugin
     from litestar.router import Router
     from litestar.types.callable_types import OperationIDCreator
+    from litestar.typing import FieldDefinition
 
 __all__ = ("OpenAPIConfig",)
 
@@ -115,9 +123,49 @@ class OpenAPIConfig:
     Handlers to serve the OpenAPI schema and documentation sites are added to this router according to
     :attr:`render_plugins`, so routes shouldn't be added that conflict with these.
     """
+    openapi_version: str = "3.1.0"
+    """The version of the OpenAPI Specification the generated document conforms to.
+
+    Set to ``"3.2.0"`` to generate an OpenAPI 3.2 document. Fields documented as requiring OpenAPI 3.2 are only valid
+    in such a document, and tooling support for it is not as widespread as for 3.1.
+
+    .. versionadded:: 3.0.0
+    """
+    self_uri: str | None = None
+    """The URI of the generated document, emitted as ``$self``. Requires OpenAPI 3.2.
+
+    .. versionadded:: 3.0.0
+    """
+    schema_component_name_creator: Callable[[FieldDefinition], str] = default_schema_component_name_creator
+    """A callable that receives the :class:`FieldDefinition <litestar.typing.FieldDefinition>` of a type and returns
+    the name of its schema in the ``components/schemas`` section.
+
+    Characters that are not allowed in a component name are replaced with ``_``. If the same name is returned for
+    different types, the names are told apart by the modules the types are defined in.
+
+    .. versionadded:: 3.0.0
+    """
+    error_response: ResponseSpec | None = None
+    """A :class:`ResponseSpec <litestar.openapi.datastructures.ResponseSpec>` describing the content of error responses.
+
+    Applied to the responses generated for the exceptions in a route handler's ``raises`` and for the validation error
+    of an operation that receives parameters or a request body. Set this if the application does not return Litestar's
+    default exception response, for example because of custom ``exception_handlers``. The description of each response
+    is still derived from its exceptions, ``description`` of the spec is not used. Examples are only generated if
+    :attr:`create_examples` is enabled as well. Entries in the ``responses`` of a route handler take precedence.
+
+    .. versionadded:: 3.0.0
+    """
 
     def __post_init__(self) -> None:
         self.path = normalize_path(self.path)
+
+        if not re.fullmatch(r"3\.[12]\.\d+", self.openapi_version):
+            raise ImproperlyConfiguredException(
+                f"Unsupported OpenAPI version {self.openapi_version!r}. Supported versions are 3.1.x and 3.2.x"
+            )
+        if self.self_uri is not None and not supports_openapi_3_2(self.openapi_version):
+            raise ImproperlyConfiguredException("'self_uri' requires 'openapi_version' to be 3.2.0 or newer")
 
         self.default_plugin: OpenAPIRenderPlugin | None = None
         for plugin in self.render_plugins:
@@ -150,6 +198,8 @@ class OpenAPIConfig:
             self.components = merged_components
 
         return OpenAPI(
+            openapi=self.openapi_version,
+            self_uri=self.self_uri,
             external_docs=self.external_docs,
             security=self.security,
             components=deepcopy(self.components),  # deepcopy prevents mutation of the config's components

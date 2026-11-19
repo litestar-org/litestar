@@ -30,3 +30,22 @@ class Tag(BaseSchemaObject):
 
     external_docs: ExternalDocumentation | None = None
     """Additional external documentation for this tag."""
+
+    summary: str | None = None
+    """A short summary of the tag, used for display purposes.
+
+    Requires OpenAPI 3.2.
+    """
+
+    parent: str | None = None
+    """The ``name`` of a tag that this tag is nested under. The named tag MUST exist in the document, and circular
+    references between parent and child tags MUST NOT be used.
+
+    Requires OpenAPI 3.2.
+    """
+
+    kind: str | None = None
+    """A machine-readable string to categorize what sort of tag it is, e.g. ``nav``, ``badge`` or ``audience``.
+
+    Requires OpenAPI 3.2.
+    """

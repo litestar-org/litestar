@@ -112,7 +112,7 @@ def test_abstract_security_config_registers_route_handlers(
                     Components(
                         security_schemes={
                             "app": SecurityScheme(
-                                type="http",
+                                type="apiKey",
                                 name="test",
                                 security_scheme_in="cookie",
                                 description="test.",
@@ -124,7 +124,7 @@ def test_abstract_security_config_registers_route_handlers(
             {
                 "schemas": {},
                 "securitySchemes": {
-                    "app": {"type": "http", "description": "test.", "name": "test", "in": "cookie"},
+                    "app": {"type": "apiKey", "description": "test.", "name": "test", "in": "cookie"},
                     "sessionCookie": {
                         "type": "apiKey",
                         "description": "Session cookie authentication.",
@@ -141,7 +141,7 @@ def test_abstract_security_config_registers_route_handlers(
                 components=Components(
                     security_schemes={
                         "app": SecurityScheme(
-                            type="http",
+                            type="apiKey",
                             name="test",
                             security_scheme_in="cookie",
                             description="test.",
@@ -158,7 +158,7 @@ def test_abstract_security_config_registers_route_handlers(
                         "name": "session",
                         "in": "cookie",
                     },
-                    "app": {"type": "http", "description": "test.", "name": "test", "in": "cookie"},
+                    "app": {"type": "apiKey", "description": "test.", "name": "test", "in": "cookie"},
                 },
             },
         ),

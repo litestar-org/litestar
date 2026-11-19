@@ -76,3 +76,16 @@ class PathItem(BaseSchemaObject):
     `Reference Object <https://spec.openapis.org/oas/v3.1.0#referenceObject>`_ to link to parameters that are defined at
     the `OpenAPI Object's components/parameters <https://spec.openapis.org/oas/v3.1.0#componentsParameters>`_.
     """
+
+    query: Operation | None = None
+    """A definition of a QUERY operation on this path.
+
+    Requires OpenAPI 3.2.
+    """
+
+    additional_operations: dict[str, Operation] | None = None
+    """A map of additional operations on this path, keyed by HTTP method. It MUST NOT contain an entry for a method that
+    has a field of its own, such as ``POST``.
+
+    Requires OpenAPI 3.2.
+    """

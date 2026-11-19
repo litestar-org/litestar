@@ -1,5 +1,6 @@
 import copy
 import re
+import sys
 from collections.abc import Callable, Mapping, Sequence
 from datetime import date, timedelta
 from decimal import Decimal
@@ -607,8 +608,6 @@ def test_create_for_computed_field(prefer_alias: bool) -> None:
 
 
 PATTERN = "^[a-z]+$"
-
-
 UNICODE_PATTERN = r"^\p{L}+$"
 
 
@@ -648,8 +647,6 @@ class PatternModel(pydantic_v2.BaseModel):
 
 
 PATTERN_STRING = {"type": "string", "pattern": PATTERN}
-
-
 PATTERN_SCHEMAS: dict[str, dict[str, Any]] = {
     "field": PATTERN_STRING,
     "field_with_length": {"type": "string", "minLength": 2, "maxLength": 5, "pattern": PATTERN},
@@ -692,6 +689,27 @@ def pattern_handler(data: JSONBody[PatternModel]) -> None:
 def test_pattern_is_documented() -> None:
     schema = Litestar([pattern_handler]).openapi_schema.to_schema()
     assert schema["components"]["schemas"]["PatternModel"]["properties"] == PATTERN_SCHEMAS
+
+
+class UnicodePatternModel(pydantic_v2.BaseModel):
+    value: str = pydantic_v2.Field("a", pattern=UNICODE_PATTERN)
+
+
+def test_unicode_property_pattern_is_documented_verbatim(validate_generated_openapi_documents: list[str]) -> None:
+    @post("/unicode", sync_to_thread=False)
+    def handler(data: JSONBody[UnicodePatternModel]) -> None:
+        return None
+
+    schema = Litestar([handler]).openapi_schema.to_schema()
+
+    assert schema["components"]["schemas"]["UnicodePatternModel"]["properties"]["value"] == {
+        "type": "string",
+        "pattern": UNICODE_PATTERN,
+        "default": "a",
+    }
+    errors = list(validate_generated_openapi_documents)
+    validate_generated_openapi_documents.clear()
+    assert errors == [f"{UNICODE_PATTERN!r} is not a 'regex'"]
 
 
 def test_handler_parameter_pattern_is_not_enforced() -> None:
@@ -826,6 +844,62 @@ def test_constrained_collection_fields_match_the_server() -> None:
         assert client.post("/", json={"mapping": {"a": 1}, "optional_sequence": [1]}).status_code == 400
 
 
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type statement not available before 3.12")
+def test_type_alias_field_constraints() -> None:
+    namespace: dict[str, Any] = {"__name__": __name__, "Annotated": Annotated, "Field": pydantic_v2.Field}
+    exec(
+        "type Limit = Annotated[int, Field(ge=0)]\n"
+        "type Outer = Limit\n"
+        "type Bounded[T] = Annotated[T, Field(ge=0)]\n"
+        "type Name = Annotated[str, Field(max_length=5)]\n"
+        "type Items[T] = Annotated[list[T], Field(min_length=1)]\n"
+        "type Code = Annotated[str, Field(min_length=2, max_length=5, pattern='^a')]",
+        namespace,
+    )
+    limit, name = namespace["Limit"], namespace["Name"]
+    model = pydantic_v2.create_model(
+        "Model",
+        extended=(Annotated[limit, pydantic_v2.Field(le=10)], ...),
+        overridden=(Annotated[limit, pydantic_v2.Field(ge=5)], ...),
+        nested=(namespace["Outer"], ...),
+        generic=(namespace["Bounded"][int], ...),
+        name=(name, ...),
+        shortened=(Annotated[name, pydantic_v2.StringConstraints(max_length=3)], ...),
+        items=(namespace["Items"][int], ...),
+        code=(namespace["Code"], ...),
+    )
+
+    @post("/")
+    async def handler(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
+        return None
+
+    payload = {
+        "extended": 1,
+        "overridden": 6,
+        "nested": 1,
+        "generic": 1,
+        "name": "abc",
+        "shortened": "abc",
+        "items": [1],
+        "code": "abc",
+    }
+    with create_test_client([handler]) as client:
+        properties = client.app.openapi_schema.to_schema()["components"]["schemas"]["Model"]["properties"]
+        assert (properties["extended"]["minimum"], properties["extended"]["maximum"]) == (0, 10)
+        assert properties["overridden"]["minimum"] == 5
+        assert properties["nested"]["minimum"] == 0
+        assert properties["generic"]["minimum"] == 0
+        assert properties["name"]["maxLength"] == 5
+        assert properties["shortened"]["maxLength"] == 3
+        assert properties["items"]["minItems"] == 1
+        assert properties["code"] == {"type": "string", "minLength": 2, "maxLength": 5, "pattern": "^a"}
+        assert client.post("/", json=payload).status_code == 201
+        assert client.post("/", json={**payload, "nested": -1}).status_code == 400
+        assert client.post("/", json={**payload, "shortened": "abcd"}).status_code == 400
+        assert client.post("/", json={**payload, "items": []}).status_code == 400
+        assert client.post("/", json={**payload, "code": "zz"}).status_code == 400
+
+
 ExampleT = TypeVar("ExampleT")
 
 
@@ -920,6 +994,36 @@ def test_json_schema_extra_examples_are_documented_for_every_usage() -> None:
     assert ExampleBase.model_fields["value"].json_schema_extra == {"example": 5}
     assert ExampleGeneric.model_fields["value"].json_schema_extra == {"example": 5}
     assert ExampleDTOModel.model_fields["value"].json_schema_extra == {"example": 5}
+
+
+def test_json_schema_extra_extension_keys() -> None:
+    class Inner(pydantic_v2.BaseModel):
+        a: int
+
+    class Model(pydantic_v2.BaseModel):
+        inline: int = pydantic_v2.Field(json_schema_extra={"x-internal": True})
+        reference: Inner = pydantic_v2.Field(json_schema_extra={"x-owner": {"team": "a"}})
+        mixed: str = pydantic_v2.Field("d", json_schema_extra={"x-a": 1, "format": "foo", "example": "e"})
+
+    @get("/", sync_to_thread=False)
+    def handler() -> Model:
+        return Model(inline=1, reference=Inner(a=1))
+
+    schemas = Litestar([handler]).openapi_schema.to_schema()["components"]["schemas"]
+    inner_name = "test_json_schema_extra_extension_keys.Inner"
+
+    assert schemas["test_json_schema_extra_extension_keys.Model"]["properties"] == {
+        "inline": {"type": "integer", "x-internal": True},
+        "reference": {"allOf": [{"$ref": f"#/components/schemas/{inner_name}"}], "x-owner": {"team": "a"}},
+        "mixed": {"type": "string", "format": "foo", "default": "d", "examples": ["e"], "x-a": 1},
+    }
+    assert schemas[inner_name] == {
+        "properties": {"a": {"type": "integer"}},
+        "type": "object",
+        "required": ["a"],
+        "title": "Inner",
+    }
+    assert Model.model_fields["inline"].json_schema_extra == {"x-internal": True}
 
 
 def test_extra_forbid_documents_additional_properties() -> None:
@@ -1048,7 +1152,7 @@ def test_ip_any_interface_and_network_document_no_format() -> None:
     assert component["properties"]["interface"] == {"type": "string"}
     assert component["properties"]["network"] == {"type": "string"}
     assert component["properties"]["address"] == {
-        "oneOf": [
+        "anyOf": [
             {"type": "string", "format": "ipv4", "description": "IPv4 address"},
             {"type": "string", "format": "ipv6", "description": "IPv6 address"},
         ]

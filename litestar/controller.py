@@ -152,7 +152,9 @@ class Controller:
     tags: Sequence[str] | None
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""
     security: Sequence[SecurityRequirement] | None
-    """A sequence of dictionaries that to the schema of all route handlers under the controller."""
+    """A sequence of dictionaries that to the schema of all route handlers under the controller. An empty sequence
+    lifts the security requirements declared on the layers above the controller.
+    """
     signature_namespace: dict[str, Any]
     """A mapping of names to types for use in forward reference resolution during signature modelling."""
     signature_types: Sequence[Any]

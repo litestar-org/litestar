@@ -46,6 +46,7 @@ class Router:
     """
 
     __slots__ = (
+        "_security_opt_out",
         "after_request",
         "after_response",
         "before_request",
@@ -153,7 +154,8 @@ class Router:
                 function decorated by the route handler decorators.
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`
-                for details.
+                for details. An empty sequence lifts the security requirements declared on the layers above the
+                router.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             signature_types: A sequence of types for use in forward reference resolution during signature modelling.
                 These types will be added to the signature namespace using their ``__name__`` attribute.
@@ -189,6 +191,7 @@ class Router:
         self.response_headers = narrow_response_headers(response_headers) if response_headers else ()
         self.return_dto = return_dto
         self.security = list(security or [])
+        self._security_opt_out = security is not None and not self.security
         self.signature_namespace = add_types_to_signature_namespace(
             signature_types or [], dict(signature_namespace or {})
         )

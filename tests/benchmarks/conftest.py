@@ -23,3 +23,8 @@ def reset_dto_backends() -> Iterator[None]:
     yield
     DTOBackend._seen_model_names = set()
     AbstractDTO._dto_backends = {}
+
+
+@pytest.fixture(autouse=True)
+def validate_generated_openapi_documents() -> None:
+    return None

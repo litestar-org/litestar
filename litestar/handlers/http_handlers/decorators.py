@@ -171,6 +171,7 @@ def route(
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
         security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+            An empty sequence lifts the security requirements declared on the layers above the handler.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -339,6 +340,7 @@ def get(
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
         security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+            An empty sequence lifts the security requirements declared on the layers above the handler.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -511,6 +513,7 @@ def head(
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
         security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+            An empty sequence lifts the security requirements declared on the layers above the handler.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -682,6 +685,7 @@ def patch(
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
         security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+            An empty sequence lifts the security requirements declared on the layers above the handler.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -854,6 +858,7 @@ def post(
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
         security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+            An empty sequence lifts the security requirements declared on the layers above the handler.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -1026,6 +1031,7 @@ def put(
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
         security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+            An empty sequence lifts the security requirements declared on the layers above the handler.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
@@ -1194,6 +1200,7 @@ def delete(
             ValidationException will be added automatically for the schema if any validation is involved.
         response_description: Text used for the route's response schema description section.
         security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+            An empty sequence lifts the security requirements declared on the layers above the handler.
         summary: Text used for the route's schema summary section.
         tags: A sequence of string tags that will be appended to the OpenAPI schema.
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec

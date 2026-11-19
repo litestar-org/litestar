@@ -4,16 +4,19 @@ from uuid import UUID
 
 import pytest
 
-from litestar import Controller, Litestar, Router, get
+from litestar import Controller, HttpMethod, Litestar, Router, get
 from litestar._openapi.datastructures import OpenAPIContext
-from litestar._openapi.parameters import create_parameters_for_handler
+from litestar._openapi.operation import describe_operation
+from litestar._openapi.parameters import ParameterFactory
 from litestar._openapi.schema_generation.examples import ExampleFactory
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
 from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
+from litestar.handlers import HTTPRouteHandler
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Example, OpenAPI, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
+from litestar.openapi.spec.parameter import Parameter
 from litestar.params import (
     CookieParameter,
     FromCookie,
@@ -24,6 +27,7 @@ from litestar.params import (
     PathParameter,
     QueryParameter,
 )
+from litestar.routes import BaseRoute
 from litestar.testing import create_test_client
 from litestar.utils import find_index
 from tests.unit.test_openapi.utils import Gender, LuckyNumber
@@ -32,17 +36,27 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 
 
+def create_factory(route: BaseRoute, handler: HTTPRouteHandler) -> ParameterFactory:
+    openapi_config = OpenAPIConfig(title="Test API", version="1.0.0", create_examples=True)
+    return ParameterFactory(
+        OpenAPIContext(openapi_config=openapi_config, plugins=[]),
+        operation=describe_operation(
+            handler,
+            HttpMethod.GET,
+            openapi_config=openapi_config,
+            path_components=route.path_components,
+            path_parameters=route.path_parameters,
+        ),
+    )
+
+
 def _create_parameters(app: Litestar, path: str) -> list["OpenAPIParameter"]:
     index = find_index(app.routes, lambda x: x.path_format == path)
     route = app.routes[index]
     route_handler = route.route_handler_map["GET"]  # type: ignore[union-attr]
-    return create_parameters_for_handler(
-        OpenAPIContext(
-            openapi_config=OpenAPIConfig(title="Test API", version="1.0.0", create_examples=True), plugins=[]
-        ),
-        route_handler,
-        route.path_parameters,
-    )
+    handler = route_handler.fn
+    assert callable(handler)
+    return create_factory(route, route_handler).create_parameters()
 
 
 def test_create_parameters(person_controller: type[Controller]) -> None:
@@ -256,7 +270,7 @@ def test_layered_parameters() -> None:
         ),
         path="/router/controller/{local}",
     )
-    controller1, controller3, router1, router3, app4, app2, app3, local, controller2 = tuple(parameters)
+    local, controller1, controller3, router1, router3, app4, app2, app3, controller2 = tuple(parameters)
 
     assert app4.param_in == ParamType.COOKIE
     assert app4.schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
@@ -431,12 +445,13 @@ def test_unwrap_new_type() -> None:
         return FancyString("")
 
     app = Litestar([handler])
-    assert app.openapi_schema.paths["/{path_param}"].get.parameters[0].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
-    assert app.openapi_schema.paths["/{path_param}"].get.parameters[1].schema.type == [  # type: ignore[index, union-attr]
-        OpenAPIType.STRING,
-        OpenAPIType.NULL,
-    ]
-    assert app.openapi_schema.paths["/{path_param}"].get.parameters[2].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
+    parameters = {
+        parameter.name: parameter  # type: ignore[union-attr]
+        for parameter in app.openapi_schema.paths["/{path_param}"].get.parameters  # type: ignore[index, union-attr]
+    }
+    assert parameters["param"].schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
+    assert parameters["optional_param"].schema.type == [OpenAPIType.STRING, OpenAPIType.NULL]  # type: ignore[union-attr]
+    assert parameters["path_param"].schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
     assert (
         app.openapi_schema.paths["/{path_param}"].get.responses["200"].content["application/json"].schema.type  # type: ignore[index, union-attr]
         == OpenAPIType.STRING
@@ -501,7 +516,15 @@ def test_query_param_only_properties() -> None:
         "schema": {"type": "string"},
         "required": True,
         "deprecated": False,
-        "allowEmptyValue": False,
+        "allowReserved": False,
+    }
+
+    assert Parameter(name="query_param", param_in="query", allow_empty_value=True).to_schema() == {
+        "name": "query_param",
+        "in": "query",
+        "required": False,
+        "deprecated": False,
+        "allowEmptyValue": True,
         "allowReserved": False,
     }
 

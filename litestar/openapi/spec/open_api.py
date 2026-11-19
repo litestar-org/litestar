@@ -85,3 +85,9 @@ class OpenAPI(BaseSchemaObject):
 
     external_docs: ExternalDocumentation | None = None
     """Additional external documentation."""
+
+    self_uri: str | None = field(default=None, metadata={"alias": "$self"})
+    """The self-assigned URI of this document (``$self``), which also serves as its base URI.
+
+    Requires OpenAPI 3.2.
+    """

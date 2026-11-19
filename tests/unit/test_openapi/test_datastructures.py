@@ -45,7 +45,7 @@ def test_get_reference_for_field_definition(schema_registry: SchemaRegistry) -> 
     reference = schema_registry.get_reference_for_field_definition(field)
     assert isinstance(reference, Reference)
     assert id(reference) in schema_registry._schema_reference_map
-    assert reference in schema_registry._schema_key_map[key].references
+    assert reference in schema_registry._schema_key_map[key][0].references
 
 
 def test_get_normalized_schema_key() -> None:

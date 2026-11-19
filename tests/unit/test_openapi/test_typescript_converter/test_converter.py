@@ -1,9 +1,13 @@
+from dataclasses import dataclass
+from typing import Annotated
+
 from polyfactory import BaseFactory
 
-from litestar import Controller, Litestar
+from litestar import Controller, Litestar, post
 from litestar._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
+from litestar.params import Body, QueryParameter
 
 
 def test_openapi_to_typescript_converter(person_controller: type[Controller], pet_controller: type[Controller]) -> None:
@@ -486,3 +490,21 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
 };
 };"""
     )
+
+
+def test_convert_schema_with_extensions() -> None:
+    @dataclass
+    class Item:
+        foo: str
+
+    @post("/", sync_to_thread=False)
+    def handler(
+        data: Annotated[Item, Body(schema_extra={"x-internal": True})],
+        q: Annotated[str, QueryParameter(schema_extra={"x-owner": {"team": ["a"]}})],
+    ) -> Item:
+        return data
+
+    result = convert_openapi_to_typescript(openapi_schema=Litestar([handler]).openapi_schema).write()
+
+    assert "foo: string;" in result
+    assert "q: string;" in result

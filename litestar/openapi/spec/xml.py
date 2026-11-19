@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Literal
 
 from litestar.openapi.spec.base import BaseSchemaObject
 
@@ -42,3 +43,14 @@ class XML(BaseSchemaObject):
     ``<books><book/><book/></books>``) or unwrapped (``<book/><book/>``). Default value is ``False``. The definition
     takes effect only when defined alongside ``type`` being ``array`` (outside the ``items``).
     """
+
+    node_type: Literal["element", "attribute", "text", "cdata", "none"] | None = None
+    """The kind of XML node the schema describes. Replaces ``attribute`` and ``wrapped``, which are not emitted when
+    ``node_type`` is set.
+
+    Requires OpenAPI 3.2.
+    """
+
+    @property
+    def _exclude_fields(self) -> set[str]:
+        return {"attribute", "wrapped"} if self.node_type is not None else set()

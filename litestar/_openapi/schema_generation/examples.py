@@ -79,5 +79,5 @@ def create_examples_for_field(field: FieldDefinition) -> list[Example]:
         field_meta = _create_field_meta(replace(field, annotation=_normalize_example_value(field.annotation)))
         value = ExampleFactory.get_field_value(field_meta)
         return [Example(description=f"Example {field.name} value", value=value)]
-    except ParameterException:
+    except (ParameterException, RecursionError):
         return []

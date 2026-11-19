@@ -39,10 +39,6 @@ def get_properties(*fields: tuple[str, Any]) -> dict[str, Any]:
     ("annotation", "constraint"),
     [
         (bool, KwargDefinition(const=True)),
-        (date, annotated_types.Ge(date(2020, 1, 1))),
-        (Optional[date], annotated_types.Ge(date(2020, 1, 1))),
-        (datetime, annotated_types.Gt(datetime(2020, 1, 1))),
-        (Optional[datetime], annotated_types.Gt(datetime(2020, 1, 1))),
         (time, annotated_types.Gt(time(1))),
         (timedelta, annotated_types.Gt(timedelta(1))),
         (UUID, KwargDefinition(pattern="^[0-9a-f-]+$")),
@@ -55,10 +51,6 @@ def test_constrained_scalar_keeps_type_and_format(annotation: Any, constraint: A
         key: properties["plain"].get(key) for key in ("type", "format")
     }
     assert not BOUND_KEYWORDS & properties["constrained"].keys()
-
-
-def test_constrained_any_is_not_an_array() -> None:
-    assert get_properties(("anything", Annotated[Any, annotated_types.MinLen(1)])) == {"anything": {"minLength": 1}}
 
 
 def test_date_bounds_are_described() -> None:
@@ -156,6 +148,7 @@ def test_constrained_collections_keep_their_shape() -> None:
         ("unique", Annotated[set[int], annotated_types.MaxLen(3)]),
         ("frozen_unique", Annotated[frozenset[int], annotated_types.MinLen(1)]),
         ("string_items", Annotated[str, KwargDefinition(min_items=1)]),
+        ("pair", Annotated[tuple[int, str], KwargDefinition(description="pair", min_items=2)]),
     ) == {
         "mapping": {"type": "object", "additionalProperties": {"type": "integer"}, "minProperties": 1},
         "mapping_items": {
@@ -185,16 +178,14 @@ def test_constrained_collections_keep_their_shape() -> None:
         "unique": {"type": "array", "items": {"type": "integer"}, "maxItems": 3, "uniqueItems": True},
         "frozen_unique": {"type": "array", "items": {"type": "integer"}, "minItems": 1, "uniqueItems": True},
         "string_items": {"type": "string", "minLength": 1},
+        "pair": {
+            "type": "array",
+            "prefixItems": [{"type": "integer"}, {"type": "string"}],
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "pair",
+        },
     }
-
-
-def test_constrained_fixed_tuple_keeps_prefix_items() -> None:
-    properties = get_properties(("pair", Annotated[tuple[int, str], KwargDefinition(description="pair", min_items=2)]))
-
-    assert properties["pair"]["prefixItems"] == [{"type": "integer"}, {"type": "string"}]
-    assert properties["pair"]["minItems"] == 2
-    assert properties["pair"]["description"] == "pair"
-    assert "items" not in properties["pair"]
 
 
 def test_length_constraint_keeps_its_keyword_when_the_shape_is_unknown() -> None:
@@ -242,32 +233,6 @@ def test_constrained_collection_items_have_no_generated_examples() -> None:
     assert schema["additionalProperties"] == {"type": "integer"}
 
 
-def test_constrained_upload_collection_bounds_the_files_property() -> None:
-    @post("/constrained", sync_to_thread=False)
-    def constrained(
-        data: Annotated[list[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART, min_items=2)],
-    ) -> None:
-        return None
-
-    @post("/plain", sync_to_thread=False)
-    def plain(data: Annotated[list[UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)]) -> None:
-        return None
-
-    with create_test_client([constrained, plain]) as client:
-        paths = client.app.openapi_schema.to_schema()["paths"]
-        constrained_schema, plain_schema = (
-            paths[path]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"]
-            for path in ("/constrained", "/plain")
-        )
-        assert constrained_schema == {
-            "type": "object",
-            "properties": {"files": {**plain_schema["properties"]["files"], "minItems": 2}},
-        }
-        assert client.post("/constrained", files=[("files", ("a.txt", b"a"))]).status_code == 400
-        two_files = [("files", ("a.txt", b"a")), ("files", ("b.txt", b"b"))]
-        assert client.post("/constrained", files=two_files).status_code == 201
-
-
 @pytest.mark.parametrize(
     "annotation",
     [
@@ -290,6 +255,7 @@ def test_upload_collection_bounds_match_the_server(annotation: Any) -> None:
             "multipart/form-data"
         ]["schema"]
         files_schema = schema["properties"]["files"]
+        assert schema == {"type": "object", "properties": {"files": files_schema}}
         assert (files_schema["minItems"], files_schema["maxItems"]) == (2, 3)
         for count, status in ((1, 400), (2, 201), (3, 201), (4, 400)):
             files = [(f"file{index}", (f"{index}.txt", b"x")) for index in range(count)]

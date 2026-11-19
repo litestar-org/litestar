@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Any, TypeAlias, TypedDict, TypeVar
 
 from litestar.exceptions.http_exceptions import HTTPException
 from litestar.plugins.base import InitPlugin
@@ -44,6 +44,27 @@ def _http_exception_to_problem_detail_exception(exc: HTTPException) -> ProblemDe
         extra=exc.extra,
         headers=exc.headers,
     )
+
+
+class _RequiredProblemDetails(TypedDict):
+    status: int
+
+
+class ProblemDetails(_RequiredProblemDetails, total=False):
+    """The content of a problem details response as per RFC 9457. Additional members may be present.
+
+    To document error responses as problem details in the OpenAPI schema, pass
+    ``ResponseSpec(ProblemDetails, media_type="application/problem+json")`` to
+    :attr:`OpenAPIConfig.error_response <litestar.openapi.config.OpenAPIConfig.error_response>`.
+
+    .. versionadded:: 3.0.0
+    """
+
+    type: str
+    title: str
+    instance: str
+    detail: str
+    extra: Any
 
 
 class ProblemDetailsException(HTTPException):

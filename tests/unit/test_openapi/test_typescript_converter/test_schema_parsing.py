@@ -5,7 +5,7 @@ import pytest
 
 from litestar._openapi.typescript_converter.schema_parsing import normalize_typescript_namespace, parse_schema
 from litestar._openapi.typescript_converter.types import TypeScriptIntersection
-from litestar.openapi.spec import Schema
+from litestar.openapi.spec import Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 
 object_schema_1 = Schema(
@@ -47,10 +47,18 @@ def test_parse_schema_handle_all_of() -> None:
     )
 
 
-def test_parse_schema_handle_one_of() -> None:
-    result = parse_schema(
-        Schema(one_of=[object_schema_1, object_schema_2, number_schema, string_schema, nullable_integer_schema])
-    )
+union_members: list[Schema | Reference] = [
+    object_schema_1,
+    object_schema_2,
+    number_schema,
+    string_schema,
+    nullable_integer_schema,
+]
+
+
+@pytest.mark.parametrize("schema", [Schema(one_of=union_members), Schema(any_of=union_members)], ids=["oneOf", "anyOf"])
+def test_parse_schema_handle_one_of(schema: Schema) -> None:
+    result = parse_schema(schema)
     assert (
         result.write() == "null | number | number | string | {\n"
         "\tfirst_1: string;\n"

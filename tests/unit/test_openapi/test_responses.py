@@ -10,8 +10,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from litestar import Controller, Litestar, MediaType, Response, delete, get, post
+from litestar import Controller, HttpMethod, Litestar, MediaType, Response, delete, get, post, route
 from litestar._openapi.datastructures import OpenAPIContext
+from litestar._openapi.operation import describe_operation
 from litestar._openapi.responses import (
     ResponseFactory,
     create_error_responses,
@@ -19,7 +20,7 @@ from litestar._openapi.responses import (
 )
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar.datastructures import Cookie, ResponseHeader
-from litestar.dto import AbstractDTO
+from litestar.dto import AbstractDTO, DataclassDTO
 from litestar.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -30,19 +31,21 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.datastructures import ResponseSpec
 from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, OpenAPIResponse, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
-from litestar.params import JSONBody
+from litestar.params import FromPath, JSONBody
 from litestar.response import File, Redirect, Stream, Template
 from litestar.routes import HTTPRoute
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
+    HTTP_304_NOT_MODIFIED,
     HTTP_307_TEMPORARY_REDIRECT,
     HTTP_400_BAD_REQUEST,
     HTTP_406_NOT_ACCEPTABLE,
 )
+from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 from tests.models import DataclassPerson, DataclassPersonFactory
-from tests.unit.test_openapi.utils import PetException
+from tests.unit.test_openapi.utils import PetException, build_document
 
 T = TypeVar("T")
 
@@ -52,31 +55,43 @@ CreateFactoryFixture: TypeAlias = "Callable[..., ResponseFactory]"
 
 @pytest.fixture()
 def create_factory() -> CreateFactoryFixture:
-    def _create_factory(route_handler: HTTPRouteHandler, generate_examples: bool = False) -> ResponseFactory:
+    def _create_factory(
+        route_handler: HTTPRouteHandler, generate_examples: bool = False, route: HTTPRoute | None = None
+    ) -> ResponseFactory:
+        openapi_config = OpenAPIConfig(title="test", version="1.0.0", create_examples=generate_examples)
         return ResponseFactory(
-            context=OpenAPIContext(
-                openapi_config=OpenAPIConfig(title="test", version="1.0.0", create_examples=generate_examples),
-                plugins=openapi_schema_plugins,
+            context=OpenAPIContext(openapi_config=openapi_config, plugins=openapi_schema_plugins),
+            operation=describe_operation(
+                route_handler,
+                HttpMethod(next(iter(route_handler.http_methods))),
+                openapi_config=openapi_config,
+                path_components=route.path_components if route else (),
+                path_parameters=route.path_parameters if route else None,
             ),
-            route_handler=route_handler,
         )
 
     return _create_factory
 
 
-def get_registered_route_handler(handler: HTTPRouteHandler | type[Controller], name: str) -> HTTPRouteHandler:
-    app = Litestar(route_handlers=[handler])
+def get_registered_route_handler(
+    handler: HTTPRouteHandler | type[Controller], name: str | None = None
+) -> HTTPRouteHandler:
+    app = Litestar(route_handlers=[handler], openapi_config=None)
+    if name is None:
+        route = app.routes[0]
+        assert isinstance(route, HTTPRoute)
+        return next(iter(route.route_handler_map.values()))
     return app.asgi_router.route_handler_index[name]  # type: ignore[return-value]
 
 
 def test_create_responses(
     person_controller: type[Controller], pet_controller: type[Controller], create_factory: CreateFactoryFixture
 ) -> None:
-    for route in Litestar(route_handlers=[person_controller]).routes:
-        assert isinstance(route, HTTPRoute)
-        for route_handler in route.route_handler_map.values():
+    for http_route in Litestar(route_handlers=[person_controller]).routes:
+        assert isinstance(http_route, HTTPRoute)
+        for route_handler in http_route.route_handler_map.values():
             if route_handler.include_in_schema:
-                responses = create_factory(route_handler).create_responses(True)
+                responses = create_factory(route_handler, route=http_route).create_responses()
                 assert responses
                 assert str(route_handler.status_code) in responses
                 assert str(HTTP_400_BAD_REQUEST) in responses
@@ -85,7 +100,7 @@ def test_create_responses(
         pet_controller,
         "tests.unit.test_openapi.conftest.create_pet_controller.<locals>.PetController.get_pets_or_owners",
     )
-    responses = create_factory(handler).create_responses(raises_validation_error=False)
+    responses = create_factory(handler).create_responses()
     assert responses
     assert str(HTTP_400_BAD_REQUEST) not in responses
     assert str(HTTP_406_NOT_ACCEPTABLE) in responses
@@ -251,11 +266,11 @@ def test_create_success_response_with_cookies(create_factory: CreateFactoryFixtu
         "allOf": [
             {
                 "description": "the first cookie",
-                "example": 'first-cookie="<string>"; HttpOnly; Path=/; SameSite=strict; Secure',
+                "examples": ['first-cookie="<string>"; HttpOnly; Path=/; SameSite=strict; Secure'],
             },
             {
                 "description": "the second cookie",
-                "example": 'second-cookie="<string>"; Max-Age=500; Path=/; SameSite=lax',
+                "examples": ['second-cookie="<string>"; Max-Age=500; Path=/; SameSite=lax'],
             },
         ]
     }
@@ -334,8 +349,7 @@ def test_create_success_response_no_content_explicit_responsespec(
     def handler() -> None:
         return None
 
-    handler = get_registered_route_handler(handler, "test")
-    factory = create_factory(handler)
+    factory = create_factory(get_registered_route_handler(handler, "test"))
     responses = factory.create_additional_responses()
     status, response = next(responses)
     assert status == "204"
@@ -407,7 +421,7 @@ def test_create_additional_responses(create_factory: CreateFactoryFixture) -> No
     def handler() -> DataclassPerson:
         return DataclassPersonFactory.build()
 
-    factory = create_factory(handler)
+    factory = create_factory(get_registered_route_handler(handler))
     responses = factory.create_additional_responses()
 
     first_response = next(responses)
@@ -460,7 +474,7 @@ def test_additional_responses_overlap_with_other_responses(create_factory: Creat
         return DataclassPersonFactory.build()
 
     handler = get_registered_route_handler(handler, "test")
-    responses = create_factory(handler).create_responses(True)
+    responses = create_factory(handler).create_responses()
 
     assert responses is not None
     assert responses["200"] is not None
@@ -481,7 +495,7 @@ def test_additional_responses_overlap_with_raises(create_factory: CreateFactoryF
         raise ValidationException()
 
     handler = get_registered_route_handler(handler, "test")
-    responses = create_factory(handler).create_responses(True)
+    responses = create_factory(handler).create_responses()
 
     assert responses is not None
     assert responses["400"] is not None
@@ -493,7 +507,7 @@ def test_additional_responses_with_custom_examples(create_factory: CreateFactory
     def handler() -> DataclassPerson:
         return DataclassPersonFactory.build()
 
-    factory = create_factory(handler)
+    factory = create_factory(get_registered_route_handler(handler))
     responses = factory.create_additional_responses()
     _status_code, response = next(responses)
     assert response.content
@@ -528,7 +542,7 @@ def test_additional_responses_with_custom_example_ids(create_factory: CreateFact
     def handler() -> DataclassPerson:
         return DataclassPersonFactory.build()
 
-    factory = create_factory(handler)
+    factory = create_factory(get_registered_route_handler(handler))
     responses = factory.create_additional_responses()
     _status_code, response = next(responses)
     assert response.content
@@ -609,5 +623,104 @@ def test_file_response_media_type(content_media_type: Any, expected: Any, create
     def handler() -> File:
         return File("test.txt")
 
-    response = create_factory(handler).create_success_response()
+    response = create_factory(get_registered_route_handler(handler)).create_success_response()
     assert next(iter(response.content.values())).schema.content_media_type == expected  # type: ignore[union-attr]
+
+
+@pytest.mark.parametrize("status_code", [HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED, 103])
+def test_success_response_of_response_none_without_body_matches_none(status_code: int) -> None:
+    @get("/bare", status_code=status_code)
+    async def bare() -> None:
+        return None
+
+    @get("/wrapped", status_code=status_code)
+    async def wrapped() -> Response[None]:
+        return Response(None)
+
+    responses = {
+        path: path_item["get"]["responses"][str(status_code)]
+        for path, path_item in build_document(bare, wrapped)["paths"].items()
+    }
+
+    assert "content" not in responses["/wrapped"]
+    assert responses["/wrapped"] == responses["/bare"]
+
+
+def test_success_response_of_response_none_keeps_headers() -> None:
+    @get(
+        "/",
+        status_code=HTTP_204_NO_CONTENT,
+        response_headers=[ResponseHeader(name="x-version", value="1", description="API version")],
+        return_dto=DataclassDTO[DataclassPerson],
+    )
+    async def handler() -> Response[None]:
+        return Response(None)
+
+    response = build_document(handler)["paths"]["/"]["get"]["responses"]["204"]
+
+    assert "content" not in response
+    assert response["headers"]["x-version"]["description"] == "API version"
+
+
+def test_success_response_of_response_none_matches_served_body() -> None:
+    @get("/no-content", status_code=HTTP_204_NO_CONTENT)
+    async def no_content() -> Response[None]:
+        return Response(None)
+
+    @route("/ok", http_method=[HttpMethod.GET, HttpMethod.HEAD])
+    async def ok() -> Response[None]:
+        return Response(None)
+
+    null_content = {"application/json": {"schema": {"type": "null"}}}
+
+    with create_test_client([no_content, ok]) as client:
+        paths = client.app.openapi_schema.to_schema()["paths"]
+
+        assert client.get("/no-content").content == b""
+        assert "content" not in paths["/no-content"]["get"]["responses"]["204"]
+
+        assert client.head("/ok").content == b""
+        assert "content" not in paths["/ok"]["head"]["responses"]["200"]
+
+        assert client.get("/ok").content == b"null"
+        assert paths["/ok"]["get"]["responses"]["200"]["content"] == null_content
+
+
+def test_responses_to_head_have_no_content() -> None:
+    @route(
+        "/items/{item_id:int}",
+        http_method=[HttpMethod.GET, HttpMethod.HEAD],
+        raises=[PetException],
+        responses={409: ResponseSpec(DataclassPerson)},
+        sync_to_thread=False,
+    )
+    def handler(item_id: FromPath[int]) -> None:
+        return None
+
+    operations = build_document(handler)["paths"]["/items/{item_id}"]
+
+    assert {status: "content" in response for status, response in operations["head"]["responses"].items()} == {
+        "200": False,
+        "400": False,
+        "406": False,
+        "409": False,
+    }
+    assert {status for status, response in operations["get"]["responses"].items() if "content" in response} == {
+        "400",
+        "406",
+        "409",
+    }
+
+
+def test_documentation_only_response_header_without_value_is_a_string() -> None:
+    @get(
+        "/",
+        response_headers=[ResponseHeader(name="X-Request-Id", documentation_only=True, description="Request id")],
+        sync_to_thread=False,
+    )
+    def handler() -> None:
+        return None
+
+    headers = build_document(handler)["paths"]["/"]["get"]["responses"]["200"]["headers"]
+
+    assert headers["X-Request-Id"]["schema"] == {"type": "string"}

@@ -67,3 +67,15 @@ class SecurityScheme(BaseSchemaObject):
     """**REQUIRED** for ``openIdConnect``. OpenId Connect URL to discover OAuth2 configuration values. This MUST be in
     the form of a URL. The OpenID Connect standard requires the use of TLS.
     """
+
+    oauth2_metadata_url: str | None = None
+    """URL to the OAuth2 authorization server metadata (:rfc:`8414`). TLS is required.
+
+    Requires OpenAPI 3.2.
+    """
+
+    deprecated: bool | None = None
+    """Declares this security scheme to be deprecated. Consumers SHOULD refrain from usage of the declared scheme.
+
+    Requires OpenAPI 3.2.
+    """

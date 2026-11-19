@@ -49,3 +49,22 @@ class OpenAPIMediaType(BaseSchemaObject):
     The key, being the property name, MUST exist in the schema as a property. The encoding object SHALL only apply to
     ``requestBody`` objects when the media type is ``multipart`` or ``application/x-www-form-urlencoded``.
     """
+
+    item_schema: Reference | Schema | None = None
+    """A schema describing each item within a sequential media type, such as ``text/event-stream`` or
+    ``application/jsonl``.
+
+    Requires OpenAPI 3.2.
+    """
+
+    prefix_encoding: list[Encoding] | None = None
+    """An array of positional encoding information, applied to the items of a ``multipart`` media type by position.
+
+    Requires OpenAPI 3.2.
+    """
+
+    item_encoding: Encoding | None = None
+    """A single Encoding Object that provides encoding information for multiple array items.
+
+    Requires OpenAPI 3.2.
+    """

@@ -26,3 +26,9 @@ class OAuthFlows(BaseSchemaObject):
 
     authorization_code: OAuthFlow | None = None
     """Configuration for the OAuth Authorization Code flow. Previously called ``accessCode`` in OpenAPI 2.0."""
+
+    device_authorization: OAuthFlow | None = None
+    """Configuration for the OAuth Device Authorization flow.
+
+    Requires OpenAPI 3.2.
+    """

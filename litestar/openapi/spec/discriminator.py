@@ -23,3 +23,10 @@ class Discriminator(BaseSchemaObject):
 
     mapping: dict[str, str] | None = None
     """An object to hold mappings between payload values and schema names or references."""
+
+    default_mapping: str | None = None
+    """The schema name or URI reference to a schema that is expected to validate the structure of the model when the
+    discriminating property is not present in the payload or contains a value for which there is no mapping.
+
+    Requires OpenAPI 3.2.
+    """

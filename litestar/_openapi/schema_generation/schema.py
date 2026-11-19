@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 from collections import OrderedDict, defaultdict, deque
 from collections.abc import Hashable, Iterable, Mapping, MutableMapping, MutableSequence, Sequence
 from copy import copy
@@ -21,15 +22,17 @@ from typing import (
 )
 from uuid import UUID
 
-from litestar._openapi.datastructures import SchemaRegistry
+from litestar._openapi.datastructures import SchemaRegistry, _get_component_key_override
 from litestar._openapi.schema_generation.constrained_fields import (
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
+from litestar._openapi.schema_generation.unions import _get_shape
 from litestar._openapi.schema_generation.utils import (
     _should_create_literal_schema,
     get_json_schema_formatted_examples,
 )
+from litestar._openapi.utils import is_recursive_type_alias, is_type_alias, resolve_type_alias
 from litestar.datastructures import SecretBytes, SecretString, UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
@@ -94,16 +97,8 @@ def _is_empty_tuple(field_definition: FieldDefinition) -> bool:
 
 
 def _get_schema_types(schema: Schema) -> frozenset[OpenAPIType] | None:
-    if schema.type is not None:
-        return frozenset((schema.type,) if isinstance(schema.type, OpenAPIType) else schema.type)
-    if not schema.one_of:
-        return None
-    types: set[OpenAPIType] = set()
-    for member in schema.one_of:
-        if not isinstance(member, Schema) or (member_types := _get_schema_types(member)) is None:
-            return None
-        types |= member_types
-    return frozenset(types)
+    shape = _get_shape(schema, {})
+    return None if shape is None else shape[0]
 
 
 def _get_length_property(kwarg_definition_key: str, schema: Schema) -> str | None:
@@ -124,33 +119,6 @@ def _is_numeric_bound(value: Any, schema: Schema) -> bool:
         return False
     schema_types = _get_schema_types(schema)
     return schema_types is None or not schema_types.isdisjoint(_NUMERIC_TYPES)
-
-
-def _is_decimal_schema(schema: Schema | Reference) -> bool:
-    return (
-        isinstance(schema, Schema)
-        and schema.one_of is not None
-        and any(isinstance(member, Schema) and member.pattern == _DECIMAL_PATTERN for member in schema.one_of)
-    )
-
-
-def _merge_decimal_members(members: list[Schema | Reference]) -> list[Schema | Reference]:
-    if not any(map(_is_decimal_schema, members)):
-        return members
-    has_plain_string = Schema(type=OpenAPIType.STRING) in members
-    merged: list[Schema | Reference] = []
-    for member in members:
-        if isinstance(member, Schema) and member.type in _NUMERIC_TYPES and member == Schema(type=member.type):
-            continue
-        if _is_decimal_schema(member) and member == Schema(one_of=cast("Schema", member).one_of):
-            merged.extend(
-                branch
-                for branch in cast("Schema", member).one_of or ()
-                if not (has_plain_string and isinstance(branch, Schema) and branch.pattern == _DECIMAL_PATTERN)
-            )
-        else:
-            merged.append(member)
-    return merged
 
 
 def _describe_date_bounds(kwarg_definition: Any) -> str | None:
@@ -198,7 +166,7 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     float: Schema(type=OpenAPIType.NUMBER),
     int: Schema(type=OpenAPIType.INTEGER),
     str: Schema(type=OpenAPIType.STRING),
-    time: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DURATION),
+    time: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.TIME),
     timedelta: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DURATION),
 }
 
@@ -306,8 +274,28 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
     return copy(TYPE_MAP[annotation]) if annotation in TYPE_MAP else Schema()
 
 
+def _merge_kwarg_definitions(base: KwargDefinition | None, override: KwargDefinition | None) -> KwargDefinition | None:
+    if base is None or override is None:
+        return override or base
+    return dataclasses.replace(
+        override,
+        **{
+            field.name: value
+            for field in dataclasses.fields(KwargDefinition)
+            if getattr(override, field.name) is None and (value := getattr(base, field.name)) is not None
+        },
+    )
+
+
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry", "signature_namespace")
+    __slots__ = (
+        "generate_component_examples",
+        "generate_examples",
+        "plugins",
+        "prefer_alias",
+        "schema_registry",
+        "signature_namespace",
+    )
 
     def __init__(
         self,
@@ -316,17 +304,23 @@ class SchemaCreator:
         prefer_alias: bool = True,
         schema_registry: SchemaRegistry | None = None,
         signature_namespace: dict[str, Any] | None = None,
+        generate_component_examples: bool | None = None,
     ) -> None:
         """Instantiate a SchemaCreator.
 
         Args:
             generate_examples: Whether to generate examples if none are given.
+            generate_component_examples: Whether to generate examples for component schemas, which are shared by
+                all their usages. Defaults to ``generate_examples``.
             plugins: A list of plugins.
             prefer_alias: Whether to prefer the alias name for the schema.
             schema_registry: A SchemaRegistry instance.
             signature_namespace: Additional names for forward reference resolution.
         """
         self.generate_examples = generate_examples
+        self.generate_component_examples = (
+            generate_examples if generate_component_examples is None else generate_component_examples
+        )
         self.plugins = plugins if plugins is not None else []
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
@@ -335,6 +329,7 @@ class SchemaCreator:
     @classmethod
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
         kwargs.setdefault("generate_examples", context.openapi_config.create_examples)
+        kwargs.setdefault("generate_component_examples", context.openapi_config.create_examples)
         kwargs.setdefault("plugins", context.plugins)
         kwargs.setdefault("schema_registry", context.schema_registry)
         return cls(**kwargs, prefer_alias=prefer_alias)
@@ -350,6 +345,7 @@ class SchemaCreator:
             prefer_alias=False,
             schema_registry=self.schema_registry,
             signature_namespace=self.signature_namespace,
+            generate_component_examples=self.generate_component_examples,
         )
 
     @staticmethod
@@ -394,11 +390,14 @@ class SchemaCreator:
         result: Schema | Reference
 
         if field_definition.is_new_type:
-            result = self.for_new_type(field_definition)
-        elif field_definition.is_type_alias_type:
-            result = self.for_type_alias_type(field_definition)
-        elif plugin_for_annotation := self.get_plugin_for(field_definition):
+            return self.for_new_type(field_definition)
+        if is_type_alias(field_definition.annotation):
+            return self.for_type_alias_type(field_definition)
+
+        if plugin_for_annotation := self.get_plugin_for(field_definition):
             result = self.for_plugin(field_definition, plugin_for_annotation)
+            if isinstance(result, Schema):
+                result = self.schema_registry.get_reference_for_schema(result) or copy(result)
         elif _should_create_literal_schema(field_definition):
             annotation = (
                 make_non_optional_union(field_definition.annotation)
@@ -447,16 +446,28 @@ class SchemaCreator:
         else:
             result = create_schema_for_annotation(field_definition.annotation)
 
-        if isinstance(result, Schema):
-            result = self.process_schema_result(field_definition, result)
-
         if isinstance(result, Reference):
-            wrapper = Schema()
+            return self._for_reference(field_definition, result)
+        return self.process_schema_result(field_definition, result)
+
+    def _for_reference(self, field_definition: FieldDefinition, reference: Reference) -> Schema | Reference:
+        """Return ``reference``, wrapped in an ``allOf`` schema if the field carries metadata of its own.
+
+        Component schemas are shared between all their usages, so metadata that belongs to a single usage is never
+        written to the component. A field declaring a ``schema_component_key`` names a component of its own, which
+        does receive the field's metadata.
+        """
+        wrapper = Schema()
+        registered_schema = self.schema_registry.from_reference(reference)
+        if registered_schema.key == (_get_component_key_override(field_definition),):
+            self._apply_field_metadata(field_definition, registered_schema.schema)
             self._apply_kwarg_definition_metadata(field_definition, wrapper)
-            if wrapper != Schema():
-                wrapper.all_of = [result]
-                return wrapper
-        return result
+        else:
+            self._apply_field_metadata(field_definition, wrapper)
+        if wrapper == Schema():
+            return reference
+        wrapper.all_of = [reference]
+        return wrapper
 
     def for_new_type(self, field_definition: FieldDefinition) -> Schema | Reference:
         return self.for_field_definition(
@@ -469,14 +480,36 @@ class SchemaCreator:
         )
 
     def for_type_alias_type(self, field_definition: FieldDefinition) -> Schema | Reference:
-        return self.for_field_definition(
-            FieldDefinition.from_kwarg(
-                annotation=field_definition.annotation.__value__,
-                name=field_definition.name,
-                default=field_definition.default,
-                kwarg_definition=field_definition.kwarg_definition,
+        annotation = field_definition.annotation
+        if not is_recursive_type_alias(annotation):
+            value_field = FieldDefinition.from_annotation(resolve_type_alias(annotation))
+            return self.for_field_definition(
+                FieldDefinition.from_kwarg(
+                    annotation=value_field.annotation,
+                    name=field_definition.name,
+                    default=field_definition.default,
+                    kwarg_definition=_merge_kwarg_definitions(
+                        value_field.kwarg_definition, field_definition.kwarg_definition
+                    ),
+                )
             )
-        )
+
+        alias_field = FieldDefinition.from_annotation(annotation)
+        if (reference := self.schema_registry.get_reference_for_field_definition(alias_field)) is None:
+            component = self.schema_registry.get_schema_for_field_definition(alias_field)
+            value_schema = self.not_generating_examples.for_field_definition(
+                FieldDefinition.from_annotation(resolve_type_alias(annotation))
+            )
+            if isinstance(value_schema, Reference):
+                component.one_of = [value_schema]
+            else:
+                for schema_field in dataclasses.fields(Schema):
+                    setattr(component, schema_field.name, getattr(value_schema, schema_field.name))
+            reference = cast("Reference", self.schema_registry.get_reference_for_field_definition(alias_field))
+        result = self._for_reference(field_definition, reference)
+        if isinstance(result, Schema) and result.all_of == [reference]:
+            result.all_of, result.one_of = None, [reference]
+        return result
 
     @staticmethod
     def for_upload_file(field_definition: FieldDefinition) -> Schema:
@@ -539,7 +572,6 @@ class SchemaCreator:
             FieldDefinition.from_kwarg(
                 annotation=make_non_optional_union(field_definition.annotation),
                 name=field_definition.name,
-                default=field_definition.default,
             )
         )
         # nullable scalars are expressed as 'type: [X, null]' rather than 'oneOf: [X, null]',
@@ -577,7 +609,7 @@ class SchemaCreator:
             A schema instance.
         """
         inner_types = (f for f in (field_definition.inner_types or []) if not self.is_undefined(f.annotation))
-        values = _merge_decimal_members(list(map(self.for_field_definition, inner_types)))
+        values = list(map(self.for_field_definition, inner_types))
         return Schema(one_of=values)
 
     def for_object_type(self, field_definition: FieldDefinition) -> Schema:
@@ -641,6 +673,9 @@ class SchemaCreator:
             A schema instance.
         """
         if (ref := self.schema_registry.get_reference_for_field_definition(field_definition)) is not None:
+            component = self.schema_registry.from_reference(ref).schema
+            if component.properties is not None:
+                self._generate_component_examples(field_definition, component)
             return ref
 
         schema = plugin.to_openapi_schema(field_definition=field_definition, schema_creator=self)
@@ -720,15 +755,22 @@ class SchemaCreator:
             enum_type = _types_in_list(enum_values)
 
         schema = self.schema_registry.get_schema_for_field_definition(field_definition)
-        schema.type = enum_type
-        schema.enum = enum_values
-        self.process_schema_result(field_definition, schema)
-        if schema.title is None:
+        if schema.enum is None:
+            schema.type = enum_type
+            schema.enum = enum_values
             schema.title = get_name(field_definition.annotation)
-        if schema.description is None:
             schema.description = field_definition.annotation.__doc__
+        self._generate_component_examples(field_definition, schema)
 
         return self.schema_registry.get_reference_for_field_definition(field_definition) or schema
+
+    def _generate_component_examples(self, type_: FieldDefinition, schema: Schema) -> None:
+        if not schema.examples and self.generate_component_examples:
+            from litestar._openapi.schema_generation.examples import create_examples_for_field
+
+            schema.examples = get_json_schema_formatted_examples(
+                create_examples_for_field(FieldDefinition.from_annotation(type_.annotation))
+            )
 
     def _apply_kwarg_definition_metadata(self, field: FieldDefinition, schema: Schema) -> None:
         if field.kwarg_definition:
@@ -756,6 +798,24 @@ class SchemaCreator:
                 schema.description = description
 
     def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
+        """Apply the metadata of ``field`` to ``schema``.
+
+        If ``schema`` is a component schema, it is left untouched and a reference to it is returned, wrapped in an
+        ``allOf`` schema holding the metadata.
+        """
+        if (reference := self.schema_registry.get_reference_for_schema(schema)) is not None:
+            return self._for_reference(field, reference)
+
+        self._apply_field_metadata(field, schema)
+
+        if not schema.examples and self.generate_examples:
+            from litestar._openapi.schema_generation.examples import create_examples_for_field
+
+            schema.examples = get_json_schema_formatted_examples(create_examples_for_field(field))
+
+        return schema
+
+    def _apply_field_metadata(self, field: FieldDefinition, schema: Schema) -> None:
         if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
             schema.const = field.default
 
@@ -764,24 +824,20 @@ class SchemaCreator:
         if isinstance(field.kwarg_definition, KwargDefinition) and (extra := field.kwarg_definition.schema_extra):
             field_aliases = schema.field_aliases()
             for schema_key, value in extra.items():
+                if schema_key.startswith("x-"):
+                    schema.extensions = {**(schema.extensions or {}), schema_key: value}
+                    continue
                 schema_key = field_aliases.get(schema_key, schema_key)
-                if not hasattr(schema, schema_key):
+                if schema_key == "extensions" or not hasattr(schema, schema_key):
                     raise ValueError(
-                        f"`schema_extra` declares key `{schema_key}` which does not exist in `Schema` object"
+                        f"`schema_extra` declares key `{schema_key}` which does not exist in `Schema` object "
+                        f"(declared by `{field.name}`). Keys must be attributes of `Schema`, their OpenAPI names, "
+                        "or specification extensions starting with `x-`"
                     )
                 setattr(schema, schema_key, value)
 
         if schema.default is None and field.default is not Empty:
             schema.default = field.default
-
-        if not schema.examples and self.generate_examples:
-            from litestar._openapi.schema_generation.examples import create_examples_for_field
-
-            schema.examples = get_json_schema_formatted_examples(create_examples_for_field(field))
-
-        if schema.title and schema.type == OpenAPIType.OBJECT:
-            return self.schema_registry.get_reference_for_field_definition(field) or schema
-        return schema
 
     def create_component_schema(
         self,
@@ -817,4 +873,5 @@ class SchemaCreator:
         schema.type = openapi_type
         schema.properties = {k: self.for_field_definition(v) for k, v in property_fields.items()}
         schema.examples = examples
+        self._generate_component_examples(type_, schema)
         return schema

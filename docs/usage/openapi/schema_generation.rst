@@ -53,7 +53,9 @@ You can also modify the generated schema for the route handler using the followi
 ``security``:
     A list of dictionaries that correlate to the
     `security requirements specification <https://spec.openapis.org/oas/latest.html#securityRequirementObject>`_. The
-    values for this key are string keyed dictionaries with the values being a list of objects.
+    values for this key are string keyed dictionaries with the values being a list of objects. An empty list
+    (``security=[]``), on a handler, controller or router, lifts the requirements declared on the layers above it
+    and in the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`.
 
 ``summary``
     Text used for the route's schema *summary* section.
@@ -168,6 +170,120 @@ app instance itself. For example:
    )
 
 
+Customizing error responses
+---------------------------
+
+By default, the responses generated for the exceptions listed in a route handler's ``raises``, and the 400 response
+added to operations that receive parameters or a request body, describe Litestar's default exception response: a JSON
+object with ``status_code``, ``detail`` and ``extra``. If your application returns a different shape, for example
+through ``exception_handlers``, set ``error_response`` to a
+:class:`ResponseSpec <litestar.openapi.datastructures.ResponseSpec>` whose ``data_container`` is the model of your
+error body:
+
+.. code-block:: python
+
+   from dataclasses import dataclass
+
+   from litestar import Litestar
+   from litestar.openapi import OpenAPIConfig
+   from litestar.openapi.datastructures import ResponseSpec
+
+
+   @dataclass
+   class APIError:
+       code: str
+       message: str
+
+
+   app = Litestar(
+       route_handlers=[...],
+       openapi_config=OpenAPIConfig(
+           title="My API",
+           version="1.0.0",
+           error_response=ResponseSpec(APIError, media_type="application/problem+json"),
+       ),
+   )
+
+Every generated error response then references that model's schema under the given media type. The description of
+each response is still derived from its status code and exceptions, so the ``description`` of the spec is not used,
+and examples are only generated when ``create_examples`` is enabled as well. An entry for the same status code in a
+handler's ``responses`` takes precedence.
+
+If every error is returned as :rfc:`9457` problem details, by using
+:class:`ProblemDetailsPlugin <litestar.plugins.problem_details.ProblemDetailsPlugin>` with
+``enable_for_all_http_exceptions=True``, document them with
+``ResponseSpec(ProblemDetails, media_type="application/problem+json")``, where ``ProblemDetails`` is imported from
+:mod:`litestar.plugins.problem_details`.
+
+Generating an OpenAPI 3.2 document
+----------------------------------
+
+The generated document conforms to version 3.1 of the OpenAPI Specification by default. To generate an OpenAPI 3.2
+document, set ``openapi_version``:
+
+.. code-block:: python
+
+   from litestar import Litestar
+   from litestar.openapi import OpenAPIConfig
+
+   app = Litestar(
+       route_handlers=[...],
+       openapi_config=OpenAPIConfig(title="My API", version="1.0.0", openapi_version="3.2.0"),
+   )
+
+With OpenAPI 3.2:
+
+- The events of a handler returning :class:`ServerSentEvent <litestar.response.ServerSentEvent>`, and the items of a
+  :class:`Stream <litestar.response.Stream>` of JSON Lines, are described with ``itemSchema``.
+- The URI of the document can be set with ``self_uri``.
+- The fields OpenAPI 3.2 added, such as ``Tag.parent``, ``Server.name`` or ``SecurityScheme.oauth2_metadata_url``,
+  can be used. They are available on the classes in :mod:`litestar.openapi.spec` and are only valid in a 3.2 document.
+
+.. note::
+
+    Not all documentation UIs and client generators support OpenAPI 3.2 yet.
+
+Customizing component schema names
+----------------------------------
+
+Models are documented once in the ``components/schemas`` section of the schema and referenced wherever they are used.
+A component is named after its type, followed by the names of its type arguments if the type is a parametrized
+generic: ``Page[Item]`` becomes ``Page_Item``. If two different types end up with the same name, the names are told
+apart by the modules the types are defined in.
+Different types that also share their module, such as classes created by a factory function, share one component if
+their schemas are equal, including the schemas of the classes they refer to, and are numbered in the order they are
+registered otherwise:
+``Thing``, ``Thing_2``. The numbers can change when route handlers are registered in a different order.
+
+To use different names, pass a callable to the ``schema_component_name_creator`` parameter of
+:class:`OpenAPIConfig <.openapi.OpenAPIConfig>`. It receives the
+:class:`FieldDefinition <litestar.typing.FieldDefinition>` of the type and returns the name:
+
+.. code-block:: python
+
+   from litestar import Litestar
+   from litestar.openapi import OpenAPIConfig
+   from litestar.typing import FieldDefinition
+
+
+   def create_component_name(field_definition: FieldDefinition) -> str:
+       name = field_definition.annotation.__name__
+       type_arguments = "".join(t.annotation.__name__ for t in field_definition.inner_types)
+       return f"{type_arguments}{name}"  # Page[Item] -> ItemPage
+
+
+   app = Litestar(
+       route_handlers=[...],
+       openapi_config=OpenAPIConfig(
+           title="My API",
+           version="1.0.0",
+           schema_component_name_creator=create_component_name,
+       ),
+   )
+
+The name of a single usage of a type can be set with ``schema_component_key``, e.g.
+``Annotated[Item, Body(schema_component_key="NewItem")]``. That usage then gets a component of its own.
+
 Accessing the OpenAPI schema in code
 ------------------------------------
 
@@ -185,6 +301,30 @@ access the request instance:
        schema = request.app.openapi_schema
        return schema.to_schema()
 
+
+Adding specification extensions to a schema
+-------------------------------------------
+
+The ``schema_extra`` of a parameter, a request body or a field sets attributes of the generated
+:class:`~litestar.openapi.spec.Schema`. A key that starts with ``x-`` is emitted as a
+`specification extension <https://spec.openapis.org/oas/v3.1.0#specification-extensions>`_ of that schema, and so is
+an ``x-`` key in the ``json_schema_extra`` of a Pydantic field:
+
+.. code-block:: python
+
+   from typing import Annotated
+
+   from litestar import get
+   from litestar.params import QueryParameter
+
+
+   @get("/")
+   async def handler(limit: Annotated[int, QueryParameter(schema_extra={"x-internal": True})] = 10) -> None: ...
+
+The parameter is documented with the schema ``{"type": "integer", "default": 10, "x-internal": true}``. For a type
+documented as a component, the extension is added next to the reference and the shared component is unchanged. Any
+other key that is not an attribute of ``Schema`` raises a :exc:`ValueError`. A schema built in code holds its
+extensions in ``Schema.extensions``.
 
 Customizing Pydantic model schemas
 ----------------------------------
@@ -333,3 +473,42 @@ Once installed, you can turn on example generation via the OpenAPI config:
 
 .. literalinclude:: /examples/openapi/customize_pydantic_model_name.py
     :language: python
+
+
+Lenient decoding of request data
+--------------------------------
+
+The schema generated for a type describes its canonical JSON representation. When Litestar decodes request data, it
+also accepts other representations of some scalar types and converts them to the annotated type. Such a value does
+not validate against the generated schema, but the request is accepted. The most common cases are listed below; the
+list is not exhaustive:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Annotated type
+     - Documented as
+     - Also accepted
+   * - :class:`int` and enums with integer values
+     - ``integer``
+     - A string of digits, such as ``"1"``
+   * - :class:`float`
+     - ``number``
+     - A numeric string, such as ``"1.5"``
+   * - :class:`bool`
+     - ``boolean``
+     - The numbers ``1`` and ``0``, and strings such as ``"true"`` or ``"1"``
+   * - :class:`datetime.datetime`
+     - ``string`` with the ``date-time`` format
+     - A number, read as a Unix timestamp in seconds
+   * - :class:`datetime.timedelta`
+     - ``string`` with the ``duration`` format
+     - A number, read as a number of seconds
+   * - :class:`uuid.UUID`
+     - ``string`` with the ``uuid`` format
+     - The 32 hexadecimal digits without dashes
+
+Pydantic models additionally accept a number for :class:`datetime.time`, read as seconds since midnight.
+
+This is intended behaviour, and the schema is deliberately not widened to describe these inputs: doing so would turn
+every scalar into a union in generated clients. A client that sends what the schema documents is unaffected.
