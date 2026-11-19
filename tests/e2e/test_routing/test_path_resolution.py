@@ -321,7 +321,7 @@ from typing import List
 async def handler(request: Request) -> List[str]:
     return [request.scope["path"], request.scope["root_path"]]
 
-app = Litestar(route_handlers=[handler])
+app = Litestar(route_handlers=[handler], dependency_scopes=("request", "handler"))
     """
 
     run_server(app, server_command)
@@ -355,7 +355,7 @@ from litestar.params import FromPath
 async def pathfinder(path: FromPath[Optional[Path]] = None) -> str:
     return str(path)
 
-app = Litestar(route_handlers=[pathfinder], debug=True)
+app = Litestar(route_handlers=[pathfinder], debug=True, dependency_scopes=("request", "handler"))
     """
 
     run_server(app, server_command)
@@ -393,6 +393,7 @@ app = Litestar(
     route_handlers=[
         create_static_files_router(path="/static", directories=["static"]),
     ],
+    dependency_scopes=("request", "handler"),
 )
     """
 
