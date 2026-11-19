@@ -647,6 +647,22 @@ class Schema(BaseSchemaObject):
     discouraged, and later versions of this specification may remove it.
     """
 
+    extensions: dict[str, Any] | None = field(default=None, kw_only=True)
+    """`Specification extensions <https://spec.openapis.org/oas/v3.1.0#specification-extensions>`_ of the schema.
+
+    Every key must start with ``x-``. The items are emitted as keys of the schema object, with their values unchanged.
+    """
+
+    @property
+    def _exclude_fields(self) -> set[str]:
+        return {"extensions"}
+
+    def to_schema(self) -> dict[str, Any]:
+        result = super().to_schema()
+        if self.extensions:
+            result.update(self.extensions)
+        return result
+
     def __hash__(self) -> int:
         return _recursive_hash(self)
 

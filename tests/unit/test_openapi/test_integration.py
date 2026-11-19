@@ -256,7 +256,7 @@ def test_with_generic_class() -> None:
                             "200": {
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
-                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo_str_"}}},
+                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo_str"}}},
                             }
                         },
                         "deprecated": False,
@@ -270,7 +270,7 @@ def test_with_generic_class() -> None:
                             "200": {
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
-                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo_int_"}}},
+                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo_int"}}},
                             }
                         },
                         "deprecated": False,
@@ -279,13 +279,13 @@ def test_with_generic_class() -> None:
             },
             "components": {
                 "schemas": {
-                    "Foo_str_": {
+                    "Foo_str": {
                         "properties": {"foo": {"type": "string"}},
                         "type": "object",
                         "required": ["foo"],
                         "title": "Foo[str]",
                     },
-                    "Foo_int_": {
+                    "Foo_int": {
                         "properties": {"foo": {"type": "integer"}},
                         "type": "object",
                         "required": ["foo"],

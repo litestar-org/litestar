@@ -487,7 +487,7 @@ class Litestar(Router):
             response_headers=config.response_headers,
             return_dto=config.return_dto,
             route_handlers=config.route_handlers,
-            security=config.security,
+            security=config.security or None,
             signature_namespace=config.signature_namespace,
             signature_types=config.signature_types,
             tags=config.tags,

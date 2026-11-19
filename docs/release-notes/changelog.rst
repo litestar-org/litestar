@@ -6,6 +6,46 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: OpenAPI: Document unions whose members overlap with ``anyOf``
+        :type: bugfix
+        :breaking:
+
+        A union is now documented with ``anyOf`` instead of ``oneOf`` when a value may match more than one of its
+        members, e.g. ``UUID | str``, ``int | float``, a union of two models, or of two enums sharing a value. A value
+        must match exactly one member of a ``oneOf``, so valid values were rejected by validators following the
+        document. Unions of members accepting disjoint values, such as ``int | str``, ``Model | None`` or models
+        whose required tag fields differ (``Literal`` tags, tagged ``msgspec.Struct``), keep ``oneOf``, as does a
+        ``oneOf`` declared with a ``discriminator``. Error responses of several exceptions
+        sharing a status code and Pydantic's ``IPvAnyAddress`` are documented with ``anyOf`` as well.
+
+    .. change:: OpenAPI: Report route handlers that serve the same method on the same path
+        :type: bugfix
+        :breaking:
+
+        With OpenAPI enabled, registering two documented route handlers for the same HTTP method on paths that differ
+        only in their path parameters, e.g. ``GET /items/{item_id:int}`` and ``GET /items/{item_id:str}`` or
+        ``GET /items/{item_id:int}`` and ``GET /items/{name:str}``, now raises an
+        :exc:`~litestar.exceptions.ImproperlyConfiguredException` at startup that names the method, both handlers and
+        both paths. Previously the application started, and generating the schema raised
+        ``ValueError: Cannot merge operation for PathItem if operation is set on both items`` when the paths differed
+        only in parameter types and documented two paths when they differed in parameter names. Only one of such
+        handlers can be reached. Routing is unchanged.
+
+        Operations for different methods on such paths, and a route handler registered on several of them, are now
+        documented under a single path, the alphabetically first one, with the path parameters named after it.
+        Previously each path was documented separately, which OpenAPI does not allow.
+
+    .. change:: OpenAPI: Document path parameters in the order of the path
+        :type: bugfix
+        :issue: 3644
+        :breaking:
+
+        Path parameters are now documented before all other parameters of an operation and in the order in which
+        they appear in the path, whether the route handler, one of its dependencies or neither consumes them.
+        Previously, a path parameter was documented at the position of the function parameter consuming it, and
+        path parameters not consumed were appended after the handler's parameters, so that consuming a path
+        parameter changed the generated document. Query, header and cookie parameters keep their order.
+
     .. change:: OpenAPI: Document IP networks and interfaces with the ``ipv4-cidr`` and ``ipv6-cidr`` formats
         :type: bugfix
         :issue: 5049
@@ -30,6 +70,18 @@
         alias: their schema does not always name a field the way requests and responses do, and forbidding
         additional properties there would reject the names actually used.
 
+    .. change:: OpenAPI: Support specification extensions in ``schema_extra``
+        :type: feature
+
+        Keys starting with ``x-`` in the ``schema_extra`` of a parameter or request body, and in the
+        ``json_schema_extra`` of a Pydantic field, are now emitted as specification extensions of the schema.
+        Previously they raised a :exc:`ValueError` that prevented the whole document from being generated. Where the
+        type is documented as a component, the extension is added next to the reference and not to the shared
+        component.
+
+        Add ``Schema.extensions`` to :class:`~litestar.openapi.spec.Schema` to hold them. Other keys that are not
+        fields of ``Schema`` still raise a :exc:`ValueError`.
+
     .. change:: OpenAPI: Do not modify the ``json_schema_extra`` of Pydantic fields
         :type: bugfix
         :breaking:
@@ -40,6 +92,50 @@
         inheriting the field, for a second parametrization of a generic model, for a model also used through
         ``PydanticDTO``, and for every further application created in the same process. The model is no longer
         modified and its examples are documented wherever it is used.
+
+    .. change:: OpenAPI: Document no content for ``Response[None]`` on responses without a body
+        :type: bugfix
+        :issue: 4598
+        :breaking:
+
+        A route handler annotated as returning ``Response[None]`` was documented with an ``application/json`` body of
+        the schema ``{"type": "null"}``, even if its response cannot carry a body. Its response is now documented
+        without ``content``, like the response of a handler returning ``None``, if the status code is ``204``,
+        ``304`` or below ``200``, and for ``HEAD`` operations. With any other status code and a JSON media type the
+        handler sends a JSON ``null``, which stays documented. No response of a ``HEAD`` operation, including its
+        error responses, is documented with ``content``.
+
+    .. change:: OpenAPI: Document constraints declared inside a PEP 695 type alias
+        :type: bugfix
+        :breaking:
+
+        Fix a bug that dropped the constraints of a Pydantic ``Field`` declared inside a ``type`` alias, e.g.
+        ``type Limit = Annotated[int, Field(ge=0)]``, from the schema of a Pydantic model field annotated with the
+        alias, although Pydantic enforces them. If the alias and the place it is used declare the same constraint,
+        the one declared where the alias is used is documented.
+
+    .. change:: OpenAPI: Support recursive PEP 695 type aliases
+        :type: bugfix
+        :issue: 4843
+
+        Fix a :exc:`RecursionError` raised while generating the schema of a recursive ``type`` alias, e.g.
+        ``type JSON = dict[str, JSON] | list[JSON] | str | int | float | bool | None``. A recursive alias is now
+        documented as a component schema named after the alias, which the document refers to where the alias
+        recurses and where it is used as a request body, a model field or a type argument. Aliases that are not
+        recursive are still documented inline. Generating examples no longer fails for a model with a field of such
+        an alias. An alias that expands to ever larger types, such as ``type Tree[T] = T | list[Tree[list[T]]]``,
+        raises an :exc:`~litestar.exceptions.ImproperlyConfiguredException`. msgspec cannot decode a recursive alias,
+        so it cannot be used as the type of a ``msgspec.Struct`` field.
+
+    .. change:: OpenAPI: Support subscripted generic PEP 695 type aliases
+        :type: bugfix
+
+        Fix a bug that raised an :exc:`~litestar.exceptions.ImproperlyConfiguredException` ("could not be mapped to an
+        Open API type") while generating the schema of a subscripted generic ``type`` alias, e.g. ``Pair[int]`` for
+        ``type Pair[T] = tuple[T, T]``. The alias is now documented as its value with the type parameters replaced by
+        the given arguments. An alias whose type parameters include a ``TypeVarTuple`` or ``ParamSpec`` still raises
+        the exception, with a message that names the alias. A subscripted alias cannot be used as the return
+        annotation of a route handler yet.
 
     .. change:: OpenAPI: Document the exact length of fixed-length tuples
         :type: bugfix
@@ -108,6 +204,23 @@
         with flags, such as :data:`re.IGNORECASE`, it is not documented, because a JSON Schema ``pattern`` cannot
         express them.
 
+    .. change:: OpenAPI: Document different classes with the same name and module as separate components
+        :type: bugfix
+        :breaking:
+
+        Classes sharing their module and qualified name, such as classes created by a factory function or with
+        :func:`dataclasses.make_dataclass`, are now documented as separate components. Previously, generating the
+        schema either raised an :exc:`~litestar.exceptions.ImproperlyConfiguredException` ("Schema component keys
+        must be unique"), or documented all of these classes with the schema of the class that was registered first.
+
+        The class registered first keeps the name, the others are numbered in registration order, e.g. ``Thing`` and
+        ``Thing_2``. The numbers therefore depend on the order in which route handlers are registered, and do not
+        change when the fields of a class change. To choose the names, use ``schema_component_name_creator`` or
+        ``schema_component_key``. Classes whose schemas are equal, including the schemas of the classes they refer to,
+        such as the results of a factory called once per route handler, keep sharing one component. Setting the same
+        ``schema_component_key`` on two such classes with different schemas now raises an
+        :exc:`~litestar.exceptions.ImproperlyConfiguredException`, as it does for any two different types.
+
     .. change:: OpenAPI: Emit valid security schemes for ``JWTCookieAuth`` and ``OAuth2PasswordBearerAuth``
         :type: bugfix
         :issue: 3642
@@ -117,6 +230,105 @@
         specification. The ``http`` scheme of ``JWTCookieAuth`` no longer carries ``in`` and ``name``. The ``oauth2``
         scheme of ``OAuth2PasswordBearerAuth`` no longer carries ``scheme``, ``bearerFormat``, ``in`` and ``name``,
         and its password flow always includes ``scopes``, which is empty if ``oauth_scopes`` is not set.
+
+    .. change:: OpenAPI: Describe error responses with ``OpenAPIConfig.error_response``
+        :type: feature
+        :issue: 3020, 4523
+
+        Add the ``error_response`` parameter to :class:`~litestar.openapi.config.OpenAPIConfig`, a
+        :class:`~litestar.openapi.datastructures.ResponseSpec` describing the content of the error responses
+        generated for a route handler's ``raises`` and for validation errors. Applications that replace Litestar's
+        default exception response can now document the content they actually return.
+
+        The new :class:`~litestar.plugins.problem_details.ProblemDetails` type describes the responses of
+        :class:`~litestar.plugins.problem_details.ProblemDetailsPlugin`. To document them, set ``error_response`` to
+        ``ResponseSpec(ProblemDetails, media_type="application/problem+json")``.
+
+    .. change:: OpenAPI: Keep ``HEAD`` operations of routes sharing a path
+        :type: bugfix
+
+        Fix a bug that dropped the ``HEAD`` operation from the schema when routes with the same path format, e.g.
+        ``/{id:int}`` and ``/{id:str}``, were merged into one path item.
+
+    .. change:: OpenAPI: Support version 3.2 of the OpenAPI Specification
+        :type: feature
+
+        Add the ``openapi_version`` parameter to :class:`~litestar.openapi.config.OpenAPIConfig`. It defaults to
+        ``"3.1.0"``; set it to ``"3.2.0"`` to generate an OpenAPI 3.2 document. The new ``self_uri`` parameter sets
+        the document's ``$self``.
+
+        Add the fields introduced by OpenAPI 3.2 to the classes in :mod:`litestar.openapi.spec`: ``OpenAPI.self_uri``
+        (``$self``), ``PathItem.query`` and ``additional_operations``, ``OpenAPIMediaType.item_schema``,
+        ``prefix_encoding`` and ``item_encoding``, ``Tag.summary``, ``parent`` and ``kind``,
+        ``OpenAPIResponse.summary``, ``Example.data_value`` and ``serialized_value``,
+        ``Discriminator.default_mapping``, ``SecurityScheme.oauth2_metadata_url`` and ``deprecated``,
+        ``OAuthFlows.device_authorization``, ``OAuthFlow.device_authorization_url``, ``Components.media_types``,
+        ``Server.name`` and ``XML.node_type``. Generating an OpenAPI 3.1 document that uses any of them raises an
+        :exc:`~litestar.exceptions.ImproperlyConfiguredException` naming the fields.
+
+        In an OpenAPI 3.2 document, the events of a :class:`~litestar.response.ServerSentEvent` response and the
+        items of a :class:`~litestar.response.Stream` of ``application/jsonl``, ``application/x-ndjson`` or
+        ``application/json-seq`` are described with ``itemSchema``.
+
+    .. change:: OpenAPI: Document server-sent events as ``text/event-stream`` and stop emitting deprecated keywords
+        :type: bugfix
+        :breaking:
+
+        These changes apply to every generated document, whatever its ``openapi_version``:
+
+        - Responses of handlers returning :class:`~litestar.response.ServerSentEvent` are documented as
+          ``text/event-stream`` instead of ``application/json``.
+        - ``allowEmptyValue``, deprecated in OpenAPI 3.2, is only emitted for query parameters that set it.
+        - Response cookies are documented with ``examples`` instead of the deprecated ``example``.
+
+    .. change:: OpenAPI: Do not write the metadata of one usage to shared component schemas
+        :type: bugfix
+        :breaking:
+
+        Fix a bug that wrote metadata belonging to a single usage of a type, such as a ``description``,
+        ``schema_extra``, a default value or a handler's ``content_encoding``, to the type's schema in
+        ``components/schemas``, which all usages share. The generated schema depended on the order in which route
+        handlers were registered, and a description given for one field showed up on every other field of the same
+        type.
+
+        The metadata is now only emitted next to the reference, as
+        ``{"allOf": [{"$ref": ...}], "description": ...}``, and the component only describes the type. To give one
+        usage a component of its own that carries the metadata, set ``schema_component_key``.
+
+    .. change:: OpenAPI: Name component schemas of generic types after their type arguments
+        :type: feature
+        :breaking:
+
+        The component schema of a parametrized generic type is now named after the type and its type arguments, e.g.
+        ``Page_Item`` for ``Page[Item]`` instead of ``Page_app.models.Item_``.
+
+        Add the ``schema_component_name_creator`` parameter to :class:`~litestar.openapi.config.OpenAPIConfig`, a
+        callable that receives the :class:`~litestar.typing.FieldDefinition` of a type and returns the name of its
+        component schema.
+
+    .. change:: OpenAPI: Allow lifting inherited security requirements with ``security=[]``
+        :type: feature
+        :breaking:
+
+        Passing ``security=[]`` to a route handler, controller or router now emits ``security: []`` for its
+        operations and drops the requirements declared on the layers above it, which marks the operations as not
+        requiring authentication. Previously an empty list was treated as not set.
+
+    .. change:: OpenAPI: Fix request bodies, response media types and the ``time`` format
+        :type: bugfix
+        :breaking:
+
+        - Responses of handlers returning :class:`~litestar.response.File`, or a
+          :class:`~litestar.response.Response` together with a ``return_dto``, are documented under
+          ``application/octet-stream`` and ``application/json`` respectively instead of an empty media type.
+        - :class:`datetime.time` is documented with the ``time`` format instead of ``duration``.
+        - Examples of component schemas are only generated if ``create_examples`` is enabled, whichever usage of
+          the type is generated first. Previously a :class:`~litestar.openapi.datastructures.ResponseSpec` could
+          add examples to a component shared with other operations.
+        - A response header declared with ``documentation_only=True`` and no ``value`` is documented with a
+          ``string`` schema, which a header requires.
+        - Parametrized generic Pydantic models whose type arguments share a name, such as ``Page[a.Item]`` and
+          ``Page[b.Item]``, no longer fail schema generation with "Schema component keys must be unique".
 
     .. change:: Drop reserved keyword arguments in handlers and DI
         :type: feature

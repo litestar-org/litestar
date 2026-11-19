@@ -32,3 +32,9 @@ class Server(BaseSchemaObject):
 
     variables: dict[str, ServerVariable] | None = None
     """A map between a variable name and its value. The value is used for substitution in the server's URL template."""
+
+    name: str | None = None
+    """An optional unique string to refer to the host designated by the URL.
+
+    Requires OpenAPI 3.2.
+    """

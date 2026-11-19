@@ -79,8 +79,12 @@ def test_request_body_schema_extra() -> None:
 
     app = Litestar([handler])
     schema = app.openapi_schema.to_schema()
-    resp = next(iter(schema["components"]["schemas"].values()))
-    assert resp["title"] == "Overridden title"
+    component_name, component = next(iter(schema["components"]["schemas"].items()))
+    assert component["title"] == "RequestBody"
+    assert schema["paths"]["/"]["post"]["requestBody"]["content"]["application/json"]["schema"] == {
+        "allOf": [{"$ref": f"#/components/schemas/{component_name}"}],
+        "title": "Overridden title",
+    }
 
 
 def test_upload_single_file_schema_generation() -> None:
@@ -290,8 +294,8 @@ def test_upload_file_mixed_union_keeps_alternatives() -> None:
     schema = app.openapi_schema.to_schema()
     body_schema = schema["paths"]["/mixed-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"]
 
-    assert {"type": "string"} in body_schema["oneOf"]
-    assert {"type": "null"} in body_schema["oneOf"]
+    assert {"type": "string"} in body_schema["anyOf"]
+    assert {"type": "null"} in body_schema["anyOf"]
 
 
 def test_nested_optional_upload_file_keeps_null_alternative() -> None:

@@ -34,3 +34,19 @@ class Example(BaseSchemaObject):
     The ``value`` field and ``externalValue`` field are mutually exclusive. See the rules for resolving
     `Relative References <https://spec.openapis.org/oas/v3.1.0#relativeReferencesURI>`_.
     """
+
+    data_value: Any | None = None
+    """An example of the data structure that MUST be valid according to the relevant schema.
+
+    Mutually exclusive with ``value``.
+
+    Requires OpenAPI 3.2.
+    """
+
+    serialized_value: str | None = None
+    """An example of the serialized form of the value, including encoding and escaping.
+
+    Mutually exclusive with ``value`` and ``externalValue``.
+
+    Requires OpenAPI 3.2.
+    """

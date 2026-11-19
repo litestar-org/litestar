@@ -4,6 +4,7 @@
 # pyright: reportGeneralTypeIssues=false
 from __future__ import annotations
 
+import dataclasses
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -13,6 +14,7 @@ import annotated_types
 import pydantic
 from pydantic_core import PydanticUndefined
 
+from litestar._openapi.utils import is_type_alias, resolve_type_alias
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition
 from litestar.types import Empty
@@ -22,6 +24,7 @@ from litestar.utils import is_class_and_subclass, is_generic, is_undefined_senti
 from litestar.utils.typing import (
     _substitute_typevars,
     normalize_type_annotation,
+    unwrap_annotation,
 )
 
 if TYPE_CHECKING:
@@ -173,6 +176,31 @@ def _get_pattern(meta: Any) -> str | None:
     return pattern  # type: ignore[no-any-return]
 
 
+def _type_alias_constraints(annotation: Any) -> dict[str, Any]:
+    metadata: list[Any] = []
+    seen: list[Any] = []
+    while is_type_alias(annotation) and annotation not in seen:
+        seen.append(annotation)
+        annotation, alias_metadata, _ = unwrap_annotation(resolve_type_alias(annotation))
+        field_infos = [meta for meta in alias_metadata if isinstance(meta, pydantic.fields.FieldInfo)]
+        metadata = [meta for field_info in field_infos for meta in field_info.metadata] + metadata
+    if not metadata:
+        return {}
+    kwarg_definition = FieldDefinition.from_annotation(Annotated[(annotation, *metadata)]).kwarg_definition
+    constraints = (
+        {}
+        if kwarg_definition is None
+        else {
+            field.name: value
+            for field in dataclasses.fields(KwargDefinition)
+            if (value := getattr(kwarg_definition, field.name)) is not None
+        }
+    )
+    if (pattern := next(filter(None, map(_get_pattern, reversed(metadata))), None)) is not None:
+        constraints["pattern"] = pattern
+    return constraints
+
+
 def _annotate_nested_patterns(annotation: Any) -> Any:
     args = get_args(annotation)
     origin = get_origin(annotation)
@@ -202,7 +230,7 @@ def _create_field_definition_v2(  # noqa: C901
     field_info: pydantic.fields.FieldInfo,
     **field_definition_kwargs: Any,
 ) -> FieldDefinition:
-    kwargs: dict[str, Any] = {}
+    kwargs: dict[str, Any] = _type_alias_constraints(field_annotation)
     examples: list[Any] = []
     field_meta: list[Any] = []
     schema_extra: dict[str, Any] = {}
@@ -235,10 +263,18 @@ def _create_field_definition_v2(  # noqa: C901
         if (pattern := _get_pattern(meta)) is not None:
             kwargs["pattern"] = pattern
         if isinstance(meta, pydantic.types.StringConstraints):
-            kwargs["min_length"] = meta.min_length
-            kwargs["max_length"] = meta.max_length
-            kwargs["lower_case"] = meta.to_lower
-            kwargs["upper_case"] = meta.to_upper
+            kwargs.update(
+                {
+                    key: value
+                    for key, value in {
+                        "min_length": meta.min_length,
+                        "max_length": meta.max_length,
+                        "lower_case": meta.to_lower,
+                        "upper_case": meta.to_upper,
+                    }.items()
+                    if value is not None
+                }
+            )
         # forward other metadata
         else:
             field_meta.append(meta)

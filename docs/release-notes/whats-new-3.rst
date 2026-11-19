@@ -696,11 +696,82 @@ parameter and forward it, because :func:`~.handlers.asgi` always passes it.
     :ref:`usage/routing/handlers:ASGI route handler considerations`
 
 
+OpenAPI: usage metadata is no longer written to shared component schemas
+-------------------------------------------------------------------------
+
+Metadata given where a type is used, such as a ``description``, ``title``, ``schema_extra``, a default value or a
+handler's ``content_encoding``, was also written to the type's schema in ``components/schemas``. Because that schema
+is shared by every usage of the type, the metadata of whichever usage was generated first ended up on all of them.
+
+The metadata is now only emitted next to the reference, and the component only describes the type:
+
+.. code-block:: python
+
+    @post("/")
+    async def create_user(data: Annotated[User, Body(description="The user to create")]) -> User: ...
+
+.. code-block:: json
+
+    {
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [{"$ref": "#/components/schemas/User"}],
+              "description": "The user to create"
+            }
+          }
+        }
+      }
+    }
+
+To keep the metadata on a component, give the usage a component of its own with ``schema_component_key``:
+
+.. code-block:: python
+
+    data: Annotated[User, Body(description="The user to create", schema_component_key="NewUser")]
+
+
+OpenAPI: component schemas of generic types are named after their type arguments
+--------------------------------------------------------------------------------
+
+The component schema of a parametrized generic type was named after the string representation of the type, which
+included the module of every type argument: ``Page[Item]`` became ``Page_app.models.Item_``. It is now named
+``Page_Item``. Clients generated from the schema will see the new names.
+
+If two types end up with the same name, the names are told apart by the modules the types are defined in, as before.
+To control the names, see :ref:`usage/openapi/schema_generation:Customizing component schema names`.
+
+
+OpenAPI: an empty ``security`` lifts inherited requirements
+-----------------------------------------------------------
+
+``security=[]`` on a route handler, controller or router was treated as not set. It now lifts the security
+requirements declared on the layers above it and in the :class:`~litestar.openapi.config.OpenAPIConfig`, and the
+operations are documented with ``security: []``. Pass ``None``, or omit the parameter, to inherit the requirements.
+
+
 OpenAPI: other changes to the generated document
 ------------------------------------------------
 
 The following changes apply to documents of existing applications and may require regenerating clients:
 
+- Responses of handlers returning :class:`~litestar.response.ServerSentEvent` are documented as ``text/event-stream``
+  instead of ``application/json``.
+- Responses of handlers returning :class:`~litestar.response.File` are documented under ``application/octet-stream``,
+  or the handler's ``media_type``, instead of an empty media type.
+- :class:`datetime.time` is documented with the ``time`` format instead of ``duration``.
+- ``allowEmptyValue`` is only emitted for query parameters that set it, and response cookies are documented with
+  ``examples`` instead of ``example``.
+- Parameters declared on a router, controller or the application are documented after the parameters of the handler
+  and its dependencies.
+- A request body is only documented if the handler, or a dependency it uses, declares ``data``.
+- Examples of component schemas are only generated if ``create_examples`` is enabled. A
+  :class:`~litestar.openapi.datastructures.ResponseSpec` still generates examples for content that is not a
+  component.
+- Different classes with the same name and module whose schemas differ, e.g. classes created by a factory function,
+  are documented as separate components, ``Thing`` and ``Thing_2``, numbered in registration order, instead of
+  sharing the component of the class registered first.
 - The ``pattern`` of Pydantic model fields declared with ``Field(pattern=...)``, or with ``constr`` or
   ``StringConstraints`` nested in another type, is documented.
 - :class:`~decimal.Decimal` is documented as a number or a decimal string (``oneOf``) instead of ``string``, and a
@@ -714,6 +785,10 @@ The following changes apply to documents of existing applications and may requir
   length constraint, like an unconstrained one plus the bound.
 - Fixed-length tuples such as ``tuple[int, str]`` are documented with ``minItems`` and ``maxItems`` equal to their
   number of elements, and ``tuple[()]`` as an empty array instead of an empty schema.
+- Constraints declared with a Pydantic ``Field`` inside a PEP 695 ``type`` alias are documented on Pydantic model
+  fields annotated with the alias, e.g. ``minimum`` for ``type Limit = Annotated[int, Field(ge=0)]``.
+- Responses of handlers returning ``Response[None]`` are documented without ``content`` if they cannot carry a body:
+  status codes ``204``, ``304`` and below ``200``, and ``HEAD`` operations.
 - Examples declared in the ``json_schema_extra`` of a Pydantic field are documented in every schema generated from
   the field, including those of subclasses and of parametrized generic models, instead of only the first one.
 - Component schemas of Pydantic models with ``extra="forbid"`` and no field alias, of msgspec structs with
@@ -722,3 +797,12 @@ The following changes apply to documents of existing applications and may requir
   :class:`ipaddress.IPv6Interface` are documented with the ``ipv4-cidr`` and ``ipv6-cidr`` formats instead of
   ``ipv4`` and ``ipv6``. Pydantic's ``IPvAnyInterface`` and ``IPvAnyNetwork`` are documented as strings without a
   format.
+- Path parameters are documented before all other parameters of an operation, in the order in which they appear in
+  the path. Query, header and cookie parameters keep their relative order.
+- Unions whose members may accept the same value, such as ``UUID | str``, ``int | float`` or a union of two models,
+  are documented with ``anyOf`` instead of ``oneOf``. Unions of disjoint members keep ``oneOf``.
+- Two route handlers for the same HTTP method on paths that differ only in the names of their path parameters, such
+  as ``/items/{item_id}`` and ``/items/{name}``, raise an :exc:`~litestar.exceptions.ImproperlyConfiguredException`
+  when the application starts with OpenAPI enabled, instead of documenting two paths, since only one of the handlers
+  can be reached. Handlers for different methods on such paths are documented under one path, the
+  alphabetically first, with the path parameters named after it.

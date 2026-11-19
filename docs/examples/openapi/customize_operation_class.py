@@ -17,7 +17,7 @@ class CustomOperation(Operation):
         self.description = "Requires OK, Returns OK"
         self.request_body = RequestBody(
             content={
-                "text": OpenAPIMediaType(
+                "text/plain": OpenAPIMediaType(
                     schema=Schema(
                         title="Body",
                         type=OpenAPIType.STRING,

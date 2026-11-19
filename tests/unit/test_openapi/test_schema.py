@@ -63,7 +63,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from tests.helpers import get_schema_for_field_definition
 from tests.models import DataclassPerson, DataclassPet
-from tests.unit.test_openapi.utils import build_document, request_body_component
+from tests.unit.test_openapi.utils import Gender, build_document, request_body_component
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -868,6 +868,21 @@ def test_type_alias_type() -> None:
     assert param.description == "foo"
 
 
+PairAlias = TypeAliasType("PairAlias", tuple[T, T], type_params=(T,))
+
+
+def test_generic_type_alias_from_typing_extensions() -> None:
+    @post("/")
+    async def handler(data: JSONBody[PairAlias[int]]) -> None:
+        return None
+
+    operation = build_document(handler)["paths"]["/"]["post"]
+    assert operation["requestBody"]["content"]["application/json"]["schema"]["prefixItems"] == [
+        {"type": "integer"},
+        {"type": "integer"},
+    ]
+
+
 @pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
 def test_type_alias_type_keyword() -> None:
     ctx: dict[str, Any] = {}
@@ -894,20 +909,20 @@ def test_decimal_schema_type() -> None:
     }
 
 
-DECIMAL_STRING = {"type": "string", "pattern": r"^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$"}
+DECIMAL = {"oneOf": [{"type": "number"}, {"type": "string", "pattern": r"^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$"}]}
 
 
 @pytest.mark.parametrize(
     ("annotation", "expected"),
     [
-        (Union[Decimal, int], [{"type": "number"}, DECIMAL_STRING]),
-        (Union[float, Decimal], [{"type": "number"}, DECIMAL_STRING]),
-        (Union[Decimal, str], [{"type": "number"}, {"type": "string"}]),
-        (Union[Decimal, int, None], [{"type": "number"}, DECIMAL_STRING, {"type": "null"}]),
-        (Union[Decimal, bool], [{"type": "number"}, DECIMAL_STRING, {"type": "boolean"}]),
+        (Union[Decimal, int], [DECIMAL, {"type": "integer"}]),
+        (Union[float, Decimal], [{"type": "number"}, DECIMAL]),
+        (Union[Decimal, str], [DECIMAL, {"type": "string"}]),
+        (Union[Decimal, int, None], [DECIMAL, {"type": "integer"}, {"type": "null"}]),
+        (Union[Decimal, bool], [DECIMAL, {"type": "boolean"}]),
     ],
 )
-def test_union_with_decimal_has_disjoint_members(annotation: Any, expected: list[dict[str, Any]]) -> None:
+def test_union_with_decimal_nests_decimal_schema(annotation: Any, expected: list[dict[str, Any]]) -> None:
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="value", annotation=annotation))
 
     assert schema.to_schema() == {"oneOf": expected}
@@ -1202,6 +1217,84 @@ def test_union_of_enums() -> None:
     assert len(schema.one_of) == 2
     components = creator.schema_registry.generate_components_schemas()
     assert {tuple(v.enum or ()) for v in components.values()} == {("red",), ("small",)}
+
+
+def test_schema_extensions_are_emitted_as_keys() -> None:
+    schema = Schema(type=OpenAPIType.STRING, extensions={"x-a": 1, "x-b": {"c": None}})
+
+    assert schema.to_schema() == {"type": "string", "x-a": 1, "x-b": {"c": None}}
+    assert Schema(type=OpenAPIType.STRING, extensions={}).to_schema() == {"type": "string"}
+    assert schema != Schema(type=OpenAPIType.STRING)
+
+
+def test_schema_extra_extension_on_inline_schema() -> None:
+    @get("/", sync_to_thread=False)
+    def handler(
+        value: Annotated[str, QueryParameter(schema_extra={"x-internal": True, "format": "foo"})],
+        optional: Annotated[Optional[int], QueryParameter(schema_extra={"x-internal": True})] = None,
+    ) -> None:
+        return None
+
+    parameters = build_document(handler)["paths"]["/"]["get"]["parameters"]
+
+    assert parameters[0]["schema"] == {"type": "string", "format": "foo", "x-internal": True}
+    assert parameters[1]["schema"] == {"type": ["integer", "null"], "x-internal": True}
+
+
+def test_schema_extra_extension_on_component_reference() -> None:
+    @dataclass
+    class Item:
+        foo: str
+
+    @post("/", sync_to_thread=False)
+    def create(data: Annotated[Item, Body(schema_extra={"x-owner": {"team": "a", "tags": ["b"]}})]) -> None:
+        return None
+
+    @get("/", sync_to_thread=False)
+    def read() -> Item:
+        return Item(foo="a")
+
+    document = build_document(create, read)
+    ((name, component),) = document["components"]["schemas"].items()
+    reference = {"$ref": f"#/components/schemas/{name}"}
+
+    assert document["paths"]["/"]["post"]["requestBody"]["content"]["application/json"]["schema"] == {
+        "allOf": [reference],
+        "x-owner": {"team": "a", "tags": ["b"]},
+    }
+    assert document["paths"]["/"]["get"]["responses"]["200"]["content"]["application/json"]["schema"] == reference
+    assert "x-owner" not in component
+
+
+def test_schema_extra_extension_with_schema_component_key() -> None:
+    @get("/", sync_to_thread=False)
+    def handler(
+        keyed: Annotated[Gender, QueryParameter(schema_extra={"x-internal": True}, schema_component_key="q")],
+        plain: Annotated[Gender, QueryParameter(schema_extra={"x-internal": True})],
+    ) -> None:
+        return None
+
+    document = build_document(handler)
+    parameters = document["paths"]["/"]["get"]["parameters"]
+
+    assert parameters[0]["schema"] == {"$ref": "#/components/schemas/q"}
+    assert document["components"]["schemas"]["q"]["x-internal"] is True
+    assert parameters[1]["schema"] == {"allOf": [{"$ref": "#/components/schemas/Gender"}], "x-internal": True}
+    assert "x-internal" not in document["components"]["schemas"]["Gender"]
+
+
+@pytest.mark.parametrize("key", ["invalid", "X-internal", "x_internal", "extensions"])
+def test_schema_extra_unknown_key_raises(key: str) -> None:
+    @get("/", sync_to_thread=False)
+    def handler(value: Annotated[str, QueryParameter(schema_extra={key: {"bad": 1}})]) -> None:
+        return None
+
+    message = (
+        f"`schema_extra` declares key `{key}` which does not exist in `Schema` object (declared by `value`). "
+        "Keys must be attributes of `Schema`, their OpenAPI names, or specification extensions starting with `x-`"
+    )
+    with pytest.raises(ValueError, match=re.escape(message)):
+        build_document(handler)
 
 
 def test_struct_forbid_unknown_fields_documents_additional_properties() -> None:

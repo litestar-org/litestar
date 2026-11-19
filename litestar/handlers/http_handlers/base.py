@@ -97,6 +97,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_resolved_before_request",
         "_response_class",
         "_response_type_handler",
+        "_security_opt_out",
         "_sync_to_thread",
         "after_request",
         "after_response",
@@ -247,6 +248,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
             security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
+                An empty sequence lifts the security requirements declared on the layers above the handler.
             summary: Text used for the route's schema summary section.
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
@@ -331,6 +333,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.summary = summary
         self.tags = frozenset(tags) if tags else frozenset()
         self.security = tuple(security) if security else ()
+        self._security_opt_out = security is not None and not self.security
         self.responses = responses
         # memoized attributes, defaulted to Empty
         self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
@@ -361,6 +364,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             cache_key_builder=self.cache_key_builder,
         )
 
+        security_lifted = False
         other: HTTPRouteHandler | Router
         for other in (self, *others):  # type: ignore[assignment]
             merge_opts["after_response"] = merge_opts.get("after_response") or other.after_response
@@ -370,7 +374,9 @@ class HTTPRouteHandler(BaseRouteHandler):
             merge_opts["etag"] = merge_opts.get("etag") or other.etag
             merge_opts["response_cookies"] = (*merge_opts.get("response_cookies", ()), *other.response_cookies)
             merge_opts["response_headers"] = (*other.response_headers, *merge_opts.get("response_headers", ()))
-            merge_opts["security"] = (*other.security, *merge_opts.get("security", ()))
+            if not security_lifted:
+                merge_opts["security"] = (*other.security, *merge_opts.get("security", ()))
+                security_lifted = other._security_opt_out
             merge_opts["tags"] = (*other.tags, *merge_opts.get("tags", ()))
 
             # these are all properties which return a safe default if the corresponding
@@ -395,6 +401,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         merge_opts["include_in_schema"] = value_or_default(
             self._include_in_schema, merge_opts.get("include_in_schema", Empty)
         )
+
+        if not merge_opts["security"] and not security_lifted:
+            merge_opts["security"] = None
 
         return merge_opts
 

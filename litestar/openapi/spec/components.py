@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.example import Example
     from litestar.openapi.spec.header import OpenAPIHeader
     from litestar.openapi.spec.link import Link
+    from litestar.openapi.spec.media_type import OpenAPIMediaType
     from litestar.openapi.spec.parameter import Parameter
     from litestar.openapi.spec.path_item import PathItem
     from litestar.openapi.spec.reference import Reference
@@ -70,3 +71,9 @@ class Components(BaseSchemaObject):
     path_items: dict[str, PathItem | Reference] | None = None
     """An object to hold reusable
     `Path Item Object <https://spec.openapis.org/oas/v3.1.0#pathItemObject>`_"""
+
+    media_types: dict[str, OpenAPIMediaType | Reference] | None = None
+    """An object to hold reusable Media Type Objects.
+
+    Requires OpenAPI 3.2.
+    """

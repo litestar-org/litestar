@@ -143,6 +143,7 @@ dev = [
   "daphne>=4.0.0",
   "opentelemetry-sdk",
   "structlog",
+  "openapi-spec-validator>=0.9.0",
 ]
 
 docs = [

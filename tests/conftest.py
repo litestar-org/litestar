@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
+import msgspec
 import pytest
 from pytest_lazy_fixtures import lf
 from redis.asyncio import Redis as AsyncRedis
@@ -24,6 +25,7 @@ from time_machine import travel
 from valkey.asyncio import Valkey as AsyncValkey
 from valkey.client import Valkey
 
+from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.base import BaseSessionBackend
 from litestar.middleware.session.client_side import ClientSideSessionBackend, CookieBackendConfig
@@ -336,6 +338,25 @@ async def valkey_client(docker_ip: str, valkey_service: None) -> AsyncGenerator[
 @pytest.fixture(autouse=True)
 def _patch_openapi_config(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("litestar.app.DEFAULT_OPENAPI_CONFIG", OpenAPIConfig(title="Litestar API", version="1.0.0"))
+
+
+@pytest.fixture(autouse=True)
+def validate_generated_openapi_documents(monkeypatch: pytest.MonkeyPatch) -> Generator[list[str], None, None]:
+    build_openapi = OpenAPIPlugin._build_openapi
+    errors: list[str] = []
+
+    def build_and_validate(self: OpenAPIPlugin) -> Any:
+        from openapi_spec_validator import OpenAPIV31SpecValidator, OpenAPIV32SpecValidator
+
+        openapi = build_openapi(self)
+        document = msgspec.json.decode(msgspec.json.encode(openapi.to_schema(), enc_hook=str))
+        validator = OpenAPIV32SpecValidator if document["openapi"].startswith("3.2") else OpenAPIV31SpecValidator
+        errors.extend(error.message for error in validator(document).iter_errors())
+        return openapi
+
+    monkeypatch.setattr(OpenAPIPlugin, "_build_openapi", build_and_validate)
+    yield errors
+    assert not errors, f"generated OpenAPI document violates the OpenAPI specification: {errors}"
 
 
 @pytest.fixture(scope="session", autouse=True)

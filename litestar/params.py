@@ -137,7 +137,8 @@ class KwargDefinition:
     schema_extra: dict[str, Any] | None = field(default=None)
     """Extensions to the generated schema.
 
-    If set, will overwrite the matching fields in the generated schema.
+    If set, will overwrite the matching fields in the generated schema. Keys starting with ``x-`` are emitted as
+    specification extensions of the schema.
 
     .. versionadded:: 2.8.0
     """
@@ -369,7 +370,7 @@ def Body(
             Equivalent to pattern in the OpenAPI specification.
         title: String value used in the title section of the OpenAPI schema for the given parameter.
         schema_extra: Extensions to the generated schema. If set, will overwrite the matching fields in the generated
-            schema.
+            schema. Keys starting with ``x-`` are emitted as specification extensions of the schema.
 
             .. versionadded:: 2.8.0
         schema_component_key: Use this as the key for the reference when creating a component for this type

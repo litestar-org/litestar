@@ -913,7 +913,7 @@ app = Litestar(route_handlers=[get_users])
 """
     )
     openapi = cast("Litestar", module.app).openapi_schema
-    schema = openapi.components.schemas["WithCount_litestar.dto._backend.GetUsersUserResponseBody_"]
+    schema = openapi.components.schemas["WithCount_GetUsersUserResponseBody"]
     assert not_none(schema.properties).keys() == {"count", "data"}
     model_schema = openapi.components.schemas["GetUsersUserResponseBody"]
     assert not_none(model_schema.properties).keys() == {"id", "name"}
