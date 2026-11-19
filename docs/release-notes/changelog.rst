@@ -244,6 +244,23 @@
         :class:`~litestar.plugins.problem_details.ProblemDetailsPlugin`. To document them, set ``error_response`` to
         ``ResponseSpec(ProblemDetails, media_type="application/problem+json")``.
 
+    .. change:: OpenAPI: Load Redoc 3 in the Redoc page
+        :type: bugfix
+        :breaking:
+
+        Fix the page of :class:`~litestar.openapi.plugins.RedocRenderPlugin`, which stayed blank since Redoc 3 was
+        released: the plugin loaded the ``latest`` Redoc bundle as a classic script and called ``Redoc.init``, while
+        the Redoc 3 bundle is an ES module. The page now imports ``init`` from the bundle as a module, and the
+        default ``version`` is ``"v3.1.0"`` instead of ``"latest"``. A ``version`` or ``js_url`` must now refer to a
+        Redoc 3 bundle.
+
+    .. change:: OpenAPI: Update the default versions of Swagger UI and Stoplight Elements
+        :type: misc
+
+        :class:`~litestar.openapi.plugins.SwaggerRenderPlugin` now loads Swagger UI 5.35.0 instead of 5.18.2, which
+        could not render OpenAPI 3.2 documents, and :class:`~litestar.openapi.plugins.StoplightRenderPlugin` loads
+        Stoplight Elements 9.0.29 instead of 7.7.18.
+
     .. change:: Support the HTTP ``QUERY`` method
         :type: feature
 
