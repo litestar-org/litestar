@@ -122,7 +122,10 @@ def test_cors_options_request_with_correct_origin_passes() -> None:
     with create_test_client(handler, cors_config=CORSConfig(allow_origins=["http://testserver.local"])) as client:
         response = client.options("/", headers={"Origin": "http://testserver.local"})
         assert response.status_code == HTTP_204_NO_CONTENT
-        assert response.headers.get("Access-Control-Allow-Methods") == "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
+        assert (
+            response.headers.get("Access-Control-Allow-Methods")
+            == "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, QUERY"
+        )
         assert response.headers.get("Access-Control-Allow-Origin") == "http://testserver.local"
         assert response.headers.get("Vary") == "Origin"
 
@@ -135,7 +138,10 @@ def test_cors_options_request_with_correct_origin_passes_with_allow_all_origins(
     with create_test_client(handler, cors_config=CORSConfig(allow_origins=["*"])) as client:
         response = client.options("/", headers={"Origin": "http://testserver.local"})
         assert response.status_code == HTTP_204_NO_CONTENT
-        assert response.headers.get("Access-Control-Allow-Methods") == "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT"
+        assert (
+            response.headers.get("Access-Control-Allow-Methods")
+            == "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, QUERY"
+        )
         assert response.headers.get("Access-Control-Allow-Origin") == "*"
         assert "Vary" not in response.headers
 

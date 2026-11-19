@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.path_item import create_path_item_for_route, merge_path_item_operations
 from litestar.constants import OPENAPI_JSON_HANDLER_NAME
-from litestar.enums import MediaType
+from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.handlers import get
 from litestar.openapi.plugins import JsonRenderPlugin
@@ -213,7 +213,10 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
         if not isinstance(route, HTTPRoute):
             return
 
-        if any(route_handler.include_in_schema for route_handler in route.route_handler_map.values()):
+        if any(
+            route_handler.include_in_schema and http_method != HttpMethod.QUERY
+            for http_method, route_handler in route.route_handler_map.items()
+        ):
             # Force recompute the schema if a new route is added
             self._openapi = None
             self._openapi_schema = None
