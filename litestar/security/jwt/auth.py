@@ -257,7 +257,9 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             The encoded token formatted for the HTTP headers
         """
         security = self.openapi_components.security_schemes.get(self.openapi_security_scheme_name, None)  # type: ignore[union-attr]
-        return f"{security.scheme} {encoded_token}" if isinstance(security, SecurityScheme) else encoded_token
+        if not isinstance(security, SecurityScheme):
+            return encoded_token
+        return f"{security.scheme or 'Bearer'} {encoded_token}"
 
 
 @dataclass
@@ -470,8 +472,6 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="http",
                     scheme="Bearer",
-                    name=self.key,
-                    security_scheme_in="cookie",
                     bearer_format="JWT",
                     description=self.description,
                 )
@@ -740,7 +740,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
         """
         return OAuthFlow(
             token_url=self.token_url,
-            scopes=self.oauth_scopes,
+            scopes=self.oauth_scopes or {},
         )
 
     @property
@@ -754,11 +754,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
             security_schemes={
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="oauth2",
-                    scheme="Bearer",
-                    name=self.auth_header,
-                    security_scheme_in="header",
                     flows=OAuthFlows(password=self.oauth_flow),
-                    bearer_format="JWT",
                     description=self.description,
                 )
             }

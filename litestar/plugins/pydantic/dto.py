@@ -84,6 +84,10 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
         cls,
         model_type: type[pydantic.BaseModel],
     ) -> Generator[DTOFieldDefinition, None, None]:
+        for model_field in model_type.model_fields.values():
+            if isinstance(extra := model_field.json_schema_extra, dict):
+                extra.pop(DTO_FIELD_META_KEY, None)
+
         model_info = get_model_info(model_type)
         model_fields = model_info.model_fields
         model_field_definitions = model_info.field_definitions
@@ -97,10 +101,6 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
             if field_info := model_fields.get(field_name):
                 # field_info might not exist, since FieldInfo isn't provided by pydantic
                 # for computed fields, but we still generate a FieldDefinition for them
-                extra = field_info.json_schema_extra
-                if isinstance(extra, dict):
-                    extra.pop(DTO_FIELD_META_KEY, None)
-
                 if not is_pydantic_undefined(field_info.default):
                     default = field_info.default
                 elif field_definition.is_optional:

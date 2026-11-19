@@ -694,3 +694,18 @@ parameter and forward it, because :func:`~.handlers.asgi` always passes it.
 .. seealso::
 
     :ref:`usage/routing/handlers:ASGI route handler considerations`
+
+
+OpenAPI: other changes to the generated document
+------------------------------------------------
+
+The following changes apply to documents of existing applications and may require regenerating clients:
+
+- Examples declared in the ``json_schema_extra`` of a Pydantic field are documented in every schema generated from
+  the field, including those of subclasses and of parametrized generic models, instead of only the first one.
+- Component schemas of Pydantic models with ``extra="forbid"`` and no field alias, of msgspec structs with
+  ``forbid_unknown_fields=True`` and of DTOs that forbid unknown fields set ``additionalProperties`` to ``false``.
+- :class:`ipaddress.IPv4Network`, :class:`ipaddress.IPv4Interface`, :class:`ipaddress.IPv6Network` and
+  :class:`ipaddress.IPv6Interface` are documented with the ``ipv4-cidr`` and ``ipv6-cidr`` formats instead of
+  ``ipv4`` and ``ipv6``. Pydantic's ``IPvAnyInterface`` and ``IPvAnyNetwork`` are documented as strings without a
+  format.

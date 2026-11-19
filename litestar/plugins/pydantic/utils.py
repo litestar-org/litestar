@@ -168,23 +168,23 @@ def _create_field_definition_v2(  # noqa: C901
     kwargs: dict[str, Any] = {}
     examples: list[Any] = []
     field_meta: list[Any] = []
+    schema_extra: dict[str, Any] = {}
 
     if json_schema_extra := field_info.json_schema_extra:
         if callable(json_schema_extra):
             raise ValueError("Callables not supported for json_schema_extra")
-        if json_schema_example := json_schema_extra.get("example"):
-            del json_schema_extra["example"]
+        schema_extra = dict(json_schema_extra)
+        if json_schema_example := schema_extra.get("example"):
+            del schema_extra["example"]
             examples.append(json_schema_example)
-        if json_schema_examples := json_schema_extra.get("examples"):
-            del json_schema_extra["examples"]
-            examples.extend(json_schema_examples)  # type: ignore[arg-type]
+        if json_schema_examples := schema_extra.get("examples"):
+            del schema_extra["examples"]
+            examples.extend(json_schema_examples)
     if field_examples := field_info.examples:
         examples.extend(field_examples)
 
     if examples:
-        if not json_schema_extra:
-            json_schema_extra = {}
-        json_schema_extra["examples"] = examples
+        schema_extra["examples"] = examples
 
     if description := field_info.description:
         kwargs["description"] = description
@@ -203,8 +203,8 @@ def _create_field_definition_v2(  # noqa: C901
         else:
             field_meta.append(meta)
 
-    if json_schema_extra:
-        kwargs["schema_extra"] = json_schema_extra
+    if schema_extra:
+        kwargs["schema_extra"] = schema_extra
 
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
 

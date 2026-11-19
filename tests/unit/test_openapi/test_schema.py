@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import Enum, StrEnum, auto
+from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from typing import (
     TYPE_CHECKING,
     Annotated,
@@ -23,6 +24,7 @@ from typing import (
 
 import annotated_types
 import msgspec
+import pydantic
 import pytest
 from msgspec import Struct
 from typing_extensions import TypeAliasType
@@ -35,6 +37,7 @@ from litestar._openapi.schema_generation.schema import (
 )
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.di import NamedDependency, Provide
+from litestar.dto import DataclassDTO, DTOConfig
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.config import OpenAPIConfig
@@ -54,11 +57,13 @@ from litestar.params import (
     PathParameter,
     QueryParameter,
 )
+from litestar.plugins.pydantic import PydanticDTO
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from tests.helpers import get_schema_for_field_definition
 from tests.models import DataclassPerson, DataclassPet
+from tests.unit.test_openapi.utils import request_body_component
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -1118,3 +1123,136 @@ def test_union_of_enums() -> None:
     assert len(schema.one_of) == 2
     components = creator.schema_registry.generate_components_schemas()
     assert {tuple(v.enum or ()) for v in components.values()} == {("red",), ("small",)}
+
+
+def test_struct_forbid_unknown_fields_documents_additional_properties() -> None:
+    class Strict(Struct, forbid_unknown_fields=True, rename="camel"):
+        some_value: int
+
+    class StrictChild(Strict):
+        other: int = 0
+
+    class LenientChild(Strict, forbid_unknown_fields=False):
+        pass
+
+    class Positional(Struct, forbid_unknown_fields=True, array_like=True):
+        some_value: int
+
+    class Tagged(Struct, forbid_unknown_fields=True, tag=True):
+        some_value: int
+
+    @post("/strict")
+    async def strict(data: JSONBody[Strict]) -> Strict:
+        return data
+
+    @post("/strict-child")
+    async def strict_child(data: JSONBody[StrictChild]) -> StrictChild:
+        return data
+
+    @post("/lenient-child")
+    async def lenient_child(data: JSONBody[LenientChild]) -> LenientChild:
+        return data
+
+    @post("/positional")
+    async def positional(data: JSONBody[Positional]) -> Positional:
+        return data
+
+    @post("/tagged")
+    async def tagged(data: JSONBody[Tagged]) -> Tagged:
+        return data
+
+    with create_test_client([strict, strict_child, lenient_child, positional, tagged]) as client:
+        document = client.app.openapi_schema.to_schema()
+
+        assert request_body_component(document, "/strict")["additionalProperties"] is False
+
+        component = request_body_component(document, "/strict-child")
+        assert component["additionalProperties"] is False
+        assert client.post("/strict-child", json={"someValue": 1, "unknown": 1}).status_code == 400
+        assert client.post("/strict-child", json={"someValue": 1}).json().keys() <= component["properties"].keys()
+
+        component = request_body_component(document, "/tagged")
+        tagged_payload = {"type": "Tagged", "some_value": 1}
+        assert component["additionalProperties"] is False
+        assert client.post("/tagged", json={**tagged_payload, "unknown": 1}).status_code == 400
+        assert client.post("/tagged", json=tagged_payload).json().keys() == component["properties"].keys()
+
+        assert "additionalProperties" not in request_body_component(document, "/lenient-child")
+        assert client.post("/lenient-child", json={"someValue": 1, "unknown": 1}).status_code == 201
+
+        assert "additionalProperties" not in request_body_component(document, "/positional")
+
+
+def test_dto_forbid_unknown_fields_documents_additional_properties() -> None:
+    @dataclass
+    class Inner:
+        value: int
+
+    @dataclass
+    class Outer:
+        inner: Inner
+
+    class ForbidModel(pydantic.BaseModel):
+        model_config = pydantic.ConfigDict(extra="forbid")
+        value: int
+
+    @post("/nested", dto=DataclassDTO[Annotated[Outer, DTOConfig(forbid_unknown_fields=True)]], return_dto=None)
+    async def nested(data: JSONBody[Outer]) -> None:
+        return None
+
+    @post("/pydantic", dto=PydanticDTO[ForbidModel], return_dto=None)
+    async def pydantic_dto(data: JSONBody[ForbidModel]) -> None:
+        return None
+
+    with create_test_client([nested, pydantic_dto]) as client:
+        document = client.app.openapi_schema.to_schema()
+        outer = request_body_component(document, "/nested")
+        inner = document["components"]["schemas"][outer["properties"]["inner"]["$ref"].rsplit("/", 1)[-1]]
+
+        assert outer["additionalProperties"] is False
+        assert inner["additionalProperties"] is False
+        assert client.post("/nested", json={"inner": {"value": 1, "unknown": 1}}).status_code == 400
+        assert request_body_component(document, "/pydantic")["additionalProperties"] is False
+
+
+def test_ipaddress_formats_match_served_values() -> None:
+    @dataclass
+    class Addresses:
+        address_v4: IPv4Address
+        interface_v4: IPv4Interface
+        network_v4: IPv4Network
+        address_v6: IPv6Address
+        interface_v6: IPv6Interface
+        network_v6: IPv6Network
+
+    @get("/")
+    async def handler() -> Addresses:
+        return Addresses(
+            address_v4=IPv4Address("192.168.0.1"),
+            interface_v4=IPv4Interface("192.168.0.1/24"),
+            network_v4=IPv4Network("192.168.0.0/24"),
+            address_v6=IPv6Address("2001:db8::1"),
+            interface_v6=IPv6Interface("2001:db8::1/64"),
+            network_v6=IPv6Network("2001:db8::/64"),
+        )
+
+    with create_test_client([handler]) as client:
+        (component,) = client.app.openapi_schema.to_schema()["components"]["schemas"].values()
+        served = client.get("/").json()
+
+    assert served == {
+        "address_v4": "192.168.0.1",
+        "interface_v4": "192.168.0.1/24",
+        "network_v4": "192.168.0.0/24",
+        "address_v6": "2001:db8::1",
+        "interface_v6": "2001:db8::1/64",
+        "network_v6": "2001:db8::/64",
+    }
+    assert component["properties"] == {
+        "address_v4": {"type": "string", "format": "ipv4"},
+        "interface_v4": {"type": "string", "format": "ipv4-cidr"},
+        "network_v4": {"type": "string", "format": "ipv4-cidr"},
+        "address_v6": {"type": "string", "format": "ipv6"},
+        "interface_v6": {"type": "string", "format": "ipv6-cidr"},
+        "network_v6": {"type": "string", "format": "ipv6-cidr"},
+    }
