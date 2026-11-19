@@ -62,17 +62,6 @@ class ErrorMessage(TypedDict):
     source: NotRequired[Literal["body"] | ParamType]
 
 
-MSGSPEC_CONSTRAINT_FIELDS = (
-    "gt",
-    "ge",
-    "lt",
-    "le",
-    "multiple_of",
-    "pattern",
-    "min_length",
-    "max_length",
-)
-
 ERR_RE = re.compile(r"`\$\.(.+)`$")
 
 DEFAULT_TYPE_DECODERS = [
@@ -106,7 +95,6 @@ class SignatureModel(Struct):
     _data_dto: ClassVar[type[AbstractDTO] | None]
     _dependency_name_set: ClassVar[set[str]]
     _fields: ClassVar[dict[str, FieldDefinition]]
-    _return_annotation: ClassVar[Any]
 
     @classmethod
     def _create_exception(cls, connection: ASGIConnection, messages: list[ErrorMessage]) -> Exception:
@@ -277,7 +265,6 @@ class SignatureModel(Struct):
             bases=(cls,),
             module=getattr(fn, "__module__", None),
             namespace={
-                "_return_annotation": parsed_signature.return_type.annotation,
                 "_dependency_name_set": dependency_names,
                 "_fields": parsed_signature.parameters,
                 "_data_dto": data_dto,

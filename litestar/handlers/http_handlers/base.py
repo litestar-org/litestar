@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import contextlib
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, TypedDict, cast
+from typing import TYPE_CHECKING, AnyStr, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
@@ -88,11 +88,6 @@ if TYPE_CHECKING:
 __all__ = ("HTTPRouteHandler",)
 
 
-class ResponseHandlerMap(TypedDict):
-    default_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType
-    response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType
-
-
 class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
         "_default_response_handler",
@@ -103,7 +98,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_resolved_before_request",
         "_response_class",
         "_response_type_handler",
-        "_sync_to_thread",
         "after_request",
         "after_response",
         "background",
@@ -265,7 +259,6 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         self.http_methods = normalize_http_method(http_methods=http_method)
         self.status_code = status_code or get_default_status_code(http_methods=self.http_methods)
-        self._sync_to_thread = sync_to_thread
 
         if not is_async_callable(fn):
             if sync_to_thread is None:

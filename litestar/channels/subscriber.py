@@ -37,7 +37,6 @@ class Subscriber:
         backlog_strategy: BacklogStrategy = "backoff",
     ) -> None:
         self._task: asyncio.Task | None = None
-        self._plugin = plugin
         self._backend = plugin._backend
         self._queue: Queue[bytes | None] | AsyncDeque[bytes | None]
 

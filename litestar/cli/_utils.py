@@ -44,11 +44,6 @@ if TYPE_CHECKING:
 
     from click import Command as BaseCommand
 
-    try:
-        from rich_click import RichContext
-    except ImportError:
-        RichContext = Context  # type: ignore[assignment,misc]
-
     from litestar.openapi import OpenAPIConfig
     from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.types import AnyCallable
@@ -288,14 +283,6 @@ def _wrap_commands(commands: Iterable[Command]) -> None:
             _wrap_commands(command.commands.values())  # pyright: ignore[reportAttributeAccessIssue]
         elif command.callback:
             command.callback = _inject_args(command.callback)
-
-
-def _bool_from_env(key: str, default: bool = False) -> bool:
-    value = getenv(key)
-    if not value:
-        return default
-    value = value.lower()
-    return value in ("true", "1")
 
 
 def _validate_app_path(app_path: str) -> tuple[ModuleType, str]:
