@@ -53,7 +53,7 @@ def _build_preflight_headers(
     if allow_methods:
         headers["Access-Control-Allow-Methods"] = ", ".join(
             sorted(
-                {"DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"}
+                {"DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "QUERY"}
                 if "*" in allow_methods
                 else set(allow_methods)
             )

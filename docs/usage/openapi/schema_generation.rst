@@ -233,6 +233,8 @@ document, set ``openapi_version``:
 
 With OpenAPI 3.2:
 
+- Handlers of the ``QUERY`` HTTP method, created with :func:`query <litestar.handlers.query>`, are documented. An
+  OpenAPI 3.1 document cannot describe them, so they are left out of it.
 - The events of a handler returning :class:`ServerSentEvent <litestar.response.ServerSentEvent>`, and the items of a
   :class:`Stream <litestar.response.Stream>` of JSON Lines, are described with ``itemSchema``.
 - The URI of the document can be set with ``self_uri``.

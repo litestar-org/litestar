@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVarTuple, get_args, get_origin
 
+from litestar.enums import HttpMethod
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.typing import FieldDefinition, TypeAliasTypes
@@ -17,6 +18,7 @@ __all__ = (
     "SEPARATORS_CLEANUP_PATTERN",
     "default_operation_id_creator",
     "default_schema_component_name_creator",
+    "documents_operation",
     "get_parametrized_generic_class",
     "is_recursive_type_alias",
     "is_type_alias",
@@ -99,6 +101,15 @@ def supports_openapi_3_2(openapi_version: str) -> bool:
     """Return whether ``openapi_version`` is version 3.2 of the OpenAPI Specification or newer."""
     major, minor, *_ = openapi_version.split(".")
     return (int(major), int(minor)) >= (3, 2)
+
+
+def documents_operation(route_handler: HTTPRouteHandler, http_method: str, openapi_version: str) -> bool:
+    """Return whether a document of ``openapi_version`` documents the operation ``route_handler`` serves for
+    ``http_method``. OpenAPI 3.1 cannot describe ``QUERY`` operations.
+    """
+    return route_handler.include_in_schema and (
+        http_method != HttpMethod.QUERY or supports_openapi_3_2(openapi_version)
+    )
 
 
 def is_type_alias(annotation: Any) -> bool:

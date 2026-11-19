@@ -244,6 +244,22 @@
         :class:`~litestar.plugins.problem_details.ProblemDetailsPlugin`. To document them, set ``error_response`` to
         ``ResponseSpec(ProblemDetails, media_type="application/problem+json")``.
 
+    .. change:: Support the HTTP ``QUERY`` method
+        :type: feature
+
+        Add support for the HTTP ``QUERY`` method, a safe and idempotent method that carries a request body. Handlers
+        are created with the new :func:`~litestar.handlers.query` decorator or ``@route(http_method="QUERY")``, and
+        ``HttpMethod.QUERY`` is available.
+
+        ``QUERY`` is a safe method for the CSRF middleware by default, and is included in the
+        ``Access-Control-Allow-Methods`` header when CORS allows all methods. ``QUERY`` handlers are documented in
+        OpenAPI 3.2 documents and left out of OpenAPI 3.1 documents, which cannot describe them.
+
+        As :rfc:`10008` requires, a ``QUERY`` request whose ``Content-Type`` is missing is answered with ``400``,
+        and one whose ``Content-Type`` does not match the body the handler declares with ``415`` and an
+        ``Accept-Query`` header. The cache key of a ``QUERY`` request includes a digest of the request body, its media
+        type and its content coding, so responses to different queries are cached separately.
+
     .. change:: OpenAPI: Keep ``HEAD`` operations of routes sharing a path
         :type: bugfix
 

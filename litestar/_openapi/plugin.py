@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.path_item import OPERATION_FIELDS, PathItemFactory, merge_path_item_operations
 from litestar._openapi.schema_generation.unions import use_any_of_if_overlapping
-from litestar._openapi.utils import supports_openapi_3_2
+from litestar._openapi.utils import documents_operation, supports_openapi_3_2
 from litestar.constants import OPENAPI_JSON_HANDLER_NAME
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
@@ -327,7 +327,7 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
     def _check_documented_operations(self, route: HTTPRoute) -> None:
         template = _PATH_PARAMETER_PATTERN.sub("{}", route.path_format or "/")
         for http_method, route_handler in route.route_handler_map.items():
-            if not route_handler.include_in_schema:
+            if not documents_operation(route_handler, http_method, self.openapi_config.openapi_version):
                 continue
             other_path, other_handler = self._documented_operations.setdefault(
                 (template, http_method), (route.path, route_handler)

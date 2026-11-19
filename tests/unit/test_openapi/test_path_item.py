@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from litestar import Controller, HttpMethod, Litestar, Request, Router, delete, get, head, post, route
+from litestar import Controller, HttpMethod, Litestar, Request, Router, delete, get, head, post, query, route
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.path_item import PathItemFactory, merge_path_item_operations
 from litestar._openapi.utils import default_operation_id_creator
@@ -248,7 +248,6 @@ def test_merge_path_item_operations_operation_set_on_both_raises(method: HttpMet
         not in [
             *HttpMethod,
             "TRACE",  # remove once https://github.com/litestar-org/litestar/pull/3294 is merged
-            "QUERY",
         ]
     ],
 )
@@ -290,6 +289,20 @@ def test_same_method_on_paths_differing_only_in_path_parameters_raises(
 ) -> None:
     with pytest.raises(ImproperlyConfiguredException, match=re.escape(message)):
         build_document(*handlers)
+
+
+def test_query_handlers_on_same_path_format_are_only_checked_when_documented() -> None:
+    @query("/search/{item_id:int}")
+    async def search_by_int(item_id: FromPath[int]) -> None:
+        return None
+
+    @query("/search/{item_id:str}")
+    async def search_by_str(item_id: FromPath[str]) -> None:
+        return None
+
+    assert build_document(search_by_int, search_by_str)["paths"] == {}
+    with pytest.raises(ImproperlyConfiguredException, match="both serve QUERY on paths"):
+        build_document(search_by_int, search_by_str, openapi_version="3.2.0")
 
 
 def test_different_methods_on_same_path_template_are_documented() -> None:

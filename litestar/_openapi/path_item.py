@@ -7,6 +7,7 @@ from litestar._openapi.operation import describe_operation
 from litestar._openapi.parameters import ParameterFactory
 from litestar._openapi.request_body import create_request_body
 from litestar._openapi.responses import ResponseFactory
+from litestar._openapi.utils import documents_operation
 from litestar.enums import HttpMethod
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import PathItem
@@ -37,7 +38,7 @@ class PathItemFactory:
             A PathItem instance.
         """
         for http_method, route_handler in self.route.route_handler_map.items():
-            if not route_handler.include_in_schema:
+            if not documents_operation(route_handler, http_method, self.context.openapi_config.openapi_version):
                 continue
 
             operation = describe_operation(

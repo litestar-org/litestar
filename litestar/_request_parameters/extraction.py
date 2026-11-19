@@ -13,8 +13,10 @@ from litestar._parsers import (
 )
 from litestar.datastructures import Headers
 from litestar.datastructures.upload_file import UploadFile
-from litestar.enums import ParamType, RequestEncodingType
+from litestar.enums import HttpMethod, ParamType, RequestEncodingType
+from litestar.exceptions import ClientException, HTTPException
 from litestar.params import BodyKwarg
+from litestar.status_codes import HTTP_415_UNSUPPORTED_MEDIA_TYPE
 from litestar.types import Empty
 from litestar.utils import make_non_optional_union
 from litestar.utils.predicates import is_non_string_sequence, is_optional_union
@@ -28,7 +30,41 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.typing import FieldDefinition
 
-__all__ = ("RequestParameterExtractor",)
+__all__ = ("RequestParameterExtractor", "check_query_content_type")
+
+_MEDIA_TYPE_ALIASES: dict[str, frozenset[str]] = {
+    RequestEncodingType.MESSAGEPACK: frozenset(
+        {RequestEncodingType.MESSAGEPACK, "application/msgpack", "application/x-msgpack"}
+    ),
+}
+
+
+def check_query_content_type(connection: ASGIConnection[Any, Any, Any, Any], media_type: str | None = None) -> None:
+    """Fail a ``QUERY`` request whose ``Content-Type`` is missing, or does not match ``media_type``.
+
+    Args:
+        connection: The connection of the request.
+        media_type: The media type the request content is decoded as, if the content is decoded.
+
+    Raises:
+        ClientException: If the request has no ``Content-Type``.
+        HTTPException: With status ``415`` and an ``Accept-Query`` header, if the ``Content-Type`` does not match
+            ``media_type``.
+    """
+    if connection.scope.get("method") != HttpMethod.QUERY:
+        return
+    received = connection.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    if not received:
+        raise ClientException("A QUERY request must declare the media type of its content in 'Content-Type'")
+    if media_type is None or received in _MEDIA_TYPE_ALIASES.get(media_type, frozenset({media_type})):
+        return
+    if media_type == RequestEncodingType.JSON and received.endswith("+json"):
+        return
+    raise HTTPException(
+        status_code=HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        detail=f"Unsupported media type {received!r} for this QUERY request, expected {str(media_type)!r}",
+        headers={"Accept-Query": str(media_type)},
+    )
 
 
 @lru_cache(1024)
@@ -258,17 +294,25 @@ def create_request_body_extractor(
     kwarg_definition = field_definition.kwarg_definition
     media_type = kwarg_definition.media_type if isinstance(kwarg_definition, BodyKwarg) else RequestEncodingType.JSON
 
+    extractor: Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]
     if media_type == RequestEncodingType.MULTI_PART:
-        return create_multipart_extractor(
+        extractor = create_multipart_extractor(
             field_definition=field_definition, is_data_optional=is_data_optional, data_dto=data_dto
         )
-    if media_type == RequestEncodingType.URL_ENCODED:
-        return create_url_encoded_data_extractor(is_data_optional=is_data_optional, data_dto=data_dto)
-    if data_dto:
-        return create_dto_extractor(data_dto=data_dto)
-    if media_type == RequestEncodingType.MESSAGEPACK:
-        return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor)
-    return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor)
+    elif media_type == RequestEncodingType.URL_ENCODED:
+        extractor = create_url_encoded_data_extractor(is_data_optional=is_data_optional, data_dto=data_dto)
+    elif data_dto:
+        extractor = create_dto_extractor(data_dto=data_dto)
+    elif media_type == RequestEncodingType.MESSAGEPACK:
+        extractor = cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor)
+    else:
+        extractor = cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor)
+
+    async def checked_extractor(connection: ASGIConnection[Any, Any, Any, Any]) -> Any:
+        check_query_content_type(connection, media_type)
+        return await extractor(connection)
+
+    return checked_extractor
 
 
 def create_dto_extractor(
