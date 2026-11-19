@@ -56,6 +56,42 @@ def test_type_decoders_apply_to_request_parameters_of_handler_and_dependency() -
         assert client.get("/?token=abc").json() == {"token": "abc", "length": 3}
 
 
+def test_type_decoders_of_two_handlers_for_one_type() -> None:
+    class Token:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    @get("/upper", type_decoders=[(lambda t: t is Token, lambda t, v: t(v.upper()))])
+    async def upper(token: FromQuery[Token]) -> str:
+        return token.value
+
+    @get("/lower", type_decoders=[(lambda t: t is Token, lambda t, v: t(v.lower()))])
+    async def lower(token: FromQuery[Token]) -> str:
+        return token.value
+
+    with TestClient(Litestar([upper, lower], openapi_config=None)) as client:
+        assert client.get("/upper?token=aBc").text == "ABC"
+        assert client.get("/lower?token=aBc").text == "abc"
+
+
+def test_type_decoder_of_other_handler_not_applied() -> None:
+    class Token:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    @get("/with", type_decoders=[(lambda t: t is Token, lambda t, v: t(v))])
+    async def with_decoder(token: FromQuery[Token]) -> str:
+        return token.value
+
+    @get("/without")
+    async def without_decoder(token: FromQuery[Token]) -> str:
+        return token.value
+
+    with TestClient(Litestar([with_decoder, without_decoder], openapi_config=None)) as client:
+        assert client.get("/with?token=abc").text == "abc"
+        assert client.get("/without?token=abc").status_code == 400
+
+
 @pytest.mark.parametrize(
     "query", ["?token=abc&page=1", "?token=abc&page=x", "?token=abc"], ids=["valid", "invalid", "missing"]
 )

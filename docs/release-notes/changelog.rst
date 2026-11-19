@@ -6,6 +6,13 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Apply the ``type_decoders`` of a handler to that handler only
+        :type: bugfix
+        :pr: 5227
+
+        Fix a bug that would leak the type decoder of a request parameter to other
+        handlers without that decoder.
+
     .. change:: Run all parts of sync generator dependencies in a worker threads
         :type: fix
         :breaking:

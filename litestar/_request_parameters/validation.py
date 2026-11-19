@@ -72,7 +72,12 @@ DEFAULT_TYPE_DECODERS = [
 ]
 
 
-def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[Any, Any], Any]) -> Any:
+def _deserializer(
+    target_type: Any,
+    value: Any,
+    type_decoders: TypeDecodersSequence,
+    default_deserializer: Callable[[Any, Any], Any],
+) -> Any:
     if isinstance(value, DTOData):
         return value
 
@@ -86,7 +91,7 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
         else:
             raise exc
 
-    if decoder := getattr(target_type, "_decoder", None):
+    if decoder := _get_decoder_for_type(target_type, type_decoders):
         return decoder(target_type, value)
 
     return default_deserializer(target_type, value)
@@ -129,11 +134,7 @@ def _create_meta(kwarg_definition: KwargDefinition) -> Meta:
     return Meta(**meta_kwargs)
 
 
-def _create_annotation(
-    field_definition: FieldDefinition,
-    type_decoders: TypeDecodersSequence,
-    meta_data: Meta | None = None,
-) -> Any:
+def _create_annotation(field_definition: FieldDefinition, meta_data: Meta | None = None) -> Any:
     annotation = _normalize_annotation(field_definition=field_definition)
 
     if annotation is Any:
@@ -141,19 +142,11 @@ def _create_annotation(
 
     if field_definition.is_union:
         types = [
-            _create_annotation(
-                field_definition=inner_type,
-                type_decoders=type_decoders,
-                meta_data=meta_data,
-            )
+            _create_annotation(field_definition=inner_type, meta_data=meta_data)
             for inner_type in field_definition.inner_types
             if not inner_type.is_none_type
         ]
         return Optional[Union[tuple(types)]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore # noqa: UP045
-
-    if decoder := _get_decoder_for_type(annotation, type_decoders=type_decoders):
-        # FIXME: temporary (hopefully) hack, see: https://github.com/jcrist/msgspec/issues/497
-        setattr(annotation, "_decoder", decoder)
 
     if meta_data:
         annotation = Annotated[annotation, meta_data]
@@ -169,11 +162,10 @@ class RequestParameterValidationError(Exception):
         """One message per missing or invalid parameter"""
 
 
-def _annotation_for(field_definition: FieldDefinition, type_decoders: TypeDecodersSequence) -> Any:
+def _annotation_for(field_definition: FieldDefinition) -> Any:
     return _create_annotation(
         # the name of a declaring parameter must not decide how the value is validated
         field_definition=dataclasses.replace(field_definition, name=""),
-        type_decoders=type_decoders,
         meta_data=_create_meta(field_definition.kwarg_definition) if field_definition.kwarg_definition else None,
     )
 
@@ -205,15 +197,12 @@ class RequestParameterValidator:
             type_decoders: The type decoders applied to each parameter
             skip_body_validation: Pass the body on as it is given, because a DTO decodes it
         """
-        decoders = [*(type_decoders or []), *DEFAULT_TYPE_DECODERS]
         fields: list[tuple[str, RequestParameterDefinition]] = []
         struct_fields: list[tuple[str, Any, Any]] = []
         for index, definition in enumerate(definitions):
             attribute = f"p{index}"
             annotation = (
-                Any
-                if definition.is_body and skip_body_validation
-                else _annotation_for(definition.field_definition, decoders)
+                Any if definition.is_body and skip_body_validation else _annotation_for(definition.field_definition)
             )
             fields.append((attribute, definition))
             struct_fields.append((attribute, annotation, _struct_default(definition.field_definition)))
@@ -226,7 +215,9 @@ class RequestParameterValidator:
         # built for 'convert' on every request.
         self._struct = defstruct("RequestParameters", struct_fields, kw_only=True, rename=dict(self._attribute_keys))
         self._deserializer = partial(
-            _deserializer, default_deserializer=partial(default_deserializer, type_decoders=type_decoders)
+            _deserializer,
+            type_decoders=[*(type_decoders or []), *DEFAULT_TYPE_DECODERS],
+            default_deserializer=partial(default_deserializer, type_decoders=type_decoders),
         )
 
     def validate(self, raw: Mapping[str, Any]) -> dict[str, Any]:
