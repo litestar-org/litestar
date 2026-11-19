@@ -1,12 +1,14 @@
+import copy
 from collections.abc import Callable
 from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import Annotated, Any, Optional, Union
+from typing import Annotated, Any, Generic, Optional, TypeVar, Union
 
 import annotated_types
 import pydantic as pydantic_v2
 import pytest
+from pydantic.alias_generators import to_camel
 
 from litestar import Litestar, get, post
 from litestar._openapi.schema_generation.schema import SchemaCreator
@@ -14,17 +16,20 @@ from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.params import JSONBody
-from litestar.plugins.pydantic import PydanticPlugin, PydanticSchemaPlugin
+from litestar.plugins.pydantic import PydanticDTO, PydanticPlugin, PydanticSchemaPlugin
 from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
 from tests.helpers import get_schema_for_field_definition
+from tests.unit.test_openapi.utils import request_body_component
 from tests.unit.test_plugins.test_pydantic.models import (
     PydanticDataclassPerson,
     PydanticPerson,
 )
 
 from . import PydanticVersion
+
+T = TypeVar("T")
 
 AnyBaseModelType = type[pydantic_v2.BaseModel]
 
@@ -608,3 +613,232 @@ def test_create_for_computed_field(prefer_alias: bool) -> None:
     assert property_two.description == "a description"
     assert property_two.title == "a title"
     assert property_two.read_only
+
+
+ExampleT = TypeVar("ExampleT")
+
+
+class ExampleBase(pydantic_v2.BaseModel):
+    value: int = pydantic_v2.Field(json_schema_extra={"example": 5})
+
+
+class ExampleChild(ExampleBase):
+    other: int = 0
+
+
+class ExampleGeneric(pydantic_v2.BaseModel, Generic[ExampleT]):
+    value: int = pydantic_v2.Field(json_schema_extra={"example": 5})
+    item: ExampleT
+
+
+class ExampleDTOModel(pydantic_v2.BaseModel):
+    value: int = pydantic_v2.Field(json_schema_extra={"example": 5})
+
+
+@pytest.mark.parametrize(
+    "field_kwargs, expected",
+    [
+        ({"json_schema_extra": {"example": 5}}, {"type": "integer", "examples": [5]}),
+        ({"json_schema_extra": {"examples": [5, 6]}}, {"type": "integer", "examples": [5, 6]}),
+        ({"json_schema_extra": {"example": 5, "examples": [6]}}, {"type": "integer", "examples": [5, 6]}),
+        (
+            {"json_schema_extra": {"example": 5, "deprecated": True}},
+            {"type": "integer", "deprecated": True, "examples": [5]},
+        ),
+        (
+            {"examples": [7], "json_schema_extra": {"deprecated": True}},
+            {"type": "integer", "deprecated": True, "examples": [7]},
+        ),
+        ({"examples": [7], "json_schema_extra": {"example": 5}}, {"type": "integer", "examples": [5, 7]}),
+    ],
+    ids=["example", "examples", "both", "other-keys", "field-examples", "field-examples-and-example"],
+)
+def test_schema_generation_does_not_mutate_json_schema_extra(
+    field_kwargs: dict[str, Any], expected: dict[str, Any]
+) -> None:
+    class Model(pydantic_v2.BaseModel):
+        value: int = pydantic_v2.Field(**copy.deepcopy(field_kwargs))
+
+    @get("/", sync_to_thread=False)
+    def handler() -> Model:
+        return Model(value=1)
+
+    json_schema_extra = Model.model_fields["value"].json_schema_extra
+    before = copy.deepcopy(json_schema_extra)
+
+    first = Litestar([handler]).openapi_schema.to_schema()
+    second = Litestar([handler]).openapi_schema.to_schema()
+
+    (component,) = first["components"]["schemas"].values()
+    assert component["properties"]["value"] == expected
+    assert second == first
+    assert Model.model_fields["value"].json_schema_extra is json_schema_extra
+    assert json_schema_extra == before
+
+
+def test_json_schema_extra_examples_are_documented_for_every_usage() -> None:
+    @get("/base", sync_to_thread=False)
+    def base() -> ExampleBase:
+        return ExampleBase(value=1)
+
+    @get("/child", sync_to_thread=False)
+    def child() -> ExampleChild:
+        return ExampleChild(value=1)
+
+    @get("/int", sync_to_thread=False)
+    def generic_int() -> ExampleGeneric[int]:
+        return ExampleGeneric[int](value=1, item=1)
+
+    @get("/str", sync_to_thread=False)
+    def generic_str() -> ExampleGeneric[str]:
+        return ExampleGeneric[str](value=1, item="a")
+
+    @get("/dto", return_dto=PydanticDTO[ExampleDTOModel], sync_to_thread=False)
+    def dto() -> ExampleDTOModel:
+        return ExampleDTOModel(value=1)
+
+    @post("/plain", sync_to_thread=False)
+    def plain(data: JSONBody[ExampleDTOModel]) -> None:
+        return None
+
+    schema = Litestar([base, child, generic_int, generic_str, dto, plain]).openapi_schema.to_schema()
+    values = {name: component["properties"]["value"] for name, component in schema["components"]["schemas"].items()}
+
+    assert len(values) == 6
+    assert all(value == {"type": "integer", "examples": [5]} for value in values.values()), values
+    assert ExampleBase.model_fields["value"].json_schema_extra == {"example": 5}
+    assert ExampleGeneric.model_fields["value"].json_schema_extra == {"example": 5}
+    assert ExampleDTOModel.model_fields["value"].json_schema_extra == {"example": 5}
+
+
+def test_extra_forbid_documents_additional_properties() -> None:
+    class Forbid(pydantic_v2.BaseModel):
+        model_config = pydantic_v2.ConfigDict(extra="forbid")
+        value: int
+
+        @pydantic_v2.computed_field  # type: ignore[prop-decorator]
+        @property
+        def double(self) -> int:
+            return self.value * 2
+
+    class ForbidChild(Forbid):
+        other: int = 0
+
+    class AllowChild(Forbid):
+        model_config = pydantic_v2.ConfigDict(extra="allow")
+
+    class Ignore(pydantic_v2.BaseModel):
+        value: int
+
+    class GenericForbid(pydantic_v2.BaseModel, Generic[T]):
+        model_config = pydantic_v2.ConfigDict(extra="forbid")
+        value: T
+
+    @post("/forbid")
+    async def forbid(data: JSONBody[Forbid]) -> Forbid:
+        return data
+
+    @post("/forbid-child")
+    async def forbid_child(data: JSONBody[ForbidChild]) -> ForbidChild:
+        return data
+
+    @post("/generic-forbid")
+    async def generic_forbid(data: JSONBody[GenericForbid[int]]) -> GenericForbid[int]:
+        return data
+
+    @post("/allow-child")
+    async def allow_child(data: JSONBody[AllowChild]) -> AllowChild:
+        return data
+
+    @post("/ignore")
+    async def ignore(data: JSONBody[Ignore]) -> Ignore:
+        return data
+
+    handlers = [forbid, forbid_child, generic_forbid, allow_child, ignore]
+
+    with create_test_client(handlers) as client:
+        document = client.app.openapi_schema.to_schema()
+
+        assert request_body_component(document, "/forbid")["additionalProperties"] is False
+
+        for path in ("/forbid-child", "/generic-forbid"):
+            component = request_body_component(document, path)
+            assert component["additionalProperties"] is False
+            assert client.post(path, json={"value": 1, "unknown": 1}).status_code == 400
+            assert client.post(path, json={"value": 1}).json().keys() <= component["properties"].keys()
+
+        for path in ("/allow-child", "/ignore"):
+            assert "additionalProperties" not in request_body_component(document, path)
+            assert client.post(path, json={"value": 1, "unknown": 1}).status_code == 201
+
+
+def test_extra_forbid_with_field_aliases_documents_no_additional_properties() -> None:
+    class Validation(pydantic_v2.BaseModel):
+        model_config = pydantic_v2.ConfigDict(extra="forbid")
+        value: int = pydantic_v2.Field(default=1, validation_alias="wireValue")
+
+    generated_model: Any = pydantic_v2.create_model(
+        "Generated",
+        __config__=pydantic_v2.ConfigDict(extra="forbid", alias_generator=to_camel),
+        user_name=(str, "x"),
+    )
+
+    class PopulateByName(pydantic_v2.BaseModel):
+        model_config = pydantic_v2.ConfigDict(extra="forbid", alias_generator=to_camel, populate_by_name=True)
+        user_name: str = "x"
+
+    class ValidateByName(pydantic_v2.BaseModel):
+        model_config = pydantic_v2.ConfigDict(extra="forbid", alias_generator=to_camel, validate_by_name=True)
+        user_name: str = "x"
+
+    @post("/validation")
+    async def validation(data: JSONBody[Validation]) -> Validation:
+        return data
+
+    @post("/generated")
+    async def generated(data: JSONBody[generated_model]) -> None:
+        return None
+
+    @post("/populate-by-name")
+    async def populate_by_name(data: JSONBody[PopulateByName]) -> None:
+        return None
+
+    @post("/validate-by-name")
+    async def validate_by_name(data: JSONBody[ValidateByName]) -> None:
+        return None
+
+    with create_test_client([validation, generated, populate_by_name, validate_by_name]) as client:
+        document = client.app.openapi_schema.to_schema()
+
+        for path in ("/validation", "/generated", "/populate-by-name", "/validate-by-name"):
+            assert "additionalProperties" not in request_body_component(document, path)
+        assert client.post("/validation", json={"wireValue": 2}).json() == {"value": 2}
+        for path in ("/populate-by-name", "/validate-by-name"):
+            assert client.post(path, json={"userName": "a"}).status_code == 201
+            assert client.post(path, json={"user_name": "a"}).status_code == 201
+
+
+def test_ip_any_interface_and_network_document_no_format() -> None:
+    class Model(pydantic_v2.BaseModel):
+        address: pydantic_v2.IPvAnyAddress
+        interface: pydantic_v2.IPvAnyInterface
+        network: pydantic_v2.IPvAnyNetwork
+
+    @post("/")
+    async def handler(data: JSONBody[Model]) -> Model:
+        return data
+
+    payload = {"address": "192.168.0.1", "interface": "2001:db8::1/64", "network": "192.168.0.0/24"}
+
+    with create_test_client([handler]) as client:
+        (component,) = client.app.openapi_schema.to_schema()["components"]["schemas"].values()
+        assert client.post("/", json=payload).json() == payload
+
+    assert component["properties"]["interface"] == {"type": "string"}
+    assert component["properties"]["network"] == {"type": "string"}
+    assert component["properties"]["address"] == {
+        "oneOf": [
+            {"type": "string", "format": "ipv4", "description": "IPv4 address"},
+            {"type": "string", "format": "ipv6", "description": "IPv6 address"},
+        ]
+    }

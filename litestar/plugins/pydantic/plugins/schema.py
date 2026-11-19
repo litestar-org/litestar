@@ -38,34 +38,8 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
             ),
         ]
     ),
-    pydantic.IPvAnyInterface: Schema(
-        one_of=[
-            Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.IPV4,
-                description="IPv4 interface",
-            ),
-            Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.IPV6,
-                description="IPv6 interface",
-            ),
-        ]
-    ),
-    pydantic.IPvAnyNetwork: Schema(
-        one_of=[
-            Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.IPV4,
-                description="IPv4 network",
-            ),
-            Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.IPV6,
-                description="IPv6 network",
-            ),
-        ]
-    ),
+    pydantic.IPvAnyInterface: Schema(type=OpenAPIType.STRING),
+    pydantic.IPvAnyNetwork: Schema(type=OpenAPIType.STRING),
     pydantic.Json: Schema(type=OpenAPIType.OBJECT, format=OpenAPIFormat.JSON_POINTER),
     pydantic.NameEmail: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"),
     pydantic.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
@@ -114,6 +88,12 @@ if int(pydantic.version.version_short().split(".")[1]) >= 10:
 
 
 _supported_types = (pydantic.BaseModel, *PYDANTIC_TYPE_MAP.keys())
+
+
+def _has_aliased_fields(model: type[pydantic.BaseModel]) -> bool:
+    return any(
+        field.alias or field.validation_alias or field.serialization_alias for field in model.model_fields.values()
+    ) or any(field.alias for field in model.model_computed_fields.values())
 
 
 class PydanticSchemaPlugin(OpenAPISchemaPlugin):
@@ -170,10 +150,14 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             )
             return schema_creator.for_field_definition(root_field_def)
 
-        return schema_creator.create_component_schema(
+        schema = schema_creator.create_component_schema(
             field_definition,
             required=sorted(f.name for f in model_info.field_definitions.values() if f.is_required),
             property_fields=model_info.field_definitions,
             title=model_info.title,
             examples=None if model_info.example is None else [model_info.example],
         )
+        model = field_definition.annotation
+        if model.model_config.get("extra") == "forbid" and not _has_aliased_fields(model):
+            schema.additional_properties = False
+        return schema

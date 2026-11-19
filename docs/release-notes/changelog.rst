@@ -6,6 +6,51 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: OpenAPI: Document IP networks and interfaces with the ``ipv4-cidr`` and ``ipv6-cidr`` formats
+        :type: bugfix
+        :issue: 5049
+        :breaking:
+
+        :class:`ipaddress.IPv4Network`, :class:`ipaddress.IPv4Interface`, :class:`ipaddress.IPv6Network` and
+        :class:`ipaddress.IPv6Interface` were documented with the ``ipv4`` and ``ipv6`` formats, which their values,
+        such as ``192.168.0.0/24``, do not satisfy. They are now documented with the ``ipv4-cidr`` and ``ipv6-cidr``
+        formats of the OpenAPI format registry, available as ``OpenAPIFormat.IPV4_CIDR`` and
+        ``OpenAPIFormat.IPV6_CIDR``. Pydantic's ``IPvAnyInterface`` and ``IPvAnyNetwork`` are documented as strings
+        without a format. IP addresses keep the ``ipv4`` and ``ipv6`` formats.
+
+    .. change:: OpenAPI: Document models that forbid unknown fields with ``additionalProperties: false``
+        :type: bugfix
+        :issue: 4280
+        :breaking:
+
+        The schemas of Pydantic models configured with ``extra="forbid"`` and of msgspec structs defined with
+        ``forbid_unknown_fields=True`` did not state that unknown fields are rejected. Their component schemas now set
+        ``additionalProperties`` to ``false``. This includes the schemas of DTOs that forbid unknown fields. Models
+        that ignore or allow unknown fields are documented as before. So are Pydantic models that declare a field
+        alias: their schema does not always name a field the way requests and responses do, and forbidding
+        additional properties there would reject the names actually used.
+
+    .. change:: OpenAPI: Do not modify the ``json_schema_extra`` of Pydantic fields
+        :type: bugfix
+        :breaking:
+
+        Fix a bug where generating the schema of a Pydantic model removed ``example`` and ``examples`` from the
+        ``json_schema_extra`` of its fields, or wrote the merged examples back into it. The examples were documented
+        the first time a field was read and were missing, or repeated, every time after that: for a subclass
+        inheriting the field, for a second parametrization of a generic model, for a model also used through
+        ``PydanticDTO``, and for every further application created in the same process. The model is no longer
+        modified and its examples are documented wherever it is used.
+
+    .. change:: OpenAPI: Emit valid security schemes for ``JWTCookieAuth`` and ``OAuth2PasswordBearerAuth``
+        :type: bugfix
+        :issue: 3642
+
+        Fix the security schemes generated for :class:`~litestar.security.jwt.JWTCookieAuth` and
+        :class:`~litestar.security.jwt.OAuth2PasswordBearerAuth`, which did not validate against the OpenAPI
+        specification. The ``http`` scheme of ``JWTCookieAuth`` no longer carries ``in`` and ``name``. The ``oauth2``
+        scheme of ``OAuth2PasswordBearerAuth`` no longer carries ``scheme``, ``bearerFormat``, ``in`` and ``name``,
+        and its password flow always includes ``scopes``, which is empty if ``oauth_scopes`` is not set.
+
     .. change:: Drop reserved keyword arguments in handlers and DI
         :type: feature
         :breaking:
