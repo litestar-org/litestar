@@ -6,7 +6,7 @@ from msgspec.msgpack import encode as encode_msgpack
 
 from litestar import Request
 from litestar.config.response_cache import (
-    build_cache_key,
+    _build_cache_key,
     default_cache_key_builder,
     default_do_cache_predicate,
 )
@@ -100,7 +100,7 @@ class ResponseCacheMiddleware(ASGIMiddleware):
                     and not message.get("more_body")
                     and (cast("HTTPScope", scope)["method"] != HttpMethod.QUERY or connection_state.body is not Empty)
                 ):
-                    key = await build_cache_key(Request(scope), route_handler.cache_key_builder or self.key_builder)
+                    key = await _build_cache_key(Request(scope), route_handler.cache_key_builder or self.key_builder)
                     store = scope["litestar_app"].stores.get(self.store)
                     await store.set(key, encode_msgpack(messages), expires_in=expires_in)
             await send(message)

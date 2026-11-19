@@ -1155,7 +1155,7 @@ def query(
             :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
         cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
             of the cache key if caching is configured on the application level.
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.

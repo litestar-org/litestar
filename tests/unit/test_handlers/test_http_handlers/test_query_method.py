@@ -4,18 +4,21 @@ from typing import Any
 
 import pytest
 
-from litestar import HttpMethod, MediaType, Request, Response, get, head, query, route
+from litestar import HttpMethod, MediaType, Request, Response, get, query, route
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
+from litestar.config.response_cache import ResponseCacheConfig
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
-from litestar.params import JSONBody
+from litestar.params import JSONBody, MsgPackBody, RawBody, URLEncodedBody
 from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_405_METHOD_NOT_ALLOWED,
+    HTTP_415_UNSUPPORTED_MEDIA_TYPE,
 )
 from litestar.testing import create_test_client
+from litestar.types import Method
 
 
 def test_query_request_with_json_body() -> None:
@@ -27,10 +30,6 @@ def test_query_request_with_json_body() -> None:
         response = client.request("QUERY", "/search", json={"term": "litestar"})
         assert response.status_code == HTTP_200_OK
         assert response.json() == {"received": {"term": "litestar"}}
-
-        response = client.query("/search", json={"term": "helper"})
-        assert response.status_code == HTTP_200_OK
-        assert response.json() == {"received": {"term": "helper"}}
 
 
 @pytest.mark.parametrize("http_method", ["QUERY", HttpMethod.QUERY])
@@ -55,7 +54,7 @@ def test_route_decorator_with_get_and_query_methods() -> None:
         assert response.status_code == HTTP_200_OK
         assert response.json() == {"method": "GET", "body": ""}
 
-        response = client.request("QUERY", "/", content=b"select 1")
+        response = client.request("QUERY", "/", content=b"select 1", headers={"content-type": "text/plain"})
         assert response.status_code == HTTP_200_OK
         assert response.json() == {"method": "QUERY", "body": "select 1"}
 
@@ -153,29 +152,42 @@ def test_cached_query_responses_are_keyed_by_request_body_the_handler_does_not_r
     assert responses == [1, 2, 1]
 
 
-def test_handler_serving_get_and_query_accepts_data() -> None:
-    @route("/", http_method=["GET", "QUERY"])
-    async def handler(data: JSONBody[dict[str, int] | None] = None) -> dict[str, int]:
-        return data or {}
+def test_cached_query_responses_are_keyed_by_media_type() -> None:
+    calls: list[str] = []
+
+    @query("/", cache=True)
+    async def handler(request: Request[Any, Any, Any], data: JSONBody[dict[str, int]]) -> str:
+        calls.append(request.headers["content-type"])
+        return request.headers["content-type"]
 
     with create_test_client(handler) as client:
-        assert client.get("/").json() == {}
-        assert client.request("QUERY", "/", json={"a": 1}).json() == {"a": 1}
+        responses = [
+            client.request("QUERY", "/", content=b'{"a": 1}', headers={"content-type": content_type}).text
+            for content_type in ("application/json", "application/vnd.api+json", "application/json")
+        ]
+
+    assert responses == ["application/json", "application/vnd.api+json", "application/json"]
+    assert calls == ["application/json", "application/vnd.api+json"]
 
 
-def test_cached_query_response_uses_cache_key_builder_of_handler() -> None:
+@pytest.mark.parametrize("on_app", [False, True], ids=["handler-key-builder", "app-key-builder"])
+def test_cached_query_response_with_custom_key_builder_is_keyed_by_request_body(on_app: bool) -> None:
     calls: list[dict[str, int]] = []
 
-    @query("/", cache=True, cache_key_builder=lambda request: request.headers.get("x-tenant", ""))
+    def key_builder(request: Request[Any, Any, Any]) -> str:
+        return request.headers.get("x-tenant", "")
+
+    @query("/", cache=True, cache_key_builder=None if on_app else key_builder)
     async def handler(data: JSONBody[dict[str, int]]) -> dict[str, int]:
         calls.append(data)
         return data
 
-    with create_test_client(handler) as client:
-        for tenant in ("a", "b", "a"):
-            client.request("QUERY", "/", json={"a": 1}, headers={"x-tenant": tenant})
+    cache_config = ResponseCacheConfig(key_builder=key_builder) if on_app else ResponseCacheConfig()
+    with create_test_client(handler, response_cache_config=cache_config) as client:
+        for tenant, value in (("a", 1), ("b", 1), ("a", 1), ("a", 2)):
+            client.request("QUERY", "/", json={"a": value}, headers={"x-tenant": tenant})
 
-    assert len(calls) == 2
+    assert calls == [{"a": 1}, {"a": 1}, {"a": 2}]
 
 
 def test_cached_query_handler_whose_guard_fails_before_the_body_is_read() -> None:
@@ -196,20 +208,77 @@ def test_cached_query_handler_whose_guard_fails_before_the_body_is_read() -> Non
     assert response.text == "handled"
 
 
-def test_data_on_head_and_get_handlers() -> None:
-    @head("/")
-    async def head_handler(data: JSONBody[dict[str, int]]) -> None:
+@pytest.mark.parametrize("http_methods", [["GET", "QUERY"], ["GET", "HEAD"]])
+def test_handler_serving_get_cannot_declare_data(http_methods: list[Method]) -> None:
+    @route("/", http_method=http_methods)
+    async def handler(data: JSONBody[dict[str, int]]) -> None:
         return None
-
-    @route("/get-head", http_method=["GET", "HEAD"])
-    async def get_head_handler(data: JSONBody[dict[str, int]]) -> None:
-        return None
-
-    with create_test_client(head_handler):
-        pass
 
     with (
         pytest.raises(ImproperlyConfiguredException, match="which a handler whose methods include 'GET' does not take"),
-        create_test_client(get_head_handler),
+        create_test_client(handler),
     ):
         pass
+
+
+@query("/json")
+async def query_json(data: JSONBody[dict[str, int]]) -> dict[str, int]:
+    return data
+
+
+@query("/msgpack")
+async def query_msgpack(data: MsgPackBody[dict[str, int]]) -> dict[str, int]:
+    return data
+
+
+@query("/form")
+async def query_form(data: URLEncodedBody[dict[str, str]]) -> dict[str, str]:
+    return data
+
+
+@query("/raw")
+async def query_raw(body: RawBody) -> int:
+    return len(body)
+
+
+@pytest.mark.parametrize(
+    "path, content, content_type, status_code, accept_query",
+    [
+        ("/json", b'{"a": 1}', None, HTTP_400_BAD_REQUEST, None),
+        ("/json", b'{"a": 1}', "text/plain", HTTP_415_UNSUPPORTED_MEDIA_TYPE, "application/json"),
+        ("/json", b'{"a": 1}', "application/json; charset=utf-8", HTTP_200_OK, None),
+        ("/json", b'{"a": 1}', "application/vnd.api+json", HTTP_200_OK, None),
+        ("/json", b"", "application/json", HTTP_400_BAD_REQUEST, None),
+        ("/msgpack", b"\x81\xa1a\x01", "application/x-msgpack", HTTP_200_OK, None),
+        ("/msgpack", b'{"a": 1}', "application/json", HTTP_415_UNSUPPORTED_MEDIA_TYPE, "application/vnd.msgpack"),
+        ("/form", b"a=1", "application/x-www-form-urlencoded", HTTP_200_OK, None),
+        (
+            "/form",
+            b'{"a": 1}',
+            "application/json",
+            HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            "application/x-www-form-urlencoded",
+        ),
+        ("/raw", b"abc", None, HTTP_400_BAD_REQUEST, None),
+        ("/raw", b"abc", "text/csv", HTTP_200_OK, None),
+    ],
+)
+def test_query_request_content_type_must_match_the_declared_body(
+    path: str, content: bytes, content_type: str | None, status_code: int, accept_query: str | None
+) -> None:
+    headers = {"content-type": content_type} if content_type else {}
+    with create_test_client([query_json, query_msgpack, query_form, query_raw]) as client:
+        response = client.request("QUERY", path, content=content, headers=headers)
+
+    assert response.status_code == status_code
+    assert response.headers.get("accept-query") == accept_query
+
+
+def test_post_request_content_type_is_not_checked() -> None:
+    @route("/", http_method=["POST", "QUERY"])
+    async def handler(data: JSONBody[dict[str, int]]) -> dict[str, int]:
+        return data
+
+    with create_test_client(handler) as client:
+        assert client.post("/", content=b'{"a": 1}').status_code == 201
+        assert client.request("QUERY", "/", content=b'{"a": 1}').status_code == HTTP_400_BAD_REQUEST

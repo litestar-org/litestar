@@ -46,14 +46,14 @@ def default_cache_key_builder(request: Request[Any, Any, Any]) -> str:
     return request.method + request.url.path + urlencode(query_params, doseq=True)
 
 
-async def build_cache_key(request: Request[Any, Any, Any], key_builder: CacheKeyBuilder) -> str:
+async def _build_cache_key(request: Request[Any, Any, Any], key_builder: CacheKeyBuilder) -> str:
     """Return the cache key of a request.
 
-    The key of a ``QUERY`` request includes a digest of the request body, which is part of what identifies the
-    request.
+    The key of a ``QUERY`` request includes a digest of the request content and of its media type, parameters and
+    content coding, which identify the request.
 
     Args:
-        request: request used to generate cache key.
+        request: The request to build the cache key of.
         key_builder: The cache key builder to use.
 
     Returns:
@@ -61,7 +61,11 @@ async def build_cache_key(request: Request[Any, Any, Any], key_builder: CacheKey
     """
     key = key_builder(request)
     if request.method == HttpMethod.QUERY:
-        key = f"{key}::{sha256(await request.body()).hexdigest()}"
+        media_type, options = request.content_type
+        metadata = [media_type, *(f"{name}={value}" for name, value in sorted(options.items()))]
+        metadata.append(request.headers.get("content-encoding", ""))
+        digest = sha256("\n".join(metadata).encode() + b"\n" + await request.body()).hexdigest()
+        key = f"{key}::{digest}"
     return key
 
 
