@@ -701,6 +701,19 @@ OpenAPI: other changes to the generated document
 
 The following changes apply to documents of existing applications and may require regenerating clients:
 
+- The ``pattern`` of Pydantic model fields declared with ``Field(pattern=...)``, or with ``constr`` or
+  ``StringConstraints`` nested in another type, is documented.
+- :class:`~decimal.Decimal` is documented as a number or a decimal string (``oneOf``) instead of ``string``, and a
+  constrained ``bool`` as ``boolean`` instead of ``integer``. Bounds of ``date`` and ``datetime`` values move from
+  ``minimum`` or ``maximum`` timestamps into the field description, and numeric bounds are no longer emitted on
+  string schemas.
+- Mappings with a length constraint are documented as ``object`` with ``minProperties`` / ``maxProperties`` instead of
+  ``array``, constrained fixed-length tuples keep ``prefixItems``, and length constraints of variable-length
+  sequences are emitted as ``minItems`` / ``maxItems``. A constrained multipart collection of
+  :class:`~litestar.datastructures.UploadFile` is documented as an ``object`` whose ``files`` property carries the
+  length constraint, like an unconstrained one plus the bound.
+- Fixed-length tuples such as ``tuple[int, str]`` are documented with ``minItems`` and ``maxItems`` equal to their
+  number of elements, and ``tuple[()]`` as an empty array instead of an empty schema.
 - Examples declared in the ``json_schema_extra`` of a Pydantic field are documented in every schema generated from
   the field, including those of subclasses and of parametrized generic models, instead of only the first one.
 - Component schemas of Pydantic models with ``extra="forbid"`` and no field alias, of msgspec structs with

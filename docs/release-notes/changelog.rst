@@ -41,6 +41,73 @@
         ``PydanticDTO``, and for every further application created in the same process. The model is no longer
         modified and its examples are documented wherever it is used.
 
+    .. change:: OpenAPI: Document the exact length of fixed-length tuples
+        :type: bugfix
+        :breaking:
+
+        A fixed-length tuple such as ``tuple[int, str]`` is documented with ``minItems`` and ``maxItems`` equal to its
+        number of elements, next to ``prefixItems``. The schema previously accepted arrays of any length, while the
+        application rejects arrays that are too short or too long. The empty tuple ``tuple[()]`` is documented as an
+        array with ``maxItems: 0`` instead of an empty schema. Variable-length tuples such as ``tuple[int, ...]`` are
+        not affected.
+
+    .. change:: OpenAPI: Constrained mappings and fixed-length tuples keep their shape
+        :type: bugfix
+        :breaking:
+
+        Fix the schema of collections that declare a length constraint, which was always an ``array`` whose ``items``
+        were a ``oneOf`` of all type arguments:
+
+        - A constrained mapping, such as ``Annotated[dict[str, int], Body(min_items=1)]`` or a pydantic
+          ``dict[str, int]`` field with ``Field(min_length=1)``, is documented as an ``object`` with
+          ``additionalProperties``. Its length constraints are emitted as ``minProperties`` and ``maxProperties``.
+        - A constrained fixed-length tuple keeps its ``prefixItems``, and a constrained ``tuple[int, ...]`` no longer
+          documents an empty schema as an alternative item type.
+        - Length constraints of variable-length sequences are emitted as ``minItems`` and ``maxItems``. Optional
+          sequences, and sequences constrained with ``min_length`` / ``max_length``, were documented with
+          ``minLength`` / ``maxLength``. Conversely, ``min_items`` / ``max_items`` on a ``str`` are emitted as
+          ``minLength`` / ``maxLength``.
+        - A constrained collection of :class:`~litestar.datastructures.UploadFile` used as a multipart ``data`` body
+          is documented like an unconstrained one, as an ``object`` with a ``files`` property, instead of an
+          ``array``. The length constraint is documented on ``files``.
+
+    .. change:: OpenAPI: Document constrained scalars and ``Decimal`` with the schema of their type
+        :type: bugfix
+        :breaking:
+
+        Fix the schema of constrained scalar types, which was chosen by a category of Python types instead of the
+        type itself, and of :class:`~decimal.Decimal`:
+
+        - :class:`~decimal.Decimal` is documented as either a number or a decimal string, as
+          ``oneOf: [{type: number}, {type: string, pattern: ...}]``, because request data accepts both and responses
+          contain a string. Constrained and unconstrained ``Decimal`` share this schema; numeric bounds apply to
+          the number form, as JSON Schema bounds only apply to numbers. In a union with ``int``, ``float`` or ``str``, such as
+          ``Decimal | int``, the members are merged so that every value matches exactly one of them.
+        - A constrained ``bool``, such as ``Annotated[bool, QueryParameter(const=True)]``, is documented as
+          ``boolean`` instead of ``integer``. The ``const`` of a ``bool`` query parameter is documented but, as
+          before, not enforced.
+        - Bounds of :class:`~datetime.date` and :class:`~datetime.datetime` values are no longer emitted as
+          ``minimum`` or ``maximum``. They held a Unix timestamp, or the date itself for optional fields, which made
+          the document invalid. They are written into the ``description`` of a field that has none, and they are
+          still enforced. A constrained ``datetime`` is documented with the ``date-time`` format instead of ``date``.
+        - Other constrained types, such as :class:`~uuid.UUID` and :class:`~datetime.time`, are no longer documented
+          as ``array``.
+        - Numeric bounds are no longer emitted on string schemas, e.g. ``Annotated[str, KwargDefinition(ge=1)]``
+          loses its ``minimum``, and a bound of ``0`` on an optional or union field is no longer dropped.
+
+    .. change:: OpenAPI: Document the ``pattern`` of Pydantic model fields
+        :type: bugfix
+        :breaking:
+
+        Fix a bug that left ``pattern`` out of the schema of a Pydantic model field declared with
+        ``Field(pattern=...)``, and of a ``constr(pattern=...)`` or ``StringConstraints(pattern=...)`` type nested in
+        another type such as ``Optional`` or ``list``. The schema accepted any string while the model rejected the
+        strings that did not match.
+
+        A pattern given as a compiled :class:`re.Pattern` is documented by its source string. If it was compiled
+        with flags, such as :data:`re.IGNORECASE`, it is not documented, because a JSON Schema ``pattern`` cannot
+        express them.
+
     .. change:: OpenAPI: Emit valid security schemes for ``JWTCookieAuth`` and ``OAuth2PasswordBearerAuth``
         :type: bugfix
         :issue: 3642

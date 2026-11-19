@@ -4,16 +4,19 @@
 # pyright: reportGeneralTypeIssues=false
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Annotated, Any, Literal, NotRequired, get_type_hints
+from typing import TYPE_CHECKING, Annotated, Any, Literal, NotRequired, Union, get_args, get_origin, get_type_hints
 
+import annotated_types
 import pydantic
 from pydantic_core import PydanticUndefined
 
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition
 from litestar.types import Empty
+from litestar.types.builtin_types import UnionTypes
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_generic, is_undefined_sentinel
 from litestar.utils.typing import (
@@ -159,6 +162,40 @@ class PydanticModelInfo:
 _CreateFieldDefinition = Callable[..., FieldDefinition]
 
 
+def _get_pattern(meta: Any) -> str | None:
+    if isinstance(meta, pydantic.fields.FieldInfo):
+        return next((pattern for item in meta.metadata if (pattern := _get_pattern(item)) is not None), None)
+    if not isinstance(meta, (annotated_types.BaseMetadata, pydantic.types.StringConstraints)):
+        return None
+    pattern = getattr(meta, "pattern", None)
+    if isinstance(pattern, re.Pattern):
+        return pattern.pattern if pattern.flags == re.UNICODE else None
+    return pattern  # type: ignore[no-any-return]
+
+
+def _annotate_nested_patterns(annotation: Any) -> Any:
+    args = get_args(annotation)
+    origin = get_origin(annotation)
+    if not args or origin is Literal:
+        return annotation
+    if origin is Annotated:
+        inner = _annotate_nested_patterns(args[0])
+        pattern = next((pattern for meta in args[1:] if (pattern := _get_pattern(meta)) is not None), None)
+        if pattern is None and inner is args[0]:
+            return annotation
+        extra = () if pattern is None else (KwargDefinition(pattern=pattern),)
+        return Annotated[(inner, *args[1:], *extra)]
+    new_args = tuple(_annotate_nested_patterns(arg) for arg in args)
+    if all(new is old for new, old in zip(new_args, args, strict=True)):
+        return annotation
+    if origin in UnionTypes:
+        return Union[new_args]
+    try:
+        return origin[new_args[0] if len(new_args) == 1 else new_args]
+    except TypeError:
+        return annotation
+
+
 def _create_field_definition_v2(  # noqa: C901
     field_annotation: Any,
     *,
@@ -192,11 +229,14 @@ def _create_field_definition_v2(  # noqa: C901
     if title := field_info.title:
         kwargs["title"] = title
 
+    field_annotation = _annotate_nested_patterns(field_annotation)
+
     for meta in field_info.metadata:
+        if (pattern := _get_pattern(meta)) is not None:
+            kwargs["pattern"] = pattern
         if isinstance(meta, pydantic.types.StringConstraints):
             kwargs["min_length"] = meta.min_length
             kwargs["max_length"] = meta.max_length
-            kwargs["pattern"] = meta.pattern
             kwargs["lower_case"] = meta.to_lower
             kwargs["upper_case"] = meta.to_upper
         # forward other metadata

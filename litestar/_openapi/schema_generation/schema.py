@@ -23,7 +23,6 @@ from uuid import UUID
 
 from litestar._openapi.datastructures import SchemaRegistry
 from litestar._openapi.schema_generation.constrained_fields import (
-    create_date_constrained_field_schema,
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
@@ -77,6 +76,91 @@ KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "title": "title",
     "read_only": "read_only",
 }
+
+_NUMERIC_BOUND_PROPERTIES = frozenset({"minimum", "exclusive_minimum", "maximum", "exclusive_maximum", "multiple_of"})
+_NUMERIC_TYPES = frozenset({OpenAPIType.INTEGER, OpenAPIType.NUMBER})
+_DATE_BOUND_DESCRIPTIONS = {"gt": "after", "ge": "on or after", "lt": "before", "le": "on or before"}
+_DECIMAL_PATTERN = r"^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$"
+_LENGTH_PROPERTIES: dict[OpenAPIType, tuple[str, str]] = {
+    OpenAPIType.STRING: ("min_length", "max_length"),
+    OpenAPIType.ARRAY: ("min_items", "max_items"),
+    OpenAPIType.OBJECT: ("min_properties", "max_properties"),
+}
+_LENGTH_BOUND_INDEX: dict[str, int] = {"min_items": 0, "min_length": 0, "max_items": 1, "max_length": 1}
+
+
+def _is_empty_tuple(field_definition: FieldDefinition) -> bool:
+    return field_definition.origin is tuple and getattr(field_definition.annotation, "__args__", None) == ()
+
+
+def _get_schema_types(schema: Schema) -> frozenset[OpenAPIType] | None:
+    if schema.type is not None:
+        return frozenset((schema.type,) if isinstance(schema.type, OpenAPIType) else schema.type)
+    if not schema.one_of:
+        return None
+    types: set[OpenAPIType] = set()
+    for member in schema.one_of:
+        if not isinstance(member, Schema) or (member_types := _get_schema_types(member)) is None:
+            return None
+        types |= member_types
+    return frozenset(types)
+
+
+def _get_length_property(kwarg_definition_key: str, schema: Schema) -> str | None:
+    if schema.properties is not None:
+        return None
+    schema_key = KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP[kwarg_definition_key]
+    schema_types = _get_schema_types(schema)
+    if schema_types is None:
+        return schema_key
+    sized_types = [sized_type for sized_type in _LENGTH_PROPERTIES if sized_type in schema_types]
+    if len(sized_types) != 1:
+        return schema_key
+    return _LENGTH_PROPERTIES[sized_types[0]][_LENGTH_BOUND_INDEX[kwarg_definition_key]]
+
+
+def _is_numeric_bound(value: Any, schema: Schema) -> bool:
+    if not isinstance(value, (int, float, Decimal)) or isinstance(value, bool):
+        return False
+    schema_types = _get_schema_types(schema)
+    return schema_types is None or not schema_types.isdisjoint(_NUMERIC_TYPES)
+
+
+def _is_decimal_schema(schema: Schema | Reference) -> bool:
+    return (
+        isinstance(schema, Schema)
+        and schema.one_of is not None
+        and any(isinstance(member, Schema) and member.pattern == _DECIMAL_PATTERN for member in schema.one_of)
+    )
+
+
+def _merge_decimal_members(members: list[Schema | Reference]) -> list[Schema | Reference]:
+    if not any(map(_is_decimal_schema, members)):
+        return members
+    has_plain_string = Schema(type=OpenAPIType.STRING) in members
+    merged: list[Schema | Reference] = []
+    for member in members:
+        if isinstance(member, Schema) and member.type in _NUMERIC_TYPES and member == Schema(type=member.type):
+            continue
+        if _is_decimal_schema(member) and member == Schema(one_of=cast("Schema", member).one_of):
+            merged.extend(
+                branch
+                for branch in cast("Schema", member).one_of or ()
+                if not (has_plain_string and isinstance(branch, Schema) and branch.pattern == _DECIMAL_PATTERN)
+            )
+        else:
+            merged.append(member)
+    return merged
+
+
+def _describe_date_bounds(kwarg_definition: Any) -> str | None:
+    bounds = [
+        f"{text} {value.isoformat()}"
+        for key, text in _DATE_BOUND_DESCRIPTIONS.items()
+        if isinstance(value := getattr(kwarg_definition, key, None), date)
+    ]
+    return f"must be {' and '.join(bounds)}" if bounds else None
+
 
 TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     Decimal: Schema(type=OpenAPIType.STRING),
@@ -215,6 +299,10 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
         A schema instance or None.
     """
 
+    if annotation is Decimal:
+        return Schema(
+            one_of=[Schema(type=OpenAPIType.NUMBER), Schema(type=OpenAPIType.STRING, pattern=_DECIMAL_PATTERN)]
+        )
     return copy(TYPE_MAP[annotation]) if annotation in TYPE_MAP else Schema()
 
 
@@ -352,7 +440,7 @@ class SchemaCreator:
             result = self.for_typevar()
         elif self.is_constrained_field(field_definition):
             result = self.for_constrained_field(field_definition)
-        elif field_definition.inner_types and not field_definition.is_generic:
+        elif (field_definition.inner_types or _is_empty_tuple(field_definition)) and not field_definition.is_generic:
             # this case does not recurse for all base cases, so it needs to happen
             # after all non-concrete cases
             result = self.for_object_type(field_definition)
@@ -413,6 +501,9 @@ class SchemaCreator:
         if field_definition.is_non_string_sequence or field_definition.is_mapping:
             property_key = "files"
             schema = Schema(type=OpenAPIType.ARRAY, items=schema)
+            if isinstance(kwarg_definition := field_definition.kwarg_definition, KwargDefinition):
+                schema.min_items = kwarg_definition.min_items or kwarg_definition.min_length
+                schema.max_items = kwarg_definition.max_items or kwarg_definition.max_length
 
         # If the uploadfile is annotated directly on the handler, then the
         # 'properties' needs to be created. Else, the 'properties' will be
@@ -486,7 +577,7 @@ class SchemaCreator:
             A schema instance.
         """
         inner_types = (f for f in (field_definition.inner_types or []) if not self.is_undefined(f.annotation))
-        values = list(map(self.for_field_definition, inner_types))
+        values = _merge_decimal_members(list(map(self.for_field_definition, inner_types)))
         return Schema(one_of=values)
 
     def for_object_type(self, field_definition: FieldDefinition) -> Schema:
@@ -519,7 +610,9 @@ class SchemaCreator:
             if (field_definition.origin is tuple) and inner_types == field_definition.inner_types:
                 return Schema(
                     type=OpenAPIType.ARRAY,
-                    prefix_items=[self.for_field_definition(f) for f in inner_types],
+                    prefix_items=[self.for_field_definition(f) for f in inner_types] or None,
+                    min_items=len(inner_types),
+                    max_items=len(inner_types),
                 )
 
             # Handle other sequence types normally
@@ -574,13 +667,16 @@ class SchemaCreator:
             A schema instance.
         """
         kwarg_definition = cast("KwargDefinition", field.kwarg_definition)
-        if any(is_class_and_subclass(field.annotation, t) for t in (int, float, Decimal)):
-            return create_numerical_constrained_field_schema(field.annotation, kwarg_definition)
-        if any(is_class_and_subclass(field.annotation, t) for t in (str, bytes)):
-            return create_string_constrained_field_schema(field.annotation, kwarg_definition)
-        if any(is_class_and_subclass(field.annotation, t) for t in (date, datetime)):
-            return create_date_constrained_field_schema(field.annotation, kwarg_definition)
-        return self.for_collection_constrained_field(field)
+        annotation = field.annotation
+        if any(is_class_and_subclass(annotation, t) for t in (str, bytes)):
+            return create_string_constrained_field_schema(annotation, kwarg_definition)
+        if any(is_class_and_subclass(annotation, t) for t in (int, float)) and not is_class_and_subclass(
+            annotation, bool
+        ):
+            return create_numerical_constrained_field_schema(annotation, kwarg_definition)
+        if field.is_mapping or field.is_non_string_iterable:
+            return self.for_collection_constrained_field(field)
+        return create_schema_for_annotation(annotation)
 
     def for_collection_constrained_field(self, field_definition: FieldDefinition) -> Schema:
         """Create Schema from Constrained List/Set field.
@@ -591,20 +687,12 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        schema = Schema(type=OpenAPIType.ARRAY)
-        kwarg_definition = cast("KwargDefinition", field_definition.kwarg_definition)
-        if kwarg_definition.min_items:
-            schema.min_items = kwarg_definition.min_items
-        if kwarg_definition.max_items:
-            schema.max_items = kwarg_definition.max_items
+        if field_definition.inner_types or _is_empty_tuple(field_definition):
+            schema = self.not_generating_examples.for_object_type(field_definition)
+        else:
+            schema = Schema(type=OpenAPIType.OBJECT if field_definition.is_mapping else OpenAPIType.ARRAY)
         if any(is_class_and_subclass(field_definition.annotation, t) for t in (set, frozenset)):
             schema.unique_items = True
-
-        item_creator = self.not_generating_examples
-        if field_definition.inner_types:
-            items = list(map(item_creator.for_field_definition, field_definition.inner_types))
-            schema.items = Schema(one_of=items) if len(items) > 1 else items[0]
-        # INFO: Removed because it was only for pydantic constrained collections
         return schema
 
     def for_enum_field(
@@ -645,20 +733,27 @@ class SchemaCreator:
     def _apply_kwarg_definition_metadata(self, field: FieldDefinition, schema: Schema) -> None:
         if field.kwarg_definition:
             for kwarg_definition_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
-                if (value := getattr(field.kwarg_definition, kwarg_definition_key, Empty)) and (
-                    not isinstance(value, Hashable) or not self.is_undefined(value)
-                ):
-                    if schema_key == "examples":
-                        value = get_json_schema_formatted_examples(cast("list[Example]", value))
+                value = getattr(field.kwarg_definition, kwarg_definition_key, Empty)
+                if schema_key in _NUMERIC_BOUND_PROPERTIES:
+                    if not _is_numeric_bound(value, schema):
+                        continue
+                    if isinstance(value, Decimal):
+                        value = float(value)
+                elif not value or (isinstance(value, Hashable) and self.is_undefined(value)):
+                    continue
+                if schema_key == "examples":
+                    value = get_json_schema_formatted_examples(cast("list[Example]", value))
+                if kwarg_definition_key in _LENGTH_BOUND_INDEX:
+                    if (length_property := _get_length_property(kwarg_definition_key, schema)) is None:
+                        continue
+                    schema_key = length_property
 
-                    # we only want to transfer values from the `KwargDefinition` to `Schema` if the schema object
-                    # doesn't already have a value for that property. For example, if a field is a constrained date,
-                    # by this point, we have already set the `exclusive_minimum` and/or `exclusive_maximum` fields
-                    # to floating point timestamp values on the schema object. However, the original `date` objects
-                    # that define those constraints on `KwargDefinition` are still `date` objects. We don't want to
-                    # overwrite them here.
-                    if getattr(schema, schema_key, None) is None:
-                        setattr(schema, schema_key, value)
+                # we only want to transfer values from the `KwargDefinition` to `Schema` if the schema object
+                # doesn't already have a value for that property.
+                if getattr(schema, schema_key, None) is None:
+                    setattr(schema, schema_key, value)
+            if schema.description is None and (description := _describe_date_bounds(field.kwarg_definition)):
+                schema.description = description
 
     def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
         if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:

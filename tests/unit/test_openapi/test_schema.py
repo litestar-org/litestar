@@ -3,8 +3,9 @@
 import json
 import re
 import sys
+import typing
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from datetime import date
 from decimal import Decimal
 from enum import Enum, StrEnum, auto
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
@@ -32,7 +33,6 @@ from typing_extensions import TypeAliasType
 from litestar import Controller, MediaType, get, post
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar._openapi.schema_generation.schema import (
-    KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
 )
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
@@ -63,7 +63,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from tests.helpers import get_schema_for_field_definition
 from tests.models import DataclassPerson, DataclassPet
-from tests.unit.test_openapi.utils import request_body_component
+from tests.unit.test_openapi.utils import build_document, request_body_component
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -86,8 +86,6 @@ def test_process_schema_result() -> None:
         lt=1,
         le=1,
         multiple_of=1,
-        min_items=1,
-        max_items=1,
         min_length=1,
         max_length=1,
         pattern="^[a-z]$",
@@ -96,14 +94,19 @@ def test_process_schema_result() -> None:
         FieldDefinition.from_annotation(annotation=str, kwarg_definition=kwarg_definition, default=test_str)
     )
 
-    assert schema.title
-    assert schema.const == test_str
-    assert kwarg_definition.examples
-    for signature_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
-        if schema_key == "examples":
-            assert schema.examples == [kwarg_definition.examples[0].value]
-        elif hasattr(kwarg_definition, signature_key):
-            assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
+    assert schema.to_schema() == {
+        "type": "string",
+        "const": "abc",
+        "default": "abc",
+        "title": "abc",
+        "description": "abc",
+        "contentEncoding": "utf-8",
+        "examples": [1],
+        "externalDocs": {"url": "https://example.com/docs"},
+        "minLength": 1,
+        "maxLength": 1,
+        "pattern": "^[a-z]$",
+    }
 
 
 def test_override_schema_component_key() -> None:
@@ -426,14 +429,11 @@ def test_annotated_types() -> None:
     assert schema.properties["constrained_int"].exclusive_maximum == 10  # type: ignore[index, union-attr]
     assert schema.properties["constrained_float"].minimum == 1  # type: ignore[index, union-attr]
     assert schema.properties["constrained_float"].maximum == 10  # type: ignore[index, union-attr]
-    assert datetime.fromtimestamp(
-        schema.properties["constrained_date"].exclusive_minimum,  # type: ignore[arg-type, index, union-attr]
-        tz=UTC,
-    ) == datetime.fromordinal(historical_date.toordinal()).replace(tzinfo=UTC)
-    assert datetime.fromtimestamp(
-        schema.properties["constrained_date"].exclusive_maximum,  # type: ignore[arg-type, index, union-attr]
-        tz=UTC,
-    ) == datetime.fromordinal(today.toordinal()).replace(tzinfo=UTC)
+    assert schema.properties["constrained_date"].to_schema() == {  # type: ignore[index]
+        "type": "string",
+        "format": "date",
+        "description": f"must be after {historical_date.isoformat()} and before {today.isoformat()}",
+    }
     assert schema.properties["constrained_lower_case"].description == "must be in lower case"  # type: ignore[index]
     assert schema.properties["constrained_upper_case"].description == "must be in upper case"  # type: ignore[index]
     assert schema.properties["constrained_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore[index, union-attr]
@@ -542,6 +542,8 @@ def test_schema_tuple() -> None:
     assert schema == Schema(
         prefix_items=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)],
         type=OpenAPIType.ARRAY,
+        min_items=2,
+        max_items=2,
     )
 
 
@@ -552,10 +554,66 @@ def test_schema_optional_tuple() -> None:
             Schema(
                 prefix_items=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.STRING)],
                 type=OpenAPIType.ARRAY,
+                min_items=2,
+                max_items=2,
             ),
             Schema(type=OpenAPIType.NULL),
         ],
     )
+
+
+FIXED_PAIR = {"type": "array", "prefixItems": [{"type": "integer"}, {"type": "string"}], "minItems": 2, "maxItems": 2}
+
+
+@pytest.mark.parametrize(
+    ("annotation", "expected"),
+    [
+        (tuple[int, str], FIXED_PAIR),
+        (tuple[int], {"type": "array", "prefixItems": [{"type": "integer"}], "minItems": 1, "maxItems": 1}),
+        (tuple[()], {"type": "array", "minItems": 0, "maxItems": 0}),
+        (typing.Tuple[()], {"type": "array", "minItems": 0, "maxItems": 0}),  # noqa: UP006
+        (tuple[int, ...], {"type": "array", "items": {"type": "integer"}}),
+        (tuple, {"type": "array"}),
+        (typing.Tuple, {}),  # noqa: UP006
+        (Optional[tuple[int, str]], {"oneOf": [FIXED_PAIR, {"type": "null"}]}),
+        (list[tuple[int, str]], {"type": "array", "items": FIXED_PAIR}),
+        (
+            tuple[tuple[int, str], int],
+            {"type": "array", "prefixItems": [FIXED_PAIR, {"type": "integer"}], "minItems": 2, "maxItems": 2},
+        ),
+        (Annotated[tuple[int, str], annotated_types.Len(1, 5)], FIXED_PAIR),
+        (Annotated[tuple[()], annotated_types.MaxLen(3)], {"type": "array", "minItems": 0, "maxItems": 0}),
+        (
+            Annotated[Optional[tuple[int, str]], KwargDefinition(min_items=3)],
+            {"oneOf": [FIXED_PAIR, {"type": "null"}], "minItems": 3},
+        ),
+    ],
+)
+def test_fixed_tuples_document_their_exact_length(annotation: Any, expected: dict[str, Any]) -> None:
+    def handler() -> Any:
+        raise NotImplementedError
+
+    handler.__annotations__["return"] = annotation
+    operation = build_document(get("/", sync_to_thread=False)(handler))["paths"]["/"]["get"]
+    assert operation["responses"]["200"]["content"]["application/json"]["schema"] == expected
+
+
+def test_fixed_tuple_query_parameter_is_served_as_documented() -> None:
+    @get("/", sync_to_thread=False)
+    def handler(v: FromQuery[tuple[int, int]]) -> None:
+        return None
+
+    with create_test_client([handler]) as client:
+        (parameter,) = client.app.openapi_schema.to_schema()["paths"]["/"]["get"]["parameters"]
+        assert parameter["schema"] == {
+            "type": "array",
+            "prefixItems": [{"type": "integer"}, {"type": "integer"}],
+            "minItems": 2,
+            "maxItems": 2,
+        }
+        assert client.get("/?v=1&v=2").status_code == 200
+        assert client.get("/?v=1").status_code == 400
+        assert client.get("/?v=1&v=2&v=3").status_code == 400
 
 
 def test_optional_enum() -> None:
@@ -831,7 +889,28 @@ def test_decimal_schema_type() -> None:
     from litestar._openapi.schema_generation.schema import create_schema_for_annotation
 
     schema = create_schema_for_annotation(Decimal)
-    assert schema.type == OpenAPIType.STRING
+    assert schema.to_schema() == {
+        "oneOf": [{"type": "number"}, {"type": "string", "pattern": r"^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$"}]
+    }
+
+
+DECIMAL_STRING = {"type": "string", "pattern": r"^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$"}
+
+
+@pytest.mark.parametrize(
+    ("annotation", "expected"),
+    [
+        (Union[Decimal, int], [{"type": "number"}, DECIMAL_STRING]),
+        (Union[float, Decimal], [{"type": "number"}, DECIMAL_STRING]),
+        (Union[Decimal, str], [{"type": "number"}, {"type": "string"}]),
+        (Union[Decimal, int, None], [{"type": "number"}, DECIMAL_STRING, {"type": "null"}]),
+        (Union[Decimal, bool], [{"type": "number"}, DECIMAL_STRING, {"type": "boolean"}]),
+    ],
+)
+def test_union_with_decimal_has_disjoint_members(annotation: Any, expected: list[dict[str, Any]]) -> None:
+    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="value", annotation=annotation))
+
+    assert schema.to_schema() == {"oneOf": expected}
 
 
 def test_not_generating_examples_preserves_schema_registry() -> None:

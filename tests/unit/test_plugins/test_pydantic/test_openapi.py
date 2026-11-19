@@ -1,5 +1,6 @@
 import copy
-from collections.abc import Callable
+import re
+from collections.abc import Callable, Mapping, Sequence
 from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
@@ -12,10 +13,11 @@ from pydantic.alias_generators import to_camel
 
 from litestar import Litestar, get, post
 from litestar._openapi.schema_generation.schema import SchemaCreator
+from litestar.di import NamedDependency, Provide
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
-from litestar.params import JSONBody
+from litestar.params import FromQuery, JSONBody
 from litestar.plugins.pydantic import PydanticDTO, PydanticPlugin, PydanticSchemaPlugin
 from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
@@ -216,10 +218,6 @@ def test_create_byte_constrained_field_schema_pydantic_v2(
         (pydantic_v2.confloat, {"ge": 10, "le": 100}),
         (pydantic_v2.confloat, {"ge": 10, "le": 100, "multiple_of": 4.2}),
         (pydantic_v2.confloat, {"gt": 10, "lt": 100, "multiple_of": 10}),
-        (pydantic_v2.condecimal, {"gt": Decimal("10"), "lt": Decimal("100")}),
-        (pydantic_v2.condecimal, {"ge": Decimal("10"), "le": Decimal("100")}),
-        (pydantic_v2.condecimal, {"gt": Decimal("10"), "lt": Decimal("100"), "multiple_of": Decimal("5")}),
-        (pydantic_v2.condecimal, {"ge": Decimal("10"), "le": Decimal("100"), "multiple_of": Decimal("2")}),
     ],
 )
 def test_create_numerical_constrained_field_schema_pydantic_v2(
@@ -244,34 +242,27 @@ def test_create_numerical_constrained_field_schema_pydantic_v2(
 
 
 @pytest.mark.parametrize(
-    "constraints",
+    ("constraints", "description"),
     [
-        {"gt": date.today() - timedelta(days=10), "lt": date.today() + timedelta(days=100)},
-        {"ge": date.today() - timedelta(days=10), "le": date.today() + timedelta(days=100)},
-        {"gt": date.today() - timedelta(days=10), "lt": date.today() + timedelta(days=100)},
-        {"ge": date.today() - timedelta(days=10), "le": date.today() + timedelta(days=100)},
+        ({"gt": date(2020, 1, 1), "lt": date(2030, 1, 1)}, "must be after 2020-01-01 and before 2030-01-01"),
+        (
+            {"ge": date(2020, 1, 1), "le": date(2030, 1, 1)},
+            "must be on or after 2020-01-01 and on or before 2030-01-01",
+        ),
     ],
 )
 def test_create_date_constrained_field_schema_pydantic_v2(
     constraints: dict[str, Any],
+    description: str,
     schema_creator: SchemaCreator,
     plugin: PydanticSchemaPlugin,
 ) -> None:
     class Model(pydantic_v2.BaseModel):
         field: pydantic_v2.condate(**constraints)  # type: ignore[valid-type]
 
-    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.type == OpenAPIType.STRING  # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.format == OpenAPIFormat.DATE  # pyright: ignore[reportAttributeAccessIssue]
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
 
-    if gt := constraints.get("gt"):
-        assert date.fromtimestamp(schema.exclusive_minimum) == gt  # type: ignore[arg-type]
-    if ge := constraints.get("ge"):
-        assert date.fromtimestamp(schema.minimum) == ge  # type: ignore[arg-type]
-    if lt := constraints.get("lt"):
-        assert date.fromtimestamp(schema.exclusive_maximum) == lt  # type: ignore[arg-type]
-    if le := constraints.get("le"):
-        assert date.fromtimestamp(schema.maximum) == le  # type: ignore[arg-type]
+    assert schema.to_schema() == {"type": "string", "format": "date", "description": description}
 
 
 @pytest.mark.parametrize(
@@ -613,6 +604,226 @@ def test_create_for_computed_field(prefer_alias: bool) -> None:
     assert property_two.description == "a description"
     assert property_two.title == "a title"
     assert property_two.read_only
+
+
+PATTERN = "^[a-z]+$"
+
+
+UNICODE_PATTERN = r"^\p{L}+$"
+
+
+class PatternModel(pydantic_v2.BaseModel):
+    field: str = pydantic_v2.Field(pattern=PATTERN)
+    field_with_length: str = pydantic_v2.Field(min_length=2, max_length=5, pattern=PATTERN)
+    annotated_field: Annotated[str, pydantic_v2.Field(pattern=PATTERN)]
+    compiled: str = pydantic_v2.Field(pattern=re.compile(PATTERN))
+    constr_type: pydantic_v2.constr(pattern=PATTERN)  # type: ignore[valid-type]
+    string_constraints: Annotated[str, pydantic_v2.StringConstraints(pattern=PATTERN)]
+    compiled_string_constraints: Annotated[str, pydantic_v2.StringConstraints(pattern=re.compile(PATTERN))]
+    optional_field: Optional[str] = pydantic_v2.Field(None, pattern=PATTERN)
+    optional_compiled: Optional[str] = pydantic_v2.Field(None, pattern=re.compile(PATTERN))
+    optional_constr: Optional[pydantic_v2.constr(pattern=PATTERN)] = None  # type: ignore[valid-type]
+    optional_compiled_string_constraints: Annotated[
+        Optional[str], pydantic_v2.StringConstraints(pattern=re.compile(PATTERN))
+    ] = None
+    list_of_constr: list[pydantic_v2.constr(pattern=PATTERN)] = []  # type: ignore[valid-type]
+    list_of_field: list[Annotated[str, pydantic_v2.Field(pattern=PATTERN)]] = []
+    dict_of_constr: dict[str, pydantic_v2.constr(pattern=PATTERN)] = {}  # type: ignore[valid-type]
+    union_constr: Union[int, pydantic_v2.constr(pattern=PATTERN)] = 1  # type: ignore[valid-type]
+    factory_list: list[pydantic_v2.constr(pattern=PATTERN)] = pydantic_v2.Field(  # type: ignore[valid-type]
+        default_factory=list
+    )
+    described: str = pydantic_v2.Field("abc", pattern=PATTERN, description="lower case letters")
+    tuple_of_constr: tuple[pydantic_v2.constr(pattern=PATTERN), ...] = ()  # type: ignore[valid-type]
+    fixed_tuple: tuple[int, pydantic_v2.constr(pattern=PATTERN)] = (1, "a")  # type: ignore[valid-type]
+    set_of_constr: set[pydantic_v2.constr(pattern=PATTERN)] = pydantic_v2.Field(  # type: ignore[valid-type]
+        default_factory=set
+    )
+    sequence_of_constr: Sequence[pydantic_v2.constr(pattern=PATTERN)] = ()  # type: ignore[valid-type]
+    mapping_of_constr: Mapping[str, pydantic_v2.constr(pattern=PATTERN)] = {}  # type: ignore[valid-type]
+    case_insensitive: str = pydantic_v2.Field("a", pattern=re.compile(PATTERN, re.IGNORECASE))
+    case_insensitive_constr: pydantic_v2.constr(  # type: ignore[valid-type]
+        pattern=re.compile(PATTERN, re.IGNORECASE)
+    ) = "a"
+
+
+PATTERN_STRING = {"type": "string", "pattern": PATTERN}
+
+
+PATTERN_SCHEMAS: dict[str, dict[str, Any]] = {
+    "field": PATTERN_STRING,
+    "field_with_length": {"type": "string", "minLength": 2, "maxLength": 5, "pattern": PATTERN},
+    "annotated_field": PATTERN_STRING,
+    "compiled": PATTERN_STRING,
+    "constr_type": PATTERN_STRING,
+    "string_constraints": PATTERN_STRING,
+    "compiled_string_constraints": PATTERN_STRING,
+    "optional_field": {"type": ["string", "null"], "pattern": PATTERN},
+    "optional_compiled": {"type": ["string", "null"], "pattern": PATTERN},
+    "optional_constr": {"type": ["string", "null"], "pattern": PATTERN},
+    "optional_compiled_string_constraints": {"type": ["string", "null"], "pattern": PATTERN},
+    "list_of_constr": {"type": "array", "items": PATTERN_STRING, "default": []},
+    "list_of_field": {"type": "array", "items": PATTERN_STRING, "default": []},
+    "dict_of_constr": {"type": "object", "additionalProperties": PATTERN_STRING, "default": {}},
+    "union_constr": {"oneOf": [{"type": "integer"}, PATTERN_STRING], "default": 1},
+    "factory_list": {"type": "array", "items": PATTERN_STRING},
+    "described": {"type": "string", "pattern": PATTERN, "description": "lower case letters", "default": "abc"},
+    "tuple_of_constr": {"type": "array", "items": PATTERN_STRING, "default": ()},
+    "fixed_tuple": {
+        "type": "array",
+        "prefixItems": [{"type": "integer"}, PATTERN_STRING],
+        "minItems": 2,
+        "maxItems": 2,
+        "default": (1, "a"),
+    },
+    "set_of_constr": {"type": "array", "items": PATTERN_STRING},
+    "sequence_of_constr": {"type": "array", "items": PATTERN_STRING, "default": ()},
+    "mapping_of_constr": {"type": "object", "additionalProperties": PATTERN_STRING, "default": {}},
+    "case_insensitive": {"type": "string", "default": "a"},
+    "case_insensitive_constr": {"type": "string", "default": "a"},
+}
+
+
+@post("/pattern", sync_to_thread=False)
+def pattern_handler(data: JSONBody[PatternModel]) -> None:
+    return None
+
+
+def test_pattern_is_documented() -> None:
+    schema = Litestar([pattern_handler]).openapi_schema.to_schema()
+    assert schema["components"]["schemas"]["PatternModel"]["properties"] == PATTERN_SCHEMAS
+
+
+def test_handler_parameter_pattern_is_not_enforced() -> None:
+    def provide_value(
+        dependency_value: FromQuery[pydantic_v2.constr(min_length=2, pattern=PATTERN)],  # type: ignore[valid-type]
+    ) -> str:
+        return dependency_value  # type: ignore[no-any-return]
+
+    @get("/unicode", sync_to_thread=False)
+    def unicode_handler(
+        value: FromQuery[pydantic_v2.constr(pattern=UNICODE_PATTERN)],  # type: ignore[valid-type]
+    ) -> str:
+        return value  # type: ignore[no-any-return]
+
+    @get("/dependency", dependencies={"provided": Provide(provide_value, sync_to_thread=False)}, sync_to_thread=False)
+    def dependency_handler(provided: NamedDependency[str]) -> str:
+        return provided
+
+    @get("/union", sync_to_thread=False)
+    def union_handler(
+        value: FromQuery[Annotated[Union[str, int], pydantic_v2.StringConstraints(pattern=PATTERN)]],
+    ) -> str:
+        return str(value)
+
+    with create_test_client([unicode_handler, dependency_handler, union_handler]) as client:
+        paths = client.app.openapi_schema.to_schema()["paths"]
+        assert paths["/unicode"]["get"]["parameters"][0]["schema"] == {"type": "string"}
+        assert paths["/dependency"]["get"]["parameters"][0]["schema"] == {"type": "string", "minLength": 2}
+        assert paths["/union"]["get"]["parameters"][0]["schema"] == {"oneOf": [{"type": "string"}, {"type": "integer"}]}
+
+        assert client.get("/unicode", params={"value": "abc"}).status_code == 200
+        assert client.get("/dependency", params={"dependency_value": "AB1"}).status_code == 200
+        assert client.get("/dependency", params={"dependency_value": "a"}).status_code == 400
+        assert client.get("/union", params={"value": "abc"}).status_code == 200
+        assert client.get("/union", params={"value": "1"}).status_code == 200
+
+
+DECIMAL_SCHEMA = {
+    "oneOf": [
+        {"type": "number"},
+        {"type": "string", "pattern": r"^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$"},
+    ]
+}
+
+
+@pytest.mark.parametrize(
+    ("constraint_kwargs", "bounds"),
+    [
+        ({"gt": Decimal("10"), "lt": Decimal("100")}, {"exclusiveMinimum": 10.0, "exclusiveMaximum": 100.0}),
+        ({"ge": Decimal("10"), "le": Decimal("100")}, {"minimum": 10.0, "maximum": 100.0}),
+        ({"gt": Decimal("10"), "multiple_of": Decimal("5")}, {"exclusiveMinimum": 10.0, "multipleOf": 5.0}),
+    ],
+)
+def test_create_decimal_constrained_field_schema_pydantic_v2(
+    constraint_kwargs: dict[str, Any],
+    bounds: dict[str, float],
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    class Model(pydantic_v2.BaseModel):
+        field: pydantic_v2.condecimal(**constraint_kwargs)  # type: ignore[valid-type]
+
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+
+    assert schema.to_schema() == {**DECIMAL_SCHEMA, **bounds}
+
+
+def test_constrained_decimal_and_date_fields_document_what_the_server_enforces() -> None:
+    class Model(pydantic_v2.BaseModel):
+        price: Decimal = pydantic_v2.Field(gt=0)
+        day: date = pydantic_v2.Field(ge=date(2020, 1, 1))
+        maybe_day: Optional[date] = pydantic_v2.Field(default=None, ge=date(2020, 1, 1))
+
+    @post("/", sync_to_thread=False)
+    def handler(data: JSONBody[Model]) -> Model:
+        return data
+
+    with create_test_client(handler) as client:
+        (component,) = client.app.openapi_schema.to_schema()["components"]["schemas"].values()
+        assert component["properties"] == {
+            "price": {**DECIMAL_SCHEMA, "exclusiveMinimum": 0},
+            "day": {"type": "string", "format": "date", "description": "must be on or after 2020-01-01"},
+            "maybe_day": {
+                "type": ["string", "null"],
+                "format": "date",
+                "description": "must be on or after 2020-01-01",
+            },
+        }
+
+        for price in ("1.5", 1.5, "1E+3"):
+            response = client.post("/", json={"price": price, "day": "2021-01-01"})
+            assert response.status_code == 201
+            assert isinstance(response.json()["price"], str)
+        assert client.post("/", json={"price": 0, "day": "2021-01-01"}).status_code == 400
+        assert client.post("/", json={"price": "abc", "day": "2021-01-01"}).status_code == 400
+        assert client.post("/", json={"price": "1.5", "day": "2019-12-31"}).status_code == 400
+
+
+def test_constrained_collection_fields_match_the_server() -> None:
+    class Model(pydantic_v2.BaseModel):
+        mapping: dict[str, int] = pydantic_v2.Field(min_length=1, max_length=2)
+        optional_mapping: Optional[dict[str, int]] = pydantic_v2.Field(default=None, min_length=1)
+        optional_sequence: Optional[list[int]] = pydantic_v2.Field(default=None, min_length=2)
+
+    @post("/", sync_to_thread=False)
+    def handler(data: JSONBody[Model]) -> None:
+        return None
+
+    with create_test_client(handler) as client:
+        (component,) = client.app.openapi_schema.to_schema()["components"]["schemas"].values()
+        assert component["properties"] == {
+            "mapping": {
+                "type": "object",
+                "additionalProperties": {"type": "integer"},
+                "minProperties": 1,
+                "maxProperties": 2,
+            },
+            "optional_mapping": {
+                "oneOf": [{"type": "object", "additionalProperties": {"type": "integer"}}, {"type": "null"}],
+                "minProperties": 1,
+            },
+            "optional_sequence": {
+                "oneOf": [{"type": "array", "items": {"type": "integer"}}, {"type": "null"}],
+                "minItems": 2,
+            },
+        }
+
+        assert client.post("/", json={"mapping": {"a": 1}}).status_code == 201
+        assert client.post("/", json={"mapping": {}}).status_code == 400
+        assert client.post("/", json={"mapping": {"a": 1, "b": 2, "c": 3}}).status_code == 400
+        assert client.post("/", json={"mapping": {"a": 1}, "optional_mapping": {}}).status_code == 400
+        assert client.post("/", json={"mapping": {"a": 1}, "optional_sequence": [1]}).status_code == 400
 
 
 ExampleT = TypeVar("ExampleT")
