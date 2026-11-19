@@ -5,10 +5,15 @@ from typing import TYPE_CHECKING, cast
 from msgspec.msgpack import encode as encode_msgpack
 
 from litestar import Request
-from litestar.config.response_cache import default_cache_key_builder, default_do_cache_predicate
+from litestar.config.response_cache import (
+    build_cache_key,
+    default_cache_key_builder,
+    default_do_cache_predicate,
+)
 from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START
-from litestar.enums import ScopeType
+from litestar.enums import HttpMethod, ScopeType
 from litestar.middleware.base import ASGIMiddleware
+from litestar.types import Empty
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
@@ -89,8 +94,13 @@ class ResponseCacheMiddleware(ASGIMiddleware):
                 elif value_or_default(connection_state.do_cache, False):
                     messages.append(message)
 
-                if messages and message["type"] == HTTP_RESPONSE_BODY and not message.get("more_body"):
-                    key = (route_handler.cache_key_builder or self.key_builder)(Request(scope))
+                if (
+                    messages
+                    and message["type"] == HTTP_RESPONSE_BODY
+                    and not message.get("more_body")
+                    and (cast("HTTPScope", scope)["method"] != HttpMethod.QUERY or connection_state.body is not Empty)
+                ):
+                    key = await build_cache_key(Request(scope), route_handler.cache_key_builder or self.key_builder)
                     store = scope["litestar_app"].stores.get(self.store)
                     await store.set(key, encode_msgpack(messages), expires_in=expires_in)
             await send(message)

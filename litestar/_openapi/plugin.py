@@ -9,7 +9,7 @@ from litestar._openapi.path_item import OPERATION_FIELDS, PathItemFactory, merge
 from litestar._openapi.schema_generation.unions import use_any_of_if_overlapping
 from litestar._openapi.utils import supports_openapi_3_2
 from litestar.constants import OPENAPI_JSON_HANDLER_NAME
-from litestar.enums import MediaType
+from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.handlers import get
 from litestar.openapi.plugins import JsonRenderPlugin
@@ -324,10 +324,12 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
             raise ImproperlyConfiguredException("OpenAPIConfig not initialized")
         return self._openapi_config
 
-    def _check_documented_operations(self, route: HTTPRoute) -> None:
+    def _check_documented_operations(self, route: HTTPRoute, openapi_config: OpenAPIConfig) -> None:
         template = _PATH_PARAMETER_PATTERN.sub("{}", route.path_format or "/")
         for http_method, route_handler in route.route_handler_map.items():
-            if not route_handler.include_in_schema:
+            if not route_handler.include_in_schema or (
+                http_method == HttpMethod.QUERY and not supports_openapi_3_2(openapi_config.openapi_version)
+            ):
                 continue
             other_path, other_handler = self._documented_operations.setdefault(
                 (template, http_method), (route.path, route_handler)
@@ -344,7 +346,7 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
             return
 
         if self._openapi_config is not None:
-            self._check_documented_operations(route)
+            self._check_documented_operations(route, self._openapi_config)
 
         if any(route_handler.include_in_schema for route_handler in route.route_handler_map.values()):
             # Force recompute the schema if a new route is added
