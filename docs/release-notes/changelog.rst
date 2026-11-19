@@ -9,7 +9,7 @@
     .. change:: Run all parts of sync generator dependencies in a worker threads
         :type: fix
         :breaking:
-        :pr: TBD
+        :pr: 5227
 
         Run all code of a synchronous generator dependency in threads. Previously, code
         up until the first ``yield`` would run on the main thread.
@@ -19,7 +19,7 @@
     .. change:: Drop reserved keyword arguments in handlers and DI
         :type: feature
         :breaking:
-        :pr: TBD
+        :pr: 5227
 
         Drop the special meaning of the "reserved keyword arguments" in handlers and DI
         providers.
@@ -40,7 +40,7 @@
     .. change:: Don't overwrite a handler parameter with a dependency of the same name
         :type: bugfix
         :breaking:
-        :pr: TBD
+        :pr: 5227
 
         Fix a bug that would overwrite a request parameter in a handler with
         dependency of the same name. Request parameters now follow the same rule as
@@ -51,7 +51,7 @@
 
     .. change:: OpenAPI: Exclude a layer parameter with ``include_in_schema=False`` from the schema
         :type: bugfix
-        :pr: TBD
+        :pr: 5227
 
         Fix a bug that would cause a layer parameter declared with
         ``include_in_schema=False`` to still be included in the OpenAPI schema, if it
@@ -59,7 +59,7 @@
 
     .. change:: OpenAPI: Include a layer parameter defined next to a handler parameter of the same name that doesn't bind it
         :type: bugfix
-        :pr: TBD
+        :pr: 5227
 
         A handler parameter named like a layer parameter, with a marker that sets a field, is a
         parameter of its own, e.g. ``limit: Annotated[int, QueryParameter(ge=1)]`` under a layer
@@ -68,7 +68,7 @@
 
     .. change:: OpenAPI: Document header parameters case insensitively across handlers and dependencies
         :type: bugfix
-        :pr: TBD
+        :pr: 5227
 
         Fix a bug that would cause header parameters declared with different casings
         (e.g. ``X-Token`` and ``x-token``) to be documented as two distinct parameters,
@@ -76,7 +76,7 @@
 
     .. change:: OpenAPI: Fix schema generation for request body declared only in a dependency provider and a DTO set
         :type: bugfix
-        :pr: TBD
+        :pr: 5227
 
         Fix a bug that occurred when a request body was only declared in a dependency
         provider of a handler, with that handler setting a ``dto=``. The schema would be
@@ -86,7 +86,7 @@
 
     .. change:: OpenAPI: Document the default of a handler parameter that's also a layer parameter
         :type: bugfix
-        :pr: TBD
+        :pr: 5227
 
         Fix a bug that would document a handler / DI parameter declared with a default,
         *and* corresponding to a layer parameter *without a default*, as required and
@@ -96,7 +96,7 @@
 
     .. change:: Raise an exception at startup for variadic handler / DI parameters
         :type: bugfix
-        :pr: TBD
+        :pr: 5227
 
         Raise an exception at startup if a handler or DI provider declares variadic
         parameters (``*args`` or ``**kwargs``).
@@ -107,7 +107,7 @@
     .. change:: Raise an exception if a generator dependency yields more than once
         :type: bugfix
         :breaking:
-        :pr: TBD
+        :pr: 5227
 
         Raise an exception if a generator dependency ``yield``\ s more than once.
         Previously, no exception was raised, and the code after the second ``yield``
@@ -116,7 +116,7 @@
     .. change:: Raise a startup exception if an unmarked handler parameter is named like a layer parameter
         :type: bugfix
         :breaking:
-        :pr: TBD
+        :pr: 5227
 
         A handler parameter without a marker raises
         :class:`~litestar.exceptions.ImproperlyConfiguredException` at startup. Ensure
@@ -125,7 +125,7 @@
     .. change:: Raise a startup exception if a request body is declared in a ``GET`` or websocket handler, or any of its dependencies
         :type: bugfix
         :breaking:
-        :pr: TBD
+        :pr: 5227
 
         Raise a startup exception if a ``GET`` HTTP or a WebSocket handler, or any of
         their dependencies declare a request body.
