@@ -11,6 +11,7 @@ from advanced_alchemy.extensions.litestar import (
     repository,
 )
 from advanced_alchemy.filters import LimitOffset
+from advanced_alchemy.service import OffsetPagination
 from pydantic import BaseModel as _BaseModel
 from pydantic import TypeAdapter
 from sqlalchemy import ForeignKey, select
@@ -20,7 +21,6 @@ from litestar import Litestar, get
 from litestar.controller import Controller
 from litestar.di import NamedDependency, Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
-from litestar.pagination import OffsetPagination
 from litestar.params import JSONBody, PathParameter, QueryParameter
 
 if TYPE_CHECKING:

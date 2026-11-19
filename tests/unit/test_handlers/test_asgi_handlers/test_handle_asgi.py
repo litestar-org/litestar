@@ -1,10 +1,10 @@
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
 
 from litestar import Controller, Litestar, MediaType, asgi
 from litestar.enums import ScopeType
-from litestar.exceptions import LitestarWarning
 from litestar.handlers import ASGIRouteHandler
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_200_OK
@@ -70,20 +70,16 @@ def test_custom_handler_class() -> None:
     assert isinstance(handler, MyHandlerClass)
 
 
-def test_copy_scope_not_set_warns_on_modification() -> None:
-    @asgi(is_mount=True)
-    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        scope["foo"] = ""  # type: ignore[typeddict-unknown-key]
-        await ASGIResponse()(scope, receive, send)
-
-    with create_test_client([handler]) as client:
-        with pytest.warns(LitestarWarning, match="modified 'scope' with 'copy_scope' set to 'None'"):
-            response = client.get("/")
-        assert response.status_code == HTTP_200_OK
-
-
-@pytest.mark.parametrize("copy_scope, expected_value", [(True, None), (False, "foo")])
-def test_copy_scope(copy_scope: bool, expected_value: "str | None") -> None:
+@pytest.mark.parametrize(
+    "handler_kwargs, expected_value",
+    [
+        pytest.param({"is_mount": True}, None, id="mount-default"),
+        pytest.param({"is_mount": True, "copy_scope": False}, "foo", id="mount-opt-out"),
+        pytest.param({}, None, id="non-mount-default"),
+        pytest.param({"copy_scope": False}, "foo", id="non-mount-opt-out"),
+    ],
+)
+def test_copy_scope(handler_kwargs: "dict[str, Any]", expected_value: "str | None") -> None:
     mock = MagicMock()
 
     def middleware_factory(app: Litestar) -> ASGIApp:
@@ -93,7 +89,7 @@ def test_copy_scope(copy_scope: bool, expected_value: "str | None") -> None:
 
         return middleware
 
-    @asgi(is_mount=True, copy_scope=copy_scope)
+    @asgi(**handler_kwargs)
     async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
         scope["foo"] = "foo"  # type: ignore[typeddict-unknown-key]
         await ASGIResponse()(scope, receive, send)
@@ -102,3 +98,31 @@ def test_copy_scope(copy_scope: bool, expected_value: "str | None") -> None:
         client.get("/")
 
     mock.assert_called_once_with(expected_value)
+
+
+def test_copy_scope_isolates_top_level_keys_only() -> None:
+    mock = MagicMock()
+
+    def middleware_factory(app: Litestar) -> ASGIApp:
+        async def middleware(scope: "Scope", receive: "Receive", send: "Send") -> None:
+            await app(scope, receive, send)
+            mock(scope.get("foo"), scope["state"].get("injected"))
+
+        return middleware
+
+    @asgi(is_mount=True)
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        scope["foo"] = "foo"  # type: ignore[typeddict-unknown-key]
+        scope["state"]["injected"] = "nested"
+        await ASGIResponse()(scope, receive, send)
+
+    with create_test_client([handler], middleware=[middleware_factory]) as client:
+        client.get("/")
+
+    mock.assert_called_once_with(None, "nested")
+
+
+def test_copy_scope_default_on_handler_class() -> None:
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None: ...
+
+    assert ASGIRouteHandler(path="/", fn=handler).copy_scope is True

@@ -43,19 +43,10 @@ def create_person_controller() -> type[Controller]:
             # required query parameters below
             page: FromQuery[int],
             name: FromQuery[Optional[Union[str, list[str]]]],  # intentionally without default
-            lucky_number: Annotated[
-                Optional[LuckyNumber], QueryParameter(required=False, examples=[Example(value=LuckyNumber.SEVEN)])
-            ],
             # header parameter
             secret_header: Annotated[str, HeaderParameter(name="secret")],
             # cookie parameter
             cookie_value: Annotated[int, CookieParameter(name="value")],
-            gender: Annotated[
-                Optional[Union[Gender, list[Gender]]],
-                QueryParameter(
-                    required=False, examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
-                ),
-            ],
             page_size: Annotated[
                 int,
                 QueryParameter(
@@ -66,6 +57,15 @@ def create_person_controller() -> type[Controller]:
                 ),
             ],
             # non-required query parameters below
+            lucky_number: Annotated[
+                Optional[LuckyNumber], QueryParameter(required=False, examples=[Example(value=LuckyNumber.SEVEN)])
+            ] = None,
+            gender: Annotated[
+                Optional[Union[Gender, list[Gender]]],
+                QueryParameter(
+                    required=False, examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
+                ),
+            ] = None,
             from_date: FromQuery[Optional[Union[int, datetime, date]]] = None,
             to_date: FromQuery[Optional[Union[int, datetime, date]]] = None,
         ) -> list[DataclassPerson]:

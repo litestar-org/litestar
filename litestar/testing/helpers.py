@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any
 
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
+from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
 from litestar.controller import Controller
 from litestar.events import SimpleEventEmitter
 from litestar.testing.client import AsyncTestClient, TestClient
@@ -58,7 +59,6 @@ def create_test_client(
     after_request: AfterRequestHookHandler | None = None,
     after_response: AfterResponseHookHandler | None = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
-    backend: Literal["asyncio", "trio"] = "asyncio",
     backend_options: dict[str, Any] | None = None,
     base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
@@ -78,6 +78,7 @@ def create_test_client(
     listeners: Sequence[EventListener] | None = None,
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
+    multipart_form_allowed_charsets: Sequence[str] = DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
     on_shutdown: Sequence[LifespanHook] | None = None,
     on_startup: Sequence[LifespanHook] | None = None,
@@ -138,8 +139,7 @@ def create_test_client(
         route_handlers: A single handler or a sequence of route handlers, which can include instances of
             :class:`Router <litestar.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or
             any function decorated by the route handler decorators.
-        backend: The async backend to use, options are "asyncio" or "trio".
-        backend_options: ``anyio`` options.
+        backend_options: ``anyio`` options of the asyncio backend.
         base_url: URL scheme and domain for test request paths, e.g. ``http://testserver``.
         raise_server_exceptions: Flag for underlying the test client to raise server exceptions instead of wrapping them
             in an HTTP response.
@@ -184,6 +184,8 @@ def create_test_client(
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
         multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
             is intended to protect from DoS attacks.
+        multipart_form_allowed_charsets: Charsets accepted for multipart/formdata text fields; others are rejected
+            with a 400. Fields without a charset are decoded as UTF-8.
         on_app_init: A sequence of :class:`OnAppInitHandler <.types.OnAppInitHandler>` instances. Handlers receive
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
@@ -266,6 +268,7 @@ def create_test_client(
         listeners=listeners,
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
+        multipart_form_allowed_charsets=multipart_form_allowed_charsets,
         on_app_init=on_app_init,
         on_shutdown=on_shutdown,
         on_startup=on_startup,
@@ -296,7 +299,6 @@ def create_test_client(
 
     return TestClient[Litestar](
         app=app,
-        backend=backend,
         backend_options=backend_options,
         base_url=base_url,
         raise_server_exceptions=raise_server_exceptions,
@@ -332,6 +334,7 @@ def create_async_test_client(
     listeners: Sequence[EventListener] | None = None,
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
+    multipart_form_allowed_charsets: Sequence[str] = DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
     on_shutdown: Sequence[LifespanHook] | None = None,
     on_startup: Sequence[LifespanHook] | None = None,
@@ -435,6 +438,8 @@ def create_async_test_client(
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
         multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
             is intended to protect from DoS attacks.
+        multipart_form_allowed_charsets: Charsets accepted for multipart/formdata text fields; others are rejected
+            with a 400. Fields without a charset are decoded as UTF-8.
         on_app_init: A sequence of :class:`OnAppInitHandler <.types.OnAppInitHandler>` instances. Handlers receive
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
@@ -516,6 +521,7 @@ def create_async_test_client(
         listeners=listeners,
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
+        multipart_form_allowed_charsets=multipart_form_allowed_charsets,
         on_app_init=on_app_init,
         on_shutdown=on_shutdown,
         on_startup=on_startup,

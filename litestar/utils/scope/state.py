@@ -35,6 +35,7 @@ class ScopeState:
         "dependency_cache",
         "do_cache",
         "exception_handlers",
+        "exception_hooks_called_for",
         "flash_messages",
         "form",
         "headers",
@@ -59,6 +60,7 @@ class ScopeState:
         self.dependency_cache = Empty
         self.do_cache = Empty
         self.exception_handlers = Empty
+        self.exception_hooks_called_for = Empty
         self.form = Empty
         self.flash_messages = []
         self.headers = Empty
@@ -81,6 +83,7 @@ class ScopeState:
     dependency_cache: dict[str, Any] | EmptyType
     do_cache: bool | EmptyType
     exception_handlers: ExceptionHandlersMap | EmptyType
+    exception_hooks_called_for: Exception | EmptyType
     form: dict[str, str | list[str] | UploadFile] | EmptyType
     flash_messages: list[dict[str, str]]
     headers: Headers | EmptyType

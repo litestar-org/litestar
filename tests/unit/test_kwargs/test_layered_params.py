@@ -2,7 +2,8 @@ from typing import Annotated
 
 import pytest
 
-from litestar import Controller, Router, get
+from litestar import Controller, Litestar, Router, get
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import (
     CookieParameter,
     FromCookie,
@@ -264,3 +265,40 @@ def test_layered_include_in_schema_parameter() -> None:
         assert "/excluded_router/excluded_handler" not in app.openapi_schema.paths
         assert "/excluded_handler" not in app.openapi_schema.paths
         assert "/handler" not in app.openapi_schema.paths
+
+
+def test_unused_layer_parameter_not_required_without_default_is_optional() -> None:
+    @get("/", sync_to_thread=False)
+    def handler() -> None:
+        return None
+
+    with create_test_client(
+        handler, parameters={"layer_param": QueryParameter(annotation=int, required=False)}
+    ) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_bare_marker_binding_layer_parameter_not_required_receives_default() -> None:
+    @get("/", sync_to_thread=False)
+    def handler(layer_param: FromQuery[int] = 3) -> int:
+        return layer_param
+
+    with create_test_client(
+        handler, parameters={"layer_param": QueryParameter(annotation=int, required=False)}
+    ) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.json() == 3
+
+
+def test_bare_marker_binding_layer_parameter_not_required_without_default_raises() -> None:
+    @get("/", sync_to_thread=False)
+    def handler(layer_param: FromQuery[int]) -> None:
+        return None
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=r"handler='handler'\] Parameter 'layer_param' is not required but declares no default",
+    ):
+        Litestar([handler], parameters={"layer_param": QueryParameter(annotation=int, required=False)})

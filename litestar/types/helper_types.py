@@ -5,7 +5,6 @@ from functools import partial
 from typing import (
     TYPE_CHECKING,
     Any,
-    Literal,
     TypeVar,
     Union,
 )
@@ -18,17 +17,13 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
-__all__ = ("AnyIOBackend", "MaybePartial", "OptionalSequence", "SSEData", "StreamType", "SyncOrAsyncUnion")
+__all__ = ("MaybePartial", "OptionalSequence", "SSEData", "StreamType", "SyncOrAsyncUnion")
 
 OptionalSequence: TypeAlias = Sequence[T] | None
 """Types 'T' as union of Sequence[T] and None."""
 
 SyncOrAsyncUnion: TypeAlias = Union[T, Awaitable[T]]
 """Types 'T' as a union of T and awaitable T."""
-
-
-AnyIOBackend: TypeAlias = Literal["asyncio", "trio"]
-"""Anyio backend names."""
 
 StreamType: TypeAlias = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]
 """A stream type."""

@@ -131,6 +131,19 @@ or ``make coverage``. Due to the nature of pytest-xdist, attaching a debugger is
 straightforward. For debugging, it's recommended to run the tests individually with
 ``pytest <test name>`` or via an IDE, which will skip ``pytest-xdist``.
 
+Benchmarks
+++++++++++
+
+Benchmarks live in ``tests/benchmarks`` and are measured by
+`CodSpeed <https://codspeed.io/litestar-org/litestar>`_ in CI. They are ordinary pytest
+tests, so ``make test`` runs each of them once.
+
+When adding one, drive the app with ``ASGIRunner`` from ``tests/benchmarks/helpers.py``
+rather than ``TestClient``, and assert on the result so it keeps working as a test.
+``pytest-codspeed`` forwards keyword arguments to its own measuring function, so pass the
+call's arguments positionally or wrap it in a ``lambda`` -- a keyword named ``target``,
+``fn``, ``name``, ``uri`` or ``marker_options`` collides with it.
+
 Running type checkers
 +++++++++++++++++++++
 

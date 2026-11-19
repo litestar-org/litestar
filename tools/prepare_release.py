@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import click
-import httpx
+import httpx2
 import msgspec
 
 if TYPE_CHECKING:
@@ -92,12 +92,12 @@ class _Thing:
         self._new_release_tag = tag
         self._release_branch = release_branch
         self._new_release_version = version
-        self._base_client = httpx.AsyncClient(
+        self._base_client = httpx2.AsyncClient(
             headers={
                 "Authorization": f"Bearer {gh_token}",
             }
         )
-        self._api_client = httpx.AsyncClient(
+        self._api_client = httpx2.AsyncClient(
             headers={
                 **self._base_client.headers,
                 "X-GitHub-Api-Version": "2022-11-28",

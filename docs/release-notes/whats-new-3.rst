@@ -42,6 +42,8 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``litestar.contrib.sqlalchemy``                    | ``advanced_alchemy.extensions.litestar``                               |
 +----------------------------------------------------+------------------------------------------------------------------------+
+| ``litestar.pagination.OffsetPagination``           | ``advanced_alchemy.service.OffsetPagination``                          |
++----------------------------------------------------+------------------------------------------------------------------------+
 
 
 Removal of ``StaticFileConfig``
@@ -195,6 +197,115 @@ If you were relying on this utility, you can define it yourself as follows:
         return isgeneratorfunction(obj) or isasyncgenfunction(obj)
 
 
+Deprecated ``DTOField`` declaration via Pydantic's ``Field.extra`` removed
+--------------------------------------------------------------------------
+
+Declaring a :class:`~.dto.field.DTOField` through Pydantic's ``Field.extra``, that is
+``Field(**dto_field("read-only"))``, is no longer supported. The mark was already being
+ignored in 2.x and only produced a deprecation warning.
+
+Remove the declaration: it leaves an internal key in the field's ``json_schema_extra``,
+which can make OpenAPI schema generation fail.
+
+Before:
+
+.. code-block:: python
+
+    import pydantic
+
+    from litestar.dto import dto_field
+
+
+    class User(pydantic.BaseModel):
+        id: int = pydantic.Field(**dto_field("read-only"))
+
+After:
+
+.. code-block:: python
+
+    from typing import Annotated
+
+    import pydantic
+
+    from litestar.dto import DTOField
+
+
+    class User(pydantic.BaseModel):
+        id: Annotated[int, DTOField(mark="read-only")]
+
+
+Removal of the ``litestar.pagination`` module
+---------------------------------------------
+
+The ``litestar.pagination`` module has been removed, together with the internal OpenAPI
+schema plugin that gave its containers a schema of their own:
+
+- ``ClassicPagination``
+- ``OffsetPagination``
+- ``CursorPagination``
+- ``AbstractSyncClassicPaginator``
+- ``AbstractAsyncClassicPaginator``
+- ``AbstractSyncOffsetPaginator``
+- ``AbstractAsyncOffsetPaginator``
+- ``AbstractSyncCursorPaginator``
+- ``AbstractAsyncCursorPaginator``
+
+``OffsetPagination`` has a direct replacement: Litestar re-exported Advanced Alchemy's
+container whenever the package was installed, so for an application that already depended
+on it the class is the same one and only the import changes, to
+``from advanced_alchemy.service import OffsetPagination``. It is exported from
+``advanced_alchemy.service``, not from ``advanced_alchemy.extensions.litestar``. An
+application that did not depend on Advanced Alchemy has to add it, directly or through the
+``litestar[sqlalchemy]`` extra, or declare the same four-field container itself --
+``items``, ``limit``, ``offset`` and ``total`` -- which serialises identically. Note that
+Advanced Alchemy declares ``items`` as a ``Sequence[T]``, where the removed fallback
+declared it as a ``list[T]``.
+
+The other two containers and the six paginator base classes have no replacement in
+Litestar or in Advanced Alchemy. Declare the container you need as a generic dataclass of
+your own, and implement the paginating logic in the handler, or in a dependency whose
+parameter is marked with :data:`~litestar.di.NamedDependency`. OpenAPI schema generation
+resolves a generic dataclass wrapping a collection the same way, and DTOs still apply to
+the models it holds.
+
+.. code-block:: python
+
+    from dataclasses import dataclass
+    from typing import Generic, TypeVar
+
+    T = TypeVar("T")
+
+
+    @dataclass
+    class ClassicPagination(Generic[T]):
+        items: list[T]
+        page_size: int
+        current_page: int
+        total_pages: int
+
+``CursorPagination`` was generic over the cursor type first and the item type second, so a
+handler annotated it as ``CursorPagination[str, Person]``:
+
+.. code-block:: python
+
+    C = TypeVar("C", int, str, UUID)
+
+
+    @dataclass
+    class CursorPagination(Generic[C, T]):
+        items: list[T]
+        results_per_page: int
+        cursor: Optional[C]
+
+The OpenAPI document changes for every paginated handler, including those of applications
+that never imported ``litestar.pagination``, since the removed plugin matched Advanced
+Alchemy's ``OffsetPagination`` as well. The response schema is now a reusable component
+referenced with ``$ref``, named after the container and its type argument, instead of a
+schema inlined per handler, with a ``required`` entry for each field and without the
+per-field descriptions the plugin wrote. Behaviour and the response body are unchanged,
+but regenerate any client generated from the document.
+
+
 Removal of semantic HTTP route handler classes
 -----------------------------------------------
 
@@ -299,7 +410,7 @@ this functionality are now required to inherit from
 Dropped support for starlette middleware protocol
 -------------------------------------------------
 
-The `starlette middleware protocol <https://www.starlette.io/middleware>`_ is no longer
+The `starlette middleware protocol <https://starlette.dev/middleware/>`_ is no longer
 supported.
 
 Only the "factory" pattern will now be supported, i.e. a callable that receives an ASGI
@@ -435,13 +546,14 @@ naming the extra to install:
     pip install 'litestar[cli]'
 
 
-``httpx`` package removed from default dependencies
-----------------------------------------------------
+Test clients are based on ``httpx2``, installed via the ``testing`` extra
+-------------------------------------------------------------------------
 
-The `httpx <https://www.python-httpx.org/>`_ library, on which the
-:doc:`test clients </usage/testing>` are based, has been moved from the default
-dependencies to the ``litestar[testing]`` package extra. It is also included in
-``litestar[full]``.
+The :doc:`test clients </usage/testing>` were based on
+`httpx <https://www.python-httpx.org/>`_, which was a default dependency. In 3.0 they
+are based on `httpx2 <https://pydantic.dev/docs/httpx2/>`_, the fork of ``httpx``
+maintained by Pydantic, and it is installed by the ``litestar[testing]`` extra rather
+than by default.
 
 Importing anything from :mod:`litestar.testing` without the extra installed raises a
 :class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`
@@ -451,6 +563,49 @@ naming the extra to install:
     :caption: Install the testing extra
 
     pip install 'litestar[testing]'
+
+``httpx2`` keeps the public API of ``httpx`` 0.28.1, but it is a distinct module, so
+every reference in a test suite has to be renamed:
+
+.. code-block:: python
+
+    # before
+    response: httpx.Response = client.get("/")
+    with pytest.raises(httpx.HTTPStatusError):
+        response.raise_for_status()
+
+    # after
+    response: httpx2.Response = client.get("/")
+    with pytest.raises(httpx2.HTTPStatusError):
+        response.raise_for_status()
+
+If you cannot rename a test suite yet, ``httpx2.alias_httpx()`` makes ``import httpx``
+resolve to ``httpx2`` process-wide. It has to be called before anything imports
+``httpx`` or ``httpcore``, and raises :exc:`RuntimeError` otherwise. Litestar never
+calls it for you.
+
+Beyond the rename, these are worth checking:
+
+- :class:`~litestar.testing.TestClient` and
+  :class:`~litestar.testing.AsyncTestClient` now subclass ``httpx2.Client`` and
+  ``httpx2.AsyncClient``, and :func:`~litestar.testing.subprocess_sync_client` /
+  :func:`~litestar.testing.subprocess_async_client` return ``httpx2`` clients.
+- ``httpx2`` raises its own exceptions, which do not inherit from the ``httpx`` ones.
+  An ``except httpx.HTTPError`` around a test client call stops matching, and does so
+  silently if ``httpx`` is still installed for other reasons.
+- The logger is named ``httpx2``. Logging configuration and ``caplog`` assertions
+  that reference the ``httpx`` logger need updating.
+- The clients inherit ``httpx2``'s ``sse()``, which works through the test transport,
+  so ``httpx-sse`` is no longer needed. The inherited ``websocket()`` does not work
+  against the test transport; use
+  :meth:`websocket_connect <litestar.testing.TestClient.websocket_connect>` instead.
+- :func:`~litestar.testing.subprocess_sync_client` and
+  :func:`~litestar.testing.subprocess_async_client` send
+  ``User-Agent: python-httpx2/<version>``. :class:`~litestar.testing.TestClient` and
+  :class:`~litestar.testing.AsyncTestClient` keep sending ``testclient``.
+- The extra pulls ``anyio>=4.10`` and ``idna>=3.18``, neither of which can be
+  satisfied alongside a lower pin. TLS verification uses the operating system trust
+  store via ``truststore`` rather than ``certifi``.
 
 
 ``rich-click>=1.9`` is now required by the CLI
@@ -501,3 +656,41 @@ startup.
 .. seealso::
 
     :ref:`usage/middleware/creating-middleware:Configuration constraints`
+
+
+``copy_scope`` defaults to ``True`` for ASGI handlers
+-----------------------------------------------------
+
+Every :func:`~.handlers.asgi` handler, mounted or not, now receives a copy of the ASGI
+``scope``, so the wrapped application can no longer add, replace or remove top-level scope
+keys seen by the outer application. In 2.x the default was ``None``, which passed the
+original scope through, warned at registration and warned again when the wrapped
+application mutated the scope. Both warnings are gone.
+
+The copy is shallow, so nested values such as ``scope["state"]`` are still shared with the
+outer scope.
+
+Set ``copy_scope=False`` where the wrapped application is meant to communicate with the
+outer application through the scope:
+
+.. code-block:: python
+
+    @asgi("/some/sub-path", is_mount=True, copy_scope=False)
+    async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None: ...
+
+You need the opt-out if the wrapped application writes a top-level scope key the outer
+application reads, such as ``scope["user"]``, or calls
+:meth:`~.connection.ASGIConnection.set_session` or
+:meth:`~.connection.ASGIConnection.clear_session`, both of which rebind
+``scope["session"]``. A mounted Starlette or FastAPI application also sets
+``scope["endpoint"]`` and ``scope["route"]``, which outer Sentry or OpenTelemetry layers
+read after the response to name the transaction. All of these now fail silently.
+
+``copy_scope`` is set per handler; there is no router- or application-level equivalent, so
+an application with several mounts opts out on each handler. A ``handler_class`` subclass
+that pinned ``copy_scope`` by passing it to ``super().__init__()`` must now accept it as a
+parameter and forward it, because :func:`~.handlers.asgi` always passes it.
+
+.. seealso::
+
+    :ref:`usage/routing/handlers:ASGI route handler considerations`

@@ -6,7 +6,7 @@ from collections import defaultdict
 from functools import lru_cache, partial
 from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
-from litestar._multipart import parse_multipart_form
+from litestar._multipart import get_charset_table, parse_multipart_form
 from litestar._parsers import (
     parse_query_string,
     parse_url_encoded_form_data,
@@ -71,7 +71,7 @@ def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMa
 
         alias_and_key_tuples.append((alias, param.field_name))
 
-        if not (param.is_required or param.default is Ellipsis):
+        if not param.is_required:
             alias_defaults[alias] = param.default
 
         alias_to_params[alias] = param
@@ -346,6 +346,7 @@ async def _extract_multipart(
             boundary=connection.content_type[-1].get("boundary", "").encode(),
             multipart_form_part_limit=multipart_form_part_limit,
             type_decoders=connection.route_handler.type_decoders,
+            charsets=get_charset_table(connection.app.multipart_form_allowed_charsets),
         )
     else:
         form_values = scope_state.form

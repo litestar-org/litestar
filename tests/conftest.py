@@ -45,7 +45,6 @@ if TYPE_CHECKING:
 
     from litestar import Litestar
     from litestar.types import (
-        AnyIOBackend,
         ASGIApp,
         ASGIVersion,
         Receive,
@@ -67,11 +66,6 @@ def mock() -> MagicMock:
 @pytest.fixture()
 def async_mock() -> AsyncMock:
     return AsyncMock()
-
-
-@pytest.fixture(params=[pytest.param("asyncio", id="asyncio"), pytest.param("trio", id="trio")])
-def anyio_backend(request: pytest.FixtureRequest) -> str:
-    return request.param  # type: ignore[no-any-return]
 
 
 @pytest.fixture()
@@ -183,11 +177,6 @@ def cookie_session_middleware(
 
 
 @pytest.fixture
-def test_client_backend(anyio_backend_name: str) -> AnyIOBackend:
-    return cast("AnyIOBackend", anyio_backend_name)
-
-
-@pytest.fixture
 def create_scope() -> Callable[..., Scope]:
     def inner(
         *,
@@ -288,8 +277,8 @@ def request_factory() -> RequestFactory:
 
 @pytest.fixture()
 def reset_httpx_logging() -> Generator[None, None, None]:
-    # ensure that httpx logging is not interfering with our test client
-    httpx_logger = logging.getLogger("httpx")
+    # ensure that httpx2 logging is not interfering with our test client
+    httpx_logger = logging.getLogger("httpx2")
     initial_level = httpx_logger.level
     httpx_logger.setLevel(logging.WARNING)
     yield

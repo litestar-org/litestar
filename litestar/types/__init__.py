@@ -74,7 +74,7 @@ from .composite_types import (
 )
 from .debugger_types import Debugger
 from .empty import Empty, EmptyType
-from .helper_types import AnyIOBackend, MaybePartial, OptionalSequence, SSEData, StreamType, SyncOrAsyncUnion
+from .helper_types import MaybePartial, OptionalSequence, SSEData, StreamType, SyncOrAsyncUnion
 from .internal_types import ControllerRouterHandler, ReservedKwargs, RouteHandlerMapItem, RouteHandlerType
 from .protocols import DataclassProtocol, Logger
 from .serialization import DataContainerType, LitestarEncodableType
@@ -87,7 +87,6 @@ __all__ = (
     "AfterResponseHookHandler",
     "AnyCallable",
     "AnyGenerator",
-    "AnyIOBackend",
     "AsyncAnyCallable",
     "BaseScope",
     "BeforeMessageSendHookHandler",
