@@ -155,8 +155,36 @@ def test_async_generator_provide() -> None:
     assert app.route_handler_method_map["/"]["GET"]._injection_setup.registry.providers["value"].fn is provide_value
 
 
+@pytest.mark.usefixtures("enable_warn_implicit_sync_to_thread")
+@pytest.mark.parametrize("declare", [pytest.param(Provide, id="Provide"), pytest.param(lambda fn: fn, id="bare")])
+def test_sync_generator_dependency_without_warning(declare: Any) -> None:
+    def provide_value() -> Generator[int, None, None]:
+        yield 1
+
+    @get("/")
+    async def handler(value: NamedDependency[int]) -> None: ...
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", LitestarWarning)
+        app = Litestar([handler], dependencies={"value": declare(provide_value)}, openapi_config=None)
+
+    assert app.route_handler_method_map["/"]["GET"]._injection_setup.registry.providers["value"].fn is provide_value
+
+
 def test_cached_generator_provide_becomes_app_scoped_provider() -> None:
     async def provide_value() -> AsyncGenerator[int, None]:
+        yield 1
+
+    @get("/")
+    async def handler(value: NamedDependency[int]) -> None: ...
+
+    app = Litestar([handler], dependencies={"value": Provide(provide_value, use_cache=True)}, openapi_config=None)
+
+    assert app.route_handler_method_map["/"]["GET"]._injection_setup.registry.providers["value"].scope == "app"
+
+
+def test_cached_sync_generator_provide_becomes_app_scoped_provider() -> None:
+    def provide_value() -> Generator[int, None, None]:
         yield 1
 
     @get("/")
@@ -766,8 +794,8 @@ def test_provider_signature_error_names_handler_and_key() -> None:
 
 
 def test_provider_construction_error_names_handler_and_key() -> None:
-    def provide_value() -> Generator[str, None, None]:
-        yield "x"
+    def provide_value() -> str:
+        return "x"
 
     @get("/", dependencies={"value": Provide(provide_value)})
     async def one(value: NamedDependency[str]) -> str:
@@ -775,15 +803,15 @@ def test_provider_construction_error_names_handler_and_key() -> None:
 
     with pytest.raises(
         DIRegistrationError,
-        match=r"^\[paths='/', handler='one', dependencies='value'\] Callable .*provide_value .* of type sync "
-        r"generator function is not supported",
+        match=r"^\[paths='/', handler='one', dependencies='value'\] Missing 'sync_to_thread' on synchronous "
+        r"callable .*provide_value",
     ):
         Litestar([one], openapi_config=None)
 
 
 def test_provider_construction_error_names_chain_of_keys_provider_is_reached_through() -> None:
-    def provide_inner() -> Generator[str, None, None]:
-        yield "x"
+    def provide_inner() -> str:
+        return "x"
 
     async def provide_outer(inner: NamedDependency[str]) -> str:
         return inner
@@ -794,8 +822,8 @@ def test_provider_construction_error_names_chain_of_keys_provider_is_reached_thr
 
     with pytest.raises(
         DIRegistrationError,
-        match=r"^\[paths='/', handler='one', dependencies='inner' -> 'outer'\] Callable .*provide_inner .* of type "
-        r"sync generator function is not supported",
+        match=r"^\[paths='/', handler='one', dependencies='inner' -> 'outer'\] Missing 'sync_to_thread' on "
+        r"synchronous callable .*provide_inner",
     ):
         Litestar([one], openapi_config=None)
 

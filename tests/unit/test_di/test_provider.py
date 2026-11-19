@@ -4,7 +4,9 @@ import functools
 import inspect
 import sys
 import threading
-from collections.abc import AsyncGenerator, AsyncIterator
+from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
+from concurrent.futures import ThreadPoolExecutor
+from contextvars import ContextVar
 from typing import Annotated, Any, Optional, get_args
 
 import pytest
@@ -129,22 +131,199 @@ async def test_async_generator_callable_instance_provider() -> None:
     assert events == ["enter", "exit"]
 
 
-def sync_generator() -> Any:
-    yield Database()
+async def test_sync_generator_provider_cleanup_runs_on_stack_close() -> None:
+    events: list[str] = []
 
-
-class SyncGeneratorFactory:
-    def __call__(self) -> Any:
+    def factory() -> Generator[Database, None, None]:
+        events.append("enter")
         yield Database()
+        events.append("exit")
+
+    provider = Provider(factory, kind="named")
+
+    stack = _CleanupStack()
+    value = await provider._produce({}, stack)
+    assert isinstance(value, Database)
+    assert events == ["enter"]
+
+    await stack.aclose()
+    assert events == ["enter", "exit"]
 
 
-@pytest.mark.parametrize(
-    "factory",
-    [pytest.param(sync_generator, id="function"), pytest.param(SyncGeneratorFactory(), id="callable-instance")],
-)
-def test_sync_generator_raises(factory: Any) -> None:
-    with pytest.raises(DIRegistrationError, match="sync generator function is not supported as a provider factory"):
-        Provider(factory, kind="named", key="db")
+async def test_sync_generator_callable_instance_provider() -> None:
+    events: list[str] = []
+
+    class GenFactory:
+        def __call__(self) -> Generator[Database, None, None]:
+            events.append("enter")
+            yield Database()
+            events.append("exit")
+
+    provider = Provider(GenFactory(), kind="named", key="db")
+    stack = _CleanupStack()
+    assert isinstance(await provider._produce({}, stack), Database)
+    await stack.aclose()
+    assert events == ["enter", "exit"]
+
+
+async def test_sync_generator_provider_runs_before_and_after_yield_in_thread() -> None:
+    threads: list[int] = []
+
+    def factory() -> Generator[None, None, None]:
+        threads.append(threading.get_ident())
+        yield
+        threads.append(threading.get_ident())
+
+    provider = Provider(factory, kind="named")
+    stack = _CleanupStack()
+    await provider._produce({}, stack)
+    await stack.aclose()
+
+    before_yield, after_yield = threads
+    assert before_yield != threading.get_ident()
+    assert after_yield != threading.get_ident()
+
+
+async def test_sync_generator_provider_cleanup_runs_while_worker_threads_are_taken(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    executor = ThreadPoolExecutor(max_workers=1)
+    monkeypatch.setattr("litestar.di.provider.get_asyncio_executor", lambda: executor)
+    waiting = threading.Event()
+    released = threading.Event()
+
+    def first() -> Generator[None, None, None]:
+        yield
+        released.set()
+
+    def second() -> Generator[None, None, None]:
+        waiting.set()
+        assert released.wait(2)
+        yield
+
+    first_stack, second_stack = _CleanupStack(), _CleanupStack()
+    await Provider(first, kind="named")._produce({}, first_stack)
+    # holds the executor's only thread until the code after the first generator's yield has run
+    second_setup = asyncio.create_task(Provider(second, kind="named")._produce({}, second_stack))
+    await asyncio.to_thread(waiting.wait, 2)
+
+    await first_stack.aclose()
+    await second_setup
+    await second_stack.aclose()
+    executor.shutdown()
+
+
+async def test_sync_generator_provider_exception_thrown_in_thread() -> None:
+    threads: list[int] = []
+
+    def factory() -> Generator[None, None, None]:
+        try:
+            yield
+        except ValueError:
+            threads.append(threading.get_ident())
+            raise
+
+    provider = Provider(factory, kind="named")
+    stack = _CleanupStack()
+    await provider._produce({}, stack)
+    exc = ValueError()
+    await stack.aclose(ValueError, exc, None)
+
+    (thread,) = threads
+    assert thread != threading.get_ident()
+
+
+async def test_sync_generator_provider_context_variable_set_before_yield_is_set_after_it() -> None:
+    var: ContextVar[str] = ContextVar("var", default="default")
+    values: list[str] = []
+
+    def factory() -> Generator[None, None, None]:
+        token = var.set("set before the yield")
+        yield
+        values.append(var.get())
+        var.reset(token)
+        values.append(var.get())
+
+    provider = Provider(factory, kind="named")
+    stack = _CleanupStack()
+    await provider._produce({}, stack)
+    await stack.aclose()
+
+    assert values == ["set before the yield", "default"]
+
+
+async def test_sync_generator_provider_context_variable_set_before_yield_reaches_caller() -> None:
+    var: ContextVar[str] = ContextVar("var", default="default")
+
+    def factory() -> Generator[None, None, None]:
+        var.set("set before the yield")
+        yield
+
+    provider = Provider(factory, kind="named")
+    stack = _CleanupStack()
+    await provider._produce({}, stack)
+
+    assert var.get() == "set before the yield"
+    await stack.aclose()
+
+
+async def test_sync_generator_provider_context_variable_set_by_caller_is_set_after_yield() -> None:
+    var: ContextVar[str] = ContextVar("var", default="default")
+    values: list[str] = []
+
+    def factory() -> Generator[None, None, None]:
+        yield
+        values.append(var.get())
+
+    provider = Provider(factory, kind="named")
+    stack = _CleanupStack()
+    await provider._produce({}, stack)
+    var.set("set by the caller")
+    await stack.aclose()
+
+    assert values == ["set by the caller"]
+
+
+async def test_sync_generator_provider_context_variable_set_by_caller_is_set_for_thrown_exception() -> None:
+    var: ContextVar[str] = ContextVar("var", default="default")
+    values: list[str] = []
+
+    def factory() -> Generator[None, None, None]:
+        try:
+            yield
+        except ValueError:
+            values.append(var.get())
+            raise
+
+    provider = Provider(factory, kind="named")
+    stack = _CleanupStack()
+    await provider._produce({}, stack)
+    var.set("set by the caller")
+    exc = ValueError()
+    await stack.aclose(ValueError, exc, None)
+
+    assert values == ["set by the caller"]
+
+
+async def test_sync_generator_provider_context_variable_set_before_yield_is_set_for_thrown_exception() -> None:
+    var: ContextVar[str] = ContextVar("var", default="default")
+    values: list[str] = []
+
+    def factory() -> Generator[None, None, None]:
+        var.set("set before the yield")
+        try:
+            yield
+        except ValueError:
+            values.append(var.get())
+            raise
+
+    provider = Provider(factory, kind="named")
+    stack = _CleanupStack()
+    await provider._produce({}, stack)
+    exc = ValueError()
+    await stack.aclose(ValueError, exc, None)
+
+    assert values == ["set before the yield"]
 
 
 @pytest.mark.parametrize(
@@ -685,6 +864,20 @@ def test_type_key_inferred_from_async_generator_annotation(annotation: Any) -> N
     assert Provider(factory, kind="type").key is Database
 
 
+@pytest.mark.parametrize(
+    "annotation",
+    [
+        pytest.param(Generator[Database, None, None], id="generator"),
+        pytest.param(Iterator[Database], id="iterator"),
+    ],
+)
+def test_type_key_inferred_from_sync_generator_annotation(annotation: Any) -> None:
+    def factory() -> annotation:  # pyright: ignore[reportInvalidTypeForm]
+        yield Database()
+
+    assert Provider(factory, kind="type").key is Database
+
+
 def test_type_key_without_return_annotation_raises() -> None:
     async def factory():  # type: ignore[no-untyped-def]
         return Database()
@@ -748,6 +941,14 @@ def test_type_key_inferred_async_generator_without_yield_type_raises() -> None:
         yield Database()
 
     with pytest.raises(DIRegistrationError, match="Cannot infer a type key for async generator provider"):
+        Provider(factory, kind="type").key
+
+
+def test_type_key_inferred_sync_generator_without_yield_type_raises() -> None:
+    def factory() -> Any:
+        yield Database()
+
+    with pytest.raises(DIRegistrationError, match="Cannot infer a type key for sync generator provider"):
         Provider(factory, kind="type").key
 
 
@@ -1148,6 +1349,15 @@ def test_sync_to_thread_on_non_sync_callable_raises(flag: bool) -> None:
     with pytest.raises(DIRegistrationError, match="not a synchronous callable"):
         Provider(factory, kind="named", sync_to_thread=flag)
     with pytest.raises(DIRegistrationError, match="not a synchronous callable"):
+        Provider(generator, kind="named", sync_to_thread=flag)
+
+
+@pytest.mark.parametrize("flag", [True, False])
+def test_sync_to_thread_on_sync_generator_raises(flag: bool) -> None:
+    def generator() -> Generator[Database, None, None]:
+        yield Database()
+
+    with pytest.raises(DIRegistrationError, match="because it is a sync generator function"):
         Provider(generator, kind="named", sync_to_thread=flag)
 
 

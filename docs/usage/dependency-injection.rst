@@ -94,7 +94,7 @@ is available to all route handlers.
 Dependencies with yield (cleanup step)
 --------------------------------------
 
-In addition to simple callables, dependencies can also be async generator functions, which allows
+In addition to simple callables, dependencies can also be (async) generator functions, which allows
 to execute an additional cleanup step, such as closing a connection, after the handler function
 has returned.
 

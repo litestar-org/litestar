@@ -6,6 +6,16 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Run all parts of sync generator dependencies in a worker threads
+        :type: fix
+        :breaking:
+        :pr: TBD
+
+        Run all code of a synchronous generator dependency in threads. Previously, code
+        up until the first ``yield`` would run on the main thread.
+
+        All of the generator's code runs in a shared :class:`contextvars.Context`.
+
     .. change:: Drop reserved keyword arguments in handlers and DI
         :type: feature
         :breaking:

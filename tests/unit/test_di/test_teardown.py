@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import AsyncGenerator
+import threading
+from collections.abc import AsyncGenerator, Generator
+from typing import Any
 
+import anyio
 import pytest
 
 from litestar.di import (
@@ -274,6 +277,32 @@ async def test_generator_yielding_twice_raises() -> None:
 async def test_generator_that_never_yields_raises() -> None:
     @provide(scope="app")
     async def never() -> AsyncGenerator[int, None]:
+        return
+        yield 1  # type: ignore[unreachable]
+
+    async with DIContext(DIRegistry("app", [never])) as ctx:
+        with pytest.raises(RuntimeError, match="didn't yield") as exc_info:
+            await ctx.solve("never")
+
+    assert any("resolving dependency 'never'" in note for note in exc_info.value.__notes__)
+
+
+async def test_sync_generator_yielding_twice_raises() -> None:
+    @provide(scope="app")
+    def twice() -> Generator[int, None, None]:
+        yield 1
+        yield 2
+
+    with pytest.raises(RuntimeError, match="didn't stop") as exc_info:
+        async with DIContext(DIRegistry("app", [twice])) as ctx:
+            await ctx.solve("twice")
+
+    assert any("tearing down dependency 'twice'" in note for note in exc_info.value.__notes__)
+
+
+async def test_sync_generator_that_never_yields_raises() -> None:
+    @provide(scope="app")
+    def never() -> Generator[int, None, None]:
         return
         yield 1  # type: ignore[unreachable]
 
@@ -1301,3 +1330,179 @@ async def test_cleanup_failure_raises_over_body_cancellation_and_keeps_it() -> N
         assert await task == "carried on"
         assert task.cancelled() is False
     assert "Takes precedence over a cancellation of the cleanup task" in left[0].__notes__
+
+
+async def test_cancellation_during_sync_generator_cleanup_raised_after_cleanup() -> None:
+    events: list[str] = []
+    committing = threading.Event()
+    commit = threading.Event()
+
+    @provide(scope="app")
+    def connection() -> Generator[str, None, None]:
+        try:
+            yield "connection"
+        finally:
+            events.append("connection closed")
+
+    @provide(scope="app")
+    def transaction(connection: NamedDependency[str]) -> Generator[str, None, None]:
+        yield "transaction"
+        committing.set()
+        commit.wait(2)
+        events.append("committed")
+
+    async def use() -> None:
+        async with DIContext(DIRegistry("app", [connection, transaction])) as ctx:
+            await ctx.solve("transaction")
+
+    task = asyncio.create_task(use())
+    await asyncio.to_thread(committing.wait, 2)
+    task.cancel()
+    await asyncio.sleep(0.01)
+    assert events == []
+
+    commit.set()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    assert events == ["committed", "connection closed"]
+
+
+async def test_cancellation_during_sync_generator_setup_thrown_into_generator() -> None:
+    events: list[str] = []
+    setting_up = threading.Event()
+    finish_setup = threading.Event()
+
+    @provide(scope="app")
+    def resource() -> Generator[str, None, None]:
+        setting_up.set()
+        finish_setup.wait(2)
+        try:
+            yield "value"
+        except asyncio.CancelledError:
+            events.append("cancellation thrown in")
+            raise
+
+    async with DIContext(DIRegistry("app", [resource])) as ctx:
+        task = asyncio.create_task(ctx.solve("resource"))
+        await asyncio.to_thread(setting_up.wait, 2)
+        task.cancel()
+        await asyncio.sleep(0.01)
+        assert not task.done()
+
+        finish_setup.set()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+
+    assert events == ["cancellation thrown in"]
+
+
+async def test_cancellation_during_failing_sync_generator_setup_raises_cancellation() -> None:
+    setting_up = threading.Event()
+    finish_setup = threading.Event()
+
+    @provide(scope="app")
+    def resource() -> Generator[str, None, None]:
+        setting_up.set()
+        finish_setup.wait(2)
+        raise ValueError
+        yield "value"  # type: ignore[unreachable]
+
+    async with DIContext(DIRegistry("app", [resource])) as ctx:
+        task = asyncio.create_task(ctx.solve("resource"))
+        await asyncio.to_thread(setting_up.wait, 2)
+        task.cancel()
+        finish_setup.set()
+
+        with pytest.raises(asyncio.CancelledError):
+            await task
+
+
+async def test_wait_for_sync_generator_cleanup_shielded_in_cancelled_anyio_scope() -> None:
+    # performance: anyio cancels a task of a cancelled scope again on every pass of the event loop. the
+    # wait for the generator's thread is shielded, so the task is not woken on each of them
+    cancellations = 0
+
+    class CountingTask(asyncio.Task[None]):
+        def cancel(self, msg: Any = None) -> bool:
+            nonlocal cancellations
+            cancellations += 1
+            return super().cancel(msg)
+
+    events: list[str] = []
+    in_use = asyncio.Event()
+    cleaning_up = threading.Event()
+    finish_cleanup = threading.Event()
+
+    @provide(scope="app")
+    def resource() -> Generator[str, None, None]:
+        try:
+            yield "value"
+        finally:
+            cleaning_up.set()
+            finish_cleanup.wait(2)
+            events.append("cleaned up")
+
+    scope = anyio.CancelScope()
+
+    async def use() -> None:
+        with scope:
+            async with DIContext(DIRegistry("app", [resource])) as ctx:
+                await ctx.solve("resource")
+                in_use.set()
+                await asyncio.sleep(10)
+        events.append("left the scope")
+
+    task = CountingTask(use())
+    await in_use.wait()
+    scope.cancel()
+    await asyncio.to_thread(cleaning_up.wait, 2)
+    await asyncio.sleep(0.05)
+    finish_cleanup.set()
+    await task
+
+    assert events == ["cleaned up", "left the scope"]
+    assert cancellations < 10
+
+
+async def test_wait_for_sync_generator_setup_shielded_in_cancelled_anyio_scope() -> None:
+    # performance: anyio cancels a task of a cancelled scope again on every pass of the event loop. the
+    # wait for the generator's thread is shielded, so the task is not woken on each of them
+    cancellations = 0
+
+    class CountingTask(asyncio.Task[None]):
+        def cancel(self, msg: Any = None) -> bool:
+            nonlocal cancellations
+            cancellations += 1
+            return super().cancel(msg)
+
+    events: list[str] = []
+    setting_up = threading.Event()
+    finish_setup = threading.Event()
+
+    @provide(scope="app")
+    def resource() -> Generator[str, None, None]:
+        setting_up.set()
+        finish_setup.wait(2)
+        try:
+            yield "value"
+        except asyncio.CancelledError:
+            events.append("cancellation thrown in")
+            raise
+
+    scope = anyio.CancelScope()
+
+    async def use() -> None:
+        with scope:
+            async with DIContext(DIRegistry("app", [resource])) as ctx:
+                await ctx.solve("resource")
+        events.append("left the scope")
+
+    task = CountingTask(use())
+    await asyncio.to_thread(setting_up.wait, 2)
+    scope.cancel()
+    await asyncio.sleep(0.05)
+    finish_setup.set()
+    await task
+
+    assert events == ["cancellation thrown in", "left the scope"]
+    assert cancellations < 10

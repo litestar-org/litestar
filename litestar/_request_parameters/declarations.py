@@ -218,9 +218,7 @@ def merge_request_parameters(
         param_type, name = key_declarations[0].parameter.param_type, key_declarations[0].parameter.name
         source = _describe_source(param_type, name)
         field_definition = _merge_declarations(source, key_declarations)
-        declarers = (
-            f"{' and '.join(map(str, key_declarations))} declare{'s' if len(key_declarations) == 1 else ''}"
-        )
+        declarers = f"{' and '.join(map(str, key_declarations))} declare{'s' if len(key_declarations) == 1 else ''}"
         # a layer parameter cannot declare a default; a parameter receiving the value must
         if (
             not field_definition.is_required

@@ -1,4 +1,4 @@
-from collections.abc import AsyncGenerator
+from collections.abc import Generator
 
 from litestar import Litestar, get
 from litestar.di import NamedDependency, Provide
@@ -6,7 +6,7 @@ from litestar.di import NamedDependency, Provide
 CONNECTION = {"open": False}
 
 
-async def generator_function() -> AsyncGenerator[dict[str, bool], None]:
+def generator_function() -> Generator[dict[str, bool], None, None]:
     """Set connection to open and close it after the handler returns."""
     CONNECTION["open"] = True
     yield CONNECTION

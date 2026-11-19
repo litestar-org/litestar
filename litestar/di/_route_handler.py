@@ -108,8 +108,8 @@ class ProvideConverter:
 
         Raises:
             DIRegistrationError: If a ``Provider``'s key is not ``key``, the provider cannot be
-                created from the declaration, e.g. for a synchronous generator, or its signature
-                cannot be read.
+                created from the declaration, e.g. for a ``Provide`` of a synchronous callable
+                without ``sync_to_thread``, or its signature cannot be read.
         """
         if isinstance(declaration, Provider):
             if declaration.key != key:

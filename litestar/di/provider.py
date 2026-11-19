@@ -3,10 +3,12 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import contextvars
 import enum
 import functools
 import inspect
-from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator
+from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Generator, Iterable, Iterator
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
@@ -19,6 +21,9 @@ from typing import (
     cast,
 )
 
+import anyio
+
+from litestar.concurrency import get_asyncio_executor
 from litestar.di._helpers import _bounded_repr, _describe_callable, _format_key
 from litestar.di._request import RequestParameter, _request_dependency, _reserved_request_value_key
 from litestar.di.exceptions import DIRegistrationError, DIResolutionError
@@ -30,7 +35,8 @@ from litestar.utils.typing import make_non_optional_union
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
-    from contextlib import AbstractAsyncContextManager
+    from contextlib import AbstractAsyncContextManager, AbstractContextManager
+    from types import TracebackType
 
     from litestar.di.context import _CleanupStack
 
@@ -183,14 +189,97 @@ class InjectionParameter:
     """Whether the parameter is optional (i.e. has a default)"""
 
 
+def _copy_context_variables(source: contextvars.Context) -> None:
+    """Set the context variables of ``source`` in the current context."""
+    for var, value in source.items():
+        if var.get(Empty) is not value:
+            var.set(value)
+
+
+async def _wait_until_done(future: asyncio.Future[Any]) -> asyncio.CancelledError | None:
+    """Wait until ``future`` is done, also when the task waiting is cancelled. Return the first cancellation
+    delivered during the wait.
+    """
+    try:
+        await asyncio.wait([future])
+    except asyncio.CancelledError as cancellation:
+        # performance: anyio cancels a task of a cancelled cancel scope again at every
+        # suspension point, resulting in a busy-loop, potentially saturating a CPU core.
+        # https://github.com/agronholm/anyio/issues/884, https://github.com/agronholm/anyio/issues/1257
+        # shielding the cancellation makes it work as expected: 'Task.cancel()' gets
+        # through
+        with anyio.CancelScope(shield=True):
+            while not future.done():
+                with contextlib.suppress(asyncio.CancelledError):
+                    await asyncio.wait([future])
+        return cancellation
+    return None
+
+
+class _SyncGeneratorContextManager:
+    """An async context manager for a sync generator provider.
+
+    The generator runs in threads, with a shared :class:`contextvars.Context`.
+    """
+
+    __slots__ = ("_context", "_context_manager")
+
+    def __init__(self, context_manager_factory: Callable[..., AbstractContextManager[Any]], /, **kwargs: Any) -> None:
+        self._context = contextvars.copy_context()
+        self._context_manager = context_manager_factory(**kwargs)
+
+    def _run_in_executor(
+        self, executor: ThreadPoolExecutor | None, fn: Callable[..., T], *args: Any
+    ) -> asyncio.Future[T]:
+        call = functools.partial(self._context.run, fn, *args)
+        return asyncio.get_running_loop().run_in_executor(executor, call)
+
+    async def __aenter__(self) -> Any:
+        entering = self._run_in_executor(get_asyncio_executor(), self._context_manager.__enter__)
+        cancellation = await _wait_until_done(entering)
+        if cancellation is None:
+            value = entering.result()
+            _copy_context_variables(self._context)
+            return value
+        if entering.exception() is None:
+            await self._exit(type(cancellation), cancellation, cancellation.__traceback__)
+        raise cancellation
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> bool | None:
+        self._context.run(_copy_context_variables, contextvars.copy_context())
+        return await self._exit(exc_type, exc, traceback)
+
+    async def _exit(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> bool | None:
+        # use a separate thread, because the threads from the executor may all be taken
+        # until this code has run (by other generators waiting for what it releases,
+        # e.g. a connection of a pool)
+        executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="litestar-sync-generator-cleanup")
+        exiting = self._run_in_executor(executor, self._context_manager.__exit__, exc_type, exc, traceback)
+        executor.shutdown(wait=False)
+        cancellation = await _wait_until_done(exiting)
+        suppressed = exiting.result()
+        if cancellation is not None:
+            raise cancellation
+        return suppressed
+
+
 def _should_run_sync_in_thread(
     fn: Callable[..., Any], form: _CallableForm, sync_to_thread: bool | None, *, role: str, how: str
 ) -> bool:
     if form is not _CallableForm.SYNC:
         if sync_to_thread is not None:
-            raise DIRegistrationError(
-                f"sync_to_thread={sync_to_thread} has no effect on {fn} because it is not a synchronous callable"
-            )
+            reason = "a sync generator function" if form is _CallableForm.GENERATOR else "not a synchronous callable"
+            raise DIRegistrationError(f"sync_to_thread={sync_to_thread} has no effect on {fn} because it is {reason}")
         return False
 
     if sync_to_thread is not None:
@@ -429,9 +518,11 @@ class Provider:
           the generator. Cleanups are guaranteed to run in reverse order they providers were invoked in.
           Every cleanup will be invoked, even if prior cleanups raised an exception. Exceptions during
           cleanup steps are re-raised once all cleanups have completed.
-
-        Sync generator functions are not supported, because bridging them into a non-blocking state requires many
-        assumptions and can cause unexpected behaviour.
+        - a sync generator, yielding exactly once, with the cleanup step of an async generator. The code
+          up to the ``yield`` runs in a worker thread, the cleanup step in a thread of its own, both in
+          one :class:`contextvars.Context`: a context variable set before the ``yield`` is set after it,
+          and set for whoever resolves the provider. A context variable set where the context closes is
+          set for the cleanup step
 
         A provider may declare no 'fn', which makes it a *seed*. Seeds are expected to be given values for their
         context explicitly when that context is created. The shorthand for this is :meth:`Provider.seed()`
@@ -489,11 +580,6 @@ class Provider:
             return
 
         self._form = _CallableForm.from_callable(fn)
-        if self._form is _CallableForm.GENERATOR:
-            raise DIRegistrationError(
-                f"Callable {subject()} of type sync generator function is not supported as a provider factory. "
-                "Supported callable types are: async callables, sync callables, and async generator functions"
-            )
         self.sync_to_thread = _should_run_sync_in_thread(
             fn,
             self._form,
@@ -503,6 +589,10 @@ class Provider:
         )
         if self._form is _CallableForm.ASYNC_GENERATOR:
             self._context_manager_factory = contextlib.asynccontextmanager(fn)
+        elif self._form is _CallableForm.GENERATOR:
+            self._context_manager_factory = functools.partial(
+                _SyncGeneratorContextManager, contextlib.contextmanager(fn)
+            )
 
         self._update_wrapper(fn)
 
@@ -595,10 +685,13 @@ class Provider:
                 "'provide(kind='type', key=Database)."
             )
 
-        if self._form is _CallableForm.ASYNC_GENERATOR:
-            if field.origin not in (AsyncGenerator, AsyncIterator, AsyncIterable) or not field.inner_types:
+        if self._form in (_CallableForm.ASYNC_GENERATOR, _CallableForm.GENERATOR):
+            is_async = self._form is _CallableForm.ASYNC_GENERATOR
+            origins = (AsyncGenerator, AsyncIterator, AsyncIterable) if is_async else (Generator, Iterator, Iterable)
+            if field.origin not in origins or not field.inner_types:
                 raise DIRegistrationError(
-                    f"Cannot infer a type key for async generator provider {_describe_callable(self.fn)}: "
+                    f"Cannot infer a type key for {'async' if is_async else 'sync'} generator provider "
+                    f"{_describe_callable(self.fn)}: "
                     f"Missing type parameter for its return annotation {field.raw!r} ."
                     "Supply the generic parameter or define a key explicitly"
                 )
@@ -648,7 +741,7 @@ class Provider:
     async def _produce(self, kwargs: Mapping[str, Any], stack: _CleanupStack | None) -> Any:
         """Produce a value from the factory, with ``kwargs`` as its resolved dependencies.
 
-        An async generator provider is entered on ``stack``, which it requires
+        A generator provider is entered on ``stack``, which it requires
         """
         fn = self._factory()
         if self._context_manager_factory is not None:
