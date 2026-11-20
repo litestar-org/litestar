@@ -14,7 +14,10 @@ from litestar import Litestar, Request, Response, get, post
 from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
 from litestar.datastructures import State
+from litestar.di import NamedDependency, Provide
 from litestar.enums import CompressionEncoding
+from litestar.exceptions import NotAuthorizedException
+from litestar.params import FromQuery
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
@@ -262,6 +265,60 @@ async def test_middleware_not_applied_to_non_cached_routes(
     with create_test_client(route_handlers=[handler]) as client:
         client.get("/")
         assert await client.app.stores.get("response_cache").exists("GET/") is expect_applied
+
+
+def test_cache_hit_runs_dependencies_and_before_request() -> None:
+    def check_token(request: Request) -> str:
+        if request.headers.get("x-token") != "valid":
+            raise NotAuthorizedException()
+        return "alice"
+
+    @get("/dependency", cache=True, dependencies={"user": Provide(check_token, sync_to_thread=False)})
+    async def dependency(user: NamedDependency[str]) -> str:
+        return user
+
+    def require_token(request: Request) -> None:
+        check_token(request)
+
+    @get("/hook", cache=True, before_request=require_token)
+    async def hook() -> str:
+        return "alice"
+
+    @get("/param", cache=True, cache_key_builder=lambda _: "param")
+    async def param(value: FromQuery[int]) -> str:
+        return "alice"
+
+    with create_test_client([dependency, hook, param]) as client:
+        for path in ("/dependency", "/hook"):
+            assert client.get(path, headers={"x-token": "valid"}).text == "alice"
+            assert client.get(path).status_code == 401
+        assert client.get("/param?value=1").text == "alice"
+        assert client.get("/param").status_code == 400
+
+
+def test_responses_rejected_before_the_handler_are_not_cached() -> None:
+    def check_token(request: Request) -> str:
+        if request.headers.get("x-token") != "valid":
+            raise NotAuthorizedException()
+        return "alice"
+
+    @get("/dependency", cache=True, dependencies={"user": Provide(check_token, sync_to_thread=False)})
+    async def dependency(user: NamedDependency[str]) -> str:
+        return user
+
+    def deny_without_token(request: Request) -> Optional[str]:
+        return None if request.headers.get("x-token") == "valid" else "denied"
+
+    @get("/hook", cache=True, before_request=deny_without_token)
+    async def hook() -> str:
+        return "alice"
+
+    with create_test_client(
+        [dependency, hook], response_cache_config=ResponseCacheConfig(cache_response_filter=lambda *_: True)
+    ) as client:
+        for path in ("/dependency", "/hook"):
+            assert client.get(path).text != "alice"
+            assert client.get(path, headers={"x-token": "valid"}).text == "alice"
 
 
 async def test_compression_applies_before_cache() -> None:

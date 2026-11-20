@@ -686,7 +686,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             await self.authorize_connection(connection=connection)
 
         try:
-            response = await self._get_response_for_request(request=connection)
+            response = await self._call_handler_function(request=connection)
 
             await response(connection.scope, connection.receive, connection.send)
 
@@ -696,33 +696,12 @@ class HTTPRouteHandler(BaseRouteHandler):
             if (form_data := ScopeState.from_scope(connection.scope).form) is not Empty:
                 await FormMultiDict.from_form_data(form_data).close()
 
-    async def _get_response_for_request(
-        self,
-        request: Request[Any, Any, Any],
-    ) -> ASGIApp:
-        """Return a response for the request.
-
-        If caching is enabled and a response exist in the cache, the cached response will be returned.
-        If caching is enabled and a response does not exist in the cache, the newly created
-        response will be cached.
-
-        Args:
-            request: The Request instance
-
-        Returns:
-            An instance of Response or a compatible ASGIApp or a subclass of it
-        """
-        if self.cache and (response := await self._get_cached_response(request=request)):
-            return response
-
-        return await self._call_handler_function(request=request)
-
     async def _call_handler_function(
         self,
         request: Request,
     ) -> ASGIApp:
-        """Call the before request handlers, retrieve any data required for the route handler, and call the route
-        handler's ``to_response`` method.
+        """Call the before request handlers, retrieve any data required for the route handler, then return the cached
+        response if there is one, or call the route handler's ``to_response`` method.
 
         This is wrapped in a try except block - and if an exception is raised,
         it tries to pass it to an appropriate exception handler - if defined.
@@ -757,6 +736,11 @@ class HTTPRouteHandler(BaseRouteHandler):
                     parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
                         connection=request, kwargs=kwargs
                     )
+
+                if self.cache:
+                    if cached_response := await self._get_cached_response(request=request):
+                        return cached_response
+                    ScopeState.from_scope(request.scope).do_cache = True
 
                 response_data = self.fn(**parsed_kwargs) if self.has_sync_callable else await self.fn(**parsed_kwargs)
 

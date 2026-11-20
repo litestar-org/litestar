@@ -81,9 +81,9 @@ class ResponseCacheMiddleware(ASGIMiddleware):
         async def wrapped_send(message: Message) -> None:
             if not value_or_default(connection_state.is_cached, False):
                 if message["type"] == HTTP_RESPONSE_START:
-                    do_cache = connection_state.do_cache = self.cache_response_filter(
-                        cast("HTTPScope", scope), message["status"]
-                    )
+                    do_cache = connection_state.do_cache = value_or_default(
+                        connection_state.do_cache, False
+                    ) and self.cache_response_filter(cast("HTTPScope", scope), message["status"])
                     if do_cache:
                         messages.append(message)
                 elif value_or_default(connection_state.do_cache, False):

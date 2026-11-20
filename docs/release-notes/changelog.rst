@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Run dependencies and ``before_request`` hooks before serving a cached response
+        :type: bugfix
+        :pr: 5217
+
+        Fix a bug where a cached response was served before ``before_request`` hooks,
+        parameter parsing and dependencies ran, so access checks done there were
+        skipped on a cache hit. The cache is now checked just before the handler is
+        called, so hooks, parameter validation and dependencies run on every request.
+        Responses returned before the handler is called, such as a ``before_request``
+        result or a dependency error, are no longer cached.
+
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
         :pr: 5213
