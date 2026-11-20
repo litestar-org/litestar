@@ -12,7 +12,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
     from litestar.openapi import OpenAPIConfig
-    from litestar.plugins import OpenAPISchemaPlugin
+    from litestar.plugins import InitPluginProtocol, OpenAPISchemaPlugin
+    from litestar.types import TypeEncodersMap
     from litestar.typing import FieldDefinition
 
 
@@ -39,7 +40,15 @@ def _longest_common_prefix(tuples_: list[tuple[str, ...]]) -> tuple[str, ...]:
     return prefix_
 
 
-def _get_component_key_override(field: FieldDefinition) -> str | None:
+def get_component_key_override(field: FieldDefinition) -> str | None:
+    """Get the explicit component key of a field.
+
+    Args:
+        field: The field definition.
+
+    Returns:
+        The ``schema_component_key`` of the field's ``KwargDefinition``, or ``None``.
+    """
     if (
         (kwarg_definition := field.kwarg_definition)
         and isinstance(kwarg_definition, KwargDefinition)
@@ -60,7 +69,7 @@ def _get_normalized_schema_key(field_definition: FieldDefinition) -> tuple[str, 
     Returns:
         A tuple of strings.
     """
-    if override := _get_component_key_override(field_definition):
+    if override := get_component_key_override(field_definition):
         return (override,)
 
     annotation = field_definition.annotation
@@ -99,10 +108,13 @@ class SchemaRegistry:
     """
 
     def __init__(self) -> None:
+        from litestar._openapi.schema_generation.library.components import LibraryComponents
+
         self._schema_key_map: dict[tuple[str, ...], RegisteredSchema] = {}
         self._schema_reference_map: dict[int, RegisteredSchema] = {}
         self._model_name_groups: defaultdict[str, list[RegisteredSchema]] = defaultdict(list)
         self._component_type_map: dict[tuple[str, ...], FieldDefinition] = {}
+        self.library: LibraryComponents = LibraryComponents()
 
     def get_schema_for_field_definition(self, field: FieldDefinition) -> Schema:
         """Get a registered schema by its key.
@@ -151,7 +163,7 @@ class SchemaRegistry:
                 f"Schema component keys must be unique. While obtaining a reference for the type '{field.raw!r}', the "
                 f"generated key {'_'.join(key)!r} was already associated with a different type '{existing_type.raw!r}'. "
             )
-            if key_override := _get_component_key_override(field):  # pragma: no branch
+            if key_override := get_component_key_override(field):  # pragma: no branch
                 # Currently, this can never not be true, however, in the future we might
                 # decide to do a stricter equality check as lined out above, in which
                 # case there can be other cases than overrides that cause this error
@@ -172,8 +184,29 @@ class SchemaRegistry:
 
         Returns:
             A RegisteredSchema object.
+
+        Raises:
+            ImproperlyConfiguredException: If ``reference`` points to a library-generated schema.
         """
+        if self.library.is_placeholder(reference):
+            raise ImproperlyConfiguredException(
+                f"{reference.ref!r} points to a library-generated schema, which has no registered schema; "
+                "use SchemaRegistry.component_for(), which returns None for it"
+            )
         return self._schema_reference_map[id(reference)]
+
+    def component_for(self, reference: Reference) -> Schema | None:
+        """Get the component schema behind a reference, or ``None`` for a library-generated schema.
+
+        Args:
+            reference: The reference to the schema to get.
+
+        Returns:
+            The component schema, or ``None`` if ``reference`` is a library placeholder.
+        """
+        if self.library.is_placeholder(reference):
+            return None
+        return self.from_reference(reference).schema
 
     def __iter__(self) -> Iterator[RegisteredSchema]:
         """Iterate over the registered schemas."""
@@ -220,6 +253,8 @@ class SchemaRegistry:
                 self.set_reference_paths(name_, registered_schema)
                 components_schemas[name_] = registered_schema.schema
 
+        components_schemas.update(self.library.emit(components_schemas))
+
         # Sort them by name to ensure they're always generated in the same order.
         return {name: components_schemas[name] for name in sorted(components_schemas.keys())}
 
@@ -229,9 +264,13 @@ class OpenAPIContext:
         self,
         openapi_config: OpenAPIConfig,
         plugins: Sequence[OpenAPISchemaPlugin],
+        type_encoders: TypeEncodersMap | None = None,
+        init_plugins: Sequence[InitPluginProtocol] = (),
     ) -> None:
         self.openapi_config = openapi_config
         self.plugins = plugins
+        self.type_encoders = type_encoders
+        self.init_plugins = init_plugins
         self.operation_ids: set[str] = set()
         self.schema_registry = SchemaRegistry()
 

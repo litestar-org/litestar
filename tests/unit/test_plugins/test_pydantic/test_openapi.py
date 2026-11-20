@@ -289,7 +289,7 @@ def test_create_constrained_field_schema_v2(
     assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
 
 
-@pytest.mark.parametrize("cls", (PydanticPerson, PydanticDataclassPerson))
+@pytest.mark.parametrize("cls", (PydanticPerson,))
 def test_spec_generation(cls: Any) -> None:
     @post("/")
     def handler(data: JSONBody[cls]) -> cls:
@@ -326,6 +326,45 @@ def test_spec_generation(cls: Any) -> None:
             "type": "object",
             "required": ["complex", "first_name", "id", "last_name", "optional", "union"],
             "title": f"{cls.__name__}",
+        }
+
+
+def test_spec_generation_pydantic_dataclass() -> None:
+    @post("/")
+    def handler(data: JSONBody[PydanticDataclassPerson]) -> PydanticDataclassPerson:
+        return data
+
+    with create_test_client(handler) as client:
+        schema = client.app.openapi_schema
+        assert schema
+
+        assert schema.to_schema()["components"]["schemas"]["PydanticDataclassPerson"] == {
+            "properties": {
+                "first_name": {"type": "string"},
+                "last_name": {"type": "string"},
+                "id": {"type": "string"},
+                "optional": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+                "complex": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {"type": "object", "additionalProperties": {"type": "string"}},
+                    },
+                },
+                "union": {"anyOf": [{"type": "integer"}, {"items": {"type": "string"}, "type": "array"}]},
+                "pets": {
+                    "anyOf": [
+                        {
+                            "items": {"$ref": "#/components/schemas/DataclassPet"},
+                            "type": "array",
+                        },
+                        {"type": "null"},
+                    ]
+                },
+            },
+            "type": "object",
+            "required": ["first_name", "last_name", "id", "optional", "complex", "union"],
+            "title": "PydanticDataclassPerson",
         }
 
 

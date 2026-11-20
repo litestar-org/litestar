@@ -25,12 +25,12 @@ def test_spec_generation() -> None:
     with create_test_client(handler) as client:
         schema = client.app.openapi_schema
         assert schema
-        assert schema.to_schema()["components"]["schemas"]["test_spec_generation.Person"] == {
+        assert schema.to_schema()["components"]["schemas"]["Person"] == {
             "properties": {
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
                 "id": {"type": "string"},
-                "optional": {"type": ["string", "null"]},
+                "optional": {"anyOf": [{"type": "string"}, {"type": "null"}]},
                 "complex": {
                     "type": "object",
                     "additionalProperties": {
@@ -39,7 +39,7 @@ def test_spec_generation() -> None:
                     },
                 },
                 "pets": {
-                    "oneOf": [
+                    "anyOf": [
                         {
                             "items": {"$ref": "#/components/schemas/DataclassPet"},
                             "type": "array",
@@ -49,6 +49,6 @@ def test_spec_generation() -> None:
                 },
             },
             "type": "object",
-            "required": ["complex", "first_name", "id", "last_name"],
+            "required": ["first_name", "last_name", "id", "complex"],
             "title": "Person",
         }

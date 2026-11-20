@@ -47,6 +47,8 @@ def test_unique_name_for_scope() -> None:
 
     assert unique_name_for_scope("b", ["a", "a_0", "b"]) == "b_0"
 
+    assert unique_name_for_scope("a", ["a", "a_2", "a_3"], start=2) == "a_4"
+
 
 def test_envflag_truthy_values(monkeypatch: pytest.MonkeyPatch) -> None:
     for value in ("1", "true", "t", "yes", "y", "on", "YeS", "oN", "TRUE", "T"):

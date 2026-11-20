@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import replace
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 from litestar._openapi.typescript_converter.types import (
@@ -131,6 +132,14 @@ def parse_type_schema(schema: Schema) -> TypeScriptPrimitive | TypeScriptLiteral
     raise TypeError(f"received an unexpected openapi type: {schema.type}")  # pragma: no cover
 
 
+def _only_requires_keys(schema: Any) -> bool:
+    if not is_schema_value(schema):
+        return False
+    members = [*(schema.any_of or ()), *(schema.one_of or ()), *(schema.all_of or ())]
+    rest = replace(schema, required=None, any_of=None, one_of=None, all_of=None)
+    return rest == Schema() and all(_only_requires_keys(member) for member in members)
+
+
 def parse_schema(schema: Schema) -> TypeScriptElement:
     """Parse an OpenAPI schema object recursively to create typescript types.
 
@@ -140,10 +149,12 @@ def parse_schema(schema: Schema) -> TypeScriptElement:
     Returns:
         A typescript type.
     """
-    if schema.all_of:
-        return TypeScriptIntersection(tuple(parse_schema(s) for s in schema.all_of if is_schema_value(s)))
+    if all_of := [s for s in schema.all_of or () if not _only_requires_keys(s)]:
+        return TypeScriptIntersection(tuple(parse_schema(s) for s in all_of if is_schema_value(s)))
     if schema.one_of:
         return TypeScriptUnion(tuple(parse_schema(s) for s in schema.one_of if is_schema_value(s)))
+    if schema.any_of:
+        return TypeScriptUnion(tuple(parse_schema(s) for s in schema.any_of if is_schema_value(s)))
     if is_schema_value(schema.items):
         return TypeScriptArray(parse_schema(schema.items))
     if schema.type == OpenAPIType.OBJECT:

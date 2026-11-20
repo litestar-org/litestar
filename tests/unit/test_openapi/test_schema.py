@@ -57,7 +57,7 @@ from litestar.params import (
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
-from tests.helpers import get_schema_for_field_definition
+from tests.helpers import get_components_for_field_definition, get_schema_for_field_definition
 from tests.models import DataclassPerson, DataclassPet
 
 if TYPE_CHECKING:
@@ -120,7 +120,7 @@ def test_override_schema_component_key() -> None:
     schema = app.openapi_schema.to_schema()
     # we expect the annotated / non-annotated to generate independent components
     assert schema["paths"]["/"]["post"]["requestBody"]["content"]["application/json"] == {
-        "schema": {"$ref": "#/components/schemas/test_override_schema_component_key.Data"}
+        "schema": {"$ref": "#/components/schemas/Data"}
     }
     assert schema["paths"]["/"]["post"]["responses"]["201"]["content"] == {
         "application/json": {"schema": {"$ref": "#/components/schemas/not_data"}}
@@ -132,7 +132,7 @@ def test_override_schema_component_key() -> None:
     assert app.openapi_schema.to_schema()["components"] == {
         "schemas": {
             "not_data": {"properties": {}, "type": "object", "required": [], "title": "Data"},
-            "test_override_schema_component_key.Data": {
+            "Data": {
                 "properties": {},
                 "type": "object",
                 "required": [],
@@ -243,7 +243,7 @@ def test_handling_of_literals() -> None:
 
     const = schema.properties["const"]
     assert isinstance(const, Schema)
-    assert const.const == 1
+    assert const.enum == [1]
 
     composite = schema.properties["composite"]
     assert isinstance(composite, Schema)
@@ -264,7 +264,7 @@ def test_schema_hashing() -> None:
 
 def test_title_validation() -> None:
     # TODO: what is this actually testing?
-    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    creator = SchemaCreator(plugins=openapi_schema_plugins, library_models=False)
     person_ref = creator.for_field_definition(FieldDefinition.from_kwarg(name="Person", annotation=DataclassPerson))
     pet_ref = creator.for_field_definition(FieldDefinition.from_kwarg(name="Pet", annotation=DataclassPet))
     assert isinstance(person_ref, Reference)
@@ -339,9 +339,9 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.properties["str_field"].max_length == 16  # type: ignore[index, union-attr]
     assert sorted(schema.required) == sorted(["int_field", "str_field", "bytes_field", "list_field", "set_field"])  # type: ignore[arg-type]
     assert schema.properties["bytes_field"].to_schema() == {  # type: ignore[index]
-        "contentEncoding": "utf-8",
-        "maxLength": 2,
-        "minLength": 1,
+        "contentEncoding": "base64",
+        "maxLength": 4,
+        "minLength": 4,
         "type": "string",
     }
     assert schema.properties["list_field"].min_items == 1  # type: ignore[index, union-attr]
@@ -362,13 +362,13 @@ def test_msgspec_optional_annotated_meta_propagates() -> None:
 
     assert schema.properties["required_field"].description == "d"  # type: ignore[index]
     assert schema.properties["required_field"].examples == ["ex"]  # type: ignore[index, union-attr]
-    assert schema.properties["optional_field"].description == "d2"  # type: ignore[index]
-    assert schema.properties["optional_field"].examples == ["ex2"]  # type: ignore[index, union-attr]
-    assert schema.properties["optional_int"].exclusive_minimum == 1  # type: ignore[index, union-attr]
-    assert schema.properties["optional_int"].maximum == 100  # type: ignore[index, union-attr]
-    assert schema.properties["optional_str"].min_length == 2  # type: ignore[index, union-attr]
-    assert schema.properties["optional_str"].max_length == 8  # type: ignore[index, union-attr]
-    assert schema.properties["optional_str"].pattern == "^[a-z]+$"  # type: ignore[index, union-attr]
+    assert schema.properties["optional_field"].any_of[0].description == "d2"  # type: ignore[index, union-attr]
+    assert schema.properties["optional_field"].any_of[0].examples == ["ex2"]  # type: ignore[index, union-attr]
+    assert schema.properties["optional_int"].any_of[0].exclusive_minimum == 1  # type: ignore[index, union-attr]
+    assert schema.properties["optional_int"].any_of[0].maximum == 100  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].any_of[0].min_length == 2  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].any_of[0].max_length == 8  # type: ignore[index, union-attr]
+    assert schema.properties["optional_str"].any_of[0].pattern == "^[a-z]+$"  # type: ignore[index, union-attr]
 
 
 def test_msgspec_union_with_metadata_arm_is_not_unwrapped() -> None:
@@ -415,7 +415,9 @@ def test_annotated_types() -> None:
         constrained_is_ascii: annotated_types.IsAscii[str]
         constrained_is_digit: annotated_types.IsDigit[str]
 
-    schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass))
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass), library_models=False
+    )
 
     assert schema.properties["constrained_int"].exclusive_minimum == 1  # type: ignore[index, union-attr]
     assert schema.properties["constrained_int"].exclusive_maximum == 10  # type: ignore[index, union-attr]
@@ -474,7 +476,7 @@ annotations.append(TypedDictGeneric[int])
 @pytest.mark.parametrize("cls", annotations)
 def test_schema_generation_with_generic_classes(cls: Any) -> None:
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(type=[OpenAPIType.INTEGER, OpenAPIType.NULL])
+    expected_optional_foo_schema = Schema(any_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
 
     properties = get_schema_for_field_definition(
         FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
@@ -696,12 +698,13 @@ def test_type_union(base_type: type) -> None:
         class ModelB(base_type):  # type: ignore[no-redef, misc]
             pass
 
-    schema = get_schema_for_field_definition(
+    schema, _ = get_components_for_field_definition(
         FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB])
     )
+    assert isinstance(schema, Schema)
     assert schema.one_of == [
-        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union.ModelA"),
-        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union.ModelB"),
+        Reference(ref="#/components/schemas/ModelA"),
+        Reference(ref="#/components/schemas/ModelB"),
     ]
 
 
@@ -726,12 +729,13 @@ def test_type_union_with_none(base_type: type) -> None:
         class ModelB(base_type):  # type: ignore[no-redef, misc]
             pass
 
-    schema = get_schema_for_field_definition(
+    schema, _ = get_components_for_field_definition(
         FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB, None])
     )
+    assert isinstance(schema, Schema)
     assert schema.one_of == [
-        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelA"),
-        Reference("#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelB"),
+        Reference(ref="#/components/schemas/ModelA"),
+        Reference("#/components/schemas/ModelB"),
         Schema(type=OpenAPIType.NULL),
     ]
 
@@ -890,7 +894,9 @@ def test_optional_simple_field_uses_type_array() -> None:
     class Model:
         nickname: str | None
 
-    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Model)).properties
+    properties = get_schema_for_field_definition(
+        FieldDefinition.from_annotation(Model), library_models=False
+    ).properties
     assert properties is not None
     nickname = properties["nickname"]
 
@@ -906,7 +912,7 @@ def test_optional_upload_file_model_field_keeps_binary_format() -> None:
     class Form:
         file: UploadFile | None
 
-    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Form)).properties
+    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Form), library_models=False).properties
     assert properties is not None
     file_schema = properties["file"]
 
@@ -920,7 +926,9 @@ def test_optional_reference_field_keeps_one_of() -> None:
     class Model:
         person: DataclassPerson | None
 
-    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Model)).properties
+    properties = get_schema_for_field_definition(
+        FieldDefinition.from_annotation(Model), library_models=False
+    ).properties
     assert properties is not None
     person = properties["person"]
     assert isinstance(person, Schema)
@@ -936,7 +944,9 @@ def test_optional_union_keeps_one_of() -> None:
     class Model:
         value: str | int | None
 
-    properties = get_schema_for_field_definition(FieldDefinition.from_annotation(Model)).properties
+    properties = get_schema_for_field_definition(
+        FieldDefinition.from_annotation(Model), library_models=False
+    ).properties
     assert properties is not None
     value = properties["value"]
     assert isinstance(value, Schema)

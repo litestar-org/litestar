@@ -21,14 +21,15 @@ __all__ = ("create_parameters_for_handler",)
 
 def _create_parameter(schema_creator: SchemaCreator, name: str, field_definition: FieldDefinition) -> Parameter:
     kwarg_definition = cast("ParameterKwarg", field_definition.kwarg_definition)
+    registry = schema_creator.schema_registry
     result = schema_creator.for_field_definition(field_definition)
-    schema = result if isinstance(result, Schema) else schema_creator.schema_registry.from_reference(result).schema
+    schema = result if isinstance(result, Schema) else registry.component_for(result)
 
-    description = schema.description
-    if description is None and schema.all_of:
+    description = schema.description if schema is not None else None
+    if description is None and schema is not None and schema.all_of:
         reference = next((s for s in schema.all_of if isinstance(s, Reference)), None)
-        if reference is not None:
-            description = schema_creator.schema_registry.from_reference(reference).schema.description
+        if reference is not None and (component := registry.component_for(reference)) is not None:
+            description = component.description
 
     examples = get_formatted_examples(field_definition, kwarg_definition.examples or [])
 
@@ -55,7 +56,7 @@ def create_parameters_for_handler(
     route.
     """
     schema_creator = SchemaCreator.from_openapi_context(
-        context, prefer_alias=True, signature_namespace=route_handler.signature_namespace
+        context, prefer_alias=True, signature_namespace=route_handler.signature_namespace, schema_mode="validation"
     )
     parameters: list[Parameter] = []
     declared_path_parameters: set[str] = set()

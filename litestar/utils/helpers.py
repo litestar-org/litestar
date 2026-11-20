@@ -89,9 +89,9 @@ def url_quote(value: str | bytes) -> str:
     return quote(value, safe="/#%[]=:;$&()+,!?*@'~")
 
 
-def unique_name_for_scope(base_name: str, scope: Container[str]) -> str:
-    """Create a name derived from ``base_name`` that's unique within ``scope``"""
-    i = 0
+def unique_name_for_scope(base_name: str, scope: Container[str], start: int = 0) -> str:
+    """Create a name derived from ``base_name`` that's unique within ``scope``, numbering from ``start``"""
+    i = start
     while True:
         if (unique_name := f"{base_name}_{i}") not in scope:
             return unique_name

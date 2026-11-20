@@ -38,7 +38,8 @@ def test_request_data_3() -> None:
         assert response.status_code == 201
         assert response.json() == {"id": 1, "name": "John"}
         schema = client.get("/schema/openapi.json")
-        assert "Create a new user." in schema.json()["components"]["schemas"]["User"]["description"]
+        body = schema.json()["paths"]["/"]["post"]["requestBody"]["content"]["application/json"]["schema"]
+        assert "Create a new user." in body["description"]
 
 
 def test_request_data_4() -> None:

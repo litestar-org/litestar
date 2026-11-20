@@ -188,30 +188,30 @@ def test_tag_field_included_in_schema() -> None:
         signature_types=[Model, Model2, Model3],
     ).openapi_schema.components.to_schema()["schemas"]
 
-    assert components["test_tag_field_included_in_schema.Model"] == {
+    assert components["Model"] == {
         "properties": {
+            "type": {"enum": ["Model"]},
             "regular_field": {"type": "string"},
-            "type": {"type": "string", "const": "Model"},
         },
         "type": "object",
-        "required": ["regular_field", "type"],
+        "required": ["type", "regular_field"],
         "title": "Model",
     }
 
-    assert components["test_tag_field_included_in_schema.Model2"] == {
+    assert components["Model2"] == {
         "properties": {
+            "type": {"enum": [2]},
             "regular_field": {"type": "string"},
-            "type": {"type": "integer", "const": 2},
         },
         "type": "object",
-        "required": ["regular_field", "type"],
+        "required": ["type", "regular_field"],
         "title": "Model2",
     }
 
-    assert components["test_tag_field_included_in_schema.Model3"] == {
+    assert components["Model3"] == {
         "properties": {
+            "foo": {"enum": ["bar"]},
             "regular_field": {"type": "string"},
-            "foo": {"type": "string", "const": "bar"},
         },
         "type": "object",
         "required": ["foo", "regular_field"],
