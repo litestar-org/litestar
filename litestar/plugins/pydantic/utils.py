@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal, NotRequired, get_type
 import pydantic
 from pydantic_core import PydanticUndefined
 
+from litestar.dto.field import DTO_FIELD_META_KEY
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition
 from litestar.types import Empty
@@ -172,19 +173,17 @@ def _create_field_definition_v2(  # noqa: C901
     if json_schema_extra := field_info.json_schema_extra:
         if callable(json_schema_extra):
             raise ValueError("Callables not supported for json_schema_extra")
+        json_schema_extra = {key: value for key, value in json_schema_extra.items() if key != DTO_FIELD_META_KEY}
         if json_schema_example := json_schema_extra.get("example"):
             del json_schema_extra["example"]
             examples.append(json_schema_example)
         if json_schema_examples := json_schema_extra.get("examples"):
-            del json_schema_extra["examples"]
             examples.extend(json_schema_examples)  # type: ignore[arg-type]
     if field_examples := field_info.examples:
         examples.extend(field_examples)
 
     if examples:
-        if not json_schema_extra:
-            json_schema_extra = {}
-        json_schema_extra["examples"] = examples
+        json_schema_extra = {**(json_schema_extra or {}), "examples": examples}
 
     if description := field_info.description:
         kwargs["description"] = description

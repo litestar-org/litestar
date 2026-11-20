@@ -8,7 +8,7 @@ from typing_extensions import override
 
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
-from litestar.dto.field import DTO_FIELD_META_KEY, extract_dto_field
+from litestar.dto.field import extract_dto_field
 from litestar.exceptions import MissingDependencyException, ValidationException
 from litestar.plugins.pydantic.utils import get_model_info, is_pydantic_2_model, is_pydantic_undefined
 from litestar.types.empty import Empty
@@ -97,10 +97,6 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
             if field_info := model_fields.get(field_name):
                 # field_info might not exist, since FieldInfo isn't provided by pydantic
                 # for computed fields, but we still generate a FieldDefinition for them
-                extra = field_info.json_schema_extra
-                if isinstance(extra, dict):
-                    extra.pop(DTO_FIELD_META_KEY, None)
-
                 if not is_pydantic_undefined(field_info.default):
                     default = field_info.default
                 elif field_definition.is_optional:
