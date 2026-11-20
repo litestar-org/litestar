@@ -19,7 +19,7 @@ from litestar.di import (
     TypeDependency,
 )
 from litestar.di.exceptions import DIRegistrationError, MissingProviderError
-from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
+from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning, LitestarWarning
 from litestar.params import FromPath, FromQuery, JSONBody, QueryParameter, QueryParams, RawBody, RequestCookies
 from litestar.plugins import DIPlugin, InitPlugin
 from litestar.testing import create_test_client
@@ -792,6 +792,65 @@ def test_marked_var_keyword_parameter_raises() -> None:
         match=r"^\[paths='/', handler='handler'\] Parameter '\*\*kwargs' of .* is marked as a dependency but is variadic",
     ):
         Litestar([handler], openapi_config=None)
+
+
+def test_handler_deprecated_request_value_warns() -> None:
+    @get("/")
+    async def handler(headers: Headers) -> None: ...
+
+    with pytest.warns(LitestarDeprecationWarning) as record:
+        Litestar([handler], openapi_config=None)
+    assert [str(warning.message) for warning in record] == [
+        "[paths='/', handler='handler'] Parameter 'headers' declares 'Headers', which is deprecated. Use "
+        "'request.headers' instead"
+    ]
+
+
+def test_handler_deprecated_request_values_warn_once() -> None:
+    @get("/")
+    async def handler(headers: Headers, query: QueryParams, cookies: RequestCookies, scope: Scope) -> None: ...
+
+    with pytest.warns(LitestarDeprecationWarning) as record:
+        Litestar([handler], openapi_config=None)
+    assert [str(warning.message) for warning in record] == [
+        "[paths='/', handler='handler'] Parameters 'headers', 'query', 'cookies' and 'scope' declare 'Headers', "
+        "'QueryParams', 'RequestCookies' and 'Scope', which are deprecated. Use 'request.headers', "
+        "'request.query_params', 'request.cookies' and 'request.scope' instead"
+    ]
+
+
+def test_websocket_handler_deprecated_request_value_warns() -> None:
+    @websocket("/")
+    async def handler(socket: WebSocket, query: QueryParams) -> None: ...
+
+    with pytest.warns(LitestarDeprecationWarning) as record:
+        Litestar([handler], openapi_config=None)
+    assert [str(warning.message) for warning in record] == [
+        "[paths='/', handler='handler'] Parameter 'query' declares 'QueryParams', which is deprecated. Use "
+        "'socket.query_params' instead"
+    ]
+
+
+def test_provider_deprecated_request_value_warns_per_handler_using_it() -> None:
+    async def provide_token(headers: Headers) -> str:
+        return headers["x-token"]
+
+    @get("/first")
+    async def first(token: NamedDependency[str]) -> None: ...
+
+    @get("/second")
+    async def second(token: NamedDependency[str]) -> None: ...
+
+    @get("/other")
+    async def other() -> None: ...
+
+    with pytest.warns(LitestarDeprecationWarning) as record:
+        Litestar([first, second, other], dependencies={"token": provide_token}, openapi_config=None)
+    assert sorted(str(warning.message) for warning in record) == [
+        f"[paths='/{name}', handler={name!r}, dependencies='token'] Parameter 'headers' declares 'Headers', which "
+        "is deprecated. Use 'connection.headers' with 'connection: ASGIConnection' instead"
+        for name in ("first", "second")
+    ]
 
 
 def test_handler_dependency_typed_optional_without_provider_raises() -> None:

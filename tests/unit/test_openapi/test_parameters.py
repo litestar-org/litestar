@@ -9,8 +9,10 @@ from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.parameters import create_parameters_for_handler
 from litestar._openapi.schema_generation.examples import ExampleFactory
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
+from litestar.datastructures import Headers
 from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
+from litestar.exceptions import LitestarDeprecationWarning
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Example, OpenAPI, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
@@ -23,8 +25,11 @@ from litestar.params import (
     HeaderParameter,
     PathParameter,
     QueryParameter,
+    QueryParams,
+    RequestCookies,
 )
 from litestar.testing import create_test_client
+from litestar.types import Scope
 from litestar.utils import find_index
 from tests.unit.test_openapi.utils import Gender, LuckyNumber
 
@@ -213,6 +218,18 @@ def test_non_dependency_in_doc_params_if_not_provided() -> None:
     app = Litestar(route_handlers=[handler])
     param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore[index, redundant-cast, union-attr]
     assert "param" in param_name_set
+
+
+def test_deprecated_request_values_are_not_documented() -> None:
+    @get("/")
+    async def handler(
+        headers: Headers, query: QueryParams, cookies: RequestCookies, scope: Scope, page: FromQuery[int]
+    ) -> None: ...
+
+    with pytest.warns(LitestarDeprecationWarning, match="which are deprecated"):
+        app = Litestar([handler])
+
+    assert [parameter.name for parameter in _create_parameters(app=app, path="/")] == ["page"]
 
 
 def test_layered_parameters() -> None:

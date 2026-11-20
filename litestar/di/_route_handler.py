@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import contextlib
+import warnings
 from dataclasses import dataclass, replace
 from inspect import isclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 from litestar._request_parameters.declarations import (
     RequestParameterDefinition,
@@ -12,16 +13,17 @@ from litestar._request_parameters.declarations import (
 )
 from litestar._request_parameters.validation import create_request_param_validaton_fn
 from litestar.connection import WebSocket
-from litestar.datastructures import ImmutableState
+from litestar.datastructures import Headers, ImmutableState
 from litestar.di._helpers import _describe_provider, _format_key
 from litestar.di._provide import Provide
 from litestar.di.context import PreparedDIContext
 from litestar.di.exceptions import DIRegistrationError, MissingProviderError
 from litestar.di.provider import InjectionTarget, Provider, _CallableForm, _marked_dependency
 from litestar.di.registry import DIRegistry
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import RawBody
+from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
+from litestar.params import QueryParams, RawBody, RequestCookies
 from litestar.routes.base import BaseRoute
+from litestar.types import Scope
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.signature import ParsedSignature
 from litestar.utils.warnings import warn_implicit_sync_to_thread
@@ -254,6 +256,40 @@ def _check_body_not_declared(
                 )
 
 
+_DEPRECATED_REQUEST_VALUES: Final[dict[Any, tuple[str, str]]] = {
+    Headers: ("Headers", "headers"),
+    QueryParams: ("QueryParams", "query_params"),
+    RequestCookies: ("RequestCookies", "cookies"),
+    Scope: ("Scope", "scope"),
+}
+
+
+def _join(items: list[str]) -> str:
+    return items[0] if len(items) == 1 else f"{', '.join(items[:-1])} and {items[-1]}"
+
+
+def _warn_deprecated_request_values(
+    callable_: InjectionTarget | Provider, prefix: HandlerErrorPrefix, *, connection: str | None
+) -> None:
+    deprecated = [
+        (dependency.parameter_name, *_DEPRECATED_REQUEST_VALUES[dependency.key])
+        for dependency in callable_.dependencies
+        if dependency.key in _DEPRECATED_REQUEST_VALUES
+    ]
+    if not deprecated:
+        return
+    names = _join([repr(name) for name, _, _ in deprecated])
+    types = _join([repr(type_name) for _, type_name, _ in deprecated])
+    attributes = _join([repr(f"{connection or 'connection'}.{attribute}") for _, _, attribute in deprecated])
+    if len(deprecated) == 1:
+        message = f"Parameter {names} declares {types}, which is deprecated. Use {attributes}"
+    else:
+        message = f"Parameters {names} declare {types}, which are deprecated. Use {attributes}"
+    if connection is None:
+        message += " with 'connection: ASGIConnection'"
+    warnings.warn(prefix.format(f"{message} instead"), LitestarDeprecationWarning, stacklevel=2)
+
+
 def create_handler_injection_setup(
     handler: BaseRouteHandler,
     app: Litestar,
@@ -360,6 +396,11 @@ def create_handler_injection_setup(
             )
         raise
     registry.check_target(target)
+    _warn_deprecated_request_values(
+        target, prefix, connection="socket" if issubclass(connection_class, WebSocket) else "request"
+    )
+    for provider in user_providers:
+        _warn_deprecated_request_values(provider, replace(prefix, dependencies=(provider.key,)), connection=None)
     request_context = PreparedDIContext(
         registry, parent=PreparedDIContext(app_registry) if app_registry is not None else None
     )

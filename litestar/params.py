@@ -301,12 +301,18 @@ QueryParams = NewType("QueryParams", MultiDict[Any])
 """All query parameters of the request, for the ``query`` parameter
 
 .. versionadded:: 2.25.0
+
+.. deprecated:: 3.0
+    Use the connection's ``query_params``
 """
 
 RequestCookies = NewType("RequestCookies", dict[str, str])
 """All cookies of the request, for the ``cookies`` parameter
 
 .. versionadded:: 2.25.0
+
+.. deprecated:: 3.0
+    Use the connection's ``cookies``
 """
 
 

@@ -26,7 +26,7 @@ from litestar.datastructures import Headers
 from litestar.datastructures.state import ImmutableState, State
 from litestar.di import NamedDependency, Provide
 from litestar.di.exceptions import DIRegistrationError, MissingProviderError
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
 from litestar.params import FromPath, FromQuery, JSONBody, MsgPackBody, QueryParams, RawBody, RequestCookies
 from litestar.status_codes import (
     HTTP_200_OK,
@@ -249,7 +249,9 @@ def test_header_params(decorator: Any, http_method: Any, expected_status_code: A
             for key, value in request_headers.items():
                 assert headers[key] == value
 
-    with create_test_client(MyController) as client:
+    with pytest.warns(LitestarDeprecationWarning, match="'Headers', which is deprecated"):
+        client = create_test_client(MyController)
+    with client:
         response = client.request(http_method, test_path, headers=request_headers)
         assert response.status_code == expected_status_code
 
@@ -299,7 +301,9 @@ def test_scope(decorator: Any, http_method: Any, expected_status_code: Any) -> N
         def test_method(self, scope: Scope) -> None:
             assert isinstance(scope, dict)
 
-    with create_test_client(MyController) as client:
+    with pytest.warns(LitestarDeprecationWarning, match="'Scope', which is deprecated"):
+        client = create_test_client(MyController)
+    with client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
 
@@ -333,7 +337,9 @@ def test_headers_annotated_as_headers() -> None:
     def handler(request: Request, headers: Headers) -> None:
         assert headers is request.headers
 
-    with create_test_client(handler) as client:
+    with pytest.warns(LitestarDeprecationWarning, match="'Headers', which is deprecated"):
+        client = create_test_client(handler)
+    with client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
@@ -344,7 +350,9 @@ def test_query_annotated_as_query_params() -> None:
         assert query.dict() == request.query_params.dict()
         assert query.getall("a") == ["1", "2"]
 
-    with create_test_client(handler) as client:
+    with pytest.warns(LitestarDeprecationWarning, match="'QueryParams', which is deprecated"):
+        client = create_test_client(handler)
+    with client:
         response = client.get("/?a=1&a=2")
         assert response.status_code == HTTP_200_OK
 
@@ -354,7 +362,9 @@ def test_cookies_annotated_as_request_cookies() -> None:
     def handler(cookies: RequestCookies) -> None:
         assert cookies == {"sid": "1"}
 
-    with create_test_client(handler) as client:
+    with pytest.warns(LitestarDeprecationWarning, match="'RequestCookies', which is deprecated"):
+        client = create_test_client(handler)
+    with client:
         response = client.get("/", headers={"Cookie": "sid=1"})
         assert response.status_code == HTTP_200_OK
 
@@ -521,7 +531,8 @@ def test_typed_reserved_kwargs_do_not_raise() -> None:
         value: NamedDependency[str],
     ) -> None: ...
 
-    Litestar([handler])
+    with pytest.warns(LitestarDeprecationWarning, match="which are deprecated"):
+        Litestar([handler])
 
 
 class Item:
