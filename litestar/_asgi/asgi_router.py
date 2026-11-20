@@ -117,8 +117,8 @@ class ASGIRouter:
             await asgi_app(scope, receive, send)
             return
 
-        app_context = self.app._dependency_context
-        if app_context is None and self.app._dependency_registry is not None:
+        app_context = self.app.dependency_context
+        if app_context is None and self.app.dependency_registry is not None:
             raise RuntimeError(
                 f"Cannot handle the request to {scope['path']!r}: the lifespan of the app is not running"
             )

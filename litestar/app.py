@@ -140,8 +140,6 @@ class Litestar(Router):
     __slots__ = (
         "_builtin_provider_factory",
         "_debug",
-        "_dependency_context",
-        "_dependency_registry",
         "_dependency_scopes",
         "_is_using_litestar_test_client",
         "_lifespan_managers",
@@ -158,6 +156,8 @@ class Litestar(Router):
         "cors_config",
         "csrf_config",
         "debugger_module",
+        "dependency_context",
+        "dependency_registry",
         "event_emitter",
         "experimental_features",
         "multipart_form_allowed_charsets",
@@ -516,11 +516,11 @@ class Litestar(Router):
         self._builtin_provider_factory = BuiltinProviderFactory(self)
         scopes = self._dependency_scopes = config.dependency_scopes
         # the app's context and seeds have scope "app". without it, the request's context is the outermost
-        self._dependency_registry: DIRegistry | None = None
+        self.dependency_registry: DIRegistry | None = None
         if scopes is None or "app" in scopes:
-            self._dependency_registry = DIRegistry("app", self._builtin_provider_factory.app_seeds, scopes=scopes)
-            self._dependency_registry.freeze()
-        self._dependency_context: DIContext | None = None
+            self.dependency_registry = DIRegistry("app", self._builtin_provider_factory.app_seeds, scopes=scopes)
+            self.dependency_registry.freeze()
+        self.dependency_context: DIContext | None = None
         self._provide_converter = ProvideConverter(self.plugins)
 
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute]
@@ -658,7 +658,7 @@ class Litestar(Router):
         """
         from litestar.di import DIContext
 
-        if self._dependency_context is not None:
+        if self.dependency_context is not None:
             raise RuntimeError(f"The lifespan of {self!r} is already running")
 
         async with AsyncExitStack() as exit_stack:
@@ -672,12 +672,16 @@ class Litestar(Router):
                     manager = manager(self)
                 await exit_stack.enter_async_context(manager)
 
-            if self._dependency_registry is not None:
+            if self.dependency_registry is not None:
                 seeds = {seed.key: self for seed in self._builtin_provider_factory.app_seeds}
-                self._dependency_context = await exit_stack.enter_async_context(
-                    DIContext(self._dependency_registry, seeds=seeds)
+                self.dependency_context = await exit_stack.enter_async_context(
+                    DIContext(self.dependency_registry, seeds=seeds)
                 )
-                exit_stack.callback(setattr, self, "_dependency_context", None)
+
+                def reset_dependency_context() -> None:
+                    self.dependency_context = None
+
+                exit_stack.callback(reset_dependency_context)
 
             for hook in self.on_startup:
                 await self._call_lifespan_hook(hook)
@@ -880,7 +884,7 @@ class Litestar(Router):
         )
 
     def register(self, value: ControllerRouterHandler) -> None:
-        if self._dependency_context is not None:
+        if self.dependency_context is not None:
             raise ImproperlyConfiguredException(
                 f"Cannot register {value!r} while the lifespan of {self!r} is running: the dependency registry "
                 "of a handler registered now would be created after the app's dependency context was entered"

@@ -60,7 +60,7 @@ def test_request_context_spans_middleware_guards_handler_background_tasks_and_af
     app = Litestar([handler], openapi_config=None)
     with TestClient(app) as client:
         assert client.get("/").status_code == 200
-        app_context = app._dependency_context
+        app_context = app.dependency_context
 
     context = seen["handler"][0]
     assert seen == dict.fromkeys(

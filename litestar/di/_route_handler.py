@@ -331,7 +331,7 @@ def create_handler_injection_setup(
         )
 
     provider_factory = app._builtin_provider_factory
-    app_registry = app._dependency_registry
+    app_registry = app.dependency_registry
     connection_seeds = provider_factory.connection_seeds(connection_class)
     # the handler's DTO decodes the body the handler declares; a body only providers declare is decoded
     # by its type, as the OpenAPI schema documents it
