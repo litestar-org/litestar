@@ -3,7 +3,7 @@ from __future__ import annotations
 import enum
 import pdb  # noqa: T100
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
@@ -13,7 +13,7 @@ from litestar.events.emitter import SimpleEventEmitter
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
     from contextlib import AbstractAsyncContextManager
 
     from litestar import Litestar, Response
@@ -225,6 +225,14 @@ class AppConfig:
     """Charsets accepted for multipart/formdata text fields; others are rejected with a 400. Fields without a charset
     are decoded as UTF-8."""
     experimental_features: list[ExperimentalFeatures] | None = None
+
+    di_check_graph_divergence: Literal["warn", "raise", False] = "warn"
+    """Check the DI graph for divergences in sub-dependencies, which may result in unexpected value isolation. 
+    Check :func:`~litestar.di.registry.check_divergence` for details.  If ``warn``, warn about findings. If ``raise``, 
+    raise an exception instead.
+    """
+    di_check_graph_divergence_ignore: Iterable[DependencyKey | Provider] | None = None
+    """Dependency keys or provider instances to ignore when running the DI graph divergence check"""
 
     def __post_init__(self) -> None:
         """Normalize the allowed hosts to be a config or None.

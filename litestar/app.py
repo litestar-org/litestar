@@ -16,7 +16,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, TypedDict, cast
+from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
 from uuid import UUID
 
 from litestar._asgi import ASGIRouter
@@ -30,6 +30,7 @@ from litestar.config.response_cache import ResponseCacheConfig
 from litestar.connection import Request, WebSocket
 from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
 from litestar.datastructures.state import State
+from litestar.di import check_divergence
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
     ImproperlyConfiguredException,
@@ -65,7 +66,7 @@ if TYPE_CHECKING:
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
     from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.di import DIContext
+    from litestar.di import DependencyKey, DIContext, Provider
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
     from litestar.openapi.spec import SecurityRequirement
@@ -232,6 +233,8 @@ class Litestar(Router):
         pdb_on_exception: bool | None = None,
         debugger_module: Debugger = pdb,
         experimental_features: Iterable[ExperimentalFeatures] | None = None,
+        di_check_graph_divergence: Literal["warn", "raise", False] = "warn",
+        di_check_graph_divergence_ignore: Iterable[DependencyKey | Provider] | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -334,6 +337,11 @@ class Litestar(Router):
             websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
             experimental_features: An iterable of experimental features to enable
+            di_check_graph_divergence: Check the DI graph for divergences in sub-dependencies, which may result in
+                unexpected value isolation. Check :func:`~litestar.di.registry.check_divergence` for details.
+                If ``warn``, warn about findings. If ``raise``, raise an exception instead.
+            di_check_graph_divergence_ignore: Dependency keys or provider instances to ignore when running the DI graph
+                divergence check.
         """
 
         if debug is None:
@@ -395,6 +403,8 @@ class Litestar(Router):
             type_decoders=type_decoders,
             websocket_class=websocket_class,
             experimental_features=list(experimental_features or []),
+            di_check_graph_divergence=di_check_graph_divergence,
+            di_check_graph_divergence_ignore=di_check_graph_divergence_ignore,
         )
 
         config.plugins.extend([OpenAPIPlugin(self), *openapi_schema_plugins])
@@ -513,14 +523,20 @@ class Litestar(Router):
         self._dependency_context: DIContext | None = None
         self._provide_converter = ProvideConverter(self.plugins)
 
-        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = self._build_routes(
-            self._reduce_handlers(self.route_handlers)
-        )
+        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute]
+        self.routes, all_handlers = self._build_routes(self._reduce_handlers(self.route_handlers))
         self.route_handler_method_map = self._create_route_handler_method_map(self.routes)
 
         # we have merged everything registered initially, so let's ensure we don't keep
         # unnecessary references to temporary objects around and let them be gc'ed
         self.route_handlers = ()
+
+        if config.di_check_graph_divergence:
+            check_divergence(
+                (h._injection_setup.registry for h in all_handlers if hasattr(h, "_injection_setup")),
+                raise_on_divergence=config.di_check_graph_divergence == "raise",
+                ignore=config.di_check_graph_divergence_ignore,
+            )
 
         self.asgi_router.construct_routing_trie()
 
@@ -714,7 +730,9 @@ class Litestar(Router):
 
         return route_map
 
-    def _build_routes(self, route_handlers: Iterable[BaseRouteHandler]) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:  # noqa: C901
+    def _build_routes(  # noqa: C901
+        self, route_handlers: Iterable[BaseRouteHandler]
+    ) -> tuple[list[HTTPRoute | ASGIRoute | WebSocketRoute], list[BaseRouteHandler]]:
         """Create routes for all the handlers"""
         routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
 
@@ -723,8 +741,10 @@ class Litestar(Router):
         # the route itself), we first group them by path and then create one route for
         # each path
         http_path_groups: dict[str, list[HTTPRouteHandler]] = collections.defaultdict(list)
+        all_handlers: list[BaseRouteHandler] = []
 
         for handler in route_handlers:
+            all_handlers.append(handler)
             if isinstance(handler, HTTPRouteHandler):
                 for path in handler.paths:
                     http_path_groups[path].append(handler)
@@ -757,7 +777,7 @@ class Litestar(Router):
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(finalized_route)
 
-        return routes
+        return routes, all_handlers
 
     def _iter_handlers(
         self, handlers: Iterable[ControllerRouterHandler], bases: list[Router]
@@ -875,7 +895,7 @@ class Litestar(Router):
             stacklevel=2,
         )
         self.routes = []
-        self.routes = self._build_routes(
+        self.routes, _ = self._build_routes(
             itertools.chain(
                 self._reduce_handlers([value]), (h for route in self.routes for h in get_route_handlers(route))
             )

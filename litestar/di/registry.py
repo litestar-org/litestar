@@ -81,8 +81,8 @@ class ValueGraphDivergence:
             )
         message += f"\n  provider: {_describe_provider(self.provider)}"
         message += (
-            "\n  If this is acceptable, you can allow it by explicitly declaring this "
-            f"as an override: check_divergence(..., overrides=[{self.key!r}]). "
+            "\n  If this is acceptable, you can ignore it: "
+            f"check_divergence(..., ignore=[{self.key!r}]). "
             f"Otherwise bind these dependencies identically, or declare a distinct "
             f"provider for {_format_key(self.key)}."
         )
@@ -503,7 +503,7 @@ def check_divergence(
                 continue
             if raise_on_divergence:
                 raise DivergenceError(finding)
-            warnings.warn(str(finding), DivergenceWarning, stacklevel=2)
+            warnings.warn(str(finding), DivergenceWarning, stacklevel=3)
 
 
 def _divergent_bindings(

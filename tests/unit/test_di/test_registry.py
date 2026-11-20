@@ -742,6 +742,6 @@ def test_check_divergence_report_names_both_registries_and_each_differing_bindin
     )
     assert "'name':" in message
     assert "in 'route' (this registry): <without provider>" in message
-    assert "overrides=['greeting']" in message
+    assert "ignore=['greeting']" in message
     assert str(exc_info.value.finding) == message
     assert isinstance(exc_info.value.finding, ValueGraphDivergence)
