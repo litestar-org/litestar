@@ -6,6 +6,30 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Use matched route templates in OpenTelemetry spans and metrics
+        :type: bugfix
+        :pr: 5222
+        :issue: 5120
+        :breaking:
+
+        OpenTelemetry HTTP server span names now use ``{method} {route_template}``,
+        e.g. ``GET /articles/{article_id}``, instead of the raw request path. The
+        ``http.route`` attribute contains only the matched template, without the HTTP
+        method, and the HTTP server metrics use it too, instead of one series per URL.
+        When routing fails (404 or 405), the span name falls back to the method and
+        ``http.route`` is omitted. Methods unknown to OpenTelemetry are reported as
+        ``HTTP``. WebSocket spans use the matched template or ``websocket`` if no
+        route matches, following OpenTelemetry HTTP semantic conventions.
+
+    .. change:: Set the mount path as ``path_template`` for mounted ASGI apps
+        :type: bugfix
+        :pr: 5222
+
+        Fix a bug that left ``scope["path_template"]`` empty for requests routed to a
+        mounted ASGI app. It now holds the mount path, e.g. ``/mount``, which also
+        changes the ``path`` label of Prometheus metrics with ``group_path=True`` for
+        these requests.
+
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
         :pr: 5213

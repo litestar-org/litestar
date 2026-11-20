@@ -48,8 +48,10 @@ class OpenTelemetryConfig:
     scope_span_details_extractor: "Callable[[Scope], tuple[str, dict[str, Any]]]" = field(
         default=get_route_details_from_scope
     )
-    """Callback which should return a string and a tuple, representing the desired default span name and a dictionary
-    with any additional span attributes to set.
+    """Callback returning the default span name and a dictionary of additional attributes.
+
+    The route is resolved before this is called, so the matched route template is available via
+    ``scope.get("path_template")``. It is unset if the request matches no route.
     """
     server_request_hook_handler: "ServerRequestHookHandler | None" = field(default=None)
     """Optional callback which is called with the server span and ASGI scope object for every incoming request."""

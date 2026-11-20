@@ -89,22 +89,8 @@ class ASGIRouter:
         """
         scope.setdefault("path_params", {})
 
-        path = scope["path"]
-        if root_path := scope.get("root_path", ""):
-            path = path.split(root_path, maxsplit=1)[-1]
-        normalized_path = normalize_path(path)
-
         try:
-            try:
-                host = next((value for name, value in scope["headers"] if name == b"host"), None)
-                if host is not None and not is_valid_host(host):
-                    raise ClientException("Invalid host header")
-            except KeyError:
-                pass
-
-            asgi_app, route_handler, scope["path"], scope["path_params"], path_template = self.handle_routing(
-                path=normalized_path, method=scope.get("method")
-            )
+            asgi_app, route_handler, scope["path"], scope["path_params"], path_template = self.resolve_route(scope)
         except Exception:
             ScopeState.from_scope(scope).exception_handlers = self._app_exception_handlers
             raise
@@ -113,6 +99,28 @@ class ASGIRouter:
             scope["route_handler"] = route_handler
             scope["path_template"] = path_template
         await asgi_app(scope, receive, send)
+
+    def resolve_route(self, scope: Scope) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
+        """Route a request without modifying its scope.
+
+        Args:
+            scope: The ASGI connection scope.
+
+        Returns:
+            The ASGI app, route handler, resolved path, path parameters and route template.
+        """
+        path = scope["path"]
+        if root_path := scope.get("root_path", ""):
+            path = path.split(root_path, maxsplit=1)[-1]
+
+        try:
+            host = next((value for name, value in scope["headers"] if name == b"host"), None)
+            if host is not None and not is_valid_host(host):
+                raise ClientException("Invalid host header")
+        except KeyError:
+            pass
+
+        return self.handle_routing(path=normalize_path(path), method=scope.get("method"))
 
     def _handle_routing(
         self, path: str, method: Method | None
