@@ -61,6 +61,7 @@ DependencyKey: TypeAlias = "str | type[Any]"
 _DEFAULT_SCOPE: Final[str] = "handler"
 
 
+@enum.unique
 class ProviderKind(enum.StrEnum):
     """Types of provider keys"""
 
