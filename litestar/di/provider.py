@@ -15,9 +15,12 @@ from typing import (
     Annotated,
     Any,
     Final,
+    Generic,
     Literal,
+    ParamSpec,
     TypeAlias,
     TypeVar,
+    TypeVarTuple,
     cast,
 )
 
@@ -54,6 +57,9 @@ __all__ = (
 
 
 T = TypeVar("T")
+R = TypeVar("R")
+P = ParamSpec("P")
+Ts = TypeVarTuple("Ts")
 
 
 DependencyKey: TypeAlias = "str | type[Any]"
@@ -217,7 +223,7 @@ async def _wait_until_done(future: asyncio.Future[Any]) -> asyncio.CancelledErro
     return None
 
 
-class _SyncGeneratorContextManager:
+class _SyncGeneratorContextManager(Generic[P, T]):
     """An async context manager for a sync generator provider.
 
     The generator runs in threads, with a shared :class:`contextvars.Context`.
@@ -225,17 +231,19 @@ class _SyncGeneratorContextManager:
 
     __slots__ = ("_context", "_context_manager")
 
-    def __init__(self, context_manager_factory: Callable[..., AbstractContextManager[Any]], /, **kwargs: Any) -> None:
+    def __init__(
+        self, context_manager_factory: Callable[P, AbstractContextManager[T]], /, *args: P.args, **kwargs: P.kwargs
+    ) -> None:
         self._context = contextvars.copy_context()
-        self._context_manager = context_manager_factory(**kwargs)
+        self._context_manager = context_manager_factory(*args, **kwargs)
 
     def _run_in_executor(
-        self, executor: ThreadPoolExecutor | None, fn: Callable[..., T], *args: Any
-    ) -> asyncio.Future[T]:
+        self, executor: ThreadPoolExecutor | None, fn: Callable[[*Ts], R], *args: *Ts
+    ) -> asyncio.Future[R]:
         call = functools.partial(self._context.run, fn, *args)
         return asyncio.get_running_loop().run_in_executor(executor, call)
 
-    async def __aenter__(self) -> Any:
+    async def __aenter__(self) -> T:
         entering = self._run_in_executor(get_asyncio_executor(), self._context_manager.__enter__)
         cancellation = await _wait_until_done(entering)
         if cancellation is None:

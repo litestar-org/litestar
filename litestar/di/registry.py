@@ -5,7 +5,7 @@ import itertools
 import warnings
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any, Final, TypeAlias
 
 from litestar.di._helpers import _describe_provider, _format_key, _format_scope_chain
 from litestar.di.exceptions import (
