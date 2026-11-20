@@ -227,8 +227,8 @@ class AppConfig:
     experimental_features: list[ExperimentalFeatures] | None = None
 
     di_check_graph_divergence: Literal["warn", "raise", False] = "warn"
-    """Check the DI graph for divergences in sub-dependencies, which may result in unexpected value isolation. 
-    Check :func:`~litestar.di.registry.check_divergence` for details.  If ``warn``, warn about findings. If ``raise``, 
+    """Check the DI graph for divergences in sub-dependencies, which may result in unexpected value isolation.
+    Check :func:`~litestar.di.registry.check_divergence` for details.  If ``warn``, warn about findings. If ``raise``,
     raise an exception instead.
     """
     di_check_graph_divergence_ignore: Iterable[DependencyKey | Provider] | None = None
