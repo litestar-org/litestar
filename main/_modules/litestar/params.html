@@ -833,118 +833,124 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="301"><span class="sd">&quot;&quot;&quot;All query parameters of the request, for the ``query`` parameter</span>
 </span><span data-line="302">
 </span><span data-line="303"><span class="sd">.. versionadded:: 2.25.0</span>
-</span><span data-line="304"><span class="sd">&quot;&quot;&quot;</span>
-</span><span data-line="305">
-</span><span data-line="306"><span class="n">RequestCookies</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s2">&quot;RequestCookies&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span>
-</span><span data-line="307"><span class="sd">&quot;&quot;&quot;All cookies of the request, for the ``cookies`` parameter</span>
+</span><span data-line="304">
+</span><span data-line="305"><span class="sd">.. deprecated:: 3.0</span>
+</span><span data-line="306"><span class="sd">    Use the connection&#39;s ``query_params``</span>
+</span><span data-line="307"><span class="sd">&quot;&quot;&quot;</span>
 </span><span data-line="308">
-</span><span data-line="309"><span class="sd">.. versionadded:: 2.25.0</span>
-</span><span data-line="310"><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="309"><span class="n">RequestCookies</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s2">&quot;RequestCookies&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span>
+</span><span data-line="310"><span class="sd">&quot;&quot;&quot;All cookies of the request, for the ``cookies`` parameter</span>
 </span><span data-line="311">
-</span><span data-line="312">
+</span><span data-line="312"><span class="sd">.. versionadded:: 2.25.0</span>
+</span><span data-line="313">
+</span><span data-line="314"><span class="sd">.. deprecated:: 3.0</span>
+</span><span data-line="315"><span class="sd">    Use the connection&#39;s ``cookies``</span>
+</span><span data-line="316"><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="317">
+</span><span data-line="318">
 <div class="viewcode-block" id="Body">
 <a class="viewcode-back" href="../../reference/params.html#litestar.params.Body">[docs]</a>
-</span><span data-line="313"><span class="k">def</span><span class="w"> </span><span class="nf">Body</span><span class="p">(</span>
-</span><span data-line="314">    <span class="o">*</span><span class="p">,</span>
-</span><span data-line="315">    <span class="n">const</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="316">    <span class="n">content_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="317">    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="318">    <span class="n">examples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="319">    <span class="n">external_docs</span><span class="p">:</span> <span class="n">ExternalDocumentation</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="320">    <span class="n">ge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="321">    <span class="n">gt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="322">    <span class="n">le</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="323">    <span class="n">lt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="324">    <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="325">    <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="326">    <span class="n">media_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">RequestEncodingType</span> <span class="o">=</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
-</span><span data-line="327">    <span class="n">min_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="328">    <span class="n">min_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="329">    <span class="n">multipart_form_part_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="330">    <span class="n">multiple_of</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="331">    <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="332">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="333">    <span class="n">schema_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="334">    <span class="n">schema_component_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="335"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="336"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an extended request body kwarg definition.</span>
-</span><span data-line="337">
-</span><span data-line="338"><span class="sd">    Args:</span>
-</span><span data-line="339"><span class="sd">        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter</span>
-</span><span data-line="340"><span class="sd">            must equal its default value. This also causes the OpenAPI const field to be</span>
-</span><span data-line="341"><span class="sd">            populated with the default value.</span>
-</span><span data-line="342"><span class="sd">        content_encoding: The content encoding of the value. Applicable on to string values.</span>
-</span><span data-line="343"><span class="sd">            See OpenAPI 3.1 for details.</span>
-</span><span data-line="344"><span class="sd">        description: String value used in the description section of the OpenAPI schema for the given parameter.</span>
-</span><span data-line="345"><span class="sd">        examples: A list of Example models.</span>
-</span><span data-line="346"><span class="sd">        external_docs: A url pointing at external documentation for the given parameter.</span>
-</span><span data-line="347"><span class="sd">        ge: Constrict value to be greater or equal to a given float or int.</span>
-</span><span data-line="348"><span class="sd">            Equivalent to minimum in the OpenAPI specification.</span>
-</span><span data-line="349"><span class="sd">        gt: Constrict value to be greater than a given float or int.</span>
-</span><span data-line="350"><span class="sd">            Equivalent to exclusiveMinimum in the OpenAPI specification.</span>
-</span><span data-line="351"><span class="sd">        le: Constrict value to be less or equal to a given float or int.</span>
-</span><span data-line="352"><span class="sd">            Equivalent to maximum in the OpenAPI specification.</span>
-</span><span data-line="353"><span class="sd">        lt: Constrict value to be less than a given float or int.</span>
-</span><span data-line="354"><span class="sd">            Equivalent to exclusiveMaximum in the OpenAPI specification.</span>
-</span><span data-line="355"><span class="sd">        max_items: Constrict a set or a list to have a maximum number of items.</span>
-</span><span data-line="356"><span class="sd">            Equivalent to maxItems in the OpenAPI specification.</span>
-</span><span data-line="357"><span class="sd">        max_length: Constrict a string or bytes value to have a maximum length.</span>
-</span><span data-line="358"><span class="sd">            Equivalent to maxLength in the OpenAPI specification.</span>
-</span><span data-line="359"><span class="sd">        media_type: Defaults to RequestEncodingType.JSON.</span>
-</span><span data-line="360"><span class="sd">        min_items: Constrict a set or a list to have a minimum number of items.</span>
-</span><span data-line="361"><span class="sd">            Equivalent to minItems in the OpenAPI specification.</span>
-</span><span data-line="362"><span class="sd">        min_length: Constrict a string or bytes value to have a minimum length.</span>
-</span><span data-line="363"><span class="sd">            Equivalent to minLength in the OpenAPI specification.</span>
-</span><span data-line="364"><span class="sd">        multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request.</span>
-</span><span data-line="365"><span class="sd">            This limit is intended to protect from DoS attacks.</span>
-</span><span data-line="366"><span class="sd">        multiple_of: Constrict value to a multiple of a given float or int.</span>
-</span><span data-line="367"><span class="sd">            Equivalent to multipleOf in the OpenAPI specification.</span>
-</span><span data-line="368"><span class="sd">        pattern: A string representing a regex against which the given string will be matched.</span>
-</span><span data-line="369"><span class="sd">            Equivalent to pattern in the OpenAPI specification.</span>
-</span><span data-line="370"><span class="sd">        title: String value used in the title section of the OpenAPI schema for the given parameter.</span>
-</span><span data-line="371"><span class="sd">        schema_extra: Extensions to the generated schema. If set, will overwrite the matching fields in the generated</span>
-</span><span data-line="372"><span class="sd">            schema.</span>
-</span><span data-line="373">
-</span><span data-line="374"><span class="sd">            .. versionadded:: 2.8.0</span>
-</span><span data-line="375"><span class="sd">        schema_component_key: Use this as the key for the reference when creating a component for this type</span>
-</span><span data-line="376"><span class="sd">            .. versionadded:: 2.12.0</span>
-</span><span data-line="377"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="378">    <span class="k">return</span> <span class="n">BodyKwarg</span><span class="p">(</span>
-</span><span data-line="379">        <span class="n">media_type</span><span class="o">=</span><span class="n">media_type</span><span class="p">,</span>
-</span><span data-line="380">        <span class="n">examples</span><span class="o">=</span><span class="n">examples</span><span class="p">,</span>
-</span><span data-line="381">        <span class="n">external_docs</span><span class="o">=</span><span class="n">external_docs</span><span class="p">,</span>
-</span><span data-line="382">        <span class="n">content_encoding</span><span class="o">=</span><span class="n">content_encoding</span><span class="p">,</span>
-</span><span data-line="383">        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
-</span><span data-line="384">        <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
-</span><span data-line="385">        <span class="n">const</span><span class="o">=</span><span class="n">const</span><span class="p">,</span>
-</span><span data-line="386">        <span class="n">gt</span><span class="o">=</span><span class="n">gt</span><span class="p">,</span>
-</span><span data-line="387">        <span class="n">ge</span><span class="o">=</span><span class="n">ge</span><span class="p">,</span>
-</span><span data-line="388">        <span class="n">lt</span><span class="o">=</span><span class="n">lt</span><span class="p">,</span>
-</span><span data-line="389">        <span class="n">le</span><span class="o">=</span><span class="n">le</span><span class="p">,</span>
-</span><span data-line="390">        <span class="n">multiple_of</span><span class="o">=</span><span class="n">multiple_of</span><span class="p">,</span>
-</span><span data-line="391">        <span class="n">min_items</span><span class="o">=</span><span class="n">min_items</span><span class="p">,</span>
-</span><span data-line="392">        <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
-</span><span data-line="393">        <span class="n">min_length</span><span class="o">=</span><span class="n">min_length</span><span class="p">,</span>
-</span><span data-line="394">        <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span>
-</span><span data-line="395">        <span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">,</span>
-</span><span data-line="396">        <span class="n">multipart_form_part_limit</span><span class="o">=</span><span class="n">multipart_form_part_limit</span><span class="p">,</span>
-</span><span data-line="397">        <span class="n">schema_extra</span><span class="o">=</span><span class="n">schema_extra</span><span class="p">,</span>
-</span><span data-line="398">        <span class="n">schema_component_key</span><span class="o">=</span><span class="n">schema_component_key</span><span class="p">,</span>
-</span><span data-line="399">    <span class="p">)</span></div>
-
-</span><span data-line="400">
-</span><span data-line="401">
-<div class="viewcode-block" id="SkipValidationMarker">
-<a class="viewcode-back" href="../../reference/params.html#litestar.params.SkipValidationMarker">[docs]</a>
-</span><span data-line="402"><span class="k">class</span><span class="w"> </span><span class="nc">SkipValidationMarker</span><span class="p">(</span><span class="n">ParameterMarker</span><span class="p">):</span>
-</span><span data-line="403"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Indicate that a type annotated with this as metadata should be</span>
-</span><span data-line="404"><span class="sd">    treated as &#39;Any&#39;</span>
-</span><span data-line="405"><span class="sd">    &quot;&quot;&quot;</span></div>
+</span><span data-line="319"><span class="k">def</span><span class="w"> </span><span class="nf">Body</span><span class="p">(</span>
+</span><span data-line="320">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="321">    <span class="n">const</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="322">    <span class="n">content_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="323">    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="324">    <span class="n">examples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="325">    <span class="n">external_docs</span><span class="p">:</span> <span class="n">ExternalDocumentation</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="326">    <span class="n">ge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="327">    <span class="n">gt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="328">    <span class="n">le</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="329">    <span class="n">lt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="330">    <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="331">    <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="332">    <span class="n">media_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">RequestEncodingType</span> <span class="o">=</span> <span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
+</span><span data-line="333">    <span class="n">min_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="334">    <span class="n">min_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="335">    <span class="n">multipart_form_part_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="336">    <span class="n">multiple_of</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="337">    <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="338">    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="339">    <span class="n">schema_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="340">    <span class="n">schema_component_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="341"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="342"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an extended request body kwarg definition.</span>
+</span><span data-line="343">
+</span><span data-line="344"><span class="sd">    Args:</span>
+</span><span data-line="345"><span class="sd">        const: A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter</span>
+</span><span data-line="346"><span class="sd">            must equal its default value. This also causes the OpenAPI const field to be</span>
+</span><span data-line="347"><span class="sd">            populated with the default value.</span>
+</span><span data-line="348"><span class="sd">        content_encoding: The content encoding of the value. Applicable on to string values.</span>
+</span><span data-line="349"><span class="sd">            See OpenAPI 3.1 for details.</span>
+</span><span data-line="350"><span class="sd">        description: String value used in the description section of the OpenAPI schema for the given parameter.</span>
+</span><span data-line="351"><span class="sd">        examples: A list of Example models.</span>
+</span><span data-line="352"><span class="sd">        external_docs: A url pointing at external documentation for the given parameter.</span>
+</span><span data-line="353"><span class="sd">        ge: Constrict value to be greater or equal to a given float or int.</span>
+</span><span data-line="354"><span class="sd">            Equivalent to minimum in the OpenAPI specification.</span>
+</span><span data-line="355"><span class="sd">        gt: Constrict value to be greater than a given float or int.</span>
+</span><span data-line="356"><span class="sd">            Equivalent to exclusiveMinimum in the OpenAPI specification.</span>
+</span><span data-line="357"><span class="sd">        le: Constrict value to be less or equal to a given float or int.</span>
+</span><span data-line="358"><span class="sd">            Equivalent to maximum in the OpenAPI specification.</span>
+</span><span data-line="359"><span class="sd">        lt: Constrict value to be less than a given float or int.</span>
+</span><span data-line="360"><span class="sd">            Equivalent to exclusiveMaximum in the OpenAPI specification.</span>
+</span><span data-line="361"><span class="sd">        max_items: Constrict a set or a list to have a maximum number of items.</span>
+</span><span data-line="362"><span class="sd">            Equivalent to maxItems in the OpenAPI specification.</span>
+</span><span data-line="363"><span class="sd">        max_length: Constrict a string or bytes value to have a maximum length.</span>
+</span><span data-line="364"><span class="sd">            Equivalent to maxLength in the OpenAPI specification.</span>
+</span><span data-line="365"><span class="sd">        media_type: Defaults to RequestEncodingType.JSON.</span>
+</span><span data-line="366"><span class="sd">        min_items: Constrict a set or a list to have a minimum number of items.</span>
+</span><span data-line="367"><span class="sd">            Equivalent to minItems in the OpenAPI specification.</span>
+</span><span data-line="368"><span class="sd">        min_length: Constrict a string or bytes value to have a minimum length.</span>
+</span><span data-line="369"><span class="sd">            Equivalent to minLength in the OpenAPI specification.</span>
+</span><span data-line="370"><span class="sd">        multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request.</span>
+</span><span data-line="371"><span class="sd">            This limit is intended to protect from DoS attacks.</span>
+</span><span data-line="372"><span class="sd">        multiple_of: Constrict value to a multiple of a given float or int.</span>
+</span><span data-line="373"><span class="sd">            Equivalent to multipleOf in the OpenAPI specification.</span>
+</span><span data-line="374"><span class="sd">        pattern: A string representing a regex against which the given string will be matched.</span>
+</span><span data-line="375"><span class="sd">            Equivalent to pattern in the OpenAPI specification.</span>
+</span><span data-line="376"><span class="sd">        title: String value used in the title section of the OpenAPI schema for the given parameter.</span>
+</span><span data-line="377"><span class="sd">        schema_extra: Extensions to the generated schema. If set, will overwrite the matching fields in the generated</span>
+</span><span data-line="378"><span class="sd">            schema.</span>
+</span><span data-line="379">
+</span><span data-line="380"><span class="sd">            .. versionadded:: 2.8.0</span>
+</span><span data-line="381"><span class="sd">        schema_component_key: Use this as the key for the reference when creating a component for this type</span>
+</span><span data-line="382"><span class="sd">            .. versionadded:: 2.12.0</span>
+</span><span data-line="383"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="384">    <span class="k">return</span> <span class="n">BodyKwarg</span><span class="p">(</span>
+</span><span data-line="385">        <span class="n">media_type</span><span class="o">=</span><span class="n">media_type</span><span class="p">,</span>
+</span><span data-line="386">        <span class="n">examples</span><span class="o">=</span><span class="n">examples</span><span class="p">,</span>
+</span><span data-line="387">        <span class="n">external_docs</span><span class="o">=</span><span class="n">external_docs</span><span class="p">,</span>
+</span><span data-line="388">        <span class="n">content_encoding</span><span class="o">=</span><span class="n">content_encoding</span><span class="p">,</span>
+</span><span data-line="389">        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+</span><span data-line="390">        <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+</span><span data-line="391">        <span class="n">const</span><span class="o">=</span><span class="n">const</span><span class="p">,</span>
+</span><span data-line="392">        <span class="n">gt</span><span class="o">=</span><span class="n">gt</span><span class="p">,</span>
+</span><span data-line="393">        <span class="n">ge</span><span class="o">=</span><span class="n">ge</span><span class="p">,</span>
+</span><span data-line="394">        <span class="n">lt</span><span class="o">=</span><span class="n">lt</span><span class="p">,</span>
+</span><span data-line="395">        <span class="n">le</span><span class="o">=</span><span class="n">le</span><span class="p">,</span>
+</span><span data-line="396">        <span class="n">multiple_of</span><span class="o">=</span><span class="n">multiple_of</span><span class="p">,</span>
+</span><span data-line="397">        <span class="n">min_items</span><span class="o">=</span><span class="n">min_items</span><span class="p">,</span>
+</span><span data-line="398">        <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+</span><span data-line="399">        <span class="n">min_length</span><span class="o">=</span><span class="n">min_length</span><span class="p">,</span>
+</span><span data-line="400">        <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span>
+</span><span data-line="401">        <span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">,</span>
+</span><span data-line="402">        <span class="n">multipart_form_part_limit</span><span class="o">=</span><span class="n">multipart_form_part_limit</span><span class="p">,</span>
+</span><span data-line="403">        <span class="n">schema_extra</span><span class="o">=</span><span class="n">schema_extra</span><span class="p">,</span>
+</span><span data-line="404">        <span class="n">schema_component_key</span><span class="o">=</span><span class="n">schema_component_key</span><span class="p">,</span>
+</span><span data-line="405">    <span class="p">)</span></div>
 
 </span><span data-line="406">
 </span><span data-line="407">
-</span><span data-line="408"><span class="n">SkipValidation</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">SkipValidationMarker</span><span class="p">()]</span>
-</span><span data-line="409"><span class="sd">&quot;&quot;&quot;Exclude &#39;T&#39; from validation, effectively treating it as &#39;Any&#39;&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SkipValidationMarker">
+<a class="viewcode-back" href="../../reference/params.html#litestar.params.SkipValidationMarker">[docs]</a>
+</span><span data-line="408"><span class="k">class</span><span class="w"> </span><span class="nc">SkipValidationMarker</span><span class="p">(</span><span class="n">ParameterMarker</span><span class="p">):</span>
+</span><span data-line="409"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Indicate that a type annotated with this as metadata should be</span>
+</span><span data-line="410"><span class="sd">    treated as &#39;Any&#39;</span>
+</span><span data-line="411"><span class="sd">    &quot;&quot;&quot;</span></div>
+
+</span><span data-line="412">
+</span><span data-line="413">
+</span><span data-line="414"><span class="n">SkipValidation</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">SkipValidationMarker</span><span class="p">()]</span>
+</span><span data-line="415"><span class="sd">&quot;&quot;&quot;Exclude &#39;T&#39; from validation, effectively treating it as &#39;Any&#39;&quot;&quot;&quot;</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

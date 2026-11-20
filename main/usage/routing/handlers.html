@@ -665,13 +665,8 @@ and <a class="reference internal" href="../../reference/params.html#litestar.par
 <p>Additionally, you can specify the following special <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.15)"><span class="xref std std-term">kwargs</span></a>,
 (known as “reserved keywords arguments”), each declared with its type:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">cookies:</span> <span class="pre">RequestCookies</span></code>: injects the request cookies as a <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.
-See <a class="reference internal" href="../../reference/params.html#litestar.params.RequestCookies" title="litestar.params.RequestCookies"><code class="xref py py-data docutils literal notranslate"><span class="pre">RequestCookies</span></code></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">headers:</span> <span class="pre">Headers</span></code>: injects the request <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.Headers" title="litestar.datastructures.headers.Headers"><code class="xref py py-class docutils literal notranslate"><span class="pre">Headers</span></code></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">query:</span> <span class="pre">QueryParams</span></code>: injects the request <code class="docutils literal notranslate"><span class="pre">query_params</span></code>. See <a class="reference internal" href="../../reference/params.html#litestar.params.QueryParams" title="litestar.params.QueryParams"><code class="xref py py-data docutils literal notranslate"><span class="pre">QueryParams</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">request:</span> <span class="pre">Request</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance. Available only for
 <a class="reference internal" href="#http-route-handlers">HTTP route handlers</a>. With a custom request class, use that class or one it inherits from.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">scope:</span> <span class="pre">Scope</span></code>: injects the ASGI scope <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">socket:</span> <span class="pre">WebSocket</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instance. Available only for
 <a class="reference internal" href="#websocket-route-handlers">websocket route handlers</a>. With a custom websocket class, use that class or one it inherits from.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">state:</span> <span class="pre">State</span></code>: injects a copy of the application <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p></li>
@@ -679,6 +674,12 @@ See <a class="reference internal" href="../../reference/params.html#litestar.par
 <li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: the parsed request body, declared with a body marker such as <a class="reference internal" href="../../reference/params.html#litestar.params.JSONBody" title="litestar.params.JSONBody"><code class="xref py py-data docutils literal notranslate"><span class="pre">JSONBody</span></code></a>. See
 <a class="reference internal" href="../requests.html"><span class="doc">requests</span></a>.</p></li>
 </ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">headers:</span> <span class="pre">Headers</span></code>, <code class="docutils literal notranslate"><span class="pre">query:</span> <span class="pre">QueryParams</span></code>, <code class="docutils literal notranslate"><span class="pre">cookies:</span> <span class="pre">RequestCookies</span></code> and <code class="docutils literal notranslate"><span class="pre">scope:</span> <span class="pre">Scope</span></code> are deprecated.
+Use the <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a>‘s <code class="docutils literal notranslate"><span class="pre">headers</span></code>, <code class="docutils literal notranslate"><span class="pre">query_params</span></code>,
+<code class="docutils literal notranslate"><span class="pre">cookies</span></code>, or <code class="docutils literal notranslate"><span class="pre">scope</span></code> attributes instead.</p>
+</div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Note that if your parameters collide with any of the reserved
@@ -689,18 +690,14 @@ See <a class="reference internal" href="../../reference/params.html#litestar.par
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Providing an alternative name for a reserved keyword argument</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Headers</span><span class="p">,</span> <span class="n">State</span>
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryParams</span><span class="p">,</span> <span class="n">RequestCookies</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
+</span><span data-line="3">
 </span><span data-line="4">
-</span><span data-line="5">
-</span><span data-line="6"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_request_handler</span><span class="p">(</span>
-</span><span data-line="8">   <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span>
-</span><span data-line="9">   <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
-</span><span data-line="10">   <span class="n">headers</span><span class="p">:</span> <span class="n">Headers</span><span class="p">,</span>
-</span><span data-line="11">   <span class="n">query</span><span class="p">:</span> <span class="n">QueryParams</span><span class="p">,</span>
-</span><span data-line="12">   <span class="n">cookies</span><span class="p">:</span> <span class="n">RequestCookies</span><span class="p">,</span>
-</span><span data-line="13"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_request_handler</span><span class="p">(</span>
+</span><span data-line="7">   <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span>
+</span><span data-line="8">   <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+</span><span data-line="9"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
 </div>

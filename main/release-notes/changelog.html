@@ -546,6 +546,16 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Deprecate request parameters <code class="docutils literal notranslate"><span class="pre">Headers</span></code>, <code class="docutils literal notranslate"><span class="pre">QueryParams</span></code>, <code class="docutils literal notranslate"><span class="pre">RequestCookies</span></code> and <code class="docutils literal notranslate"><span class="pre">Scope</span></code><a class="headerlink reference internal" href="#3.0.0-deprecate request parameters" id="3.0.0-deprecate request parameters">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Deprecate
+<a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.Headers" title="litestar.datastructures.Headers"><code class="xref py py-class docutils literal notranslate"><span class="pre">Headers</span></code></a>, <a class="reference internal" href="../reference/params.html#litestar.params.QueryParams" title="litestar.params.QueryParams"><code class="xref py py-data docutils literal notranslate"><span class="pre">QueryParams</span></code></a>,
+<a class="reference internal" href="../reference/params.html#litestar.params.RequestCookies" title="litestar.params.RequestCookies"><code class="xref py py-data docutils literal notranslate"><span class="pre">RequestCookies</span></code></a>, and <a class="reference internal" href="../reference/types.html#litestar.types.Scope" title="litestar.types.Scope"><code class="xref py py-data docutils literal notranslate"><span class="pre">Scope</span></code></a> as
+request parameters.</p>
+<p><a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a>‘s <code class="docutils literal notranslate"><span class="pre">headers</span></code>, <code class="docutils literal notranslate"><span class="pre">query_params</span></code>,
+<code class="docutils literal notranslate"><span class="pre">cookies</span></code>, or <code class="docutils literal notranslate"><span class="pre">scope</span></code> attributes should be used instead.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/TBD">https://github.com/litestar-org/litestar/pull/TBD</a></span></p>
+</div>
+</dd>
 <dt>Drop reserved keyword arguments in handlers and DI<a class="headerlink reference internal" href="#3.0.0-drop reserved keyword arguments in handlers and di" id="3.0.0-drop reserved keyword arguments in handlers and di">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Drop the special meaning of the “reserved keyword arguments” in handlers and DI
 providers.</p>
