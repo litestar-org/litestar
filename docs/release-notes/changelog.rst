@@ -6,6 +6,15 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Apply DTO field filtering to nested models in fixed-length tuples
+        :type: bugfix
+        :pr: 5216
+
+        Fix a bug where DTOs skipped nested models inside fixed-length tuple fields such
+        as ``tuple[Model, int]``, so excluded and private fields were returned in
+        responses, and handlers received the internal transfer model instead of
+        ``Model``.
+
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
         :pr: 5213
