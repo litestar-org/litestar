@@ -804,7 +804,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 </span><span data-line="115"><span class="linenos">115</span><span class="k">class</span><span class="w"> </span><span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 </span><span data-line="116"><span class="linenos">116</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
 </span><span data-line="117"><span class="linenos">117</span>
-</span><span data-line="118"><span class="linenos">118</span>    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span>
+</span><span data-line="118"><span class="linenos">118</span>    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">)}</span>
 </span><span data-line="119"><span class="linenos">119</span>
 </span><span data-line="120"><span class="linenos">120</span>    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
 </span><span data-line="121"><span class="linenos">121</span>    <span class="k">def</span><span class="w"> </span><span class="nf">list_authors</span><span class="p">(</span>
@@ -838,7 +838,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 </span><span data-line="149"><span class="linenos">149</span>    <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
 </span><span data-line="150"><span class="linenos">150</span>    <span class="nd">@get</span><span class="p">(</span>
 </span><span data-line="151"><span class="linenos">151</span>        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-</span><span data-line="152"><span class="linenos">152</span>        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
+</span><span data-line="152"><span class="linenos">152</span>        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)},</span>
 </span><span data-line="153"><span class="linenos">153</span>    <span class="p">)</span>
 </span><span data-line="154"><span class="linenos">154</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
 </span><span data-line="155"><span class="linenos">155</span>        <span class="bp">self</span><span class="p">,</span>
@@ -857,7 +857,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 </span><span data-line="168"><span class="linenos">168</span>
 </span><span data-line="169"><span class="linenos">169</span>    <span class="nd">@patch</span><span class="p">(</span>
 </span><span data-line="170"><span class="linenos">170</span>        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-</span><span data-line="171"><span class="linenos">171</span>        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
+</span><span data-line="171"><span class="linenos">171</span>        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)},</span>
 </span><span data-line="172"><span class="linenos">172</span>    <span class="p">)</span>
 </span><span data-line="173"><span class="linenos">173</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
 </span><span data-line="174"><span class="linenos">174</span>        <span class="bp">self</span><span class="p">,</span>
@@ -909,7 +909,7 @@ Here’s a corresponding synchronous version of the previous example:</p>
 </span><span data-line="220"><span class="linenos">220</span>    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">AuthorController</span><span class="p">],</span>
 </span><span data-line="221"><span class="linenos">221</span>    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
 </span><span data-line="222"><span class="linenos">222</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
-</span><span data-line="223"><span class="linenos">223</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">)},</span>
+</span><span data-line="223"><span class="linenos">223</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
 </span><span data-line="224"><span class="linenos">224</span><span class="p">)</span>
 </span></pre></div>
 </div>
@@ -1148,7 +1148,7 @@ functionality to our application.</p>
 </span><span data-line="220"><span class="linenos">220</span>    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">AuthorController</span><span class="p">],</span>
 </span><span data-line="221"><span class="linenos">221</span>    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
 </span><span data-line="222"><span class="linenos">222</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
-</span><span data-line="223"><span class="linenos">223</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">)},</span>
+</span><span data-line="223"><span class="linenos">223</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
 </span><span data-line="224"><span class="linenos">224</span><span class="p">)</span>
 </span></pre></div>
 </div>

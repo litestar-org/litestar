@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="../../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar.di.registry - Litestar Framework</title><link rel="shortcut icon" href="../../../_static/favicon.svg"/><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=470ca8b0" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=326d68a3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=f8f74789" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="litestar.di.registry"/>
+  <meta property="og:image" content="_static/logo-light.png"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="announcement">
+    <div class="announcement-inner">
+      <p>You are viewing the <strong>local</strong> version of the documentation. <a href="/latest/">Click here to go to the latest version.</a></p>
+      <button class="announcement-close" aria-label="Close announcement">
+        <i class="i-lucide close"></i>
+      </button>
+    </div>
+  </div><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../../../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
+      <strong>Litestar</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../../../index.html">Home</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="../../../contribution-guide.html">
+                <span>Contributing</span>
+                <small>Learn how to contribute to the Litestar project</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
+                <span>Code of Conduct</span>
+                <small>Review the etiquette for interacting with the Litestar community</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file">
+                <span>Security</span>
+                <small>Overview of Litestar's security protocols</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-3" aria-controls="nav-children-3">
+            <span>About</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-3" aria-labelledby="nav-trigger-3"><li><a href="https://litestar.dev">
+                <span>Official Website</span>
+                <small>The Litestar project website</small>
+              </a></li><li><a href="https://litestar.dev/about">
+                <span>Litestar Organization</span>
+                <small>Details about the Litestar organization</small>
+              </a></li><li><a href="https://litestar.dev/about/litestar-releases">
+                <span>Releases</span>
+                <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-4" aria-controls="nav-children-4">
+            <span>Release notes</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-4" aria-labelledby="nav-trigger-4"><li><a href="../../../release-notes/whats-new-3.html">
+                <span>What's new in 3.0</span>
+                <small>Explore the new features in Litestar 3.0</small>
+              </a></li><li><a href="../../../release-notes/changelog.html">
+                <span>3.x Changelog</span>
+                <small>All changes in the 3.x series</small>
+              </a></li><li><a href="https://docs.litestar.dev/2/release-notes/changelog.html">
+                <span>2.x Changelog</span>
+                <small>All changes in the 2.x series</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-5" aria-controls="nav-children-5">
+            <span>Help</span>
+            <i class="i-lucide chevron-down"></i>
+          </button>
+        <ul id="nav-children-5" aria-labelledby="nav-trigger-5"><li><a href="https://discord.gg/litestar">
+                <span>Discord Help Forum</span>
+                <small>Dedicated Discord help forum</small>
+              </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
+                <span>GitHub Discussions</span>
+                <small>GitHub Discussions</small>
+              </a></li></ul>
+      </li><li class="link">
+          <a href="https://github.com/sponsors/Litestar-Org">
+            <span>Sponsor</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="nav-versions">
+    <button type="button" aria-label="Versions">
+      <span class="md:hidden">Versions</span>
+      <span class="hidden md:inline">main</span>
+      <i class="i-lucide chevron-down"></i>
+    </button>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">v3 (development)</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/applications.html">Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/routing/index.html">Routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/handlers.html">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/parameters.html">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/requests.html">Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/channels.html">Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/databases/index.html">Databases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/databases/piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/dto/index.html">Data Transfer Object (DTO)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/file_systems.html">File Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/htmx.html">HTMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/logging.html">Request logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/metrics/index.html">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/metrics/opentelemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/metrics/prometheus.html">Prometheus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/middleware/index.html">Middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/openapi/index.html">OpenAPI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html">Configuring schema generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#configuring-schema-generation-on-a-route-handler">Configuring schema generation on a route handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/schema_generation.html#generating-examples">Generating examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#configuring-the-openapi-root-path">Configuring the OpenAPI Root Path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#building-your-own-openapi-ui-plugin">Building your own OpenAPI UI Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#interacting-with-the-router">Interacting with the <code class="docutils literal notranslate"><span class="pre">Router</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/openapi/ui_plugins.html#cdn-and-offline-file-support">CDN and offline file support</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/plugins/index.html">Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/problem_details.html">Problem Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/security/index.html">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/secret-datastructures.html">Handling Secrets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/custom-types.html">Custom types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/websockets.html">WebSockets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/channels/index.html">channels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/channels/backends/index.html">backends</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/channels/backends/asyncpg.html">asyncpg</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/connection.html">connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/concurrency.html">concurrency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/datastructures/index.html">datastructures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/datastructures/secret_values.html">secret_values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/dto/index.html">dto</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/file_system.html">file_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/middleware/index.html">middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/session/index.html">session</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../reference/middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/middleware/constraints.html">constraints</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/openapi/index.html">openapi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/openapi/plugins.html">plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/attrs.html">attrs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/htmx.html">htmx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/minijinja.html">minijinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/prometheus.html">prometheus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/plugins/pydantic.html">pydantic</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/repository/index.html">repository</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/repository/abc.html">abc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/repository/filters.html">filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/repository/testing.html">testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/response/index.html">response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/sse.html">SSE (Server Sent Events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/routes.html">routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/security/index.html">security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/security/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/stores/index.html">stores</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../reference/stores/valkey.html">valkey</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/typing.html">typing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../onboarding/index.html">Onboarding from other frameworks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../onboarding/fastapi.html">FastAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../onboarding/flask.html">Flask</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../topics/index.html">Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../topics/explicit_declarations.html">Explicit parameter declarations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../topics/deployment/index.html">Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/todo-app/index.html">Developing a basic TODO application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/01-modelling-and-features.html">Introduction to Database Modelling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/01-modelling-and-features.html#modelling">Modelling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/01-modelling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/03-repository-controller.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/04-repository-other.html#slug-fields">Slug Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tutorials/repository-tutorial/04-repository-other.html#full-code">Full Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribution-guide.html">Contribution Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+  data-type="github" data-user="litestar-org" data-repo="litestar">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>litestar</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../../index.html"><span itemprop="name">Litestar</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Module code</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">litestar.di.registry</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <h1>Source code for litestar.di.registry</h1><div class="highlight"><pre>
+<span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">graphlib</span>
+</span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+</span><span data-line="5"><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">MappingProxyType</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">TypeAlias</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di._helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">_describe_provider</span><span class="p">,</span> <span class="n">_format_key</span><span class="p">,</span> <span class="n">_format_scope_chain</span>
+</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="12">    <span class="n">CaptiveDependencyError</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">CircularDependencyError</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">DIRegistrationError</span><span class="p">,</span>
+</span><span data-line="15">    <span class="n">DivergenceError</span><span class="p">,</span>
+</span><span data-line="16">    <span class="n">DivergenceWarning</span><span class="p">,</span>
+</span><span data-line="17">    <span class="n">MissingProviderError</span><span class="p">,</span>
+</span><span data-line="18"><span class="p">)</span>
+</span><span data-line="19"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">_DEFAULT_SCOPE</span><span class="p">,</span> <span class="n">InjectionTarget</span><span class="p">,</span> <span class="n">Provider</span>
+</span><span data-line="20">
+</span><span data-line="21"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="22">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Mapping</span>
+</span><span data-line="23">
+</span><span data-line="24">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">DependencyKey</span>
+</span><span data-line="25">
+</span><span data-line="26"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="27">    <span class="s2">&quot;_DEFAULT_SCOPES&quot;</span><span class="p">,</span>
+</span><span data-line="28">    <span class="s2">&quot;DIRegistry&quot;</span><span class="p">,</span>
+</span><span data-line="29">    <span class="s2">&quot;ValueGraphDivergence&quot;</span><span class="p">,</span>
+</span><span data-line="30">    <span class="s2">&quot;check_divergence&quot;</span><span class="p">,</span>
+</span><span data-line="31"><span class="p">)</span>
+</span><span data-line="32">
+</span><span data-line="33">
+</span><span data-line="34"><span class="n">_DEFAULT_SCOPES</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;app&quot;</span><span class="p">,</span> <span class="s2">&quot;request&quot;</span><span class="p">,</span> <span class="s2">&quot;handler&quot;</span><span class="p">)</span>
+</span><span data-line="35">
+</span><span data-line="36">
+</span><span data-line="37"><span class="n">_Predecessors</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="s2">&quot;frozenset[Provider]&quot;</span>
+</span><span data-line="38">
+</span><span data-line="39">
+<div class="viewcode-block" id="ValueGraphDivergence">
+<a class="viewcode-back" href="../../../reference/di.html#litestar.di.ValueGraphDivergence">[docs]</a>
+</span><span data-line="40"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="41"><span class="k">class</span><span class="w"> </span><span class="nc">ValueGraphDivergence</span><span class="p">:</span>
+</span><span data-line="42"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Finding of :func:`~litestar.di.check_divergence`: a node at which two registries&#39;</span>
+</span><span data-line="43"><span class="sd">    value graphs diverge. ``provider``, declared under ``key`` by both, has different</span>
+</span><span data-line="44"><span class="sd">    predecessors in ``registry`` than in ``first_registry``</span>
+</span><span data-line="45"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="46">
+</span><span data-line="47">    <span class="n">key</span><span class="p">:</span> <span class="n">DependencyKey</span>
+</span><span data-line="48">    <span class="n">provider</span><span class="p">:</span> <span class="n">Provider</span>
+</span><span data-line="49">    <span class="n">first_registry</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="50">    <span class="n">registry</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="51">    <span class="n">bindings</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">DependencyKey</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Provider</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Provider</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span>
+</span><span data-line="52"><span class="w">    </span><span class="sd">&quot;&quot;&quot;bindings that differ, as ``(first, this)`` per key, ``None`` for an unbound optional dependency&quot;&quot;&quot;</span>
+</span><span data-line="53">
+</span><span data-line="54">    <span class="nd">@staticmethod</span>
+</span><span data-line="55">    <span class="k">def</span><span class="w"> </span><span class="nf">_describe_binding</span><span class="p">(</span><span class="n">binding</span><span class="p">:</span> <span class="n">Provider</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="56">        <span class="k">if</span> <span class="n">binding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="57">            <span class="k">return</span> <span class="s2">&quot;&lt;without provider&gt;&quot;</span>
+</span><span data-line="58">        <span class="k">return</span> <span class="n">_describe_provider</span><span class="p">(</span><span class="n">binding</span><span class="p">)</span>
+</span><span data-line="59">
+</span><span data-line="60">    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="61">        <span class="c1"># Registry names are not required to be unique, and two conflicting registries with one</span>
+</span><span data-line="62">        <span class="c1"># name would otherwise produce e.g. &quot;&#39;route&#39; differs from &#39;route&#39;&quot;</span>
+</span><span data-line="63">        <span class="n">ours</span><span class="p">,</span> <span class="n">theirs</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first_registry</span><span class="p">)</span>
+</span><span data-line="64">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registry</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_registry</span><span class="p">:</span>
+</span><span data-line="65">            <span class="n">ours</span> <span class="o">+=</span> <span class="s2">&quot; (this registry)&quot;</span>
+</span><span data-line="66">            <span class="n">theirs</span> <span class="o">+=</span> <span class="s2">&quot; (a different registry with the same name)&quot;</span>
+</span><span data-line="67">        <span class="c1"># TODO: Better error condition description and why this *might* be an issue.</span>
+</span><span data-line="68">        <span class="c1"># Link to docs?</span>
+</span><span data-line="69">        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="70">            <span class="sa">f</span><span class="s2">&quot;Provider </span><span class="si">{</span><span class="n">_format_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2"> has different predecessors in registry &quot;</span>
+</span><span data-line="71">            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ours</span><span class="si">}</span><span class="s2"> than in registry </span><span class="si">{</span><span class="n">theirs</span><span class="si">}</span><span class="s2">. Resolution would implicitly create two &quot;</span>
+</span><span data-line="72">            <span class="sa">f</span><span class="s2">&quot;distinct values for this key in the same scope (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">scope</span><span class="si">!r}</span><span class="s2">).&quot;</span>
+</span><span data-line="73">        <span class="p">)</span>
+</span><span data-line="74">        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  Differing predecessors:&quot;</span>
+</span><span data-line="75">        <span class="k">for</span> <span class="n">dependency_key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bindings</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">_format_key</span><span class="p">):</span>
+</span><span data-line="76">            <span class="n">first</span><span class="p">,</span> <span class="n">this</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bindings</span><span class="p">[</span><span class="n">dependency_key</span><span class="p">]</span>
+</span><span data-line="77">            <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+</span><span data-line="78">                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    </span><span class="si">{</span><span class="n">_format_key</span><span class="p">(</span><span class="n">dependency_key</span><span class="p">)</span><span class="si">}</span><span class="s2">:&quot;</span>
+</span><span data-line="79">                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">      in </span><span class="si">{</span><span class="n">ours</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_describe_binding</span><span class="p">(</span><span class="n">this</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="80">                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">      in </span><span class="si">{</span><span class="n">theirs</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_describe_binding</span><span class="p">(</span><span class="n">first</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="81">            <span class="p">)</span>
+</span><span data-line="82">        <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  provider: </span><span class="si">{</span><span class="n">_describe_provider</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="83">        <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+</span><span data-line="84">            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  If this is acceptable, you can ignore it: &quot;</span>
+</span><span data-line="85">            <span class="sa">f</span><span class="s2">&quot;check_divergence(..., ignore=[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">!r}</span><span class="s2">]). &quot;</span>
+</span><span data-line="86">            <span class="sa">f</span><span class="s2">&quot;Otherwise bind these dependencies identically, or declare a distinct &quot;</span>
+</span><span data-line="87">            <span class="sa">f</span><span class="s2">&quot;provider for </span><span class="si">{</span><span class="n">_format_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+</span><span data-line="88">        <span class="p">)</span>
+</span><span data-line="89">        <span class="k">return</span> <span class="n">message</span></div>
+
+</span><span data-line="90">
+</span><span data-line="91">
+</span><span data-line="92"><span class="n">_REGISTRY_SEQUENCE</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</span><span data-line="93"><span class="sd">&quot;&quot;&quot;Sequence registries and contexts draw from, so that using a registry created after the</span>
+</span><span data-line="94"><span class="sd">outermost context of its chain was entered raises. See</span>
+</span><span data-line="95"><span class="sd">:meth:`DIContext._raise_if_registry_created_after_context_entered`</span>
+</span><span data-line="96"><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="97">
+</span><span data-line="98">
+<div class="viewcode-block" id="DIRegistry">
+<a class="viewcode-back" href="../../../reference/di.html#litestar.di.DIRegistry">[docs]</a>
+</span><span data-line="99"><span class="k">class</span><span class="w"> </span><span class="nc">DIRegistry</span><span class="p">:</span>
+</span><span data-line="100"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A registry of DI providers.&quot;&quot;&quot;</span>
+</span><span data-line="101">
+</span><span data-line="102">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="103">        <span class="s2">&quot;_created_at&quot;</span><span class="p">,</span>
+</span><span data-line="104">        <span class="s2">&quot;_frozen&quot;</span><span class="p">,</span>
+</span><span data-line="105">        <span class="s2">&quot;_predecessors&quot;</span><span class="p">,</span>
+</span><span data-line="106">        <span class="s2">&quot;_providers&quot;</span><span class="p">,</span>
+</span><span data-line="107">        <span class="s2">&quot;_scope_index&quot;</span><span class="p">,</span>
+</span><span data-line="108">        <span class="s2">&quot;_seeds&quot;</span><span class="p">,</span>
+</span><span data-line="109">        <span class="s2">&quot;_seeds_by_scope&quot;</span><span class="p">,</span>
+</span><span data-line="110">        <span class="s2">&quot;_static_order&quot;</span><span class="p">,</span>
+</span><span data-line="111">        <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+</span><span data-line="112">        <span class="s2">&quot;scopes&quot;</span><span class="p">,</span>
+</span><span data-line="113">    <span class="p">)</span>
+</span><span data-line="114">
+<div class="viewcode-block" id="DIRegistry.__init__">
+<a class="viewcode-back" href="../../../reference/di.html#litestar.di.DIRegistry.__init__">[docs]</a>
+</span><span data-line="115">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="116">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="117">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="118">        <span class="n">providers</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Provider</span><span class="p">],</span>
+</span><span data-line="119">        <span class="n">scopes</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="120">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="121"><span class="w">        </span><span class="sd">&quot;&quot;&quot;A registry of DI providers.</span>
+</span><span data-line="122">
+</span><span data-line="123"><span class="sd">        A registry holds every provider needed to satisfy the keys it declares.</span>
+</span><span data-line="124">
+</span><span data-line="125"><span class="sd">        A registry is mutable until the first time a graph is solved from it, creating a</span>
+</span><span data-line="126"><span class="sd">        :class:`DIContext` or calling :meth:`predecessors_of`, at which point it</span>
+</span><span data-line="127"><span class="sd">        *freezes*, validating the graph and disallowing further registrations.</span>
+</span><span data-line="128">
+</span><span data-line="129"><span class="sd">        Args:</span>
+</span><span data-line="130"><span class="sd">            name: Name of this registry. Only used for debugging purposes in error messages</span>
+</span><span data-line="131"><span class="sd">            providers: Providers available in this registry</span>
+</span><span data-line="132"><span class="sd">            scopes: Available scopes, in order, outermost first. Defaults to ``(&quot;app&quot;, &quot;request&quot;, &quot;handler&quot;)``</span>
+</span><span data-line="133">
+</span><span data-line="134"><span class="sd">        Raises:</span>
+</span><span data-line="135"><span class="sd">            DIRegistrationError: If the scopes or the providers are invalid.</span>
+</span><span data-line="136">
+</span><span data-line="137"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="138">        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+</span><span data-line="139">        <span class="bp">self</span><span class="o">.</span><span class="n">scopes</span> <span class="o">=</span> <span class="n">_DEFAULT_SCOPES</span> <span class="k">if</span> <span class="n">scopes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">scopes</span><span class="p">)</span>
+</span><span data-line="140">        <span class="bp">self</span><span class="o">.</span><span class="n">_created_at</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">_REGISTRY_SEQUENCE</span><span class="p">)</span>
+</span><span data-line="141">
+</span><span data-line="142">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">:</span>
+</span><span data-line="143">            <span class="k">raise</span> <span class="n">DIRegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registry </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> was given an empty scope order.&quot;</span><span class="p">)</span>
+</span><span data-line="144">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">):</span>
+</span><span data-line="145">            <span class="k">raise</span> <span class="n">DIRegistrationError</span><span class="p">(</span>
+</span><span data-line="146">                <span class="sa">f</span><span class="s2">&quot;Registry </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> has duplicate scopes in </span><span class="si">{</span><span class="n">_format_scope_chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+</span><span data-line="147">                <span class="s2">&quot;Scope names must be unique, as they identify a context&#39;s a position in the scope order.&quot;</span>
+</span><span data-line="148">            <span class="p">)</span>
+</span><span data-line="149">
+</span><span data-line="150">        <span class="bp">self</span><span class="o">.</span><span class="n">_scope_index</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">scope</span><span class="p">:</span> <span class="n">index</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">scope</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">)}</span>
+</span><span data-line="151">        <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Provider</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="152">        <span class="bp">self</span><span class="o">.</span><span class="n">_seeds</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Provider</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="153">        <span class="bp">self</span><span class="o">.</span><span class="n">_frozen</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="154">        <span class="bp">self</span><span class="o">.</span><span class="n">_static_order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+</span><span data-line="155">        <span class="c1"># a provider&#39;s predecessors are part of the identity of the values it produces</span>
+</span><span data-line="156">        <span class="c1"># through this registry. these are populated in .freeze()</span>
+</span><span data-line="157">        <span class="bp">self</span><span class="o">.</span><span class="n">_predecessors</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Provider</span><span class="p">,</span> <span class="n">_Predecessors</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="158">        <span class="c1"># the seeds a context of each scope is given values for. populated in .freeze()</span>
+</span><span data-line="159">        <span class="bp">self</span><span class="o">.</span><span class="n">_seeds_by_scope</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Provider</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="160">
+</span><span data-line="161">        <span class="k">for</span> <span class="n">provider</span> <span class="ow">in</span> <span class="n">providers</span><span class="p">:</span>
+</span><span data-line="162">            <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span></div>
+
+</span><span data-line="163">
+</span><span data-line="164">    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="165">        <span class="k">return</span> <span class="p">(</span>
+</span><span data-line="166">            <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> providers=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="167">            <span class="sa">f</span><span class="s2">&quot; frozen=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_frozen</span><span class="si">!r}</span><span class="s2"> at </span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">:</span><span class="s2">#x</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+</span><span data-line="168">        <span class="p">)</span>
+</span><span data-line="169">
+</span><span data-line="170">    <span class="nd">@property</span>
+</span><span data-line="171">    <span class="k">def</span><span class="w"> </span><span class="nf">is_frozen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="172">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frozen</span>
+</span><span data-line="173">
+</span><span data-line="174">    <span class="nd">@property</span>
+</span><span data-line="175">    <span class="k">def</span><span class="w"> </span><span class="nf">providers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">DependencyKey</span><span class="p">,</span> <span class="n">Provider</span><span class="p">]:</span>
+</span><span data-line="176"><span class="w">        </span><span class="sd">&quot;&quot;&quot;The registry&#39;s providers&quot;&quot;&quot;</span>
+</span><span data-line="177">        <span class="k">return</span> <span class="n">MappingProxyType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">)</span>
+</span><span data-line="178">
+<div class="viewcode-block" id="DIRegistry.register">
+<a class="viewcode-back" href="../../../reference/di.html#litestar.di.DIRegistry.register">[docs]</a>
+</span><span data-line="179">    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span>
+</span><span data-line="180">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="181">        <span class="n">provider</span><span class="p">:</span> <span class="n">Provider</span><span class="p">,</span>
+</span><span data-line="182">        <span class="n">override</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="183">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="184"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a provider.</span>
+</span><span data-line="185">
+</span><span data-line="186"><span class="sd">        Args:</span>
+</span><span data-line="187"><span class="sd">            provider: The provider or callable to create a provider instance</span>
+</span><span data-line="188"><span class="sd">            override: If ``False``, trying to register a provider for an already existing</span>
+</span><span data-line="189"><span class="sd">                key raises :exc:`DIRegistrationError`</span>
+</span><span data-line="190">
+</span><span data-line="191"><span class="sd">        Raises:</span>
+</span><span data-line="192"><span class="sd">            DIRegistrationError: If the registry is frozen, the key is a duplicate and ``override``</span>
+</span><span data-line="193"><span class="sd">                is not set, the scope is unknown, or the provider cannot be inspected.</span>
+</span><span data-line="194">
+</span><span data-line="195"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="196">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frozen</span><span class="p">:</span>
+</span><span data-line="197">            <span class="k">raise</span> <span class="n">DIRegistrationError</span><span class="p">(</span>
+</span><span data-line="198">                <span class="sa">f</span><span class="s2">&quot;Cannot register provider at frozen registry </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">. A &quot;</span>
+</span><span data-line="199">                <span class="s2">&quot;registry is frozen the first time any dependency is solved from it, &quot;</span>
+</span><span data-line="200">                <span class="s2">&quot;to prevent accidental mutation of live contexts and the values held &quot;</span>
+</span><span data-line="201">                <span class="s2">&quot;within them, and to avoid expensive re-computation of the dependency &quot;</span>
+</span><span data-line="202">                <span class="s2">&quot;graph and its associated checks. Register everything before creating &quot;</span>
+</span><span data-line="203">                <span class="s2">&quot;a DIContext, or build an independent registry with the new providers. &quot;</span>
+</span><span data-line="204">            <span class="p">)</span>
+</span><span data-line="205">
+</span><span data-line="206">        <span class="n">provider</span><span class="o">.</span><span class="n">resolve_signature</span><span class="p">()</span>
+</span><span data-line="207">
+</span><span data-line="208">        <span class="k">if</span> <span class="n">provider</span><span class="o">.</span><span class="n">scope</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scope_index</span><span class="p">:</span>
+</span><span data-line="209">            <span class="k">raise</span> <span class="n">DIRegistrationError</span><span class="p">(</span>
+</span><span data-line="210">                <span class="sa">f</span><span class="s2">&quot;Unknown scope </span><span class="si">{</span><span class="n">provider</span><span class="o">.</span><span class="n">scope</span><span class="si">!r}</span><span class="s2">. Cannot register provider &quot;</span>
+</span><span data-line="211">                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_describe_provider</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span><span class="si">}</span><span class="s2"> with scope </span><span class="si">{</span><span class="n">provider</span><span class="o">.</span><span class="n">scope</span><span class="si">!r}</span><span class="s2"> on &quot;</span>
+</span><span data-line="212">                <span class="sa">f</span><span class="s2">&quot;registry </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> with declared scopes &quot;</span>
+</span><span data-line="213">                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_format_scope_chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="214">            <span class="p">)</span>
+</span><span data-line="215">
+</span><span data-line="216">        <span class="n">existing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">provider</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="217">        <span class="k">if</span> <span class="n">existing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">override</span><span class="p">:</span>
+</span><span data-line="218">            <span class="k">raise</span> <span class="n">DIRegistrationError</span><span class="p">(</span>
+</span><span data-line="219">                <span class="sa">f</span><span class="s2">&quot;Cannot register provider </span><span class="si">{</span><span class="n">_describe_provider</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span><span class="si">}</span><span class="s2"> at registry &quot;</span>
+</span><span data-line="220">                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> for key </span><span class="si">{</span><span class="n">_format_key</span><span class="p">(</span><span class="n">provider</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">. Another &quot;</span>
+</span><span data-line="221">                <span class="s2">&quot;provider is already registered for this key: &quot;</span>
+</span><span data-line="222">                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_describe_provider</span><span class="p">(</span><span class="n">existing</span><span class="p">)</span><span class="si">}</span><span class="s2">. If you wish to override the existing &quot;</span>
+</span><span data-line="223">                <span class="s2">&quot;provider, explicitly set &#39;override=True&#39;&quot;</span>
+</span><span data-line="224">            <span class="p">)</span>
+</span><span data-line="225">
+</span><span data-line="226">        <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">[</span><span class="n">provider</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">provider</span>
+</span><span data-line="227">        <span class="bp">self</span><span class="o">.</span><span class="n">_seeds</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">provider</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="228">        <span class="k">if</span> <span class="n">provider</span><span class="o">.</span><span class="n">is_seed</span><span class="p">:</span>
+</span><span data-line="229">            <span class="bp">self</span><span class="o">.</span><span class="n">_seeds</span><span class="p">[</span><span class="n">provider</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">provider</span></div>
+
+</span><span data-line="230">
+<div class="viewcode-block" id="DIRegistry.register_callable">
+<a class="viewcode-back" href="../../../reference/di.html#litestar.di.DIRegistry.register_callable">[docs]</a>
+</span><span data-line="231">    <span class="k">def</span><span class="w"> </span><span class="nf">register_callable</span><span class="p">(</span>
+</span><span data-line="232">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="233">        <span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+</span><span data-line="234">        <span class="n">key</span><span class="p">:</span> <span class="n">DependencyKey</span><span class="p">,</span>
+</span><span data-line="235">        <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="236">        <span class="n">sync_to_thread</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="237">        <span class="n">override</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="238">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="239"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a callable as a new provider.</span>
+</span><span data-line="240">
+</span><span data-line="241"><span class="sd">        ``fn`` will be wrapped in one :class:`Provider`. The key type is inferred from</span>
+</span><span data-line="242"><span class="sd">        ``key``: A string will be a provider for a ``NamedDependency``, anything else a</span>
+</span><span data-line="243"><span class="sd">        ``TypeDependency``.</span>
+</span><span data-line="244">
+</span><span data-line="245"><span class="sd">        Args:</span>
+</span><span data-line="246"><span class="sd">            fn: The factory callable to create a provider instance from</span>
+</span><span data-line="247"><span class="sd">            key: Key to register under</span>
+</span><span data-line="248"><span class="sd">            scope: Scope of the new provider</span>
+</span><span data-line="249"><span class="sd">            sync_to_thread: Whether a bare sync callable runs in a worker thread: see</span>
+</span><span data-line="250"><span class="sd">                :class:`Provider`</span>
+</span><span data-line="251"><span class="sd">            override: If ``False``, trying to register a provider for an already existing</span>
+</span><span data-line="252"><span class="sd">                key raises :exc:`DIRegistrationError`</span>
+</span><span data-line="253">
+</span><span data-line="254"><span class="sd">        Raises:</span>
+</span><span data-line="255"><span class="sd">            DIRegistrationError: If the registry is frozen, the key is a duplicate and</span>
+</span><span data-line="256"><span class="sd">                ``override`` is not set, the scope is unknown, or the provider cannot be</span>
+</span><span data-line="257"><span class="sd">                inspected.</span>
+</span><span data-line="258"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="259">        <span class="n">provider</span> <span class="o">=</span> <span class="n">Provider</span><span class="p">(</span>
+</span><span data-line="260">            <span class="n">fn</span><span class="p">,</span>
+</span><span data-line="261">            <span class="n">scope</span><span class="o">=</span><span class="n">_DEFAULT_SCOPE</span> <span class="k">if</span> <span class="n">scope</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">scope</span><span class="p">,</span>
+</span><span data-line="262">            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="263">            <span class="n">sync_to_thread</span><span class="o">=</span><span class="n">sync_to_thread</span><span class="p">,</span>
+</span><span data-line="264">        <span class="p">)</span>
+</span><span data-line="265">        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">provider</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="n">override</span><span class="p">)</span></div>
+
+</span><span data-line="266">
+<div class="viewcode-block" id="DIRegistry.get_provider">
+<a class="viewcode-back" href="../../../reference/di.html#litestar.di.DIRegistry.get_provider">[docs]</a>
+</span><span data-line="267">    <span class="k">def</span><span class="w"> </span><span class="nf">get_provider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">DependencyKey</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Provider</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="268"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the provider for ``key``, or ``None`` if no provider for ``key`` has been registered&quot;&quot;&quot;</span>
+</span><span data-line="269">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+</span><span data-line="270">
+<div class="viewcode-block" id="DIRegistry.check_target">
+<a class="viewcode-back" href="../../../reference/di.html#litestar.di.DIRegistry.check_target">[docs]</a>
+</span><span data-line="271">    <span class="k">def</span><span class="w"> </span><span class="nf">check_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="272"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that this registry has a provider for every required dependency of ``target``.</span>
+</span><span data-line="273">
+</span><span data-line="274"><span class="sd">        Args:</span>
+</span><span data-line="275"><span class="sd">            target: A callable or an :class:`InjectionTarget`</span>
+</span><span data-line="276">
+</span><span data-line="277"><span class="sd">        Raises:</span>
+</span><span data-line="278"><span class="sd">            MissingProviderError: If a required dependency of ``target`` has no provider</span>
+</span><span data-line="279"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="280">        <span class="n">injection_target</span> <span class="o">=</span> <span class="n">InjectionTarget</span><span class="o">.</span><span class="n">_for_callable</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+</span><span data-line="281">        <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">injection_target</span><span class="o">.</span><span class="n">dependencies</span><span class="p">:</span>
+</span><span data-line="282">            <span class="k">if</span> <span class="ow">not</span> <span class="n">dependency</span><span class="o">.</span><span class="n">optional</span> <span class="ow">and</span> <span class="n">dependency</span><span class="o">.</span><span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">:</span>
+</span><span data-line="283">                <span class="k">raise</span> <span class="n">MissingProviderError</span><span class="p">(</span>
+</span><span data-line="284">                    <span class="n">dependency</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="285">                    <span class="n">registry_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="286">                    <span class="n">known_keys</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">,</span>
+</span><span data-line="287">                    <span class="n">required_by</span><span class="o">=</span><span class="n">injection_target</span><span class="p">,</span>
+</span><span data-line="288">                <span class="p">)</span></div>
+
+</span><span data-line="289">
+<div class="viewcode-block" id="DIRegistry.predecessors_of">
+<a class="viewcode-back" href="../../../reference/di.html#litestar.di.DIRegistry.predecessors_of">[docs]</a>
+</span><span data-line="290">    <span class="k">def</span><span class="w"> </span><span class="nf">predecessors_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">provider</span><span class="p">:</span> <span class="n">Provider</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Predecessors</span><span class="p">:</span>
+</span><span data-line="291"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return predecessors of ``provider`` as declared in this registry.</span>
+</span><span data-line="292">
+</span><span data-line="293"><span class="sd">        Raises:</span>
+</span><span data-line="294"><span class="sd">            DIRegistrationError: If this registry does not declare ``provider``.</span>
+</span><span data-line="295"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="296">        <span class="bp">self</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
+</span><span data-line="297">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="298">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predecessors</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span>
+</span><span data-line="299">        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+</span><span data-line="300">            <span class="k">raise</span> <span class="n">DIRegistrationError</span><span class="p">(</span>
+</span><span data-line="301">                <span class="sa">f</span><span class="s2">&quot;Registry </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> does not declare </span><span class="si">{</span><span class="n">provider</span><span class="si">!r}</span><span class="s2">, so it names no node for it.&quot;</span>
+</span><span data-line="302">            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span></div>
+
+</span><span data-line="303">
+<div class="viewcode-block" id="DIRegistry.freeze">
+<a class="viewcode-back" href="../../../reference/di.html#litestar.di.DIRegistry.freeze">[docs]</a>
+</span><span data-line="304">    <span class="k">def</span><span class="w"> </span><span class="nf">freeze</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="305"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Freeze the registry and validate the dependency graph.</span>
+</span><span data-line="306">
+</span><span data-line="307"><span class="sd">        Subsequent calls to this method are a no-op.</span>
+</span><span data-line="308">
+</span><span data-line="309"><span class="sd">        Raises:</span>
+</span><span data-line="310"><span class="sd">            MissingProviderError: If any dependency has no registered provider</span>
+</span><span data-line="311"><span class="sd">            CircularDependencyError: If any provider depends on itself, directly or indirectly</span>
+</span><span data-line="312"><span class="sd">            CaptiveDependencyError: If any provider depends on a value from a later scope</span>
+</span><span data-line="313"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="314">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frozen</span><span class="p">:</span>
+</span><span data-line="315">            <span class="k">return</span>
+</span><span data-line="316">
+</span><span data-line="317">        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">provider</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="318">            <span class="c1"># really just a sanity check, and to catch possible future regressions.</span>
+</span><span data-line="319">            <span class="c1"># registration through the public interface does not allow for this to happen.</span>
+</span><span data-line="320">            <span class="c1"># providers registered under keys different from their own would be used for</span>
+</span><span data-line="321">            <span class="c1"># aliasing, which is specifically not supported, and should be handled by</span>
+</span><span data-line="322">            <span class="c1"># creating a new provider, forwarding the dependency</span>
+</span><span data-line="323">            <span class="k">if</span> <span class="n">provider</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">key</span><span class="p">:</span>
+</span><span data-line="324">                <span class="k">raise</span> <span class="n">DIRegistrationError</span><span class="p">(</span>
+</span><span data-line="325">                    <span class="sa">f</span><span class="s2">&quot;Provider key mismatch. Provider </span><span class="si">{</span><span class="n">_describe_provider</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span><span class="si">}</span><span class="s2"> with key </span><span class="si">{</span><span class="n">_format_key</span><span class="p">(</span><span class="n">provider</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span data-line="326">                    <span class="sa">f</span><span class="s2">&quot;registered for </span><span class="si">{</span><span class="n">_format_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2"> in registry </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+</span><span data-line="327">                <span class="p">)</span>
+</span><span data-line="328">
+</span><span data-line="329">        <span class="bp">self</span><span class="o">.</span><span class="n">_static_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">)</span>
+</span><span data-line="330">
+</span><span data-line="331">        <span class="c1"># TODO: improve naming</span>
+</span><span data-line="332">        <span class="n">predecessors</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Provider</span><span class="p">,</span> <span class="n">_Predecessors</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="333">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_static_order</span><span class="p">:</span>
+</span><span data-line="334">            <span class="n">provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+</span><span data-line="335">            <span class="n">beneath</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Provider</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span data-line="336">            <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">provider</span><span class="o">.</span><span class="n">dependencies</span><span class="p">:</span>
+</span><span data-line="337">                <span class="n">bound</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_providers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dependency</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="338">                <span class="k">if</span> <span class="n">bound</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="339">                    <span class="n">beneath</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bound</span><span class="p">)</span>
+</span><span data-line="340">                    <span class="n">beneath</span> <span class="o">|=</span> <span class="n">predecessors</span><span class="p">[</span><span class="n">bound</span><span class="p">]</span>
+</span><span data-line="341">            <span class="n">predecessors</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">beneath</span><span class="p">)</span>
+</span><span data-line="342">        <span class="bp">self</span><span class="o">.</span><span class="n">_predecessors</span> <span class="o">=</span> <span class="n">predecessors</span>
+</span><span data-line="343">        <span class="bp">self</span><span class="o">.</span><span class="n">_seeds_by_scope</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="344">            <span class="n">scope</span><span class="p">:</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">provider</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">provider</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seeds</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">provider</span><span class="o">.</span><span class="n">scope</span> <span class="o">==</span> <span class="n">scope</span><span class="p">}</span>
+</span><span data-line="345">            <span class="k">for</span> <span class="n">scope</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scopes</span>
+</span><span data-line="346">        <span class="p">}</span>
+</span><span data-line="347">        <span class="bp">self</span><span class="o">.</span><span class="n">_frozen</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+</span><span data-line="348">
+</span><span data-line="349">    <span class="nd">@staticmethod</span>
+</span><span data-line="350">    <span class="k">def</span><span class="w"> </span><span class="nf">_dependency_path</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">edges</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">order</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+</span><span data-line="351"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Shortest chain of keys along &#39;edges&#39; from a root of the graph to &#39;target&#39;</span>
+</span><span data-line="352"><span class="sd">        &#39;order&#39; is &#39;edges&#39; sorted dependency-first.</span>
+</span><span data-line="353">
+</span><span data-line="354"><span class="sd">        Only used for error reporting and debugging</span>
+</span><span data-line="355"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="356">        <span class="c1"># dependents first. every dependent of a key is settled before the key is, so a</span>
+</span><span data-line="357">        <span class="c1"># key nothing has reached by then is a root.</span>
+</span><span data-line="358">        <span class="n">depth</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="359">        <span class="n">came_from</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="360">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+</span><span data-line="361">            <span class="n">below</span> <span class="o">=</span> <span class="n">depth</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span data-line="362">            <span class="k">for</span> <span class="n">dependency_key</span> <span class="ow">in</span> <span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">()):</span>
+</span><span data-line="363">                <span class="k">if</span> <span class="n">depth</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dependency_key</span><span class="p">,</span> <span class="n">below</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">below</span><span class="p">:</span>
+</span><span data-line="364">                    <span class="n">depth</span><span class="p">[</span><span class="n">dependency_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">below</span>
+</span><span data-line="365">                    <span class="n">came_from</span><span class="p">[</span><span class="n">dependency_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+</span><span data-line="366">        <span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+</span><span data-line="367">        <span class="k">while</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">came_from</span><span class="p">:</span>
+</span><span data-line="368">            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">came_from</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+</span><span data-line="369">        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+</span><span data-line="370">
+</span><span data-line="371">    <span class="k">def</span><span class="w"> </span><span class="nf">_solve_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">providers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Provider</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+</span><span data-line="372"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the solved dependency graph in a static order. Check for cycles,</span>
+</span><span data-line="373"><span class="sd">        missing providers and captive dependencies. The returned graph is</span>
+</span><span data-line="374"><span class="sd">        guaranteed to be safe to resolve in that order.</span>
+</span><span data-line="375">
+</span><span data-line="376"><span class="sd">        Raises:</span>
+</span><span data-line="377"><span class="sd">            CircularDependencyError: If the graph contains a cycle</span>
+</span><span data-line="378"><span class="sd">            MissingProviderError: If a dependency has no provider</span>
+</span><span data-line="379"><span class="sd">            CaptiveDependencyError: If a provider depends on a value from a later scope</span>
+</span><span data-line="380"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="381">        <span class="c1"># an edge is a dependency on a bound key, or a required one. unbound optional</span>
+</span><span data-line="382">        <span class="c1"># dependencies are not considered, as they do not take part in the  resolution</span>
+</span><span data-line="383">        <span class="c1"># process. a required key nothing binds is kept (it will be added as a leaf by</span>
+</span><span data-line="384">        <span class="c1"># TopologicalSorter), so the order reaches the gap and, we can report the path</span>
+</span><span data-line="385">        <span class="c1"># to it in the &#39;MissingProviderError&#39;</span>
+</span><span data-line="386">        <span class="n">edges</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="387">            <span class="n">key</span><span class="p">:</span> <span class="p">[</span>
+</span><span data-line="388">                <span class="n">dependency</span><span class="o">.</span><span class="n">key</span>
+</span><span data-line="389">                <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">provider</span><span class="o">.</span><span class="n">dependencies</span>
+</span><span data-line="390">                <span class="k">if</span> <span class="n">dependency</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="n">providers</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">dependency</span><span class="o">.</span><span class="n">optional</span>
+</span><span data-line="391">            <span class="p">]</span>
+</span><span data-line="392">            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">provider</span> <span class="ow">in</span> <span class="n">providers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span data-line="393">        <span class="p">}</span>
+</span><span data-line="394">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="395">            <span class="n">order</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">graphlib</span><span class="o">.</span><span class="n">TopologicalSorter</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span><span class="o">.</span><span class="n">static_order</span><span class="p">())</span>
+</span><span data-line="396">        <span class="k">except</span> <span class="n">graphlib</span><span class="o">.</span><span class="n">CycleError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span data-line="397">            <span class="c1"># &#39;CycleError&#39; reports the cycle, with the first node repeated at the end,</span>
+</span><span data-line="398">            <span class="c1"># but it does so in &#39;pred -&gt; node&#39; order, whereas we expect &#39;node -&gt; pred&#39;</span>
+</span><span data-line="399">            <span class="c1"># order, so we have to reverse here</span>
+</span><span data-line="400">            <span class="k">raise</span> <span class="n">CircularDependencyError</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">registry_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+</span><span data-line="401">
+</span><span data-line="402">        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">provider</span> <span class="ow">in</span> <span class="n">providers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="403">            <span class="k">for</span> <span class="n">dependency_key</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+</span><span data-line="404">                <span class="n">dependency_provider</span> <span class="o">=</span> <span class="n">providers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dependency_key</span><span class="p">)</span>
+</span><span data-line="405">                <span class="k">if</span> <span class="n">dependency_provider</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="406">                    <span class="k">raise</span> <span class="n">MissingProviderError</span><span class="p">(</span>
+</span><span data-line="407">                        <span class="n">dependency_key</span><span class="p">,</span>
+</span><span data-line="408">                        <span class="n">path</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_dependency_path</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">order</span><span class="p">),</span> <span class="n">dependency_key</span><span class="p">),</span>
+</span><span data-line="409">                        <span class="n">registry_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="410">                        <span class="n">known_keys</span><span class="o">=</span><span class="n">providers</span><span class="p">,</span>
+</span><span data-line="411">                        <span class="n">required_by</span><span class="o">=</span><span class="n">provider</span><span class="p">,</span>
+</span><span data-line="412">                    <span class="p">)</span>
+</span><span data-line="413">                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scope_index</span><span class="p">[</span><span class="n">dependency_provider</span><span class="o">.</span><span class="n">scope</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scope_index</span><span class="p">[</span><span class="n">provider</span><span class="o">.</span><span class="n">scope</span><span class="p">]:</span>
+</span><span data-line="414">                    <span class="k">raise</span> <span class="n">CaptiveDependencyError</span><span class="p">(</span>
+</span><span data-line="415">                        <span class="n">key</span><span class="p">,</span>
+</span><span data-line="416">                        <span class="n">provider</span><span class="o">=</span><span class="n">provider</span><span class="p">,</span>
+</span><span data-line="417">                        <span class="n">dependency_key</span><span class="o">=</span><span class="n">dependency_key</span><span class="p">,</span>
+</span><span data-line="418">                        <span class="n">dependency_provider</span><span class="o">=</span><span class="n">dependency_provider</span><span class="p">,</span>
+</span><span data-line="419">                        <span class="n">scopes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">,</span>
+</span><span data-line="420">                        <span class="n">registry_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="421">                    <span class="p">)</span>
+</span><span data-line="422">        <span class="k">return</span> <span class="n">order</span></div>
+
+</span><span data-line="423">
+</span><span data-line="424">
+</span><span data-line="425"><span class="c1"># TODO: Better function name? it&#39;s not very descriptive. idk what tho</span>
+<div class="viewcode-block" id="check_divergence">
+<a class="viewcode-back" href="../../../reference/di.html#litestar.di.check_divergence">[docs]</a>
+</span><span data-line="426"><span class="k">def</span><span class="w"> </span><span class="nf">check_divergence</span><span class="p">(</span>
+</span><span data-line="427">    <span class="n">registries</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">DIRegistry</span><span class="p">],</span>
+</span><span data-line="428">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="429">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="430">    <span class="n">ignore</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">DependencyKey</span> <span class="o">|</span> <span class="n">Provider</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="431">    <span class="n">raise_on_divergence</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="432"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="433"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Check for divergences in the predecessors of providers shared by ``registries``.</span>
+</span><span data-line="434">
+</span><span data-line="435"><span class="sd">    Why does this matter? A provider registered in one or more registry that, through</span>
+</span><span data-line="436"><span class="sd">    differing predecessors in each registry, will create unique values below the</span>
+</span><span data-line="437"><span class="sd">    lifetimes of its scope.</span>
+</span><span data-line="438">
+</span><span data-line="439"><span class="sd">    .. code-block::</span>
+</span><span data-line="440">
+</span><span data-line="441"><span class="sd">        @provide(scope=&quot;app&quot;, key=&quot;session&quot;)</span>
+</span><span data-line="442"><span class="sd">        async def create_session(engine: NamedDependency[Engine]) -&gt; Session:</span>
+</span><span data-line="443"><span class="sd">            with Session(bind=engine) as session:</span>
+</span><span data-line="444"><span class="sd">                yield session</span>
+</span><span data-line="445">
+</span><span data-line="446"><span class="sd">        @provide(scope=&quot;app&quot;, key=&quot;engine&quot;)</span>
+</span><span data-line="447"><span class="sd">        async def engine_one() -&gt; str:</span>
+</span><span data-line="448"><span class="sd">            return create_engine(&lt;some params&gt;)</span>
+</span><span data-line="449">
+</span><span data-line="450"><span class="sd">        @provide(scope=&quot;app&quot;, key=&quot;engine&quot;)</span>
+</span><span data-line="451"><span class="sd">        async def engine_two() -&gt; str:</span>
+</span><span data-line="452"><span class="sd">            return create_engine(&lt;some other params&gt;)</span>
+</span><span data-line="453">
+</span><span data-line="454"><span class="sd">        alice = DIRegistry(&quot;alice&quot;, [create_session, engine_one])</span>
+</span><span data-line="455"><span class="sd">        bob = DIRegistry(&quot;bob&quot;, [create_session, engine_two])</span>
+</span><span data-line="456">
+</span><span data-line="457"><span class="sd">        app_ctx = DIContext(registry=DIRegistry(), scope=&quot;app&quot;)</span>
+</span><span data-line="458"><span class="sd">        alice_ctx = DIContext(alice, scope=&quot;request&quot;, parent=app_ctx)</span>
+</span><span data-line="459"><span class="sd">        bob_ctx = DIContext(alice, scope=&quot;request&quot;, parent=app_ctx)</span>
+</span><span data-line="460">
+</span><span data-line="461"><span class="sd">        await alice_ctx.solve(&quot;session&quot;)  # there is now an &#39;engine&#39; and a &#39;session&#39; in app_ctx</span>
+</span><span data-line="462"><span class="sd">        await bob_ctx.solve(&quot;session&quot;)  # a distinct &#39;engine&#39; and a &#39;session&#39; are created in app_ctx</span>
+</span><span data-line="463">
+</span><span data-line="464"><span class="sd">    In this example, both registries share the provider for the &#39;session&#39; key, but have</span>
+</span><span data-line="465"><span class="sd">    different providers for the &#39;engine&#39; key. Since &#39;session&#39; depends on &#39;engine&#39;, this</span>
+</span><span data-line="466"><span class="sd">    is a divergence. When resolving &#39;session&#39; through &#39;alice_ctx&#39; , it must get</span>
+</span><span data-line="467"><span class="sd">    a different &#39;engine&#39; then when resolved through &#39;bob_ctx&#39;, which the context will</span>
+</span><span data-line="468"><span class="sd">    solve by invoking &#39;create_session&#39; again, even if a value for its key is already</span>
+</span><span data-line="469"><span class="sd">    present in &#39;app_ctx&#39;.</span>
+</span><span data-line="470">
+</span><span data-line="471"><span class="sd">    Raises:</span>
+</span><span data-line="472"><span class="sd">        DivergenceError: If ``raise_on_divergence`` is set, at the first finding.</span>
+</span><span data-line="473">
+</span><span data-line="474"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="475">    <span class="n">ignore</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ignore</span><span class="p">)</span> <span class="k">if</span> <span class="n">ignore</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+</span><span data-line="476">
+</span><span data-line="477">    <span class="n">seen</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Provider</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">_Predecessors</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="478">    <span class="k">for</span> <span class="n">registry</span> <span class="ow">in</span> <span class="n">registries</span><span class="p">:</span>
+</span><span data-line="479">        <span class="n">registry</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
+</span><span data-line="480">        <span class="n">checked</span> <span class="o">=</span> <span class="n">scopes</span> <span class="k">if</span> <span class="n">scopes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">registry</span><span class="o">.</span><span class="n">scopes</span><span class="p">[</span><span class="mi">0</span><span class="p">],)</span>
+</span><span data-line="481">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">registry</span><span class="o">.</span><span class="n">_static_order</span><span class="p">:</span>
+</span><span data-line="482">            <span class="n">provider</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">_providers</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+</span><span data-line="483">            <span class="k">if</span> <span class="n">provider</span><span class="o">.</span><span class="n">scope</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">checked</span><span class="p">:</span>
+</span><span data-line="484">                <span class="k">continue</span>
+</span><span data-line="485">            <span class="n">predecessors</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">_predecessors</span><span class="p">[</span><span class="n">provider</span><span class="p">]</span>
+</span><span data-line="486">            <span class="n">recorded</span> <span class="o">=</span> <span class="n">seen</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">provider</span><span class="p">,</span> <span class="p">{})</span>
+</span><span data-line="487">            <span class="k">if</span> <span class="n">predecessors</span> <span class="ow">in</span> <span class="n">recorded</span><span class="p">:</span>
+</span><span data-line="488">                <span class="k">continue</span>
+</span><span data-line="489">            <span class="k">if</span> <span class="ow">not</span> <span class="n">recorded</span><span class="p">:</span>
+</span><span data-line="490">                <span class="n">recorded</span><span class="p">[</span><span class="n">predecessors</span><span class="p">]</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">name</span>
+</span><span data-line="491">                <span class="k">continue</span>
+</span><span data-line="492">            <span class="n">first</span><span class="p">,</span> <span class="n">first_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">recorded</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+</span><span data-line="493">            <span class="n">recorded</span><span class="p">[</span><span class="n">predecessors</span><span class="p">]</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">name</span>
+</span><span data-line="494">            <span class="n">finding</span> <span class="o">=</span> <span class="n">ValueGraphDivergence</span><span class="p">(</span>
+</span><span data-line="495">                <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="496">                <span class="n">provider</span><span class="o">=</span><span class="n">provider</span><span class="p">,</span>
+</span><span data-line="497">                <span class="n">first_registry</span><span class="o">=</span><span class="n">first_name</span><span class="p">,</span>
+</span><span data-line="498">                <span class="n">registry</span><span class="o">=</span><span class="n">registry</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="499">                <span class="n">bindings</span><span class="o">=</span><span class="n">_divergent_bindings</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">predecessors</span><span class="p">),</span>
+</span><span data-line="500">            <span class="p">)</span>
+</span><span data-line="501">
+</span><span data-line="502">            <span class="k">if</span> <span class="n">provider</span> <span class="ow">in</span> <span class="n">ignore</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ignore</span><span class="p">:</span>
+</span><span data-line="503">                <span class="k">continue</span>
+</span><span data-line="504">            <span class="k">if</span> <span class="n">raise_on_divergence</span><span class="p">:</span>
+</span><span data-line="505">                <span class="k">raise</span> <span class="n">DivergenceError</span><span class="p">(</span><span class="n">finding</span><span class="p">)</span>
+</span><span data-line="506">            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">finding</span><span class="p">),</span> <span class="n">DivergenceWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></div>
+
+</span><span data-line="507">
+</span><span data-line="508">
+</span><span data-line="509"><span class="k">def</span><span class="w"> </span><span class="nf">_divergent_bindings</span><span class="p">(</span>
+</span><span data-line="510">    <span class="n">first</span><span class="p">:</span> <span class="n">_Predecessors</span><span class="p">,</span> <span class="n">this</span><span class="p">:</span> <span class="n">_Predecessors</span>
+</span><span data-line="511"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Provider</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Provider</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]:</span>
+</span><span data-line="512"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the bindings two sets of predecessors diverge on, &#39;(first, this)&#39; per key&quot;&quot;&quot;</span>
+</span><span data-line="513">    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">first</span><span class="p">},</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">this</span><span class="p">}</span>
+</span><span data-line="514">    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">|</span> <span class="n">b</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">b</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>
+</span></pre></div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2026, Litestar Organization</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+<a href="https://discord.gg/litestar" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit">
+  <iconify-icon icon="simple-icons:reddit"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../../_static/documentation_options.js?v=639af1cb"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script src="../../../_static/litestar-theme.js?v=ab2dcc9e"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../../_static/togglebutton.js?v=1ae7504c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../../../_static/shibuya.js?v=cac61aee"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script></body>
+</html>

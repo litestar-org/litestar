@@ -446,12 +446,109 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#litestar.di.NamedDependency"><code class="docutils literal notranslate"><span class="pre">NamedDependency</span></code></a></li>
-<li><a class="reference internal" href="#litestar.di.Provide"><code class="docutils literal notranslate"><span class="pre">Provide</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.di.Provide.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.di.Provide.__call__"><code class="docutils literal notranslate">__call__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIContext"><code class="docutils literal notranslate"><span class="pre">DIContext</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.DIContext.__aenter__"><code class="docutils literal notranslate">__aenter__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIContext.__aexit__"><code class="docutils literal notranslate">__aexit__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIContext.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIContext.enter_nested"><code class="docutils literal notranslate">enter_nested()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIContext.get"><code class="docutils literal notranslate">get()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIContext.inject"><code class="docutils literal notranslate">inject()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIContext.solve"><code class="docutils literal notranslate">solve()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIContext.solve_arguments"><code class="docutils literal notranslate">solve_arguments()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIContext.solve_many"><code class="docutils literal notranslate">solve_many()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#litestar.di.DIRegistry"><code class="docutils literal notranslate"><span class="pre">DIRegistry</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.DIRegistry.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIRegistry.check_target"><code class="docutils literal notranslate">check_target()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIRegistry.freeze"><code class="docutils literal notranslate">freeze()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIRegistry.get_provider"><code class="docutils literal notranslate">get_provider()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIRegistry.predecessors_of"><code class="docutils literal notranslate">predecessors_of()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIRegistry.providers"><code class="docutils literal notranslate">providers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIRegistry.register"><code class="docutils literal notranslate">register()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DIRegistry.register_callable"><code class="docutils literal notranslate">register_callable()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#litestar.di.Dependency"><code class="docutils literal notranslate"><span class="pre">Dependency</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.Dependency.key"><code class="docutils literal notranslate">key</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.Dependency.kind"><code class="docutils literal notranslate">kind</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.Dependency.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#litestar.di.InjectionParameter"><code class="docutils literal notranslate"><span class="pre">InjectionParameter</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.InjectionParameter.parameter_name"><code class="docutils literal notranslate">parameter_name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.InjectionParameter.key"><code class="docutils literal notranslate">key</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.InjectionParameter.kind"><code class="docutils literal notranslate">kind</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.InjectionParameter.optional"><code class="docutils literal notranslate">optional</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.InjectionParameter.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#litestar.di.InjectionTarget"><code class="docutils literal notranslate"><span class="pre">InjectionTarget</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.InjectionTarget.__call__"><code class="docutils literal notranslate">__call__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.InjectionTarget.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.InjectionTarget.fn"><code class="docutils literal notranslate">fn</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#litestar.di.PreparedDIContext"><code class="docutils literal notranslate"><span class="pre">PreparedDIContext</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.PreparedDIContext.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.PreparedDIContext.create"><code class="docutils literal notranslate">create()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#litestar.di.Provide"><code class="docutils literal notranslate"><span class="pre">Provide</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.Provide.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#litestar.di.Provider"><code class="docutils literal notranslate"><span class="pre">Provider</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.Provider.__call__"><code class="docutils literal notranslate">__call__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.Provider.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.Provider.dependencies"><code class="docutils literal notranslate">dependencies</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.Provider.is_seed"><code class="docutils literal notranslate">is_seed</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.Provider.key"><code class="docutils literal notranslate">key</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.Provider.non_di_parameters"><code class="docutils literal notranslate">non_di_parameters</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.Provider.request_parameters"><code class="docutils literal notranslate">request_parameters</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.Provider.resolve_signature"><code class="docutils literal notranslate">resolve_signature()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.Provider.seed"><code class="docutils literal notranslate">seed()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#litestar.di.ProviderKind"><code class="docutils literal notranslate"><span class="pre">ProviderKind</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.ProviderKind.__new__"><code class="docutils literal notranslate">__new__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.ProviderKind.NAMED"><code class="docutils literal notranslate">NAMED</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.ProviderKind.TYPE"><code class="docutils literal notranslate">TYPE</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#litestar.di.RequestParameter"><code class="docutils literal notranslate"><span class="pre">RequestParameter</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.RequestParameter.parameter_name"><code class="docutils literal notranslate">parameter_name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.RequestParameter.param_type"><code class="docutils literal notranslate">param_type</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.RequestParameter.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.RequestParameter.field_definition"><code class="docutils literal notranslate">field_definition</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.RequestParameter.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.RequestParameter.is_body"><code class="docutils literal notranslate">is_body</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.RequestParameter.key"><code class="docutils literal notranslate">key</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#litestar.di.ValueGraphDivergence"><code class="docutils literal notranslate"><span class="pre">ValueGraphDivergence</span></code></a><ul>
+<li><a class="reference internal" href="#litestar.di.ValueGraphDivergence.bindings"><code class="docutils literal notranslate">bindings</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.ValueGraphDivergence.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#litestar.di.check_divergence"><code class="docutils literal notranslate"><span class="pre">check_divergence()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.provide"><code class="docutils literal notranslate"><span class="pre">provide()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.NamedDependency"><code class="docutils literal notranslate"><span class="pre">NamedDependency</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.TypeDependency"><code class="docutils literal notranslate"><span class="pre">TypeDependency</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.DependencyKey"><code class="docutils literal notranslate"><span class="pre">DependencyKey</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.CaptiveDependencyError"><code class="docutils literal notranslate"><span class="pre">CaptiveDependencyError</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.CircularDependencyError"><code class="docutils literal notranslate"><span class="pre">CircularDependencyError</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.DIContextClosedError"><code class="docutils literal notranslate"><span class="pre">DIContextClosedError</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.DIException"><code class="docutils literal notranslate"><span class="pre">DIException</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.DIGraphError"><code class="docutils literal notranslate"><span class="pre">DIGraphError</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.DIRegistrationError"><code class="docutils literal notranslate"><span class="pre">DIRegistrationError</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.DIResolutionError"><code class="docutils literal notranslate"><span class="pre">DIResolutionError</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.DIScopeError"><code class="docutils literal notranslate"><span class="pre">DIScopeError</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.DivergenceError"><code class="docutils literal notranslate"><span class="pre">DivergenceError</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.DivergenceWarning"><code class="docutils literal notranslate"><span class="pre">DivergenceWarning</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.MissingProviderError"><code class="docutils literal notranslate"><span class="pre">MissingProviderError</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.MissingSeedError"><code class="docutils literal notranslate"><span class="pre">MissingSeedError</span></code></a></li>
+<li><a class="reference internal" href="#litestar.di.exceptions.ScopeMismatchError"><code class="docutils literal notranslate"><span class="pre">ScopeMismatchError</span></code></a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -546,40 +643,861 @@ data-aria-dark="Switch to auto color mode">
 </div><article class="yue" role="main">
           <section id="module-litestar.di">
 <span id="di"></span><h1>di<a class="headerlink" href="#module-litestar.di" title="Link to this heading">¶</a></h1>
-<dl class="py data">
-<dt class="sig sig-object py" id="litestar.di.NamedDependency">
-<span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">NamedDependency</span></span><a class="headerlink" href="#litestar.di.NamedDependency" title="Link to this definition">¶</a></dt>
-<dd><p>Mark a parameter for name-based dependency injection.</p>
-<p>The name of the function parameter will be used as the name for the dependency to inject.</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>, &lt;litestar.di.Dependency object at 0x7f8235f2ab10&gt;]</p>
-</dd></dl>
-
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.di.Provide">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">Provide</span></span><a class="reference internal" href="../_modules/litestar/di.html#Provide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Provide" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="litestar.di.DIContext">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">DIContext</span></span><a class="reference internal" href="../_modules/litestar/di/context.html#DIContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIContext" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Wrapper class for dependency injection</p>
+<p>A live DI scope. Manages resolution and lifetime of dependencies</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.di.Provide.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dependency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.AnyCallable" title="litestar.types.AnyCallable"><span class="pre">AnyCallable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="openapi/spec.html#litestar.openapi.spec.Schema.type" title="litestar.openapi.spec.Schema.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_to_thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di.html#Provide.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Provide.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">Provide</span></code></p>
+<dt class="sig sig-object py" id="litestar.di.DIContext.__aenter__">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">__aenter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Self" title="(in Python v3.15)"><span class="pre">Self</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#DIContext.__aenter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIContext.__aenter__" title="Link to this definition">¶</a></dt>
+<dd><p>Open this context.</p>
+<p>A context can only be entered once. Closing and re-entering it again is an error.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.di.Provide.params.dependency"></span><strong>dependency</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provide.params.dependency">¶</a> – Callable to call or class to instantiate. The result is then injected as a dependency.</p></li>
-<li><p><span class="target" id="litestar.di.Provide.params.use_cache"></span><strong>use_cache</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provide.params.use_cache">¶</a> – Cache the dependency return value. Defaults to False.</p></li>
-<li><p><span class="target" id="litestar.di.Provide.params.sync_to_thread"></span><strong>sync_to_thread</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provide.params.sync_to_thread">¶</a> – Run sync code in an async thread. Defaults to False.</p></li>
+<li><p><a class="reference internal" href="#litestar.di.exceptions.DIContextClosedError" title="litestar.di.exceptions.DIContextClosedError"><strong>DIContextClosedError</strong></a> – If this context, or its parent context, has already been closed</p></li>
+<li><p><a class="reference internal" href="#litestar.di.exceptions.DIScopeError" title="litestar.di.exceptions.DIScopeError"><strong>DIScopeError</strong></a> – If it has already been entered, or its parent has not been</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.di.Provide.__call__">
-<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/litestar/di.html#Provide.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Provide.__call__" title="Link to this definition">¶</a></dt>
-<dd><p>Call the provider’s dependency.</p>
+<dt class="sig sig-object py" id="litestar.di.DIContext.__aexit__">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">__aexit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="openapi/spec.html#litestar.openapi.spec.Schema.type" title="litestar.openapi.spec.Schema.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(in Python v3.15)"><span class="pre">BaseException</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(in Python v3.15)"><span class="pre">BaseException</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TracebackType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#DIContext.__aexit__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIContext.__aexit__" title="Link to this definition">¶</a></dt>
+<dd><p>Close this context and clean up all its dependencies</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIContext.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DIRegistry" title="litestar.di.DIRegistry"><span class="pre">DIRegistry</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DIContext" title="litestar.di.DIContext"><span class="pre">DIContext</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepared</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.PreparedDIContext" title="litestar.di.PreparedDIContext"><span class="pre">PreparedDIContext</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#DIContext.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIContext.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>A DI context to resolve dependencies.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">scope</span></code> is not given, the outermost scope is used, or, when <code class="docutils literal notranslate"><span class="pre">parent</span></code> is
+given, the scope immediately following the parent’s. Creating a context freezes
+<code class="docutils literal notranslate"><span class="pre">registry</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.DIContext.params.registry"></span><strong>registry</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.params.registry">¶</a> – The registry to resolve through</p></li>
+<li><p><span class="target" id="litestar.di.DIContext.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.params.scope">¶</a> – The scope this context owns</p></li>
+<li><p><span class="target" id="litestar.di.DIContext.params.parent"></span><strong>parent</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.params.parent">¶</a> – The context before this</p></li>
+<li><p><span class="target" id="litestar.di.DIContext.params.seeds"></span><strong>seeds</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.params.seeds">¶</a> – Values for the seed keys of this scope. If <code class="docutils literal notranslate"><span class="pre">registry</span></code> declares seeds,
+values for all seeds must be given</p></li>
+<li><p><span class="target" id="litestar.di.DIContext.params.prepared"></span><strong>prepared</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.params.prepared">¶</a> – The <a class="reference internal" href="#litestar.di.PreparedDIContext" title="litestar.di.PreparedDIContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreparedDIContext</span></code></a> of <code class="docutils literal notranslate"><span class="pre">registry</span></code>, <code class="docutils literal notranslate"><span class="pre">scope</span></code> and <code class="docutils literal notranslate"><span class="pre">parent</span></code>,
+which has checked them. If not given, it is created</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIContext.enter_nested">
+<span class="sig-name descname"><span class="pre">enter_nested</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DIRegistry" title="litestar.di.DIRegistry"><span class="pre">DIRegistry</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.di.DIContext" title="litestar.di.DIContext"><span class="pre">DIContext</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#DIContext.enter_nested"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIContext.enter_nested" title="Link to this definition">¶</a></dt>
+<dd><p>A new <a class="reference internal" href="#litestar.di.DIContext" title="litestar.di.DIContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIContext</span></code></a>, with this instance set as its parent.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">with</span> <span class="n">app_context</span><span class="o">.</span><span class="n">enter_nested</span><span class="p">()</span> <span class="k">as</span> <span class="n">request_context</span><span class="p">:</span>
+</span><span data-line="2">    <span class="o">...</span>
+</span></pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.DIContext.enter_nested.params.registry"></span><strong>registry</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.enter_nested.params.registry">¶</a> – The registry the child resolves through. Defaults to this context’s</p></li>
+<li><p><span class="target" id="litestar.di.DIContext.enter_nested.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.enter_nested.params.scope">¶</a> – The scope to enter. Defaults to the one immediately following this context’s</p></li>
+<li><p><span class="target" id="litestar.di.DIContext.enter_nested.params.seeds"></span><strong>seeds</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.enter_nested.params.seeds">¶</a> – Values for the seed keys of the nested scope</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIContext.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">TypeForm</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#DIContext.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIContext.get" title="Link to this definition">¶</a></dt>
+<dd><p>Return the previously solved value of <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#litestar.di.exceptions.DIResolutionError" title="litestar.di.exceptions.DIResolutionError"><strong>DIResolutionError</strong></a> – If the key has not been resolved in this context or a parent</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIContext.inject">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">inject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_to_thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#DIContext.inject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIContext.inject" title="Link to this definition">¶</a></dt>
+<dd><p>Resolve all dependencies of <code class="docutils literal notranslate"><span class="pre">fn</span></code>, inject them into <code class="docutils literal notranslate"><span class="pre">fn</span></code>, and return its
+return value.</p>
+<p><code class="docutils literal notranslate"><span class="pre">args</span></code> and <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are passed to <code class="docutils literal notranslate"><span class="pre">fn</span></code>. When a parameter is declared a
+dependency but still passed explicitly, the explicit form will take precedence.</p>
+<p>This method should not be used from within a dependency provider, as it can
+result in deadlocks: When solved dynamically, a dependency can request itself,
+creating a cycle, which can only be checked exhaustively if all dependencies
+are declared upfront. A best-effort check is performed to prevent calling this
+method from within a dependency, but it should not be relied on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.DIContext.inject.params.fn"></span><strong>fn</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.inject.params.fn">¶</a> – A callable or an <a class="reference internal" href="#litestar.di.InjectionTarget" title="litestar.di.InjectionTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectionTarget</span></code></a></p></li>
+<li><p><span class="target" id="litestar.di.DIContext.inject.params.args"></span><strong>args</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.inject.params.args">¶</a> – Positional arguments for <code class="docutils literal notranslate"><span class="pre">fn</span></code></p></li>
+<li><p><span class="target" id="litestar.di.DIContext.inject.params.kwargs"></span><strong>kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.inject.params.kwargs">¶</a> – Keyword arguments for <code class="docutils literal notranslate"><span class="pre">fn</span></code></p></li>
+<li><p><span class="target" id="litestar.di.DIContext.inject.params.sync_to_thread"></span><strong>sync_to_thread</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.inject.params.sync_to_thread">¶</a> – Whether a synchronous <code class="docutils literal notranslate"><span class="pre">fn</span></code> runs in a worker thread</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#litestar.di.exceptions.MissingProviderError" title="litestar.di.exceptions.MissingProviderError"><strong>MissingProviderError</strong></a> – If a required dependency has no provider.</p></li>
+<li><p><a class="reference internal" href="#litestar.di.exceptions.DIResolutionError" title="litestar.di.exceptions.DIResolutionError"><strong>DIResolutionError</strong></a> – If the call is found to come from inside a factory; a best effort
+    check to avoid misuse.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIContext.solve">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">TypeForm</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#DIContext.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIContext.solve" title="Link to this definition">¶</a></dt>
+<dd><p>Solve for <code class="docutils literal notranslate"><span class="pre">key</span></code> and return its value.</p>
+<p>This method should not be used from within a dependency provider, as it can
+result in deadlocks: When solved dynamically, a dependency can request itself,
+creating a cycle, which can only be checked exhaustively if all dependencies
+are declared upfront. A best-effort check is performed to prevent calling this
+method from within a dependency, but it should not be relied on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#litestar.di.exceptions.MissingProviderError" title="litestar.di.exceptions.MissingProviderError"><strong>MissingProviderError</strong></a> – If a key has no provider.</p></li>
+<li><p><a class="reference internal" href="#litestar.di.exceptions.DIResolutionError" title="litestar.di.exceptions.DIResolutionError"><strong>DIResolutionError</strong></a> – If the call is found to come from inside a factory; a best effort
+    check to avoid misuse.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIContext.solve_arguments">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">solve_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">supplied</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Collection</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="datastructures/index.html#litestar.datastructures.Cookie.dict" title="litestar.datastructures.Cookie.dict"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#DIContext.solve_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIContext.solve_arguments" title="Link to this definition">¶</a></dt>
+<dd><p>Return the resolved dependencies of <code class="docutils literal notranslate"><span class="pre">fn</span></code>, keyed by parameter name.</p>
+<p>Parameters in <code class="docutils literal notranslate"><span class="pre">supplied</span></code> and optional dependencies without a provider are left out.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.DIContext.solve_arguments.params.fn"></span><strong>fn</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.solve_arguments.params.fn">¶</a> – A callable or an <a class="reference internal" href="#litestar.di.InjectionTarget" title="litestar.di.InjectionTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectionTarget</span></code></a></p></li>
+<li><p><span class="target" id="litestar.di.DIContext.solve_arguments.params.supplied"></span><strong>supplied</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIContext.solve_arguments.params.supplied">¶</a> – Names of parameters not to be resolved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#litestar.di.exceptions.MissingProviderError" title="litestar.di.exceptions.MissingProviderError"><strong>MissingProviderError</strong></a> – If a required dependency has no provider.</p></li>
+<li><p><a class="reference internal" href="#litestar.di.exceptions.DIResolutionError" title="litestar.di.exceptions.DIResolutionError"><strong>DIResolutionError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">supplied</span></code> names a parameter <code class="docutils literal notranslate"><span class="pre">fn</span></code> does not declare, unless
+    <code class="docutils literal notranslate"><span class="pre">fn</span></code> takes <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>; or if the call is found to come from inside a factory,
+    a best effort check to avoid misuse.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIContext.solve_many">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">solve_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">TypeForm</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#DIContext.solve_many"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIContext.solve_many" title="Link to this definition">¶</a></dt>
+<dd><p>Solve all <code class="docutils literal notranslate"><span class="pre">keys</span></code>, and return their resolved values in the order of <code class="docutils literal notranslate"><span class="pre">keys</span></code>.</p>
+<p>This method should not be used from within a dependency provider, as it can
+result in deadlocks: When solved dynamically, a dependency can request itself,
+creating a cycle, which can only be checked exhaustively if all dependencies
+are declared upfront. A best-effort check is performed to prevent calling this
+method from within a dependency, but it should not be relied on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#litestar.di.exceptions.MissingProviderError" title="litestar.di.exceptions.MissingProviderError"><strong>MissingProviderError</strong></a> – If a key has no provider.</p></li>
+<li><p><a class="reference internal" href="#litestar.di.exceptions.DIResolutionError" title="litestar.di.exceptions.DIResolutionError"><strong>DIResolutionError</strong></a> – If the call is found to come from inside a factory; a
+    best effort check to avoid misuse.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.di.DIRegistry">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">DIRegistry</span></span><a class="reference internal" href="../_modules/litestar/di/registry.html#DIRegistry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIRegistry" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A registry of DI providers.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIRegistry.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">providers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scopes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/registry.html#DIRegistry.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIRegistry.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>A registry of DI providers.</p>
+<p>A registry holds every provider needed to satisfy the keys it declares.</p>
+<p>A registry is mutable until the first time a graph is solved from it, creating a
+<a class="reference internal" href="#litestar.di.DIContext" title="litestar.di.DIContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIContext</span></code></a> or calling <a class="reference internal" href="#litestar.di.DIRegistry.predecessors_of" title="litestar.di.DIRegistry.predecessors_of"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predecessors_of()</span></code></a>, at which point it
+<em>freezes</em>, validating the graph and disallowing further registrations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.DIRegistry.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.params.name">¶</a> – Name of this registry. Only used for debugging purposes in error messages</p></li>
+<li><p><span class="target" id="litestar.di.DIRegistry.params.providers"></span><strong>providers</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.params.providers">¶</a> – Providers available in this registry</p></li>
+<li><p><span class="target" id="litestar.di.DIRegistry.params.scopes"></span><strong>scopes</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.params.scopes">¶</a> – Available scopes, in order, outermost first. Defaults to <code class="docutils literal notranslate"><span class="pre">(&quot;app&quot;,</span> <span class="pre">&quot;request&quot;,</span> <span class="pre">&quot;handler&quot;)</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#litestar.di.exceptions.DIRegistrationError" title="litestar.di.exceptions.DIRegistrationError"><strong>DIRegistrationError</strong></a> – If the scopes or the providers are invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIRegistry.check_target">
+<span class="sig-name descname"><span class="pre">check_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/registry.html#DIRegistry.check_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIRegistry.check_target" title="Link to this definition">¶</a></dt>
+<dd><p>Check that this registry has a provider for every required dependency of <code class="docutils literal notranslate"><span class="pre">target</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.di.DIRegistry.check_target.params.target"></span><strong>target</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.check_target.params.target">¶</a> – A callable or an <a class="reference internal" href="#litestar.di.InjectionTarget" title="litestar.di.InjectionTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">InjectionTarget</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#litestar.di.exceptions.MissingProviderError" title="litestar.di.exceptions.MissingProviderError"><strong>MissingProviderError</strong></a> – If a required dependency of <code class="docutils literal notranslate"><span class="pre">target</span></code> has no provider</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIRegistry.freeze">
+<span class="sig-name descname"><span class="pre">freeze</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/registry.html#DIRegistry.freeze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIRegistry.freeze" title="Link to this definition">¶</a></dt>
+<dd><p>Freeze the registry and validate the dependency graph.</p>
+<p>Subsequent calls to this method are a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#litestar.di.exceptions.MissingProviderError" title="litestar.di.exceptions.MissingProviderError"><strong>MissingProviderError</strong></a> – If any dependency has no registered provider</p></li>
+<li><p><a class="reference internal" href="#litestar.di.exceptions.CircularDependencyError" title="litestar.di.exceptions.CircularDependencyError"><strong>CircularDependencyError</strong></a> – If any provider depends on itself, directly or indirectly</p></li>
+<li><p><a class="reference internal" href="#litestar.di.exceptions.CaptiveDependencyError" title="litestar.di.exceptions.CaptiveDependencyError"><strong>CaptiveDependencyError</strong></a> – If any provider depends on a value from a later scope</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIRegistry.get_provider">
+<span class="sig-name descname"><span class="pre">get_provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><span class="pre">Provider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/registry.html#DIRegistry.get_provider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIRegistry.get_provider" title="Link to this definition">¶</a></dt>
+<dd><p>Return the provider for <code class="docutils literal notranslate"><span class="pre">key</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no provider for <code class="docutils literal notranslate"><span class="pre">key</span></code> has been registered</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIRegistry.predecessors_of">
+<span class="sig-name descname"><span class="pre">predecessors_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.provider.Provider"><span class="pre">Provider</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#frozenset" title="(in Python v3.15)"><span class="pre">frozenset</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.provider.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/litestar/di/registry.html#DIRegistry.predecessors_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIRegistry.predecessors_of" title="Link to this definition">¶</a></dt>
+<dd><p>Return predecessors of <code class="docutils literal notranslate"><span class="pre">provider</span></code> as declared in this registry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#litestar.di.exceptions.DIRegistrationError" title="litestar.di.exceptions.DIRegistrationError"><strong>DIRegistrationError</strong></a> – If this registry does not declare <code class="docutils literal notranslate"><span class="pre">provider</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.di.DIRegistry.providers">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">providers</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#litestar.di.DIRegistry.providers" title="Link to this definition">¶</a></dt>
+<dd><p>The registry’s providers</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIRegistry.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.provider.Provider"><span class="pre">Provider</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">override</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/registry.html#DIRegistry.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIRegistry.register" title="Link to this definition">¶</a></dt>
+<dd><p>Register a provider.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.DIRegistry.register.params.provider"></span><strong>provider</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.register.params.provider">¶</a> – The provider or callable to create a provider instance</p></li>
+<li><p><span class="target" id="litestar.di.DIRegistry.register.params.override"></span><strong>override</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.register.params.override">¶</a> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, trying to register a provider for an already existing
+key raises <a class="reference internal" href="#litestar.di.exceptions.DIRegistrationError" title="litestar.di.exceptions.DIRegistrationError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DIRegistrationError</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#litestar.di.exceptions.DIRegistrationError" title="litestar.di.exceptions.DIRegistrationError"><strong>DIRegistrationError</strong></a> – If the registry is frozen, the key is a duplicate and <code class="docutils literal notranslate"><span class="pre">override</span></code>
+    is not set, the scope is unknown, or the provider cannot be inspected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.DIRegistry.register_callable">
+<span class="sig-name descname"><span class="pre">register_callable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_to_thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/registry.html#DIRegistry.register_callable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.DIRegistry.register_callable" title="Link to this definition">¶</a></dt>
+<dd><p>Register a callable as a new provider.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fn</span></code> will be wrapped in one <a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provider</span></code></a>. The key type is inferred from
+<code class="docutils literal notranslate"><span class="pre">key</span></code>: A string will be a provider for a <code class="docutils literal notranslate"><span class="pre">NamedDependency</span></code>, anything else a
+<code class="docutils literal notranslate"><span class="pre">TypeDependency</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.DIRegistry.register_callable.params.fn"></span><strong>fn</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.register_callable.params.fn">¶</a> – The factory callable to create a provider instance from</p></li>
+<li><p><span class="target" id="litestar.di.DIRegistry.register_callable.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.register_callable.params.key">¶</a> – Key to register under</p></li>
+<li><p><span class="target" id="litestar.di.DIRegistry.register_callable.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.register_callable.params.scope">¶</a> – Scope of the new provider</p></li>
+<li><p><span class="target" id="litestar.di.DIRegistry.register_callable.params.sync_to_thread"></span><strong>sync_to_thread</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.register_callable.params.sync_to_thread">¶</a> – Whether a bare sync callable runs in a worker thread: see
+<a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provider</span></code></a></p></li>
+<li><p><span class="target" id="litestar.di.DIRegistry.register_callable.params.override"></span><strong>override</strong><a class="paramlink headerlink reference internal" href="#litestar.di.DIRegistry.register_callable.params.override">¶</a> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, trying to register a provider for an already existing
+key raises <a class="reference internal" href="#litestar.di.exceptions.DIRegistrationError" title="litestar.di.exceptions.DIRegistrationError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">DIRegistrationError</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#litestar.di.exceptions.DIRegistrationError" title="litestar.di.exceptions.DIRegistrationError"><strong>DIRegistrationError</strong></a> – If the registry is frozen, the key is a duplicate and
+    <code class="docutils literal notranslate"><span class="pre">override</span></code> is not set, the scope is unknown, or the provider cannot be
+    inspected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.di.Dependency">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">Dependency</span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#Dependency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Dependency" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Mark a parameter as a dependency.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">session</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Session</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="s2">&quot;db_session&quot;</span><span class="p">)],</span>
+</span><span data-line="3">    <span class="n">replica</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Engine</span><span class="p">,</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">ReplicaEngine</span><span class="p">)],</span>
+</span><span data-line="4"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span></pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.Dependency.key">
+<span class="sig-name descname"><span class="pre">key</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><a class="headerlink" href="#litestar.di.Dependency.key" title="Link to this definition">¶</a></dt>
+<dd><p>The key to resolve</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.Dependency.kind">
+<span class="sig-name descname"><span class="pre">kind</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'named'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.ProviderKind" title="litestar.di.ProviderKind"><span class="pre">ProviderKind</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><a class="headerlink" href="#litestar.di.Dependency.kind" title="Link to this definition">¶</a></dt>
+<dd><p>Whether to resolve by name or by type. If not given, inferred from ‘key’, or by name without a key</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.Dependency.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'named'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.ProviderKind" title="litestar.di.ProviderKind"><span class="pre">ProviderKind</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.di.Dependency.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.di.InjectionParameter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">InjectionParameter</span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#InjectionParameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.InjectionParameter" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A parameter of a provider or an injection target that DI fills.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.InjectionParameter.parameter_name">
+<span class="sig-name descname"><span class="pre">parameter_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><a class="headerlink" href="#litestar.di.InjectionParameter.parameter_name" title="Link to this definition">¶</a></dt>
+<dd><p>Name of the parameter on the callable.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.InjectionParameter.key">
+<span class="sig-name descname"><span class="pre">key</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="openapi/spec.html#litestar.openapi.spec.Schema.type" title="litestar.openapi.spec.Schema.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#litestar.di.InjectionParameter.key" title="Link to this definition">¶</a></dt>
+<dd><p>Key of the dependency</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.InjectionParameter.kind">
+<span class="sig-name descname"><span class="pre">kind</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.ProviderKind" title="litestar.di.provider.ProviderKind"><span class="pre">ProviderKind</span></a></span><a class="headerlink" href="#litestar.di.InjectionParameter.kind" title="Link to this definition">¶</a></dt>
+<dd><p>The provider kind</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.InjectionParameter.optional">
+<span class="sig-name descname"><span class="pre">optional</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#litestar.di.InjectionParameter.optional" title="Link to this definition">¶</a></dt>
+<dd><p>Whether the parameter is optional (i.e. has a default)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.InjectionParameter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="openapi/spec.html#litestar.openapi.spec.Schema.type" title="litestar.openapi.spec.Schema.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.ProviderKind" title="litestar.di.provider.ProviderKind"><span class="pre">ProviderKind</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.di.InjectionParameter.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.di.InjectionTarget">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">InjectionTarget</span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#InjectionTarget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.InjectionTarget" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A callable whose dependencies are read from its signature, for <a class="reference internal" href="#litestar.di.DIContext.inject" title="litestar.di.DIContext.inject"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DIContext.inject()</span></code></a>,
+<a class="reference internal" href="#litestar.di.DIContext.solve_arguments" title="litestar.di.DIContext.solve_arguments"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DIContext.solve_arguments()</span></code></a> and <a class="reference internal" href="#litestar.di.DIRegistry.check_target" title="litestar.di.DIRegistry.check_target"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DIRegistry.check_target()</span></code></a>.</p>
+<p>It has the same calling semantics as a <a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provider</span></code></a>, but does not provide a
+value into the context.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.InjectionTarget.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#InjectionTarget.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.InjectionTarget.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Call the callable as-is</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.InjectionTarget.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ParsedSignature</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#InjectionTarget.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.InjectionTarget.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap <code class="docutils literal notranslate"><span class="pre">fn</span></code> as an injection target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.InjectionTarget.params.fn"></span><strong>fn</strong><a class="paramlink headerlink reference internal" href="#litestar.di.InjectionTarget.params.fn">¶</a> – The callable to call with its dependencies resolved</p></li>
+<li><p><span class="target" id="litestar.di.InjectionTarget.params.signature"></span><strong>signature</strong><a class="paramlink headerlink reference internal" href="#litestar.di.InjectionTarget.params.signature">¶</a> – The parsed signature of <code class="docutils literal notranslate"><span class="pre">fn</span></code>, used instead of reading it from <code class="docutils literal notranslate"><span class="pre">fn</span></code>. For
+a <a class="reference external" href="https://docs.python.org/3/library/functools.html#functools.partial" title="(in Python v3.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">functools.partial()</span></code></a>, it may be that of the callable it wraps</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.di.InjectionTarget.fn">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">fn</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#litestar.di.InjectionTarget.fn" title="Link to this definition">¶</a></dt>
+<dd><p>The wrapped callable</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.di.PreparedDIContext">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">PreparedDIContext</span></span><a class="reference internal" href="../_modules/litestar/di/context.html#PreparedDIContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.PreparedDIContext" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Factory to create a DIContext, from a given registry, scope, and parent context</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.PreparedDIContext.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DIRegistry" title="litestar.di.DIRegistry"><span class="pre">DIRegistry</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DIContext" title="litestar.di.DIContext"><span class="pre">DIContext</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.PreparedDIContext" title="litestar.di.PreparedDIContext"><span class="pre">PreparedDIContext</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#PreparedDIContext.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.PreparedDIContext.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Prepare contexts of <code class="docutils literal notranslate"><span class="pre">registry</span></code> at <code class="docutils literal notranslate"><span class="pre">scope</span></code>, nested in <code class="docutils literal notranslate"><span class="pre">parent</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">scope</span></code> is not given, the outermost scope is used, or, when <code class="docutils literal notranslate"><span class="pre">parent</span></code> is
+given, the scope immediately following the parent’s. Freezes <code class="docutils literal notranslate"><span class="pre">registry</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.PreparedDIContext.params.registry"></span><strong>registry</strong><a class="paramlink headerlink reference internal" href="#litestar.di.PreparedDIContext.params.registry">¶</a> – The registry the contexts resolve through</p></li>
+<li><p><span class="target" id="litestar.di.PreparedDIContext.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.di.PreparedDIContext.params.scope">¶</a> – The scope the contexts own</p></li>
+<li><p><span class="target" id="litestar.di.PreparedDIContext.params.parent"></span><strong>parent</strong><a class="paramlink headerlink reference internal" href="#litestar.di.PreparedDIContext.params.parent">¶</a> – The context before these, or its prepared context</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#litestar.di.exceptions.DIScopeError" title="litestar.di.exceptions.DIScopeError"><strong>DIScopeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">registry</span></code> and the registry of <code class="docutils literal notranslate"><span class="pre">parent</span></code> declare different scopes,
+    <code class="docutils literal notranslate"><span class="pre">registry</span></code> has no scope <code class="docutils literal notranslate"><span class="pre">scope</span></code>, or <code class="docutils literal notranslate"><span class="pre">scope</span></code> is not the one following the
+    scope of <code class="docutils literal notranslate"><span class="pre">parent</span></code>, without a parent the outermost one</p></li>
+<li><p><a class="reference internal" href="#litestar.di.exceptions.DIContextClosedError" title="litestar.di.exceptions.DIContextClosedError"><strong>DIContextClosedError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">parent</span></code> is a closed context</p></li>
+<li><p><a class="reference internal" href="#litestar.di.exceptions.DIRegistrationError" title="litestar.di.exceptions.DIRegistrationError"><strong>DIRegistrationError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">parent</span></code> is a context and <code class="docutils literal notranslate"><span class="pre">registry</span></code> was created after
+    the outermost context before it was entered</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.PreparedDIContext.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DIContext" title="litestar.di.DIContext"><span class="pre">DIContext</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.di.DIContext" title="litestar.di.DIContext"><span class="pre">DIContext</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/context.html#PreparedDIContext.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.PreparedDIContext.create" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new <a class="reference internal" href="#litestar.di.DIContext" title="litestar.di.DIContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIContext</span></code></a> of the registry at the scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.PreparedDIContext.create.params.parent"></span><strong>parent</strong><a class="paramlink headerlink reference internal" href="#litestar.di.PreparedDIContext.create.params.parent">¶</a> – The context before the new one: a context of the registry and scope of the
+<code class="docutils literal notranslate"><span class="pre">parent</span></code> given to this prepared context, with the outermost context entered
+after the registry was created</p></li>
+<li><p><span class="target" id="litestar.di.PreparedDIContext.create.params.seeds"></span><strong>seeds</strong><a class="paramlink headerlink reference internal" href="#litestar.di.PreparedDIContext.create.params.seeds">¶</a> – Values for the seed keys of the scope. If the registry declares seeds,
+values for all seeds must be given</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.di.Provide">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">Provide</span></span><a class="reference internal" href="../_modules/litestar/di/_provide.html#Provide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Provide" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A dependency declaration, converted at handler registration to a
+<a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provider</span></code></a> of <code class="docutils literal notranslate"><span class="pre">dependency</span></code> under the key it is declared with: scope
+<code class="docutils literal notranslate"><span class="pre">&quot;app&quot;</span></code> with <code class="docutils literal notranslate"><span class="pre">use_cache=True</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;handler&quot;</span></code> otherwise, and <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> as given.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.Provide.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dependency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.AnyCallable" title="litestar.types.AnyCallable"><span class="pre">AnyCallable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="openapi/spec.html#litestar.openapi.spec.Schema.type" title="litestar.openapi.spec.Schema.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_to_thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/_provide.html#Provide.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Provide.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Store the arguments, warning that <code class="docutils literal notranslate"><span class="pre">Provide</span></code> is deprecated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.Provide.params.dependency"></span><strong>dependency</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provide.params.dependency">¶</a> – The factory callable</p></li>
+<li><p><span class="target" id="litestar.di.Provide.params.use_cache"></span><strong>use_cache</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provide.params.use_cache">¶</a> – Whether the provider has scope <code class="docutils literal notranslate"><span class="pre">&quot;app&quot;</span></code> instead of <code class="docutils literal notranslate"><span class="pre">&quot;handler&quot;</span></code></p></li>
+<li><p><span class="target" id="litestar.di.Provide.params.sync_to_thread"></span><strong>sync_to_thread</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provide.params.sync_to_thread">¶</a> – Whether a sync callable runs in a worker thread</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.di.Provider">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">Provider</span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#Provider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Provider" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A factory to produce a value</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.Provider.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#Provider.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Provider.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Call underlying factory as-is</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.Provider.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'named'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.ProviderKind" title="litestar.di.ProviderKind"><span class="pre">ProviderKind</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'handler'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_to_thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ParsedSignature</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#Provider.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Provider.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>DI provider. A factory to produce a value.</p>
+<p>A factory callable may be:</p>
+<ul class="simple">
+<li><p>an async callable</p></li>
+<li><p>a sync callable: In this case, sync_to_thread must be passed explicitly, to define
+how it should be invoked. Blocking synchronous callables should pass sync_to_thread=True,
+so they can run in a thread pool without blocking the main event loop.
+See <a class="reference internal" href="../topics/sync-vs-async.html"><span class="doc">Sync vs. Async</span></a> for more info.
+A class is treated as a non-blocking sync callable. It’s __init__ and __new__ methods should
+<em>never</em> block</p></li>
+<li><p>an async generator, yielding exactly once. The yielded value is the factory value.
+the code after the <code class="docutils literal notranslate"><span class="pre">yield</span></code> will be invoked as a cleanup step when this provider’s DIContext
+closes. If the context is closing with an active exception, that exception will be thrown into
+the generator. Cleanups are guaranteed to run in reverse order they providers were invoked in.
+Every cleanup will be invoked, even if prior cleanups raised an exception. Exceptions during
+cleanup steps are re-raised once all cleanups have completed.</p></li>
+<li><p>a sync generator, yielding exactly once, with the cleanup step of an async generator. The code
+up to the <code class="docutils literal notranslate"><span class="pre">yield</span></code> runs in a worker thread, the cleanup step in a thread of its own, both in
+one <a class="reference external" href="https://docs.python.org/3/library/contextvars.html#contextvars.Context" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">contextvars.Context</span></code></a>: a context variable set before the <code class="docutils literal notranslate"><span class="pre">yield</span></code> is set after it,
+and set for whoever resolves the provider. A context variable set where the context closes is
+set for the cleanup step</p></li>
+</ul>
+<p>A provider may declare no ‘fn’, which makes it a <em>seed</em>. Seeds are expected to be given values for their
+context explicitly when that context is created. The shorthand for this is <a class="reference internal" href="#litestar.di.Provider.seed" title="litestar.di.Provider.seed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Provider.seed()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.Provider.params.fn"></span><strong>fn</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provider.params.fn">¶</a> – The factory callable, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to declare a seed, whose value is given to the
+context owning its scope when it is built</p></li>
+<li><p><span class="target" id="litestar.di.Provider.params.kind"></span><strong>kind</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provider.params.kind">¶</a> – Whether this provider is keyed by name or by type</p></li>
+<li><p><span class="target" id="litestar.di.Provider.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provider.params.scope">¶</a> – Name of the lifetime-scope where the produced value is stored</p></li>
+<li><p><span class="target" id="litestar.di.Provider.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provider.params.key">¶</a> – The key to register under. If omitted it is inferred: from <code class="docutils literal notranslate"><span class="pre">fn.__name__</span></code> for
+a named provider, and from the return annotation (or the class itself) for
+a type provider</p></li>
+<li><p><span class="target" id="litestar.di.Provider.params.sync_to_thread"></span><strong>sync_to_thread</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provider.params.sync_to_thread">¶</a> – Whether a sync callable runs in a worker thread</p></li>
+<li><p><span class="target" id="litestar.di.Provider.params.signature"></span><strong>signature</strong><a class="paramlink headerlink reference internal" href="#litestar.di.Provider.params.signature">¶</a> – The parsed signature of <code class="docutils literal notranslate"><span class="pre">fn</span></code>, used instead of reading it from <code class="docutils literal notranslate"><span class="pre">fn</span></code>. For
+a <a class="reference external" href="https://docs.python.org/3/library/functools.html#functools.partial" title="(in Python v3.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">functools.partial()</span></code></a>, it may be that of the callable it wraps</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#litestar.di.exceptions.DIRegistrationError" title="litestar.di.exceptions.DIRegistrationError"><strong>DIRegistrationError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">fn</span></code> is not a supported callable, <code class="docutils literal notranslate"><span class="pre">key</span></code> contradicts
+    <code class="docutils literal notranslate"><span class="pre">kind</span></code>, a seed is declared without a key or with a signature, or
+    <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> contradicts the callable’s form.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.di.Provider.dependencies">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dependencies</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.InjectionParameter" title="litestar.di.provider.InjectionParameter"><span class="pre">InjectionParameter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#litestar.di.Provider.dependencies" title="Link to this definition">¶</a></dt>
+<dd><p>Sub-dependencies of this provider</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.di.Provider.is_seed">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_seed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#litestar.di.Provider.is_seed" title="Link to this definition">¶</a></dt>
+<dd><p>Whether this provider is a seed</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.di.Provider.key">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">key</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="openapi/spec.html#litestar.openapi.spec.Schema.type" title="litestar.openapi.spec.Schema.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#litestar.di.Provider.key" title="Link to this definition">¶</a></dt>
+<dd><p>Key this provider is registered under</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.di.Provider.non_di_parameters">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">non_di_parameters</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#litestar.di.Provider.non_di_parameters" title="Link to this definition">¶</a></dt>
+<dd><p>Names of the factory callable’s parameters that a <a class="reference external" href="https://docs.python.org/3/library/functools.html#functools.partial" title="(in Python v3.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">functools.partial()</span></code></a> binds by keyword</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.di.Provider.request_parameters">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">request_parameters</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.RequestParameter" title="litestar.di._request.RequestParameter"><span class="pre">RequestParameter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#litestar.di.Provider.request_parameters" title="Link to this definition">¶</a></dt>
+<dd><p>Sub-dependencies of this provider that carry a parameter or body marker</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.Provider.resolve_signature">
+<span class="sig-name descname"><span class="pre">resolve_signature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ParsedSignature</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#Provider.resolve_signature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Provider.resolve_signature" title="Link to this definition">¶</a></dt>
+<dd><p>Extract sub-dependencies and the remaining parameters from the provider callable’s
+signature. <code class="docutils literal notranslate"><span class="pre">signature</span></code> is read instead of the callable’s when the provider was given
+none at construction.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.Provider.seed">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="openapi/spec.html#litestar.openapi.spec.Schema.type" title="litestar.openapi.spec.Schema.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'handler'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.provider.Provider"><span class="pre">Provider</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#Provider.seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.Provider.seed" title="Link to this definition">¶</a></dt>
+<dd><p>Create a provider without a factory. Its value must be passed to the DIContext explicitly at creation time.</p>
+<p>The kind is inferred from the key. A string key creates a name dependency, anything
+else a type dependency.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.di.ProviderKind">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">ProviderKind</span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#ProviderKind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.ProviderKind" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.StrEnum" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<p>Types of provider keys</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.ProviderKind.__new__">
+<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar.di.ProviderKind.__new__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.ProviderKind.NAMED">
+<span class="sig-name descname"><span class="pre">NAMED</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'named'</span></span><a class="headerlink" href="#litestar.di.ProviderKind.NAMED" title="Link to this definition">¶</a></dt>
+<dd><p>Keyed by a name</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.ProviderKind.TYPE">
+<span class="sig-name descname"><span class="pre">TYPE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'type'</span></span><a class="headerlink" href="#litestar.di.ProviderKind.TYPE" title="Link to this definition">¶</a></dt>
+<dd><p>Keyed by a type</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.di.RequestParameter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">RequestParameter</span></span><a class="reference internal" href="../_modules/litestar/di/_request.html#RequestParameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.RequestParameter" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Parameter of a Provider or InjectionTarget declared by a parameter marker, such
+as <code class="docutils literal notranslate"><span class="pre">FromQuery[...]</span></code>, or a body marker, such as <code class="docutils literal notranslate"><span class="pre">JSONBody[...]</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.RequestParameter.parameter_name">
+<span class="sig-name descname"><span class="pre">parameter_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><a class="headerlink" href="#litestar.di.RequestParameter.parameter_name" title="Link to this definition">¶</a></dt>
+<dd><p>Name of the parameter on the callable</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.RequestParameter.param_type">
+<span class="sig-name descname"><span class="pre">param_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="enums.html#litestar.enums.ParamType" title="litestar.enums.ParamType"><span class="pre">ParamType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><a class="headerlink" href="#litestar.di.RequestParameter.param_type" title="Link to this definition">¶</a></dt>
+<dd><p>Type of the request parameter. <code class="docutils literal notranslate"><span class="pre">None</span></code> for the request body</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.RequestParameter.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><a class="headerlink" href="#litestar.di.RequestParameter.name" title="Link to this definition">¶</a></dt>
+<dd><p>Name of the request parameter in the request, as declared. Empty for the request body</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.RequestParameter.field_definition">
+<span class="sig-name descname"><span class="pre">field_definition</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span><a class="headerlink" href="#litestar.di.RequestParameter.field_definition" title="Link to this definition">¶</a></dt>
+<dd><p>The parameter’s declaration. Its <code class="docutils literal notranslate"><span class="pre">kwarg_definition</span></code> is the marker</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.RequestParameter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="enums.html#litestar.enums.ParamType" title="litestar.enums.ParamType"><span class="pre">ParamType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.di.RequestParameter.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.di.RequestParameter.is_body">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_body</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><a class="headerlink" href="#litestar.di.RequestParameter.is_body" title="Link to this definition">¶</a></dt>
+<dd><p>Whether a body marker declares the parameter</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.di.RequestParameter.key">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">key</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><a class="headerlink" href="#litestar.di.RequestParameter.key" title="Link to this definition">¶</a></dt>
+<dd><p>The dependency key, <code class="docutils literal notranslate"><span class="pre">&quot;&lt;param</span> <span class="pre">type&gt;:&lt;name&gt;&quot;</span></code> with a header’s name lower-cased, or
+<code class="docutils literal notranslate"><span class="pre">&quot;body:&quot;</span></code> for the request body</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.di.ValueGraphDivergence">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">ValueGraphDivergence</span></span><a class="reference internal" href="../_modules/litestar/di/registry.html#ValueGraphDivergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.ValueGraphDivergence" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Finding of <a class="reference internal" href="#litestar.di.check_divergence" title="litestar.di.check_divergence"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_divergence()</span></code></a>: a node at which two registries’
+value graphs diverge. <code class="docutils literal notranslate"><span class="pre">provider</span></code>, declared under <code class="docutils literal notranslate"><span class="pre">key</span></code> by both, has different
+predecessors in <code class="docutils literal notranslate"><span class="pre">registry</span></code> than in <code class="docutils literal notranslate"><span class="pre">first_registry</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.di.ValueGraphDivergence.bindings">
+<span class="sig-name descname"><span class="pre">bindings</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><span class="pre">Provider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><span class="pre">Provider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#litestar.di.ValueGraphDivergence.bindings" title="Link to this definition">¶</a></dt>
+<dd><p>bindings that differ, as <code class="docutils literal notranslate"><span class="pre">(first,</span> <span class="pre">this)</span></code> per key, <code class="docutils literal notranslate"><span class="pre">None</span></code> for an unbound optional dependency</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.di.ValueGraphDivergence.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><span class="pre">Provider</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_registry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">registry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bindings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><span class="pre">Provider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><span class="pre">Provider</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.di.ValueGraphDivergence.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="litestar.di.check_divergence">
+<span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">check_divergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.DIRegistry" title="litestar.di.DIRegistry"><span class="pre">DIRegistry</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">scopes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Collection</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_on_divergence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/litestar/di/registry.html#check_divergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.check_divergence" title="Link to this definition">¶</a></dt>
+<dd><p>Check for divergences in the predecessors of providers shared by <code class="docutils literal notranslate"><span class="pre">registries</span></code>.</p>
+<p>Why does this matter? A provider registered in one or more registry that, through
+differing predecessors in each registry, will create unique values below the
+lifetimes of its scope.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@provide</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;app&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_session</span><span class="p">(</span><span class="n">engine</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">Engine</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Session</span><span class="p">:</span>
+</span><span data-line="3">    <span class="k">with</span> <span class="n">Session</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+</span><span data-line="4">        <span class="k">yield</span> <span class="n">session</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@provide</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;app&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;engine&quot;</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">engine_one</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="8">    <span class="k">return</span> <span class="n">create_engine</span><span class="p">(</span><span class="o">&lt;</span><span class="n">some</span> <span class="n">params</span><span class="o">&gt;</span><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="nd">@provide</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;app&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;engine&quot;</span><span class="p">)</span>
+</span><span data-line="11"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">engine_two</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="12">    <span class="k">return</span> <span class="n">create_engine</span><span class="p">(</span><span class="o">&lt;</span><span class="n">some</span> <span class="n">other</span> <span class="n">params</span><span class="o">&gt;</span><span class="p">)</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">alice</span> <span class="o">=</span> <span class="n">DIRegistry</span><span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">create_session</span><span class="p">,</span> <span class="n">engine_one</span><span class="p">])</span>
+</span><span data-line="15"><span class="n">bob</span> <span class="o">=</span> <span class="n">DIRegistry</span><span class="p">(</span><span class="s2">&quot;bob&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">create_session</span><span class="p">,</span> <span class="n">engine_two</span><span class="p">])</span>
+</span><span data-line="16">
+</span><span data-line="17"><span class="n">app_ctx</span> <span class="o">=</span> <span class="n">DIContext</span><span class="p">(</span><span class="n">registry</span><span class="o">=</span><span class="n">DIRegistry</span><span class="p">(),</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;app&quot;</span><span class="p">)</span>
+</span><span data-line="18"><span class="n">alice_ctx</span> <span class="o">=</span> <span class="n">DIContext</span><span class="p">(</span><span class="n">alice</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;request&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">app_ctx</span><span class="p">)</span>
+</span><span data-line="19"><span class="n">bob_ctx</span> <span class="o">=</span> <span class="n">DIContext</span><span class="p">(</span><span class="n">alice</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;request&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">app_ctx</span><span class="p">)</span>
+</span><span data-line="20">
+</span><span data-line="21"><span class="k">await</span> <span class="n">alice_ctx</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>  <span class="c1"># there is now an &#39;engine&#39; and a &#39;session&#39; in app_ctx</span>
+</span><span data-line="22"><span class="k">await</span> <span class="n">bob_ctx</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>  <span class="c1"># a distinct &#39;engine&#39; and a &#39;session&#39; are created in app_ctx</span>
+</span></pre></div>
+</div>
+<p>In this example, both registries share the provider for the ‘session’ key, but have
+different providers for the ‘engine’ key. Since ‘session’ depends on ‘engine’, this
+is a divergence. When resolving ‘session’ through ‘alice_ctx’ , it must get
+a different ‘engine’ then when resolved through ‘bob_ctx’, which the context will
+solve by invoking ‘create_session’ again, even if a value for its key is already
+present in ‘app_ctx’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#litestar.di.exceptions.DivergenceError" title="litestar.di.exceptions.DivergenceError"><strong>DivergenceError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">raise_on_divergence</span></code> is set, at the first finding.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="litestar.di.provide">
+<span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">provide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'handler'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'named'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'type'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.ProviderKind" title="litestar.di.ProviderKind"><span class="pre">ProviderKind</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.di.DependencyKey" title="litestar.di.DependencyKey"><span class="pre">DependencyKey</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_to_thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><span class="pre">Provider</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/litestar/di/provider.html#provide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.provide" title="Link to this definition">¶</a></dt>
+<dd><p>A decorator wrapping the callable into a <a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provider</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.di.provide.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.di.provide.params.scope">¶</a> – Name of the scope owning the produced value.</p></li>
+<li><p><span class="target" id="litestar.di.provide.params.kind"></span><strong>kind</strong><a class="paramlink headerlink reference internal" href="#litestar.di.provide.params.kind">¶</a> – Whether the provider is keyed by name or by type. If not given, inferred
+from <code class="docutils literal notranslate"><span class="pre">key</span></code>, or by name without a key</p></li>
+<li><p><span class="target" id="litestar.di.provide.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.di.provide.params.key">¶</a> – Key this factory provides for. If not given, will be inferred. From the
+callable’s name for <code class="docutils literal notranslate"><span class="pre">kind=&quot;named&quot;</span></code> (the default), and from the callable’s
+return type for <code class="docutils literal notranslate"><span class="pre">kind=&quot;type&quot;</span></code></p></li>
+<li><p><span class="target" id="litestar.di.provide.params.sync_to_thread"></span><strong>sync_to_thread</strong><a class="paramlink headerlink reference internal" href="#litestar.di.provide.params.sync_to_thread">¶</a> – Whether a sync callable runs in a worker thread; see <a class="reference internal" href="#litestar.di.Provider" title="litestar.di.Provider"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provider</span></code></a>
+for more information</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#litestar.di.exceptions.DIRegistrationError" title="litestar.di.exceptions.DIRegistrationError"><strong>DIRegistrationError</strong></a> – If used as a bare <code class="docutils literal notranslate"><span class="pre">&#64;provide</span></code> without parentheses.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="litestar.di.NamedDependency">
+<span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">NamedDependency</span></span><a class="headerlink" href="#litestar.di.NamedDependency" title="Link to this definition">¶</a></dt>
+<dd><p>Mark a parameter as a dependency resolved by <em>name</em>.</p>
+<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Dependency(kind=&quot;named&quot;)]</span></code></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="litestar.di.TypeDependency">
+<span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">TypeDependency</span></span><a class="headerlink" href="#litestar.di.TypeDependency" title="Link to this definition">¶</a></dt>
+<dd><p>Mark a parameter as a dependency resolved by <em>type</em>.</p>
+<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">Dependency(kind=&quot;type&quot;)]</span></code></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="litestar.di.DependencyKey">
+<span class="sig-prename descclassname"><span class="pre">litestar.di.</span></span><span class="sig-name descname"><span class="pre">DependencyKey</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">str</span> <span class="pre">|</span> <span class="pre">type[Any]</span></span><a class="headerlink" href="#litestar.di.DependencyKey" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception" id="module-litestar.di.exceptions">
+<dt class="sig sig-object py" id="litestar.di.exceptions.CaptiveDependencyError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">CaptiveDependencyError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#CaptiveDependencyError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.CaptiveDependencyError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIGraphError" title="litestar.di.exceptions.DIGraphError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIGraphError</span></code></a></p>
+<p>A provider depends on a value from a later scope, which it would keep using
+after that value was cleaned up</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.CircularDependencyError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">CircularDependencyError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#CircularDependencyError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.CircularDependencyError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIGraphError" title="litestar.di.exceptions.DIGraphError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIGraphError</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.DIContextClosedError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">DIContextClosedError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#DIContextClosedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.DIContextClosedError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIResolutionError" title="litestar.di.exceptions.DIResolutionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIResolutionError</span></code></a></p>
+<p>A <a class="reference internal" href="#litestar.di.DIContext" title="litestar.di.DIContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIContext</span></code></a> was used after it was closed.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.DIException">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">DIException</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#DIException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.DIException" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="exceptions.html#litestar.exceptions.LitestarException" title="litestar.exceptions.base_exceptions.LitestarException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.DIGraphError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">DIGraphError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#DIGraphError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.DIGraphError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIException" title="litestar.di.exceptions.DIException"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.DIRegistrationError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">DIRegistrationError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#DIRegistrationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.DIRegistrationError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIException" title="litestar.di.exceptions.DIException"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.DIResolutionError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">DIResolutionError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#DIResolutionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.DIResolutionError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIException" title="litestar.di.exceptions.DIException"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.DIScopeError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">DIScopeError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#DIScopeError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.DIScopeError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIResolutionError" title="litestar.di.exceptions.DIResolutionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIResolutionError</span></code></a></p>
+<p>A scope was entered out of order, skipped, repeated, not at all, does not exist</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.DivergenceError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">DivergenceError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#DivergenceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.DivergenceError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIGraphError" title="litestar.di.exceptions.DIGraphError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIGraphError</span></code></a></p>
+<p>Covering a <a class="reference internal" href="#litestar.di.ValueGraphDivergence" title="litestar.di.ValueGraphDivergence"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueGraphDivergence</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.DivergenceWarning">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">DivergenceWarning</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#DivergenceWarning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.DivergenceWarning" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="exceptions.html#litestar.exceptions.LitestarWarning" title="litestar.exceptions.base_exceptions.LitestarWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarWarning</span></code></a></p>
+<p>Covering a <a class="reference internal" href="#litestar.di.ValueGraphDivergence" title="litestar.di.ValueGraphDivergence"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueGraphDivergence</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.MissingProviderError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">MissingProviderError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#MissingProviderError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.MissingProviderError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIGraphError" title="litestar.di.exceptions.DIGraphError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIGraphError</span></code></a></p>
+<p>A dependency has no provider registered in the registry</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.MissingSeedError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">MissingSeedError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#MissingSeedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.MissingSeedError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIResolutionError" title="litestar.di.exceptions.DIResolutionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIResolutionError</span></code></a></p>
+<p>A context was built without a value for a seed key its registry declares at its scope</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="litestar.di.exceptions.ScopeMismatchError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.di.exceptions.</span></span><span class="sig-name descname"><span class="pre">ScopeMismatchError</span></span><a class="reference internal" href="../_modules/litestar/di/exceptions.html#ScopeMismatchError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.di.exceptions.ScopeMismatchError" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.di.exceptions.DIResolutionError" title="litestar.di.exceptions.DIResolutionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIResolutionError</span></code></a></p>
+<p>A provider exists, but its scope is not entered by the requesting context or any context
+above it</p>
 </dd></dl>
 
 </section>

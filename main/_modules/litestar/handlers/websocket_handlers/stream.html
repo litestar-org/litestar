@@ -667,7 +667,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="160"><span class="sd">    Args:</span>
 </span><span data-line="161"><span class="sd">        path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults</span>
 </span><span data-line="162"><span class="sd">            to ``/``</span>
-</span><span data-line="163"><span class="sd">        dependencies: A string keyed mapping of dependency :class:`Provider &lt;.di.Provide&gt;` instances.</span>
+</span><span data-line="163"><span class="sd">        dependencies: A sequence of :class:`Provider &lt;.di.Provider&gt;` instances, or a mapping of names or types to providers, :class:`Provide &lt;.di.Provide&gt;` instances or callables.</span>
 </span><span data-line="164"><span class="sd">        exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
 </span><span data-line="165"><span class="sd">        guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
 </span><span data-line="166"><span class="sd">        middleware: A sequence of :class:`Middleware &lt;.types.Middleware&gt;`.</span>
@@ -741,92 +741,87 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="233">        <span class="c1"># go away with v3.0&#39;s static handlers</span>
 </span><span data-line="234">        <span class="n">stream_fn</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Callable[..., AsyncGenerator[Any, Any]]&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
 </span><span data-line="235">
-</span><span data-line="236">        <span class="c1"># construct a fake signature for the kwargs modelling, using the generator</span>
-</span><span data-line="237">        <span class="c1"># function passed to the handler as a base, to include all the dependencies,</span>
-</span><span data-line="238">        <span class="c1"># params, injection kwargs, etc. + &#39;socket&#39;, so DI works properly, but the</span>
-</span><span data-line="239">        <span class="c1"># signature looks to kwargs/signature modelling like a plain &#39;@websocket&#39;</span>
-</span><span data-line="240">        <span class="c1"># handler that returns &#39;None&#39;</span>
-</span><span data-line="241">        <span class="n">parsed_handler_signature</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-</span><span data-line="242">            <span class="n">parsed_handler_signature</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_annotation</span><span class="p">(</span><span class="n">NoneType</span><span class="p">)</span>
-</span><span data-line="243">        <span class="p">)</span>
-</span><span data-line="244">        <span class="n">receives_socket_parameter</span> <span class="o">=</span> <span class="s2">&quot;socket&quot;</span> <span class="ow">in</span> <span class="n">parsed_stream_fn_signature</span><span class="o">.</span><span class="n">parameters</span>
-</span><span data-line="245">
-</span><span data-line="246">        <span class="k">if</span> <span class="ow">not</span> <span class="n">receives_socket_parameter</span><span class="p">:</span>
-</span><span data-line="247">            <span class="n">original_parameters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parsed_handler_signature</span><span class="o">.</span><span class="n">original_signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-</span><span data-line="248">            <span class="c1"># a keyword-only parameter must come before &#39;**kwargs&#39;</span>
-</span><span data-line="249">            <span class="n">insert_at</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-</span><span data-line="250">                <span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">original_parameters</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">kind</span> <span class="ow">is</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">VAR_KEYWORD</span><span class="p">),</span>
-</span><span data-line="251">                <span class="nb">len</span><span class="p">(</span><span class="n">original_parameters</span><span class="p">),</span>
-</span><span data-line="252">            <span class="p">)</span>
-</span><span data-line="253">            <span class="n">original_parameters</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
-</span><span data-line="254">                <span class="n">insert_at</span><span class="p">,</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;socket&quot;</span><span class="p">,</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">KEYWORD_ONLY</span><span class="p">,</span> <span class="n">annotation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">websocket_class</span><span class="p">)</span>
-</span><span data-line="255">            <span class="p">)</span>
-</span><span data-line="256">            <span class="n">parsed_handler_signature</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-</span><span data-line="257">                <span class="n">parsed_handler_signature</span><span class="p">,</span>
-</span><span data-line="258">                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="259">                    <span class="o">**</span><span class="n">parsed_handler_signature</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
-</span><span data-line="260">                    <span class="s2">&quot;socket&quot;</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_annotation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">websocket_class</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;socket&quot;</span><span class="p">),</span>
-</span><span data-line="261">                <span class="p">},</span>
-</span><span data-line="262">                <span class="n">original_signature</span><span class="o">=</span><span class="n">parsed_handler_signature</span><span class="o">.</span><span class="n">original_signature</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">original_parameters</span><span class="p">),</span>
-</span><span data-line="263">            <span class="p">)</span>
-</span><span data-line="264">
-</span><span data-line="265">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="o">=</span> <span class="n">parsed_handler_signature</span>
-</span><span data-line="266">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_return_field</span> <span class="o">=</span> <span class="n">parsed_stream_fn_signature</span><span class="o">.</span><span class="n">return_type</span><span class="o">.</span><span class="n">inner_types</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="267">
-</span><span data-line="268">        <span class="n">json_encoder</span> <span class="o">=</span> <span class="n">JsonEncoder</span><span class="p">(</span><span class="n">enc_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">default_serializer</span><span class="p">)</span>
-</span><span data-line="269">        <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_data_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="270">        <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span> <span class="o">=</span> <span class="n">return_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_return_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">data_dto</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dto</span><span class="p">)</span>
-</span><span data-line="271">
-</span><span data-line="272">        <span class="c1"># make sure the closure doesn&#39;t capture self._ws_stream / self</span>
-</span><span data-line="273">        <span class="n">send_mode</span><span class="p">:</span> <span class="n">WebSocketMode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ws_stream_options</span><span class="o">.</span><span class="n">send_mode</span>  <span class="c1"># pyright: ignore[reportAssignmentType]</span>
-</span><span data-line="274">        <span class="n">listen_for_disconnect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ws_stream_options</span><span class="o">.</span><span class="n">listen_for_disconnect</span>
-</span><span data-line="275">        <span class="n">warn_on_data_discard</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ws_stream_options</span><span class="o">.</span><span class="n">warn_on_data_discard</span>
-</span><span data-line="276">
-</span><span data-line="277">        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="278">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
-</span><span data-line="279">                <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">send_mode</span><span class="p">)</span>
-</span><span data-line="280">                <span class="k">return</span>
-</span><span data-line="281">
-</span><span data-line="282">            <span class="k">if</span> <span class="n">return_dto</span><span class="p">:</span>
-</span><span data-line="283">                <span class="n">encoded_data</span> <span class="o">=</span> <span class="n">return_dto</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span><span class="o">.</span><span class="n">data_to_encodable_type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</span><span data-line="284">                <span class="n">data</span> <span class="o">=</span> <span class="n">json_encoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoded_data</span><span class="p">)</span>
-</span><span data-line="285">                <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">send_mode</span><span class="p">)</span>
-</span><span data-line="286">                <span class="k">return</span>
-</span><span data-line="287">
-</span><span data-line="288">            <span class="n">data</span> <span class="o">=</span> <span class="n">json_encoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</span><span data-line="289">            <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">send_mode</span><span class="p">)</span>
-</span><span data-line="290">
-</span><span data-line="291">        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">stream_fn</span><span class="p">)</span>
-</span><span data-line="292">        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="293">            <span class="k">if</span> <span class="n">receives_socket_parameter</span><span class="p">:</span>
-</span><span data-line="294">                <span class="n">kw</span><span class="p">[</span><span class="s2">&quot;socket&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">socket</span>
-</span><span data-line="295">
-</span><span data-line="296">            <span class="k">await</span> <span class="n">send_websocket_stream</span><span class="p">(</span>
-</span><span data-line="297">                <span class="n">socket</span><span class="o">=</span><span class="n">socket</span><span class="p">,</span>
-</span><span data-line="298">                <span class="n">stream</span><span class="o">=</span><span class="n">stream_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">),</span>
-</span><span data-line="299">                <span class="n">mode</span><span class="o">=</span><span class="n">send_mode</span><span class="p">,</span>
-</span><span data-line="300">                <span class="n">close</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span data-line="301">                <span class="n">listen_for_disconnect</span><span class="o">=</span><span class="n">listen_for_disconnect</span><span class="p">,</span>
-</span><span data-line="302">                <span class="n">warn_on_data_discard</span><span class="o">=</span><span class="n">warn_on_data_discard</span><span class="p">,</span>
-</span><span data-line="303">                <span class="n">send_handler</span><span class="o">=</span><span class="n">send_handler</span><span class="p">,</span>
-</span><span data-line="304">            <span class="p">)</span>
-</span><span data-line="305">
-</span><span data-line="306">        <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">handler_fn</span>  <span class="c1"># pyright: ignore[reportGeneralTypeIssues]</span>
-</span><span data-line="307">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_registration</span><span class="p">(</span><span class="n">route</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
-</span><span data-line="308">
-</span><span data-line="309">
-</span><span data-line="310"><span class="k">class</span><span class="w"> </span><span class="nc">_WebSocketStreamOptions</span><span class="p">:</span>
-</span><span data-line="311">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="312">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="313">        <span class="n">generator_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
-</span><span data-line="314">        <span class="n">listen_for_disconnect</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-</span><span data-line="315">        <span class="n">warn_on_data_discard</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-</span><span data-line="316">        <span class="n">send_mode</span><span class="p">:</span> <span class="n">WebSocketMode</span><span class="p">,</span>
-</span><span data-line="317">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="318">        <span class="bp">self</span><span class="o">.</span><span class="n">generator_fn</span> <span class="o">=</span> <span class="n">generator_fn</span>
-</span><span data-line="319">        <span class="bp">self</span><span class="o">.</span><span class="n">listen_for_disconnect</span> <span class="o">=</span> <span class="n">listen_for_disconnect</span>
-</span><span data-line="320">        <span class="bp">self</span><span class="o">.</span><span class="n">warn_on_data_discard</span> <span class="o">=</span> <span class="n">warn_on_data_discard</span>
-</span><span data-line="321">        <span class="bp">self</span><span class="o">.</span><span class="n">send_mode</span> <span class="o">=</span> <span class="n">send_mode</span>
+</span><span data-line="236">        <span class="c1"># the signature the handler&#39;s dependencies are read from: the generator function&#39;s, returning &#39;None&#39; like</span>
+</span><span data-line="237">        <span class="c1"># a plain &#39;@websocket&#39; handler, with a parameter of its own for the socket the stream is sent to. the</span>
+</span><span data-line="238">        <span class="c1"># function&#39;s parameters, a socket among them, are its dependencies</span>
+</span><span data-line="239">        <span class="n">original_parameters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parsed_handler_signature</span><span class="o">.</span><span class="n">original_signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</span><span data-line="240">        <span class="c1"># a keyword-only parameter must come before &#39;**kwargs&#39;</span>
+</span><span data-line="241">        <span class="n">insert_at</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+</span><span data-line="242">            <span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">original_parameters</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">kind</span> <span class="ow">is</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">VAR_KEYWORD</span><span class="p">),</span>
+</span><span data-line="243">            <span class="nb">len</span><span class="p">(</span><span class="n">original_parameters</span><span class="p">),</span>
+</span><span data-line="244">        <span class="p">)</span>
+</span><span data-line="245">        <span class="n">original_parameters</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+</span><span data-line="246">            <span class="n">insert_at</span><span class="p">,</span>
+</span><span data-line="247">            <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+</span><span data-line="248">                <span class="s2">&quot;__litestar_stream_socket__&quot;</span><span class="p">,</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">KEYWORD_ONLY</span><span class="p">,</span> <span class="n">annotation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">websocket_class</span>
+</span><span data-line="249">            <span class="p">),</span>
+</span><span data-line="250">        <span class="p">)</span>
+</span><span data-line="251">        <span class="n">parsed_handler_signature</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+</span><span data-line="252">            <span class="n">parsed_handler_signature</span><span class="p">,</span>
+</span><span data-line="253">            <span class="n">return_type</span><span class="o">=</span><span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_annotation</span><span class="p">(</span><span class="n">NoneType</span><span class="p">),</span>
+</span><span data-line="254">            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="255">                <span class="o">**</span><span class="n">parsed_handler_signature</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+</span><span data-line="256">                <span class="s2">&quot;__litestar_stream_socket__&quot;</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_annotation</span><span class="p">(</span>
+</span><span data-line="257">                    <span class="bp">self</span><span class="o">.</span><span class="n">websocket_class</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;__litestar_stream_socket__&quot;</span>
+</span><span data-line="258">                <span class="p">),</span>
+</span><span data-line="259">            <span class="p">},</span>
+</span><span data-line="260">            <span class="n">original_signature</span><span class="o">=</span><span class="n">parsed_handler_signature</span><span class="o">.</span><span class="n">original_signature</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">original_parameters</span><span class="p">),</span>
+</span><span data-line="261">        <span class="p">)</span>
+</span><span data-line="262">
+</span><span data-line="263">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="o">=</span> <span class="n">parsed_handler_signature</span>
+</span><span data-line="264">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_return_field</span> <span class="o">=</span> <span class="n">parsed_stream_fn_signature</span><span class="o">.</span><span class="n">return_type</span><span class="o">.</span><span class="n">inner_types</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="265">
+</span><span data-line="266">        <span class="n">json_encoder</span> <span class="o">=</span> <span class="n">JsonEncoder</span><span class="p">(</span><span class="n">enc_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">default_serializer</span><span class="p">)</span>
+</span><span data-line="267">        <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_data_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="268">        <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span> <span class="o">=</span> <span class="n">return_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_return_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">data_dto</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dto</span><span class="p">)</span>
+</span><span data-line="269">
+</span><span data-line="270">        <span class="c1"># make sure the closure doesn&#39;t capture self._ws_stream / self</span>
+</span><span data-line="271">        <span class="n">send_mode</span><span class="p">:</span> <span class="n">WebSocketMode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ws_stream_options</span><span class="o">.</span><span class="n">send_mode</span>  <span class="c1"># pyright: ignore[reportAssignmentType]</span>
+</span><span data-line="272">        <span class="n">listen_for_disconnect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ws_stream_options</span><span class="o">.</span><span class="n">listen_for_disconnect</span>
+</span><span data-line="273">        <span class="n">warn_on_data_discard</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ws_stream_options</span><span class="o">.</span><span class="n">warn_on_data_discard</span>
+</span><span data-line="274">
+</span><span data-line="275">        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="276">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
+</span><span data-line="277">                <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">send_mode</span><span class="p">)</span>
+</span><span data-line="278">                <span class="k">return</span>
+</span><span data-line="279">
+</span><span data-line="280">            <span class="k">if</span> <span class="n">return_dto</span><span class="p">:</span>
+</span><span data-line="281">                <span class="n">encoded_data</span> <span class="o">=</span> <span class="n">return_dto</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span><span class="o">.</span><span class="n">data_to_encodable_type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span data-line="282">                <span class="n">data</span> <span class="o">=</span> <span class="n">json_encoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoded_data</span><span class="p">)</span>
+</span><span data-line="283">                <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">send_mode</span><span class="p">)</span>
+</span><span data-line="284">                <span class="k">return</span>
+</span><span data-line="285">
+</span><span data-line="286">            <span class="n">data</span> <span class="o">=</span> <span class="n">json_encoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span data-line="287">            <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_data</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">send_mode</span><span class="p">)</span>
+</span><span data-line="288">
+</span><span data-line="289">        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">stream_fn</span><span class="p">)</span>
+</span><span data-line="290">        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">__litestar_stream_socket__</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="291">            <span class="k">await</span> <span class="n">send_websocket_stream</span><span class="p">(</span>
+</span><span data-line="292">                <span class="n">socket</span><span class="o">=</span><span class="n">__litestar_stream_socket__</span><span class="p">,</span>
+</span><span data-line="293">                <span class="n">stream</span><span class="o">=</span><span class="n">stream_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">),</span>
+</span><span data-line="294">                <span class="n">mode</span><span class="o">=</span><span class="n">send_mode</span><span class="p">,</span>
+</span><span data-line="295">                <span class="n">close</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="296">                <span class="n">listen_for_disconnect</span><span class="o">=</span><span class="n">listen_for_disconnect</span><span class="p">,</span>
+</span><span data-line="297">                <span class="n">warn_on_data_discard</span><span class="o">=</span><span class="n">warn_on_data_discard</span><span class="p">,</span>
+</span><span data-line="298">                <span class="n">send_handler</span><span class="o">=</span><span class="n">send_handler</span><span class="p">,</span>
+</span><span data-line="299">            <span class="p">)</span>
+</span><span data-line="300">
+</span><span data-line="301">        <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">handler_fn</span>  <span class="c1"># pyright: ignore[reportGeneralTypeIssues]</span>
+</span><span data-line="302">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_registration</span><span class="p">(</span><span class="n">route</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+</span><span data-line="303">
+</span><span data-line="304">
+</span><span data-line="305"><span class="k">class</span><span class="w"> </span><span class="nc">_WebSocketStreamOptions</span><span class="p">:</span>
+</span><span data-line="306">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="307">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="308">        <span class="n">generator_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+</span><span data-line="309">        <span class="n">listen_for_disconnect</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+</span><span data-line="310">        <span class="n">warn_on_data_discard</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+</span><span data-line="311">        <span class="n">send_mode</span><span class="p">:</span> <span class="n">WebSocketMode</span><span class="p">,</span>
+</span><span data-line="312">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="313">        <span class="bp">self</span><span class="o">.</span><span class="n">generator_fn</span> <span class="o">=</span> <span class="n">generator_fn</span>
+</span><span data-line="314">        <span class="bp">self</span><span class="o">.</span><span class="n">listen_for_disconnect</span> <span class="o">=</span> <span class="n">listen_for_disconnect</span>
+</span><span data-line="315">        <span class="bp">self</span><span class="o">.</span><span class="n">warn_on_data_discard</span> <span class="o">=</span> <span class="n">warn_on_data_discard</span>
+</span><span data-line="316">        <span class="bp">self</span><span class="o">.</span><span class="n">send_mode</span> <span class="o">=</span> <span class="n">send_mode</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

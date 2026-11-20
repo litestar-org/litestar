@@ -904,7 +904,7 @@ your controllers and function based routes.</p>
 </span><span data-line="220">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">AuthorController</span><span class="p">],</span>
 </span><span data-line="221">    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
 </span><span data-line="222">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
-</span><span data-line="223">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">)},</span>
+</span><span data-line="223">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
 </span><span data-line="224"><span class="p">)</span>
 </span></pre></div>
 </div>
@@ -1029,7 +1029,7 @@ your controllers and function based routes.</p>
 </span><span data-line="115"><span class="k">class</span><span class="w"> </span><span class="nc">AuthorController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 </span><span data-line="116"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Author CRUD&quot;&quot;&quot;</span>
 </span><span data-line="117">
-</span><span data-line="118">    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span>
+</span><span data-line="118">    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_authors_repo</span><span class="p">)}</span>
 </span><span data-line="119">
 </span><span data-line="120">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors&quot;</span><span class="p">)</span>
 </span><span data-line="121">    <span class="k">def</span><span class="w"> </span><span class="nf">list_authors</span><span class="p">(</span>
@@ -1063,7 +1063,7 @@ your controllers and function based routes.</p>
 </span><span data-line="149">    <span class="c1"># we override the authors_repo to use the version that joins the Books in</span>
 </span><span data-line="150">    <span class="nd">@get</span><span class="p">(</span>
 </span><span data-line="151">        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-</span><span data-line="152">        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
+</span><span data-line="152">        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)},</span>
 </span><span data-line="153">    <span class="p">)</span>
 </span><span data-line="154">    <span class="k">def</span><span class="w"> </span><span class="nf">get_author</span><span class="p">(</span>
 </span><span data-line="155">        <span class="bp">self</span><span class="p">,</span>
@@ -1082,7 +1082,7 @@ your controllers and function based routes.</p>
 </span><span data-line="168">
 </span><span data-line="169">    <span class="nd">@patch</span><span class="p">(</span>
 </span><span data-line="170">        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/authors/{author_id:uuid}&quot;</span><span class="p">,</span>
-</span><span data-line="171">        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
+</span><span data-line="171">        <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;authors_repo&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_author_details_repo</span><span class="p">)},</span>
 </span><span data-line="172">    <span class="p">)</span>
 </span><span data-line="173">    <span class="k">def</span><span class="w"> </span><span class="nf">update_author</span><span class="p">(</span>
 </span><span data-line="174">        <span class="bp">self</span><span class="p">,</span>
@@ -1134,7 +1134,7 @@ your controllers and function based routes.</p>
 </span><span data-line="220">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">AuthorController</span><span class="p">],</span>
 </span><span data-line="221">    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
 </span><span data-line="222">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">sqlalchemy_config</span><span class="p">)],</span>
-</span><span data-line="223">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">)},</span>
+</span><span data-line="223">    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;limit_offset&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">provide_limit_offset_pagination</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)},</span>
 </span><span data-line="224"><span class="p">)</span>
 </span></pre></div>
 </div>

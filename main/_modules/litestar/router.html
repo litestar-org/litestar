@@ -506,7 +506,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="4">
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 </span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar._layers.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">narrow_response_cookies</span><span class="p">,</span> <span class="n">narrow_response_headers</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar._layers.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">narrow_dependencies</span><span class="p">,</span> <span class="n">narrow_response_cookies</span><span class="p">,</span> <span class="n">narrow_response_headers</span>
 </span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfiguredException</span>
 </span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.empty</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span>
 </span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_path</span>
@@ -628,7 +628,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="122"><span class="sd">            cache_control: A ``cache-control`` header of type</span>
 </span><span data-line="123"><span class="sd">                :class:`CacheControlHeader &lt;.datastructures.CacheControlHeader&gt;` to add to route handlers of</span>
 </span><span data-line="124"><span class="sd">                this router. Can be overridden by route handlers.</span>
-</span><span data-line="125"><span class="sd">            dependencies: A string keyed mapping of dependency :class:`Provide &lt;.di.Provide&gt;` instances.</span>
+</span><span data-line="125"><span class="sd">            dependencies: A sequence of :class:`Provider &lt;.di.Provider&gt;` instances, or a mapping of names or types to providers, :class:`Provide &lt;.di.Provide&gt;` instances or callables.</span>
 </span><span data-line="126"><span class="sd">            dto: :class:`AbstractDTO &lt;.dto.base_dto.AbstractDTO&gt;` to use for (de)serializing and</span>
 </span><span data-line="127"><span class="sd">                validation of request data.</span>
 </span><span data-line="128"><span class="sd">            etag: An ``etag`` header of type :class:`ETag &lt;.datastructures.ETag&gt;` to add to route handlers of this app.</span>
@@ -681,7 +681,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="175">        <span class="bp">self</span><span class="o">.</span><span class="n">cache_control</span> <span class="o">=</span> <span class="n">cache_control</span>
 </span><span data-line="176">        <span class="bp">self</span><span class="o">.</span><span class="n">dto</span> <span class="o">=</span> <span class="n">dto</span>
 </span><span data-line="177">        <span class="bp">self</span><span class="o">.</span><span class="n">etag</span> <span class="o">=</span> <span class="n">etag</span>
-</span><span data-line="178">        <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">dependencies</span> <span class="ow">or</span> <span class="p">{})</span>
+</span><span data-line="178">        <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span> <span class="o">=</span> <span class="n">narrow_dependencies</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
 </span><span data-line="179">        <span class="bp">self</span><span class="o">.</span><span class="n">exception_handlers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">exception_handlers</span> <span class="ow">or</span> <span class="p">{})</span>
 </span><span data-line="180">        <span class="bp">self</span><span class="o">.</span><span class="n">guards</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">guards</span> <span class="ow">or</span> <span class="p">[])</span>
 </span><span data-line="181">        <span class="bp">self</span><span class="o">.</span><span class="n">include_in_schema</span> <span class="o">=</span> <span class="n">include_in_schema</span>

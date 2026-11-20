@@ -1143,55 +1143,53 @@ with description “My enum accepts two values”; and the schema for <code clas
 application:</p>
 <div class="literal-block-wrapper docutils container" id="id13">
 <div class="code-block-caption"><span class="caption-text">Declaring parameters on different layers of the application</span><a class="headerlink" href="#id13" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-</span><span data-line="5">    <span class="n">CookieParameter</span><span class="p">,</span>
-</span><span data-line="6">    <span class="n">FromHeader</span><span class="p">,</span>
-</span><span data-line="7">    <span class="n">FromPath</span><span class="p">,</span>
-</span><span data-line="8">    <span class="n">FromQuery</span><span class="p">,</span>
-</span><span data-line="9">    <span class="n">HeaderParameter</span><span class="p">,</span>
-</span><span data-line="10">    <span class="n">QueryParameter</span><span class="p">,</span>
-</span><span data-line="11"><span class="p">)</span>
-</span><span data-line="12">
-</span><span data-line="13">
-</span><span data-line="14"><span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-</span><span data-line="15">    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller&quot;</span>
-</span><span data-line="16">    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="17">        <span class="s2">&quot;controller_param&quot;</span><span class="p">:</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">lt</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
-</span><span data-line="18">    <span class="p">}</span>
-</span><span data-line="19">
-</span><span data-line="20">    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{path_param:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="21">    <span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span>
-</span><span data-line="22">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="23">        <span class="n">path_param</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-</span><span data-line="24">        <span class="n">local_param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-</span><span data-line="25">        <span class="n">router_param</span><span class="p">:</span> <span class="n">FromHeader</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-</span><span data-line="26">        <span class="n">controller_param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">lt</span><span class="o">=</span><span class="mi">50</span><span class="p">)],</span>
-</span><span data-line="27">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]:</span>
-</span><span data-line="28">        <span class="k">return</span> <span class="p">{</span>
-</span><span data-line="29">            <span class="s2">&quot;path_param&quot;</span><span class="p">:</span> <span class="n">path_param</span><span class="p">,</span>
-</span><span data-line="30">            <span class="s2">&quot;local_param&quot;</span><span class="p">:</span> <span class="n">local_param</span><span class="p">,</span>
-</span><span data-line="31">            <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">router_param</span><span class="p">,</span>
-</span><span data-line="32">            <span class="s2">&quot;controller_param&quot;</span><span class="p">:</span> <span class="n">controller_param</span><span class="p">,</span>
-</span><span data-line="33">        <span class="p">}</span>
-</span><span data-line="34">
-</span><span data-line="35">
-</span><span data-line="36"><span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
-</span><span data-line="37">    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router&quot;</span><span class="p">,</span>
-</span><span data-line="38">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span>
-</span><span data-line="39">    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="40">        <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyHeader&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;^[a-zA-Z]$&quot;</span><span class="p">),</span>
-</span><span data-line="41">    <span class="p">},</span>
-</span><span data-line="42"><span class="p">)</span>
-</span><span data-line="43">
-</span><span data-line="44"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="45">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
-</span><span data-line="46">    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-</span><span data-line="47">        <span class="s2">&quot;app_param&quot;</span><span class="p">:</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;special-cookie&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-</span><span data-line="48">    <span class="p">},</span>
-</span><span data-line="49"><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="3">    <span class="n">CookieParameter</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">FromHeader</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">FromPath</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">FromQuery</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">HeaderParameter</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">QueryParameter</span><span class="p">,</span>
+</span><span data-line="9"><span class="p">)</span>
+</span><span data-line="10">
+</span><span data-line="11">
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="13">    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller&quot;</span>
+</span><span data-line="14">    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="15">        <span class="s2">&quot;controller_param&quot;</span><span class="p">:</span> <span class="n">QueryParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">lt</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+</span><span data-line="16">    <span class="p">}</span>
+</span><span data-line="17">
+</span><span data-line="18">    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{path_param:int}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="19">    <span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span>
+</span><span data-line="20">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="21">        <span class="n">path_param</span><span class="p">:</span> <span class="n">FromPath</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+</span><span data-line="22">        <span class="n">local_param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+</span><span data-line="23">        <span class="n">router_param</span><span class="p">:</span> <span class="n">FromHeader</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+</span><span data-line="24">        <span class="n">controller_param</span><span class="p">:</span> <span class="n">FromQuery</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+</span><span data-line="25">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="26">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="27">            <span class="s2">&quot;path_param&quot;</span><span class="p">:</span> <span class="n">path_param</span><span class="p">,</span>
+</span><span data-line="28">            <span class="s2">&quot;local_param&quot;</span><span class="p">:</span> <span class="n">local_param</span><span class="p">,</span>
+</span><span data-line="29">            <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">router_param</span><span class="p">,</span>
+</span><span data-line="30">            <span class="s2">&quot;controller_param&quot;</span><span class="p">:</span> <span class="n">controller_param</span><span class="p">,</span>
+</span><span data-line="31">        <span class="p">}</span>
+</span><span data-line="32">
+</span><span data-line="33">
+</span><span data-line="34"><span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
+</span><span data-line="35">    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router&quot;</span><span class="p">,</span>
+</span><span data-line="36">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span>
+</span><span data-line="37">    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="38">        <span class="s2">&quot;router_param&quot;</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyHeader&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;^[a-zA-Z]+$&quot;</span><span class="p">),</span>
+</span><span data-line="39">    <span class="p">},</span>
+</span><span data-line="40"><span class="p">)</span>
+</span><span data-line="41">
+</span><span data-line="42"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="43">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">router</span><span class="p">],</span>
+</span><span data-line="44">    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="45">        <span class="s2">&quot;app_param&quot;</span><span class="p">:</span> <span class="n">CookieParameter</span><span class="p">(</span><span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;special-cookie&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+</span><span data-line="46">    <span class="p">},</span>
+</span><span data-line="47"><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>

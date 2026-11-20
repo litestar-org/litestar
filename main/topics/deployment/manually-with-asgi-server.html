@@ -716,6 +716,17 @@ Daphne</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Daphne does not support the ASGI lifespan protocol. Litestar requires the
+lifespan protocol to support app-scoped dependencies, and the app will fail
+to start if the lifespan does not run. To fix this, create ann app without
+the <code class="docutils literal notranslate"><span class="pre">app</span></code> dependency scope, and make sure to not use any dependency
+providers with that scope.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">dependency_scopes</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;request&quot;</span><span class="p">,</span> <span class="s2">&quot;handler&quot;</span><span class="p">))</span>
+</span></pre></div>
+</div>
+</div>
 </div>
 <input id="sd-tab-item-11" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="granian" for="sd-tab-item-11">

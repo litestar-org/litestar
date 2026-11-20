@@ -761,7 +761,7 @@ exception handler with a handler that returns plain-text responses you could do 
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/validation-error
-</span><span data-line="2">validation<span class="w"> </span>error:<span class="w"> </span>Missing<span class="w"> </span>required<span class="w"> </span>query<span class="w"> </span>parameter<span class="w"> </span><span class="s1">&#39;some_query_param&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>path<span class="w"> </span>/validation-error
+</span><span data-line="2">validation<span class="w"> </span>error:<span class="w"> </span>Validation<span class="w"> </span>failed<span class="w"> </span><span class="k">for</span><span class="w"> </span>GET<span class="w"> </span>/validation-error
 </span><span data-line="3">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/server-error
 </span><span data-line="4">server<span class="w"> </span>error:<span class="w"> </span><span class="m">500</span>:<span class="w"> </span>Internal<span class="w"> </span>Server<span class="w"> </span>Error
 </span><span data-line="5">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/value-error

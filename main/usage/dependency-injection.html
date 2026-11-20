@@ -463,7 +463,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#bypassing-validation">Bypassing validation</a></li>
+<li><a class="reference internal" href="#dependency-values-are-not-validated">Dependency values are not validated</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -1075,20 +1075,21 @@ provided dependency makes the application fail at startup, not at request time:<
 </span><span data-line="15">
 </span><span data-line="16"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </span><span data-line="17">
-</span><span data-line="18"><span class="c1"># ImproperlyConfiguredException: 500: Explicit dependency &#39;non_optional_dependency&#39; for &#39;hello_world&#39; has no default</span>
-</span><span data-line="19"><span class="c1"># value, or provided dependency.</span>
+</span><span data-line="18"><span class="c1"># MissingProviderError: Registry &quot;[paths=&#39;/&#39;, handler=&#39;hello_world&#39;]&quot; has no provider for dependency</span>
+</span><span data-line="19"><span class="c1"># &#39;non_optional_dependency&#39;.</span>
+</span><span data-line="20"><span class="c1">#   required by: hello_world (.../dependency_non_optional_not_provided.py:7)</span>
 </span></pre></div>
 </div>
 </div>
 </section>
 </section>
 </section>
-<section id="bypassing-validation">
-<h2>Bypassing validation<a class="headerlink" href="#bypassing-validation" title="Link to this heading">¶</a></h2>
-<p>By default, injected dependency values are validated by Litestar, for example, this
-application will raise an internal server error:</p>
+<section id="dependency-values-are-not-validated">
+<h2>Dependency values are not validated<a class="headerlink" href="#dependency-values-are-not-validated" title="Link to this heading">¶</a></h2>
+<p>A dependency is passed to the handler as its provider returns it; the value is not checked
+against the parameter’s annotation. This handler receives a string:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">A dependency value of another type than annotated</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1107,31 +1108,6 @@ application will raise an internal server error:</p>
 </span><span data-line="16">
 </span><span data-line="17">
 </span><span data-line="18"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
-</span></pre></div>
-</div>
-</div>
-<p>This validation can be bypassed using the <a class="reference internal" href="../reference/params.html#litestar.params.SkipValidation" title="litestar.params.SkipValidation"><code class="xref py py-data docutils literal notranslate"><span class="pre">SkipValidation</span></code></a> marker:</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Bypassing dependency validation</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="2">
-</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">SkipValidation</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string.&quot;&quot;&quot;</span>
-</span><span data-line="10">    <span class="k">return</span> <span class="s2">&quot;whoops&quot;</span>
-</span><span data-line="11">
-</span><span data-line="12">
-</span><span data-line="13"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">provide_str</span><span class="p">})</span>
-</span><span data-line="14"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hello_world</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">SkipValidation</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="15"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler expects an `int`, but we&#39;ve provided a `str`.&quot;&quot;&quot;</span>
-</span><span data-line="16">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
-</span><span data-line="17">
-</span><span data-line="18">
-</span><span data-line="19"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>

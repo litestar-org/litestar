@@ -508,189 +508,190 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">cast</span>
 </span><span data-line="7">
 </span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span>
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_async_callable</span>
-</span><span data-line="10">
-</span><span data-line="11"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="12">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>
-</span><span data-line="13">
-</span><span data-line="14">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
-</span><span data-line="15">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provide</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar._layers.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">narrow_dependencies</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_async_callable</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="13">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>
+</span><span data-line="14">
+</span><span data-line="15">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
+</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
 </span><span data-line="17">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">OpenAPIMediaType</span>
 </span><span data-line="18">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.authentication</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAuthenticationMiddleware</span>
 </span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefineMiddleware</span>
 </span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.openapi.spec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Components</span><span class="p">,</span> <span class="n">SecurityRequirement</span>
 </span><span data-line="21">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 </span><span data-line="22">        <span class="n">ControllerRouterHandler</span><span class="p">,</span>
-</span><span data-line="23">        <span class="n">Guard</span><span class="p">,</span>
-</span><span data-line="24">        <span class="n">Method</span><span class="p">,</span>
-</span><span data-line="25">        <span class="n">ResponseCookies</span><span class="p">,</span>
-</span><span data-line="26">        <span class="n">Scopes</span><span class="p">,</span>
-</span><span data-line="27">        <span class="n">SyncOrAsyncUnion</span><span class="p">,</span>
-</span><span data-line="28">        <span class="n">TypeEncodersMap</span><span class="p">,</span>
-</span><span data-line="29">    <span class="p">)</span>
-</span><span data-line="30">
-</span><span data-line="31"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;AbstractSecurityConfig&quot;</span><span class="p">,)</span>
-</span><span data-line="32">
-</span><span data-line="33"><span class="n">UserType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;UserType&quot;</span><span class="p">)</span>
-</span><span data-line="34"><span class="n">AuthType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AuthType&quot;</span><span class="p">)</span>
-</span><span data-line="35">
+</span><span data-line="23">        <span class="n">Dependencies</span><span class="p">,</span>
+</span><span data-line="24">        <span class="n">Guard</span><span class="p">,</span>
+</span><span data-line="25">        <span class="n">Method</span><span class="p">,</span>
+</span><span data-line="26">        <span class="n">ResponseCookies</span><span class="p">,</span>
+</span><span data-line="27">        <span class="n">Scopes</span><span class="p">,</span>
+</span><span data-line="28">        <span class="n">SyncOrAsyncUnion</span><span class="p">,</span>
+</span><span data-line="29">        <span class="n">TypeEncodersMap</span><span class="p">,</span>
+</span><span data-line="30">    <span class="p">)</span>
+</span><span data-line="31">
+</span><span data-line="32"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;AbstractSecurityConfig&quot;</span><span class="p">,)</span>
+</span><span data-line="33">
+</span><span data-line="34"><span class="n">UserType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;UserType&quot;</span><span class="p">)</span>
+</span><span data-line="35"><span class="n">AuthType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AuthType&quot;</span><span class="p">)</span>
 </span><span data-line="36">
+</span><span data-line="37">
 <div class="viewcode-block" id="AbstractSecurityConfig">
 <a class="viewcode-back" href="../../../reference/security/index.html#litestar.security.AbstractSecurityConfig">[docs]</a>
-</span><span data-line="37"><span class="k">class</span><span class="w"> </span><span class="nc">AbstractSecurityConfig</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">UserType</span><span class="p">,</span> <span class="n">AuthType</span><span class="p">]):</span>
-</span><span data-line="38"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A base class for Security Configs - this class can be used on the application level</span>
-</span><span data-line="39"><span class="sd">    or be manually configured on the router / controller level to provide auth.</span>
-</span><span data-line="40"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="41">
-</span><span data-line="42">    <span class="n">authentication_middleware_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">]</span>
-</span><span data-line="43"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The authentication middleware class to use.</span>
-</span><span data-line="44">
-</span><span data-line="45"><span class="sd">    Must inherit from</span>
-</span><span data-line="46"><span class="sd">    :class:`AbstractAuthenticationMiddleware &lt;litestar.middleware.authentication.AbstractAuthenticationMiddleware&gt;`</span>
-</span><span data-line="47"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="48">    <span class="n">guards</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="49"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An iterable of guards to call for requests, providing authorization functionalities.&quot;&quot;&quot;</span>
-</span><span data-line="50">    <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="51"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns to skip in the authentication middleware.&quot;&quot;&quot;</span>
-</span><span data-line="52">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;exclude_from_auth&quot;</span>
-</span><span data-line="53"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An identifier to use on routes to disable authentication and authorization checks for a particular route.&quot;&quot;&quot;</span>
-</span><span data-line="54">    <span class="n">exclude_http_methods</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Method</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-</span><span data-line="55">        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Sequence[Method]&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">])</span>
-</span><span data-line="56">    <span class="p">)</span>
-</span><span data-line="57"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A sequence of http methods that do not require authentication. Defaults to [&#39;OPTIONS&#39;, &#39;HEAD&#39;]&quot;&quot;&quot;</span>
-</span><span data-line="58">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="59"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be</span>
-</span><span data-line="60"><span class="sd">    processed.&quot;&quot;&quot;</span>
-</span><span data-line="61">    <span class="n">route_handlers</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ControllerRouterHandler</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="62"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An optional iterable of route handlers to register.&quot;&quot;&quot;</span>
-</span><span data-line="63">    <span class="n">dependencies</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Provide</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="64"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An optional dictionary of dependency providers.&quot;&quot;&quot;</span>
-</span><span data-line="65">    <span class="n">retrieve_user_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">ASGIConnection</span><span class="p">],</span> <span class="n">SyncOrAsyncUnion</span><span class="p">[</span><span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span>
-</span><span data-line="66"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.</span>
-</span><span data-line="67">
-</span><span data-line="68"><span class="sd">    Notes:</span>
-</span><span data-line="69"><span class="sd">        - User and Auth can be any arbitrary values specified by the security backend.</span>
-</span><span data-line="70"><span class="sd">        - The User and Auth values will be set by the middleware as ``scope[&quot;user&quot;]`` and ``scope[&quot;auth&quot;]`` respectively.</span>
-</span><span data-line="71"><span class="sd">          Once provided, they can access via the ``connection.user`` and ``connection.auth`` properties.</span>
-</span><span data-line="72"><span class="sd">        - The callable can be sync or async. If it is sync, it will be wrapped to support async.</span>
-</span><span data-line="73">
-</span><span data-line="74"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="75">    <span class="n">type_encoders</span><span class="p">:</span> <span class="n">TypeEncodersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="76"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A mapping of types to callables that transform them into types supported for serialization.&quot;&quot;&quot;</span>
-</span><span data-line="77">
+</span><span data-line="38"><span class="k">class</span><span class="w"> </span><span class="nc">AbstractSecurityConfig</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">UserType</span><span class="p">,</span> <span class="n">AuthType</span><span class="p">]):</span>
+</span><span data-line="39"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A base class for Security Configs - this class can be used on the application level</span>
+</span><span data-line="40"><span class="sd">    or be manually configured on the router / controller level to provide auth.</span>
+</span><span data-line="41"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="42">
+</span><span data-line="43">    <span class="n">authentication_middleware_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">]</span>
+</span><span data-line="44"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The authentication middleware class to use.</span>
+</span><span data-line="45">
+</span><span data-line="46"><span class="sd">    Must inherit from</span>
+</span><span data-line="47"><span class="sd">    :class:`AbstractAuthenticationMiddleware &lt;litestar.middleware.authentication.AbstractAuthenticationMiddleware&gt;`</span>
+</span><span data-line="48"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="49">    <span class="n">guards</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="50"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An iterable of guards to call for requests, providing authorization functionalities.&quot;&quot;&quot;</span>
+</span><span data-line="51">    <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="52"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns to skip in the authentication middleware.&quot;&quot;&quot;</span>
+</span><span data-line="53">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;exclude_from_auth&quot;</span>
+</span><span data-line="54"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An identifier to use on routes to disable authentication and authorization checks for a particular route.&quot;&quot;&quot;</span>
+</span><span data-line="55">    <span class="n">exclude_http_methods</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Method</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+</span><span data-line="56">        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Sequence[Method]&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">])</span>
+</span><span data-line="57">    <span class="p">)</span>
+</span><span data-line="58"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A sequence of http methods that do not require authentication. Defaults to [&#39;OPTIONS&#39;, &#39;HEAD&#39;]&quot;&quot;&quot;</span>
+</span><span data-line="59">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="60"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be</span>
+</span><span data-line="61"><span class="sd">    processed.&quot;&quot;&quot;</span>
+</span><span data-line="62">    <span class="n">route_handlers</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ControllerRouterHandler</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="63"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An optional iterable of route handlers to register.&quot;&quot;&quot;</span>
+</span><span data-line="64">    <span class="n">dependencies</span><span class="p">:</span> <span class="n">Dependencies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="65"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A sequence of :class:`Provider &lt;.di.Provider&gt;` instances, or a mapping of names or types to providers, :class:`Provide &lt;.di.Provide&gt;` instances or callables.&quot;&quot;&quot;</span>
+</span><span data-line="66">    <span class="n">retrieve_user_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">ASGIConnection</span><span class="p">],</span> <span class="n">SyncOrAsyncUnion</span><span class="p">[</span><span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span>
+</span><span data-line="67"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.</span>
+</span><span data-line="68">
+</span><span data-line="69"><span class="sd">    Notes:</span>
+</span><span data-line="70"><span class="sd">        - User and Auth can be any arbitrary values specified by the security backend.</span>
+</span><span data-line="71"><span class="sd">        - The User and Auth values will be set by the middleware as ``scope[&quot;user&quot;]`` and ``scope[&quot;auth&quot;]`` respectively.</span>
+</span><span data-line="72"><span class="sd">          Once provided, they can access via the ``connection.user`` and ``connection.auth`` properties.</span>
+</span><span data-line="73"><span class="sd">        - The callable can be sync or async. If it is sync, it will be wrapped to support async.</span>
+</span><span data-line="74">
+</span><span data-line="75"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="76">    <span class="n">type_encoders</span><span class="p">:</span> <span class="n">TypeEncodersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="77"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A mapping of types to callables that transform them into types supported for serialization.&quot;&quot;&quot;</span>
+</span><span data-line="78">
 <div class="viewcode-block" id="AbstractSecurityConfig.on_app_init">
 <a class="viewcode-back" href="../../../reference/security/index.html#litestar.security.AbstractSecurityConfig.on_app_init">[docs]</a>
-</span><span data-line="78">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
-</span><span data-line="79"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle app init by injecting middleware, guards etc. into the app. This method can be used only on the app</span>
-</span><span data-line="80"><span class="sd">        level.</span>
-</span><span data-line="81">
-</span><span data-line="82"><span class="sd">        Args:</span>
-</span><span data-line="83"><span class="sd">            app_config: An instance of :class:`AppConfig &lt;.config.app.AppConfig&gt;`</span>
-</span><span data-line="84">
-</span><span data-line="85"><span class="sd">        Returns:</span>
-</span><span data-line="86"><span class="sd">            The :class:`AppConfig &lt;.config.app.AppConfig&gt;`.</span>
-</span><span data-line="87"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="88">        <span class="n">app_config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">middleware</span><span class="p">)</span>
-</span><span data-line="89">
-</span><span data-line="90">        <span class="k">if</span> <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="p">:</span>
-</span><span data-line="91">            <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="p">)</span>
-</span><span data-line="92">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">components</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-</span><span data-line="93">                <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openapi_components</span><span class="p">)</span>
-</span><span data-line="94">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="95">                <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">openapi_components</span><span class="p">,</span> <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">components</span><span class="p">]</span>
-</span><span data-line="96">
-</span><span data-line="97">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">security</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-</span><span data-line="98">                <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">security</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">security_requirement</span><span class="p">)</span>
-</span><span data-line="99">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="100">                <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">security</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">security_requirement</span><span class="p">]</span>
-</span><span data-line="101">
-</span><span data-line="102">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
-</span><span data-line="103">            <span class="n">app_config</span><span class="o">.</span><span class="n">guards</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">)</span>
-</span><span data-line="104">
-</span><span data-line="105">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span><span class="p">:</span>
-</span><span data-line="106">            <span class="n">app_config</span><span class="o">.</span><span class="n">dependencies</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span><span class="p">)</span>
-</span><span data-line="107">
-</span><span data-line="108">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_handlers</span><span class="p">:</span>
-</span><span data-line="109">            <span class="n">app_config</span><span class="o">.</span><span class="n">route_handlers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">route_handlers</span><span class="p">)</span>
-</span><span data-line="110">
-</span><span data-line="111">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="112">            <span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span> <span class="o">=</span> <span class="n">app_config</span><span class="o">.</span><span class="n">type_encoders</span>
-</span><span data-line="113">
-</span><span data-line="114">        <span class="k">return</span> <span class="n">app_config</span></div>
+</span><span data-line="79">    <span class="k">def</span><span class="w"> </span><span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
+</span><span data-line="80"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle app init by injecting middleware, guards etc. into the app. This method can be used only on the app</span>
+</span><span data-line="81"><span class="sd">        level.</span>
+</span><span data-line="82">
+</span><span data-line="83"><span class="sd">        Args:</span>
+</span><span data-line="84"><span class="sd">            app_config: An instance of :class:`AppConfig &lt;.config.app.AppConfig&gt;`</span>
+</span><span data-line="85">
+</span><span data-line="86"><span class="sd">        Returns:</span>
+</span><span data-line="87"><span class="sd">            The :class:`AppConfig &lt;.config.app.AppConfig&gt;`.</span>
+</span><span data-line="88"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="89">        <span class="n">app_config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">middleware</span><span class="p">)</span>
+</span><span data-line="90">
+</span><span data-line="91">        <span class="k">if</span> <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="p">:</span>
+</span><span data-line="92">            <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="p">)</span>
+</span><span data-line="93">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">components</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+</span><span data-line="94">                <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openapi_components</span><span class="p">)</span>
+</span><span data-line="95">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="96">                <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">openapi_components</span><span class="p">,</span> <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">components</span><span class="p">]</span>
+</span><span data-line="97">
+</span><span data-line="98">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">security</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+</span><span data-line="99">                <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">security</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">security_requirement</span><span class="p">)</span>
+</span><span data-line="100">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="101">                <span class="n">app_config</span><span class="o">.</span><span class="n">openapi_config</span><span class="o">.</span><span class="n">security</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">security_requirement</span><span class="p">]</span>
+</span><span data-line="102">
+</span><span data-line="103">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
+</span><span data-line="104">            <span class="n">app_config</span><span class="o">.</span><span class="n">guards</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">)</span>
+</span><span data-line="105">
+</span><span data-line="106">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span><span class="p">:</span>
+</span><span data-line="107">            <span class="n">app_config</span><span class="o">.</span><span class="n">dependencies</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">narrow_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span><span class="p">))</span>
+</span><span data-line="108">
+</span><span data-line="109">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_handlers</span><span class="p">:</span>
+</span><span data-line="110">            <span class="n">app_config</span><span class="o">.</span><span class="n">route_handlers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">route_handlers</span><span class="p">)</span>
+</span><span data-line="111">
+</span><span data-line="112">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="113">            <span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span> <span class="o">=</span> <span class="n">app_config</span><span class="o">.</span><span class="n">type_encoders</span>
+</span><span data-line="114">
+</span><span data-line="115">        <span class="k">return</span> <span class="n">app_config</span></div>
 
-</span><span data-line="115">
+</span><span data-line="116">
 <div class="viewcode-block" id="AbstractSecurityConfig.create_response">
 <a class="viewcode-back" href="../../../reference/security/index.html#litestar.security.AbstractSecurityConfig.create_response">[docs]</a>
-</span><span data-line="116">    <span class="k">def</span><span class="w"> </span><span class="nf">create_response</span><span class="p">(</span>
-</span><span data-line="117">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="118">        <span class="n">content</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="119">        <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-</span><span data-line="120">        <span class="n">media_type</span><span class="p">:</span> <span class="n">MediaType</span> <span class="o">|</span> <span class="n">OpenAPIMediaType</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="121">        <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="122">        <span class="n">cookies</span><span class="p">:</span> <span class="n">ResponseCookies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="123">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="124"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a response object.</span>
-</span><span data-line="125">
-</span><span data-line="126"><span class="sd">        Handles setting the type encoders mapping on the response.</span>
-</span><span data-line="127">
-</span><span data-line="128"><span class="sd">        Args:</span>
-</span><span data-line="129"><span class="sd">            content: A value for the response body that will be rendered into bytes string.</span>
-</span><span data-line="130"><span class="sd">            status_code: An HTTP status code.</span>
-</span><span data-line="131"><span class="sd">            media_type: A value for the response &#39;Content-Type&#39; header.</span>
-</span><span data-line="132"><span class="sd">            headers: A string keyed dictionary of response headers. Header keys are insensitive.</span>
-</span><span data-line="133"><span class="sd">            cookies: A list of :class:`Cookie &lt;litestar.datastructures.Cookie&gt;` instances to be set under</span>
-</span><span data-line="134"><span class="sd">                the response &#39;Set-Cookie&#39; header.</span>
-</span><span data-line="135">
-</span><span data-line="136"><span class="sd">        Returns:</span>
-</span><span data-line="137"><span class="sd">            A response object.</span>
-</span><span data-line="138"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="139">        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-</span><span data-line="140">            <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
-</span><span data-line="141">            <span class="n">status_code</span><span class="o">=</span><span class="n">status_code</span><span class="p">,</span>
-</span><span data-line="142">            <span class="n">media_type</span><span class="o">=</span><span class="n">media_type</span><span class="p">,</span>
-</span><span data-line="143">            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
-</span><span data-line="144">            <span class="n">cookies</span><span class="o">=</span><span class="n">cookies</span><span class="p">,</span>
-</span><span data-line="145">            <span class="n">type_encoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span><span class="p">,</span>
-</span><span data-line="146">        <span class="p">)</span></div>
+</span><span data-line="117">    <span class="k">def</span><span class="w"> </span><span class="nf">create_response</span><span class="p">(</span>
+</span><span data-line="118">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="119">        <span class="n">content</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="120">        <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="121">        <span class="n">media_type</span><span class="p">:</span> <span class="n">MediaType</span> <span class="o">|</span> <span class="n">OpenAPIMediaType</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="122">        <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="123">        <span class="n">cookies</span><span class="p">:</span> <span class="n">ResponseCookies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="124">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="125"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a response object.</span>
+</span><span data-line="126">
+</span><span data-line="127"><span class="sd">        Handles setting the type encoders mapping on the response.</span>
+</span><span data-line="128">
+</span><span data-line="129"><span class="sd">        Args:</span>
+</span><span data-line="130"><span class="sd">            content: A value for the response body that will be rendered into bytes string.</span>
+</span><span data-line="131"><span class="sd">            status_code: An HTTP status code.</span>
+</span><span data-line="132"><span class="sd">            media_type: A value for the response &#39;Content-Type&#39; header.</span>
+</span><span data-line="133"><span class="sd">            headers: A string keyed dictionary of response headers. Header keys are insensitive.</span>
+</span><span data-line="134"><span class="sd">            cookies: A list of :class:`Cookie &lt;litestar.datastructures.Cookie&gt;` instances to be set under</span>
+</span><span data-line="135"><span class="sd">                the response &#39;Set-Cookie&#39; header.</span>
+</span><span data-line="136">
+</span><span data-line="137"><span class="sd">        Returns:</span>
+</span><span data-line="138"><span class="sd">            A response object.</span>
+</span><span data-line="139"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="140">        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="141">            <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
+</span><span data-line="142">            <span class="n">status_code</span><span class="o">=</span><span class="n">status_code</span><span class="p">,</span>
+</span><span data-line="143">            <span class="n">media_type</span><span class="o">=</span><span class="n">media_type</span><span class="p">,</span>
+</span><span data-line="144">            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+</span><span data-line="145">            <span class="n">cookies</span><span class="o">=</span><span class="n">cookies</span><span class="p">,</span>
+</span><span data-line="146">            <span class="n">type_encoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span><span class="p">,</span>
+</span><span data-line="147">        <span class="p">)</span></div>
 
-</span><span data-line="147">
-</span><span data-line="148">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="149">        <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_user_handler</span> <span class="o">=</span> <span class="n">ensure_async_callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retrieve_user_handler</span><span class="p">)</span>
-</span><span data-line="150">
-</span><span data-line="151">    <span class="nd">@property</span>
-</span><span data-line="152">    <span class="nd">@abstractmethod</span>
-</span><span data-line="153">    <span class="k">def</span><span class="w"> </span><span class="nf">openapi_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Components</span><span class="p">:</span>
-</span><span data-line="154"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create OpenAPI documentation for the JWT auth schema used.</span>
-</span><span data-line="155">
-</span><span data-line="156"><span class="sd">        Returns:</span>
-</span><span data-line="157"><span class="sd">            An :class:`Components &lt;litestar.openapi.spec.components.Components&gt;` instance.</span>
-</span><span data-line="158"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="159">        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span><span data-line="160">
-</span><span data-line="161">    <span class="nd">@property</span>
-</span><span data-line="162">    <span class="nd">@abstractmethod</span>
-</span><span data-line="163">    <span class="k">def</span><span class="w"> </span><span class="nf">security_requirement</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecurityRequirement</span><span class="p">:</span>
-</span><span data-line="164"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return OpenAPI 3.1.</span>
-</span><span data-line="165">
-</span><span data-line="166"><span class="sd">        :data:`SecurityRequirement &lt;.openapi.spec.SecurityRequirement&gt;` for the auth</span>
-</span><span data-line="167"><span class="sd">        backend.</span>
-</span><span data-line="168">
-</span><span data-line="169"><span class="sd">        Returns:</span>
-</span><span data-line="170"><span class="sd">            An OpenAPI 3.1 :data:`SecurityRequirement &lt;.openapi.spec.SecurityRequirement&gt;` dictionary.</span>
-</span><span data-line="171"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="172">        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span><span data-line="173">
-</span><span data-line="174">    <span class="nd">@property</span>
-</span><span data-line="175">    <span class="nd">@abstractmethod</span>
-</span><span data-line="176">    <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefineMiddleware</span><span class="p">:</span>
-</span><span data-line="177"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of the config&#39;s ``authentication_middleware_class`` attribute and any required kwargs,</span>
-</span><span data-line="178"><span class="sd">        wrapping it in Litestar&#39;s ``DefineMiddleware``.</span>
-</span><span data-line="179">
-</span><span data-line="180"><span class="sd">        Returns:</span>
-</span><span data-line="181"><span class="sd">            An instance of :class:`DefineMiddleware &lt;litestar.middleware.base.DefineMiddleware&gt;`.</span>
-</span><span data-line="182"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="183">        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</span><span data-line="148">
+</span><span data-line="149">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="150">        <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_user_handler</span> <span class="o">=</span> <span class="n">ensure_async_callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retrieve_user_handler</span><span class="p">)</span>
+</span><span data-line="151">
+</span><span data-line="152">    <span class="nd">@property</span>
+</span><span data-line="153">    <span class="nd">@abstractmethod</span>
+</span><span data-line="154">    <span class="k">def</span><span class="w"> </span><span class="nf">openapi_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Components</span><span class="p">:</span>
+</span><span data-line="155"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create OpenAPI documentation for the JWT auth schema used.</span>
+</span><span data-line="156">
+</span><span data-line="157"><span class="sd">        Returns:</span>
+</span><span data-line="158"><span class="sd">            An :class:`Components &lt;litestar.openapi.spec.components.Components&gt;` instance.</span>
+</span><span data-line="159"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="160">        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</span><span data-line="161">
+</span><span data-line="162">    <span class="nd">@property</span>
+</span><span data-line="163">    <span class="nd">@abstractmethod</span>
+</span><span data-line="164">    <span class="k">def</span><span class="w"> </span><span class="nf">security_requirement</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecurityRequirement</span><span class="p">:</span>
+</span><span data-line="165"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return OpenAPI 3.1.</span>
+</span><span data-line="166">
+</span><span data-line="167"><span class="sd">        :data:`SecurityRequirement &lt;.openapi.spec.SecurityRequirement&gt;` for the auth</span>
+</span><span data-line="168"><span class="sd">        backend.</span>
+</span><span data-line="169">
+</span><span data-line="170"><span class="sd">        Returns:</span>
+</span><span data-line="171"><span class="sd">            An OpenAPI 3.1 :data:`SecurityRequirement &lt;.openapi.spec.SecurityRequirement&gt;` dictionary.</span>
+</span><span data-line="172"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="173">        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</span><span data-line="174">
+</span><span data-line="175">    <span class="nd">@property</span>
+</span><span data-line="176">    <span class="nd">@abstractmethod</span>
+</span><span data-line="177">    <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefineMiddleware</span><span class="p">:</span>
+</span><span data-line="178"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of the config&#39;s ``authentication_middleware_class`` attribute and any required kwargs,</span>
+</span><span data-line="179"><span class="sd">        wrapping it in Litestar&#39;s ``DefineMiddleware``.</span>
+</span><span data-line="180">
+</span><span data-line="181"><span class="sd">        Returns:</span>
+</span><span data-line="182"><span class="sd">            An instance of :class:`DefineMiddleware &lt;litestar.middleware.base.DefineMiddleware&gt;`.</span>
+</span><span data-line="183"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="184">        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

@@ -546,6 +546,24 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Drop reserved keyword arguments in handlers and DI<a class="headerlink reference internal" href="#3.0.0-drop reserved keyword arguments in handlers and di" id="3.0.0-drop reserved keyword arguments in handlers and di">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Drop the special meaning of the “reserved keyword arguments” in handlers and DI
+providers.</p>
+<p>The parameter names can now freely be used and assigned, as their meaning is
+derived from their respective annotation:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">body</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">request</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">socket</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">state</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">litestar.constants.RESERVED_KWARGS</span></code>, <code class="docutils literal notranslate"><span class="pre">litestar.constants.SKIP_VALIDATION_NAMES</span></code>,
+<code class="docutils literal notranslate"><span class="pre">FieldDefinition.is_non_marker_parameter_field</span></code> and <code class="docutils literal notranslate"><span class="pre">ParameterKwarg.is_marker</span></code>
+are removed.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
 <dt>Remove support for trio<a class="headerlink reference internal" href="#3.0.0-remove support for trio" id="3.0.0-remove support for trio">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Trio is no longer supported. <code class="docutils literal notranslate"><span class="pre">set_trio_capacity_limiter</span></code> and
 <code class="docutils literal notranslate"><span class="pre">get_trio_capacity_limiter</span></code> are removed from <a class="reference internal" href="../reference/concurrency.html#module-litestar.concurrency" title="litestar.concurrency"><code class="xref py py-mod docutils literal notranslate"><span class="pre">litestar.concurrency</span></code></a>, along with
@@ -1259,6 +1277,105 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Apply the constraints of a layer parameter to corresponding handler / DI parameters<a class="headerlink reference internal" href="#3.0.0-apply the constraints of a layer parameter to corresponding handler / di parameters" id="3.0.0-apply the constraints of a layer parameter to corresponding handler / di parameters">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would cause the constraints of a layer parameter, e.g.
+<code class="docutils literal notranslate"><span class="pre">parameters={&quot;limit&quot;:</span> <span class="pre">QueryParameter(gt=0)}</span></code>, to not be applied for a
+corresponding handler or dependency parameter.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>Apply the <code class="docutils literal notranslate"><span class="pre">type_decoders</span></code> of a handler to that handler only<a class="headerlink reference internal" href="#3.0.0-apply the" id="3.0.0-apply the">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would leak the type decoder of a request parameter to other
+handlers without that decoder.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>Run all parts of sync generator dependencies in a worker threads<a class="headerlink reference internal" href="#3.0.0-run all parts of sync generator dependencies in a worker threads" id="3.0.0-run all parts of sync generator dependencies in a worker threads">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Run all code of a synchronous generator dependency in threads. Previously, code
+up until the first <code class="docutils literal notranslate"><span class="pre">yield</span></code> would run on the main thread.</p>
+<p>All of the generator’s code runs in a shared <a class="reference external" href="https://docs.python.org/3/library/contextvars.html#contextvars.Context" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">contextvars.Context</span></code></a>.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>Don’t overwrite a handler parameter with a dependency of the same name<a class="headerlink reference internal" href="#3.0.0-don't overwrite a handler parameter with a dependency of the same name" id="3.0.0-don't overwrite a handler parameter with a dependency of the same name">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would overwrite a request parameter in a handler with
+dependency of the same name. Request parameters now follow the same rule as
+dependencies: Last declared wins. Since a parameter in a handler is always
+declared last, it will always win against a dependency of the same name.</p>
+<p>The OpenAPI schema already documented this correctly.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Exclude a layer parameter with <code class="docutils literal notranslate"><span class="pre">include_in_schema=False</span></code> from the schema<a class="headerlink reference internal" href="#3.0.0-openapi: exclude a layer parameter with" id="3.0.0-openapi: exclude a layer parameter with">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would cause a layer parameter declared with
+<code class="docutils literal notranslate"><span class="pre">include_in_schema=False</span></code> to still be included in the OpenAPI schema, if it
+was also consumed by a handler of a dependency of that handler.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Include a layer parameter defined next to a handler parameter of the same name that doesn’t bind it<a class="headerlink reference internal" href="#3.0.0-openapi: include a layer parameter defined next to a handler parameter of the same name that doesn't bind it" id="3.0.0-openapi: include a layer parameter defined next to a handler parameter of the same name that doesn't bind it">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A handler parameter named like a layer parameter, with a marker that sets a field, is a
+parameter of its own, e.g. <code class="docutils literal notranslate"><span class="pre">limit:</span> <span class="pre">Annotated[int,</span> <span class="pre">QueryParameter(ge=1)]</span></code> under a layer
+parameter <code class="docutils literal notranslate"><span class="pre">limit</span></code> declared with <code class="docutils literal notranslate"><span class="pre">name=&quot;page-limit&quot;</span></code>. The OpenAPI schema documents
+both. Previously, it documented only the handler parameter.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Document header parameters case insensitively across handlers and dependencies<a class="headerlink reference internal" href="#3.0.0-openapi: document header parameters case insensitively across handlers and dependencies" id="3.0.0-openapi: document header parameters case insensitively across handlers and dependencies">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would cause header parameters declared with different casings
+(e.g. <code class="docutils literal notranslate"><span class="pre">X-Token</span></code> and <code class="docutils literal notranslate"><span class="pre">x-token</span></code>) to be documented as two distinct parameters,
+if one of them was declared in a dependency and one in a handler.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Fix schema generation for request body declared only in a dependency provider and a DTO set<a class="headerlink reference internal" href="#3.0.0-openapi: fix schema generation for request body declared only in a dependency provider and a dto set" id="3.0.0-openapi: fix schema generation for request body declared only in a dependency provider and a dto set">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that occurred when a request body was only declared in a dependency
+provider of a handler, with that handler setting a <code class="docutils literal notranslate"><span class="pre">dto=</span></code>. The schema would be
+generated from the raw model, not the DTO transformed one. The schema now takes
+the DTO into consideration, independent of the point the request body is
+declared.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Document the default of a handler parameter that’s also a layer parameter<a class="headerlink reference internal" href="#3.0.0-openapi: document the default of a handler parameter that's also a layer parameter" id="3.0.0-openapi: document the default of a handler parameter that's also a layer parameter">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would document a handler / DI parameter declared with a default,
+<em>and</em> corresponding to a layer parameter <em>without a default</em>, as required and
+without a default.</p>
+<p>The parameter is now correctly documented as not required, and with its default.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>Raise an exception at startup for variadic handler / DI parameters<a class="headerlink reference internal" href="#3.0.0-raise an exception at startup for variadic handler / di parameters" id="3.0.0-raise an exception at startup for variadic handler / di parameters">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Raise an exception at startup if a handler or DI provider declares variadic
+parameters (<code class="docutils literal notranslate"><span class="pre">*args</span></code> or <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>).</p>
+<p>Previously, <code class="docutils literal notranslate"><span class="pre">*args</span></code> would fail every request with a <code class="docutils literal notranslate"><span class="pre">500</span></code> error, and
+<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> would implicitly declare a query parameter named <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>Raise an exception if a generator dependency yields more than once<a class="headerlink reference internal" href="#3.0.0-raise an exception if a generator dependency yields more than once" id="3.0.0-raise an exception if a generator dependency yields more than once">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Raise an exception if a generator dependency <code class="docutils literal notranslate"><span class="pre">yield</span></code>s more than once.
+Previously, no exception was raised, and the code after the second <code class="docutils literal notranslate"><span class="pre">yield</span></code>
+never ran.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>Raise a startup exception if an unmarked handler parameter is named like a layer parameter<a class="headerlink reference internal" href="#3.0.0-raise a startup exception if an unmarked handler parameter is named like a layer parameter" id="3.0.0-raise a startup exception if an unmarked handler parameter is named like a layer parameter">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>A handler parameter without a marker raises
+<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> at startup. Ensure
+this is also the case if it is named like a layer parameter.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
+<dt>Raise a startup exception if a request body is declared in a <code class="docutils literal notranslate"><span class="pre">GET</span></code> or websocket handler, or any of its dependencies<a class="headerlink reference internal" href="#3.0.0-raise a startup exception if a request body is declared in a" id="3.0.0-raise a startup exception if a request body is declared in a">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Raise a startup exception if a <code class="docutils literal notranslate"><span class="pre">GET</span></code> HTTP or a WebSocket handler, or any of
+their dependencies declare a request body.</p>
+<p>Previously, declaring a body for such handlers in a dependency would work, and
+the body would be passed as <code class="docutils literal notranslate"><span class="pre">b&quot;&quot;</span></code>, ignoring a possible default. Requests to
+a WebSocket handler with such a declaration would fail.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
+</div>
+</dd>
 <dt>Keep publishing channel messages after a backend error<a class="headerlink reference internal" href="#3.0.0-keep publishing channel messages after a backend error" id="3.0.0-keep publishing channel messages after a backend error">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that stopped <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a> from publishing
 any further messages after the backend raised an error for one of them, for
