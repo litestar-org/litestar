@@ -1,12 +1,12 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
 
 import re
 from collections import defaultdict
+from collections.abc import AsyncGenerator, Mapping
 from encodings.aliases import aliases as _codec_aliases
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from multipart import (  # type: ignore[import-untyped]
     MultipartSegment,
@@ -18,14 +18,10 @@ from multipart import (  # type: ignore[import-untyped]
 from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import ClientException
 from litestar.exceptions.http_exceptions import RequestEntityTooLarge
+from litestar.types import TypeDecodersSequence
 
 __all__ = ("get_charset_table", "parse_content_header", "parse_multipart_form")
 
-
-if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Mapping
-
-    from litestar.types import TypeDecodersSequence
 
 _token = r"([\w!#$%&'*+\-.^_`|~]+)"  # noqa: S105
 _quoted = r'"([^"]*)"'
