@@ -36,7 +36,7 @@ async def test_non_default_store(memory_store: MemoryStore) -> None:
     with TestClient(app) as client:
         res = client.get("/")
         assert res.status_code == 200
-        assert await memory_store.exists(res.cookies["session"])
+        assert await memory_store.exists(f"session::{res.cookies['session']}")
 
 
 async def test_set_store_name(memory_store: MemoryStore) -> None:
@@ -54,7 +54,7 @@ async def test_set_store_name(memory_store: MemoryStore) -> None:
     with TestClient(app) as client:
         res = client.get("/")
         assert res.status_code == 200
-        assert await memory_store.exists(res.cookies["session"])
+        assert await memory_store.exists(f"session::{res.cookies['session']}")
 
 
 async def test_get_set(
@@ -225,12 +225,12 @@ async def test_cleared_session_with_session_cookie_deleted(path: str, memory_sto
 
     with TestClient(app) as client:
         session_id = client.post("/login").cookies["session"]
-        assert await memory_store.exists(session_id)
+        assert await memory_store.exists(f"session::{session_id}")
 
         res = client.post(path)
         assert res.status_code == 201
         assert res.headers["set-cookie"].startswith("session=null;")
-        assert not await memory_store.exists(session_id)
+        assert not await memory_store.exists(f"session::{session_id}")
 
 
 async def test_empty_session_with_unknown_session_cookie_not_stored(memory_store: MemoryStore) -> None:
@@ -245,4 +245,64 @@ async def test_empty_session_with_unknown_session_cookie_not_stored(memory_store
         res = client.get("/")
         assert res.status_code == 200
         assert res.headers["set-cookie"].startswith("session=null;")
-        assert not await memory_store.exists("unknown")
+        assert not await memory_store.exists("session::unknown")
+
+
+async def test_session_id_does_not_reach_other_keys_in_shared_store(memory_store: MemoryStore) -> None:
+    @get("/me")
+    def me(request: Request) -> dict:
+        return request.session
+
+    @get("/login")
+    def login(request: Request) -> None:
+        request.set_session({"user": "attacker"})
+
+    @get("/logout")
+    def logout(request: Request) -> None:
+        request.clear_session()
+
+    app = Litestar(
+        [me, login, logout],
+        middleware=[ServerSideSessionConfig().middleware],
+        stores={"sessions": memory_store},
+    )
+    await memory_store.set("other", b'{"foo": "bar"}')
+
+    with TestClient(app, cookies={"session": "other"}) as client:
+        assert client.get("/me").json() == {}
+        client.get("/login")
+        assert await memory_store.get("other") == b'{"foo": "bar"}'
+        client.get("/logout")
+        assert await memory_store.get("other") == b'{"foo": "bar"}'
+
+
+async def test_unknown_session_id_is_not_reused(memory_store: MemoryStore) -> None:
+    @get("/login")
+    def login(request: Request) -> None:
+        request.set_session({"user": "victim"})
+
+    app = Litestar([login], middleware=[ServerSideSessionConfig().middleware], stores={"sessions": memory_store})
+
+    with TestClient(app, cookies={"session": "chosen-by-attacker"}) as client:
+        session_id = client.get("/login").cookies["session"]
+        assert session_id != "chosen-by-attacker"
+        assert await memory_store.exists(f"session::{session_id}")
+        assert not await memory_store.exists("session::chosen-by-attacker")
+
+
+@pytest.mark.parametrize("known", [True, False])
+async def test_clear_then_set_session_uses_new_id(memory_store: MemoryStore, known: bool) -> None:
+    @get("/login")
+    def login(request: Request) -> None:
+        request.clear_session()
+        request.set_session({"user": "victim"})
+
+    app = Litestar([login], middleware=[ServerSideSessionConfig().middleware], stores={"sessions": memory_store})
+    if known:
+        await memory_store.set("session::old", b'{"user": "attacker"}')
+
+    with TestClient(app, cookies={"session": "old"}) as client:
+        session_id = client.get("/login").cookies["session"]
+        assert session_id != "old"
+        assert await memory_store.exists(f"session::{session_id}")
+        assert not await memory_store.exists("session::old")

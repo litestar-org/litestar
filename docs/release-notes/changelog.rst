@@ -6,6 +6,21 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Prefix server-side session keys in the store
+        :type: bugfix
+        :pr: 5219
+        :breaking:
+
+        :class:`~litestar.middleware.session.server_side.ServerSideSessionBackend` used the
+        session cookie value as the store key. When sessions shared a store with rate limiting
+        or response caching, a client could pick a cookie value to read, overwrite or delete
+        those entries. Session keys are now prefixed with ``session::``. Sessions created
+        before upgrading are invalidated, so users have to log in again. Subclasses that
+        override only some of ``get``, ``set`` and ``delete`` must use the same prefixed key.
+
+        A session ID from the cookie that does not exist in the store is no longer reused, and
+        calling ``clear_session()`` before ``set_session()`` now gives the session a new ID.
+
     .. change:: Keep publishing channel messages after a backend error
         :type: bugfix
         :pr: 5213
