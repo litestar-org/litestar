@@ -186,67 +186,299 @@ access the request instance:
        return schema.to_schema()
 
 
-Customizing Pydantic model schemas
-----------------------------------
+Model schemas
+-------------
 
-You can customize the OpenAPI schemas generated for pydantic models by following the guidelines in
-the `Pydantic docs <https://docs.pydantic.dev/latest/usage/json_schema/>`_.
+Litestar asks the library that validates a model to generate the model's schema, so the
+document describes the data the server accepts and returns:
 
-Additionally, you can affect how pydantic models are translated into OpenAPI ``components`` by settings a special dunder
-attribute on the model called ``__schema_name__``:
+pydantic
+    Subclasses of ``pydantic.BaseModel``, including ``RootModel``, and the dataclasses and
+    ``TypedDict``\ s nested in them. Documenting a pydantic model requires pydantic 2.11 or
+    later; with an older version, generating the document raises an
+    :class:`~litestar.exceptions.ImproperlyConfiguredException` that names the requirement.
+
+msgspec
+    Dataclasses, including pydantic dataclasses since Litestar decodes them with msgspec,
+    ``msgspec.Struct`` subclasses, ``TypedDict``\ s and attrs classes.
+
+Enums, and types the library does not describe itself, such as
+:class:`~litestar.datastructures.UploadFile` or arbitrary classes, are documented by
+Litestar wherever they appear. An enum therefore has one component, shared by parameters
+and by the models of both libraries.
+
+Litestar generates the schema itself for:
+
+- DTO transfer models, i.e. handlers with a ``dto`` or ``return_dto``. A pydantic model used
+  as a field type of a transfer model, rather than as a nested transfer model, is still
+  documented by pydantic.
+- Models handled by a schema plugin you register, including a subclass of the built-in
+  dataclass, ``Struct``, ``TypedDict`` or attrs schema plugin that overrides
+  ``to_openapi_schema``.
+- Models msgspec cannot decode, e.g. a dataclass with a field that is a union of two
+  dataclasses.
+
+What ``to_openapi_schema`` of a built-in schema plugin returns,
+:class:`~litestar.plugins.pydantic.PydanticSchemaPlugin`,
+:class:`~litestar.plugins.attrs.AttrsSchemaPlugin` and the dataclass, ``Struct`` and
+``TypedDict`` plugins, is unspecified: it may be a placeholder reference that points at the
+component once the document is built. A subclass calling ``super().to_openapi_schema()``, or a
+schema plugin calling one of these plugins, may return that value unchanged or wrap it, e.g.
+in a ``oneOf``, but must not read or change it; return your own schema instead.
+``schema_creator.schema_registry.from_reference()`` raises
+:class:`~litestar.exceptions.ImproperlyConfiguredException` for the placeholder, and
+``schema_creator.schema_registry.component_for()`` returns ``None``.
+
+A :class:`~litestar.params.KwargDefinition` on a field of a model a library documents sets
+the field's ``title``, ``description`` and ``examples``. Its constraints, such as ``ge`` or
+``max_length``, are not documented, since the server does not enforce them on these fields.
+On a pydantic model, only the ``KwargDefinition`` of the field itself is read, not one nested
+in the field type, such as ``list[Annotated[int, KwargDefinition(...)]]``, and values set with
+``pydantic.Field`` take precedence.
+
+To document deeply nested models, Litestar raises the interpreter's recursion limit to at least
+10000 while a library generates schemas, and restores it afterwards. The limit is process-wide,
+so it also applies to other threads during that time, usually the first request for the schema.
+
+
+Request and response schemas
+++++++++++++++++++++++++++++
+
+A model can be documented differently in a request and in a response: a pydantic
+``computed_field`` is only returned, an alias may only apply when validating, a ``Decimal``
+is accepted as a number or a string but returned as a string. When the two schemas differ,
+the model gets two components: ``<Name>-Input``, used by request bodies and parameters, and
+``<Name>-Output``, used by responses. A model with the same schema in both directions, or
+used in one direction only, has a single ``<Name>`` component. A model that contains a split
+model is split as well, including a msgspec model that contains a pydantic model.
+
+
+Customizing pydantic model schemas
+++++++++++++++++++++++++++++++++++
+
+Use the options described in the
+`pydantic JSON schema docs <https://docs.pydantic.dev/latest/concepts/json_schema/>`_: the
+model docstring becomes the description, ``Field`` sets descriptions, constraints and
+examples, ``json_schema_extra`` (a dict or a callable) adds keys to a model or field schema,
+and ``WithJsonSchema`` replaces the schema of a type.
+
+.. literalinclude:: /examples/openapi/customize_pydantic_model_schema.py
+    :caption: Customizing a pydantic model schema
+    :language: python
+
+``Product`` is used in both directions and ``label`` only exists in responses, so the
+document has a ``Product-Input`` and a ``Product-Output`` component. ``Product-Output`` looks
+like this, and ``Product-Input`` is the same without ``label``:
+
+.. code-block:: json
+
+   {
+       "properties": {
+           "name": {
+               "type": "string",
+               "maxLength": 50,
+               "title": "Name",
+               "description": "Display name"
+           },
+           "sku": {
+               "type": "string",
+               "pattern": "^[A-Z]{3}-[0-9]{4}$",
+               "title": "Sku"
+           },
+           "price": {
+               "type": "integer",
+               "exclusiveMinimum": 0,
+               "title": "Price",
+               "description": "Price in cents"
+           },
+           "label": {"type": "string", "title": "Label", "readOnly": true}
+       },
+       "type": "object",
+       "required": ["name", "sku", "price", "label"],
+       "title": "Product",
+       "description": "A product in the catalogue.",
+       "examples": [{"name": "Chair", "price": 4900, "sku": "CHR-0001"}]
+   }
+
+To document a model with a schema pydantic does not generate, register a schema plugin for
+it, or subclass :class:`~litestar.plugins.pydantic.PydanticSchemaPlugin` and override
+``to_openapi_schema``: return your own schema, or the value of
+``super().to_openapi_schema()`` unchanged to keep pydantic's component. A schema the subclass returns
+for a model is also used where the model is nested in a pydantic model.
+
+pydantic's schema also differs from the schema Litestar generates for other types in these
+ways:
+
+- Properties carry pydantic's titles, e.g. ``"title": "Name"``.
+- ``model_config["example"]`` is not read; use ``json_schema_extra={"examples": [...]}``.
+- Request schemas list the keys validation accepts: the alias, the alias or the field name
+  with ``validate_by_name`` (or ``populate_by_name``), or only the field name with
+  ``validate_by_alias=False``. This also applies to the dataclasses and ``TypedDict``\ s
+  nested in a model. Response schemas use aliases if the ``prefer_alias`` option of
+  :class:`~litestar.plugins.pydantic.PydanticPlugin` or
+  :class:`~litestar.plugins.pydantic.PydanticInitPlugin` is set.
+- ``bytes`` is a string, with ``format: base64url`` if the model's ``val_json_bytes`` or
+  ``ser_json_bytes`` setting is ``base64``.
+- pydantic types have pydantic's schema inside and outside a model:
+
+  - ``AnyUrl`` has ``format: uri`` and ``minLength: 1``, and ``HttpUrl`` also
+    ``maxLength: 2083``.
+  - ``IPvAnyAddress``, ``IPvAnyInterface`` and ``IPvAnyNetwork`` are strings with
+    ``format: ipvanyaddress``, ``ipvanyinterface`` and ``ipvanynetwork``.
+  - ``NameEmail`` has ``format: name-email``.
+  - ``SecretStr`` and ``SecretBytes`` are ``writeOnly`` strings with ``format: password``.
+  - ``ByteSize`` is a non-negative integer, or in request schemas also a size string such
+    as ``"1kb"``.
+  - ``Json[T]`` inside a model is a string with ``contentMediaType: application/json`` in
+    requests and ``T`` in responses; outside a model it is documented as ``T``, the type the
+    server decodes.
+- A dataclass used inside a pydantic model and directly by a handler has two components,
+  one generated by pydantic and one by msgspec, e.g. ``Address`` and ``Address_2``.
+- A field type pydantic cannot describe, e.g. a custom type with a plain
+  ``__get_pydantic_core_schema__``, is documented by the schema plugin you register for it.
+  Without one, it is documented as any value, with one
+  :class:`~litestar.exceptions.LitestarWarning` naming the model and field.
+
+.. note::
+
+   Outside a model, the server rejects pydantic types other than ``Json`` as request
+   parameters or bodies, so use them inside a model.
+
+.. note::
+
+   - A field that contains both a type pydantic cannot describe and a subclass of it with the
+     same pydantic core schema, e.g. ``tuple[Money, SubMoney]``, documents both as any value,
+     with a :class:`~litestar.exceptions.LitestarWarning`, since the two cannot be told apart.
+   - A generic class pydantic hands back to Litestar, such as a generic ``Struct``, gets one
+     component per parametrisation, e.g. ``Page_int_``. A field that contains several
+     parametrisations of the same class, e.g. ``Union[Page[int], Page[str]]``, or
+     ``tuple[PageOf[Item], Page[int]]`` where ``PageOf`` is a generic alias of ``Page``,
+     references a component of the bare class ``Page`` instead.
+   - ``PastDate`` and similar types have no description.
+
+
+Customizing msgspec model schemas
++++++++++++++++++++++++++++++++++
+
+Use the options described in the
+`msgspec JSON schema docs <https://jcristharif.com/msgspec/jsonschema.html>`_: the class
+docstring becomes the description, ``msgspec.Meta`` sets constraints, ``title``,
+``description`` and ``examples``, and ``Meta(extra_json_schema=...)`` adds keys to the
+schema.
+
+.. literalinclude:: /examples/openapi/customize_msgspec_model_schema.py
+    :caption: Customizing a msgspec model schema
+    :language: python
+
+``Stock`` is only returned, so the document has a single ``Stock`` component:
+
+.. code-block:: json
+
+   {
+       "properties": {
+           "sku": {
+               "type": "string",
+               "pattern": "^[A-Z]{3}-[0-9]{4}$",
+               "examples": ["CHR-0001"]
+           },
+           "quantity": {
+               "type": "integer",
+               "minimum": 0,
+               "description": "Units in the warehouse"
+           },
+           "warehouse": {
+               "anyOf": [{"type": "string"}, {"type": "null"}],
+               "deprecated": true
+           }
+       },
+       "type": "object",
+       "required": ["sku", "quantity"],
+       "title": "Stock",
+       "description": "Stock level of a product."
+   }
+
+Litestar changes msgspec's schema for these types:
+
+- ``Decimal`` is a number or a string with ``format: decimal`` in requests, and a string with
+  ``format: decimal`` in responses.
+- ``datetime`` and ``time`` have ``format: date-time`` and ``format: time``.
+- Field defaults are encoded with the application's ``type_encoders``; a default that needs
+  a router- or handler-level encoder is left out, and so is a default set with
+  ``pydantic.Field`` on a pydantic dataclass field.
+
+For both libraries, ``set`` and ``frozenset`` are arrays without ``uniqueItems``, since the
+server removes duplicates instead of rejecting them. A schema plugin you register is used for
+the types the library hands back to Litestar, not for the types it describes itself, such as
+a ``datetime`` or ``UUID`` field.
+
+
+Naming components
++++++++++++++++++
+
+A component is named after its class. Each library makes the names of its own models
+unique: two models named ``Item`` in the modules ``app.a`` and ``app.b`` become
+``app.a.Item`` and ``app.b.Item``. Classes with the same module and qualified name, such as
+classes built by a factory function, cannot be told apart by name, so the second one gets a
+``_2`` suffix; so does a name already used by another component, for example by a model of
+the other library.
+
+Set ``__schema_name__`` on a class to choose the name of its component wherever the class
+appears. It also sets the component's title, unless a pydantic model sets
+``model_config["title"]``. Litestar reads it from the class itself, so subclasses do not
+inherit it. A split model keeps the suffixes, e.g. ``IdContainer-Input``.
 
 .. literalinclude:: /examples/openapi/customize_pydantic_model_name.py
     :caption: Customize Components Example
     :language: python
 
-
-The above will result in an OpenAPI schema object that looks like this:
+The above results in this component:
 
 .. code-block:: json
 
    {
-       "openapi": "3.1.0",
-       "info": {"title": "Litestar API", "version": "1.0.0"},
-       "servers": [{"url": "/"}],
-       "paths": {
-           "/id": {
-               "get": {
-                   "operationId": "Retrieve Id Handler",
-                   "responses": {
-                       "200": {
-                           "description": "Request fulfilled, document follows",
-                           "headers": {},
-                           "content": {
-                               "application/json": {
-                                   "schema": {
-                                       "$ref": "#/components/schemas/IdContainer"
-                                   }
-                               }
-                           }
-                       }
-                   },
-                   "deprecated": false
-               }
-           }
-       },
-       "components": {
-           "schemas": {
-               "IdContainer": {
-                   "properties": {
-                       "id": {"type": "string", "format": "uuid", "title": "Id"}
-                   },
-                   "type": "object",
-                   "required": ["id"],
-                   "title": "IdContainer"
-               }
-           }
+       "IdContainer": {
+           "properties": {
+               "id": {"type": "string", "format": "uuid", "title": "Id"}
+           },
+           "type": "object",
+           "required": ["id"],
+           "title": "IdContainer"
        }
    }
 
-.. attention::
+:attr:`~.params.KwargDefinition.schema_component_key` on a request body or parameter gives
+that use site its own copy of the component, under the given key. The key gets the
+``-Input`` and ``-Output`` suffixes only when it is used in both directions on a split model:
 
-   If you use multiple pydantic models that use the same name in the schema, you will need to use the `__schema_name__`
-   dunder to ensure each has a unique name in the schema, otherwise the schema components will be ambivalent.
+.. code-block:: python
+
+   from typing import Annotated
+
+   from litestar import post
+   from litestar.params import Body
+
+
+   @post("/ids")
+   async def create_id(data: Annotated[IdModel, Body(schema_component_key="NewId")]) -> None: ...
+
+Two classes or use sites with the same explicit name, from ``__schema_name__`` or
+``schema_component_key``, or an explicit name that is also the name of another Litestar
+component such as an enum, raise :class:`~litestar.exceptions.ImproperlyConfiguredException`.
+A model whose automatic name is taken gets the suffix instead.
+
+
+Unsupported keys
+++++++++++++++++
+
+In a schema a library generates, keys added through pydantic's ``json_schema_extra`` on a
+model or a field, or msgspec's ``Meta(extra_json_schema=...)`` on a field, are kept only if
+they are JSON schema keywords Litestar can convert. Other keys, such as specification
+extensions (``x-*``), ``$comment``, ``nullable``, ``externalDocs`` or ``xml``, are left out
+of the document, with one :class:`~litestar.exceptions.LitestarWarning` per model and key.
+In a schema Litestar generates itself, such as that of a DTO transfer model or a model
+msgspec cannot decode, such a key in a field's ``json_schema_extra`` raises a
+``ValueError``, while a model-level ``json_schema_extra`` and msgspec's
+``extra_json_schema`` are ignored.
 
 
 
@@ -331,5 +563,16 @@ as a package extra under ``litestar[polyfactory`` and ``litestar[full]``.
 
 Once installed, you can turn on example generation via the OpenAPI config:
 
-.. literalinclude:: /examples/openapi/customize_pydantic_model_name.py
+.. literalinclude:: /examples/openapi/generating_examples.py
     :language: python
+
+For a pydantic or msgspec model, the generated examples are added where the model is used,
+next to a reference to its component, not to the component itself:
+
+.. code-block:: json
+
+   {"allOf": [{"$ref": "#/components/schemas/Pet"}], "examples": [{"name": "Rex"}]}
+
+The component only carries the examples declared through the model's library. In a request,
+a pydantic model's example uses the keys validation accepts and leaves out computed fields;
+if the model's validation rejects every dump of the example, the request has no example.
