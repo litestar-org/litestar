@@ -6,6 +6,18 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Deprecate request parameters ``Headers``, ``QueryParams``, ``RequestCookies`` and ``Scope``
+        :type: feature
+        :pr: TBD
+
+        Deprecate
+        :class:`~litestar.datastructures.Headers`, :data:`~litestar.params.QueryParams`,
+        :data:`~litestar.params.RequestCookies`, and :data:`~litestar.types.Scope` as
+        request parameters.
+
+        :class:`~litestar.connection.ASGIConnection`\ 's ``headers``, ``query_params``,
+        ``cookies``, or ``scope`` attributes should be used instead.
+
     .. change:: Apply the constraints of a layer parameter to corresponding handler / DI parameters
         :type: bugfix
         :breaking:

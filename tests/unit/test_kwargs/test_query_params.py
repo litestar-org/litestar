@@ -13,6 +13,7 @@ import pytest
 from litestar import MediaType, Request, get, post
 from litestar.datastructures import MultiDict
 from litestar.di import NamedDependency, Provide
+from litestar.exceptions import LitestarDeprecationWarning
 from litestar.params import FromQuery, JSONBody, QueryParameter, QueryParams
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -172,7 +173,9 @@ def test_query_kwarg() -> None:
         assert a == ["foo", "bar"]
         assert b == ["qux"]
 
-    with create_test_client(handler) as client:
+    with pytest.warns(LitestarDeprecationWarning, match="'QueryParams', which is deprecated"):
+        client = create_test_client(handler)
+    with client:
         response = client.get(f"{test_path}?{params}")
         assert response.status_code == HTTP_200_OK, response.json()
 
