@@ -208,6 +208,31 @@ def test_provider_declaration_is_used_as_is() -> None:
     assert app.route_handler_method_map["/"]["GET"]._injection_setup.registry.providers["value"] is provider
 
 
+def test_provider_binding_layer_parameter_is_copied() -> None:
+    def provide_value(limit: FromQuery[int]) -> int:
+        return limit
+
+    @get("/")
+    async def handler(value: NamedDependency[int]) -> None: ...
+
+    provider = Provider(provide_value, key="value", sync_to_thread=True)
+    app = Litestar(
+        [handler], dependencies=[provider], parameters={"limit": QueryParameter(name="page-limit")}, openapi_config=None
+    )
+    held = app.route_handler_method_map["/"]["GET"]._injection_setup.registry.providers["value"]
+
+    assert held is not provider
+    assert (held.fn, held.kind, held.key, held.scope, held.sync_to_thread) == (
+        provide_value,
+        ProviderKind.NAMED,
+        "value",
+        "handler",
+        True,
+    )
+    assert [parameter.name for parameter in held.request_parameters] == ["page-limit"]
+    assert [parameter.name for parameter in provider.request_parameters] == ["limit"]
+
+
 @pytest.mark.parametrize("declare", [Provide, lambda cls: Provider(cls, key="value")], ids=["Provide", "Provider"])
 def test_class_dependency_reads_signature_from_di_plugin(declare: Any) -> None:
     class Value:

@@ -113,8 +113,8 @@ def test_layer_parameter_with_annotation_differing_from_declaration_raises() -> 
     )
 
 
-def test_provider_bare_marker_not_restating_layer_constraint_raises() -> None:
-    async def provide_value(limit: FromQuery[int]) -> int:
+def test_provider_constrained_marker_not_restating_layer_constraint_raises() -> None:
+    async def provide_value(limit: Annotated[int, QueryParameter(lt=5)]) -> int:
         return limit
 
     @get("/", dependencies={"value": Provide(provide_value)})

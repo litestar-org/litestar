@@ -160,7 +160,7 @@ def apply_layer_parameters(
     signature: ParsedSignature, layer_parameters: Mapping[str, FieldDefinition]
 ) -> ParsedSignature:
     """Return ``signature`` with each parameter that binds a layer parameter carrying that layer
-    parameter's declaration.
+    parameter's declaration, ``signature`` itself if no parameter binds one.
 
     A parameter binds the layer parameter of its name if its marker is of the layer parameter's
     type and sets no field, e.g. ``FromQuery[int]``.
@@ -169,18 +169,17 @@ def apply_layer_parameters(
         signature: The signature of a callable
         layer_parameters: The layer parameters, by name
     """
-    parameters = dict(signature.parameters)
-    for name, field in signature.parameters.items():
-        layer_parameter = layer_parameters.get(name)
-        if layer_parameter is None or not _binds_layer_parameter(field, layer_parameter):
-            continue
-        parameters[name] = FieldDefinition.from_kwarg(
+    bound = {
+        name: FieldDefinition.from_kwarg(
             annotation=field.raw,
             name=name,
             default=field.default,
-            kwarg_definition=layer_parameter.kwarg_definition,
+            kwarg_definition=layer_parameters[name].kwarg_definition,
         )
-    return dataclasses.replace(signature, parameters=parameters)
+        for name, field in signature.parameters.items()
+        if name in layer_parameters and _binds_layer_parameter(field, layer_parameters[name])
+    }
+    return dataclasses.replace(signature, parameters={**signature.parameters, **bound}) if bound else signature
 
 
 def merge_request_parameters(

@@ -6,6 +6,15 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Apply the constraints of a layer parameter to corresponding handler / DI parameters
+        :type: bugfix
+        :breaking:
+        :pr: 5227
+
+        Fix a bug that would cause the constraints of a layer parameter, e.g.
+        ``parameters={"limit": QueryParameter(gt=0)}``, to not be applied for a
+        corresponding handler or dependency parameter.
+
     .. change:: Apply the ``type_decoders`` of a handler to that handler only
         :type: bugfix
         :pr: 5227

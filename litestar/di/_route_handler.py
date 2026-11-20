@@ -27,7 +27,7 @@ from litestar.utils.signature import ParsedSignature
 from litestar.utils.warnings import warn_implicit_sync_to_thread
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine, Generator, Iterable
+    from collections.abc import Callable, Coroutine, Generator, Iterable, Mapping
 
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
@@ -35,6 +35,7 @@ if TYPE_CHECKING:
     from litestar.handlers import BaseRouteHandler
     from litestar.plugins import PluginRegistry
     from litestar.types import AnyCallable
+    from litestar.typing import FieldDefinition
 
 __all__ = ("HandlerInjectionSetup", "ProvideConverter", "create_handler_injection_setup")
 
@@ -193,6 +194,30 @@ def _create_fn_injection_target(handler: BaseRouteHandler) -> InjectionTarget:
     return target
 
 
+def _apply_layer_parameters_to_provider(
+    provider: Provider, layer_parameters: Mapping[str, FieldDefinition]
+) -> Provider:
+    """Return ``provider`` if none of its parameters binds one of ``layer_parameters``, otherwise a
+    provider of the same callable, kind, key, scope and ``sync_to_thread`` whose parameters that
+    bind a layer parameter carry that layer parameter's declaration, see
+    :func:`~litestar._request_parameters.declarations.apply_layer_parameters`.
+    """
+    signature = provider._signature
+    if signature is None:  # a seed
+        return provider
+    applied = apply_layer_parameters(signature, layer_parameters)
+    if applied is signature:
+        return provider
+    return type(provider)(
+        provider.fn,
+        kind=provider.kind,
+        scope=provider.scope,
+        key=provider.key,
+        sync_to_thread=provider.sync_to_thread if provider._form is _CallableForm.SYNC else None,
+        signature=applied,
+    )
+
+
 def _dependency_keys(target: InjectionTarget, providers: Iterable[Provider]) -> set[DependencyKey]:
     return {
         dependency.key
@@ -238,15 +263,18 @@ def create_handler_injection_setup(
 ) -> HandlerInjectionSetup:
     """Return what injecting ``handler``'s function takes.
 
-    A parameter of the function with a bare marker named like a layer parameter declares that
-    layer parameter, see :func:`~litestar._request_parameters.declarations.apply_layer_parameters`.
+    A parameter of the function or of a provider with a bare marker named like a layer parameter
+    declares that layer parameter, see
+    :func:`~litestar._request_parameters.declarations.apply_layer_parameters`.
 
     The registry holds the app's seeds, the seeds of ``connection_class``, the providers of the
     reserved request values and of the state classes the providers and the function depend on,
     a seed for each request parameter of the function, the providers and the layers, and these
     providers of ``handler.dependencies``:
     the ones the function reaches (those its dependencies name, and the ones these name in
-    turn), and the ones of every scope but ``"handler"`` with the ones they name in turn.
+    turn), and the ones of every scope but ``"handler"`` with the ones they name in turn. A
+    provider with a parameter declaring a layer parameter is held as a provider of its own for
+    this handler, of the same callable, kind, key, scope and ``sync_to_thread``.
 
     Args:
         handler: A registered handler
@@ -278,7 +306,9 @@ def create_handler_injection_setup(
             if key in reached or key not in handler.dependencies:
                 continue
             with replace(prefix, dependencies=chain).wrap_config_exception():
-                reached[key] = provider = app._provide_converter.convert(handler.dependencies[key], key)
+                reached[key] = provider = _apply_layer_parameters_to_provider(
+                    app._provide_converter.convert(handler.dependencies[key], key), handler.parameter_field_definitions
+                )
             pending.extend((*chain, dependency.key) for dependency in provider.dependencies)
 
     # the layer providers the function uses: those its dependencies name, and the ones these name in turn. then

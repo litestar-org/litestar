@@ -649,10 +649,9 @@ class Provider:
             return
 
         signature = self._signature if self._signature is not None else signature
-        self.dependencies, self.non_di_parameters, self.request_parameters, _ = _injection_parameters_from_fn(
-            self.fn, strict=True, signature=signature
+        self.dependencies, self.non_di_parameters, self.request_parameters, self._signature = (
+            _injection_parameters_from_fn(self.fn, strict=True, signature=signature)
         )
-        self._signature = signature
         self._resolved = True
 
     def _infer_key(self) -> DependencyKey:

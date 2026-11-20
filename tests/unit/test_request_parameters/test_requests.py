@@ -3,8 +3,8 @@ from typing import Annotated, Any
 
 import pytest
 
-from litestar import Litestar, get, post
-from litestar.di import NamedDependency, Provide
+from litestar import Litestar, Router, get, post
+from litestar.di import NamedDependency, Provide, Provider
 from litestar.params import FromHeader, FromPath, FromQuery, HeaderParameter, JSONBody, QueryParameter
 from litestar.testing import TestClient
 
@@ -166,6 +166,38 @@ def test_only_bare_marker_of_layer_parameter_type_binds_it() -> None:
         {"message": "Missing required query parameter", "key": "header", "source": "query"}
     ]
     assert limit_violated.json()["extra"] == [{"message": "Expected `int` >= 1", "key": "limit", "source": "query"}]
+
+
+def test_provider_bare_marker_merged_with_layer_parameter() -> None:
+    async def provide_limit(limit: FromQuery[int]) -> int:
+        return limit
+
+    @get("/", dependencies={"provided": Provide(provide_limit)})
+    async def handler(provided: NamedDependency[int]) -> int:
+        return provided
+
+    layer_parameters = {"limit": QueryParameter(name="page-limit", gt=0)}
+    with TestClient(Litestar([handler], parameters=layer_parameters, openapi_config=None)) as client:
+        assert client.get("/?page-limit=5").json() == 5
+        violated = client.get("/?page-limit=0")
+
+    assert violated.json()["extra"] == [{"message": "Expected `int` >= 1", "key": "page-limit", "source": "query"}]
+
+
+def test_shared_provider_merged_with_layer_parameter_per_handler() -> None:
+    async def provide_limit(limit: FromQuery[int]) -> int:
+        return limit
+
+    @get("/")
+    async def handler(provided: NamedDependency[int]) -> int:
+        return provided
+
+    renamed = Router("/renamed", route_handlers=[handler], parameters={"limit": QueryParameter(name="page-limit")})
+    plain = Router("/plain", route_handlers=[handler])
+    app = Litestar([renamed, plain], dependencies=[Provider(provide_limit, key="provided")], openapi_config=None)
+    with TestClient(app) as client:
+        assert client.get("/renamed?page-limit=5").json() == 5
+        assert client.get("/plain?limit=3").json() == 3
 
 
 def test_path_parameter_with_default_on_paths_with_and_without_segment() -> None:
