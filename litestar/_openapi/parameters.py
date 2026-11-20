@@ -132,6 +132,11 @@ class ParameterFactory:
         examples_list = kwarg_definition.examples or []
         examples = get_formatted_examples(field_definition, examples_list)
 
+        if examples and isinstance(result, Schema):
+            # examples are documented at the parameter level, so there's no need to
+            # duplicate them on the parameter's schema
+            result.examples = None
+
         return Parameter(
             description=description,
             name=parameter_name,
