@@ -222,10 +222,10 @@ filterwarnings = [
   "ignore::DeprecationWarning:sphinxcontrib",
   "ignore:.*Deprecated in litestar:DeprecationWarning",
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
-  "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",
+  "ignore: Python Debugger on exception enabled:UserWarning:",
   "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
   "ignore:Use of deprecated default '__check_model__':DeprecationWarning:polyfactory:",
-  "ignore:Registering routes.*:litestar.exceptions.base_exceptions.LitestarWarning",
+  "ignore:Registering routes.*:UserWarning",
   "ignore::pytest.PytestUnraisableExceptionWarning:", # ignore temporarily until the underlying issue can be fixed, which requires the new async-aware test client
 ]
 markers = [
@@ -308,7 +308,6 @@ warn_unused_ignores = false
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
-warn_untyped_fields = true
 
 [tool.pyright]
 disableBytesTypePromotions = true
