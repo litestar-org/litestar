@@ -11,7 +11,7 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
 
-from litestar import Litestar, get
+from litestar import Litestar, WebSocket, get
 from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.subscriber import BacklogStrategy
@@ -474,3 +474,70 @@ async def test_startup_shutdown_cycle(memory_backend: MemoryChannelsBackend) -> 
     assert messages == [b"final_message"]
 
     await plugin._on_shutdown()
+
+
+async def test_subscription_exits_when_on_event_raises(memory_backend: MemoryChannelsBackend) -> None:
+    on_event = AsyncMock(side_effect=RuntimeError)
+    plugin = ChannelsPlugin(backend=memory_backend, channels=["foo"])
+
+    async with plugin.start_subscription("foo") as subscriber:
+        async with subscriber.run_in_background(on_event):
+            subscriber.put_nowait(b"foo")
+            subscriber.put_nowait(b"bar")
+
+    on_event.assert_awaited_once_with(b"foo")
+
+
+async def test_unsubscribe_does_not_block_on_full_backlog(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend, channels=["foo"], subscriber_max_backlog=1)
+
+    async with plugin.start_subscription("foo") as subscriber:
+        subscriber.put_nowait(b"foo")
+
+
+async def test_dropleft_backlog_overflow_does_not_block_join(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(
+        backend=memory_backend, channels=["foo"], subscriber_max_backlog=1, subscriber_backlog_strategy="dropleft"
+    )
+
+    async with plugin.start_subscription("foo") as subscriber:
+        subscriber.put_nowait(b"foo")
+        subscriber.put_nowait(b"bar")
+        async with subscriber.run_in_background(AsyncMock()):
+            pass
+
+
+async def test_put_subscriber_history_does_not_block_on_full_backlog(
+    memory_backend_with_history: MemoryChannelsBackend,
+) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend_with_history, channels=["foo"], subscriber_max_backlog=1)
+
+    async with plugin:
+        await plugin.wait_published(b"bar", "foo")
+        await plugin.wait_published(b"baz", "foo")
+
+        async with plugin.start_subscription("foo") as subscriber:
+            await plugin.put_subscriber_history(subscriber, "foo", limit=2)
+
+            assert subscriber.qsize == 1
+
+
+async def test_ws_handler_does_not_wait_for_a_stalled_send(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend, channels=["foo"])
+
+    class StalledSocket:
+        async def accept(self) -> None:
+            pass
+
+        async def send_text(self, data: str) -> None:
+            await asyncio.Event().wait()
+
+        async def receive(self) -> dict[str, str]:
+            await plugin.wait_published(b"bar", "foo")
+            await asyncio.sleep(0.01)
+            return {"type": "websocket.disconnect"}
+
+    async with plugin:
+        await plugin._ws_handler_func(channel_name="foo", socket=cast(WebSocket, StalledSocket()))
+
+        assert not plugin._channels.get("foo")
