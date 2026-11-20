@@ -7,6 +7,7 @@ import pytest
 
 from litestar import Litestar, get
 from litestar.di import NamedDependency
+from litestar.di.exceptions import DIRegistrationError
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Parameter as OpenAPIParameter
@@ -227,8 +228,9 @@ def test_dependency_parameter_without_location_named_like_path_param_raises() ->
         return provided
 
     with pytest.raises(
-        ImproperlyConfiguredException,
-        match=r"dependencies='provided'\] Missing declaration for parameter 'foo'",
+        DIRegistrationError,
+        match=r"^\[paths='/\{foo:int\}', handler='handler', dependencies='provided'\] Parameter 'foo' of provider "
+        r".*\.provide_foo \(.*\) is not marked as a dependency",
     ):
         Litestar([handler])
 

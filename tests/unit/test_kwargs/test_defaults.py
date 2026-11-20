@@ -1,3 +1,4 @@
+import re
 from typing import Annotated, Any, Optional
 
 import pytest
@@ -36,7 +37,10 @@ def test_missing_parameter_without_default(annotation: Any) -> None:
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.status_code == HTTP_400_BAD_REQUEST
-        assert response.json()["detail"] == "Missing required query parameter 'value' for path /"
+        assert response.json()["detail"] == "Validation failed for GET /"
+        assert response.json()["extra"] == [
+            {"message": "Missing required query parameter", "key": "value", "source": "query"}
+        ]
 
 
 def test_optional_parameter_required_with_default() -> None:
@@ -47,7 +51,10 @@ def test_optional_parameter_required_with_default() -> None:
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.status_code == HTTP_400_BAD_REQUEST
-        assert response.json()["detail"] == "Missing required query parameter 'value' for path /"
+        assert response.json()["detail"] == "Validation failed for GET /"
+        assert response.json()["extra"] == [
+            {"message": "Missing required query parameter", "key": "value", "source": "query"}
+        ]
 
 
 def test_parameter_not_required_receives_default() -> None:
@@ -68,7 +75,10 @@ def test_parameter_not_required_without_default_raises() -> None:
 
     with pytest.raises(
         ImproperlyConfiguredException,
-        match=r"handler='handler'\] Parameter 'value' is not required but declares no default",
+        match=re.escape(
+            "[paths='/', handler='handler'] parameter 'value' of handler 'handler' declares the query parameter "
+            "'value' not required but without a default"
+        ),
     ):
         Litestar([handler])
 
@@ -83,6 +93,9 @@ def test_dependency_parameter_not_required_without_default_raises() -> None:
 
     with pytest.raises(
         ImproperlyConfiguredException,
-        match=r"dependencies='provided'\] Parameter 'value' is not required but declares no default",
+        match=re.escape(
+            "[paths='/', handler='handler'] parameter 'value' of provider 'provided' declares the query parameter "
+            "'value' not required but without a default"
+        ),
     ):
         Litestar([handler])

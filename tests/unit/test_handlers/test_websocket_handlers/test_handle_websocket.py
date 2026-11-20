@@ -1,9 +1,4 @@
-from unittest.mock import MagicMock
-
-import pytest
-
 from litestar import Controller, Router, WebSocket, websocket
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import FromQuery
 from litestar.testing import create_test_client
 
@@ -52,12 +47,3 @@ def test_websocket_signature_namespace() -> None:
         ws.send_json({"data": "123"})
         data = ws.receive_json()
         assert data == {"a": 1, "b": "two", "c": 3.0, "d": ["d"]}
-
-
-async def test_not_finalized_raises() -> None:
-    @websocket("/")
-    async def handler(socket: WebSocket) -> None:
-        pass
-
-    with pytest.raises(ImproperlyConfiguredException, match="handler parameter model not defined"):
-        await handler.handle(MagicMock())

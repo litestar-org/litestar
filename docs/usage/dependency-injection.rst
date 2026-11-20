@@ -382,19 +382,12 @@ provided dependency makes the application fail at startup, not at request time:
 
 
 
-Bypassing validation
---------------------
+Dependency values are not validated
+-----------------------------------
 
-By default, injected dependency values are validated by Litestar, for example, this
-application will raise an internal server error:
+A dependency is passed to the handler as its provider returns it; the value is not checked
+against the parameter's annotation. This handler receives a string:
 
 .. literalinclude:: /examples/dependency_injection/dependency_validation_error.py
-    :caption: Dependency validation error
-    :language: python
-
-
-This validation can be bypassed using the :data:`~litestar.params.SkipValidation` marker:
-
-.. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
-    :caption: Bypassing dependency validation
+    :caption: A dependency value of another type than annotated
     :language: python

@@ -15,7 +15,7 @@ from litestar import Litestar, get
 from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.subscriber import BacklogStrategy
-from litestar.di import NamedDependency
+from litestar.di import NamedDependency, TypeDependency
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import AsyncTestClient, TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
@@ -71,6 +71,17 @@ def test_plugin_dependency(mock: MagicMock, memory_backend: MemoryChannelsBacken
 
     assert mock.call_count == 1
     assert mock.call_args[0][0] is channels_plugin
+
+
+def test_plugin_dependency_by_type(memory_backend: MemoryChannelsBackend) -> None:
+    channels_plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+
+    @get()
+    async def handler(plugin: TypeDependency[ChannelsPlugin]) -> bool:
+        return plugin is channels_plugin
+
+    with create_test_client(handler, plugins=[channels_plugin]) as client:
+        assert client.get("/").json() is True
 
 
 def test_plugin_dependency_signature_namespace(memory_backend: MemoryChannelsBackend) -> None:

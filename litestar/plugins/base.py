@@ -50,7 +50,7 @@ class InitPluginProtocol(Protocol):
             .. code-block:: python
 
                 from litestar import Litestar, get
-                from litestar.di import Provide
+                from litestar.di import Provider
                 from litestar.plugins import InitPluginProtocol
 
 
@@ -65,7 +65,9 @@ class InitPluginProtocol(Protocol):
 
                 class MyPlugin(InitPluginProtocol):
                     def on_app_init(self, app_config: AppConfig) -> AppConfig:
-                        app_config.dependencies["name"] = Provide(get_name)
+                        app_config.dependencies["name"] = Provider(
+                            get_name, key="name", sync_to_thread=False
+                        )
                         app_config.route_handlers.append(my_route_handler)
                         return app_config
 
@@ -93,7 +95,7 @@ class InitPlugin(InitPluginProtocol):
             .. code-block:: python
 
                 from litestar import Litestar, get
-                from litestar.di import Provide
+                from litestar.di import Provider
                 from litestar.plugins import InitPluginProtocol
 
 
@@ -108,7 +110,9 @@ class InitPlugin(InitPluginProtocol):
 
                 class MyPlugin(InitPluginProtocol):
                     def on_app_init(self, app_config: AppConfig) -> AppConfig:
-                        app_config.dependencies["name"] = Provide(get_name)
+                        app_config.dependencies["name"] = Provider(
+                            get_name, key="name", sync_to_thread=False
+                        )
                         app_config.route_handlers.append(my_route_handler)
                         return app_config
 

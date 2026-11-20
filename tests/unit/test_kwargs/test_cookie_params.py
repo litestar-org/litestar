@@ -19,7 +19,7 @@ from litestar.testing import create_test_client
         ),
         (int, {"special-cookie": "123"}, CookieParameter(name="special-cookie", ge=100, le=201), HTTP_200_OK),
         (int, {"special-cookie": "123"}, CookieParameter(name="special-cookie", ge=100, le=120), HTTP_400_BAD_REQUEST),
-        (int, {}, CookieParameter(name="special-cookie", ge=100, le=120), HTTP_400_BAD_REQUEST),
+        (int, {}, CookieParameter(name="special-cookie", ge=100, le=120), HTTP_200_OK),
         (
             Optional[int],
             {},

@@ -5,7 +5,7 @@ import pytest
 
 from litestar import Litestar, get, post
 from litestar.di import NamedDependency, Provide
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.di.exceptions import MissingProviderError
 from litestar.params import FromQuery, JSONBody
 from litestar.testing import create_test_client
 
@@ -75,7 +75,7 @@ def test_model_required_field_without_provider_raises() -> None:
     async def handler(foo: NamedDependency[Foo]) -> Foo:
         return foo
 
-    with pytest.raises(ImproperlyConfiguredException, match="Explicit dependency 'bar'"):
+    with pytest.raises(MissingProviderError, match="has no provider for dependency 'bar'"):
         Litestar([handler])
 
 

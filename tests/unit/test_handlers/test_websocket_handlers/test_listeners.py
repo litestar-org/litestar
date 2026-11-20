@@ -11,6 +11,7 @@ from litestar import Controller, Litestar, Request, WebSocket
 from litestar.connection import ASGIConnection
 from litestar.datastructures import MultiDict, State
 from litestar.di import NamedDependency, Provide
+from litestar.di.exceptions import MissingProviderError
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import WebsocketListenerRouteHandler
@@ -233,6 +234,7 @@ def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
         ws.send_text("something")
         ws.send_text("something")
         assert ws.receive_json() == {"data": "something", "foo": 1}
+        assert ws.receive_json() == {"data": "something", "foo": 1}
 
 
 def test_listener_callback_no_data_arg_raises() -> None:
@@ -244,20 +246,12 @@ def test_listener_callback_no_data_arg_raises() -> None:
         handler.on_registration(WebSocketRoute(path="/", route_handler=handler), app=Litestar())
 
 
-def test_listener_callback_request_and_body_arg_raises() -> None:
-    with pytest.raises(ImproperlyConfiguredException):
+def test_listener_callback_request_arg_raises() -> None:
+    @websocket_listener("/")
+    def handler(data: str, request: Request) -> None: ...
 
-        @websocket_listener("/")
-        def handler_request(data: str, request: Request) -> None: ...
-
-        handler_request.on_registration(WebSocketRoute(path="/", route_handler=handler_request), app=Litestar())
-
-    with pytest.raises(ImproperlyConfiguredException):
-
-        @websocket_listener("/")
-        def handler_body(data: str, body: bytes) -> None: ...
-
-        handler_body.on_registration(WebSocketRoute(path="/", route_handler=handler_body), app=Litestar())
+    with pytest.raises(MissingProviderError, match="has no provider for dependency Request"):
+        Litestar([handler])
 
 
 def test_listener_accept_connection_callback() -> None:

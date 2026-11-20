@@ -220,5 +220,5 @@ app = Litestar(
     route_handlers=[AuthorController],
     on_startup=[on_startup],
     plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
-    dependencies={"limit_offset": Provide(provide_limit_offset_pagination)},
+    dependencies={"limit_offset": Provide(provide_limit_offset_pagination, sync_to_thread=False)},
 )

@@ -204,7 +204,7 @@ def test_struct_field_default() -> None:
 
 def test_schema_for_optional_path_parameter() -> None:
     @get(path=["/", "/{test_message:str}"], media_type=MediaType.TEXT, sync_to_thread=False)
-    def handler(test_message: FromPath[Optional[str]]) -> str:
+    def handler(test_message: FromPath[Optional[str]] = None) -> str:
         return test_message or "no message"
 
     with create_test_client(
