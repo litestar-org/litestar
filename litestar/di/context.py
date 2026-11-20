@@ -10,6 +10,7 @@ from typing import (
     Final,
     Self,
     TypeVar,
+    cast,
     overload,
 )
 
@@ -38,6 +39,8 @@ if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable, Collection, Mapping
     from contextlib import AbstractAsyncContextManager
     from types import TracebackType
+
+    from typing_extensions import TypeForm
 
     from litestar.di.provider import DependencyKey, InjectionParameter, Provider
     from litestar.di.registry import DIRegistry, _Predecessors
@@ -266,19 +269,31 @@ class DIContext:
         await self._resolve_arguments(target.dependencies, arguments, supplied=supplied)
         return arguments
 
+    # a string spelling a type is a type form: the overloads taking a 'str' have to match first
     @overload
-    async def solve_many(self, key1: type[T1], /) -> tuple[T1]: ...
+    async def solve_many(self, key1: str, /, *keys: DependencyKey) -> tuple[Any, ...]: ...
 
     @overload
-    async def solve_many(self, key1: type[T1], key2: type[T2], /) -> tuple[T1, T2]: ...
+    async def solve_many(self, key1: DependencyKey, key2: str, /, *keys: DependencyKey) -> tuple[Any, ...]: ...
 
     @overload
-    async def solve_many(self, key1: type[T1], key2: type[T2], key3: type[T3], /) -> tuple[T1, T2, T3]: ...
+    async def solve_many(
+        self, key1: DependencyKey, key2: DependencyKey, key3: str, /, *keys: DependencyKey
+    ) -> tuple[Any, ...]: ...
+
+    @overload
+    async def solve_many(self, key1: TypeForm[T1], /) -> tuple[T1]: ...
+
+    @overload
+    async def solve_many(self, key1: TypeForm[T1], key2: TypeForm[T2], /) -> tuple[T1, T2]: ...
+
+    @overload
+    async def solve_many(self, key1: TypeForm[T1], key2: TypeForm[T2], key3: TypeForm[T3], /) -> tuple[T1, T2, T3]: ...
 
     @overload
     async def solve_many(self, *keys: DependencyKey) -> tuple[Any, ...]: ...
 
-    async def solve_many(self, *keys: DependencyKey) -> tuple[Any, ...]:
+    async def solve_many(self, *keys: str | TypeForm[Any]) -> tuple[Any, ...]:
         """Solve all ``keys``, and return their resolved values in the order of ``keys``.
 
         This method should not be used from within a dependency provider, as it can
@@ -293,15 +308,15 @@ class DIContext:
                 best effort check to avoid misuse, see :doc:`/usage/di_2/caveats`.
         """
         self._check_usable(for_method="solve_many")
-        return tuple([await self._resolve_one(key) for key in keys])
-
-    @overload
-    async def solve(self, key: type[T]) -> T: ...
+        return tuple([await self._resolve_one(key) for key in cast("tuple[DependencyKey, ...]", keys)])
 
     @overload
     async def solve(self, key: str) -> Any: ...
 
-    async def solve(self, key: DependencyKey) -> Any:
+    @overload
+    async def solve(self, key: TypeForm[T]) -> T: ...
+
+    async def solve(self, key: str | TypeForm[Any]) -> Any:
         """Solve for ``key`` and return its value.
 
         This method should not be used from within a dependency provider, as it can
@@ -316,15 +331,15 @@ class DIContext:
                 check to avoid misuse, see :doc:`/usage/di_2/caveats`.
         """
         self._check_usable(for_method="solve")
-        return await self._resolve_one(key)
-
-    @overload
-    def get(self, key: type[T]) -> T: ...
+        return await self._resolve_one(key)  # type: ignore[arg-type]
 
     @overload
     def get(self, key: str) -> Any: ...
 
-    def get(self, key: DependencyKey) -> Any:
+    @overload
+    def get(self, key: TypeForm[T]) -> T: ...
+
+    def get(self, key: str | TypeForm[Any]) -> Any:
         """Return the previously solved value of ``key``.
 
         Raises:

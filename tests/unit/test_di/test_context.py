@@ -1,10 +1,11 @@
-# pyright: reportUnnecessaryTypeIgnoreComment=false
+# pyright: reportUnnecessaryTypeIgnoreComment=false, enableExperimentalFeatures=true
 from __future__ import annotations
 
+import abc
 import asyncio
 import functools
 from collections.abc import AsyncGenerator
-from typing import Annotated, Any, NewType, assert_type
+from typing import Annotated, Any, Literal, NewType, Protocol, assert_type
 
 import pytest
 from pytest_mock import MockerFixture
@@ -341,6 +342,81 @@ async def test_solve_type_dependency() -> None:
 
 
 UserId = NewType("UserId", int)
+Mode = Literal["read", "write"]
+
+
+async def test_value_typed_by_type_form_key() -> None:
+    @provide(scope="app", kind="type")
+    async def user_id() -> UserId:
+        return UserId(7)
+
+    @provide(scope="app", kind="type")
+    async def mode() -> Mode:
+        return "read"
+
+    @provide(scope="app", kind="type")
+    async def numbers() -> list[int]:
+        return [1, 2]
+
+    async with DIContext(DIRegistry("app", [user_id, mode, numbers])) as ctx:
+        assert assert_type(await ctx.solve(UserId), UserId) == 7
+        assert assert_type(await ctx.solve(Mode), Literal["read", "write"]) == "read"
+        assert assert_type(await ctx.solve(list[int]), list[int]) == [1, 2]
+
+        assert assert_type(ctx.get(UserId), UserId) == 7
+        assert assert_type(ctx.get(Mode), Literal["read", "write"]) == "read"
+        assert assert_type(ctx.get(list[int]), list[int]) == [1, 2]
+
+        values = assert_type(
+            await ctx.solve_many(UserId, Mode, list[int]), tuple[UserId, Literal["read", "write"], list[int]]
+        )
+        assert values == (7, "read", [1, 2])
+
+
+async def test_value_typed_by_abstract_class_key() -> None:
+    class Repository(Protocol):
+        def load(self) -> str: ...
+
+    class Storage(abc.ABC):
+        @abc.abstractmethod
+        def read(self) -> str: ...
+
+    class SQLRepository:
+        def load(self) -> str:
+            return "row"
+
+    class DiskStorage(Storage):
+        def read(self) -> str:
+            return "bytes"
+
+    registry = DIRegistry(
+        "app",
+        [Provider(SQLRepository, scope="app", key=Repository), Provider(DiskStorage, scope="app", key=Storage)],
+    )
+    async with DIContext(registry) as ctx:
+        repository = assert_type(await ctx.solve(Repository), Repository)
+        storage = assert_type(await ctx.solve(Storage), Storage)
+        assert (repository.load(), storage.read()) == ("row", "bytes")
+
+        assert assert_type(ctx.get(Repository), Repository) is repository
+        assert assert_type(ctx.get(Storage), Storage) is storage
+
+        values = assert_type(await ctx.solve_many(Repository, Storage), tuple[Repository, Storage])
+        assert values == (repository, storage)
+
+
+async def test_name_key_spelling_a_type_typed_as_any() -> None:
+    @provide(scope="app", key="Config")
+    async def named() -> str:
+        return "by name"
+
+    # a string spelling a type is a type form: the overloads taking a 'str' have to match first
+    async with DIContext(DIRegistry("app", [named, config])) as ctx:
+        assert assert_type(await ctx.solve("Config"), Any) == "by name"
+        assert assert_type(ctx.get("Config"), Any) == "by name"
+        assert assert_type(await ctx.solve_many("Config"), tuple[Any, ...]) == ("by name",)
+        assert_type(await ctx.solve_many(Config, "Config"), tuple[Any, ...])
+        assert_type(await ctx.solve_many(Config, Config, "Config"), tuple[Any, ...])
 
 
 async def test_new_type_type_dependency() -> None:
@@ -361,7 +437,7 @@ async def test_new_type_type_dependency() -> None:
     assert count.key is int
     async with DIContext(DIRegistry("app", [user_id, count])) as ctx:
         assert await ctx.inject(handler) == (7, 3)
-        assert await ctx.solve(UserId) == 7  # pyright: ignore[reportCallIssue, reportArgumentType]
+        assert await ctx.solve(UserId) == 7
         assert await ctx.solve(int) == 3
 
     async with DIContext(DIRegistry("app", [user_id])) as ctx:

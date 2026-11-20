@@ -245,6 +245,7 @@ enable_error_code = [
   "possibly-undefined",
   "redundant-self",
 ]
+enable_incomplete_feature = ["TypeForm"]
 packages = ["litestar", "tests", "docs.examples"]
 plugins = ["pydantic.mypy"]
 python_version = "3.11"
