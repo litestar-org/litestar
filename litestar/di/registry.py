@@ -31,7 +31,7 @@ __all__ = (
 )
 
 
-_DEFAULT_SCOPES: tuple[str, ...] = ("app", "request", "handler")
+_DEFAULT_SCOPES: Final = ("app", "request", "handler")
 
 
 _Predecessors: TypeAlias = "frozenset[Provider]"
