@@ -717,13 +717,16 @@ def _transfer_type_data(
     attribute_accessor: Callable[[object, str], Any],
 ) -> Any:
     if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
+        # Inlined rather than calling ``_nested_destination_type``: this runs once per nested value.
+        if nested_as_dict:
+            destination_type: Any = dict
+        elif is_data_field:
+            destination_type = transfer_type.field_definition.annotation
+        else:
+            destination_type = transfer_type.nested_field_info.model
+
         return _transfer_instance_data(
-            destination_type=_nested_destination_type(
-                nested_as_dict=nested_as_dict,
-                is_data_field=is_data_field,
-                field_annotation=transfer_type.field_definition.annotation,
-                nested_model=transfer_type.nested_field_info.model,
-            ),
+            destination_type=destination_type,
             source_instance=source_value,
             field_definitions=transfer_type.nested_field_info.field_definitions,
             is_data_field=is_data_field,
@@ -787,31 +790,31 @@ def _transfer_nested_union_type_data(
     # (e.g. Optional[Model] or Union[Model, str]), so the target type is unambiguous.
     # Untagged unions of multiple nested models (e.g. Union[ModelA, ModelB]) are
     # rejected by msgspec before this transfer runs.
-    allow_mapping_source = (
-        is_data_field
-        and not nested_as_dict
-        and transfer_type.nested_member_count == 1
-        and isinstance(source_value, Mapping)
-    )
+    # The (slower, ABC-based) Mapping check is only evaluated when the cheap model
+    # isinstance check fails, so the common "already a model instance" path is unaffected.
+    allow_mapping_source = is_data_field and not nested_as_dict and transfer_type.nested_member_count == 1
 
     for inner_type in transfer_type.inner_types:
         if isinstance(inner_type, CompositeType):
             raise RuntimeError("Composite inner types not (yet) supported for nested unions.")
 
-        if not inner_type.nested_field_info:
+        nested_field_info = inner_type.nested_field_info
+        if not nested_field_info:
             continue
 
-        constraint = inner_type.nested_field_info.model if is_data_field else inner_type.field_definition.annotation
-        if isinstance(source_value, constraint) or allow_mapping_source:
+        constraint = nested_field_info.model if is_data_field else inner_type.field_definition.annotation
+        if isinstance(source_value, constraint) or (allow_mapping_source and isinstance(source_value, Mapping)):
+            if nested_as_dict:
+                destination_type: Any = dict
+            elif is_data_field:
+                destination_type = inner_type.field_definition.annotation
+            else:
+                destination_type = nested_field_info.model
+
             return _transfer_instance_data(
-                destination_type=_nested_destination_type(
-                    nested_as_dict=nested_as_dict,
-                    is_data_field=is_data_field,
-                    field_annotation=inner_type.field_definition.annotation,
-                    nested_model=inner_type.nested_field_info.model,
-                ),
+                destination_type=destination_type,
                 source_instance=source_value,
-                field_definitions=inner_type.nested_field_info.field_definitions,
+                field_definitions=nested_field_info.field_definitions,
                 is_data_field=is_data_field,
                 attribute_accessor=attribute_accessor,
             )
