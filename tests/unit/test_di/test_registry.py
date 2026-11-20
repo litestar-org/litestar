@@ -263,7 +263,7 @@ def test_check_target_accepts_an_injection_target() -> None:
 
 
 def test_missing_provider_suggests_close_names() -> None:
-    registry = DIRegistry("app", [make_provider("a", deps=("databse",)), make_provider("database")])
+    registry = DIRegistry("app", [make_provider("a", deps=("databse",)), make_provider("database")])  # codespell:ignore
 
     with pytest.raises(MissingProviderError, match="did you mean: 'database'"):
         registry.freeze()

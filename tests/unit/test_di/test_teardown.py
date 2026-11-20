@@ -409,7 +409,7 @@ async def test_out_of_order_close_is_reported_even_when_cleanup_fails() -> None:
     assert req.closed
 
 
-async def test_parent_closing_during_childs_teardown_raises() -> None:
+async def test_parent_closing_during_childs_teardown_raises() -> None:  # codespell:ignore
     # order shouldn't matter, it should always raise
     cleanup_started = asyncio.Event()
     release = asyncio.Event()

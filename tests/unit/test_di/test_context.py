@@ -284,9 +284,9 @@ async def test_supplied_name_without_parameter_raises() -> None:
         with pytest.raises(
             DIResolutionError,
             match=r"Cannot solve the arguments of .*handler .*: 'supplied' names parameters it does not "
-            r"declare: 'sesion'$",
+            r"declare: 'sesion'$",  # codespell:ignore
         ):
-            await ctx.solve_arguments(handler, supplied={"limit", "sesion"})
+            await ctx.solve_arguments(handler, supplied={"limit", "sesion"})  # codespell:ignore
         assert not ctx.has_solved("session")
 
 
@@ -699,10 +699,10 @@ async def test_seed_with_factory_raises() -> None:
     assert calls == 1
 
 
-@pytest.mark.parametrize("seeds", [{"reqest_obj": 1}, {"request_obj": 1, "reqest_obj": 2}])
+@pytest.mark.parametrize("seeds", [{"reqest_obj": 1}, {"request_obj": 1, "reqest_obj": 2}])  # codespell:ignore
 async def test_seed_for_undeclared_key_raises(seeds: dict[DependencyKey, int]) -> None:
     registry = DIRegistry("app", [Provider.seed("request_obj", scope="app")])
-    with pytest.raises(DIRegistrationError, match="seeded with 'reqest_obj'") as exc_info:
+    with pytest.raises(DIRegistrationError, match="seeded with 'reqest_obj'") as exc_info:  # codespell:ignore
         DIContext(registry, seeds=seeds)
     message = str(exc_info.value)
     assert "did you mean: 'request_obj'?" in message
