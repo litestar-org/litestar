@@ -129,7 +129,7 @@ class DIRegistry:
         Args:
             name: Name of this registry. Only used for debugging purposes in error messages
             providers: Providers available in this registry
-            scopes: Available scopes, in order, outermost first. Defaults to :data:`DEFAULT_SCOPES`
+            scopes: Available scopes, in order, outermost first. Defaults to ``("app", "request", "handler")``
 
         Raises:
             DIRegistrationError: If the scopes or the providers are invalid.

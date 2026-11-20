@@ -233,7 +233,7 @@ class DIContext:
         Raises:
             MissingProviderError: If a required dependency has no provider.
             DIResolutionError: If the call is found to come from inside a factory; a best effort
-                check to avoid misuse, see :doc:`/usage/di_2/caveats`.
+                check to avoid misuse.
         """
         self._check_usable(for_method="inject")
         target = InjectionTarget._for_callable(fn)
@@ -255,7 +255,7 @@ class DIContext:
             MissingProviderError: If a required dependency has no provider.
             DIResolutionError: If ``supplied`` names a parameter ``fn`` does not declare, unless
                 ``fn`` takes ``**kwargs``; or if the call is found to come from inside a factory,
-                a best effort check to avoid misuse, see :doc:`/usage/di_2/caveats`.
+                a best effort check to avoid misuse.
         """
         self._check_usable(for_method="solve_arguments")
         target = InjectionTarget._for_callable(fn)
@@ -305,7 +305,7 @@ class DIContext:
         Raises:
             MissingProviderError: If a key has no provider.
             DIResolutionError: If the call is found to come from inside a factory; a
-                best effort check to avoid misuse, see :doc:`/usage/di_2/caveats`.
+                best effort check to avoid misuse.
         """
         self._check_usable(for_method="solve_many")
         return tuple([await self._resolve_one(key) for key in cast("tuple[DependencyKey, ...]", keys)])
@@ -328,7 +328,7 @@ class DIContext:
         Raises:
             MissingProviderError: If a key has no provider.
             DIResolutionError: If the call is found to come from inside a factory; a best effort
-                check to avoid misuse, see :doc:`/usage/di_2/caveats`.
+                check to avoid misuse.
         """
         self._check_usable(for_method="solve")
         return await self._resolve_one(key)  # type: ignore[arg-type]
@@ -488,8 +488,6 @@ class DIContext:
         """Raise if being called from inside a provider.
 
         Best effort check using context variables, not guaranteed to always work.
-
-        See for details :doc:`/usage/di_2/caveats`
         """
         current_provider = _CTX_RUNNING_PROVIDER_SLOT.get()
         if current_provider is not None and current_provider.running:

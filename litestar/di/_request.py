@@ -44,8 +44,8 @@ class RequestParameter:
 
     @property
     def key(self) -> str:
-        """Dependency key: ``"<param type>:<name>"``, a header's name lower-cased, or ``"body:"``
-        for the request body
+        """The dependency key, ``"<param type>:<name>"`` with a header's name lower-cased, or
+        ``"body:"`` for the request body
         """
         if self.param_type is None:
             return "body:"

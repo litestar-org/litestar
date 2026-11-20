@@ -23,7 +23,7 @@
         handlers without that decoder.
 
     .. change:: Run all parts of sync generator dependencies in a worker threads
-        :type: fix
+        :type: bugfix
         :breaking:
         :pr: 5227
 

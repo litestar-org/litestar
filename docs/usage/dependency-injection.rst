@@ -388,6 +388,6 @@ Dependency values are not validated
 A dependency is passed to the handler as its provider returns it; the value is not checked
 against the parameter's annotation. This handler receives a string:
 
-.. literalinclude:: /examples/dependency_injection/dependency_values_not_validated.py
+.. literalinclude:: /examples/dependency_injection/dependency_validation_error.py
     :caption: A dependency value of another type than annotated
     :language: python

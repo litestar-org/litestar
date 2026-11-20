@@ -338,7 +338,7 @@ class Litestar(Router):
                 connections.
             experimental_features: An iterable of experimental features to enable
             di_check_graph_divergence: Check the DI graph for divergences in sub-dependencies, which may result in
-                unexpected value isolation. Check :func:`~litestar.di.registry.check_divergence` for details.
+                unexpected value isolation. Check :func:`~litestar.di.check_divergence` for details.
                 If ``warn``, warn about findings. If ``raise``, raise an exception instead.
             di_check_graph_divergence_ignore: Dependency keys or provider instances to ignore when running the DI graph
                 divergence check.

@@ -118,7 +118,7 @@ class Dependency:
     """The key to resolve"""
 
     kind: Literal["named", "type"] | ProviderKind | None = None
-    """Resolution strategy: by name or by type. If not given, inferred from 'key', or by name without a key"""
+    """Whether to resolve by name or by type. If not given, inferred from 'key', or by name without a key"""
 
     def __post_init__(self) -> None:
         kind = _get_provider_kind_for(self.key, self.kind, subject=lambda: repr(self)) or ProviderKind.NAMED
@@ -774,8 +774,8 @@ def provide(
         kind: Whether the provider is keyed by name or by type. If not given, inferred
             from ``key``, or by name without a key
         key: Key this factory provides for. If not given, will be inferred. From the
-        callable's name for ``kind="named"`` (the default), and from the callable's
-        return type for ``kind="type"``
+            callable's name for ``kind="named"`` (the default), and from the callable's
+            return type for ``kind="type"``
         sync_to_thread: Whether a sync callable runs in a worker thread; see :class:`Provider`
             for more information
 
