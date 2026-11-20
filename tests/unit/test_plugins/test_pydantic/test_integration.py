@@ -298,7 +298,7 @@ def test_model_defaults(pydantic_version: PydanticVersion) -> None:
         return {"a": data.a, "b": data.b, "c": data.c}
 
     with create_test_client([handler]) as client:
-        schema = client.app.openapi_schema.components.schemas["test_model_defaults.Model"]
+        schema = client.app.openapi_schema.components.schemas["Model"]
         res = client.post("/", json={"a": 5})
         assert res.status_code == 201
         assert res.json() == {"a": 5, "b": 1, "c": 3}
@@ -326,7 +326,7 @@ def test_v2_computed_fields(with_dto: bool) -> None:
     async def handler() -> Model:
         return Model()
 
-    component_name = "HandlerModelResponseBody" if with_dto else "test_v2_computed_fields.Model"
+    component_name = "HandlerModelResponseBody" if with_dto else "Model"
 
     with create_test_client([handler]) as client:
         schema = client.app.openapi_schema.components.schemas[component_name]

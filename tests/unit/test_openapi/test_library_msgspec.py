@@ -223,6 +223,15 @@ class SpecialPlugin(DataclassSchemaPlugin):
         return Schema(type=OpenAPIType.STRING)
 
 
+class PModel(pydantic.BaseModel):
+    p: int
+
+
+@dataclasses.dataclass
+class WithPydantic:
+    model: PModel
+
+
 @dataclasses.dataclass
 class UnionA:
     a: int
@@ -744,6 +753,13 @@ def test_plugin_wrapping_a_routed_plugin_keeps_the_root(model: Any, inner: OpenA
     wrapped = document([round_trip(model)], plugins=(Wrapping(inner, model),))
 
     assert wrapped == document([round_trip(model)])
+
+
+def test_nested_pydantic_model_delegated() -> None:
+    schemas = components(document([body_only(WithPydantic)]))
+
+    assert schemas["WithPydantic"]["properties"] == {"model": {"$ref": f"{PREFIX}PModel"}}
+    assert schemas["PModel"]["properties"] == {"p": {"title": "P", "type": "integer"}}
 
 
 @pytest.mark.parametrize(
