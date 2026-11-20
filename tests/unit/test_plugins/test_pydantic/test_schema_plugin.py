@@ -23,6 +23,14 @@ class PydanticV2Generic(pydantic_v2.BaseModel, Generic[T]):
     annotated_foo: Annotated[T, object()]
 
 
+class ForwardRefParent(pydantic_v2.BaseModel):
+    children: "list[ForwardRefChild]"
+
+
+class ForwardRefChild(pydantic_v2.BaseModel):
+    name: str
+
+
 @pytest.mark.parametrize("model", [PydanticV2Generic])
 def test_schema_generation_with_generic_classes(model: type[PydanticV2Generic]) -> None:
     cls = model[int]  # type: ignore[index]
@@ -213,3 +221,19 @@ def test_optional_field_does_not_mutate_shared_type_map_schema() -> None:
 
     assert optional.type == [OpenAPIType.INTEGER, OpenAPIType.NULL]
     assert required.type == OpenAPIType.INTEGER
+
+
+def test_schema_generation_resolves_forward_references() -> None:
+    schema_creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
+    reference = schema_creator.for_field_definition(FieldDefinition.from_annotation(ForwardRefParent))
+    assert isinstance(reference, Reference)
+    properties = schema_creator.schema_registry.from_reference(reference).schema.properties
+
+    assert properties
+    children = properties["children"]
+    assert isinstance(children, Schema)
+    assert children.type == OpenAPIType.ARRAY
+    assert isinstance(children.items, Reference)
+    child = schema_creator.schema_registry.from_reference(children.items).schema
+    assert child.title == "ForwardRefChild"
+    assert child.properties == {"name": Schema(type=OpenAPIType.STRING)}

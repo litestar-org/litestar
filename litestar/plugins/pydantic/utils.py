@@ -236,6 +236,9 @@ def get_model_info(
         is_generic_model = False
         model = annotation
 
+    if not model.__pydantic_complete__:
+        model.model_rebuild(raise_errors=False, _parent_namespace_depth=0)
+
     model_config = model.model_config
     model_field_info = model.model_fields
     title = model_config.get("title")
