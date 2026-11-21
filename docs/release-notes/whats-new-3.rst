@@ -467,9 +467,9 @@ returns a ``SessionMiddleware`` instance instead of a ``DefineMiddleware``, so
 ``middleware=[session_config.middleware]`` keeps working, while code reaching into
 ``session_config.middleware.kwargs["backend"]`` must use
 ``session_config.middleware.backend`` instead. The ``exclude`` patterns of the session
-configurations are now matched against the **handler's path template** (e.g.
-``/user/{user_id:int}``) at startup, instead of the request path (e.g. ``/user/1``) at
-runtime; unanchored patterns should be anchored.
+configurations are still matched against the request path; the new
+``exclude_path_pattern`` option matches against the handler's path (e.g.
+``/user/{user_id:int}``) at startup.
 
 Code that composed one of the others directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and

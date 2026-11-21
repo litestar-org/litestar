@@ -12,6 +12,7 @@ from typing import (
 
 from litestar.connection import ASGIConnection
 from litestar.enums import ScopeType
+from litestar.middleware._utils import build_exclude_bypass
 from litestar.middleware.base import ASGIMiddleware
 from litestar.serialization import decode_json, encode_json
 from litestar.utils import get_serializer_from_scope
@@ -64,7 +65,12 @@ class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):
     Defaults to ``lax``.
     """
     exclude: str | list[str] | None
-    """A pattern or list of patterns to skip in the session middleware."""
+    """A pattern or list of patterns to skip in the session middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = None
+    """A pattern or list of patterns to skip in the session middleware, matched against the handler path at startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str
     """An identifier to use on routes to disable the session middleware for a particular route."""
 
@@ -195,8 +201,10 @@ class SessionMiddleware(ASGIMiddleware, Generic[BaseSessionBackendT]):
             backend: A :class:`BaseSessionBackend` instance used to store and retrieve session data
         """
         self.backend = backend
-        exclude = backend.config.exclude
-        self.exclude_path_pattern = (tuple(exclude) if isinstance(exclude, list) else exclude) or None
+        exclude_path_pattern = backend.config.exclude_path_pattern
+        self.exclude_path_pattern = (
+            tuple(exclude_path_pattern) if isinstance(exclude_path_pattern, list) else exclude_path_pattern
+        ) or None
         self.exclude_opt_key = backend.config.exclude_opt_key
         # scopes are user-configurable and the middleware serves more than one scope
         # type, so a startup-time handler bypass cannot represent per-connection scope
@@ -206,6 +214,9 @@ class SessionMiddleware(ASGIMiddleware, Generic[BaseSessionBackendT]):
         self.scopes = (*scope_types, ScopeType.ASGI)
         if scope_types != {ScopeType.HTTP, ScopeType.WEBSOCKET}:
             self.should_bypass_for_scope = self._is_unconfigured_scope_type
+        self.should_bypass_for_scope = build_exclude_bypass(
+            backend.config.exclude, middleware_cls=type(self), also=self.should_bypass_for_scope
+        )
 
     def _is_unconfigured_scope_type(self, scope: Scope) -> bool:
         return scope["type"] not in self.scopes

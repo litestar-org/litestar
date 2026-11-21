@@ -1,8 +1,11 @@
 from typing import TYPE_CHECKING, Any, Optional, Union
 
+import pytest
+
 from litestar import HttpMethod, Request, Response, WebSocket, asgi, get, post, route
 from litestar.enums import ScopeType
 from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.params import FromPath
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
@@ -159,6 +162,33 @@ def test_middleware_exclude_pattern(session_backend_config_memory: "ServerSideSe
 
         response = client.get("/west")
         assert response.json() == {"has_session": True}
+
+
+@pytest.mark.parametrize(
+    "option, patterns",
+    [("exclude", ["^/user/1$"]), ("exclude_path_pattern", [r"^/user/\{user_id:int\}$"])],
+    ids=["request_path", "handler_path"],
+)
+def test_middleware_exclude_dynamic_path(
+    session_backend_config_memory: "ServerSideSessionConfig", option: str, patterns: list[str]
+) -> None:
+    setattr(session_backend_config_memory, option, patterns)
+
+    @get("/user/{user_id:int}")
+    def user_handler(request: Request, user_id: FromPath[int]) -> dict[str, bool]:
+        return get_session_installed(request)
+
+    @get("/west")
+    def west_handler(request: Request) -> dict[str, bool]:
+        return get_session_installed(request)
+
+    with create_test_client(
+        route_handlers=[user_handler, west_handler],
+        middleware=[session_backend_config_memory.middleware],
+    ) as client:
+        assert client.get("/user/1").json() == {"has_session": False}
+        assert client.get("/user/2").json() == {"has_session": option == "exclude"}
+        assert client.get("/west").json() == {"has_session": True}
 
 
 def test_middleware_exclude_flag(session_backend_config_memory: "ServerSideSessionConfig") -> None:
