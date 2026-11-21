@@ -343,8 +343,10 @@ def test_client_sends_repeated_headers_separately() -> None:
 
 def test_client_uses_the_default_https_port_in_scope() -> None:
     @get("/")
-    def handler(request: Request) -> int:
-        return request.scope["server"][1]
+    def handler(request: Request) -> Optional[int]:
+        server = request.scope["server"]
+        assert server is not None
+        return server[1]
 
     with create_test_client(handler, base_url="https://example.org") as client:
         assert client.get("/").json() == 443
