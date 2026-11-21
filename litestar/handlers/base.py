@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import functools
-from dataclasses import replace
 from functools import partial
 from typing import TYPE_CHECKING, Any, NoReturn, cast
 
@@ -11,7 +10,6 @@ from litestar._layers.utils import narrow_dependencies
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.middleware.constraints import check_middleware_constraints
-from litestar.params import BodyKwarg
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
     Dependencies,
@@ -32,7 +30,7 @@ from litestar.utils.scope.state import ScopeState
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, merge_signature_namespaces
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Mapping, Sequence
+    from collections.abc import Callable, Coroutine, Mapping, Sequence
     from typing import Self
 
     from litestar.app import Litestar
@@ -63,6 +61,7 @@ class BaseRouteHandler:
         "_parsed_fn_signature",
         "_parsed_return_field",
         "_return_dto",
+        "_validate_request_parameters",
         "dependencies",
         "exception_handlers",
         "fn",
@@ -79,6 +78,12 @@ class BaseRouteHandler:
 
     _injection_setup: HandlerInjectionSetup
     """What injecting the handler's function takes. Set on registration"""
+
+    _validate_request_parameters: Callable[[ASGIConnection], Coroutine[Any, Any, dict[str, Any]]] | None
+    """The validation pass over the request parameters of the handler's function, dependencies and layers,
+    see :func:`~litestar._request_parameters.validation.create_request_param_validaton_fn`. ``None`` if
+    there are none. Set on registration
+    """
 
     def __init__(
         self,
@@ -131,7 +136,7 @@ class BaseRouteHandler:
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
         self._parsed_return_field: FieldDefinition | EmptyType = Empty
-        self._parsed_data_field: FieldDefinition | None | EmptyType = Empty
+        self._parsed_data_field: FieldDefinition | None = None
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
 
         self.dependencies = narrow_dependencies(dependencies)
@@ -272,13 +277,7 @@ class BaseRouteHandler:
 
     @property
     def parsed_data_field(self) -> FieldDefinition | None:
-        if self._parsed_data_field is Empty:
-            self._parsed_data_field = None
-            for field in self.parsed_fn_signature.parameters.values():
-                if isinstance(field.kwarg_definition, BodyKwarg):
-                    # a DTO knows the request body by the name 'data'
-                    self._parsed_data_field = replace(field, name="data")
-                    break
+        """The request body of an HTTP handler, or the data a websocket listener receives. Set on registration"""
         return self._parsed_data_field
 
     @property

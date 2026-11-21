@@ -61,22 +61,16 @@ class PathItemFactory:
         parameters = create_parameters_for_handler(self.context, route_handler, self.route.path_parameters)
 
         request_body = None
-        setup = route_handler._injection_setup
-        body = next(
-            (definition for definition in setup.request_parameter_definitions.values() if definition.is_body), None
-        )
-        if body is not None:
-            # a body only providers declare is decoded without the handler's DTO
-            handler_declares_body = any(parameter.is_body for parameter in setup.target.request_parameters)
+        if (data_field := route_handler.parsed_data_field) is not None:
             request_body = create_request_body(
                 self.context,
                 route_handler.handler_id,
-                route_handler.data_dto if handler_declares_body else None,
-                body.field_definition,
+                route_handler.data_dto,
+                data_field,
                 signature_namespace=route_handler.signature_namespace,
             )
 
-        raises_validation_error = bool(body or self._path_item.parameters or parameters)
+        raises_validation_error = bool(data_field or self._path_item.parameters or parameters)
         responses = create_responses_for_handler(
             self.context, route_handler, raises_validation_error=raises_validation_error
         )
