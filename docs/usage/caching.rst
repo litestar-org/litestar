@@ -60,6 +60,9 @@ Specifying a cache key builder
 Litestar uses the request's path + sorted query parameters as the cache key. This can be adjusted by providing a
 "key builder" function, either at application or route handler level.
 
+The key of a ``QUERY`` request always includes a digest of the request body, its media type and its content coding,
+also with a custom key builder, since they identify the query.
+
 .. literalinclude:: /examples/caching/key_builder.py
     :language: python
     :caption: Using a custom cache key builder.

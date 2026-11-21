@@ -119,6 +119,23 @@
         are rejected. Their component schemas now set ``additionalProperties`` to ``false``,
         like those of the models they are generated from.
 
+    .. change:: Support the HTTP ``QUERY`` method
+        :type: feature
+        :pr: 5234
+
+        Add support for the HTTP ``QUERY`` method, a safe and idempotent method that carries a request body. Handlers
+        are created with the new :func:`~litestar.handlers.query` decorator or ``@route(http_method="QUERY")``, and
+        ``HttpMethod.QUERY`` is available.
+
+        ``QUERY`` is a safe method for the CSRF middleware by default, and is included in the
+        ``Access-Control-Allow-Methods`` header when CORS allows all methods. ``QUERY`` handlers are left out of the
+        OpenAPI document, since OpenAPI 3.1 cannot describe them.
+
+        As :rfc:`10008` requires, a ``QUERY`` request whose ``Content-Type`` is missing is answered with ``400``,
+        and one whose ``Content-Type`` does not match the body the handler declares with ``415`` and an
+        ``Accept-Query`` header. The cache key of a ``QUERY`` request includes a digest of the request body, its media
+        type and its content coding, so responses to different queries are cached separately.
+
     .. change:: Deprecate request parameters ``Headers``, ``QueryParams``, ``RequestCookies`` and ``Scope``
         :type: feature
         :pr: TBD

@@ -1,6 +1,7 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 from __future__ import annotations
 
+from litestar._request_parameters.extraction import check_query_content_type
 from litestar.app import Litestar
 from litestar.connection import ASGIConnection, Request
 from litestar.datastructures import Headers, ImmutableState, State
@@ -28,6 +29,7 @@ def _provide_scope(connection: ASGIConnection) -> Scope:
 
 
 async def _provide_raw_body(request: Request) -> RawBody:
+    check_query_content_type(request)
     return RawBody(await request.body())
 
 

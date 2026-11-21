@@ -80,7 +80,7 @@ class CSRFMiddleware(ASGIMiddleware):
         cookie_httponly: bool = False,
         cookie_samesite: Literal["lax", "strict", "none"] = "lax",
         cookie_domain: str | None = None,
-        safe_methods: Iterable[Method] = ("GET", "HEAD", "OPTIONS"),
+        safe_methods: Iterable[Method] = ("GET", "HEAD", "OPTIONS", "QUERY"),
         exclude: str | list[str] | None = None,
         exclude_opt_key: str = "exclude_from_csrf",
     ) -> None:

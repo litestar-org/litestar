@@ -277,7 +277,7 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
         ]
         for method in HttpMethod:
             if (
-                operation := cast("Operation | None", getattr(path_item, method.lower(), "None"))
+                operation := cast("Operation | None", getattr(path_item, method.lower(), None))
             ) and operation.operation_id:
                 params = parse_params(
                     [

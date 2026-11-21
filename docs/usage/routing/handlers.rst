@@ -197,6 +197,7 @@ which correlates with their name:
 * :func:`@patch() <.handlers.patch>`
 * :func:`@post() <.handlers.post>`
 * :func:`@put() <.handlers.put>`
+* :func:`@query() <.handlers.query>`
 
 These are used exactly like :func:`@route() <.handlers.route>` with the sole exception that you don't need to configure
 the :paramref:`~.handlers.HTTPRouteHandler.http_method` :term:`kwarg <argument>`:
@@ -249,6 +250,16 @@ the :paramref:`~.handlers.HTTPRouteHandler.http_method` :term:`kwarg <argument>`
 
         @delete(path="/resources/{pk:int}")
         async def delete_resource(pk: FromPath[int]) -> None: ...
+
+``QUERY`` is a safe, idempotent method that carries a request body, for queries too large or too structured for the
+URL (:rfc:`10008`). A ``QUERY`` request must declare the media type of its body: one without a ``Content-Type`` is
+answered with ``400``, and one whose ``Content-Type`` does not match the body the handler declares with ``415`` and an
+``Accept-Query`` header naming the expected media type. A handler serving ``GET`` cannot declare a body, so ``GET``
+and ``QUERY`` with a body are served by separate handlers.
+
+As for ``GET``, the CSRF middleware does not protect ``QUERY`` requests, so ``QUERY`` handlers should not change state.
+
+``QUERY`` handlers are left out of the OpenAPI schema, since OpenAPI 3.1 cannot describe them.
 
 Furthermore, in the OpenAPI specification each unique combination of HTTP verb (e.g. ``GET``, ``POST``, etc.) and path
 is regarded as a distinct `operation <https://spec.openapis.org/oas/latest.html#operation-object>`_\ , and each
