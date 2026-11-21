@@ -447,8 +447,9 @@ configure them - for CORS, via
 compression, via :class:`~litestar.config.compression.CompressionConfig`, and for
 allowed hosts, via :class:`~litestar.config.allowed_hosts.AllowedHostsConfig` - are
 unaffected. Their ``exclude`` patterns are still matched against the request path;
-``CSRFConfig`` and ``CompressionConfig`` additionally accept ``exclude_path_pattern``,
-which is matched against the handler's path (e.g. ``/user/{user_id:int}``) at startup,
+``CSRFConfig``, ``CompressionConfig`` and ``AllowedHostsConfig`` additionally accept
+``exclude_path_pattern``, which is matched against the handler's path (e.g.
+``/user/{user_id:int}``) at startup,
 as described in :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
 
 ``CompressionMiddleware`` keeps its ``CompressionConfig``-based constructor (minus the

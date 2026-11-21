@@ -615,17 +615,12 @@
             )
             asgi_app = middleware(next_app)
 
-        Two behavioural changes for excluded routes, matching the other migrated
-        middleware:
-
-        - :attr:`~litestar.config.allowed_hosts.AllowedHostsConfig.exclude` patterns are
-          now matched against the **handler's path template** (e.g.
-          ``/user/{user_id:int}``) at startup, instead of the request path (e.g.
-          ``/user/1``) at runtime. For mounted ASGI apps, patterns match the mount path
-          only, not sub-paths, and a handler registered on multiple paths is excluded as
-          a whole when any of its paths matches.
-        - Handlers excluded via ``exclude`` or ``exclude_opt_key`` now bypass the
-          middleware entirely at startup rather than per request.
+        :attr:`~litestar.config.allowed_hosts.AllowedHostsConfig.exclude` patterns are
+        still matched against the request path. The new
+        :attr:`~litestar.config.allowed_hosts.AllowedHostsConfig.exclude_path_pattern`
+        matches against the handler's path (e.g. ``/user/{user_id:int}``) instead;
+        handlers excluded this way, or via ``exclude_opt_key``, bypass the middleware
+        entirely at startup rather than per request.
 
     .. change:: Migrate ``CompressionMiddleware`` to ``ASGIMiddleware``
         :type: feature

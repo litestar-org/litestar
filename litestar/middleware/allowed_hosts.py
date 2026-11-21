@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from litestar.datastructures import URL, MutableScopeHeaders
 from litestar.enums import ScopeType
+from litestar.middleware._utils import build_exclude_bypass
 from litestar.middleware.base import ASGIMiddleware
 from litestar.response.base import ASGIResponse
 from litestar.response.redirect import ASGIRedirectResponse
@@ -27,6 +28,7 @@ class AllowedHostsMiddleware(ASGIMiddleware):
         *,
         allowed_hosts: list[str] | None = None,
         exclude: str | list[str] | None = None,
+        exclude_path_pattern: str | list[str] | None = None,
         exclude_opt_key: str | None = None,
         scopes: Scopes | None = None,
         www_redirect: bool = True,
@@ -37,7 +39,9 @@ class AllowedHostsMiddleware(ASGIMiddleware):
             allowed_hosts: A list of trusted hosts. Use ``*`` to allow all hosts, or prefix
                 domains with ``*.`` to allow all subdomains. Wildcard placement is validated
                 by :class:`~litestar.config.allowed_hosts.AllowedHostsConfig`, not here.
-            exclude: A pattern or list of patterns to skip.
+            exclude: A pattern or list of patterns to skip, matched against the request path.
+            exclude_path_pattern: A pattern or list of patterns to skip, matched against the handler path at
+                startup. See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
             exclude_opt_key: An identifier to use on routes to disable the host check for a
                 particular route.
             scopes: ASGI scopes processed by the middleware; if ``None`` or empty, ``http``,
@@ -46,12 +50,17 @@ class AllowedHostsMiddleware(ASGIMiddleware):
             www_redirect: A boolean dictating whether to redirect requests that start with
                 ``www.`` and otherwise match a trusted host.
         """
-        self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
+        self.exclude_path_pattern = (
+            tuple(exclude_path_pattern) if isinstance(exclude_path_pattern, list) else exclude_path_pattern
+        )
         self.exclude_opt_key = exclude_opt_key
         if scopes:
             scope_types = frozenset(scopes)
             self.scopes = (*(s for s in (ScopeType.HTTP, ScopeType.WEBSOCKET) if s in scope_types), ScopeType.ASGI)
             self.should_bypass_for_scope = lambda scope: scope["type"] not in scope_types
+        self.should_bypass_for_scope = build_exclude_bypass(
+            exclude, middleware_cls=type(self), also=self.should_bypass_for_scope
+        )
 
         self.allowed_hosts = ["*"] if allowed_hosts is None else list(allowed_hosts)
         self.www_redirect = www_redirect
@@ -78,6 +87,7 @@ class AllowedHostsMiddleware(ASGIMiddleware):
         return cls(
             allowed_hosts=config.allowed_hosts,
             exclude=config.exclude,
+            exclude_path_pattern=config.exclude_path_pattern,
             exclude_opt_key=config.exclude_opt_key,
             scopes=config.scopes,
             www_redirect=config.www_redirect,

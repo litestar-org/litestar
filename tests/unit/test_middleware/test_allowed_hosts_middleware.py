@@ -212,7 +212,36 @@ def test_scopes_http_does_not_check_websocket_connections_to_asgi_mounts() -> No
         assert ws.receive_text() == "ws-ok"
 
 
-def test_exclude_matches_handler_path_template() -> None:
+def test_exclude_matches_request_path() -> None:
+    from litestar.params import FromPath
+
+    @get("/user/{user_id:int}")
+    def handler(user_id: FromPath[int]) -> None: ...
+
+    config = AllowedHostsConfig(allowed_hosts=["moishe.zuchmir.com"], exclude=["^/user/1$"])
+
+    with create_test_client([handler], allowed_hosts=config) as client:
+        client.base_url = "http://not.allowed.com"
+        assert client.get("/user/1").status_code == HTTP_200_OK
+        assert client.get("/user/2").status_code == HTTP_400_BAD_REQUEST
+
+
+def test_exclude_matches_request_path_with_scopes() -> None:
+    @get("/excluded")
+    def excluded() -> None: ...
+
+    @get("/checked")
+    def checked() -> None: ...
+
+    config = AllowedHostsConfig(allowed_hosts=["moishe.zuchmir.com"], exclude=["^/excluded$"], scopes={ScopeType.HTTP})
+
+    with create_test_client([excluded, checked], allowed_hosts=config) as client:
+        client.base_url = "http://not.allowed.com"
+        assert client.get("/excluded").status_code == HTTP_200_OK
+        assert client.get("/checked").status_code == HTTP_400_BAD_REQUEST
+
+
+def test_exclude_path_pattern_matches_handler_path() -> None:
     from litestar.params import FromPath
 
     @get("/user/{user_id:int}")
@@ -221,19 +250,12 @@ def test_exclude_matches_handler_path_template() -> None:
     @get("/order/{order_id:int}")
     def checked(order_id: FromPath[int]) -> None: ...
 
-    config = AllowedHostsConfig(allowed_hosts=["moishe.zuchmir.com"], exclude=[r"/user/\{user_id:int\}"])
+    config = AllowedHostsConfig(allowed_hosts=["moishe.zuchmir.com"], exclude_path_pattern=[r"/user/\{user_id:int\}"])
 
     with create_test_client([excluded, checked], allowed_hosts=config) as client:
         client.base_url = "http://not.allowed.com"
         assert client.get("/user/1").status_code == HTTP_200_OK
         assert client.get("/order/1").status_code == HTTP_400_BAD_REQUEST
-
-    # a request-path pattern does not match a dynamic handler and excludes nothing
-    config = AllowedHostsConfig(allowed_hosts=["moishe.zuchmir.com"], exclude=["^/user/1$"])
-
-    with create_test_client([excluded, checked], allowed_hosts=config) as client:
-        client.base_url = "http://not.allowed.com"
-        assert client.get("/user/1").status_code == HTTP_400_BAD_REQUEST
 
 
 def test_empty_scopes_set_uses_default_scopes() -> None:
