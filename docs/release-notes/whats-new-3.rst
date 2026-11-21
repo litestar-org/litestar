@@ -496,10 +496,8 @@ directly constructible, making the
 ``middleware`` property is deprecated and will be removed in ``4.0``. Pass a configured
 middleware instance to the middleware list instead, e.g.
 ``middleware=[RateLimitMiddleware(rate_limit=("minute", 10))]``. The ``exclude``
-patterns are now matched against the **handler's path template** (e.g.
-``/user/{user_id:int}``) at startup, instead of the request path (e.g. ``/user/1``) at
-runtime, and handlers excluded via ``exclude`` or ``exclude_opt_key`` bypass the
-middleware entirely at startup rather than per request.
+patterns are still matched against the request path; the new ``exclude_path_pattern``
+argument matches against the handler's path (e.g. ``/user/{user_id:int}``) at startup.
 
 .. seealso::
     :ref:`asgi-middleware-migration`

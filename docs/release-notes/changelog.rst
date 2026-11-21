@@ -569,18 +569,11 @@
                 middleware=[RateLimitMiddleware(rate_limit=("minute", 10), exclude=["/schema"])],
             )
 
-        Two behavioural changes for excluded routes:
-
-        - :attr:`~litestar.middleware.rate_limit.RateLimitConfig.exclude` patterns are
-          now matched against the **handler's path template** (e.g.
-          ``/user/{user_id:int}``) at startup, instead of the request path (e.g.
-          ``/user/1``) at runtime. Patterns targeting literal handler paths keep
-          working; patterns written to match expanded path parameters must be rewritten
-          against the template. For mounted ASGI apps, patterns match the mount path
-          only, not sub-paths, and a handler registered on multiple paths is excluded as
-          a whole when any of its paths matches.
-        - Handlers excluded via ``exclude`` or ``exclude_opt_key`` now bypass the
-          middleware entirely at startup rather than per request.
+        ``exclude`` patterns are still matched against the request path. The new
+        ``exclude_path_pattern`` argument matches against the handler's path (e.g.
+        ``/user/{user_id:int}``) instead; handlers excluded this way, or via
+        ``exclude_opt_key``, bypass the middleware entirely at startup rather than per
+        request.
 
     .. change:: Add support for ``leeway`` parameter in JWT security backends
         :type: feature

@@ -367,7 +367,25 @@ def test_mounted_apps_are_rate_limited() -> None:
 
 
 @travel(datetime.utcnow, tick=False)
-def test_exclude_matches_handler_path_template() -> None:
+def test_exclude_matches_request_path() -> None:
+    from litestar.params import FromPath
+
+    @get("/user/{user_id:int}")
+    def handler(user_id: FromPath[int]) -> None:
+        return None
+
+    rate_limit_middleware = RateLimitMiddleware(rate_limit=("second", 1), exclude=["^/user/1$"])
+
+    with create_test_client(route_handlers=[handler], middleware=[rate_limit_middleware]) as client:
+        assert client.get("/user/1").status_code == HTTP_200_OK
+        assert client.get("/user/1").status_code == HTTP_200_OK
+
+        assert client.get("/user/2").status_code == HTTP_200_OK
+        assert client.get("/user/2").status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+@travel(datetime.utcnow, tick=False)
+def test_exclude_path_pattern_matches_handler_path() -> None:
     from litestar.params import FromPath
 
     @get("/user/{user_id:int}")
@@ -378,8 +396,9 @@ def test_exclude_matches_handler_path_template() -> None:
     def limited_handler(order_id: FromPath[int]) -> None:
         return None
 
-    # exclusion patterns match the handler's path template, not the request path
-    rate_limit_middleware = RateLimitMiddleware(rate_limit=("second", 1), exclude=[r"/user/\{user_id:int\}"])
+    rate_limit_middleware = RateLimitMiddleware(
+        rate_limit=("second", 1), exclude_path_pattern=[r"/user/\{user_id:int\}"]
+    )
 
     with create_test_client(
         route_handlers=[excluded_handler, limited_handler], middleware=[rate_limit_middleware]

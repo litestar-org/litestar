@@ -9,6 +9,7 @@ import anyio
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.exceptions import TooManyRequestsException
+from litestar.middleware._utils import build_exclude_bypass
 from litestar.middleware.base import ASGIMiddleware
 from litestar.serialization import decode_json, encode_json
 from litestar.utils import ensure_async_callable
@@ -76,6 +77,7 @@ class RateLimitMiddleware(ASGIMiddleware):
         rate_limit_remaining_header_key: str = "RateLimit-Remaining",
         rate_limit_reset_header_key: str = "RateLimit-Reset",
         exclude: str | list[str] | None = None,
+        exclude_path_pattern: str | list[str] | None = None,
         exclude_opt_key: str | None = None,
     ) -> None:
         """Initialize ``RateLimitMiddleware``.
@@ -95,7 +97,10 @@ class RateLimitMiddleware(ASGIMiddleware):
             rate_limit_remaining_header_key: Key to use for the rate limit remaining header.
             rate_limit_reset_header_key: Key to use for the rate limit reset header.
             exclude: A pattern or list of patterns to skip in the rate limiting middleware, matched against the
-                handler path.
+                request path.
+            exclude_path_pattern: A pattern or list of patterns to skip in the rate limiting middleware, matched
+                against the handler path at startup. See
+                :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
             exclude_opt_key: An identifier to use on routes to disable rate limiting for a particular route.
         """
         self.unit: DurationUnit = rate_limit[0]
@@ -111,7 +116,12 @@ class RateLimitMiddleware(ASGIMiddleware):
         self.rate_limit_limit_header_key = rate_limit_limit_header_key
         self.rate_limit_remaining_header_key = rate_limit_remaining_header_key
         self.rate_limit_reset_header_key = rate_limit_reset_header_key
-        self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
+        self.exclude_path_pattern = (
+            tuple(exclude_path_pattern) if isinstance(exclude_path_pattern, list) else exclude_path_pattern
+        )
+        self.should_bypass_for_scope = build_exclude_bypass(
+            exclude, middleware_cls=type(self), also=self.should_bypass_for_scope
+        )
         self.exclude_opt_key = exclude_opt_key
         self._lock = anyio.Lock()
 
@@ -263,7 +273,13 @@ class RateLimitConfig:
     rate_limit: tuple[DurationUnit, int]
     """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns to skip in the rate limiting middleware."""
+    """A pattern or list of patterns to skip in the rate limiting middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the rate limiting middleware, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str | None = field(default=None)
     """An identifier to use on routes to disable rate limiting for a particular route."""
     identifier_for_request: Callable[[Request], str] = get_remote_address
@@ -327,6 +343,7 @@ class RateLimitConfig:
             rate_limit_remaining_header_key=self.rate_limit_remaining_header_key,
             rate_limit_reset_header_key=self.rate_limit_reset_header_key,
             exclude=self.exclude,
+            exclude_path_pattern=self.exclude_path_pattern,
             exclude_opt_key=self.exclude_opt_key,
         )
 
