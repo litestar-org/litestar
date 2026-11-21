@@ -385,10 +385,10 @@ def test_converter_maps_refs_boolean_schemas_formats_and_discriminators() -> Non
         ({"$schema": "https://json-schema.org/draft/2020-12/schema"}, "$schema", {}),
         ({"x-internal": True, "type": "integer"}, "x-internal", {"type": "integer"}),
         ({"externalDocs": {"url": "https://example.org"}}, "externalDocs", {}),
-        ({"minimun": 1}, "minimun", {}),
+        ({"unknownKeyword": 1}, "unknownKeyword", {}),
         (
-            {"type": "object", "properties": {"a": {"minimun": 1}}},
-            "minimun",
+            {"type": "object", "properties": {"a": {"unknownKeyword": 1}}},
+            "unknownKeyword",
             {"type": "object", "properties": {"a": {}}},
         ),
     ],

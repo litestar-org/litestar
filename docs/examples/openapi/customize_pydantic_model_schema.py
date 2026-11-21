@@ -15,7 +15,7 @@ class Product(BaseModel):
     sku: Annotated[str, WithJsonSchema({"type": "string", "pattern": "^[A-Z]{3}-[0-9]{4}$"})]
     price: int = Field(gt=0, description="Price in cents")
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def label(self) -> str:
         return f"{self.name} ({self.sku})"

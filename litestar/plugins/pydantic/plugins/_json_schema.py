@@ -280,6 +280,10 @@ class LitestarGenerateJsonSchema(GenerateJsonSchema):
         try:
             result = super().default_schema(schema)
         except UnicodeDecodeError:
+            self.emit_warning(
+                "non-serializable-default",
+                f"Default value {schema.get('default')} is not JSON serializable; excluding default from JSON schema",
+            )
             return self.generate_inner(schema["schema"])
         if (
             self.mode == "serialization"

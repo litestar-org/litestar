@@ -29,6 +29,7 @@ from pydantic import (
 from pydantic.json_schema import (
     CoreRef,
     GenerateJsonSchema,
+    PydanticJsonSchemaWarning,
     SkipJsonSchema,
     _DefinitionsRemapping,
     models_json_schema,
@@ -316,7 +317,7 @@ class Order(pydantic.BaseModel):
 
 ItemA = pydantic.create_model("Item", __module__="app.a", a=(int, ...))
 ItemB = pydantic.create_model("Item", __module__="app.b", b=(str, ...))
-Incomplete = pydantic.create_model("Incomplete", other=("Later", ...))
+Incomplete = pydantic.create_model("Incomplete", other=(cast("Any", "Later"), ...))
 
 
 class SerializationOverride(pydantic.BaseModel):
@@ -914,7 +915,7 @@ def test_component_names_and_titles() -> None:
 
 
 def test_same_named_classes_are_module_qualified() -> None:
-    split = Litestar([route(JSONBody[ItemA], ItemB)]).openapi_schema.to_schema()  # type: ignore[misc,valid-type]
+    split = Litestar([route(JSONBody[ItemA], ItemB)]).openapi_schema.to_schema()
     assert components(split) == {
         "app.a.Item": {
             "properties": {"a": {"title": "A", "type": "integer"}},
@@ -932,7 +933,7 @@ def test_same_named_classes_are_module_qualified() -> None:
     assert body_schema(split) == {"$ref": f"{PREFIX}app.a.Item"}
     assert response_schema(split) == {"$ref": f"{PREFIX}app.b.Item"}
 
-    shared = Litestar([route(JSONBody[ItemA], ItemB), route(JSONBody[ItemA], ItemA, "/a")]).openapi_schema.to_schema()  # type: ignore[misc,valid-type]
+    shared = Litestar([route(JSONBody[ItemA], ItemB), route(JSONBody[ItemA], ItemA, "/a")]).openapi_schema.to_schema()
     assert set(components(shared)) == {"app.a.Item", "app.b.Item"}
     assert body_schema(shared, "/a") == response_schema(shared, "/a") == {"$ref": f"{PREFIX}app.a.Item"}
 
@@ -1361,7 +1362,7 @@ def test_aliases_of_types_claimed_by_a_custom_plugin_are_handed_back(
 
 
 def test_aliases_shared_between_fields_are_handed_back(recwarn: pytest.WarningsRecorder) -> None:
-    model = pydantic.create_model("SharesAlias", a=(MoneyList, ...), b=(tuple[MoneyList, MoneyList], ...))
+    model = pydantic.create_model("SharesAlias", a=(cast("Any", MoneyList), ...), b=(tuple[MoneyList, MoneyList], ...))
 
     schemas = components(pydantic_document(model, response=False, plugins=[MoneyPlugin()]))
 
@@ -1452,12 +1453,8 @@ def test_type_statement_aliases_of_claimed_types_are_handed_back(recwarn: pytest
         "type Listed = list[Money]\ntype Tree = dict[str, Tree | Money]\ntype Pair[V] = tuple[V, V]",
         namespace,
     )
-    model = pydantic.create_model(
-        "HoldsTypeAliases",
-        listed=(namespace["Listed"], ...),
-        tree=(namespace["Tree"], ...),
-        pair=(namespace["Pair"][Money], ...),
-    )
+    listed, tree, pair = namespace["Listed"], namespace["Tree"], namespace["Pair"]
+    model = pydantic.create_model("HoldsTypeAliases", listed=(listed, ...), tree=(tree, ...), pair=(pair[Money], ...))
 
     schemas = components(pydantic_document(model, response=False, plugins=[MoneyPlugin()]))
 
@@ -1619,7 +1616,7 @@ def test_dto_routes_leave_structs_nested_in_pydantic_models_unchanged(order: int
 def link_chain(length: int) -> Any:
     model: Any = int
     for index in reversed(range(length)):
-        model = pydantic.create_model(f"Link{index}", next=(Optional[model], None))
+        model = pydantic.create_model(f"Link{index}", next=(cast("Any", Optional[model]), None))
     return model
 
 
@@ -1815,15 +1812,17 @@ def test_name_precedence_follows_resolver_names_in_every_round(struct_routes: li
 def alternating_chain(depth: int) -> Any:
     child: Any = int
     for level in reversed(range(depth)):
-        if level % 2:
-            child = pydantic.create_model(
+        following = cast("Any", Optional[child])
+        child = (
+            pydantic.create_model(
                 f"P{level}",
                 __config__=pydantic.ConfigDict(arbitrary_types_allowed=True),
                 v=(int, 0),
-                next=(Optional[child], None),
+                next=(following, None),
             )
-        else:
-            child = msgspec.defstruct(f"S{level}", [("v", int, 0), ("next", cast("Any", Optional[child]), None)])
+            if level % 2
+            else msgspec.defstruct(f"S{level}", [("v", int, 0), ("next", following, None)])
+        )
     return child
 
 
@@ -1891,7 +1890,8 @@ def test_bytes_default_that_is_not_text_is_left_out() -> None:
         raw: bytes = b"\xff\x00"
         text: bytes = b"ok"
 
-    schema = components(pydantic_app(Blob, request=False).openapi_schema.to_schema())["Blob"]
+    with pytest.warns(PydanticJsonSchemaWarning, match="not JSON serializable"):
+        schema = components(pydantic_app(Blob, request=False).openapi_schema.to_schema())["Blob"]
 
     assert "default" not in schema["properties"]["raw"]
     assert schema["properties"]["text"]["default"] == "ok"
