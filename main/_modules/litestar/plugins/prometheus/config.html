@@ -506,10 +506,10 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingDependencyException</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefineMiddleware</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.prometheus.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-</span><span data-line="9">    <span class="n">PrometheusMiddleware</span><span class="p">,</span>
-</span><span data-line="10"><span class="p">)</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.prometheus.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="8">    <span class="n">PrometheusMiddleware</span><span class="p">,</span>
+</span><span data-line="9"><span class="p">)</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn_deprecation</span>
 </span><span data-line="11">
 </span><span data-line="12"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PrometheusConfig&quot;</span><span class="p">,)</span>
 </span><span data-line="13">
@@ -548,29 +548,53 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="44">    <span class="n">exclude_unhandled_paths</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span data-line="45"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether to ignore requests for unhandled paths from the metrics.&quot;&quot;&quot;</span>
 </span><span data-line="46">    <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="47"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns for routes to exclude from the metrics.&quot;&quot;&quot;</span>
-</span><span data-line="48">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="49"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A key or list of keys in ``opt`` with which a route handler can &quot;opt-out&quot; of the middleware.&quot;&quot;&quot;</span>
-</span><span data-line="50">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="51"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed.&quot;&quot;&quot;</span>
-</span><span data-line="52">    <span class="n">middleware_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">PrometheusMiddleware</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">PrometheusMiddleware</span><span class="p">)</span>
-</span><span data-line="53"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The middleware class to use.</span>
-</span><span data-line="54"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="55">    <span class="n">group_path</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="56"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether to group paths in the metrics to avoid cardinality explosion.</span>
-</span><span data-line="57"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="58">
-</span><span data-line="59">    <span class="nd">@property</span>
-</span><span data-line="60">    <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefineMiddleware</span><span class="p">:</span>
-</span><span data-line="61"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of :class:`DefineMiddleware &lt;litestar.middleware.base.DefineMiddleware&gt;` that wraps with.</span>
-</span><span data-line="62">
-</span><span data-line="63"><span class="sd">        [PrometheusMiddleware][litestar.plugins.prometheus.PrometheusMiddleware]. or a subclass</span>
-</span><span data-line="64"><span class="sd">        of this middleware.</span>
-</span><span data-line="65">
-</span><span data-line="66"><span class="sd">        Returns:</span>
-</span><span data-line="67"><span class="sd">            An instance of ``DefineMiddleware``.</span>
-</span><span data-line="68"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="69">        <span class="k">return</span> <span class="n">DefineMiddleware</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middleware_class</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+</span><span data-line="47"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns for routes to exclude from the metrics, matched against the request path.&quot;&quot;&quot;</span>
+</span><span data-line="48">    <span class="n">exclude_path_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="49"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns for routes to exclude from the metrics, matched against the handler path at</span>
+</span><span data-line="50"><span class="sd">    startup.</span>
+</span><span data-line="51">
+</span><span data-line="52"><span class="sd">    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.</span>
+</span><span data-line="53"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="54">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="55"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A key or list of keys in ``opt`` with which a route handler can &quot;opt-out&quot; of the middleware.&quot;&quot;&quot;</span>
+</span><span data-line="56">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="57"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed.&quot;&quot;&quot;</span>
+</span><span data-line="58">    <span class="n">middleware_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">PrometheusMiddleware</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">PrometheusMiddleware</span><span class="p">)</span>
+</span><span data-line="59"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The middleware class to use.</span>
+</span><span data-line="60"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="61">    <span class="n">group_path</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="62"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether to group paths in the metrics to avoid cardinality explosion.</span>
+</span><span data-line="63"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="64">
+</span><span data-line="65">    <span class="nd">@property</span>
+</span><span data-line="66">    <span class="k">def</span><span class="w"> </span><span class="nf">middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PrometheusMiddleware</span><span class="p">:</span>
+</span><span data-line="67"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of :class:`PrometheusMiddleware &lt;litestar.plugins.prometheus.PrometheusMiddleware&gt;`,</span>
+</span><span data-line="68"><span class="sd">        or a subclass of this middleware, configured from this config instance.</span>
+</span><span data-line="69">
+</span><span data-line="70"><span class="sd">        Returns:</span>
+</span><span data-line="71"><span class="sd">            An instance of :attr:`middleware_class`.</span>
+</span><span data-line="72"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="73">        <span class="n">warn_deprecation</span><span class="p">(</span>
+</span><span data-line="74">            <span class="n">version</span><span class="o">=</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span>
+</span><span data-line="75">            <span class="n">deprecated_name</span><span class="o">=</span><span class="s2">&quot;PrometheusConfig.middleware&quot;</span><span class="p">,</span>
+</span><span data-line="76">            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;property&quot;</span><span class="p">,</span>
+</span><span data-line="77">            <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span>
+</span><span data-line="78">            <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;PrometheusMiddleware&quot;</span><span class="p">,</span>
+</span><span data-line="79">            <span class="n">info</span><span class="o">=</span><span class="s2">&quot;Construct a PrometheusMiddleware instance directly and pass it to the middleware list&quot;</span><span class="p">,</span>
+</span><span data-line="80">        <span class="p">)</span>
+</span><span data-line="81">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">middleware_class</span><span class="p">(</span>
+</span><span data-line="82">            <span class="n">app_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app_name</span><span class="p">,</span>
+</span><span data-line="83">            <span class="n">prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
+</span><span data-line="84">            <span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+</span><span data-line="85">            <span class="n">exemplars</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exemplars</span><span class="p">,</span>
+</span><span data-line="86">            <span class="n">buckets</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">buckets</span><span class="p">,</span>
+</span><span data-line="87">            <span class="n">excluded_http_methods</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">excluded_http_methods</span><span class="p">,</span>
+</span><span data-line="88">            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span>
+</span><span data-line="89">            <span class="n">exclude_path_pattern</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_path_pattern</span><span class="p">,</span>
+</span><span data-line="90">            <span class="n">exclude_opt_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_opt_key</span><span class="p">,</span>
+</span><span data-line="91">            <span class="n">scopes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scopes</span><span class="p">,</span>
+</span><span data-line="92">            <span class="n">group_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">group_path</span><span class="p">,</span>
+</span><span data-line="93">        <span class="p">)</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

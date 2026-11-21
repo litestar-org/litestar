@@ -560,18 +560,18 @@ this package, you should first install the required dependencies:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Using the Prometheus Exporter</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.prometheus</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrometheusConfig</span><span class="p">,</span> <span class="n">PrometheusController</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.prometheus</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrometheusController</span><span class="p">,</span> <span class="n">PrometheusMiddleware</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">group_path</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Litestar</span><span class="p">:</span>
 </span><span data-line="6">    <span class="c1"># Default app name and prefix is litestar.</span>
-</span><span data-line="7">    <span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">(</span><span class="n">group_path</span><span class="o">=</span><span class="n">group_path</span><span class="p">)</span>
+</span><span data-line="7">    <span class="n">prometheus_middleware</span> <span class="o">=</span> <span class="n">PrometheusMiddleware</span><span class="p">(</span><span class="n">group_path</span><span class="o">=</span><span class="n">group_path</span><span class="p">)</span>
 </span><span data-line="8">
 </span><span data-line="9">    <span class="c1"># By default the metrics are available in prometheus format and the path is set to &#39;/metrics&#39;.</span>
 </span><span data-line="10">    <span class="c1"># If you want to change the path and format you can do it by subclassing the PrometheusController class.</span>
 </span><span data-line="11">
-</span><span data-line="12">    <span class="c1"># Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.</span>
-</span><span data-line="13">    <span class="k">return</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">PrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</span><span data-line="12">    <span class="c1"># Creating the litestar app instance with our custom PrometheusMiddleware and PrometheusController.</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">PrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_middleware</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -582,7 +582,7 @@ this package, you should first install the required dependencies:</p>
 </span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.prometheus</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrometheusConfig</span><span class="p">,</span> <span class="n">PrometheusController</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.plugins.prometheus</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrometheusController</span><span class="p">,</span> <span class="n">PrometheusMiddleware</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="c1"># We can modify the path of our custom handler and override the metrics format by subclassing the PrometheusController.</span>
@@ -612,10 +612,10 @@ this package, you should first install the required dependencies:</p>
 </span><span data-line="32">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;trace_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1234&quot;</span><span class="p">}</span>
 </span><span data-line="33">
 </span><span data-line="34">
-</span><span data-line="35"><span class="c1"># Creating the instance of PrometheusConfig with our own custom options.</span>
+</span><span data-line="35"><span class="c1"># Creating the instance of PrometheusMiddleware with our own custom options.</span>
 </span><span data-line="36"><span class="c1"># The given options are not necessary, you can use the default ones</span>
-</span><span data-line="37"><span class="c1"># as well by just creating a raw instance PrometheusConfig()</span>
-</span><span data-line="38"><span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">(</span>
+</span><span data-line="37"><span class="c1"># as well by just creating a raw instance PrometheusMiddleware()</span>
+</span><span data-line="38"><span class="n">prometheus_middleware</span> <span class="o">=</span> <span class="n">PrometheusMiddleware</span><span class="p">(</span>
 </span><span data-line="39">    <span class="n">app_name</span><span class="o">=</span><span class="s2">&quot;litestar-example&quot;</span><span class="p">,</span>
 </span><span data-line="40">    <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;litestar&quot;</span><span class="p">,</span>
 </span><span data-line="41">    <span class="n">labels</span><span class="o">=</span><span class="n">extra_labels</span><span class="p">,</span>
@@ -625,8 +625,8 @@ this package, you should first install the required dependencies:</p>
 </span><span data-line="45"><span class="p">)</span>
 </span><span data-line="46">
 </span><span data-line="47">
-</span><span data-line="48"><span class="c1"># Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.</span>
-</span><span data-line="49"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">CustomPrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</span><span data-line="48"><span class="c1"># Creating the litestar app instance with our custom PrometheusMiddleware and PrometheusController.</span>
+</span><span data-line="49"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">CustomPrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_middleware</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
