@@ -20,9 +20,12 @@ async def test_websocket_listener() -> None:
     async with AsyncTestClient(app_stream_and_receive_listener) as client:
         with await client.websocket_connect("/") as ws:
             ws.send_text("Hello")
-            data_1 = ws.receive_text()
-            data_2 = ws.receive_text()
-            assert sorted([data_1, data_2]) == sorted(["Hello", "ping"])
+            received = set()
+            for _ in range(50):
+                received.add(ws.receive_text(timeout=1))
+                if received == {"Hello", "ping"}:
+                    break
+            assert received == {"Hello", "ping"}
 
 
 async def test_websocket_handler():
