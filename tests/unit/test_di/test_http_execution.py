@@ -10,11 +10,18 @@ from litestar import Litestar, Request, get, post
 from litestar.connection import ASGIConnection
 from litestar.datastructures import UploadFile
 from litestar.di import DIContext, NamedDependency, PreparedDIContext, Provide
-from litestar.dto import DataclassDTO, DTOConfig, DTOData
-from litestar.exceptions import HTTPException, ImproperlyConfiguredException, ValidationException
+from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData
+from litestar.exceptions import (
+    HTTPException,
+    ImproperlyConfiguredException,
+    InvalidAnnotationException,
+    ValidationException,
+)
 from litestar.params import Body, FromQuery, JSONBody, MultipartBody, QueryParameter
+from litestar.plugins import SerializationPlugin
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_422_UNPROCESSABLE_ENTITY, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import AsyncTestClient, TestClient, create_test_client
+from litestar.typing import FieldDefinition
 
 
 def test_request_parameters_are_validated_before_any_dependency_runs() -> None:
@@ -250,7 +257,7 @@ async def test_independent_generator_dependencies_torn_down_one_after_the_other_
     assert events == ["second teardown started", "second torn down", "first torn down"]
 
 
-def test_body_declared_only_by_dependency_is_decoded_without_handler_dto() -> None:
+def test_dto_decodes_body_declared_only_by_dependency() -> None:
     @dataclass
     class User:
         name: str
@@ -270,7 +277,37 @@ def test_body_declared_only_by_dependency_is_decoded_without_handler_dto() -> No
         response = client.post("/", json={"name": "x", "secret": "s"})
 
     assert response.status_code == 201
-    assert response.json() == {"name": "x", "secret": "s"}
+    assert response.json() == {"name": "x", "secret": "default"}
+
+
+def test_plugin_dto_decodes_body_declared_only_by_dependency() -> None:
+    @dataclass
+    class User:
+        name: str
+        secret: str = "default"
+
+    class UserDTO(DataclassDTO[User]):
+        config = DTOConfig(exclude={"secret"})
+
+    class UserSerializationPlugin(SerializationPlugin):
+        def supports_type(self, field_definition: FieldDefinition) -> bool:
+            return field_definition.is_subclass_of(User)
+
+        def create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]:
+            return UserDTO
+
+    async def provide_user(data: Annotated[User, Body()]) -> User:
+        return data
+
+    @post("/", dependencies={"user": Provide(provide_user)}, return_dto=None)
+    async def handler(user: NamedDependency[User]) -> dict:
+        return {"name": user.name, "secret": user.secret}
+
+    with TestClient(Litestar([handler], plugins=[UserSerializationPlugin()], openapi_config=None)) as client:
+        response = client.post("/", json={"name": "x", "secret": "s"})
+
+    assert response.status_code == 201
+    assert response.json() == {"name": "x", "secret": "default"}
 
 
 def test_dto_decodes_body_declared_under_other_name_than_data() -> None:
@@ -318,6 +355,80 @@ def test_dto_data_declared_under_other_name_than_data_without_dto_raises() -> No
 
     with pytest.raises(ImproperlyConfiguredException, match="a subclass of DTOData but no DTO has been registered"):
         Litestar([handler], openapi_config=None)
+
+
+def test_dto_data_declared_only_by_dependency() -> None:
+    @dataclass
+    class Person:
+        name: str
+
+    async def provide_name(data: JSONBody[DTOData[Person]]) -> str:
+        return data.create_instance().name
+
+    @post("/", dto=DataclassDTO[Person], return_dto=None, dependencies={"name": Provide(provide_name)})
+    async def handler(name: NamedDependency[str]) -> str:
+        return name
+
+    with create_test_client([handler]) as client:
+        response = client.post("/", json={"name": "a"})
+
+    assert response.status_code == 201
+    assert response.text == "a"
+
+
+def test_dto_data_declared_only_by_dependency_without_dto_raises() -> None:
+    @dataclass
+    class Person:
+        name: str
+
+    async def provide_name(data: JSONBody[DTOData[Person]]) -> str:
+        return data.create_instance().name
+
+    @post("/", dependencies={"name": Provide(provide_name)})
+    async def handler(name: NamedDependency[str]) -> str:
+        return name
+
+    with pytest.raises(ImproperlyConfiguredException, match="a subclass of DTOData but no DTO has been registered"):
+        Litestar([handler], openapi_config=None)
+
+
+def test_dto_not_supporting_body_declared_only_by_dependency_raises() -> None:
+    @dataclass
+    class Person:
+        name: str
+
+    @dataclass
+    class Other:
+        value: int
+
+    async def provide_value(data: JSONBody[Other]) -> int:
+        return data.value
+
+    @post("/", dto=DataclassDTO[Person], return_dto=None, dependencies={"value": Provide(provide_value)})
+    async def handler(value: NamedDependency[int]) -> int:
+        return value
+
+    with pytest.raises(InvalidAnnotationException, match="DTO narrowed with"):
+        Litestar([handler], openapi_config=None)
+
+
+def test_dto_data_declared_by_handler_and_dependency() -> None:
+    @dataclass
+    class Person:
+        name: str
+
+    async def provide_name(data: JSONBody[DTOData[Person]]) -> str:
+        return data.create_instance().name
+
+    @post("/", dto=DataclassDTO[Person], return_dto=None, dependencies={"name": Provide(provide_name)})
+    async def handler(data: JSONBody[DTOData[Person]], name: NamedDependency[str]) -> list[str]:
+        return [data.create_instance().name, name]
+
+    with create_test_client([handler]) as client:
+        response = client.post("/", json={"name": "a"})
+
+    assert response.status_code == 201
+    assert response.json() == ["a", "a"]
 
 
 def test_upload_declared_under_other_name_than_data_documented_like_data() -> None:
