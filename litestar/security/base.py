@@ -96,9 +96,9 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
                 app_config.openapi_config.components = [self.openapi_components, app_config.openapi_config.components]
 
             if isinstance(app_config.openapi_config.security, list):
-                app_config.openapi_config.security.append(self.security_requirement)
+                app_config.openapi_config.security.extend(self.security_requirements)
             else:
-                app_config.openapi_config.security = [self.security_requirement]
+                app_config.openapi_config.security = list(self.security_requirements)
 
         if self.guards:
             app_config.guards.extend(self.guards)
@@ -171,6 +171,17 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
             An OpenAPI 3.1 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` dictionary.
         """
         raise NotImplementedError
+
+    @property
+    def security_requirements(self) -> list[SecurityRequirement]:
+        """Return the OpenAPI 3.1 security requirements added to the document by :meth:`on_app_init`.
+
+        A request satisfying any one of them is authenticated. Defaults to :attr:`security_requirement` alone.
+
+        Returns:
+            A list of OpenAPI 3.1 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` dictionaries.
+        """
+        return [self.security_requirement]
 
     @property
     @abstractmethod

@@ -484,12 +484,14 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
             "BearerToken": {
                 "type": "oauth2",
                 "description": "OAUTH2 password bearer authentication and authorization.",
-                "name": "Authorization",
-                "in": "header",
-                "scheme": "Bearer",
-                "bearerFormat": "JWT",
-                "flows": {"password": {"tokenUrl": "/login"}},
-            }
+                "flows": {"password": {"tokenUrl": "/login", "scopes": {}}},
+            },
+            "BearerTokenCookie": {
+                "type": "apiKey",
+                "description": "OAUTH2 password bearer authentication and authorization.",
+                "name": "token",
+                "in": "cookie",
+            },
         },
     }
 
@@ -507,16 +509,28 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
                 "BearerToken": {
                     "type": "oauth2",
                     "description": "OAUTH2 password bearer authentication and authorization.",
-                    "name": "Authorization",
-                    "in": "header",
-                    "scheme": "Bearer",
-                    "bearerFormat": "JWT",
-                    "flows": {"password": {"tokenUrl": "/login"}},
-                }
+                    "flows": {"password": {"tokenUrl": "/login", "scopes": {}}},
+                },
+                "BearerTokenCookie": {
+                    "type": "apiKey",
+                    "description": "OAUTH2 password bearer authentication and authorization.",
+                    "name": "token",
+                    "in": "cookie",
+                },
             },
         },
-        "security": [{"BearerToken": []}],
+        "security": [{"BearerToken": []}, {"BearerTokenCookie": []}],
     }
+
+
+@pytest.mark.parametrize("auth_cls", [JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth])
+def test_format_auth_header(auth_cls: Any) -> None:
+    kwargs: dict[str, Any] = {"token_url": "/login"} if auth_cls is OAuth2PasswordBearerAuth else {}
+    jwt_auth = auth_cls(
+        token_secret=secrets.token_hex(), retrieve_user_handler=lambda token, connection: None, **kwargs
+    )
+
+    assert jwt_auth.format_auth_header("token") == "Bearer token"
 
 
 def test_type_encoders() -> None:
