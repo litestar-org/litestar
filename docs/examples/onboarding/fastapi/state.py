@@ -2,7 +2,7 @@ from typing import cast
 
 from litestar import Litestar, get
 from litestar.datastructures import State
-from litestar.di import NamedDependency, Provide
+from litestar.di import NamedDependency
 
 
 class ArqRedis:
@@ -13,7 +13,7 @@ async def get_arq_redis(state: State) -> ArqRedis:
     return cast(ArqRedis, state.arq_redis)
 
 
-@get("/", dependencies={"arq_redis": Provide(get_arq_redis)})
+@get("/", dependencies={"arq_redis": get_arq_redis})
 async def handler(arq_redis: NamedDependency[ArqRedis]) -> dict[str, str]:
     return {"type": type(arq_redis).__name__}
 

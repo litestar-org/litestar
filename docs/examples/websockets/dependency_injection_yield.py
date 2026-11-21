@@ -3,7 +3,7 @@ from typing import TypedDict
 
 from litestar import Litestar, websocket_listener
 from litestar.datastructures import State
-from litestar.di import NamedDependency, Provide
+from litestar.di import NamedDependency
 
 
 class Message(TypedDict):
@@ -20,7 +20,7 @@ def socket_client_count(state: State) -> Iterator[int]:
     state.count -= 1
 
 
-@websocket_listener("/", dependencies={"client_count": Provide(socket_client_count)})
+@websocket_listener("/", dependencies={"client_count": socket_client_count})
 async def handler(data: str, client_count: NamedDependency[int]) -> Message:
     return Message(message=data, client_count=client_count)
 

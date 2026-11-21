@@ -1,7 +1,7 @@
 from typing import Any
 
 from litestar import Litestar, get
-from litestar.di import NamedDependency, Provide
+from litestar.di import NamedDependency
 
 
 async def provide_str() -> str:
@@ -9,7 +9,7 @@ async def provide_str() -> str:
     return "whoops"
 
 
-@get("/", dependencies={"injected": Provide(provide_str)}, sync_to_thread=False)
+@get("/", dependencies={"injected": provide_str}, sync_to_thread=False)
 def hello_world(injected: NamedDependency[int]) -> dict[str, Any]:
     """Handler expects an `int`, but we've provided a `str`."""
     return {"hello": injected}
