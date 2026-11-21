@@ -15,14 +15,18 @@ from litestar._openapi.schema_generation.library import (
     MODES,
     LibraryRequest,
     LibraryResolver,
-    LibraryResult,
     LibraryRun,
     SchemaMode,
-    build_result,
     claimed_by_other_plugin,
     kwarg_definition_metadata,
+)
+from litestar._openapi.schema_generation.library.graph import (
+    NameCandidates,
+    ResolvedSchemas,
+    SchemaKey,
+    SchemaNode,
     reachable,
-    unique_names,
+    schema_node,
 )
 from litestar.serialization import default_serializer
 from litestar.typing import FieldDefinition
@@ -139,57 +143,68 @@ def _qualified_name(cls: Any) -> str:
 class _MsgspecResolver(LibraryResolver):
     name = "msgspec"
 
-    def resolve(self, requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolve(self, requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         translator = _LitestarTranslator([request.annotation for request in requests], run.serializer)
         infos = [_unwrap(info)[0] for info in translator.run()]  # type: ignore[no-untyped-call]
         components = _json_schema._collect_component_types(infos)
 
         creator = run.schema_creator("validation")
-        roots = {getattr(info, "cls", None) for info in infos}
+        root_classes = [getattr(info, "cls", None) for info in infos]
+        roots = set(root_classes)
         delegated = {
             cls
             for cls, info in components.items()
             if isinstance(info, msgspec.inspect.EnumType)
             or (cls not in roots and claimed_by_other_plugin(creator, cls))
         }
-        provisional = unique_names(
-            {cls: (_qualified_name(cls), _qualified_name(cls)) for cls in components if cls not in delegated}
-        )
-        root_keys = {
-            request: provisional.get(getattr(info, "cls", None), "")
-            for request, info in zip(requests, infos, strict=True)
-        }
-        explicit = {
-            def_key: schema_name
-            for cls, def_key in provisional.items()
-            if isinstance(schema_name := getattr(cls, "__dict__", {}).get("__schema_name__"), str)
-        }
+        references = {cls: str(index) for index, cls in enumerate(cls for cls in components if cls not in delegated)}
+        names: dict[Any, NameCandidates] = {}
+        for cls in references:
+            explicit = getattr(cls, "__dict__", {}).get("__schema_name__")
+            names[cls] = NameCandidates(
+                _json_schema._get_class_name(cls),
+                _qualified_name(cls),
+                explicit if isinstance(explicit, str) else None,
+            )
 
-        defs: dict[SchemaMode, dict[str, dict[str, Any]]] = {}
+        kept: dict[SchemaKey, SchemaNode] = {}
         for mode, _ in MODES:
-            mode_infos = [info for request, info in zip(requests, infos, strict=True) if request.mode == mode]
-            if not mode_infos:
+            mode_roots = [cls for request, cls in zip(requests, root_classes, strict=True) if request.mode == mode]
+            if not mode_roots:
                 continue
-            generator = _LitestarSchemaGenerator(provisional, mode, delegated, _delegate(run, mode), run.serializer)
-            mode_defs = {
-                provisional[cls]: generator.to_schema(info, False)
-                for cls, info in _json_schema._collect_component_types(mode_infos).items()
-                if cls in provisional
+            generator = _LitestarSchemaGenerator(references, mode, delegated, _delegate(run, mode), run.serializer)
+            targets = {f"{LOCAL_PREFIX}{name}": SchemaKey(self.name, cls, mode) for cls, name in references.items()}
+            mode_nodes = {
+                SchemaKey(self.name, cls, mode): schema_node(
+                    _titled(generator.to_schema(info, False), names[cls].explicit), targets, names[cls]
+                )
+                for cls, info in _json_schema._collect_component_types(
+                    [info for request, info in zip(requests, infos, strict=True) if request.mode == mode]
+                ).items()
+                if cls in references
             }
-            mode_roots = [
-                def_key for request, def_key in root_keys.items() if request.mode == mode and def_key in mode_defs
-            ]
-            kept = {*mode_roots, *reachable(mode_roots, mode_defs)}
-            defs[mode] = {
-                def_key: {**schema, "title": explicit[def_key]} if def_key in explicit else schema
-                for def_key, schema in mode_defs.items()
-                if def_key in kept
-            }
+            root_keys = [key for cls in mode_roots if (key := SchemaKey(self.name, cls, mode)) in mode_nodes]
+            for key in {*root_keys, *reachable(root_keys, mode_nodes)}:
+                kept[key] = mode_nodes[key]
 
-        candidates = {
-            def_key: (_json_schema._get_class_name(cls), _qualified_name(cls)) for cls, def_key in provisional.items()
+        nodes = {
+            key: kept[key]
+            for cls in references
+            for mode, _ in MODES
+            if (key := SchemaKey(self.name, cls, mode)) in kept
         }
-        return build_result(root_keys, defs, candidates, explicit)
+        return ResolvedSchemas(
+            {
+                request: SchemaKey(self.name, cls, request.mode)
+                for request, cls in zip(requests, root_classes, strict=True)
+                if cls in references
+            },
+            nodes,
+        )
+
+
+def _titled(schema: dict[str, Any], title: str | None) -> dict[str, Any]:
+    return schema if title is None else {**schema, "title": title}
 
 
 MSGSPEC_RESOLVER = _MsgspecResolver()

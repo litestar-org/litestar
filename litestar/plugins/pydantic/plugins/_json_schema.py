@@ -10,17 +10,22 @@ from pydantic_core import core_schema
 
 from litestar._openapi.schema_generation.library import (
     LOCAL_PREFIX,
+    MODES,
     LibraryRequest,
     LibraryResolver,
-    LibraryResult,
     LibraryRun,
-    SchemaMode,
-    build_result,
     claimed_by_other_plugin,
     kwarg_definition_metadata,
     map_references,
 )
 from litestar._openapi.schema_generation.library.exceptions import SchemaConversionError
+from litestar._openapi.schema_generation.library.graph import (
+    NameCandidates,
+    ResolvedSchemas,
+    SchemaKey,
+    SchemaNode,
+    schema_node,
+)
 from litestar.dto.field import DTO_FIELD_META_KEY
 from litestar.plugins.pydantic import _model_dump
 from litestar.plugins.pydantic.plugins.init import PydanticInitPlugin
@@ -475,7 +480,7 @@ def _input_value(model: pydantic.BaseModel) -> Any:
 class _PydanticResolver(LibraryResolver):
     name = "pydantic"
 
-    def resolve(self, requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolve(self, requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         prefer_alias = next(
             (plugin.prefer_alias for plugin in run.init_plugins if isinstance(plugin, PydanticInitPlugin)), False
         )
@@ -494,29 +499,33 @@ class _PydanticResolver(LibraryResolver):
             for ref, schema in generated.items()
             if (target := _replacement(schema)) is not None
         }
-        identities: dict[str, tuple[str, SchemaMode]] = {}
-        defs: dict[SchemaMode, dict[str, dict[str, Any]]] = {}
+        targets: dict[str, SchemaKey] = {}
+        schemas: dict[SchemaKey, dict[str, Any]] = {}
+        identities: dict[str, None] = {}
         schema_names: dict[str, str] = {}
         for ref, generated_schema in generated.items():
             if f"{LOCAL_PREFIX}{ref}" in inlined:
                 continue
-            identities[ref] = core_ref, mode = generator.defs_to_core_refs[ref]
+            core_ref, mode = generator.defs_to_core_refs[ref]
+            targets[f"{LOCAL_PREFIX}{ref}"] = key = SchemaKey(self.name, core_ref, mode)
+            identities[core_ref] = None
             schema = _rewrite(generated_schema, inlined)
             if (name := schema.pop(_NAME_KEY, None)) is not None:
                 schema_names[core_ref] = name
-            defs.setdefault(mode, {})[core_ref] = schema
+            schemas[key] = schema
 
-        core_refs = sorted(
-            dict.fromkeys(core_ref for core_ref, _ in identities.values()), key=lambda ref: ref in schema_names
-        )
-        return build_result(
-            {request: keys[(request, request.mode)].get("$ref", "")[len(LOCAL_PREFIX) :] for request in requests},
-            defs,
-            {core_ref: _class_names(core_ref) for core_ref in core_refs},
-            schema_names,
-            generator.warnings,
-            identities,
-        )
+        nodes: dict[SchemaKey, SchemaNode] = {}
+        for identity in sorted(identities, key=lambda core_ref: core_ref in schema_names):
+            names = NameCandidates(*_class_names(identity), explicit=schema_names.get(identity))
+            for mode, _ in MODES:
+                if (key := SchemaKey(self.name, identity, mode)) in schemas:
+                    nodes[key] = schema_node(schemas[key], targets, names)
+        roots = {
+            request: targets[root_ref]
+            for request in requests
+            if isinstance(root_ref := keys[(request, request.mode)].get("$ref"), str) and root_ref in targets
+        }
+        return ResolvedSchemas(roots, nodes, tuple(generator.warnings))
 
     def to_input_example(self, value: Any) -> Any:
         if is_pydantic_model_instance(value):

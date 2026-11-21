@@ -12,7 +12,7 @@ import re
 import subprocess
 import sys
 import uuid
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from types import MappingProxyType
 from typing import Annotated, Any, Generic, Literal, NotRequired, Optional, TypedDict, TypeVar, Union, cast
 
@@ -24,17 +24,15 @@ from litestar import Litestar, get, post
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.plugin import OpenAPIPlugin
 from litestar._openapi.schema_generation.library import (
+    LOCAL_PREFIX,
+    MODES,
     LibraryRequest,
-    LibraryResolver,
-    LibraryResult,
     LibraryRun,
     SchemaMode,
-    build_result,
     map_references,
-    unique_names,
 )
 from litestar._openapi.schema_generation.library import components as library_components
-from litestar._openapi.schema_generation.library._msgspec import MSGSPEC_RESOLVER
+from litestar._openapi.schema_generation.library._msgspec import _MsgspecResolver
 from litestar._openapi.schema_generation.library.components import LibraryComponents
 from litestar._openapi.schema_generation.library.converter import json_schema_to_spec
 from litestar._openapi.schema_generation.library.exceptions import (
@@ -43,6 +41,7 @@ from litestar._openapi.schema_generation.library.exceptions import (
     SchemaNameConflictError,
     UnresolvedSchemaError,
 )
+from litestar._openapi.schema_generation.library.graph import NameCandidates, ResolvedSchemas, SchemaKey, schema_node
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar._openapi.schema_generation.schema import SchemaCreator
 from litestar.datastructures import ResponseHeader, UploadFile
@@ -90,16 +89,16 @@ class ExistingThing:
     pass
 
 
-Resolve = Callable[[Sequence[LibraryRequest], LibraryRun], LibraryResult]
+Resolve = Callable[[Sequence[LibraryRequest], LibraryRun], ResolvedSchemas]
 
 
-class FakeResolver(LibraryResolver):
+class FakeResolver(_MsgspecResolver):
     name = "fake"
 
     def __init__(self) -> None:
-        self.resolve_with: Resolve = MSGSPEC_RESOLVER.resolve
+        self.resolve_with: Resolve = super().resolve
 
-    def resolve(self, requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolve(self, requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         return self.resolve_with(requests, run)
 
 
@@ -169,17 +168,39 @@ def by_name(request: LibraryRequest) -> str:
     return cast("str", request.annotation.__name__)
 
 
+def fake_key(resolver: str, def_key: str, defs: Mapping[str, Any]) -> SchemaKey:
+    for mode, suffix in MODES:
+        stem = def_key.removesuffix(suffix)
+        if stem != def_key and stem not in defs and all(f"{stem}{other}" in defs for _, other in MODES):
+            return SchemaKey(resolver, stem, mode)
+    return SchemaKey(resolver, def_key, "validation")
+
+
+def resolved(
+    roots: Mapping[LibraryRequest, str],
+    defs: Mapping[str, Any],
+    names: Mapping[str, str] | None = None,
+    warnings: tuple[str, ...] = (),
+) -> ResolvedSchemas:
+    resolver = next(iter(roots)).resolver.name
+    keys = {def_key: fake_key(resolver, def_key, defs) for def_key in defs}
+    targets = {f"{LOCAL_PREFIX}{def_key}": key for def_key, key in keys.items()}
+    nodes = {
+        key: schema_node(
+            defs[def_key], targets, NameCandidates(str(key.identity), str(key.identity), (names or {}).get(def_key))
+        )
+        for def_key, key in keys.items()
+    }
+    return ResolvedSchemas({request: keys[key] for request, key in roots.items() if key in keys}, nodes, warnings)
+
+
 def canned(
     defs: dict[str, Any],
     names: dict[str, str] | None = None,
     root: Callable[[LibraryRequest], str] = by_name,
 ) -> Resolve:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
-        return LibraryResult(
-            roots={request: root(request) for request in requests},
-            defs=copy.deepcopy(defs),
-            names=dict(names or {}),
-        )
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
+        return resolved({request: root(request) for request in requests}, copy.deepcopy(defs), names)
 
     return resolver
 
@@ -187,7 +208,7 @@ def canned(
 def in_rounds(*resolvers: Resolve, calls: list[list[LibraryRequest]] | None = None) -> Resolve:
     seen: list[list[LibraryRequest]] = [] if calls is None else calls
 
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         seen.append(list(requests))
         return resolvers[len(seen) - 1](requests, run)
 
@@ -195,11 +216,11 @@ def in_rounds(*resolvers: Resolve, calls: list[list[LibraryRequest]] | None = No
 
 
 def delegating_other(defs: dict[str, Any], mode: SchemaMode = "validation", target: Any = Other) -> Resolve:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         other = run.embed(run.schema_creator(mode).for_field_definition(FieldDefinition.from_annotation(target)))
-        resolved = copy.deepcopy(defs)
-        resolved["Marker"]["properties"]["other"] = other
-        return LibraryResult(roots={request: by_name(request) for request in requests}, defs=resolved)
+        delegated = copy.deepcopy(defs)
+        delegated["Marker"]["properties"]["other"] = other
+        return resolved({request: by_name(request) for request in requests}, delegated)
 
     return resolver
 
@@ -453,9 +474,9 @@ def test_response_spec_generates_examples_unless_disabled_or_given(
 def captured_requests(creator: SchemaCreator, monkeypatch: pytest.MonkeyPatch) -> list[LibraryRequest]:
     requests: list[LibraryRequest] = []
 
-    def resolver(received: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(received: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         requests.extend(received)
-        return LibraryResult(roots=dict.fromkeys(received, "X"), defs={"X": {}})
+        return resolved(dict.fromkeys(received, "X"), {"X": {}})
 
     use(monkeypatch, resolver)
     context = OpenAPIContext(openapi_config=OpenAPIConfig(title="t", version="1"), plugins=[])
@@ -578,13 +599,11 @@ def test_resolution_needing_one_round_more_than_the_cap_raises(monkeypatch: pyte
 
 
 def test_resolve_stops_when_requests_never_settle(monkeypatch: pytest.MonkeyPatch) -> None:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         fresh = run.embed(
             run.schema_creator("validation").for_field_definition(FieldDefinition.from_annotation(ExistingThing))
         )
-        return LibraryResult(
-            roots=dict.fromkeys(requests, "Def"), defs={"Def": {"type": "object", "properties": {"x": fresh}}}
-        )
+        return resolved(dict.fromkeys(requests, "Def"), {"Def": {"type": "object", "properties": {"x": fresh}}})
 
     use(monkeypatch, resolver)
 
@@ -597,7 +616,7 @@ def test_resolve_stops_when_requests_never_settle(monkeypatch: pytest.MonkeyPatc
 
 
 def test_recursion_error_names_the_resolver(monkeypatch: pytest.MonkeyPatch) -> None:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         raise RecursionError
 
     use(monkeypatch, resolver)
@@ -609,10 +628,10 @@ def test_recursion_error_names_the_resolver(monkeypatch: pytest.MonkeyPatch) -> 
 def test_run_schema_creator_generates_no_examples(monkeypatch: pytest.MonkeyPatch) -> None:
     creators: dict[str, SchemaCreator] = {}
 
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         creators["validation"] = run.schema_creator("validation")
         creators["serialization"] = run.schema_creator("serialization")
-        return LibraryResult(roots=dict.fromkeys(requests, "Marker"), defs={"Marker": MARKER_DEF})
+        return resolved(dict.fromkeys(requests, "Marker"), {"Marker": MARKER_DEF})
 
     use(monkeypatch, resolver)
 
@@ -845,13 +864,13 @@ def test_explicit_name_collision_raises(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 def test_explicit_name_wins_over_an_earlier_automatic_name(monkeypatch: pytest.MonkeyPatch) -> None:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         named_other = FieldDefinition.from_annotation(Other, kwarg_definition=Body(schema_component_key="Foo"))
         foo = copy.deepcopy(MARKER_DEF)
         foo["properties"]["other"] = run.embed(run.schema_creator("validation").for_field_definition(named_other))
-        return LibraryResult(
-            roots={request: "Foo" if request.annotation is Marker else "Other" for request in requests},
-            defs={"Foo": foo, "Other": OTHER_DEF},
+        return resolved(
+            {request: "Foo" if request.annotation is Marker else "Other" for request in requests},
+            {"Foo": foo, "Other": OTHER_DEF},
         )
 
     use(monkeypatch, resolver)
@@ -937,10 +956,10 @@ def test_different_embedded_values_never_share_a_token(
 ) -> None:
     tokens: list[dict[str, str]] = []
 
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         for value in (first, second, first):
             tokens.append(run.embed(Schema(default=value)))
-        return LibraryResult(roots=dict.fromkeys(requests, "Marker"), defs={"Marker": MARKER_DEF})
+        return resolved(dict.fromkeys(requests, "Marker"), {"Marker": MARKER_DEF})
 
     use(monkeypatch, resolver)
     fake_document([get_marker()])
@@ -951,13 +970,12 @@ def test_different_embedded_values_never_share_a_token(
 def test_embedded_existing_reference_gets_final_path(monkeypatch: pytest.MonkeyPatch) -> None:
     tokens: list[dict[str, str]] = []
 
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         creator = run.schema_creator("serialization")
         for _ in range(2):
             tokens.append(run.embed(creator.for_field_definition(FieldDefinition.from_annotation(ExistingThing))))
-        return LibraryResult(
-            roots=dict.fromkeys(requests, "Marker"),
-            defs={"Marker": {"type": "object", "properties": {"existing": tokens[0]}}},
+        return resolved(
+            dict.fromkeys(requests, "Marker"), {"Marker": {"type": "object", "properties": {"existing": tokens[0]}}}
         )
 
     use(monkeypatch, resolver)
@@ -980,7 +998,7 @@ CONDITIONAL_SCALARS = {
 
 
 def test_nullable_embedded_scalar_is_a_type_array(monkeypatch: pytest.MonkeyPatch) -> None:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         scalar = run.embed(Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.BINARY))
         enum = run.embed(Schema(type=OpenAPIType.STRING, enum=["a"]))
         conditional = {key: {"anyOf": [run.embed(scalar), NULL]} for key, scalar in CONDITIONAL_SCALARS.items()}
@@ -992,9 +1010,9 @@ def test_nullable_embedded_scalar_is_a_type_array(monkeypatch: pytest.MonkeyPatc
             "ref": {"anyOf": [{"$ref": "#/$defs/Other"}, {"type": "null"}]},
             "inline": {"anyOf": [{"type": "string"}, {"type": "null"}]},
         }
-        return LibraryResult(
-            roots=dict.fromkeys(requests, "Marker"),
-            defs={"Marker": {"type": "object", "properties": properties}, "Other": OTHER_DEF},
+        return resolved(
+            dict.fromkeys(requests, "Marker"),
+            {"Marker": {"type": "object", "properties": properties}, "Other": OTHER_DEF},
         )
 
     use(monkeypatch, resolver)
@@ -1034,7 +1052,7 @@ def test_optional_upload_file_in_multipart_form_is_a_type_array(form: Any) -> No
 
 
 def test_build_is_deterministic(monkeypatch: pytest.MonkeyPatch) -> None:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         if any(request.annotation is Marker for request in requests):
             return delegating_other({"Marker": MARKER_DEF, "Other": OTHER_DEF}, mode="serialization", target=Foreign)(
                 requests, run
@@ -1347,13 +1365,14 @@ def test_map_references_drops_a_discriminator_mapping_to_non_references() -> Non
     }
 
 
-def test_build_result_rejects_a_root_without_a_schema() -> None:
-    request = LibraryRequest(Marker, FAKE, "validation")
+@pytest.mark.parametrize("defs", [{}, {"Other": OTHER_DEF}])
+def test_a_root_without_a_schema_raises(defs: dict[str, Any], monkeypatch: pytest.MonkeyPatch) -> None:
+    use(monkeypatch, canned(defs, root=lambda request: "Missing"))
 
     with pytest.raises(
         ImproperlyConfiguredException, match="The fake schema resolver cannot document .*Marker.* as a component"
     ):
-        build_result({request: "Missing"}, {"validation": {}}, {}, {})
+        fake_document([get_marker()])
 
 
 def test_components_of_an_unresolved_placeholder_raise() -> None:
@@ -1368,10 +1387,6 @@ def test_components_of_an_unresolved_placeholder_raise() -> None:
         creator.schema_registry.generate_components_schemas()
 
 
-def test_unique_names_collapse_runs_of_invalid_characters() -> None:
-    assert unique_names({"pair": ("Pair[int, str]", "m.Pair[int, str]")}) == {"pair": "Pair_int_str_"}
-
-
 def raise_never_resolved(monkeypatch: pytest.MonkeyPatch) -> None:
     creator = SchemaCreator(plugins=openapi_schema_plugins)
     creator.for_field_definition(FieldDefinition.from_annotation(Marker))
@@ -1384,7 +1399,7 @@ def raise_unsettled(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def raise_recursion(monkeypatch: pytest.MonkeyPatch) -> None:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
         raise RecursionError
 
     use(monkeypatch, resolver)
@@ -1407,7 +1422,8 @@ def raise_bare_reference(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def raise_undocumentable(monkeypatch: pytest.MonkeyPatch) -> None:
-    build_result({LibraryRequest(Marker, FAKE, "validation"): "Missing"}, {"validation": {}}, {}, {})
+    use(monkeypatch, canned({}, root=lambda request: "Missing"))
+    fake_document([get_marker()])
 
 
 @pytest.mark.parametrize(
@@ -1486,8 +1502,8 @@ def resolved_library(monkeypatch: pytest.MonkeyPatch, resolver: Resolve) -> tupl
 
 
 def test_freeze_is_idempotent(monkeypatch: pytest.MonkeyPatch) -> None:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
-        return LibraryResult(roots=dict.fromkeys(requests, "Marker"), defs={"Marker": MARKER_DEF}, warnings=("w",))
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
+        return resolved(dict.fromkeys(requests, "Marker"), {"Marker": MARKER_DEF}, warnings=("w",))
 
     library, _ = resolved_library(monkeypatch, resolver)
 

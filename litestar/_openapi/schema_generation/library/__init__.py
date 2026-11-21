@@ -1,24 +1,37 @@
+"""Library-generated schemas: the types schema plugins defer to a library such as msgspec or pydantic.
+
+Documenting one OpenAPI document runs four phases, all driven by
+:class:`~litestar._openapi.schema_generation.library.components.LibraryComponents`:
+
+1. Collect: while paths are documented, schema plugins get a placeholder reference for each deferred type
+   (``LibraryComponents.placeholder``, reached through ``SchemaCreator.for_library``).
+2. Resolve: ``LibraryComponents.resolve`` runs each :class:`LibraryResolver` in rounds until every request has a
+   schema; a resolver returns :class:`~litestar._openapi.schema_generation.library.graph.ResolvedSchemas`, schemas
+   keyed by :class:`~litestar._openapi.schema_generation.library.graph.SchemaKey` with their name candidates.
+3. Freeze: ``LibraryComponents.freeze`` merges identical mode pairs and finds the reachable schemas (``graph``),
+   names every component (``naming.name_components``), converts the schemas to OpenAPI (``converter``) and returns
+   an immutable ``FrozenLibrarySchemas``.
+4. Point references: ``LibraryComponents.point_references`` points the placeholders at their components.
+"""
+
 import math
 from abc import ABC, abstractmethod
-from collections import Counter
-from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from contextlib import suppress
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Literal, TypeGuard
 
 import msgspec.json
 
-from litestar._openapi.datastructures import INVALID_KEY_CHARACTER_PATTERN
 from litestar._openapi.schema_generation.library.converter import EMBED_PREFIX
-from litestar._openapi.schema_generation.library.exceptions import SchemaConversionError
 from litestar.params import KwargDefinition
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.serialization.msgspec_hooks import get_serializer
 from litestar.typing import FieldDefinition
-from litestar.utils.helpers import unique_name_for_scope
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
+    from litestar._openapi.schema_generation.library.graph import ResolvedSchemas
     from litestar._openapi.schema_generation.schema import SchemaCreator
     from litestar.openapi.spec.reference import Reference
     from litestar.openapi.spec.schema import Schema
@@ -30,27 +43,19 @@ __all__ = (
     "MODES",
     "LibraryRequest",
     "LibraryResolver",
-    "LibraryResult",
     "LibraryRun",
     "MsgspecRoutedPlugin",
     "SchemaMode",
-    "build_result",
     "claimed_by_other_plugin",
     "embed_index",
     "kwarg_definition_metadata",
-    "local_name",
-    "local_references",
     "map_references",
     "msgspec_placeholder",
-    "reachable",
-    "renamer",
     "routed_to_msgspec",
-    "unique_names",
 )
 
 SchemaMode = Literal["validation", "serialization"]
 
-_K = TypeVar("_K", bound=Hashable)
 LOCAL_PREFIX = "#/$defs/"
 MODES: tuple[tuple[SchemaMode, str], ...] = (("validation", "-Input"), ("serialization", "-Output"))
 
@@ -66,7 +71,7 @@ class LibraryResolver(ABC):
     name: str
 
     @abstractmethod
-    def resolve(self, requests: Sequence["LibraryRequest"], run: "LibraryRun") -> "LibraryResult":
+    def resolve(self, requests: Sequence["LibraryRequest"], run: "LibraryRun") -> "ResolvedSchemas":
         """Generate the schemas of ``requests``, all the requests made with this resolver so far.
 
         A resolution round runs the resolver again whenever requests were added since its last run.
@@ -76,7 +81,8 @@ class LibraryResolver(ABC):
             run: What the resolver may use during this round.
 
         Returns:
-            The generated schemas, which must cover every request in ``requests``.
+            The generated schemas and their name candidates; the root of every request in ``requests`` must be one of
+            the nodes.
         """
 
     def to_input_example(self, value: Any) -> Any:
@@ -106,23 +112,6 @@ class LibraryRequest:
     resolver: LibraryResolver
     mode: SchemaMode
     name: str | None = None
-
-
-@dataclass
-class LibraryResult:
-    """The schemas a resolver generated for its requests.
-
-    ``roots`` maps each request to the key of its schema in ``defs``. ``defs`` are JSON schemas whose references
-    use ``#/$defs/<key>`` or tokens returned by :meth:`LibraryRun.embed`. ``names`` maps keys of ``defs`` to
-    explicit component names. A schema generated for both modes is keyed ``<key>-Input`` and ``<key>-Output``;
-    pairs that turn out identical once all resolvers ran become one component. ``warnings`` are emitted once the
-    document is built, from the resolver's last result only.
-    """
-
-    roots: dict[LibraryRequest, str]
-    defs: dict[str, dict[str, Any]]
-    names: dict[str, str] = field(default_factory=dict)
-    warnings: tuple[str, ...] = ()
 
 
 class LibraryRun:
@@ -319,153 +308,6 @@ def map_references(node: Any, replace: Callable[[str], Any], markers: Sequence[s
     return result
 
 
-def renamer(names: Mapping[str, str]) -> Callable[[str], str]:
-    targets = {f"{LOCAL_PREFIX}{key}": f"{LOCAL_PREFIX}{target}" for key, target in names.items()}
-    return lambda ref: targets.get(ref, ref)
-
-
-def _references(node: Any) -> Iterator[str]:
-    if isinstance(node, list):
-        for item in node:
-            yield from _references(item)
-    elif isinstance(node, dict):
-        for key, item in node.items():
-            if key == "$ref" and isinstance(item, str):
-                yield item
-            elif key == "discriminator" and isinstance(item, dict) and isinstance(item.get("mapping"), dict):
-                yield from (target for target in item["mapping"].values() if isinstance(target, str))
-            else:
-                yield from _references(item)
-
-
-def local_name(ref: str) -> str | None:
-    return ref[len(LOCAL_PREFIX) :] if ref.startswith(LOCAL_PREFIX) else None
-
-
 def embed_index(ref: str) -> int | None:
     index = ref[len(EMBED_PREFIX) :]
     return int(index) if ref.startswith(EMBED_PREFIX) and index.isdigit() else None
-
-
-def local_references(node: Any) -> Iterator[str]:
-    return (name for ref in _references(node) if (name := local_name(ref)) is not None)
-
-
-def reachable(roots: Iterable[str], defs: Mapping[str, Any]) -> dict[str, None]:
-    """Find the defs that local references reach from ``roots``.
-
-    Args:
-        roots: The def keys to start from; each must be in ``defs``.
-        defs: The JSON schemas by def key.
-
-    Returns:
-        The def keys reached, in discovery order; a root is included only if a reference reaches it.
-    """
-    found: dict[str, None] = {}
-    stack = list(roots)
-    while stack:
-        for name in local_references(defs[stack.pop()]):
-            if name in defs and name not in found:
-                found[name] = None
-                stack.append(name)
-    return found
-
-
-def unique_names(candidates: Mapping[_K, tuple[str, str]]) -> dict[_K, str]:
-    """Give each key a distinct name made of component key characters.
-
-    A key takes its short name unless another key shares it, then its qualified name. Remaining clashes get the
-    first free ``_<n>`` suffix from 2, in the order of ``candidates``.
-
-    Args:
-        candidates: The short and qualified name of each key, in priority order.
-
-    Returns:
-        The name of each key.
-    """
-    sanitised = {
-        key: (INVALID_KEY_CHARACTER_PATTERN.sub("_", short), INVALID_KEY_CHARACTER_PATTERN.sub("_", qualified))
-        for key, (short, qualified) in candidates.items()
-    }
-    counts = Counter(short for short, _ in sanitised.values())
-    preferred = {key: short if counts[short] == 1 else qualified for key, (short, qualified) in sanitised.items()}
-    taken = set(preferred.values())
-    names: dict[_K, str] = {}
-    used: set[str] = set()
-    for key, name in preferred.items():
-        names[key] = candidate = unique_name_for_scope(name, taken, start=2) if name in used else name
-        used.add(candidate)
-        taken.add(candidate)
-    return names
-
-
-def build_result(
-    roots: Mapping[LibraryRequest, str],
-    defs: Mapping[SchemaMode, Mapping[str, dict[str, Any]]],
-    candidates: Mapping[str, tuple[str, str]],
-    explicit: Mapping[str, str],
-    warnings: Iterable[str] = (),
-    identities: Mapping[str, tuple[str, SchemaMode]] | None = None,
-) -> LibraryResult:
-    """Name the schemas a resolver generated per def key and mode.
-
-    A def key generated in both modes gets ``-Input`` and ``-Output`` keys. A def key keeps its short name unless
-    another documented def key shares it, then its qualified name; a def key with an explicit name always uses its
-    qualified name and carries the explicit one in :attr:`LibraryResult.names`. Remaining clashes get a numeric
-    suffix, given in the order of ``candidates``.
-
-    Args:
-        roots: The reference key of each request's schema.
-        defs: The schemas generated in each mode, by def key. They refer to each other with
-            ``#/$defs/<reference key>``.
-        candidates: The short and qualified name of each def key, in priority order; may include def keys without
-            schemas.
-        explicit: The explicit component name of def keys.
-        warnings: Warnings to emit once the document is built.
-        identities: The def key and mode each reference key points at. Without it, a reference key is the def key
-            it points at in the mode of the request or schema that uses it.
-
-    Returns:
-        The resolver result.
-
-    Raises:
-        SchemaConversionError: If a root reference key points at no schema.
-    """
-    both = set(defs.get("validation", {})) & set(defs.get("serialization", {}))
-    documented = {def_key for mode_defs in defs.values() for def_key in mode_defs}
-    final = unique_names(
-        {
-            def_key: (qualified, qualified) if def_key in explicit else (short, qualified)
-            for def_key, (short, qualified) in candidates.items()
-            if def_key in documented
-        }
-    )
-    keys = {
-        mode: {def_key: f"{final[def_key]}{suffix if def_key in both else ''}" for def_key in defs[mode]}
-        for mode, suffix in MODES
-        if mode in defs
-    }
-    shared = (
-        None
-        if identities is None
-        else {ref_key: keys[mode][def_key] for ref_key, (def_key, mode) in identities.items()}
-    )
-    targets = {mode: keys.get(mode, {}) if shared is None else shared for mode, _ in MODES}
-    result_defs: dict[str, dict[str, Any]] = {}
-    names: dict[str, str] = {}
-    for mode, suffix in MODES:
-        rename = renamer(targets[mode])
-        for def_key, result_key in keys.get(mode, {}).items():
-            result_defs[result_key] = map_references(defs[mode][def_key], rename)
-            if def_key in explicit:
-                names[result_key] = f"{explicit[def_key]}{suffix if def_key in both else ''}"
-    if missing := [request for request, ref_key in roots.items() if ref_key not in targets[request.mode]]:
-        raise SchemaConversionError(
-            f"The {missing[0].resolver.name} schema resolver cannot document {missing[0].annotation!r} as a component"
-        )
-    return LibraryResult(
-        roots={request: targets[request.mode][ref_key] for request, ref_key in roots.items()},
-        defs=result_defs,
-        names=names,
-        warnings=tuple(warnings),
-    )
