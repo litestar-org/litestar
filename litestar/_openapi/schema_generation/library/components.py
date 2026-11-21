@@ -255,8 +255,8 @@ class LibraryComponents:
         """Convert the resolved schemas to components and record the component of every placeholder.
 
         Runs in steps: check that every request is resolved, merge the mode pairs whose schemas are identical
-        (:func:`~.graph.merge_identical_modes`), find the schemas reachable from a request (:func:`~.graph.reachable`),
-        name them (:func:`~.naming.name_components`), convert them and replace each that got a numeric suffix by an
+        (:func:`~.graph.merge_identical_modes`) into one schema each (:func:`~.graph.collapse_merged`), find the schemas
+        reachable from a request (:func:`~.graph.reachable`), name them (:func:`~.naming.name_components`), convert them and replace each that got a numeric suffix by an
         equal existing component, then emit the warnings. Must run after :meth:`resolve`; :meth:`point_references` then
         points the placeholders at their components. Runs once: later calls return the same result and no new
         placeholder may be requested.
@@ -284,8 +284,7 @@ class LibraryComponents:
         nodes = _nodes(collapsed)
         reached = reachable((key for result in collapsed.values() for key in result.roots.values()), nodes)
         names = name_components(collapsed, list(self._requests), reached, existing)
-        dropped: dict[tuple[str, str], None] = {}
-        schemas, targets = self._fold_into_existing(names, nodes, embedded, existing, dropped)
+        schemas, targets, dropped = self._fold_into_existing(names, nodes, embedded, existing)
         _warn(dropped, results)
         self._frozen = FrozenLibrarySchemas(MappingProxyType(schemas), MappingProxyType(targets))
         return self._frozen
@@ -304,8 +303,7 @@ class LibraryComponents:
         nodes: Mapping[SchemaKey, SchemaNode],
         embedded: Sequence[Schema | Reference],
         existing: Mapping[str, Schema],
-        dropped: dict[tuple[str, str], None],
-    ) -> tuple[dict[str, Schema], dict[str, str]]:
+    ) -> tuple[dict[str, Schema], dict[str, str], dict[tuple[str, str], None]]:
         """Convert the named schemas, replacing each that got a numeric suffix by an equal existing component.
 
         Repeats until no schema is replaced, since a replacement changes the schemas that refer to it.
@@ -315,11 +313,12 @@ class LibraryComponents:
             nodes: The nodes by key, with merged pairs collapsed.
             embedded: The embedded Litestar schemas, by index.
             existing: The components Litestar generated for the document.
-            dropped: Collects the JSON schema keys left out, with their model.
 
         Returns:
-            The new components by name, and the target of each placeholder.
+            The new components by name, the target of each placeholder, and the JSON schema keys left out, with
+            their model.
         """
+        dropped: dict[tuple[str, str], None] = {}
 
         def point(ref: str) -> str:
             return targets.get(ref, ref)
@@ -339,7 +338,7 @@ class LibraryComponents:
                 == map_references(existing[base].to_schema(), point)
             }
             if not folds:
-                return schemas, targets
+                return schemas, targets, dropped
             names = names.folded(folds)
 
     def point_references(self, node: Any) -> None:

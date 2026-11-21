@@ -1335,3 +1335,26 @@ def test_generated_example_of_a_type_outside_msgspec_builtins_uses_the_app_seria
     (example,) = doc["paths"]["/"]["get"]["parameters"][0]["schema"]["examples"]
 
     assert str(IPv4Address(example)) == example
+
+
+def test_a_class_named_like_a_mode_suffixed_component_keeps_its_own_schema() -> None:
+    split = msgspec.defstruct("Amount", [("price", decimal.Decimal)])
+    suffixed = msgspec.defstruct("Amount-Input", [("label", str)])
+
+    @post("/split")
+    async def split_handler(data: JSONBody[split]) -> split:  # type: ignore[valid-type]
+        return data
+
+    @post("/suffixed")
+    async def suffixed_handler(data: JSONBody[suffixed]) -> None:  # type: ignore[valid-type]
+        return None
+
+    doc = Litestar([split_handler, suffixed_handler]).openapi_schema.to_schema()
+
+    def body(path: str) -> dict[str, Any]:
+        ref = doc["paths"][path]["post"]["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+        return cast("dict[str, Any]", components(doc)[ref.rsplit("/", 1)[-1]])
+
+    assert list(body("/split")["properties"]) == ["price"]
+    assert list(body("/suffixed")["properties"]) == ["label"]
+    assert sorted(components(doc)) == ["Amount-Input", "Amount-Input_2", "Amount-Output"]
