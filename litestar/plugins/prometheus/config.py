@@ -4,10 +4,10 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from litestar.exceptions import MissingDependencyException
-from litestar.middleware.base import DefineMiddleware
 from litestar.plugins.prometheus.middleware import (
     PrometheusMiddleware,
 )
+from litestar.utils.deprecation import warn_deprecation
 
 __all__ = ("PrometheusConfig",)
 
@@ -44,7 +44,13 @@ class PrometheusConfig:
     exclude_unhandled_paths: bool = field(default=False)
     """Whether to ignore requests for unhandled paths from the metrics."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns for routes to exclude from the metrics."""
+    """A pattern or list of patterns for routes to exclude from the metrics, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns for routes to exclude from the metrics, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str | None = field(default=None)
     """A key or list of keys in ``opt`` with which a route handler can "opt-out" of the middleware."""
     scopes: Scopes | None = field(default=None)
@@ -57,13 +63,31 @@ class PrometheusConfig:
     """
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Create an instance of :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>` that wraps with.
-
-        [PrometheusMiddleware][litestar.plugins.prometheus.PrometheusMiddleware]. or a subclass
-        of this middleware.
+    def middleware(self) -> PrometheusMiddleware:
+        """Create an instance of :class:`PrometheusMiddleware <litestar.plugins.prometheus.PrometheusMiddleware>`,
+        or a subclass of this middleware, configured from this config instance.
 
         Returns:
-            An instance of ``DefineMiddleware``.
+            An instance of :attr:`middleware_class`.
         """
-        return DefineMiddleware(self.middleware_class, config=self)
+        warn_deprecation(
+            version="3.0",
+            deprecated_name="PrometheusConfig.middleware",
+            kind="property",
+            removal_in="4.0",
+            alternative="PrometheusMiddleware",
+            info="Construct a PrometheusMiddleware instance directly and pass it to the middleware list",
+        )
+        return self.middleware_class(
+            app_name=self.app_name,
+            prefix=self.prefix,
+            labels=self.labels,
+            exemplars=self.exemplars,
+            buckets=self.buckets,
+            excluded_http_methods=self.excluded_http_methods,
+            exclude=self.exclude,
+            exclude_path_pattern=self.exclude_path_pattern,
+            exclude_opt_key=self.exclude_opt_key,
+            scopes=self.scopes,
+            group_path=self.group_path,
+        )

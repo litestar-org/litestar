@@ -541,6 +541,49 @@
         inferred path parameter style, now raises ``ImproperlyConfiguredException`` when
         the application is created. Declare it with ``FromPath``.
 
+    .. change:: Migrate ``PrometheusMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 5006
+        :issue: 4009
+        :breaking:
+
+        ``PrometheusMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases.
+
+        Since the middleware is now directly constructible, the
+        :class:`~litestar.plugins.prometheus.PrometheusConfig` configuration object is
+        obsolete and its ``middleware`` property is deprecated; it will be removed in
+        ``4.0``. Pass a configured ``PrometheusMiddleware`` instance to the middleware
+        list instead:
+
+        .. code-block:: python
+
+            # before
+            config = PrometheusConfig(app_name="my-app", group_path=True)
+            app = Litestar(..., middleware=[config.middleware])
+
+            # after
+            app = Litestar(
+                ...,
+                middleware=[PrometheusMiddleware(app_name="my-app", group_path=True)],
+            )
+
+        Subclasses of ``PrometheusMiddleware`` must rename ``__call__`` to ``handle``,
+        which receives the next ASGI app as an additional ``next_app`` argument in place
+        of ``self.app``, and read settings from the corresponding instance attributes
+        instead of the removed private ``self._config``.
+
+        ``exclude`` patterns are still matched against the request path. The new
+        ``exclude_path_pattern`` argument matches against the handler's path (e.g.
+        ``/user/{user_id:int}``) instead; handlers excluded this way, or via
+        ``exclude_opt_key``, bypass the middleware entirely at startup rather than per
+        request.
+
+        Mounted ASGI apps stay wrapped regardless of the configured ``scopes``, with
+        their connections filtered by scope type at runtime, so restricting the
+        middleware to e.g. ``{"websocket"}`` also holds for connections through mounts.
+
     .. change:: Migrate ``RateLimitMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 5005
