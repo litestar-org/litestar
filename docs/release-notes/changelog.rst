@@ -621,9 +621,8 @@
             asgi_app = middleware(next_app)
             backend = session_config.middleware.backend
 
-        ``exclude`` patterns are still matched against the request path. The new
-        ``exclude_path_pattern`` option of the session configurations matches against
-        the handler's path (e.g. ``/user/{user_id:int}``) instead; handlers excluded this
+        The new ``exclude_path_pattern`` option of the session configurations matches
+        against the handler's path (e.g. ``/user/{user_id:int}``); handlers excluded this
         way, or via ``exclude_opt_key``, bypass the middleware entirely at startup rather
         than per request.
 
