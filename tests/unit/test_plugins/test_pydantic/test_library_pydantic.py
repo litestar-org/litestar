@@ -978,9 +978,12 @@ def test_json_schema_mode_override_with_nested_models(model: Any) -> None:
     response_only = pydantic_document(model, request=False)
     assert child_keys(response_only, response_schema(response_only)) == ["user_name"]
 
-    both = pydantic_document(model)
+    app = pydantic_app(model)
+    both = app.openapi_schema.to_schema()
     assert child_keys(both, body_schema(both)) == ["userName"]
-    assert child_keys(both, response_schema(both))
+    assert child_keys(both, response_schema(both)) == ["user_name"]
+    with TestClient(app) as client:
+        assert client.post("/", json={"child": {"userName": "a"}}).json() == {"child": {"user_name": "a"}}
 
 
 def test_private_generate_json_schema_contract() -> None:

@@ -252,6 +252,9 @@ the model gets two components: ``<Name>-Input``, used by request bodies and para
 used in one direction only, has a single ``<Name>`` component. A model that contains a split
 model is split as well, including a msgspec model that contains a pydantic model.
 
+pydantic's ``json_schema_mode_override`` setting is ignored: requests are always documented as
+validated and responses as serialized, which is what the server does.
+
 
 Customizing pydantic model schemas
 ++++++++++++++++++++++++++++++++++

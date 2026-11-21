@@ -5,7 +5,13 @@ from typing import TYPE_CHECKING, Any, NewType, cast, get_args, get_origin, get_
 
 import pydantic
 from pydantic.errors import PydanticInvalidForJsonSchema, PydanticUserError
-from pydantic.json_schema import CoreRef, GenerateJsonSchema, JsonSchemaValue, _DefinitionsRemapping
+from pydantic.json_schema import (
+    CoreRef,
+    GenerateJsonSchema,
+    JsonSchemaMode,
+    JsonSchemaValue,
+    _DefinitionsRemapping,
+)
 from pydantic_core import core_schema
 
 from litestar._openapi.schema_generation.library import (
@@ -217,6 +223,10 @@ class LitestarGenerateJsonSchema(GenerateJsonSchema):
         self.warnings: dict[str, None] = {}
         super().__init__(by_alias=True, ref_template=ref_template)
         self._serialization_by_alias = prefer_alias
+
+    @property
+    def mode(self) -> JsonSchemaMode:
+        return self._mode
 
     @property
     def by_alias(self) -> bool:
