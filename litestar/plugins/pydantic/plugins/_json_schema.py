@@ -7,7 +7,6 @@ import pydantic
 from pydantic.errors import PydanticInvalidForJsonSchema, PydanticUserError
 from pydantic.json_schema import (
     CoreRef,
-    GenerateJsonSchema,
     JsonSchemaMode,
     JsonSchemaValue,
     _DefinitionsRemapping,
@@ -35,7 +34,7 @@ from litestar._openapi.schema_generation.library.graph import (
 from litestar.dto.field import DTO_FIELD_META_KEY
 from litestar.plugins.pydantic import _model_dump
 from litestar.plugins.pydantic.plugins.init import PydanticInitPlugin
-from litestar.plugins.pydantic.plugins.schema import PydanticSchemaPlugin
+from litestar.plugins.pydantic.plugins.schema import PydanticSchemaPlugin, _RegisteredFormatsJsonSchema
 from litestar.plugins.pydantic.utils import is_pydantic_model_instance
 from litestar.typing import FieldDefinition, TypeAliasTypes
 
@@ -207,7 +206,7 @@ def _field_names(fields: Iterable[tuple[str, Any]], schema: Mapping[str, Any]) -
     return {id(field): name for name, field in (*fields, *computed)}
 
 
-class LitestarGenerateJsonSchema(GenerateJsonSchema):
+class LitestarGenerateJsonSchema(_RegisteredFormatsJsonSchema):
     def __init__(
         self, run: LibraryRun, prefer_alias: bool, roots: Collection[Any] = (), ref_template: str = "#/$defs/{model}"
     ) -> None:

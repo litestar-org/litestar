@@ -2,18 +2,24 @@ from __future__ import annotations
 
 import warnings
 from functools import cache
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import pydantic
 from pydantic import networks
+from pydantic.json_schema import CoreRef, GenerateJsonSchema, JsonSchemaValue
 
 from litestar._openapi.schema_generation.library.converter import json_schema_to_spec
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
+from litestar.openapi.spec.enums import OpenAPIFormat
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.plugins.pydantic.utils import is_pydantic_model_class, is_pydantic_undefined
 from litestar.utils import is_class_and_subclass
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from pydantic._internal._core_utils import CoreSchemaOrField
+
     from litestar._openapi.schema_generation.library import SchemaMode
     from litestar._openapi.schema_generation.schema import SchemaCreator
     from litestar.openapi.spec import Reference, Schema
@@ -41,6 +47,35 @@ _supported_types: tuple[Any, ...] = (
 )
 
 _MINIMUM_PYDANTIC_VERSION = (2, 11)
+_IP_FORMATS: dict[str, tuple[OpenAPIFormat, ...]] = {
+    "ipv4network": (OpenAPIFormat.IPV4_CIDR,),
+    "ipv4interface": (OpenAPIFormat.IPV4_CIDR,),
+    "ipv6network": (OpenAPIFormat.IPV6_CIDR,),
+    "ipv6interface": (OpenAPIFormat.IPV6_CIDR,),
+    "ipvanyaddress": (OpenAPIFormat.IPV4, OpenAPIFormat.IPV6),
+    "ipvanyinterface": (OpenAPIFormat.IPV4_CIDR, OpenAPIFormat.IPV6_CIDR),
+    "ipvanynetwork": (OpenAPIFormat.IPV4_CIDR, OpenAPIFormat.IPV6_CIDR),
+}
+
+
+def _with_registered_format(result: JsonSchemaValue) -> JsonSchemaValue:
+    pydantic_format = result.get("format")
+    if not isinstance(pydantic_format, str) or (formats := _IP_FORMATS.get(pydantic_format)) is None:
+        return result
+    if len(formats) == 1:
+        return {**result, "format": formats[0].value}
+    rest = {key: value for key, value in result.items() if key not in {"type", "format"}}
+    return {**rest, "anyOf": [{"type": "string", "format": registered.value} for registered in formats]}
+
+
+class _RegisteredFormatsJsonSchema(GenerateJsonSchema):
+    def generate_inner(self, schema: CoreSchemaOrField) -> JsonSchemaValue:
+        result = _with_registered_format(super().generate_inner(schema))
+        if (ref := cast("Mapping[str, Any]", schema).get("ref")) is not None:
+            defs_ref = self.core_to_defs_refs.get((CoreRef(ref), self.mode))
+            if defs_ref is not None and defs_ref in self.definitions:
+                self.definitions[defs_ref] = _with_registered_format(self.definitions[defs_ref])
+        return result
 
 
 class PydanticSchemaPlugin(OpenAPISchemaPlugin):
@@ -115,6 +150,6 @@ def _type_schema(annotation: Any, mode: SchemaMode) -> Schema | Reference:
 @cache
 def _json_schema(annotation: Any, mode: SchemaMode) -> dict[str, Any]:
     try:
-        return pydantic.TypeAdapter(annotation).json_schema(mode=mode)
+        return pydantic.TypeAdapter(annotation).json_schema(mode=mode, schema_generator=_RegisteredFormatsJsonSchema)
     except pydantic.PydanticInvalidForJsonSchema:
         return {}

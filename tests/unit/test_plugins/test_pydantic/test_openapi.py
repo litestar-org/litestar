@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from datetime import date, timedelta
 from decimal import Decimal
+from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Interface, IPv6Network
 from types import ModuleType
 from typing import Annotated, Any, Optional, Union
 
@@ -8,6 +9,7 @@ import annotated_types
 import pydantic as pydantic_v2
 import pytest
 from pydantic_core import core_schema
+from typing_extensions import TypeAliasType
 
 from litestar import Litestar, get, post
 from litestar._openapi.schema_generation.schema import SchemaCreator
@@ -16,6 +18,7 @@ from litestar.openapi.spec import Schema
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.params import FromQuery, JSONBody
 from litestar.plugins.pydantic import PydanticDTO, PydanticPlugin, PydanticSchemaPlugin
+from litestar.plugins.pydantic.plugins.schema import _RegisteredFormatsJsonSchema
 from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
@@ -638,8 +641,10 @@ def test_pydantic_types_outside_models_match_their_schema_inside_models(annotati
     adapter = pydantic_v2.TypeAdapter(annotation)
     parameter = document["paths"]["/"]["post"]["parameters"][0]["schema"]
     response = document["paths"]["/"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
-    assert parameter == inside("Input") == adapter.json_schema(mode="validation")
-    assert response == inside("Output") == adapter.json_schema(mode="serialization")
+    validation = adapter.json_schema(mode="validation", schema_generator=_RegisteredFormatsJsonSchema)
+    serialization = adapter.json_schema(mode="serialization", schema_generator=_RegisteredFormatsJsonSchema)
+    assert parameter == inside("Input") == validation
+    assert response == inside("Output") == serialization
 
 
 class OpaqueUrl(pydantic_v2.AnyUrl):
@@ -680,3 +685,70 @@ def test_create_for_computed_field(prefer_alias: bool, name: str) -> None:
         "property_one": {"type": "string", "title": "Property One"},
         name: {"type": "boolean", "title": "a title", "description": "a description", "readOnly": True},
     }
+
+
+def test_ip_types_use_registered_formats() -> None:
+    class Model(pydantic_v2.BaseModel):
+        address_v4: IPv4Address
+        interface_v4: IPv4Interface
+        network_v4: IPv4Network
+        interface_v6: IPv6Interface
+        network_v6: IPv6Network
+        any_address: pydantic_v2.IPvAnyAddress
+        any_interface: pydantic_v2.IPvAnyInterface
+        any_network: pydantic_v2.IPvAnyNetwork
+
+    @get("/")
+    async def handler(network: FromQuery[pydantic_v2.IPvAnyNetwork]) -> Model:
+        raise NotImplementedError
+
+    document = Litestar([handler]).openapi_schema.to_schema()
+    properties = document["components"]["schemas"]["Model"]["properties"]
+    cidr = {"anyOf": [{"type": "string", "format": "ipv4-cidr"}, {"type": "string", "format": "ipv6-cidr"}]}
+
+    assert {name: {k: v for k, v in schema.items() if k != "title"} for name, schema in properties.items()} == {
+        "address_v4": {"type": "string", "format": "ipv4"},
+        "interface_v4": {"type": "string", "format": "ipv4-cidr"},
+        "network_v4": {"type": "string", "format": "ipv4-cidr"},
+        "interface_v6": {"type": "string", "format": "ipv6-cidr"},
+        "network_v6": {"type": "string", "format": "ipv6-cidr"},
+        "any_address": {"anyOf": [{"type": "string", "format": "ipv4"}, {"type": "string", "format": "ipv6"}]},
+        "any_interface": cidr,
+        "any_network": cidr,
+    }
+    assert document["paths"]["/"]["get"]["parameters"][0]["schema"] == cidr
+
+
+def test_aliased_ip_types_use_registered_formats() -> None:
+    Network = TypeAliasType("Network", IPv4Network)
+    AnyNetwork = TypeAliasType("AnyNetwork", pydantic_v2.IPvAnyNetwork)
+
+    class Model(pydantic_v2.BaseModel):
+        network: Network
+        any_network: AnyNetwork
+
+    @get("/")
+    async def handler() -> Model:
+        raise NotImplementedError
+
+    schemas = Litestar([handler]).openapi_schema.to_schema()["components"]["schemas"]
+
+    assert schemas["Network"] == {"type": "string", "format": "ipv4-cidr"}
+    assert schemas["AnyNetwork"] == {
+        "anyOf": [{"type": "string", "format": "ipv4-cidr"}, {"type": "string", "format": "ipv6-cidr"}]
+    }
+
+
+def test_pydantic_dto_forbid_documents_additional_properties() -> None:
+    class ForbidModel(pydantic_v2.BaseModel):
+        model_config = pydantic_v2.ConfigDict(extra="forbid")
+        value: int
+
+    @post("/", dto=PydanticDTO[ForbidModel], return_dto=None)
+    async def handler(data: JSONBody[ForbidModel]) -> None:
+        return None
+
+    document = Litestar([handler]).openapi_schema.to_schema()
+    ref = document["paths"]["/"]["post"]["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+
+    assert document["components"]["schemas"][ref.rsplit("/", 1)[-1]]["additionalProperties"] is False

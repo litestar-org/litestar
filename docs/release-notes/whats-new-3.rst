@@ -178,6 +178,12 @@ documents only sets the field's ``title``, ``description`` and ``examples``; con
 such as ``ge`` or ``max_length`` are no longer documented, since the server does not enforce
 them on these fields.
 
+IP networks and interfaces are documented with the ``ipv4-cidr`` and ``ipv6-cidr`` formats
+instead of ``ipv4`` and ``ipv6``. Pydantic's ``IPvAny*`` types are documented as an
+``anyOf`` of the IPv4 and IPv6 formats, except through ``PydanticDTO``, which documents them
+as plain strings. Component schemas of DTOs that forbid unknown fields set
+``additionalProperties`` to ``false``.
+
 
 Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
 -------------------------------------------------------------------------------

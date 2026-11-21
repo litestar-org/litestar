@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import Enum, StrEnum, auto
+from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from typing import (
     TYPE_CHECKING,
     Annotated,
@@ -35,6 +36,7 @@ from litestar._openapi.schema_generation.schema import (
 )
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.di import NamedDependency, Provide
+from litestar.dto import DataclassDTO, DTOConfig
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.config import OpenAPIConfig
@@ -1128,3 +1130,85 @@ def test_union_of_enums() -> None:
     assert len(schema.one_of) == 2
     components = creator.schema_registry.generate_components_schemas()
     assert {tuple(v.enum or ()) for v in components.values()} == {("red",), ("small",)}
+
+
+def test_dto_forbid_unknown_fields_documents_additional_properties() -> None:
+    @dataclass
+    class Inner:
+        value: int
+
+    @dataclass
+    class Outer:
+        inner: Inner
+
+    @post("/forbid", dto=DataclassDTO[Annotated[Outer, DTOConfig(forbid_unknown_fields=True)]], return_dto=None)
+    async def forbid(data: JSONBody[Outer]) -> None:
+        return None
+
+    @post("/allow", dto=DataclassDTO[Outer], return_dto=None)
+    async def allow(data: JSONBody[Outer]) -> None:
+        return None
+
+    with create_test_client([forbid, allow]) as client:
+        document = client.app.openapi_schema.to_schema()
+        schemas = document["components"]["schemas"]
+
+        def body_component(path: str) -> dict[str, Any]:
+            ref = document["paths"][path]["post"]["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+            return schemas[ref.rsplit("/", 1)[-1]]  # type: ignore[no-any-return]
+
+        outer = body_component("/forbid")
+        inner = schemas[outer["properties"]["inner"]["$ref"].rsplit("/", 1)[-1]]
+        assert outer["additionalProperties"] is False
+        assert inner["additionalProperties"] is False
+        assert client.post("/forbid", json={"inner": {"value": 1, "unknown": 1}}).status_code == 400
+        assert "additionalProperties" not in body_component("/allow")
+        assert client.post("/allow", json={"inner": {"value": 1}, "unknown": 1}).status_code == 201
+
+
+def test_ipaddress_formats_match_served_values() -> None:
+    @dataclass
+    class Addresses:
+        address_v4: IPv4Address
+        interface_v4: IPv4Interface
+        network_v4: IPv4Network
+        address_v6: IPv6Address
+        interface_v6: IPv6Interface
+        network_v6: IPv6Network
+
+    @get("/")
+    async def handler() -> Addresses:
+        return Addresses(
+            address_v4=IPv4Address("192.168.0.1"),
+            interface_v4=IPv4Interface("192.168.0.1/24"),
+            network_v4=IPv4Network("192.168.0.0/24"),
+            address_v6=IPv6Address("2001:db8::1"),
+            interface_v6=IPv6Interface("2001:db8::1/64"),
+            network_v6=IPv6Network("2001:db8::/64"),
+        )
+
+    @get("/param")
+    async def param_handler(network: FromQuery[IPv4Network]) -> None:
+        return None
+
+    with create_test_client([handler, param_handler]) as client:
+        document = client.app.openapi_schema.to_schema()
+        served = client.get("/").json()
+
+    assert served == {
+        "address_v4": "192.168.0.1",
+        "interface_v4": "192.168.0.1/24",
+        "network_v4": "192.168.0.0/24",
+        "address_v6": "2001:db8::1",
+        "interface_v6": "2001:db8::1/64",
+        "network_v6": "2001:db8::/64",
+    }
+    assert document["components"]["schemas"]["Addresses"]["properties"] == {
+        "address_v4": {"type": "string", "format": "ipv4"},
+        "interface_v4": {"type": "string", "format": "ipv4-cidr"},
+        "network_v4": {"type": "string", "format": "ipv4-cidr"},
+        "address_v6": {"type": "string", "format": "ipv6"},
+        "interface_v6": {"type": "string", "format": "ipv6-cidr"},
+        "network_v6": {"type": "string", "format": "ipv6-cidr"},
+    }
+    assert document["paths"]["/param"]["get"]["parameters"][0]["schema"] == {"type": "string", "format": "ipv4-cidr"}

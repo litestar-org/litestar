@@ -55,8 +55,11 @@ class StructSchemaPlugin(MsgspecRoutedPlugin):
             property_fields[struct_info.tag_field] = FieldDefinition.from_annotation(Literal[struct_info.tag])
             required.append(struct_info.tag_field)
 
-        return schema_creator.create_component_schema(
+        schema = schema_creator.create_component_schema(
             field_definition,
             required=sorted(required),
             property_fields=property_fields,
         )
+        if struct_info.forbid_unknown_fields and not struct_info.array_like:
+            schema.additional_properties = False
+        return schema

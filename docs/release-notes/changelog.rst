@@ -91,6 +91,34 @@
         ``example`` key from the ``json_schema_extra`` of a pydantic model field, changing
         the model's own field information.
 
+    .. change:: OpenAPI: Document IP networks and interfaces with the ``ipv4-cidr`` and ``ipv6-cidr`` formats
+        :type: bugfix
+        :issue: 5049
+        :pr: 5237
+        :breaking:
+
+        :class:`ipaddress.IPv4Network`, :class:`ipaddress.IPv4Interface`,
+        :class:`ipaddress.IPv6Network` and :class:`ipaddress.IPv6Interface` were documented
+        with the ``ipv4`` and ``ipv6`` formats, which their values, such as ``192.168.0.0/24``,
+        do not satisfy. They are now documented with the ``ipv4-cidr`` and ``ipv6-cidr``
+        formats of the OpenAPI format registry, available as ``OpenAPIFormat.IPV4_CIDR`` and
+        ``OpenAPIFormat.IPV6_CIDR``, including in pydantic models, whose schemas would
+        otherwise carry pydantic's own ``ipv4network`` and ``ipv4interface`` formats. In
+        pydantic models and parameters, pydantic's ``IPvAnyAddress``, ``IPvAnyInterface`` and
+        ``IPvAnyNetwork`` are documented as an ``anyOf`` of the IPv4 and IPv6 formats instead
+        of pydantic's ``ipvany*`` formats. ``PydanticDTO`` still documents these three types
+        as strings without a format.
+
+    .. change:: OpenAPI: Document DTOs that forbid unknown fields with ``additionalProperties: false``
+        :type: bugfix
+        :pr: 5237
+        :breaking:
+
+        The schemas of DTOs configured with ``forbid_unknown_fields=True``, including
+        ``PydanticDTO`` over a model with ``extra="forbid"``, did not state that unknown fields
+        are rejected. Their component schemas now set ``additionalProperties`` to ``false``,
+        like those of the models they are generated from.
+
     .. change:: Deprecate request parameters ``Headers``, ``QueryParams``, ``RequestCookies`` and ``Scope``
         :type: feature
         :pr: TBD
