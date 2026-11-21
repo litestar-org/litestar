@@ -1,3 +1,4 @@
+import sys
 from typing import Any, AsyncGenerator, Callable, Dict, Generator
 from unittest.mock import MagicMock
 
@@ -6,6 +7,8 @@ from pytest import FixtureRequest
 
 from litestar import Response, WebSocket, get, websocket
 from litestar.di import NamedDependency
+from litestar.exceptions import WebSocketDisconnect
+from litestar.params import FromQuery
 from litestar.response.base import ASGIResponse
 from litestar.testing import create_test_client
 
@@ -36,7 +39,7 @@ def generator_dependency(
         except ValueError:
             exception_mock()
         finally:
-            finally_mock()
+            finally_mock(sys.exc_info()[1])
 
     return dependency
 
@@ -52,7 +55,7 @@ def async_generator_dependency(
         except ValueError:
             exception_mock()
         finally:
-            finally_mock()
+            finally_mock(sys.exc_info()[1])
 
     return dependency
 
@@ -103,6 +106,64 @@ async def test_generator_dependency_websocket(
     cleanup_mock.assert_called_once()
     finally_mock.assert_called_once()
     exception_mock.assert_not_called()
+
+
+def raise_value_error(dep: NamedDependency[str]) -> str:
+    raise ValueError()
+
+
+def raise_value_error_concurrently() -> str:
+    raise ValueError()
+
+
+def validate_limit(dep: NamedDependency[str], limit: FromQuery[int]) -> int:
+    return limit
+
+
+@pytest.mark.parametrize(
+    "failing_dependency, path, status_code",
+    [
+        (raise_value_error, "/", 500),
+        (raise_value_error_concurrently, "/", 500),
+        (validate_limit, "/?limit=x", 400),
+    ],
+)
+@pytest.mark.parametrize("dependency_fixture", ["generator_dependency", "async_generator_dependency"])
+def test_generator_dependency_cleaned_up_when_later_dependency_fails(
+    request: FixtureRequest,
+    dependency_fixture: str,
+    failing_dependency: Callable[..., Any],
+    path: str,
+    status_code: int,
+    finally_mock: MagicMock,
+) -> None:
+    dependency = request.getfixturevalue(dependency_fixture)
+
+    @get("/", dependencies={"dep": dependency, "failing": failing_dependency})
+    def handler(dep: NamedDependency[str], failing: NamedDependency[Any]) -> None:
+        return None
+
+    with create_test_client(route_handlers=[handler]) as client:
+        assert client.get(path).status_code == status_code
+    finally_mock.assert_called_once()
+    assert not isinstance(finally_mock.call_args.args[0], GeneratorExit)
+
+
+@pytest.mark.parametrize("dependency_fixture", ["generator_dependency", "async_generator_dependency"])
+def test_generator_dependency_websocket_cleaned_up_when_validation_fails(
+    request: FixtureRequest, dependency_fixture: str, finally_mock: MagicMock
+) -> None:
+    dependency = request.getfixturevalue(dependency_fixture)
+
+    @websocket("/ws", dependencies={"dep": dependency})
+    async def ws_handler(socket: WebSocket, dep: NamedDependency[str], room: FromQuery[int]) -> None:
+        await socket.accept()
+
+    with create_test_client(route_handlers=[ws_handler]) as client:
+        with pytest.raises(WebSocketDisconnect), client.websocket_connect("/ws?room=x"):
+            pass
+    finally_mock.assert_called_once()
+    assert not isinstance(finally_mock.call_args.args[0], GeneratorExit)
 
 
 @pytest.mark.parametrize("dependency_fixture", ["generator_dependency", "async_generator_dependency"])
