@@ -322,7 +322,25 @@ def test_compression_with_custom_middleware(handler: HTTPRouteHandler) -> None:
         mock.assert_called_once()
 
 
-def test_exclude_matches_handler_path_template() -> None:
+def test_exclude_matches_request_path() -> None:
+    from litestar.params import FromPath
+
+    @get("/user/{user_id:int}", media_type=MediaType.TEXT)
+    def handler(user_id: FromPath[int]) -> str:
+        return "_litestar_" * 4000
+
+    with create_test_client(
+        route_handlers=[handler],
+        compression_config=CompressionConfig(backend="gzip", exclude=["^/user/1$"]),
+    ) as client:
+        response = client.get("/user/1", headers={"Accept-Encoding": "gzip"})
+        assert "content-encoding" not in response.headers
+
+        response = client.get("/user/2", headers={"Accept-Encoding": "gzip"})
+        assert response.headers["content-encoding"] == "gzip"
+
+
+def test_exclude_path_pattern_matches_handler_path() -> None:
     from litestar.params import FromPath
 
     @get("/user/{user_id:int}", media_type=MediaType.TEXT)
@@ -333,23 +351,14 @@ def test_exclude_matches_handler_path_template() -> None:
     def compressed_handler(order_id: FromPath[int]) -> str:
         return "_litestar_" * 4000
 
-    # exclusion patterns match the handler's path template, not the request path
     with create_test_client(
         route_handlers=[excluded_handler, compressed_handler],
-        compression_config=CompressionConfig(backend="gzip", exclude=[r"/user/\{user_id:int\}"]),
+        compression_config=CompressionConfig(backend="gzip", exclude_path_pattern=[r"/user/\{user_id:int\}"]),
     ) as client:
         response = client.get("/user/1", headers={"Accept-Encoding": "gzip"})
         assert "content-encoding" not in response.headers
 
         response = client.get("/order/1", headers={"Accept-Encoding": "gzip"})
-        assert response.headers["content-encoding"] == "gzip"
-
-    # a request-path pattern does not match a dynamic handler and excludes nothing
-    with create_test_client(
-        route_handlers=[excluded_handler, compressed_handler],
-        compression_config=CompressionConfig(backend="gzip", exclude=["^/user/1$"]),
-    ) as client:
-        response = client.get("/user/1", headers={"Accept-Encoding": "gzip"})
         assert response.headers["content-encoding"] == "gzip"
 
 

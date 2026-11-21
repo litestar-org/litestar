@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import CompressionEncoding, ScopeType
+from litestar.middleware._utils import build_exclude_bypass
 from litestar.middleware.base import ASGIMiddleware
 from litestar.middleware.compression.gzip_facade import GzipCompression
 from litestar.utils.empty import value_or_default
@@ -44,7 +45,13 @@ class CompressionMiddleware(ASGIMiddleware):
             config: An instance of CompressionConfig.
         """
         self.config = config
-        self.exclude_path_pattern = tuple(config.exclude) if isinstance(config.exclude, list) else config.exclude
+        exclude_path_pattern = config.exclude_path_pattern
+        self.exclude_path_pattern = (
+            tuple(exclude_path_pattern) if isinstance(exclude_path_pattern, list) else exclude_path_pattern
+        )
+        self.should_bypass_for_scope = build_exclude_bypass(
+            config.exclude, middleware_cls=type(self), also=self.should_bypass_for_scope
+        )
         self.exclude_opt_key = config.exclude_opt_key
 
     async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:

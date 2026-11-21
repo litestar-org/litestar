@@ -444,11 +444,10 @@ configure them - for CORS, via
 :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
 ``cache`` argument, for CSRF, via :class:`~litestar.config.csrf.CSRFConfig`, and for
 compression, via :class:`~litestar.config.compression.CompressionConfig` - are
-unaffected. :attr:`~litestar.config.csrf.CSRFConfig.exclude` patterns are still matched
-against the request path; the new
-:attr:`~litestar.config.csrf.CSRFConfig.exclude_path_pattern` is matched against the
-handler's path (e.g. ``/user/{user_id:int}``) at startup, as described in
-:attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+unaffected. Their ``exclude`` patterns are still matched against the request path;
+``CSRFConfig`` and ``CompressionConfig`` additionally accept ``exclude_path_pattern``,
+which is matched against the handler's path (e.g. ``/user/{user_id:int}``) at startup,
+as described in :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
 
 ``CompressionMiddleware`` keeps its ``CompressionConfig``-based constructor (minus the
 ``app`` argument), since the config remains part of the public ``CompressionFacade``
