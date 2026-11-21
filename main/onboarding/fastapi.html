@@ -749,7 +749,7 @@ Litestar</label><div class="sd-tab-content docutils">
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">State</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span><span class="p">,</span> <span class="n">Provide</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedDependency</span>
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">ArqRedis</span><span class="p">:</span>
@@ -760,7 +760,7 @@ Litestar</label><div class="sd-tab-content docutils">
 </span><span data-line="13">    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">ArqRedis</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">arq_redis</span><span class="p">)</span>
 </span><span data-line="14">
 </span><span data-line="15">
-</span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arq_redis&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_arq_redis</span><span class="p">)})</span>
+</span><span data-line="16"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arq_redis&quot;</span><span class="p">:</span> <span class="n">get_arq_redis</span><span class="p">})</span>
 </span><span data-line="17"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">arq_redis</span><span class="p">:</span> <span class="n">NamedDependency</span><span class="p">[</span><span class="n">ArqRedis</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span data-line="18">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">arq_redis</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span>
 </span><span data-line="19">
@@ -1234,7 +1234,7 @@ Litestar</label><div class="sd-tab-content docutils">
 parameter annotation via <code class="docutils literal notranslate"><span class="pre">Depends(fn)</span></code>, or in a list on the path operation.
 Litestar declares dependencies as a mapping from parameter name to provider, attached to
 the <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> keyword on any layer. Async callables can be used as dependency
-providers natively, sync callables must be wrapped in <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a>.</p>
+providers natively, sync callables must be wrapped with <a class="reference internal" href="../reference/di.html#litestar.di.provide" title="litestar.di.provide"><code class="xref py py-func docutils literal notranslate"><span class="pre">provide()</span></code></a>.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-27" name="sd-tab-set-13" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="fastapi" for="sd-tab-item-27">
@@ -1800,7 +1800,7 @@ Litestar</label><div class="sd-tab-content docutils">
 </tr>
 <tr class="row-even"><td><p>Dependency injection</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Depends(fn)</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">dependencies={&quot;name&quot;:</span> <span class="pre">Provide(fn)}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dependencies={&quot;name&quot;:</span> <span class="pre">fn}</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Application state</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">request.app.state</span></code></p></td>

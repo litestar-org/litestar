@@ -42,7 +42,7 @@ interacting with the ``Author`` model:
     .. literalinclude:: /examples/sqla/sqlalchemy_async_repository.py
         :language: python
         :caption: ``app.py``
-        :lines: 120-199
+        :lines: 116-204
         :linenos:
 
 In our list detail endpoint, we use the pagination filter for limiting the amount of
@@ -73,5 +73,5 @@ Full Code
     .. literalinclude:: /examples/sqla/sqlalchemy_async_repository.py
         :language: python
         :caption: ``app.py``
-        :emphasize-lines: 82-84, 87-94, 120-199
+        :emphasize-lines: 82-84, 87-94, 116-204
         :linenos:
