@@ -4,20 +4,20 @@ import dataclasses
 from dataclasses import MISSING, fields
 from typing import TYPE_CHECKING
 
-from litestar.plugins import OpenAPISchemaPlugin
+from litestar._openapi.schema_generation.library import MsgspecRoutedPlugin
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
-    from litestar.openapi.spec import Schema
+    from litestar.openapi.spec import Reference, Schema
 
 
-class DataclassSchemaPlugin(OpenAPISchemaPlugin):
+class DataclassSchemaPlugin(MsgspecRoutedPlugin):
     def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
         return field_definition.is_dataclass_type
 
-    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
+    def _own_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
         type_hints = field_definition.get_type_hints(
             include_extras=True, resolve_generics=True, namespace=schema_creator.signature_namespace
         )

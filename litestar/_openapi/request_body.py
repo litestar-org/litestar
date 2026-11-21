@@ -41,7 +41,7 @@ def create_request_body(
     data_field = replace(data_field, name="data")
     media_type: RequestEncodingType | str = RequestEncodingType.JSON
     schema_creator = SchemaCreator.from_openapi_context(
-        context, prefer_alias=True, signature_namespace=signature_namespace
+        context, prefer_alias=True, signature_namespace=signature_namespace, schema_mode="validation"
     )
     if isinstance(data_field.kwarg_definition, BodyKwarg) and data_field.kwarg_definition.media_type:
         media_type = data_field.kwarg_definition.media_type
@@ -50,7 +50,7 @@ def create_request_body(
         schema = resolved_data_dto.create_openapi_schema(
             field_definition=data_field,
             handler_id=handler_id,
-            schema_creator=schema_creator,
+            schema_creator=schema_creator.replace(library_models=False),
         )
     else:
         schema = schema_creator.for_field_definition(data_field)

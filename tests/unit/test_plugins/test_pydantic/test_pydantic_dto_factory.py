@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import replace
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Any
 from unittest.mock import ANY
 
 import pydantic as pydantic_v2
@@ -164,7 +164,35 @@ def test_dto_field_via_pydantic_field_extra_is_ignored() -> None:
         "title": "HandlerModelResponseBody",
     }
 
-    assert Model.model_fields["a"].json_schema_extra == {}
-    assert Model.model_fields["b"].json_schema_extra == {"deprecated": True}
+    read_only: dict[str, Any] = dict(dto_field("read-only"))
+    assert Model.model_fields["a"].json_schema_extra == read_only
+    assert Model.model_fields["b"].json_schema_extra == {"deprecated": True, **read_only}
 
     assert [field.dto_field for field in PydanticDTO.generate_field_definitions(Model)] == [DTOField(), DTOField()]
+
+
+class ExtraExample(pydantic_v2.BaseModel):
+    value: int = pydantic_v2.Field(default=2, json_schema_extra=dict(dto_field("read-only"), example=5))  # type: ignore[arg-type]
+
+
+class FieldExamples(pydantic_v2.BaseModel):
+    value: int = pydantic_v2.Field(default=2, examples=[5], json_schema_extra=dto_field("read-only"))  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    "model, extra",
+    [(ExtraExample, {**dto_field("read-only"), "example": 5}), (FieldExamples, dto_field("read-only"))],
+)
+def test_dto_field_extra_with_examples_is_left_out_of_the_schema(
+    model: type[pydantic_v2.BaseModel], extra: dict[str, object]
+) -> None:
+    def with_dto() -> pydantic_v2.BaseModel:
+        return model()
+
+    with_dto.__annotations__["return"] = model
+    handler = get("/dto", return_dto=PydanticDTO[model], sync_to_thread=False)(with_dto)  # type: ignore[valid-type]
+    schemas = Litestar([handler]).openapi_schema.components.to_schema()["schemas"]
+
+    (properties,) = (schema["properties"] for schema in schemas.values())
+    assert properties == {"value": {"type": "integer", "default": 2, "examples": [5]}}
+    assert model.model_fields["value"].json_schema_extra == extra

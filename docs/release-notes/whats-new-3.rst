@@ -160,6 +160,25 @@ via :attr:`OpenAPIConfig.render_plugins`, e.g. :class:`ScalarRenderPlugin` (the 
 :class:`SwaggerRenderPlugin`, :class:`RedocRenderPlugin` or :class:`StoplightRenderPlugin`.
 
 
+OpenAPI model schemas generated with pydantic and msgspec
+---------------------------------------------------------
+
+pydantic models are documented by pydantic, and dataclasses, msgspec Structs,
+``TypedDict``\ s and attrs classes by msgspec, which changes component names and shapes
+and splits a model into ``<Name>-Input`` and ``<Name>-Output`` components when its request
+and response schemas differ. See :ref:`usage/openapi/schema_generation:Model schemas`.
+
+``PydanticSchemaPlugin.for_pydantic_model`` has been removed. To customize a pydantic
+model's schema, use pydantic's own options, or override ``to_openapi_schema`` in a subclass
+of :class:`~litestar.plugins.pydantic.PydanticSchemaPlugin` and return your own schema. The
+``pydantic`` extra now requires pydantic 2.11 or later.
+
+A :class:`~litestar.params.KwargDefinition` on a field of a model that pydantic or msgspec
+documents only sets the field's ``title``, ``description`` and ``examples``; constraints
+such as ``ge`` or ``max_length`` are no longer documented, since the server does not enforce
+them on these fields.
+
+
 Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
 -------------------------------------------------------------------------------
 

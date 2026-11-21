@@ -77,7 +77,12 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
             ExampleFactory.seed_random(openapi_config.random_seed)
 
         openapi = openapi_config.to_openapi_schema()
-        context = OpenAPIContext(openapi_config=openapi_config, plugins=self.app.plugins.openapi)
+        context = OpenAPIContext(
+            openapi_config=openapi_config,
+            plugins=self.app.plugins.openapi,
+            type_encoders=self.app.type_encoders,
+            init_plugins=self.app.plugins.init,
+        )
         path_items: dict[str, PathItem] = {}
         for route in self.included_routes.values():
             path = route.path_format or "/"
@@ -87,7 +92,10 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
             path_items[path] = path_item
 
         openapi.paths = path_items
-        openapi.components.schemas = context.schema_registry.generate_components_schemas()
+        context.schema_registry.library.resolve(context)
+        schemas = context.schema_registry.generate_components_schemas()
+        context.schema_registry.library.point_references(openapi)
+        openapi.components.schemas = schemas
         return openapi
 
     def invalidate_schema_cache(self) -> None:

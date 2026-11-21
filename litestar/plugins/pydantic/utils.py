@@ -4,13 +4,13 @@
 # pyright: reportGeneralTypeIssues=false
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Annotated, Any, Literal, NotRequired, get_type_hints
+from typing import TYPE_CHECKING, Annotated, Any, NotRequired, get_type_hints
 
 import pydantic
 from pydantic_core import PydanticUndefined
 
+from litestar.dto.field import DTO_FIELD_META_KEY
 from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition
 from litestar.types import Empty
@@ -94,15 +94,11 @@ def is_pydantic_undefined(value: Any) -> bool:
     return value is PydanticUndefined
 
 
-def create_field_definitions_for_computed_fields(
-    model: type[pydantic.BaseModel],
-    prefer_alias: bool,
-) -> dict[str, FieldDefinition]:
+def create_field_definitions_for_computed_fields(model: type[pydantic.BaseModel]) -> dict[str, FieldDefinition]:
     """Create field definitions for computed fields.
 
     Args:
         model: A pydantic model.
-        prefer_alias: Whether to prefer the alias or the name of the field.
 
     Returns:
         A dictionary containing the field definitions for the computed fields.
@@ -111,13 +107,8 @@ def create_field_definitions_for_computed_fields(
     if pydantic_decorators is None:
         return {}
 
-    def get_name(k: str, dec: Any) -> str:
-        if not dec.info.alias:
-            return k
-        return dec.info.alias if prefer_alias else k  # type: ignore[no-any-return]
-
     return {
-        (name := get_name(k, dec)): FieldDefinition.from_annotation(
+        name: FieldDefinition.from_annotation(
             Annotated[
                 dec.info.return_type,
                 KwargDefinition(
@@ -130,33 +121,14 @@ def create_field_definitions_for_computed_fields(
             ],
             name=name,
         )
-        for k, dec in pydantic_decorators.computed_fields.items()
+        for name, dec in pydantic_decorators.computed_fields.items()
     }
-
-
-def is_pydantic_root_model(annotation: Any) -> bool:
-    """Check if the given annotation is a Pydantic RootModel.
-
-    Args:
-        annotation: A type annotation
-
-    Returns:
-        True if the annotation is a RootModel, otherwise False.
-    """
-    return getattr(annotation, "__pydantic_root_model__", False) is True
 
 
 @dataclass(frozen=True)
 class PydanticModelInfo:
-    pydantic_version: Literal["1", "2"]
     field_definitions: dict[str, FieldDefinition]
     model_fields: dict[str, pydantic.fields.FieldInfo]
-    title: str | None = None
-    example: Any | None = None
-    is_generic: bool = False
-
-
-_CreateFieldDefinition = Callable[..., FieldDefinition]
 
 
 def _create_field_definition_v2(  # noqa: C901
@@ -172,19 +144,17 @@ def _create_field_definition_v2(  # noqa: C901
     if json_schema_extra := field_info.json_schema_extra:
         if callable(json_schema_extra):
             raise ValueError("Callables not supported for json_schema_extra")
+        json_schema_extra = {key: value for key, value in json_schema_extra.items() if key != DTO_FIELD_META_KEY}
         if json_schema_example := json_schema_extra.get("example"):
             del json_schema_extra["example"]
             examples.append(json_schema_example)
         if json_schema_examples := json_schema_extra.get("examples"):
-            del json_schema_extra["examples"]
             examples.extend(json_schema_examples)  # type: ignore[arg-type]
     if field_examples := field_info.examples:
         examples.extend(field_examples)
 
     if examples:
-        if not json_schema_extra:
-            json_schema_extra = {}
-        json_schema_extra["examples"] = examples
+        json_schema_extra = {**(json_schema_extra or {}), "examples": examples}
 
     if description := field_info.description:
         kwargs["description"] = description
@@ -223,10 +193,7 @@ def _create_field_definition_v2(  # noqa: C901
     )
 
 
-def get_model_info(
-    annotation: Any,
-    prefer_alias: bool = False,
-) -> PydanticModelInfo:
+def get_model_info(annotation: Any) -> PydanticModelInfo:
     model: type[pydantic.BaseModel]
 
     if is_generic(annotation):
@@ -236,10 +203,7 @@ def get_model_info(
         is_generic_model = False
         model = annotation
 
-    model_config = model.model_config
     model_field_info = model.model_fields
-    title = model_config.get("title")
-    example = model_config.get("example")
 
     model_fields: dict[str, pydantic.fields.FieldInfo] = {
         k: getattr(f, "field_info", f) for k, f in model_field_info.items()
@@ -263,9 +227,9 @@ def get_model_info(
         )
 
     property_fields = {
-        field_info.alias if field_info.alias and prefer_alias else k: _create_field_definition_v2(
+        k: _create_field_definition_v2(
             field_annotation=model_annotations[k],
-            name=field_info.alias if field_info.alias and prefer_alias else k,
+            name=k,
             default=Empty
             if is_undefined_sentinel(field_info.default) or is_pydantic_undefined(field_info.default)
             else field_info.default,
@@ -274,17 +238,9 @@ def get_model_info(
         for k, field_info in model_fields.items()
     }
 
-    computed_field_definitions = create_field_definitions_for_computed_fields(
-        model,  # type: ignore[arg-type]
-        prefer_alias=prefer_alias,
-    )
-    property_fields.update(computed_field_definitions)
+    property_fields.update(create_field_definitions_for_computed_fields(model))
 
     return PydanticModelInfo(
-        pydantic_version="2",
-        title=title,
-        example=example,
         field_definitions=property_fields,
-        is_generic=is_generic_model,
         model_fields=model_fields,
     )

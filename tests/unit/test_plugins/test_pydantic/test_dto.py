@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Annotated, Literal, Optional, cast
+from typing import TYPE_CHECKING, Annotated, Generic, Literal, Optional, TypeVar, cast
 
 import pydantic as pydantic_v2
 import pytest
@@ -21,6 +21,17 @@ if TYPE_CHECKING:
     from types import ModuleType
 
     from pydantic import BaseModel
+
+T = TypeVar("T")
+
+
+class Page(pydantic_v2.BaseModel, Generic[T]):
+    items: list[T]
+    total: int = 0
+
+
+class Described(pydantic_v2.BaseModel):
+    name: str = pydantic_v2.Field(title="Full name", examples=["Ada"])
 
 
 def test_aware_datetime_serialization_v2(use_experimental_dto_backend: bool) -> None:
@@ -151,3 +162,31 @@ def test_forbid_unknown_fields_if_forbid_extra_is_set_v2(
     assert dto.config.forbid_unknown_fields is expected_dto_config_option
     # ensure the config is merged
     assert dto.config.experimental_codegen_backend is use_experimental_dto_backend
+
+
+def test_generic_model_resolves_its_type_parameters(use_experimental_dto_backend: bool) -> None:
+    class PageDTO(PydanticDTO[Page[int]]):
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+
+    @post(dto=PageDTO, signature_types=[Page])
+    def handler(data: JSONBody[Page[int]]) -> Page[int]:
+        return data
+
+    with create_test_client(handler) as client:
+        assert client.post("/", json={"items": [1, 2]}).json() == {"items": [1, 2], "total": 0}
+        assert client.post("/", json={"items": ["a"]}).status_code == 400
+        schemas = client.app.openapi_schema.to_schema()["components"]["schemas"]
+
+    (request,) = (schema for name, schema in schemas.items() if name.endswith("RequestBody"))
+    assert request["properties"]["items"] == {"type": "array", "items": {"type": "integer"}}
+
+
+def test_field_title_and_examples_are_documented() -> None:
+    @post(dto=PydanticDTO[Described], return_dto=None, signature_types=[Described])
+    def handler(data: JSONBody[Described]) -> None:
+        return None
+
+    schemas = Litestar([handler]).openapi_schema.to_schema()["components"]["schemas"]
+
+    (request,) = schemas.values()
+    assert request["properties"]["name"] == {"type": "string", "title": "Full name", "examples": ["Ada"]}

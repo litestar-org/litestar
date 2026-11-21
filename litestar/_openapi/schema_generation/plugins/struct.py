@@ -5,17 +5,17 @@ from typing import TYPE_CHECKING, Literal
 import msgspec
 from msgspec import Struct
 
-from litestar.plugins import OpenAPISchemaPlugin
+from litestar._openapi.schema_generation.library import MsgspecRoutedPlugin
 from litestar.plugins.core._msgspec import kwarg_definition_from_field
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
-    from litestar.openapi.spec import Schema
+    from litestar.openapi.spec import Reference, Schema
 
 
-class StructSchemaPlugin(OpenAPISchemaPlugin):
+class StructSchemaPlugin(MsgspecRoutedPlugin):
     def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
         return not field_definition.is_union and field_definition.is_subclass_of(Struct)
 
@@ -23,7 +23,7 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
     def _is_field_required(field: msgspec.inspect.Field) -> bool:
         return field.required or field.default_factory is Empty
 
-    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
+    def _own_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
         type_hints = field_definition.get_type_hints(
             include_extras=True, resolve_generics=True, namespace=schema_creator.signature_namespace
         )

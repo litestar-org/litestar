@@ -79,8 +79,9 @@ def test_request_body_schema_extra() -> None:
 
     app = Litestar([handler])
     schema = app.openapi_schema.to_schema()
-    resp = next(iter(schema["components"]["schemas"].values()))
-    assert resp["title"] == "Overridden title"
+    body = schema["paths"]["/"]["post"]["requestBody"]["content"]["application/json"]["schema"]
+    assert body["title"] == "Overridden title"
+    assert schema["components"]["schemas"]["RequestBody"]["title"] == "RequestBody"
 
 
 def test_upload_single_file_schema_generation() -> None:
