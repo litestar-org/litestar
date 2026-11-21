@@ -10,7 +10,7 @@ import msgspec.json
 
 from litestar._openapi.datastructures import INVALID_KEY_CHARACTER_PATTERN
 from litestar._openapi.schema_generation.library.converter import EMBED_PREFIX
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar._openapi.schema_generation.library.exceptions import SchemaConversionError
 from litestar.params import KwargDefinition
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.serialization.msgspec_hooks import get_serializer
@@ -429,7 +429,7 @@ def build_result(
         The resolver result.
 
     Raises:
-        ImproperlyConfiguredException: If a root reference key points at no schema.
+        SchemaConversionError: If a root reference key points at no schema.
     """
     both = set(defs.get("validation", {})) & set(defs.get("serialization", {}))
     documented = {def_key for mode_defs in defs.values() for def_key in mode_defs}
@@ -460,7 +460,7 @@ def build_result(
             if def_key in explicit:
                 names[result_key] = f"{explicit[def_key]}{suffix if def_key in both else ''}"
     if missing := [request for request, ref_key in roots.items() if ref_key not in targets[request.mode]]:
-        raise ImproperlyConfiguredException(
+        raise SchemaConversionError(
             f"The {missing[0].resolver.name} schema resolver cannot document {missing[0].annotation!r} as a component"
         )
     return LibraryResult(

@@ -2,7 +2,8 @@ import sys
 import threading
 import warnings
 from collections.abc import Callable, Collection, Mapping
-from dataclasses import fields
+from dataclasses import dataclass, fields
+from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, NamedTuple
 
 from litestar._openapi.datastructures import (
@@ -25,7 +26,13 @@ from litestar._openapi.schema_generation.library import (
     renamer,
 )
 from litestar._openapi.schema_generation.library.converter import json_schema_to_spec
-from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
+from litestar._openapi.schema_generation.library.exceptions import (
+    LibrarySchemaError,
+    SchemaConversionError,
+    SchemaNameConflictError,
+    UnresolvedSchemaError,
+)
+from litestar.exceptions import LitestarWarning
 from litestar.openapi.spec.base import BaseSchemaObject
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
@@ -36,7 +43,7 @@ from litestar.utils.helpers import unique_name_for_scope
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation.schema import SchemaCreator
 
-__all__ = ("LibraryComponents",)
+__all__ = ("FrozenLibrarySchemas", "LibraryComponents")
 
 _PLACEHOLDER_PREFIX = "#/components/schemas/litestar-library-"
 _INPUT, _OUTPUT = (suffix for _, suffix in MODES)
@@ -136,28 +143,39 @@ def _merged(result: LibraryResult, stems: Collection[str]) -> LibraryResult:
     return LibraryResult(roots=roots, defs=defs, names=names)
 
 
+@dataclass(frozen=True, slots=True)
+class FrozenLibrarySchemas:
+    """The library-generated components of one OpenAPI document.
+
+    ``components`` are the new components by name; ``targets`` maps each placeholder to the path of its component.
+    """
+
+    components: Mapping[str, Schema]
+    targets: Mapping[str, str]
+
+
 class LibraryComponents:
     """The library-generated schemas of one OpenAPI document.
 
     Schema plugins get a placeholder for each type they defer to a library resolver. Once every path is documented,
-    :meth:`resolve` runs the resolvers, :meth:`emit` turns their schemas into components and
+    :meth:`resolve` runs the resolvers, :meth:`freeze` turns their schemas into components and
     :meth:`point_references` points the placeholders at those components.
     """
 
     __slots__ = (
         "_embedded",
         "_example_resolvers",
+        "_frozen",
         "_requests",
         "_resolvers",
         "_results",
-        "_targets",
         "_tokens",
     )
 
     def __init__(self) -> None:
         self._requests: dict[LibraryRequest, str] = {}
         self._tokens: dict[str, LibraryRequest] = {}
-        self._targets: dict[str, str] = {}
+        self._frozen: FrozenLibrarySchemas | None = None
         self._resolvers: dict[str, LibraryResolver] = {}
         self._results: _Results = {}
         self._embedded: dict[bytes, tuple[int, Schema | Reference]] = {}
@@ -174,7 +192,14 @@ class LibraryComponents:
 
         Returns:
             A placeholder, the same for equal requests, that :meth:`point_references` points at the component.
+
+        Raises:
+            LibrarySchemaError: If the components are already frozen.
         """
+        if self._frozen is not None:
+            raise LibrarySchemaError(
+                "Cannot request a library-generated schema once the components of the document are generated"
+            )
         self._resolvers.setdefault(resolver.name, resolver)
         request = LibraryRequest(
             field_definition.annotation, resolver, mode, get_component_key_override(field_definition)
@@ -249,8 +274,8 @@ class LibraryComponents:
             context: The context of the document being built.
 
         Raises:
-            ImproperlyConfiguredException: If a resolver exceeds the recursion limit or the requests do not settle
-                within 1000 rounds.
+            UnresolvedSchemaError: If a resolver exceeds the recursion limit or the requests do not settle within
+                1000 rounds.
         """
         run = LibraryRun(context, self._embedded)
         for _ in range(_MAX_ROUNDS):
@@ -263,7 +288,7 @@ class LibraryComponents:
                 ):
                     self._resolve(self._resolvers[resolver_name], requests, run)
         if unsettled := self._unsettled():
-            raise ImproperlyConfiguredException(
+            raise UnresolvedSchemaError(
                 f"Library-generated schemas did not settle after {_MAX_ROUNDS} resolution rounds: every round gave "
                 f"the {', '.join(sorted({request.resolver.name for request in unsettled}))} schema resolver new types "
                 f"to document, most recently {[request.annotation for request in unsettled]!r}"
@@ -281,32 +306,36 @@ class LibraryComponents:
             with _RAISED_RECURSION_LIMIT:
                 result = resolver.resolve(requests, run)
         except RecursionError as exc:
-            raise ImproperlyConfiguredException(
+            raise UnresolvedSchemaError(
                 f"The {resolver.name} schema resolver exceeded the maximum recursion depth"
             ) from exc
         self._results[resolver.name] = result
 
-    def emit(self, existing: Mapping[str, Schema]) -> dict[str, Schema]:
+    def freeze(self, existing: Mapping[str, Schema]) -> FrozenLibrarySchemas:
         """Convert the resolved schemas to components and record the component of every placeholder.
 
         Only schemas reachable from a request are emitted. Explicitly named schemas are named before the others, and
         identical schemas of one resolver under one name become one component. A schema that got a numeric suffix
         because an existing component already uses its name is replaced by that component if both are equal; this
         repeats until no schema changes, since a replacement changes the schemas that refer to it. Must run after
-        :meth:`resolve`; :meth:`point_references` then points the placeholders at their components.
+        :meth:`resolve`; :meth:`point_references` then points the placeholders at their components. Runs once: later
+        calls return the same result and no new placeholder may be requested.
 
         Args:
             existing: The components Litestar generated for the document.
 
         Returns:
-            The new components, keyed by name; no name is in ``existing``.
+            The new components, keyed by name, none of them in ``existing``, and the target of each placeholder.
 
         Raises:
-            ImproperlyConfiguredException: If a request is not resolved, an explicit name is taken or a schema cannot be
-                converted.
+            UnresolvedSchemaError: If a request is not resolved.
+            SchemaNameConflictError: If an explicit name is taken.
+            SchemaConversionError: If a schema cannot be converted.
         """
+        if self._frozen is not None:
+            return self._frozen
         if unsettled := self._unsettled():
-            raise ImproperlyConfiguredException(
+            raise UnresolvedSchemaError(
                 f"The library-generated schemas of {[request.annotation for request in unsettled]!r} were never "
                 "resolved; a SchemaCreator documents them only within the OpenAPI document of an application"
             )
@@ -326,10 +355,10 @@ class LibraryComponents:
         dropped: dict[tuple[str, str], None] = {}
 
         def point(ref: str) -> str:
-            return self._targets.get(ref, ref)
+            return targets.get(ref, ref)
 
         while True:
-            self._targets = {
+            targets = {
                 token: f"#/components/schemas/{final[root_entries[request]]}"
                 for request, token in self._requests.items()
             }
@@ -360,24 +389,25 @@ class LibraryComponents:
         for resolver_name in sorted(self._results):
             for message in self._results[resolver_name].warnings:
                 warnings.warn(message, category=LitestarWarning, stacklevel=1)
-        return schemas
+        self._frozen = FrozenLibrarySchemas(MappingProxyType(schemas), MappingProxyType(targets))
+        return self._frozen
 
     def point_references(self, node: Any) -> None:
         """Point every placeholder reachable from ``node`` at its component, including copies of placeholders.
 
-        Walks the OpenAPI objects, lists, tuples and dicts in ``node`` once. Must run after :meth:`emit`.
+        Walks the OpenAPI objects, lists, tuples and dicts in ``node`` once. Does nothing before :meth:`freeze`.
 
         Args:
             node: The OpenAPI object, or a value in it, whose placeholders to point; changed in place.
         """
-        if not self._targets:
+        if self._frozen is None or not (targets := self._frozen.targets):
             return
         seen: set[int] = set()
         stack = [node]
         while stack:
             item = stack.pop()
             if isinstance(item, Reference):
-                item.ref = self._targets.get(item.ref, item.ref)
+                item.ref = targets.get(item.ref, item.ref)
             elif isinstance(item, (BaseSchemaObject, list, tuple, dict)) and id(item) not in seen:
                 seen.add(id(item))
                 if isinstance(item, BaseSchemaObject):
@@ -525,7 +555,7 @@ class LibraryComponents:
             The component name of each entry, and the entry behind each new component.
 
         Raises:
-            ImproperlyConfiguredException: If an explicit name is taken by a different schema.
+            SchemaNameConflictError: If an explicit name is taken by a different schema.
         """
         final: dict[_Entry, str] = {}
         components: dict[str, _Entry] = {}
@@ -541,7 +571,7 @@ class LibraryComponents:
             if base not in taken:
                 name = base
             elif _is_explicit(results, entry):
-                raise ImproperlyConfiguredException(
+                raise SchemaNameConflictError(
                     f"Schema component keys must be unique. Cannot use the key {base!r} for a library-generated "
                     "schema, it is already used by a different schema"
                 )
@@ -567,12 +597,12 @@ class LibraryComponents:
                 return Reference(f"#/components/schemas/{final[target]}")
             if (position := embed_index(ref)) is not None and position < len(embedded):
                 return embedded[position]
-            raise ImproperlyConfiguredException(f"Cannot resolve {ref!r} in a library-generated schema")
+            raise SchemaConversionError(f"Cannot resolve {ref!r} in a library-generated schema")
 
         keys: set[str] = set()
         schema = json_schema_to_spec(results[entry.resolver_name].defs[entry.def_key], lookup_ref, keys)
         model = name.removesuffix(_suffix(name))
         dropped.update(((model, key), None) for key in sorted(keys))
         if isinstance(schema, Reference):
-            raise ImproperlyConfiguredException(f"The library-generated schema {name!r} is a bare reference")
+            raise SchemaConversionError(f"The library-generated schema {name!r} is a bare reference")
         return schema

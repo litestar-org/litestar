@@ -20,8 +20,8 @@ from litestar._openapi.schema_generation.library import (
     kwarg_definition_metadata,
     map_references,
 )
+from litestar._openapi.schema_generation.library.exceptions import SchemaConversionError
 from litestar.dto.field import DTO_FIELD_META_KEY
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.plugins.pydantic import _model_dump
 from litestar.plugins.pydantic.plugins.init import PydanticInitPlugin
 from litestar.plugins.pydantic.plugins.schema import PydanticSchemaPlugin
@@ -325,7 +325,7 @@ class LitestarGenerateJsonSchema(GenerateJsonSchema):
             with self._scope(owner=cls, field="root" if schema.get("root_model") else None, shared=()):
                 result = super().model_schema(schema)
         except KeyError as exc:
-            raise ImproperlyConfiguredException(
+            raise SchemaConversionError(
                 f"Cannot document {cls.__qualname__!r}: pydantic cannot resolve the JSON schema reference {exc}"
             ) from exc
         if isinstance(name := cls.__dict__.get("__schema_name__"), str):
@@ -487,7 +487,7 @@ class _PydanticResolver(LibraryResolver):
                 [(request, request.mode, request.annotation.__pydantic_core_schema__) for request in requests]
             )
         except PydanticUserError as exc:
-            raise ImproperlyConfiguredException(f"Cannot document a pydantic model: {exc.message}") from exc
+            raise SchemaConversionError(f"Cannot document a pydantic model: {exc.message}") from exc
 
         inlined = {
             f"{LOCAL_PREFIX}{ref}": target

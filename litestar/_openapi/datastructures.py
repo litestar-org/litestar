@@ -253,7 +253,7 @@ class SchemaRegistry:
                 self.set_reference_paths(name_, registered_schema)
                 components_schemas[name_] = registered_schema.schema
 
-        components_schemas.update(self.library.emit(components_schemas))
+        components_schemas.update(self.library.freeze(components_schemas).components)
 
         # Sort them by name to ensure they're always generated in the same order.
         return {name: components_schemas[name] for name in sorted(components_schemas.keys())}

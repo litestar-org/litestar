@@ -8,10 +8,12 @@ import enum
 import json
 import os
 import pathlib
+import re
 import subprocess
 import sys
 import uuid
 from collections.abc import Callable, Sequence
+from types import MappingProxyType
 from typing import Annotated, Any, Generic, Literal, NotRequired, Optional, TypedDict, TypeVar, Union, cast
 
 import msgspec
@@ -33,7 +35,14 @@ from litestar._openapi.schema_generation.library import (
 )
 from litestar._openapi.schema_generation.library import components as library_components
 from litestar._openapi.schema_generation.library._msgspec import MSGSPEC_RESOLVER
+from litestar._openapi.schema_generation.library.components import LibraryComponents
 from litestar._openapi.schema_generation.library.converter import json_schema_to_spec
+from litestar._openapi.schema_generation.library.exceptions import (
+    LibrarySchemaError,
+    SchemaConversionError,
+    SchemaNameConflictError,
+    UnresolvedSchemaError,
+)
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar._openapi.schema_generation.schema import SchemaCreator
 from litestar.datastructures import ResponseHeader, UploadFile
@@ -1361,3 +1370,158 @@ def test_components_of_an_unresolved_placeholder_raise() -> None:
 
 def test_unique_names_collapse_runs_of_invalid_characters() -> None:
     assert unique_names({"pair": ("Pair[int, str]", "m.Pair[int, str]")}) == {"pair": "Pair_int_str_"}
+
+
+def raise_never_resolved(monkeypatch: pytest.MonkeyPatch) -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    creator.for_field_definition(FieldDefinition.from_annotation(Marker))
+    creator.schema_registry.generate_components_schemas()
+
+
+def raise_unsettled(monkeypatch: pytest.MonkeyPatch) -> None:
+    use_two_rounds(monkeypatch, cap=1)
+    fake_document([get_marker()])
+
+
+def raise_recursion(monkeypatch: pytest.MonkeyPatch) -> None:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+        raise RecursionError
+
+    use(monkeypatch, resolver)
+    fake_document([get_marker()])
+
+
+def raise_name_conflict(monkeypatch: pytest.MonkeyPatch) -> None:
+    use(monkeypatch, canned({"Marker": MARKER_DEF, "Other": OTHER_DEF}))
+    fake_document([route(keyed("K"), keyed("K", Other))])
+
+
+def raise_unresolvable_ref(monkeypatch: pytest.MonkeyPatch) -> None:
+    use(monkeypatch, referencing("#/$defs/Missing"))
+    fake_document([get_marker()])
+
+
+def raise_bare_reference(monkeypatch: pytest.MonkeyPatch) -> None:
+    use(monkeypatch, canned({"Marker": {"$ref": "#/$defs/Other"}, "Other": OTHER_DEF}))
+    fake_document([get_marker()])
+
+
+def raise_undocumentable(monkeypatch: pytest.MonkeyPatch) -> None:
+    build_result({LibraryRequest(Marker, FAKE, "validation"): "Missing"}, {"validation": {}}, {}, {})
+
+
+@pytest.mark.parametrize(
+    ("trigger", "error", "message"),
+    [
+        pytest.param(
+            raise_never_resolved,
+            UnresolvedSchemaError,
+            r"The library-generated schemas of \[<class '.*Marker'>\] were never resolved; a SchemaCreator documents "
+            r"them only within the OpenAPI document of an application",
+            id="never-resolved",
+        ),
+        pytest.param(
+            raise_unsettled,
+            UnresolvedSchemaError,
+            r"Library-generated schemas did not settle after 1 resolution rounds: every round gave the fake schema "
+            r"resolver new types to document, most recently \[<class '.*Other'>\]",
+            id="unsettled",
+        ),
+        pytest.param(
+            raise_recursion,
+            UnresolvedSchemaError,
+            r"The fake schema resolver exceeded the maximum recursion depth",
+            id="recursion-limit",
+        ),
+        pytest.param(
+            raise_name_conflict,
+            SchemaNameConflictError,
+            r"Schema component keys must be unique\. Cannot use the key 'K' for a library-generated schema, it is "
+            r"already used by a different schema",
+            id="explicit-name-taken",
+        ),
+        pytest.param(
+            raise_unresolvable_ref,
+            SchemaConversionError,
+            r"Cannot resolve '#/\$defs/Missing' in a library-generated schema",
+            id="unresolvable-reference",
+        ),
+        pytest.param(
+            raise_bare_reference,
+            SchemaConversionError,
+            r"The library-generated schema 'Marker' is a bare reference",
+            id="bare-reference",
+        ),
+        pytest.param(
+            raise_undocumentable,
+            SchemaConversionError,
+            r"The fake schema resolver cannot document <class '.*Marker'> as a component",
+            id="cannot-document",
+        ),
+    ],
+)
+def test_library_errors_are_typed(
+    trigger: Callable[[pytest.MonkeyPatch], None],
+    error: type[LibrarySchemaError],
+    message: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with pytest.raises(ImproperlyConfiguredException) as exc_info:
+        trigger(monkeypatch)
+
+    assert type(exc_info.value) is error
+    assert isinstance(exc_info.value, LibrarySchemaError)
+    assert re.fullmatch(message, exc_info.value.detail)
+    assert str(exc_info.value) == f"500: {exc_info.value.detail}"
+
+
+def resolved_library(monkeypatch: pytest.MonkeyPatch, resolver: Resolve) -> tuple[LibraryComponents, Reference]:
+    use(monkeypatch, resolver)
+    creator = SchemaCreator()
+    placeholder = creator.for_library(FieldDefinition.from_annotation(Marker), FAKE)
+    creator.schema_registry.library.resolve(
+        OpenAPIContext(openapi_config=OpenAPIConfig(title="t", version="1"), plugins=[])
+    )
+    return creator.schema_registry.library, placeholder
+
+
+def test_freeze_is_idempotent(monkeypatch: pytest.MonkeyPatch) -> None:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> LibraryResult:
+        return LibraryResult(roots=dict.fromkeys(requests, "Marker"), defs={"Marker": MARKER_DEF}, warnings=("w",))
+
+    library, _ = resolved_library(monkeypatch, resolver)
+
+    with pytest.warns(LitestarWarning) as record:
+        first = library.freeze({})
+        second = library.freeze({})
+
+    assert second is first
+    assert [str(warning.message) for warning in record] == ["w"]
+    assert {name: schema.to_schema() for name, schema in first.components.items()} == {"Marker": MARKER_DEF}
+    assert first.targets == {f"{library_components._PLACEHOLDER_PREFIX}0": f"{PREFIX}Marker"}
+    assert isinstance(first.components, MappingProxyType)
+    assert isinstance(first.targets, MappingProxyType)
+
+
+def test_placeholder_after_freeze_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    library, _ = resolved_library(monkeypatch, canned({"Marker": MARKER_DEF}))
+    library.freeze({})
+
+    with pytest.raises(LibrarySchemaError) as exc_info:
+        library.placeholder(FieldDefinition.from_annotation(Other), FAKE, "validation")
+
+    assert exc_info.value.detail == (
+        "Cannot request a library-generated schema once the components of the document are generated"
+    )
+
+
+def test_point_references_before_freeze_is_noop(monkeypatch: pytest.MonkeyPatch) -> None:
+    library, placeholder = resolved_library(monkeypatch, canned({"Marker": MARKER_DEF}))
+    token = placeholder.ref
+
+    library.point_references(placeholder)
+    assert placeholder.ref == token
+
+    library.freeze({})
+    library.point_references(placeholder)
+    assert placeholder.ref == f"{PREFIX}Marker"
