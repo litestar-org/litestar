@@ -5,6 +5,8 @@ extend-ignore-re = ["(?Rm)^.*(#|//)\\s*codespell:ignore\\s*$"]
 selectin = 'selectin'
 odf = 'odf'
 splitted = 'splitted'
+ser = 'ser'
+typ = 'typ'
 
 [files]
 extend-exclude = [

@@ -5,14 +5,11 @@ from typing import Annotated, Any, Generic, Literal, Optional, TypeVar, Union
 import pydantic as pydantic_v2
 import pytest
 
-from litestar._openapi.schema_generation import SchemaCreator
 from litestar.openapi.spec import OpenAPIType
-from litestar.openapi.spec.reference import Reference
-from litestar.openapi.spec.schema import Schema
 from litestar.plugins.pydantic import PydanticSchemaPlugin
 from litestar.typing import FieldDefinition
-from litestar.utils.helpers import get_name
 from tests.helpers import get_schema_for_field_definition
+from tests.unit.test_plugins.test_pydantic import pydantic_document
 
 T = TypeVar("T")
 
@@ -23,18 +20,13 @@ class PydanticV2Generic(pydantic_v2.BaseModel, Generic[T]):
     annotated_foo: Annotated[T, object()]
 
 
-@pytest.mark.parametrize("model", [PydanticV2Generic])
-def test_schema_generation_with_generic_classes(model: type[PydanticV2Generic]) -> None:
-    cls = model[int]  # type: ignore[index]
-    field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
-    properties = get_schema_for_field_definition(field_definition, plugins=[PydanticSchemaPlugin()]).properties
-    expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(type=[OpenAPIType.INTEGER, OpenAPIType.NULL])
+def test_schema_generation_with_generic_classes() -> None:
+    schemas = pydantic_document(PydanticV2Generic[int], response=False)["components"]["schemas"]
+    properties = schemas["PydanticV2Generic_int_"]["properties"]
 
-    assert properties
-    assert properties["foo"] == expected_foo_schema
-    assert properties["annotated_foo"] == expected_foo_schema
-    assert properties["optional_foo"] == expected_optional_foo_schema
+    assert properties["foo"] == {"title": "Foo", "type": "integer"}
+    assert properties["annotated_foo"] == {"title": "Annotated Foo", "type": "integer"}
+    assert properties["optional_foo"] == {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Optional Foo"}
 
 
 @pytest.mark.parametrize(
@@ -59,13 +51,10 @@ def test_v2_constrained_secrets() -> None:
         string: pydantic_v2.SecretStr = pydantic_v2.Field(min_length=1)
         bytes_: pydantic_v2.SecretBytes = pydantic_v2.Field(min_length=1)
 
-    schema = PydanticSchemaPlugin.for_pydantic_model(
-        FieldDefinition.from_annotation(Model), schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()])
-    )
-    assert isinstance(schema, Schema)
-    assert schema.properties
-    assert schema.properties["string"] == Schema(min_length=1, type=OpenAPIType.STRING)
-    assert schema.properties["bytes_"] == Schema(min_length=1, type=OpenAPIType.STRING)
+    properties = pydantic_document(Model)["components"]["schemas"]["Model"]["properties"]
+
+    secret = {"type": "string", "minLength": 1, "format": "password", "writeOnly": True}
+    assert properties == {"string": {**secret, "title": "String"}, "bytes_": {**secret, "title": "Bytes"}}
 
 
 class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
@@ -89,127 +78,87 @@ class V2GenericModelWithPrivateFields(pydantic_v2.BaseModel, Generic[T]):
 )
 def test_exclude_private_fields(model_class: type[pydantic_v2.BaseModel]) -> None:
     # https://github.com/litestar-org/litestar/issues/3150
-    schema = PydanticSchemaPlugin.for_pydantic_model(
-        FieldDefinition.from_annotation(model_class), schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()])
-    )
-    assert isinstance(schema, Schema)
-    assert not schema.properties
+    schemas = pydantic_document(model_class)["components"]["schemas"]
+
+    assert schemas[model_class.__name__]["properties"] == {}
 
 
-def test_root_model_schema_generation() -> None:
-    """Test that RootModel generates schema for root content instead of wrapping in 'root' field."""
-
-    class NumberList(pydantic_v2.RootModel[list[int]]):
-        pass
-
-    class StringDict(pydantic_v2.RootModel[dict[str, str]]):
-        pass
-
-    # https://docs.pydantic.dev/latest/concepts/unions/#discriminated-unions-with-str-discriminators
-    class BasePet(pydantic_v2.BaseModel):
-        name: str
-
-    class Cat(BasePet):
-        pet_type: Literal["cat"]
-        meows: int
-
-    class Dog(BasePet):
-        pet_type: Literal["dog"]
-        barks: float
-
-    class Lizard(BasePet):
-        pet_type: Literal["reptile", "lizard"]
-        scales: bool
-
-    class Pet(pydantic_v2.RootModel[BasePet]):
-        root: Annotated[  # pyright: ignore[reportIncompatibleVariableOverride]
-            Union[
-                Annotated[Cat, pydantic_v2.Tag("cat")],
-                Annotated[Dog, pydantic_v2.Tag("dog")],
-                Annotated[Lizard, pydantic_v2.Tag("lizard")],
-            ],
-            pydantic_v2.Field(discriminator="pet_type"),
-        ]
-
-    class PetStore(pydantic_v2.BaseModel):
-        pets: list[Pet]
-
-    # Test NumberList RootModel
-    number_list_schema = PydanticSchemaPlugin.for_pydantic_model(
-        FieldDefinition.from_annotation(NumberList),
-        schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()]),
-    )
-
-    # Should generate an array schema, not an object with 'root' property
-    assert isinstance(number_list_schema, Schema)
-    assert number_list_schema.type == OpenAPIType.ARRAY
-    assert number_list_schema.items == Schema(type=OpenAPIType.INTEGER)
-    assert number_list_schema.properties is None
-
-    # Test StringDict RootModel
-    string_dict_schema = PydanticSchemaPlugin.for_pydantic_model(
-        FieldDefinition.from_annotation(StringDict),
-        schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()]),
-    )
-
-    # Should generate an object schema with string properties, not wrapped in 'root'
-    assert isinstance(string_dict_schema, Schema)
-    assert string_dict_schema.type == OpenAPIType.OBJECT
-    assert string_dict_schema.additional_properties == Schema(type=OpenAPIType.STRING)
-    assert string_dict_schema.properties is None
-
-    # Test PetStore with Pet RootModel
-    schema_creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
-    pet_schema = PydanticSchemaPlugin.for_pydantic_model(
-        FieldDefinition.from_annotation(PetStore),
-        schema_creator=schema_creator,
-    )
-
-    # Should generate a oneOf schema with the correct subschemas
-    assert isinstance(pet_schema, Schema)
-    assert pet_schema.type == OpenAPIType.OBJECT
-    assert isinstance(pet_schema.properties, dict)
-    assert "pets" in pet_schema.properties
-
-    pets = pet_schema.properties["pets"]
-    assert isinstance(pets, Schema)
-    assert pets.type == OpenAPIType.ARRAY
-    assert isinstance(pets.items, Schema)
-    assert isinstance(pets.items.one_of, list)
-    assert len(pets.items.one_of) == 3
-
-    assert isinstance(pets.items.one_of[0], Reference)
-    cat_schema = schema_creator.schema_registry.from_reference(pets.items.one_of[0]).schema
-    assert cat_schema.title == "Cat"
-    assert cat_schema.properties is not None
-    assert cat_schema.properties["name"] == Schema(type=OpenAPIType.STRING)
-    assert cat_schema.properties["pet_type"] == Schema(type=OpenAPIType.STRING, const="cat")
-    assert cat_schema.properties["meows"] == Schema(type=OpenAPIType.INTEGER)
-
-    assert isinstance(pets.items.one_of[1], Reference)
-    dog_schema = schema_creator.schema_registry.from_reference(pets.items.one_of[1]).schema
-    assert dog_schema.title == "Dog"
-    assert dog_schema.properties is not None
-    assert dog_schema.properties["name"] == Schema(type=OpenAPIType.STRING)
-    assert dog_schema.properties["pet_type"] == Schema(type=OpenAPIType.STRING, const="dog")
-    assert dog_schema.properties["barks"] == Schema(type=OpenAPIType.NUMBER)
-
-    assert isinstance(pets.items.one_of[2], Reference)
-    lizard_schema = schema_creator.schema_registry.from_reference(pets.items.one_of[2]).schema
-    assert lizard_schema.title == "Lizard"
-    assert lizard_schema.properties is not None
-    assert lizard_schema.properties["name"] == Schema(type=OpenAPIType.STRING)
-    assert lizard_schema.properties["pet_type"] == Schema(type=OpenAPIType.STRING, enum=["reptile", "lizard"])
-    assert lizard_schema.properties["scales"] == Schema(type=OpenAPIType.BOOLEAN)
+class NumberList(pydantic_v2.RootModel[list[int]]):
+    pass
 
 
-def test_optional_field_does_not_mutate_shared_type_map_schema() -> None:
+class StringDict(pydantic_v2.RootModel[dict[str, str]]):
+    pass
+
+
+class BasePet(pydantic_v2.BaseModel):
+    name: str
+
+
+class Cat(BasePet):
+    pet_type: Literal["cat"]
+
+
+class Lizard(BasePet):
+    pet_type: Literal["reptile", "lizard"]
+
+
+class Pet(pydantic_v2.RootModel[BasePet]):
+    root: Annotated[  # pyright: ignore[reportIncompatibleVariableOverride]
+        Union[Annotated[Cat, pydantic_v2.Tag("cat")], Annotated[Lizard, pydantic_v2.Tag("lizard")]],
+        pydantic_v2.Field(discriminator="pet_type"),
+    ]
+
+
+class PetStore(pydantic_v2.BaseModel):
+    pets: list[Pet]
+
+
+@pytest.mark.parametrize(
+    "model, expected",
+    [
+        (NumberList, {"NumberList": {"items": {"type": "integer"}, "type": "array", "title": "NumberList"}}),
+        (
+            StringDict,
+            {"StringDict": {"additionalProperties": {"type": "string"}, "type": "object", "title": "StringDict"}},
+        ),
+    ],
+)
+def test_root_model_schema_generation(model: Any, expected: dict[str, Any]) -> None:
+    assert pydantic_document(model, response=False)["components"]["schemas"] == expected
+
+
+def test_root_model_of_a_discriminated_union() -> None:
+    schemas = pydantic_document(PetStore, response=False)["components"]["schemas"]
+
+    assert set(schemas) == {"PetStore", "Pet", "Cat", "Lizard"}
+    assert schemas["PetStore"]["properties"]["pets"]["items"] == {"$ref": "#/components/schemas/Pet"}
+    assert schemas["Pet"] == {
+        "oneOf": [{"$ref": "#/components/schemas/Cat"}, {"$ref": "#/components/schemas/Lizard"}],
+        "title": "Pet",
+        "discriminator": {
+            "propertyName": "pet_type",
+            "mapping": {
+                "cat": "#/components/schemas/Cat",
+                "lizard": "#/components/schemas/Lizard",
+                "reptile": "#/components/schemas/Lizard",
+            },
+        },
+    }
+    assert schemas["Lizard"]["properties"]["pet_type"] == {
+        "type": "string",
+        "enum": ["reptile", "lizard"],
+        "title": "Pet Type",
+    }
+
+
+def test_optional_pydantic_type_does_not_change_the_required_schema() -> None:
     optional = get_schema_for_field_definition(
-        FieldDefinition.from_annotation(Optional[pydantic_v2.ByteSize]), plugins=[PydanticSchemaPlugin()]
+        FieldDefinition.from_annotation(Optional[pydantic_v2.EmailStr]), plugins=[PydanticSchemaPlugin()]
     )
     required = get_schema_for_field_definition(
-        FieldDefinition.from_annotation(pydantic_v2.ByteSize), plugins=[PydanticSchemaPlugin()]
+        FieldDefinition.from_annotation(pydantic_v2.EmailStr), plugins=[PydanticSchemaPlugin()]
     )
 
-    assert optional.type == [OpenAPIType.INTEGER, OpenAPIType.NULL]
-    assert required.type == OpenAPIType.INTEGER
+    assert optional.type == [OpenAPIType.STRING, OpenAPIType.NULL]
+    assert required.type == OpenAPIType.STRING

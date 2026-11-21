@@ -152,9 +152,7 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["test_msgspec_schema_generation.Lookup"]["properties"][
-            "id"
-        ] == {
+        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
             "maxLength": 16,
@@ -176,7 +174,7 @@ def test_dataclass_field_default() -> None:
         return SomeModel()
 
     app = Litestar(route_handlers=[handler], signature_types=[SomeModel])
-    schema = app.openapi_schema.components.schemas["test_dataclass_field_default.SomeModel"]
+    schema = app.openapi_schema.components.schemas["SomeModel"]
     assert schema
     assert schema.properties["field_a"].default == "default_a"  # type: ignore[union-attr, index]
     assert schema.properties["field_b"].default == "default_b"  # type: ignore[union-attr, index]
@@ -195,7 +193,7 @@ def test_struct_field_default() -> None:
         return SomeModel()
 
     app = Litestar(route_handlers=[handler], signature_types=[SomeModel])
-    schema = app.openapi_schema.components.schemas["test_struct_field_default.SomeModel"]
+    schema = app.openapi_schema.components.schemas["SomeModel"]
     assert schema
     assert schema.properties["field_a"].default == "default_a"  # type: ignore[union-attr, index]
     assert schema.properties["field_b"].default == "default_b"  # type: ignore[union-attr, index]
@@ -359,8 +357,8 @@ class Model:
     app = Litestar(route_handlers=[handler_a, handler_b], debug=True)
     openapi_plugin = app.plugins.get(OpenAPIPlugin)
     assert openapi_plugin.provide_openapi().components.schemas.keys() == {
-        f"{module_a.__name__}_Model",
-        f"{module_b.__name__}_Model",
+        f"{module_a.__name__}.Model",
+        f"{module_b.__name__}.Model",
     }
     # TODO: expand this test to cover more cases
 
@@ -485,9 +483,5 @@ def test_components_schemas_in_alphabetical_order() -> None:
     openapi_plugin = app.plugins.get(OpenAPIPlugin)
     openapi = openapi_plugin.provide_openapi()
 
-    expected_keys = [
-        "test_components_schemas_in_alphabetical_order.A",
-        "test_components_schemas_in_alphabetical_order.B",
-        "test_components_schemas_in_alphabetical_order.C",
-    ]
+    expected_keys = ["A", "B", "C"]
     assert list(openapi.components.schemas.keys()) == expected_keys

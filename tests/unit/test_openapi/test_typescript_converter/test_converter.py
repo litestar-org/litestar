@@ -1,9 +1,11 @@
+import pydantic
 from polyfactory import BaseFactory
 
-from litestar import Controller, Litestar
+from litestar import Controller, Litestar, post
 from litestar._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
+from litestar.params import JSONBody
 
 
 def test_openapi_to_typescript_converter(person_controller: type[Controller], pet_controller: type[Controller]) -> None:
@@ -485,4 +487,23 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
 };
 };
 };"""
+    )
+
+
+class ByNameOrAlias(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(validate_by_name=True)
+
+    user_name: str = pydantic.Field(alias="userName")
+    age: int
+
+
+def test_request_body_accepting_name_or_alias_is_an_interface() -> None:
+    @post("/", sync_to_thread=False)
+    def handler(data: JSONBody[ByNameOrAlias]) -> None:
+        return None
+
+    result = convert_openapi_to_typescript(openapi_schema=Litestar([handler]).openapi_schema)
+
+    assert (
+        "export type RequestBody = {\n\tage: number;\n\tuserName?: string;\n\tuser_name?: string;\n};" in result.write()
     )

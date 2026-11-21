@@ -158,6 +158,7 @@ nitpick_ignore = [
     (PY_CLASS, "ExceptionT"),
     (PY_CLASS, "NoneType"),
     (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
+    (PY_CLASS, "litestar._openapi.schema_generation.library.MsgspecRoutedPlugin"),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
     # types in changelog that no longer exist

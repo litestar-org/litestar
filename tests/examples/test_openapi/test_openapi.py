@@ -1,4 +1,12 @@
-from docs.examples.openapi import customize_openapi_types, customize_pydantic_model_name
+from typing import Any
+
+import pytest
+from docs.examples.openapi import (
+    customize_msgspec_model_schema,
+    customize_openapi_types,
+    customize_pydantic_model_name,
+    customize_pydantic_model_schema,
+)
 
 from litestar.testing import TestClient
 
@@ -18,7 +26,9 @@ def test_schema_generation() -> None:
                             "200": {
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
-                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/IdModel"}}},
+                                "content": {
+                                    "application/json": {"schema": {"$ref": "#/components/schemas/IdContainer"}}
+                                },
                             }
                         },
                         "deprecated": False,
@@ -27,8 +37,8 @@ def test_schema_generation() -> None:
             },
             "components": {
                 "schemas": {
-                    "IdModel": {
-                        "properties": {"id": {"type": "string", "format": "uuid"}},
+                    "IdContainer": {
+                        "properties": {"id": {"format": "uuid", "title": "Id", "type": "string"}},
                         "type": "object",
                         "required": ["id"],
                         "title": "IdContainer",
@@ -69,3 +79,66 @@ def test_schema_types_sorted() -> None:
 
         # Types should be sorted alphabetically.
         assert nested_query_type == ["null", "string"]
+
+
+PRODUCT_PROPERTIES: dict[str, Any] = {
+    "name": {"type": "string", "maxLength": 50, "title": "Name", "description": "Display name"},
+    "sku": {"type": "string", "pattern": "^[A-Z]{3}-[0-9]{4}$", "title": "Sku"},
+    "price": {"type": "integer", "exclusiveMinimum": 0, "title": "Price", "description": "Price in cents"},
+}
+
+
+@pytest.mark.parametrize(
+    ("component", "properties", "required"),
+    [
+        ("Product-Input", PRODUCT_PROPERTIES, ["name", "sku", "price"]),
+        (
+            "Product-Output",
+            {**PRODUCT_PROPERTIES, "label": {"type": "string", "title": "Label", "readOnly": True}},
+            ["name", "sku", "price", "label"],
+        ),
+    ],
+)
+def test_customize_pydantic_model_schema(component: str, properties: dict[str, Any], required: list[str]) -> None:
+    schema = customize_pydantic_model_schema.app.openapi_schema.to_schema()
+
+    assert schema["components"]["schemas"][component] == {
+        "properties": properties,
+        "type": "object",
+        "required": required,
+        "title": "Product",
+        "description": "A product in the catalogue.",
+        "examples": [{"name": "Chair", "price": 4900, "sku": "CHR-0001"}],
+    }
+
+
+def test_customize_pydantic_model_schema_references() -> None:
+    operation = customize_pydantic_model_schema.app.openapi_schema.to_schema()["paths"]["/products"]["post"]
+
+    assert operation["requestBody"]["content"]["application/json"]["schema"] == {
+        "$ref": "#/components/schemas/Product-Input"
+    }
+    assert operation["responses"]["201"]["content"]["application/json"]["schema"] == {
+        "$ref": "#/components/schemas/Product-Output"
+    }
+
+
+def test_customize_msgspec_model_schema() -> None:
+    schema = customize_msgspec_model_schema.app.openapi_schema.to_schema()
+
+    assert schema["paths"]["/stock"]["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+        "$ref": "#/components/schemas/Stock"
+    }
+    assert schema["components"]["schemas"] == {
+        "Stock": {
+            "properties": {
+                "sku": {"type": "string", "pattern": "^[A-Z]{3}-[0-9]{4}$", "examples": ["CHR-0001"]},
+                "quantity": {"type": "integer", "minimum": 0, "description": "Units in the warehouse"},
+                "warehouse": {"anyOf": [{"type": "string"}, {"type": "null"}], "deprecated": True},
+            },
+            "type": "object",
+            "required": ["sku", "quantity"],
+            "title": "Stock",
+            "description": "Stock level of a product.",
+        }
+    }

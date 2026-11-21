@@ -64,6 +64,20 @@ def create_factory() -> CreateFactoryFixture:
     return _create_factory
 
 
+def emitted_components(factory: ResponseFactory, *documented: Any) -> dict[str, Schema]:
+    registry = factory.context.schema_registry
+    registry.library.resolve(factory.context)
+    components = registry.generate_components_schemas()
+    registry.library.point_references((documented, components))
+    return components
+
+
+def component_name(schema: Schema | Reference | None) -> str:
+    reference = schema.all_of[0] if isinstance(schema, Schema) and schema.all_of else schema
+    assert isinstance(reference, Reference)
+    return reference.ref.rsplit("/", 1)[-1]
+
+
 def get_registered_route_handler(handler: HTTPRouteHandler | type[Controller], name: str) -> HTTPRouteHandler:
     app = Litestar(route_handlers=[handler])
     return app.asgi_router.route_handler_index[name]  # type: ignore[return-value]
@@ -271,10 +285,11 @@ def test_create_success_response_with_response_class(create_factory: CreateFacto
     response = factory.create_success_response()
 
     assert response.content
-    reference = response.content["application/json"].schema
+    wrapper = response.content["application/json"].schema
 
-    assert isinstance(reference, Reference)
-    assert isinstance(factory.context.schema_registry.from_reference(reference).schema, Schema)
+    assert isinstance(wrapper, Schema)
+    assert wrapper.examples
+    assert isinstance(emitted_components(factory, wrapper)[component_name(wrapper)], Schema)
 
 
 def test_create_success_response_with_stream(create_factory: CreateFactoryFixture) -> None:
@@ -408,21 +423,20 @@ def test_create_additional_responses(create_factory: CreateFactoryFixture) -> No
         return DataclassPersonFactory.build()
 
     factory = create_factory(handler)
-    responses = factory.create_additional_responses()
+    first_response, second_response, third_response, fourth_response = factory.create_additional_responses()
+    components = emitted_components(factory, first_response, second_response, third_response, fourth_response)
 
-    first_response = next(responses)
     assert first_response[0] == "401"
     assert first_response[1].description == "Authentication error"
 
     assert first_response[1].content
     assert isinstance(first_response[1].content["application/json"], OpenAPIMediaType)
-    reference = first_response[1].content["application/json"].schema
-    assert isinstance(reference, Reference)
-    schema = factory.context.schema_registry.from_reference(reference).schema
-    assert isinstance(schema, Schema)
+    wrapper = first_response[1].content["application/json"].schema
+    assert isinstance(wrapper, Schema)
+    assert wrapper.examples
+    schema = components[component_name(wrapper)]
     assert schema.title == "AuthenticationError"
 
-    second_response = next(responses)
     assert second_response[0] == "500"
     assert second_response[1].description == "Additional response"
 
@@ -430,24 +444,18 @@ def test_create_additional_responses(create_factory: CreateFactoryFixture) -> No
     assert isinstance(second_response[1].content["text/plain"], OpenAPIMediaType)
     reference = second_response[1].content["text/plain"].schema
     assert isinstance(reference, Reference)
-    schema = factory.context.schema_registry.from_reference(reference).schema
-    assert isinstance(schema, Schema)
+    schema = components[component_name(reference)]
     assert schema.title == "ServerError"
     assert not schema.examples
 
-    third_response = next(responses)
     assert third_response[0] == "505"
     assert third_response[1].description == "Additional response"
 
-    fourth_response = next(responses)
     assert fourth_response[0] == "900"
     assert fourth_response[1].description == "Additional response"
     custom_media_type_content = fourth_response[1].content.get("application/vnd.custom")  # type: ignore[union-attr]
     assert custom_media_type_content
     assert isinstance(custom_media_type_content, OpenAPIMediaType)
-
-    with pytest.raises(StopIteration):
-        next(responses)
 
 
 def test_additional_responses_overlap_with_other_responses(create_factory: CreateFactoryFixture) -> None:
@@ -558,9 +566,7 @@ def test_create_response_for_response_subclass(create_factory: CreateFactoryFixt
 
     assert response.content
     assert isinstance(response.content["application/json"], OpenAPIMediaType)
-    reference = response.content["application/json"].schema
-    assert isinstance(reference, Reference)
-    schema = factory.context.schema_registry.from_reference(reference).schema
+    schema = emitted_components(factory, response)[component_name(response.content["application/json"].schema)]
     assert schema.title == "DataclassPerson"
 
 
@@ -596,9 +602,14 @@ def test_response_generation_with_dto(create_factory: CreateFactoryFixture) -> N
     factory = create_factory(resolved_handler)
     field_definition = FieldDefinition.from_annotation(dict[str, Any])
     factory.create_success_response()
-    mock_dto.create_openapi_schema.assert_called_once_with(
-        field_definition=field_definition, handler_id=resolved_handler.handler_id, schema_creator=factory.schema_creator
-    )
+    mock_dto.create_openapi_schema.assert_called_once()
+    kwargs = mock_dto.create_openapi_schema.call_args.kwargs
+    assert kwargs["field_definition"] == field_definition
+    assert kwargs["handler_id"] == resolved_handler.handler_id
+    schema_creator = kwargs["schema_creator"]
+    assert schema_creator.library_models is False
+    assert schema_creator.schema_mode == "serialization"
+    assert schema_creator.schema_registry is factory.schema_creator.schema_registry
 
 
 @pytest.mark.parametrize(

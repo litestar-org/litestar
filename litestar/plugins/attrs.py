@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeGuard
 
+from litestar._openapi.schema_generation.library import MsgspecRoutedPlugin
 from litestar.exceptions import MissingDependencyException
-from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
@@ -17,27 +17,17 @@ except ImportError as e:
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
-    from litestar.openapi.spec import Schema
+    from litestar.openapi.spec import Reference, Schema
 
 __all__ = ("AttrsSchemaPlugin", "is_attrs_class")
 
 
-class AttrsSchemaPlugin(OpenAPISchemaPlugin):
+class AttrsSchemaPlugin(MsgspecRoutedPlugin):
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
         return is_attrs_class(value) or is_attrs_class(type(value))
 
-    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
-        """Given a type annotation, transform it into an OpenAPI schema class.
-
-        Args:
-            field_definition: FieldDefinition instance.
-            schema_creator: An instance of the schema creator class
-
-        Returns:
-            An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
-        """
-
+    def _own_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
         type_hints = field_definition.get_type_hints(
             include_extras=True, resolve_generics=True, namespace=schema_creator.signature_namespace
         )

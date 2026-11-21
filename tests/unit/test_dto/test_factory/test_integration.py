@@ -1009,9 +1009,10 @@ app = Litestar(route_handlers=[create_item, create_item_with_dto])
     )
 
     openapi_schema = module.app.openapi_schema
-    item_schema = openapi_schema.components.schemas["Item"]
+    item_body_schema = openapi_schema.paths["/"].post.request_body.content["application/json"].schema
     item_with_dto_schema = openapi_schema.components.schemas["CreateItemWithDtoItemRequestBody"]
-    assert item_schema.examples == item_with_dto_schema.examples
+    assert item_body_schema.examples
+    assert item_body_schema.examples == item_with_dto_schema.examples
 
 
 @pytest.mark.parametrize("forbid_unknown_fields, expected_status_code", [(False, 201), (True, 400)])

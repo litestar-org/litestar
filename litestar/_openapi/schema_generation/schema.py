@@ -8,6 +8,7 @@ from copy import copy
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
+from functools import partial
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from pathlib import Path
 from re import Pattern
@@ -27,9 +28,11 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
+from litestar._openapi.schema_generation.library import msgspec_placeholder, routed_to_msgspec
 from litestar._openapi.schema_generation.utils import (
     _should_create_literal_schema,
     get_json_schema_formatted_examples,
+    nullable_scalar,
 )
 from litestar.datastructures import SecretBytes, SecretString, UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
@@ -55,7 +58,9 @@ from litestar.utils.typing import (
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
+    from litestar._openapi.schema_generation.library import LibraryResolver, SchemaMode
     from litestar.openapi.spec import Example
+    from litestar.types import TypeEncodersMap
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "content_encoding": "content_encoding",
@@ -85,11 +90,11 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     dict: Schema(type=OpenAPIType.OBJECT),
     frozenset: Schema(type=OpenAPIType.ARRAY),
     IPv4Address: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV4),
-    IPv4Interface: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV4),
-    IPv4Network: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV4),
+    IPv4Interface: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV4_CIDR),
+    IPv4Network: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV4_CIDR),
     IPv6Address: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV6),
-    IPv6Interface: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV6),
-    IPv6Network: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV6),
+    IPv6Interface: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV6_CIDR),
+    IPv6Network: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.IPV6_CIDR),
     Iterable: Schema(type=OpenAPIType.ARRAY),
     list: Schema(type=OpenAPIType.ARRAY),
     Mapping: Schema(type=OpenAPIType.OBJECT),
@@ -219,7 +224,16 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry", "signature_namespace")
+    __slots__ = (
+        "generate_examples",
+        "library_models",
+        "plugins",
+        "prefer_alias",
+        "schema_mode",
+        "schema_registry",
+        "signature_namespace",
+        "type_encoders",
+    )
 
     def __init__(
         self,
@@ -228,6 +242,9 @@ class SchemaCreator:
         prefer_alias: bool = True,
         schema_registry: SchemaRegistry | None = None,
         signature_namespace: dict[str, Any] | None = None,
+        schema_mode: SchemaMode = "validation",
+        library_models: bool = True,
+        type_encoders: TypeEncodersMap | None = None,
     ) -> None:
         """Instantiate a SchemaCreator.
 
@@ -237,18 +254,27 @@ class SchemaCreator:
             prefer_alias: Whether to prefer the alias name for the schema.
             schema_registry: A SchemaRegistry instance.
             signature_namespace: Additional names for forward reference resolution.
+            schema_mode: Whether schemas describe values the server validates or values it serializes.
+            library_models: Whether the built-in dataclass, ``Struct``, ``TypedDict`` and attrs plugins may defer
+                schemas to msgspec. DTO transfer models are documented with it off. Other plugins that call
+                :meth:`for_library` are not affected.
+            type_encoders: The application's type encoders, used to encode generated request examples.
         """
         self.generate_examples = generate_examples
         self.plugins = plugins if plugins is not None else []
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
         self.signature_namespace = signature_namespace or {}
+        self.schema_mode: SchemaMode = schema_mode
+        self.library_models = library_models
+        self.type_encoders = type_encoders
 
     @classmethod
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
         kwargs.setdefault("generate_examples", context.openapi_config.create_examples)
         kwargs.setdefault("plugins", context.plugins)
         kwargs.setdefault("schema_registry", context.schema_registry)
+        kwargs.setdefault("type_encoders", context.type_encoders)
         return cls(**kwargs, prefer_alias=prefer_alias)
 
     @property
@@ -256,13 +282,19 @@ class SchemaCreator:
         """Return a SchemaCreator with generate_examples set to False."""
         if not self.generate_examples:
             return self
-        return type(self)(
-            generate_examples=False,
-            plugins=self.plugins,
-            prefer_alias=False,
-            schema_registry=self.schema_registry,
-            signature_namespace=self.signature_namespace,
-        )
+        return self.replace(generate_examples=False, prefer_alias=False)
+
+    def replace(self, **changes: Any) -> Self:
+        """Return a SchemaCreator sharing this one's registry, with ``changes`` applied."""
+        return type(self)(**{**{slot: getattr(self, slot) for slot in SchemaCreator.__slots__}, **changes})
+
+    def for_library(self, field_definition: FieldDefinition, resolver: LibraryResolver) -> Reference:
+        """Defer the schema of ``field_definition`` to ``resolver``.
+
+        Returns:
+            A placeholder that points at the final component once the document is built.
+        """
+        return self.schema_registry.library.placeholder(field_definition, resolver, self.schema_mode)
 
     @staticmethod
     def plugin_supports_field(plugin: OpenAPISchemaPlugin, field: FieldDefinition) -> bool:
@@ -364,7 +396,11 @@ class SchemaCreator:
 
         if isinstance(result, Reference):
             wrapper = Schema()
-            self._apply_kwarg_definition_metadata(field_definition, wrapper)
+            if self.schema_registry.library.is_placeholder(result):
+                self._apply_use_site_metadata(field_definition, wrapper)
+                self._apply_generated_examples(field_definition, wrapper)
+            else:
+                self._apply_kwarg_definition_metadata(field_definition, wrapper)
             if wrapper != Schema():
                 wrapper.all_of = [result]
                 return wrapper
@@ -451,23 +487,22 @@ class SchemaCreator:
                 default=field_definition.default,
             )
         )
+        if (
+            isinstance(schema_or_reference, Schema)
+            and schema_or_reference.all_of
+            and len(schema_or_reference.all_of) == 1
+            and isinstance(inner := schema_or_reference.all_of[0], Reference)
+            and self.schema_registry.library.is_placeholder(inner)
+        ):
+            schema_or_reference = inner
+        if schema_or_reference == Schema():
+            return Schema()
         # nullable scalars are expressed as 'type: [X, null]' rather than 'oneOf: [X, null]',
         # which tooling handles better (e.g. Swagger UI file inputs). refs, unions, enums and
         # const cannot preserve their semantics in a type array; structured types could, but
         # downstream tooling support is weak, so both keep the oneOf encoding.
-        if (
-            isinstance(schema_or_reference, Schema)
-            and isinstance(schema_type := schema_or_reference.type, OpenAPIType)
-            and schema_type in (OpenAPIType.STRING, OpenAPIType.INTEGER, OpenAPIType.NUMBER, OpenAPIType.BOOLEAN)
-            and schema_or_reference.one_of is None
-            and schema_or_reference.any_of is None
-            and schema_or_reference.all_of is None
-            and schema_or_reference.enum is None
-            and schema_or_reference.const is None
-        ):
-            schema = copy(schema_or_reference)
-            schema.type = [schema_type, OpenAPIType.NULL]
-            return schema
+        if (nullable := nullable_scalar(schema_or_reference)) is not None:
+            return nullable
 
         if isinstance(schema_or_reference, Schema) and isinstance(schema_or_reference.one_of, list):
             result = schema_or_reference.one_of
@@ -547,10 +582,13 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+        if (placeholder := msgspec_placeholder(plugin, field_definition, self)) is not None:
+            return placeholder
         if (ref := self.schema_registry.get_reference_for_field_definition(field_definition)) is not None:
             return ref
 
-        schema = plugin.to_openapi_schema(field_definition=field_definition, schema_creator=self)
+        generate = plugin._own_schema if routed_to_msgspec(plugin) else plugin.to_openapi_schema
+        schema = generate(field_definition=field_definition, schema_creator=self)
         if isinstance(schema, SchemaDataContainer):  # pragma: no cover
             return self.for_field_definition(
                 FieldDefinition.from_kwarg(
@@ -661,6 +699,14 @@ class SchemaCreator:
                         setattr(schema, schema_key, value)
 
     def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
+        self._apply_use_site_metadata(field, schema)
+        self._apply_generated_examples(field, schema)
+
+        if schema.title and schema.type == OpenAPIType.OBJECT:
+            return self.schema_registry.get_reference_for_field_definition(field) or schema
+        return schema
+
+    def _apply_use_site_metadata(self, field: FieldDefinition, schema: Schema) -> None:
         if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:
             schema.const = field.default
 
@@ -679,14 +725,14 @@ class SchemaCreator:
         if schema.default is None and field.default is not Empty:
             schema.default = field.default
 
+    def _apply_generated_examples(self, field: FieldDefinition, schema: Schema) -> None:
         if not schema.examples and self.generate_examples:
-            from litestar._openapi.schema_generation.examples import create_examples_for_field
+            from litestar._openapi.schema_generation.examples import create_examples_for_field, create_input_examples
 
-            schema.examples = get_json_schema_formatted_examples(create_examples_for_field(field))
-
-        if schema.title and schema.type == OpenAPIType.OBJECT:
-            return self.schema_registry.get_reference_for_field_definition(field) or schema
-        return schema
+            examples = create_examples_for_field(field)
+            if self.schema_mode == "validation":
+                examples = create_input_examples(examples, partial(self.schema_registry.library.to_input_example, self))
+            schema.examples = get_json_schema_formatted_examples(examples) or None
 
     def create_component_schema(
         self,

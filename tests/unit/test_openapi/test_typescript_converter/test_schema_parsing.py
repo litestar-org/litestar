@@ -4,8 +4,8 @@ from typing import Any
 import pytest
 
 from litestar._openapi.typescript_converter.schema_parsing import normalize_typescript_namespace, parse_schema
-from litestar._openapi.typescript_converter.types import TypeScriptIntersection
-from litestar.openapi.spec import Schema
+from litestar._openapi.typescript_converter.types import TypeScriptIntersection, TypeScriptUnion
+from litestar.openapi.spec import Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 
 object_schema_1 = Schema(
@@ -62,6 +62,16 @@ def test_parse_schema_handle_one_of() -> None:
     )
 
 
+def test_parse_schema_any_of() -> None:
+    members = [Schema(type=OpenAPIType.STRING), Schema(type=OpenAPIType.NULL)]
+
+    result = parse_schema(Schema(any_of=members))
+
+    assert result == parse_schema(Schema(one_of=members))
+    assert isinstance(result, TypeScriptUnion)
+    assert result.write() == "null | string"
+
+
 def test_parse_schema_handle_array() -> None:
     result = parse_schema(array_schema)
     assert (
@@ -90,6 +100,23 @@ def test_parse_schema_handle_object() -> None:
 def test_parse_schema_handle_enum(schema_type: Any, enum: list[Any], expected: str) -> None:
     result = parse_schema(Schema(type=schema_type, enum=enum))
     assert result.write() == expected
+
+
+def test_parse_schema_ignores_all_of_members_that_only_require_keys() -> None:
+    either_key = Schema(any_of=[Schema(required=["userName"]), Schema(required=["user_name"])])
+    properties: dict[str, Schema | Reference] = {
+        "userName": Schema(type=OpenAPIType.STRING),
+        "user_name": Schema(type=OpenAPIType.STRING),
+    }
+
+    only_required = parse_schema(Schema(type=OpenAPIType.OBJECT, properties=properties, all_of=[either_key]))
+    with_object = parse_schema(Schema(all_of=[either_key, object_schema_1]))
+    mixed = Schema(any_of=[Schema(required=["first_1"])], one_of=[object_schema_1])
+
+    assert only_required.write() == "{\n\tuserName?: string;\n\tuser_name?: string;\n}"
+    assert with_object.write() == parse_schema(Schema(all_of=[object_schema_1])).write()
+    assert parse_schema(Schema(all_of=[mixed])).write() == parse_schema(Schema(all_of=[mixed, either_key])).write()
+    assert parse_schema(Schema(all_of=[mixed])).write() != "any"
 
 
 @pytest.mark.parametrize("namespace", [string.punctuation])

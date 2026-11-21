@@ -1,16 +1,55 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
+from litestar.openapi.spec.enums import OpenAPIType
+from litestar.openapi.spec.schema import Schema
 from litestar.utils.helpers import get_name
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
-    from litestar.openapi.spec import Example
+    from litestar.openapi.spec import Example, Reference
     from litestar.typing import FieldDefinition
 
-__all__ = ("_should_create_literal_schema",)
+__all__ = ("_should_create_literal_schema", "nullable_scalar")
+
+_NULLABLE_SCALARS = frozenset({OpenAPIType.STRING, OpenAPIType.INTEGER, OpenAPIType.NUMBER, OpenAPIType.BOOLEAN})
+_TYPE_DEPENDENT_KEYWORDS = (
+    "one_of",
+    "any_of",
+    "all_of",
+    "enum",
+    "const",
+    "schema_not",
+    "schema_if",
+    "then",
+    "schema_else",
+)
+
+
+def nullable_scalar(schema: Schema | Reference, **changes: Any) -> Schema | None:
+    """Make a scalar schema accept ``null`` through a ``type`` array.
+
+    References, combinators, ``enum``, ``const`` and conditionals would also apply to ``null`` in a type array, so
+    such schemas keep a ``oneOf`` with ``null`` instead.
+
+    Args:
+        schema: The schema to make nullable.
+        **changes: Other attributes to set on the result.
+
+    Returns:
+        A copy of ``schema`` typed ``[<type>, null]``, or ``None`` if ``schema`` is not such a scalar.
+    """
+    if not (
+        isinstance(schema, Schema)
+        and isinstance(schema.type, OpenAPIType)
+        and schema.type in _NULLABLE_SCALARS
+        and all(getattr(schema, keyword) is None for keyword in _TYPE_DEPENDENT_KEYWORDS)
+    ):
+        return None
+    return replace(schema, **changes, type=[schema.type, OpenAPIType.NULL])
 
 
 def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:

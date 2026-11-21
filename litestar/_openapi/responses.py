@@ -86,7 +86,10 @@ class ResponseFactory:
         self.route_handler = route_handler
         self.field_definition = route_handler.parsed_fn_signature.return_type
         self.schema_creator = SchemaCreator.from_openapi_context(
-            context, prefer_alias=False, signature_namespace=route_handler.signature_namespace
+            context,
+            prefer_alias=False,
+            signature_namespace=route_handler.signature_namespace,
+            schema_mode="serialization",
         )
 
     def create_responses(self, raises_validation_error: bool) -> Responses | None:
@@ -142,7 +145,7 @@ class ResponseFactory:
                 result = dto.create_openapi_schema(
                     field_definition=self.field_definition,
                     handler_id=self.route_handler.handler_id,
-                    schema_creator=self.schema_creator,
+                    schema_creator=self.schema_creator.replace(library_models=False),
                 )
             else:
                 if self.field_definition.is_subclass_of(Template):
@@ -160,11 +163,16 @@ class ResponseFactory:
 
                 result = self.schema_creator.for_field_definition(field_def)
 
-            schema = (
-                result if isinstance(result, Schema) else self.context.schema_registry.from_reference(result).schema
-            )
-            schema.content_encoding = self.route_handler.content_encoding
-            schema.content_media_type = self.route_handler.content_media_type
+            schema = result if isinstance(result, Schema) else self.context.schema_registry.component_for(result)
+            if schema is not None:
+                schema.content_encoding = self.route_handler.content_encoding
+                schema.content_media_type = self.route_handler.content_media_type
+            elif self.route_handler.content_encoding or self.route_handler.content_media_type:
+                result = Schema(
+                    all_of=[result],
+                    content_encoding=self.route_handler.content_encoding,
+                    content_media_type=self.route_handler.content_media_type,
+                )
             response = OpenAPIResponse(
                 content={get_enum_string_value(media_type): OpenAPIMediaType(schema=result)},
                 description=self.create_description(),
@@ -219,7 +227,10 @@ class ResponseFactory:
             schema_creator = self.schema_creator
         else:
             schema_creator = SchemaCreator.from_openapi_context(
-                self.context, generate_examples=False, signature_namespace=self.route_handler.signature_namespace
+                self.context,
+                generate_examples=False,
+                signature_namespace=self.route_handler.signature_namespace,
+                schema_mode="serialization",
             )
 
         for response_header in self.route_handler.response_headers:
@@ -252,8 +263,9 @@ class ResponseFactory:
             schema_creator = SchemaCreator.from_openapi_context(
                 self.context,
                 prefer_alias=False,
-                generate_examples=additional_response.generate_examples,
+                generate_examples=additional_response.generate_examples and not additional_response.examples,
                 signature_namespace=self.route_handler.signature_namespace,
+                schema_mode="serialization",
             )
             field_def = FieldDefinition.from_annotation(additional_response.data_container)
 

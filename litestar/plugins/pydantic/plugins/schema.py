@@ -1,124 +1,103 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+import warnings
+from functools import cache
+from typing import TYPE_CHECKING, Any, cast
 
 import pydantic
 from pydantic import networks
+from pydantic.json_schema import CoreRef, GenerateJsonSchema, JsonSchemaValue
 
-from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Reference, Schema
+from litestar._openapi.schema_generation.library.converter import json_schema_to_spec
+from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
+from litestar.openapi.spec.enums import OpenAPIFormat
 from litestar.plugins import OpenAPISchemaPlugin
-from litestar.plugins.pydantic.utils import (
-    get_model_info,
-    is_pydantic_model_class,
-    is_pydantic_root_model,
-    is_pydantic_undefined,
-)
-from litestar.typing import FieldDefinition
+from litestar.plugins.pydantic.utils import is_pydantic_model_class, is_pydantic_undefined
 from litestar.utils import is_class_and_subclass
 
 if TYPE_CHECKING:
-    from litestar._openapi.schema_generation.schema import SchemaCreator
+    from collections.abc import Mapping
 
-PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
-    pydantic.SecretStr: Schema(type=OpenAPIType.STRING),
-    pydantic.SecretBytes: Schema(type=OpenAPIType.STRING),
-    pydantic.ByteSize: Schema(type=OpenAPIType.INTEGER),
-    pydantic.EmailStr: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL),
-    pydantic.IPvAnyAddress: Schema(
-        one_of=[
-            Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.IPV4,
-                description="IPv4 address",
-            ),
-            Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.IPV6,
-                description="IPv6 address",
-            ),
-        ]
-    ),
-    pydantic.IPvAnyInterface: Schema(
-        one_of=[
-            Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.IPV4,
-                description="IPv4 interface",
-            ),
-            Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.IPV6,
-                description="IPv6 interface",
-            ),
-        ]
-    ),
-    pydantic.IPvAnyNetwork: Schema(
-        one_of=[
-            Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.IPV4,
-                description="IPv4 network",
-            ),
-            Schema(
-                type=OpenAPIType.STRING,
-                format=OpenAPIFormat.IPV6,
-                description="IPv6 network",
-            ),
-        ]
-    ),
-    pydantic.Json: Schema(type=OpenAPIType.OBJECT, format=OpenAPIFormat.JSON_POINTER),
-    pydantic.NameEmail: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"),
-    pydantic.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
-    pydantic.PastDate: Schema(
-        type=OpenAPIType.STRING,
-        format=OpenAPIFormat.DATE,
-        description="date with the constraint that the value must be in the past",
-    ),
-    pydantic.FutureDate: Schema(
-        type=OpenAPIType.STRING,
-        format=OpenAPIFormat.DATE,
-        description="date with the constraint that the value must be in the future",
-    ),
-    pydantic.PastDatetime: Schema(
-        type=OpenAPIType.STRING,
-        format=OpenAPIFormat.DATE_TIME,
-        description="datetime with the constraint that the value must be in the past",
-    ),
-    pydantic.FutureDatetime: Schema(
-        type=OpenAPIType.STRING,
-        format=OpenAPIFormat.DATE_TIME,
-        description="datetime with the constraint that the value must be in the future",
-    ),
-    pydantic.AwareDatetime: Schema(
-        type=OpenAPIType.STRING,
-        format=OpenAPIFormat.DATE_TIME,
-        description="datetime with the constraint that the value must have timezone info",
-    ),
-    pydantic.NaiveDatetime: Schema(
-        type=OpenAPIType.STRING,
-        format=OpenAPIFormat.DATE_TIME,
-        description="datetime with the constraint that the value must lack timezone info",
-    ),
+    from pydantic._internal._core_utils import CoreSchemaOrField
+
+    from litestar._openapi.schema_generation.library import SchemaMode
+    from litestar._openapi.schema_generation.schema import SchemaCreator
+    from litestar.openapi.spec import Reference, Schema
+    from litestar.typing import FieldDefinition
+
+_supported_types: tuple[Any, ...] = (
+    pydantic.BaseModel,
+    pydantic.SecretStr,
+    pydantic.SecretBytes,
+    pydantic.ByteSize,
+    pydantic.EmailStr,
+    pydantic.IPvAnyAddress,
+    pydantic.IPvAnyInterface,
+    pydantic.IPvAnyNetwork,
+    pydantic.Json,
+    pydantic.NameEmail,
+    pydantic.AnyUrl,
+    pydantic.PastDate,
+    pydantic.FutureDate,
+    pydantic.PastDatetime,
+    pydantic.FutureDatetime,
+    pydantic.AwareDatetime,
+    pydantic.NaiveDatetime,
+    *(url for url in (networks.HttpUrl, networks.AnyHttpUrl) if isinstance(url, type)),
+)
+
+_MINIMUM_PYDANTIC_VERSION = (2, 11)
+_IP_FORMATS: dict[str, tuple[OpenAPIFormat, ...]] = {
+    "ipv4network": (OpenAPIFormat.IPV4_CIDR,),
+    "ipv4interface": (OpenAPIFormat.IPV4_CIDR,),
+    "ipv6network": (OpenAPIFormat.IPV6_CIDR,),
+    "ipv6interface": (OpenAPIFormat.IPV6_CIDR,),
+    "ipvanyaddress": (OpenAPIFormat.IPV4, OpenAPIFormat.IPV6),
+    "ipvanyinterface": (OpenAPIFormat.IPV4_CIDR, OpenAPIFormat.IPV6_CIDR),
+    "ipvanynetwork": (OpenAPIFormat.IPV4_CIDR, OpenAPIFormat.IPV6_CIDR),
 }
 
-if int(pydantic.version.version_short().split(".")[1]) >= 10:
-    # These were 'Annotated' type aliases before Pydantic 2.10, where they were
-    # changed to proper classes. Using subscripted generics type in an 'isinstance'
-    # check would raise a 'TypeError' on Python <3.12
-    PYDANTIC_TYPE_MAP.update(
-        {
-            networks.HttpUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
-            networks.AnyHttpUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
-        }
-    )
+
+def _with_registered_format(result: JsonSchemaValue) -> JsonSchemaValue:
+    pydantic_format = result.get("format")
+    if not isinstance(pydantic_format, str) or (formats := _IP_FORMATS.get(pydantic_format)) is None:
+        return result
+    if len(formats) == 1:
+        return {**result, "format": formats[0].value}
+    rest = {key: value for key, value in result.items() if key not in {"type", "format"}}
+    return {**rest, "anyOf": [{"type": "string", "format": registered.value} for registered in formats]}
 
 
-_supported_types = (pydantic.BaseModel, *PYDANTIC_TYPE_MAP.keys())
+class _RegisteredFormatsJsonSchema(GenerateJsonSchema):
+    def generate_inner(self, schema: CoreSchemaOrField) -> JsonSchemaValue:
+        result = _with_registered_format(super().generate_inner(schema))
+        if (ref := cast("Mapping[str, Any]", schema).get("ref")) is not None:
+            defs_ref = self.core_to_defs_refs.get((CoreRef(ref), self.mode))
+            if defs_ref is not None and defs_ref in self.definitions:
+                self.definitions[defs_ref] = _with_registered_format(self.definitions[defs_ref])
+        return result
 
 
 class PydanticSchemaPlugin(OpenAPISchemaPlugin):
     def __init__(self, prefer_alias: bool = False) -> None:
+        if prefer_alias:
+            warnings.warn(
+                "PydanticSchemaPlugin(prefer_alias=True) has no effect: response schemas follow the prefer_alias "
+                "option of PydanticPlugin or PydanticInitPlugin, which serialize the models",
+                category=LitestarWarning,
+                stacklevel=2,
+            )
         self.prefer_alias = prefer_alias
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        if "for_pydantic_model" in cls.__dict__:
+            warnings.warn(
+                f"{cls.__qualname__}.for_pydantic_model is never called: PydanticSchemaPlugin no longer has this "
+                "hook. Override to_openapi_schema and return your own schema instead",
+                category=LitestarWarning,
+                stacklevel=3,
+            )
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
@@ -131,6 +110,8 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
         """Given a type annotation, transform it into an OpenAPI schema class.
 
+        Pydantic models and types are documented with pydantic's own JSON schema generation.
+
         Args:
             field_definition: FieldDefinition instance.
             schema_creator: An instance of the schema creator class
@@ -138,42 +119,37 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         Returns:
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
         """
-        if schema_creator.prefer_alias != self.prefer_alias:
-            schema_creator.prefer_alias = True
+        from litestar.plugins.pydantic.plugins._json_schema import PYDANTIC_RESOLVER
+
         if is_pydantic_model_class(field_definition.annotation):
-            return self.for_pydantic_model(field_definition=field_definition, schema_creator=schema_creator)
-        return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
+            _check_pydantic_version()
+            return schema_creator.for_library(field_definition, PYDANTIC_RESOLVER)
+        return _type_schema(field_definition.annotation, schema_creator.schema_mode)
 
-    @classmethod
-    def for_pydantic_model(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
-        """Create a schema object for a given pydantic model class.
 
-        Args:
-            field_definition: FieldDefinition instance.
-            schema_creator: An instance of the schema creator class
-
-        Returns:
-            A schema instance.
-        """
-
-        model_info = get_model_info(field_definition.annotation, prefer_alias=schema_creator.prefer_alias)
-
-        # Handle RootModel: generate schema for the root field content instead of treating it as a regular field
-        if is_pydantic_root_model(field_definition.annotation) and (
-            root_field := model_info.field_definitions.get("root")
-        ):
-            root_field_def = FieldDefinition.from_annotation(
-                annotation=root_field.annotation,
-                name=field_definition.name,
-                default=field_definition.default,
-                extra=field_definition.extra,
-            )
-            return schema_creator.for_field_definition(root_field_def)
-
-        return schema_creator.create_component_schema(
-            field_definition,
-            required=sorted(f.name for f in model_info.field_definitions.values() if f.is_required),
-            property_fields=model_info.field_definitions,
-            title=model_info.title,
-            examples=None if model_info.example is None else [model_info.example],
+def _check_pydantic_version() -> None:
+    if not _is_supported_pydantic_version(pydantic.VERSION):
+        raise ImproperlyConfiguredException(
+            f"Documenting pydantic models requires pydantic 2.11 or later, but pydantic {pydantic.VERSION} is installed"
         )
+
+
+@cache
+def _is_supported_pydantic_version(version: str) -> bool:
+    major, minor, *_ = version.split(".")
+    return (int(major), int(minor)) >= _MINIMUM_PYDANTIC_VERSION
+
+
+def _type_schema(annotation: Any, mode: SchemaMode) -> Schema | Reference:
+    def lookup_ref(ref: str) -> Schema | Reference:
+        raise ImproperlyConfiguredException(f"Cannot resolve {ref!r} in the pydantic schema of {annotation!r}")
+
+    return json_schema_to_spec(_json_schema(annotation, mode), lookup_ref)
+
+
+@cache
+def _json_schema(annotation: Any, mode: SchemaMode) -> dict[str, Any]:
+    try:
+        return pydantic.TypeAdapter(annotation).json_schema(mode=mode, schema_generator=_RegisteredFormatsJsonSchema)
+    except pydantic.PydanticInvalidForJsonSchema:
+        return {}

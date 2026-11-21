@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import typing
 from dataclasses import replace
+from datetime import date, datetime, time
 from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING, Any, get_args
+from uuid import UUID
 
 import msgspec
 from polyfactory.exceptions import ParameterException
@@ -14,10 +16,11 @@ from polyfactory.utils.helpers import unwrap_annotation
 from polyfactory.utils.predicates import is_union
 
 from litestar.openapi.spec import Example
-from litestar.plugins.pydantic.utils import is_pydantic_model_instance
 from litestar.types import Empty
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from litestar.typing import FieldDefinition
 
 
@@ -46,10 +49,6 @@ def _normalize_example_value(value: Any) -> Any:
         value = round(float(value), 2)
     if isinstance(value, Enum):
         value = value.value
-    if is_pydantic_model_instance(value):
-        from litestar.plugins.pydantic import _model_dump
-
-        value = _model_dump(value)
     if isinstance(value, (list, set)):
         value = [_normalize_example_value(v) for v in value]
     if isinstance(value, dict):
@@ -79,5 +78,32 @@ def create_examples_for_field(field: FieldDefinition) -> list[Example]:
         field_meta = _create_field_meta(replace(field, annotation=_normalize_example_value(field.annotation)))
         value = ExampleFactory.get_field_value(field_meta)
         return [Example(description=f"Example {field.name} value", value=value)]
-    except ParameterException:
+    except (ParameterException, ValueError):
+        return []
+
+
+def create_input_examples(examples: list[Example], input_value: Callable[[Any], Any]) -> list[Example]:
+    """Convert generated examples to values the server accepts as input, or drop them if it would not.
+
+    Args:
+        examples: Examples created by :func:`create_examples_for_field`.
+        input_value: Converts any value msgspec cannot convert to a value validation accepts, or raises
+            ``TypeError``.
+
+    Returns:
+        The converted examples, or an empty list.
+    """
+    try:
+        return [
+            replace(
+                example,
+                value=msgspec.to_builtins(
+                    example.value,
+                    builtin_types=(datetime, date, time, Decimal, UUID, bytes),
+                    enc_hook=input_value,
+                ),
+            )
+            for example in examples
+        ]
+    except (TypeError, ValueError):
         return []

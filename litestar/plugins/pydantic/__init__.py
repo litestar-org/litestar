@@ -104,7 +104,7 @@ class PydanticPlugin(InitPlugin):
                     validate_strict=self.validate_strict,
                     round_trip=self.round_trip,
                 ),
-                PydanticSchemaPlugin(prefer_alias=self.prefer_alias),
+                PydanticSchemaPlugin(),
                 PydanticDIPlugin(),
             ]
         )
