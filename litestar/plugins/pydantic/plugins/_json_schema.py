@@ -267,7 +267,10 @@ class LitestarGenerateJsonSchema(GenerateJsonSchema):
         return result
 
     def default_schema(self, schema: core_schema.WithDefaultSchema) -> JsonSchemaValue:
-        result = super().default_schema(schema)
+        try:
+            result = super().default_schema(schema)
+        except UnicodeDecodeError:
+            return self.generate_inner(schema["schema"])
         if (
             self.mode == "serialization"
             and "default" in result

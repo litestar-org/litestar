@@ -93,8 +93,9 @@ class OpenAPIPlugin(InitPlugin, ReceiveRoutePlugin):
 
         openapi.paths = path_items
         context.schema_registry.library.resolve(context)
-        openapi.components.schemas = context.schema_registry.generate_components_schemas()
+        schemas = context.schema_registry.generate_components_schemas()
         context.schema_registry.library.point_references(openapi)
+        openapi.components.schemas = schemas
         return openapi
 
     def invalidate_schema_cache(self) -> None:

@@ -40,6 +40,7 @@ from litestar import Litestar, get, post
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.schema_generation.library import LibraryRun
 from litestar._openapi.schema_generation.library.converter import json_schema_to_spec
+from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar._openapi.schema_generation.schema import SchemaCreator
 from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, dto_field
@@ -1872,3 +1873,46 @@ def test_old_pydantic_documents_apps_without_pydantic_models(monkeypatch: pytest
     monkeypatch.setattr(pydantic, "VERSION", "2.10.6")
 
     assert components(pydantic_document(SpecialDc))["SpecialDc"]["properties"] == {"x": {"type": "integer"}}
+
+
+def test_bytes_default_that_is_not_text_is_left_out() -> None:
+    class Blob(pydantic.BaseModel):
+        raw: bytes = b"\xff\x00"
+        text: bytes = b"ok"
+
+    schema = components(pydantic_app(Blob, request=False).openapi_schema.to_schema())["Blob"]
+
+    assert "default" not in schema["properties"]["raw"]
+    assert schema["properties"]["text"]["default"] == "ok"
+
+
+def test_components_hold_no_placeholder_before_references_are_pointed() -> None:
+    class Leaf(pydantic.BaseModel):
+        value: int
+
+    @dataclasses.dataclass
+    class Holder:
+        leaf: Leaf
+
+    context = OpenAPIContext(
+        openapi_config=OpenAPIConfig(title="t", version="1"),
+        plugins=[*openapi_schema_plugins, PydanticSchemaPlugin()],
+    )
+    SchemaCreator.from_openapi_context(context).for_field_definition(FieldDefinition.from_annotation(Holder))
+    context.schema_registry.library.resolve(context)
+
+    generated = context.schema_registry.generate_components_schemas()
+
+    assert (
+        "litestar-library" not in msgspec.json.encode({name: s.to_schema() for name, s in generated.items()}).decode()
+    )
+    assert sorted(generated) == ["Holder", "Leaf"]
+
+
+def test_dropped_key_warning_names_a_class_named_like_a_mode_suffix() -> None:
+    model = pydantic.create_model(
+        "Thing-Output", __config__=pydantic.ConfigDict(json_schema_extra={"x-foo": 1}), a=(int, ...)
+    )
+
+    with pytest.warns(LitestarWarning, match="The JSON schema key 'x-foo' of 'Thing-Output' cannot"):
+        pydantic_app(model, response=False).openapi_schema.to_schema()

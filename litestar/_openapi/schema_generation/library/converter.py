@@ -2,8 +2,8 @@ from collections.abc import Callable, Mapping
 from dataclasses import replace
 from typing import Any
 
+from litestar._openapi.schema_generation.library.exceptions import SchemaConversionError
 from litestar._openapi.schema_generation.utils import nullable_scalar
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.discriminator import Discriminator
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.reference import Reference
@@ -78,9 +78,7 @@ def _openapi_type(value: str) -> OpenAPIType:
     try:
         return OpenAPIType(value)
     except ValueError as exc:
-        raise ImproperlyConfiguredException(
-            f"Unsupported JSON schema type {value!r} in a library-generated schema"
-        ) from exc
+        raise SchemaConversionError(f"Unsupported JSON schema type {value!r} in a library-generated schema") from exc
 
 
 def _openapi_format(value: str) -> OpenAPIFormat | str:
@@ -154,7 +152,7 @@ def json_schema_to_spec(
         The OpenAPI schema, or the result of ``lookup_ref`` for a schema that is only a ``$ref``.
 
     Raises:
-        ImproperlyConfiguredException: If the JSON schema has a type OpenAPI does not know.
+        SchemaConversionError: If the JSON schema has a type OpenAPI does not know.
     """
     if dropped is None:
         dropped = set()

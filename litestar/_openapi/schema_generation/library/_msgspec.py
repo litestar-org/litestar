@@ -20,6 +20,7 @@ from litestar._openapi.schema_generation.library import (
     claimed_by_other_plugin,
     kwarg_definition_metadata,
 )
+from litestar._openapi.schema_generation.library.exceptions import SchemaConversionError
 from litestar._openapi.schema_generation.library.graph import (
     NameCandidates,
     ResolvedSchemas,
@@ -61,6 +62,10 @@ def supports_msgspec_schema(annotation: Any) -> bool:
         msgspec.msgpack.Decoder(annotation)
     except (TypeError, NameError):
         return False
+    except RecursionError as exc:
+        raise SchemaConversionError(
+            f"Cannot document {annotation!r}: msgspec exceeds the maximum recursion depth decoding it"
+        ) from exc
     return True
 
 

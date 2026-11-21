@@ -25,6 +25,7 @@ from msgspec import _json_schema as js
 from litestar import Litestar, get, post
 from litestar._openapi.schema_generation.library import _msgspec
 from litestar._openapi.schema_generation.library._msgspec import _LitestarTranslator, supports_msgspec_schema
+from litestar._openapi.schema_generation.library.exceptions import SchemaConversionError
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar._openapi.schema_generation.plugins.dataclass import DataclassSchemaPlugin
 from litestar._openapi.schema_generation.plugins.struct import StructSchemaPlugin
@@ -1358,3 +1359,13 @@ def test_a_class_named_like_a_mode_suffixed_component_keeps_its_own_schema() -> 
     assert list(body("/split")["properties"]) == ["price"]
     assert list(body("/suffixed")["properties"]) == ["label"]
     assert sorted(components(doc)) == ["Amount-Input", "Amount-Input_2", "Amount-Output"]
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="needs the type statement")
+def test_recursive_alias_msgspec_cannot_decode_raises_a_conversion_error() -> None:
+    namespace: dict[str, Any] = {}
+    exec("type Tree = dict[str, Tree] | int", namespace)
+    holder = msgspec.defstruct("Holder", [("tree", namespace["Tree"])])
+
+    with pytest.raises(SchemaConversionError, match="msgspec exceeds the maximum recursion depth"):
+        supports_msgspec_schema(holder)

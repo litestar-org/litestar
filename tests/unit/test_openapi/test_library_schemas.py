@@ -1541,3 +1541,35 @@ def test_point_references_before_freeze_is_noop(monkeypatch: pytest.MonkeyPatch)
     library.freeze({})
     library.point_references(placeholder)
     assert placeholder.ref == f"{PREFIX}Marker"
+
+
+def test_two_resolvers_of_one_name_raise() -> None:
+    library = LibraryComponents()
+    library.placeholder(FieldDefinition.from_annotation(Marker), FAKE, "validation")
+
+    with pytest.raises(LibrarySchemaError, match="Two schema resolvers are named 'fake'"):
+        library.placeholder(FieldDefinition.from_annotation(Other), FakeResolver(), "validation")
+
+
+def test_a_schema_for_a_request_the_resolver_was_not_given_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
+        extra = LibraryRequest(Other, FAKE, "validation")
+        return resolved({**dict.fromkeys(requests, "Marker"), extra: "Marker"}, {"Marker": MARKER_DEF})
+
+    with pytest.raises(LibrarySchemaError, match="returned schemas for requests it was not given"):
+        resolved_library(monkeypatch, resolver)
+
+
+def test_a_schema_keyed_for_another_resolver_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
+        key = SchemaKey("elsewhere", "Marker", "validation")
+        node = schema_node(MARKER_DEF, {}, NameCandidates("Marker", "Marker"))
+        return ResolvedSchemas(dict.fromkeys(requests, key), {key: node})
+
+    with pytest.raises(LibrarySchemaError, match="keyed for another resolver"):
+        resolved_library(monkeypatch, resolver)
+
+
+def test_unknown_json_schema_type_raises_a_conversion_error() -> None:
+    with pytest.raises(SchemaConversionError, match="Unsupported JSON schema type 'money'"):
+        json_schema_to_spec({"type": "money"}, lambda ref: Reference(ref), set())

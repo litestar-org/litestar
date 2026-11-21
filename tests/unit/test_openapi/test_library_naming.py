@@ -17,7 +17,7 @@ from litestar._openapi.schema_generation.library.graph import (
     reachable,
     schema_node,
 )
-from litestar._openapi.schema_generation.library.naming import Names, model_name, name_components
+from litestar._openapi.schema_generation.library.naming import Names, name_components
 from litestar.openapi.spec import Reference, Schema
 
 
@@ -265,14 +265,24 @@ def test_folded_names_point_at_the_existing_component() -> None:
     assert folded.component_of == {FOO.key(): "Foo"}
     assert not folded.keys
     assert not folded.bases
+    assert not folded.models
 
 
-@pytest.mark.parametrize(
-    ("component", "model"),
-    [("Foo-Input", "Foo"), ("Foo-Output", "Foo"), ("Foo", "Foo"), ("Foo-Input_2", "Foo-Input_2")],
-)
-def test_model_name_drops_the_mode_suffix(component: str, model: str) -> None:
-    assert model_name(component) == model
+def test_models_drop_the_mode_suffix_of_split_schemas_only() -> None:
+    suffixed = Spec("evil", "Evil-Input")
+
+    names = names_of([BOTH, suffixed], [BOTH.request(), BOTH.request("serialization"), suffixed.request()])
+
+    assert dict(names.models) == {"Item-Input": "Item", "Item-Output": "Item", "Evil-Input": "Evil-Input"}
+
+
+def test_a_merged_schema_named_like_a_mode_suffix_keeps_its_explicit_name() -> None:
+    suffixed = Spec("evil", "Evil-Input", modes=("validation", "serialization"), schema={"type": "object"})
+    requests = [suffixed.request(name="K"), suffixed.request("serialization", name="K")]
+
+    names = names_of([suffixed], requests, merged={("a", "evil")})
+
+    assert set(names.component_of_request.values()) == {"K"}
 
 
 class CountingNodes(Mapping[SchemaKey, SchemaNode]):

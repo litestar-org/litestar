@@ -2,7 +2,7 @@ import sys
 import threading
 import warnings
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any
 
@@ -29,7 +29,7 @@ from litestar._openapi.schema_generation.library.graph import (
     merge_identical_modes,
     reachable,
 )
-from litestar._openapi.schema_generation.library.naming import Names, model_name, name_components
+from litestar._openapi.schema_generation.library.naming import Names, name_components
 from litestar.exceptions import LitestarWarning
 from litestar.openapi.spec.base import BaseSchemaObject
 from litestar.openapi.spec.reference import Reference
@@ -46,6 +46,7 @@ _PLACEHOLDER_PREFIX = "#/components/schemas/litestar-library-"
 _COMPONENT_PREFIX = "#/components/schemas/"
 _MAX_ROUNDS = 1000
 _RECURSION_LIMIT = 10_000
+_SCALARS = (str, int, float, bool, type(None))
 
 
 class _RaisedRecursionLimit:
@@ -82,7 +83,8 @@ _RAISED_RECURSION_LIMIT = _RaisedRecursionLimit()
 class FrozenLibrarySchemas:
     """The library-generated components of one OpenAPI document.
 
-    ``components`` are the new components by name; ``targets`` maps each placeholder to the path of its component.
+    ``components`` are the new components by name, in which no placeholder is left; ``targets`` maps each
+    placeholder to the path of its component.
     """
 
     components: Mapping[str, Schema]
@@ -129,13 +131,16 @@ class LibraryComponents:
             A placeholder, the same for equal requests, that :meth:`point_references` points at the component.
 
         Raises:
-            LibrarySchemaError: If the components are already frozen.
+            LibrarySchemaError: If the components are already frozen, or another resolver of the same name is in use.
         """
         if self._frozen is not None:
             raise LibrarySchemaError(
                 "Cannot request a library-generated schema once the components of the document are generated"
             )
-        self._resolvers.setdefault(resolver.name, resolver)
+        if self._resolvers.setdefault(resolver.name, resolver) is not resolver:
+            raise LibrarySchemaError(
+                f"Two schema resolvers are named {resolver.name!r}: {self._resolvers[resolver.name]!r} and {resolver!r}"
+            )
         request = LibraryRequest(
             field_definition.annotation, resolver, mode, get_component_key_override(field_definition)
         )
@@ -249,6 +254,15 @@ class LibraryComponents:
                 f"The {missing[0].resolver.name} schema resolver cannot document {missing[0].annotation!r} as a "
                 "component"
             )
+        if len(result.roots) != len(requests):
+            raise LibrarySchemaError(
+                f"The {resolver.name} schema resolver returned schemas for requests it was not given: "
+                f"{[request.annotation for request in result.roots if request not in requests]!r}"
+            )
+        if foreign := [key for key in result.nodes if key.resolver != resolver.name]:
+            raise LibrarySchemaError(
+                f"The {resolver.name} schema resolver returned a schema keyed for another resolver: {foreign[0]!r}"
+            )
         self._results[resolver.name] = result
 
     def freeze(self, existing: Mapping[str, Schema]) -> FrozenLibrarySchemas:
@@ -256,13 +270,14 @@ class LibraryComponents:
 
         Runs in steps: check that every request is resolved, merge the mode pairs whose schemas are identical
         (:func:`~.graph.merge_identical_modes`) into one schema each (:func:`~.graph.collapse_merged`), find the schemas
-        reachable from a request (:func:`~.graph.reachable`), name them (:func:`~.naming.name_components`), convert them and replace each that got a numeric suffix by an
-        equal existing component, then emit the warnings. Must run after :meth:`resolve`; :meth:`point_references` then
-        points the placeholders at their components. Runs once: later calls return the same result and no new
+        reachable from a request (:func:`~.graph.reachable`), name them (:func:`~.naming.name_components`), convert them,
+        replace each that got a numeric suffix by an equal existing component, point the placeholders they hold at
+        their components, then emit the warnings. Must run after :meth:`resolve`; :meth:`point_references` then points
+        the placeholders of the rest of the document. Runs once: later calls return the same result and no new
         placeholder may be requested.
 
         Args:
-            existing: The components Litestar generated for the document.
+            existing: The components Litestar generated for the document; only the first call reads them.
 
         Returns:
             The new components, keyed by name, none of them in ``existing``, and the target of each placeholder.
@@ -285,6 +300,7 @@ class LibraryComponents:
         reached = reachable((key for result in collapsed.values() for key in result.roots.values()), nodes)
         names = name_components(collapsed, list(self._requests), reached, existing)
         schemas, targets, dropped = self._fold_into_existing(names, nodes, embedded, existing)
+        _point(schemas, targets)
         _warn(dropped, results)
         self._frozen = FrozenLibrarySchemas(MappingProxyType(schemas), MappingProxyType(targets))
         return self._frozen
@@ -349,20 +365,29 @@ class LibraryComponents:
         Args:
             node: The OpenAPI object, or a value in it, whose placeholders to point; changed in place.
         """
-        if self._frozen is None or not (targets := self._frozen.targets):
-            return
-        seen: set[int] = set()
-        stack = [node]
-        while stack:
-            item = stack.pop()
-            if isinstance(item, Reference):
-                item.ref = targets.get(item.ref, item.ref)
-            elif isinstance(item, (BaseSchemaObject, list, tuple, dict)) and id(item) not in seen:
-                seen.add(id(item))
-                if isinstance(item, BaseSchemaObject):
-                    stack.extend(getattr(item, f.name) for f in fields(item))
-                else:
-                    stack.extend(item.values() if isinstance(item, dict) else item)
+        if self._frozen is not None:
+            _point(node, self._frozen.targets)
+
+
+def _point(node: Any, targets: Mapping[str, str]) -> None:
+    if not targets:
+        return
+    seen: set[int] = set()
+    stack = [node]
+    while stack:
+        item = stack.pop()
+        if isinstance(item, Reference):
+            item.ref = targets.get(item.ref, item.ref)
+        elif isinstance(item, (BaseSchemaObject, list, tuple, dict)) and id(item) not in seen:
+            seen.add(id(item))
+            values = (
+                vars(item).values()
+                if isinstance(item, BaseSchemaObject)
+                else item.values()
+                if isinstance(item, dict)
+                else item
+            )
+            stack.extend(value for value in values if not isinstance(value, _SCALARS))
 
 
 def _nodes(results: Mapping[str, ResolvedSchemas]) -> dict[SchemaKey, SchemaNode]:
@@ -385,7 +410,7 @@ def _convert(
 
     keys: set[str] = set()
     schema = json_schema_to_spec(node.schema, lookup_ref, keys)
-    dropped.update(((model_name(name), key), None) for key in sorted(keys))
+    dropped.update(((names.models[name], key), None) for key in sorted(keys))
     if isinstance(schema, Reference):
         raise SchemaConversionError(f"The library-generated schema {name!r} is a bare reference")
     return schema

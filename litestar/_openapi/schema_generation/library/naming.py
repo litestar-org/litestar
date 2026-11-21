@@ -15,9 +15,8 @@ from litestar._openapi.schema_generation.library.exceptions import SchemaNameCon
 from litestar._openapi.schema_generation.library.graph import NameCandidates, ResolvedSchemas, SchemaKey, SchemaNode
 from litestar.utils.helpers import unique_name_for_scope
 
-__all__ = ("Names", "model_name", "name_components")
+__all__ = ("Names", "name_components")
 
-_SUFFIXES = tuple(suffix for _, suffix in MODES)
 _SUFFIX_OF: dict[SchemaMode, str] = dict(MODES)
 _Use = tuple[SchemaKey, str | None]
 
@@ -27,13 +26,15 @@ class Names:
     """The component names of the library-generated schemas of one document.
 
     ``component_of`` names the component of each emitted schema, ``component_of_request`` the component of each
-    request. ``keys`` maps each new component to the schema it holds, and ``bases`` to the name it was derived from.
+    request. ``keys`` maps each new component to the schema it holds, ``bases`` to the name it was derived from and
+    ``models`` to the name of the model it documents, without the suffix of its mode.
     """
 
     component_of: Mapping[SchemaKey, str]
     component_of_request: Mapping[LibraryRequest, str]
     keys: Mapping[str, SchemaKey]
     bases: Mapping[str, str]
+    models: Mapping[str, str]
 
     def folded(self, into: Mapping[str, str]) -> "Names":
         """Replace new components by existing ones.
@@ -49,27 +50,12 @@ class Names:
             component_of_request={request: into.get(name, name) for request, name in self.component_of_request.items()},
             keys={name: key for name, key in self.keys.items() if name not in into},
             bases={name: base for name, base in self.bases.items() if name not in into},
+            models={name: model for name, model in self.models.items() if name not in into},
         )
 
 
 def _sanitised(name: str) -> str:
     return INVALID_KEY_CHARACTER_PATTERN.sub("_", name)
-
-
-def _mode_suffix(name: str) -> str:
-    return next((suffix for suffix in _SUFFIXES if name.endswith(suffix)), "")
-
-
-def model_name(component: str) -> str:
-    """Return the model a component documents, without the suffix of its mode.
-
-    Args:
-        component: The component name.
-
-    Returns:
-        The name without ``-Input`` or ``-Output``.
-    """
-    return component.removesuffix(_mode_suffix(component))
 
 
 def _unique_names(candidates: Mapping[Hashable, NameCandidates]) -> dict[Hashable, str]:
@@ -94,7 +80,9 @@ def _unique_names(candidates: Mapping[Hashable, NameCandidates]) -> dict[Hashabl
     return names
 
 
-def _schema_names(nodes: Mapping[SchemaKey, SchemaNode]) -> tuple[dict[SchemaKey, str], dict[SchemaKey, str]]:
+def _schema_names(
+    nodes: Mapping[SchemaKey, SchemaNode],
+) -> tuple[dict[SchemaKey, str], dict[SchemaKey, str], dict[SchemaKey, str]]:
     candidates: dict[Hashable, NameCandidates] = {}
     keys_per_identity: Counter[Hashable] = Counter()
     for key, node in nodes.items():
@@ -103,16 +91,20 @@ def _schema_names(nodes: Mapping[SchemaKey, SchemaNode]) -> tuple[dict[SchemaKey
     unique = _unique_names(candidates)
     names: dict[SchemaKey, str] = {}
     explicit: dict[SchemaKey, str] = {}
+    suffixes: dict[SchemaKey, str] = {}
     for key in nodes:
-        suffix = _SUFFIX_OF[key.mode] if keys_per_identity[key.identity] > 1 else ""
+        suffix = suffixes[key] = _SUFFIX_OF[key.mode] if keys_per_identity[key.identity] > 1 else ""
         names[key] = f"{unique[key.identity]}{suffix}"
         if (name := candidates[key.identity].explicit) is not None:
             explicit[key] = f"{name}{suffix}"
-    return names, explicit
+    return names, explicit, suffixes
 
 
 def _naming_order(
-    resolved: Mapping[str, ResolvedSchemas], requests: Sequence[LibraryRequest], names: Mapping[SchemaKey, str]
+    resolved: Mapping[str, ResolvedSchemas],
+    requests: Sequence[LibraryRequest],
+    names: Mapping[SchemaKey, str],
+    suffixes: Mapping[SchemaKey, str],
 ) -> tuple[dict[LibraryRequest, _Use], list[_Use]]:
     order = {request: position for position, request in enumerate(requests)}
     root_entries: dict[LibraryRequest, _Use] = {}
@@ -126,7 +118,7 @@ def _naming_order(
             key = result.roots[request]
             name = request.name
             if name is not None and len(modes[name]) > 1:
-                name += _mode_suffix(names[key])
+                name += suffixes[key]
             entry = (key, name)
             root_entries.setdefault(request, entry)
             if request.name is not None:
@@ -186,11 +178,13 @@ def name_components(
     nodes = {key: node for result in resolved.values() for key, node in result.nodes.items()}
     names: dict[SchemaKey, str] = {}
     explicit: dict[SchemaKey, str] = {}
+    suffixes: dict[SchemaKey, str] = {}
     for result in resolved.values():
-        resolver_names, resolver_explicit = _schema_names(result.nodes)
+        resolver_names, resolver_explicit, resolver_suffixes = _schema_names(result.nodes)
         names.update(resolver_names)
         explicit.update(resolver_explicit)
-    root_entries, ordered = _naming_order(resolved, requests, names)
+        suffixes.update(resolver_suffixes)
+    root_entries, ordered = _naming_order(resolved, requests, names, suffixes)
     emitted = {*root_entries.values(), *((key, None) for key in reached)}
 
     def is_explicit(entry: _Use) -> bool:
@@ -201,6 +195,7 @@ def name_components(
     final: dict[_Use, str] = {}
     components: dict[str, SchemaKey] = {}
     bases: dict[str, str] = {}
+    models: dict[str, str] = {}
     taken = set(existing)
     named: dict[tuple[str, str], list[tuple[SchemaKey, str]]] = {}
     for entry in entries:
@@ -222,6 +217,7 @@ def name_components(
         final[entry] = name
         components[name] = key
         bases[name] = base
+        models[name] = name.removesuffix(suffixes[key]) if suffixes[key] else name
         taken.add(name)
         same.append((key, name))
     return Names(
@@ -229,4 +225,5 @@ def name_components(
         component_of_request={request: final[entry] for request, entry in root_entries.items()},
         keys=components,
         bases=bases,
+        models=models,
     )
