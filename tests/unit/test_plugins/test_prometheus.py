@@ -129,6 +129,35 @@ def test_prometheus_group_path_default_uses_route_template_for_parameterized_rou
         assert 'path="/users/3"' not in metrics
 
 
+@pytest.mark.parametrize(
+    "exclude_kwargs, excluded_user_id",
+    [({"exclude": ["^/users/1$"]}, 1), ({"exclude_path_pattern": [r"^/users/\{user_id:int\}$"]}, 2)],
+    ids=["request_path", "handler_path"],
+)
+def test_prometheus_middleware_exclude(exclude_kwargs: dict[str, Any], excluded_user_id: int) -> None:
+    prometheus_middleware = create_middleware(group_path=False, **exclude_kwargs)
+
+    @get("/users/{user_id:int}")
+    def user_handler(user_id: FromPath[int]) -> None:
+        return None
+
+    @get("/other")
+    def other_handler() -> None:
+        return None
+
+    with create_test_client(
+        [user_handler, other_handler, PrometheusController], middleware=[prometheus_middleware]
+    ) as client:
+        client.get("/users/1")
+        client.get("/users/2")
+        client.get("/other")
+        metrics = client.get("/metrics").content.decode()
+
+        assert 'path="/other"' in metrics
+        assert f'path="/users/{excluded_user_id}"' not in metrics
+        assert ('path="/users/2"' in metrics) is ("exclude" in exclude_kwargs)
+
+
 def test_prometheus_middleware_configurations() -> None:
     labels = {"foo": "bar", "baz": lambda a: "qux"}
 

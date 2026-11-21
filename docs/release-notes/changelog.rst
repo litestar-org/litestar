@@ -574,18 +574,11 @@
         of ``self.app``, and read settings from the corresponding instance attributes
         instead of the removed private ``self._config``.
 
-        Two behavioural changes for excluded routes:
-
-        - :attr:`~litestar.plugins.prometheus.PrometheusConfig.exclude` patterns are
-          now matched against the **handler's path template** (e.g.
-          ``/user/{user_id:int}``) at startup, instead of the request path (e.g.
-          ``/user/1``) at runtime. Patterns targeting literal handler paths keep
-          working; patterns written to match expanded path parameters must be rewritten
-          against the template. For mounted ASGI apps, patterns match the mount path
-          only, not sub-paths, and a handler registered on multiple paths is excluded as
-          a whole when any of its paths matches.
-        - Handlers excluded via ``exclude`` or ``exclude_opt_key`` now bypass the
-          middleware entirely at startup rather than per request.
+        ``exclude`` patterns are still matched against the request path. The new
+        ``exclude_path_pattern`` argument matches against the handler's path (e.g.
+        ``/user/{user_id:int}``) instead; handlers excluded this way, or via
+        ``exclude_opt_key``, bypass the middleware entirely at startup rather than per
+        request.
 
         Mounted ASGI apps stay wrapped regardless of the configured ``scopes``, with
         their connections filtered by scope type at runtime, so restricting the

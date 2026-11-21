@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, cast
 from litestar.connection.request import Request
 from litestar.enums import ScopeType
 from litestar.exceptions import HTTPException, MissingDependencyException
+from litestar.middleware._utils import build_exclude_bypass
 from litestar.middleware.base import ASGIMiddleware
 
 __all__ = ("PrometheusMiddleware",)
@@ -43,6 +44,7 @@ class PrometheusMiddleware(ASGIMiddleware):
         buckets: Sequence[str | float] | None = None,
         excluded_http_methods: Method | Sequence[Method] | None = None,
         exclude: str | list[str] | None = None,
+        exclude_path_pattern: str | list[str] | None = None,
         exclude_opt_key: str | None = None,
         scopes: Scopes | None = None,
         group_path: bool = True,
@@ -59,7 +61,10 @@ class PrometheusMiddleware(ASGIMiddleware):
             buckets: A list of buckets to use for the histogram.
             excluded_http_methods: A list of http methods to exclude from the metrics.
             exclude: A pattern or list of patterns for routes to exclude from the metrics, matched against the
-                handler path.
+                request path.
+            exclude_path_pattern: A pattern or list of patterns for routes to exclude from the metrics, matched
+                against the handler path at startup. See
+                :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
             exclude_opt_key: A key in ``opt`` with which a route handler can "opt-out" of the middleware.
             scopes: ASGI scopes processed by the middleware; if ``None`` or empty, ``http``, ``websocket`` and ASGI
                 route handlers are all processed. Mounted ASGI apps stay wrapped regardless, with their connections
@@ -71,13 +76,18 @@ class PrometheusMiddleware(ASGIMiddleware):
         self.labels = labels
         self.exemplars = exemplars
         self.excluded_http_methods = excluded_http_methods
-        self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
+        self.exclude_path_pattern = (
+            tuple(exclude_path_pattern) if isinstance(exclude_path_pattern, list) else exclude_path_pattern
+        )
         self.exclude_opt_key = exclude_opt_key
         self.group_path = group_path
         if scopes:
             scope_types = frozenset(scopes)
             self.scopes = (*(s for s in (ScopeType.HTTP, ScopeType.WEBSOCKET) if s in scope_types), ScopeType.ASGI)
             self.should_bypass_for_scope = lambda scope: scope["type"] not in scope_types
+        self.should_bypass_for_scope = build_exclude_bypass(
+            exclude, middleware_cls=type(self), also=self.should_bypass_for_scope
+        )
 
         self._kwargs: dict[str, Any] = {}
         if buckets is not None:

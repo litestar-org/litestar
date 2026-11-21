@@ -44,7 +44,13 @@ class PrometheusConfig:
     exclude_unhandled_paths: bool = field(default=False)
     """Whether to ignore requests for unhandled paths from the metrics."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns for routes to exclude from the metrics."""
+    """A pattern or list of patterns for routes to exclude from the metrics, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns for routes to exclude from the metrics, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str | None = field(default=None)
     """A key or list of keys in ``opt`` with which a route handler can "opt-out" of the middleware."""
     scopes: Scopes | None = field(default=None)
@@ -80,6 +86,7 @@ class PrometheusConfig:
             buckets=self.buckets,
             excluded_http_methods=self.excluded_http_methods,
             exclude=self.exclude,
+            exclude_path_pattern=self.exclude_path_pattern,
             exclude_opt_key=self.exclude_opt_key,
             scopes=self.scopes,
             group_path=self.group_path,
