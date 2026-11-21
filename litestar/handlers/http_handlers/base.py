@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from enum import Enum
 from typing import TYPE_CHECKING, AnyStr, TypedDict, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
+from litestar._request_parameters.validation import create_request_param_validaton_fn
 from litestar.connection import Request
 from litestar.datastructures import CacheControlHeader, ETag, FormMultiDict, Header
 from litestar.datastructures.response_header import ResponseHeader
@@ -530,7 +532,29 @@ class HTTPRouteHandler(BaseRouteHandler):
         return value_or_default(self._request_max_body_size, None)  # pyright: ignore[reportReturnType]
 
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+        from litestar.di._route_handler import create_handler_injection_setup
+
+        self._injection_setup = create_handler_injection_setup(
+            self, app, connection_class=self.request_class, accepts_body="GET" not in self.http_methods
+        )
+        definitions = self._injection_setup.request_parameter_definitions
+        # there is at most one definition of the request body, since declarations of it,
+        # by the handler and its dependencies are merged into one. a DTO knows the body
+        # by the name 'data'
+        for definition in definitions.values():
+            if definition.is_body:
+                self._parsed_data_field = replace(definition.field_definition, name="data")
+                break
+
         super().on_registration(route=route, app=app)
+
+        self._validate_request_parameters = (
+            create_request_param_validaton_fn(
+                definitions.values(), data_dto=self.data_dto, type_decoders=self.type_decoders
+            )
+            if definitions
+            else None
+        )
 
         if type(self).resolve_before_request is not HTTPRouteHandler.resolve_before_request:
             self._resolved_before_request = self.resolve_before_request()
@@ -551,12 +575,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             status_code=self.status_code,
             background=self.background,
             after_request=self.after_request,
-        )
-
-        from litestar.di._route_handler import create_handler_injection_setup
-
-        self._injection_setup = create_handler_injection_setup(
-            self, app, connection_class=self.request_class, accepts_body="GET" not in self.http_methods
         )
 
     def _validate_handler_function(self) -> None:
@@ -713,7 +731,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         setup = self._injection_setup
         # the seeds of the handler context, by key: the validated request parameters of the handler, its
         # dependencies and its layers, and the request
-        validate = setup.validate_request_parameters
+        validate = self._validate_request_parameters
         seeds: dict[Any, Any] = await validate(request) if validate else {}
         for key in setup.connection_seed_keys:
             seeds[key] = request
