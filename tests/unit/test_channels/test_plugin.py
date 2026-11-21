@@ -15,6 +15,7 @@ from litestar import Litestar, get
 from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
+from litestar.channels.backends.redis import RedisChannelsBackend
 from litestar.channels.subscriber import BacklogStrategy
 from litestar.di import NamedDependency
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
@@ -138,7 +139,12 @@ def test_create_ws_route_handlers(
         ws_handler_base_path=handler_base_path or "/",
         ws_send_mode=socket_send_mode,
     )
-    app = Litestar(plugins=[channels_plugin])
+
+    async def close_redis_connections() -> None:
+        if isinstance(channels_backend, RedisChannelsBackend):
+            await channels_backend._redis.connection_pool.disconnect()
+
+    app = Litestar(plugins=[channels_plugin], on_shutdown=[close_redis_connections])
 
     with TestClient(app) as client, client.websocket_connect(f"{handler_base_path or ''}/something") as ws:
         channels_plugin.publish(["foo"], "something")
@@ -158,7 +164,12 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
         create_ws_route_handlers=True,
         channels=["something"],
     )
-    app = Litestar(plugins=[channels_plugin])
+
+    async def close_redis_connections() -> None:
+        if isinstance(channels_backend, RedisChannelsBackend):
+            await channels_backend._redis.connection_pool.disconnect()
+
+    app = Litestar(plugins=[channels_plugin], on_shutdown=[close_redis_connections])
 
     with TestClient(app) as client, client.websocket_connect("/something") as ws:
         channels_plugin.publish(["foo"], "something")
@@ -179,7 +190,11 @@ def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: C
         ws_handler_base_path="/ws",
     )
 
-    app = Litestar(plugins=[channels_plugin])
+    async def close_redis_connections() -> None:
+        if isinstance(channels_backend, RedisChannelsBackend):
+            await channels_backend._redis.connection_pool.disconnect()
+
+    app = Litestar(plugins=[channels_plugin], on_shutdown=[close_redis_connections])
 
     with TestClient(app) as client:
         with client.websocket_connect("/ws/foo") as ws:

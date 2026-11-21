@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 from litestar import Litestar, post
+from litestar.params import JSONBody
 
 
 class Item(BaseModel):
@@ -8,7 +9,7 @@ class Item(BaseModel):
 
 
 @post("/items/")
-async def create_item(data: Item) -> dict[str, str]:
+async def create_item(data: JSONBody[Item]) -> dict[str, str]:
     return {"name": data.name}
 
 

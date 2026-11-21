@@ -11,6 +11,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from litestar import Controller, Request, Response, Router, get, post
 from litestar.enums import ScopeType
 from litestar.middleware import DefineMiddleware, MiddlewareProtocol
+from litestar.params import JSONBody
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -100,7 +101,7 @@ def test_request_body_logging_middleware(caplog: LogCaptureFixture, capsys: "Cap
         programmer: bool
 
     @post(path="/")
-    def post_handler(data: JSONRequest) -> JSONRequest:
+    def post_handler(data: JSONBody[JSONRequest]) -> JSONRequest:
         return data
 
     if sys.version_info < (3, 13):

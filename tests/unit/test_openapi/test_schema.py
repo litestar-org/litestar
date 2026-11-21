@@ -43,6 +43,7 @@ from litestar.params import (
     FromPath,
     FromQuery,
     HeaderParameter,
+    JSONBody,
     KwargDefinition,
     Parameter,
     ParameterKwarg,
@@ -104,7 +105,7 @@ def test_override_schema_component_key() -> None:
 
     @post("/")
     def handler(
-        data: Data,
+        data: JSONBody[Data],
     ) -> Annotated[Data, Parameter(schema_component_key="not_data")]:
         return Data()
 
@@ -149,7 +150,7 @@ def test_override_schema_component_key_raise_if_keys_are_not_unique() -> None:
 
     @post("/")
     def handler(
-        data: Data,
+        data: JSONBody[Data],
     ) -> Annotated[Data, Parameter(schema_component_key="not_data")]:
         return Data()
 
@@ -838,3 +839,44 @@ def test_decimal_schema_type() -> None:
 
     schema = create_schema_for_annotation(Decimal)
     assert schema.type == OpenAPIType.STRING
+
+
+def test_reference_result_keeps_kwarg_metadata() -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    result = creator.for_field_definition(
+        FieldDefinition.from_kwarg(
+            name="person",
+            annotation=DataclassPerson,
+            kwarg_definition=Parameter(title="A person", description="The person to greet"),
+        )
+    )
+
+    assert isinstance(result, Schema)
+    assert result.title == "A person"
+    assert result.description == "The person to greet"
+    assert result.all_of is not None
+    assert len(result.all_of) == 1
+    assert isinstance(result.all_of[0], Reference)
+
+
+def test_reference_result_without_kwarg_metadata_stays_reference() -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    result = creator.for_field_definition(FieldDefinition.from_kwarg(name="person", annotation=DataclassPerson))
+
+    assert isinstance(result, Reference)
+
+
+def test_reference_result_keeps_kwarg_metadata_on_subsequent_use() -> None:
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    first = creator.for_field_definition(FieldDefinition.from_kwarg(name="a", annotation=DataclassPerson))
+    second = creator.for_field_definition(
+        FieldDefinition.from_kwarg(
+            name="b", annotation=DataclassPerson, kwarg_definition=Parameter(description="second use")
+        )
+    )
+
+    assert isinstance(first, Reference)
+    assert isinstance(second, Schema)
+    assert second.description == "second use"
+    assert second.all_of is not None
+    assert isinstance(second.all_of[0], Reference)

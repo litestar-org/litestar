@@ -1,9 +1,10 @@
 from litestar import Litestar, post
 from litestar.config.csrf import CSRFConfig
+from litestar.params import JSONBody
 
 
 @post("/transfer")
-async def transfer(data: dict[str, int]) -> dict[str, int]:
+async def transfer(data: JSONBody[dict[str, int]]) -> dict[str, int]:
     return data
 
 

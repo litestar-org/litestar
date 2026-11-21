@@ -11,6 +11,7 @@ from typing_extensions import Annotated, Literal
 
 from litestar import Request, post
 from litestar.dto import DTOConfig
+from litestar.params import JSONBody
 from litestar.plugins.pydantic import PydanticDTO, _model_dump, _model_dump_json
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import create_test_client
@@ -34,7 +35,7 @@ def test_aware_datetime_serialization_v2(use_experimental_dto_backend: bool) -> 
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=AwareDatetimeDTO, signature_types=[PydanticAwareDatetimeModel])
-    def handler(data: PydanticAwareDatetimeModel) -> PydanticAwareDatetimeModel:
+    def handler(data: JSONBody[PydanticAwareDatetimeModel]) -> PydanticAwareDatetimeModel:
         return data
 
     with create_test_client(handler) as client:
@@ -63,7 +64,7 @@ def test_schema_required_fields_with_pydantic_dto(
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_types=[PydanticUser])
-    def handler(data: PydanticUser, request: Request) -> dict:
+    def handler(data: JSONBody[PydanticUser], request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
 

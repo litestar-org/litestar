@@ -153,7 +153,7 @@ def create_static_files_router(
         security: Security options passed to the router
         tags: ``tags`` passed to the router
         router_class: The class used to construct a router from
-        resolve_symlinks: Resolve symlinks of ``directories``
+        resolve_symlinks: Resolve symlinks to the base directories and served paths
     """
 
     if file_system is None:

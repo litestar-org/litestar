@@ -3,8 +3,8 @@ from litestar.datastructures import UploadFile
 from litestar.params import MultipartBody
 
 
-@post(path="/", media_type=MediaType.TEXT)
-async def handle_file_upload(data: MultipartBody[UploadFile]) -> str:
+@post(path="/", media_type=MediaType.TEXT, sync_to_thread=True)
+def handle_file_upload(data: MultipartBody[UploadFile]) -> str:
     content = data.file.read()
     filename = data.filename
     return f"{filename},length: {len(content)}"

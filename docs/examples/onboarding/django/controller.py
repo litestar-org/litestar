@@ -1,5 +1,5 @@
 from litestar import Controller, Litestar, delete, get, patch, post
-from litestar.params import FromPath
+from litestar.params import FromPath, JSONBody
 
 
 class ItemController(Controller):
@@ -10,7 +10,7 @@ class ItemController(Controller):
         return [{"id": 1}, {"id": 2}]
 
     @post("/")
-    async def create_item(self, data: dict[str, str]) -> dict[str, str]:
+    async def create_item(self, data: JSONBody[dict[str, str]]) -> dict[str, str]:
         return data
 
     @get("/{item_id:int}")
@@ -18,7 +18,7 @@ class ItemController(Controller):
         return {"id": item_id}
 
     @patch("/{item_id:int}")
-    async def update_item(self, item_id: FromPath[int], data: dict[str, str]) -> dict[str, object]:
+    async def update_item(self, item_id: FromPath[int], data: JSONBody[dict[str, str]]) -> dict[str, object]:
         return {"id": item_id, **data}
 
     @delete("/{item_id:int}")

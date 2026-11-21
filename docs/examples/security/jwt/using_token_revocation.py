@@ -7,6 +7,7 @@ from pydantic import BaseModel, EmailStr
 from litestar import Litestar, Request, Response, get, post
 from litestar.connection import ASGIConnection
 from litestar.openapi.config import OpenAPIConfig
+from litestar.params import JSONBody
 from litestar.security.jwt import JWTAuth, Token
 
 
@@ -58,7 +59,7 @@ jwt_auth = JWTAuth[User](
 
 # Given an instance of 'JWTAuth' we can create a login handler function:
 @post("/login")
-async def login_handler(data: User) -> Response[User]:
+async def login_handler(data: JSONBody[User]) -> Response[User]:
     MOCK_DB[str(data.id)] = data
     # you can do whatever you want to update the response instance here
     # e.g. response.set_cookie(...)

@@ -36,7 +36,8 @@ def test_sqlalchemy_async_plugin_example(
     monkeypatch.setattr(sqlalchemy_async_plugin_example.config, "engine_instance", aiosqlite_engine)
 
     with TestClient(sqlalchemy_async_plugin_example.app) as client:
-        assert client.post("/", json=data[0]).json() == data
+        res = client.post("/", json=data[0])
+    assert res.json() == data
 
 
 def test_sqlalchemy_sync_plugin_example(data: dict[str, Any], monkeypatch: MonkeyPatch, sqlite_engine: Engine) -> None:

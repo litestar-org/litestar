@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 from litestar import HttpMethod, Litestar, WebSocket, delete, get, patch, post, put, route
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.params import Body
+from litestar.params import Body, RawBody
 from litestar.response import File, Redirect
 from litestar.status_codes import (
     HTTP_100_CONTINUE,
@@ -159,9 +159,9 @@ def test_body_param_with_non_bytes_annotation_raises(decorator: Callable[..., An
 
 @pytest.mark.parametrize("decorator", [post, put, patch])
 def test_body_param_with_metadata_allowed(decorator: Callable[..., Any]) -> None:
-    def handler_fn(body: Annotated[bytes, Body(title="something")]) -> None:
+    def handler_fn(body: Annotated[RawBody, Body(title="something")]) -> None:
         pass
 
-    # we expect no error here, even though the type isn't directly 'bytes' but has
+    # we expect no error here, even though the type isn't directly 'RawBody' but has
     # metadata attached to it
     Litestar([decorator()(handler_fn)])

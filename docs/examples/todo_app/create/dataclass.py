@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from litestar import Litestar, post
+from litestar.params import JSONBody
 
 
 @dataclass
@@ -14,7 +15,7 @@ TODO_LIST: List[TodoItem] = []
 
 
 @post("/")
-async def add_item(data: TodoItem) -> List[TodoItem]:
+async def add_item(data: JSONBody[TodoItem]) -> List[TodoItem]:
     TODO_LIST.append(data)
     return TODO_LIST
 

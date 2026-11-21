@@ -22,6 +22,7 @@ from litestar.handlers.http_handlers._utils import (
     normalize_http_method,
 )
 from litestar.openapi.spec import Operation
+from litestar.params import RawBody
 from litestar.response import Response
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
@@ -625,7 +626,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
-        if (body_param := self.parsed_fn_signature.parameters.get("body")) and not body_param.is_subclass_of(bytes):
+        if (
+            (body_param := self.parsed_fn_signature.parameters.get("body"))
+            and body_param.annotation is not RawBody
+            and not body_param.is_subclass_of(bytes)
+        ):
             raise ImproperlyConfiguredException(
                 f"Invalid type annotation for 'body' parameter in route handler {self}. 'body' will always receive the "
                 f"raw request body as bytes but was annotated with '{body_param.raw!r}'. If you want to receive "

@@ -13,7 +13,7 @@ async def my_generator() -> AsyncGenerator[bytes, None]:
         yield encode_json({"current_time": datetime.now()})
 
 
-@get(path="/time")
+@get(path="/time", sync_to_thread=False)
 def stream_time() -> Stream:
     return Stream(my_generator())
 

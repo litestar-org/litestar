@@ -21,7 +21,7 @@ from litestar.enums import MediaType
 from litestar.openapi.spec.response import OpenAPIResponse
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
-from litestar.params import MultipartBody, URLEncodedBody
+from litestar.params import JSONBody, MultipartBody, URLEncodedBody
 from litestar.serialization import encode_json
 from litestar.testing import create_test_client
 from tests.helpers import not_none
@@ -92,7 +92,7 @@ def test_renamed_field(use_experimental_dto_backend: bool) -> None:
     dto = DataclassDTO[Annotated[Foo, config]]
 
     @post(dto=dto, signature_types=[Foo])
-    def handler(data: Foo) -> Foo:
+    def handler(data: JSONBody[Foo]) -> Foo:
         assert data.bar == "hello"
         return data
 
@@ -129,7 +129,7 @@ class Foo:
     dto = DataclassDTO[Annotated[Foo, config]]  # type: ignore[valid-type]
 
     @post(dto=dto, signature_types=[Foo])
-    def handler(data: Foo) -> Foo:  # type: ignore[valid-type]
+    def handler(data: JSONBody[Foo]) -> Foo:  # type: ignore[valid-type]
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -179,7 +179,7 @@ def test_fields_alias_generator(
     dto = DataclassDTO[Annotated[Fzop, config]]
 
     @post(dto=dto)
-    def handler(data: Fzop) -> Fzop:
+    def handler(data: JSONBody[Fzop]) -> Fzop:
         assert data.bar == instance.bar
         assert data.SPAM == instance.SPAM
         return data
@@ -198,7 +198,7 @@ def test_dto_data_injection(use_experimental_dto_backend: bool) -> None:
     config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=DataclassDTO[Annotated[Foo, config]], return_dto=None, signature_types=[Foo])
-    def handler(data: DTOData[Foo]) -> Foo:
+    def handler(data: JSONBody[DTOData[Foo]]) -> Foo:
         assert isinstance(data, DTOData)
         assert data.as_builtins() == {"bar": "hello"}
         assert isinstance(data.create_instance(), Foo)
@@ -229,7 +229,7 @@ def test_dto_data_injection_with_nested_model(use_experimental_dto_backend: bool
         ],
         return_dto=None,
     )
-    def handler(data: DTOData[NestingBar]) -> Dict[str, Any]:
+    def handler(data: JSONBody[DTOData[NestingBar]]) -> Dict[str, Any]:
         assert isinstance(data, DTOData)
         return cast("dict[str, Any]", data.as_builtins())
 
@@ -248,7 +248,7 @@ def test_dto_data_create_instance_nested_kwargs(use_experimental_dto_backend: bo
         ],
         return_dto=None,
     )
-    def handler(data: DTOData[NestingBar]) -> NestingBar:
+    def handler(data: JSONBody[DTOData[NestingBar]]) -> NestingBar:
         assert isinstance(data, DTOData)
         result = data.create_instance(foo__baz="world")
         assert result.foo.baz == "world"
@@ -322,7 +322,7 @@ def test_dto_data_create_instance_renamed_fields(use_experimental_dto_backend: b
             ]
         ],
     )
-    def handler(data: DTOData[RenamedBar]) -> RenamedBar:
+    def handler(data: JSONBody[DTOData[RenamedBar]]) -> RenamedBar:
         assert isinstance(data, DTOData)
         result = data.create_instance(foo_foo="world")
         assert result.foo_foo == "world"
@@ -340,7 +340,7 @@ def test_dto_data_with_patch_request(use_experimental_dto_backend: bool) -> None
         config = DTOConfig(partial=True)
 
     @patch(dto=PatchDTO, return_dto=None)
-    def handler(data: DTOData[User]) -> User:
+    def handler(data: JSONBody[DTOData[User]]) -> User:
         return data.update_instance(User(name="John", age=42))
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -364,7 +364,7 @@ def test_dto_openapi_with_unique_handler_names(use_experimental_dto_backend: boo
         return_dto=DataclassDTO[UniqueModelName],
         signature_namespace={"UniqueModelName": UniqueModelName},
     )
-    def handler(data: UniqueModelName) -> UniqueModelName:
+    def handler(data: JSONBody[UniqueModelName]) -> UniqueModelName:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -388,14 +388,14 @@ def test_dto_openapi_without_unique_handler_names(use_experimental_dto_backend: 
     read_dto = DataclassDTO[SharedModelName]
 
     @post(dto=write_dto, return_dto=read_dto)
-    def handler(data: SharedModelName) -> SharedModelName:
+    def handler(data: JSONBody[SharedModelName]) -> SharedModelName:
         return data
 
     class MyController(Controller):
         path = "/sub-path"
 
         @post(dto=write_dto, return_dto=read_dto)
-        def handler(self, data: SharedModelName) -> SharedModelName:
+        def handler(self, data: JSONBody[SharedModelName]) -> SharedModelName:
             return data
 
     with create_test_client(route_handlers=[handler, MyController]) as client:
@@ -448,7 +448,7 @@ def test_dto_with_generic_sequence_annotations(use_experimental_dto_backend: boo
         dto=DataclassDTO[Annotated[User, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
         signature_types=[User],
     )
-    def handler(data: Sequence[User]) -> Sequence[User]:
+    def handler(data: JSONBody[Sequence[User]]) -> Sequence[User]:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -468,7 +468,7 @@ def test_dto_private_fields(use_experimental_dto_backend: bool) -> None:
         dto=DataclassDTO[Annotated[Foo, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
         signature_types=[Foo],
     )
-    def handler(data: DTOData[Foo]) -> Foo:
+    def handler(data: JSONBody[DTOData[Foo]]) -> Foo:
         mock.received_data = data.as_builtins()
         return data.create_instance(_baz=42)
 
@@ -495,7 +495,7 @@ def test_dto_private_fields_disabled(use_experimental_dto_backend: bool) -> None
         ],
         signature_types=[Foo],
     )
-    def handler(data: Foo) -> Foo:
+    def handler(data: JSONBody[Foo]) -> Foo:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -519,7 +519,7 @@ def test_dto_concrete_builtin_collection_types(use_experimental_dto_backend: boo
         ],
         signature_types=[Foo],
     )
-    def handler(data: Foo) -> Foo:
+    def handler(data: JSONBody[Foo]) -> Foo:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -733,7 +733,7 @@ def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: b
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_types=[MsgspecUser])
-    def handler(data: MsgspecUser, request: Request) -> dict:
+    def handler(data: JSONBody[MsgspecUser], request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
 
@@ -759,7 +759,7 @@ def test_schema_required_fields_with_dataclass_dto(use_experimental_dto_backend:
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_types=[DataclassUser])
-    def handler(data: DataclassUser, request: Request) -> dict:
+    def handler(data: JSONBody[DataclassUser], request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
 
@@ -784,7 +784,7 @@ def test_schema_required_fields_with_msgspec_dto_and_default_fields(use_experime
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_types=[MsgspecUser])
-    def handler(data: MsgspecUser, request: Request) -> dict:
+    def handler(data: JSONBody[MsgspecUser], request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
 
@@ -819,7 +819,7 @@ class Superuser(BoundUser[ClassicNameStyle]):
 
 def test_dto_with_msgspec_with_bound_generic_and_inherited_models(use_experimental_dto_backend: bool) -> None:
     @post(dto=MsgspecDTO[Annotated[Superuser, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]])
-    def handler(data: Superuser) -> Superuser:
+    def handler(data: JSONBody[Superuser]) -> Superuser:
         return data
 
     with create_test_client(handler) as client:
@@ -861,7 +861,7 @@ def test_data_dto_with_default() -> None:
         foo: str
 
     @post(path="/", dto=DataclassDTO[Foo], signature_types=[Foo])
-    def test(data: Optional[Foo] = None) -> dict:
+    def test(data: JSONBody[Optional[Foo]] = None) -> dict:
         return {"foo": data}
 
     with create_test_client([test]) as client:
@@ -896,7 +896,7 @@ def test_msgspec_dto_copies_constraints(
         dto=Annotated[MsgspecDTO[struct], DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)],  # type: ignore[arg-type, valid-type]
         signature_namespace={"struct": struct},
     )
-    def handler(data: struct) -> None:  # type: ignore[valid-type]
+    def handler(data: JSONBody[struct]) -> None:  # type: ignore[valid-type]
         pass
 
     with create_test_client([handler]) as client:
@@ -912,7 +912,7 @@ def test_msgspec_dto_dont_copy_length_constraint_for_partial_dto() -> None:
         config = DTOConfig(partial=True)
 
     @post("/", dto=FooDTO, signature_types={Foo})
-    def handler(data: Foo) -> None:
+    def handler(data: JSONBody[Foo]) -> None:
         pass
 
     with create_test_client([handler]) as client:
@@ -1129,7 +1129,7 @@ def test_forbid_unknown_fields(
     dto = DataclassDTO[Annotated[Foo, config]]
 
     @post(dto=dto, signature_types=[Foo])
-    def handler(data: Foo) -> Foo:
+    def handler(data: JSONBody[Foo]) -> Foo:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:

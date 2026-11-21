@@ -139,7 +139,8 @@ Handling exceptions
 If an exception occurs within the handler function, it will be raised **within** the
 generator, at the point where it first ``yield`` ed. This makes it possible to adapt behaviour
 of the dependency based on exceptions, for example rolling back a database session on error
-and committing otherwise.
+and committing otherwise. The same happens if a dependency resolved after it, or the
+validation of the handler's parameters, fails.
 
 .. literalinclude:: /examples/dependency_injection/dependency_yield_exceptions.py
     :caption: ``dependencies.py``

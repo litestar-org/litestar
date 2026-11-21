@@ -2,6 +2,7 @@ from pydantic import BaseModel, BeforeValidator, ConfigDict, PlainSerializer, Wi
 from typing_extensions import Annotated
 
 from litestar import Litestar, post
+from litestar.params import JSONBody
 
 
 class TenantUser:
@@ -52,7 +53,7 @@ class UserAsset(BaseModel):
 
 @post("/asset", sync_to_thread=False)
 def create_asset(
-    data: UserAsset,
+    data: JSONBody[UserAsset],
 ) -> UserAsset:
     assert isinstance(data.user, TenantUser)
     return data

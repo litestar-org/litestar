@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from litestar import Litestar, Request, post
 from litestar.events import listener
+from litestar.params import JSONBody
 
 
 @dataclass
@@ -17,7 +18,7 @@ async def send_welcome_email(user: User) -> None:
 
 
 @post("/users")
-async def create_user(data: User, request: Request) -> User:
+async def create_user(data: JSONBody[User], request: Request) -> User:
     request.app.emit("user_created", user=data)
     return data
 

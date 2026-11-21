@@ -3,6 +3,7 @@ from typing import Any, Type
 from msgspec import Struct
 
 from litestar import Litestar, post
+from litestar.params import JSONBody
 
 
 class TenantUser:
@@ -62,7 +63,7 @@ class UserAsset(Struct):
 
 @post("/asset", sync_to_thread=False)
 def create_asset(
-    data: UserAsset,
+    data: JSONBody[UserAsset],
 ) -> UserAsset:
     assert isinstance(data.user, TenantUser)
     return data

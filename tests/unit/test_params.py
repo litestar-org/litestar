@@ -6,7 +6,7 @@ from typing_extensions import Annotated
 from litestar import Controller, Litestar, MediaType, get, post
 from litestar.di import NamedDependency, Provide
 from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
-from litestar.params import Body, Dependency, FromQuery, Parameter, QueryParameter, SkipValidation
+from litestar.params import Body, Dependency, FromQuery, JSONBody, Parameter, QueryParameter, SkipValidation
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 
@@ -54,7 +54,7 @@ def test_parsing_of_body_as_annotated() -> None:
 
 def test_parsing_of_body_as_default() -> None:
     @post(path="/")
-    def handler(data: List[str] = Body(min_items=1)) -> List[str]:
+    def handler(data: JSONBody[List[str]] = Body(min_items=1)) -> List[str]:
         return data
 
     with create_test_client(handler) as client:

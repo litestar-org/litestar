@@ -6,6 +6,7 @@ from litestar import Litestar, post
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
+from litestar.params import JSONBody
 
 
 def test_raise_no_fn_validation() -> None:
@@ -23,7 +24,7 @@ def test_dto_data_annotation_with_no_resolved_dto() -> None:
         hello: str
 
     @post("/")
-    async def async_hello_world(data: DTOData[Model]) -> Model:
+    async def async_hello_world(data: JSONBody[DTOData[Model]]) -> Model:
         """Route Handler that outputs hello world."""
         return data.create_instance()
 

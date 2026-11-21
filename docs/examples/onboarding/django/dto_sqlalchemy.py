@@ -4,6 +4,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
 from litestar.dto import DTOConfig
+from litestar.params import JSONBody
 from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 
@@ -23,7 +24,7 @@ ReadItemDTO = SQLAlchemyDTO[Item]
 
 
 @post("/items", dto=WriteItemDTO, return_dto=ReadItemDTO)
-async def create_item(data: Item) -> Item:
+async def create_item(data: JSONBody[Item]) -> Item:
     data.id = 1
     return data
 

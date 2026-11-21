@@ -159,7 +159,8 @@ If you want to run the container as part of a Docker Compose setup then you can 
         ports:
           - "5432:5432"
         volumes:
-          - db_data:/var/lib/postgresql/data
+          # Note that image versions previous to 18 used /var/lib/postgresql/data
+          - db_data:/var/lib/postgresql
 
     volumes:
       db_data:

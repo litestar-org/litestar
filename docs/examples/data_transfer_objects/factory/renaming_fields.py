@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 
 from litestar import Litestar, post
 from litestar.dto import DTOConfig, dto_field
+from litestar.params import JSONBody
 from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 from .my_lib import Base
@@ -21,7 +22,7 @@ UserDTO = SQLAlchemyDTO[Annotated[User, config]]
 
 
 @post("/users", dto=UserDTO, sync_to_thread=False)
-def create_user(data: User) -> User:
+def create_user(data: JSONBody[User]) -> User:
     assert data.name == "Litestar User"
     data.created_at = datetime.min
     return data

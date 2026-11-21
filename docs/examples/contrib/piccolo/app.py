@@ -7,7 +7,7 @@ from litestar import Litestar, MediaType, delete, get, patch, post
 from litestar.contrib.piccolo import PiccoloDTO
 from litestar.dto import DTOConfig, DTOData
 from litestar.exceptions import NotFoundException
-from litestar.params import FromPath
+from litestar.params import FromPath, JSONBody
 
 from .piccolo_conf import DB
 
@@ -44,7 +44,7 @@ async def tasks() -> List[Task]:
     media_type=MediaType.JSON,
     tags=["Task"],
 )
-async def create_task(data: Task) -> Task:
+async def create_task(data: JSONBody[Task]) -> Task:
     await data.save()
     await data.refresh()
     return data
@@ -57,7 +57,7 @@ async def create_task(data: Task) -> Task:
     media_type=MediaType.JSON,
     tags=["Task"],
 )
-async def update_task(task_id: FromPath[int], data: DTOData[Task]) -> Task:
+async def update_task(task_id: FromPath[int], data: JSONBody[DTOData[Task]]) -> Task:
     task = await Task.objects().get(Task.id == task_id)
     if not task:
         raise NotFoundException("Task does not exist")

@@ -12,7 +12,7 @@ env:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -34,7 +34,7 @@ jobs:
         run: pre-commit run --show-diff-on-failure --color=always --all-files
 
   mypy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -52,7 +52,7 @@ jobs:
         run: uv run mypy
 
   pyright:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -70,7 +70,7 @@ jobs:
         run: uv run pyright
 
   slotscheck:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -92,11 +92,12 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
     uses: ./.github/workflows/test.yml
     with:
-      coverage: ${{ (matrix.python-version == '3.14' || matrix.python-version == '3.8') }}
+      coverage: ${{ (matrix.python-version == '3.15' || matrix.python-version == '3.8') }}
       python-version: ${{ matrix.python-version }}
+      os: ${{ (matrix.python-version == '3.8' || matrix.python-version == '3.9') && 'ubuntu-24.04' || 'ubuntu-latest' }}
 
   # add an aggregate step here to check if any of the steps of the matrix 'test' job
   # failed. this allows us to have dynamic or diverging steps in the matrix, while still
@@ -115,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        typing-extensions: ["4.14.0", "4.15.0", "latest"]
+        typing-extensions: ["4.14.0", "4.15.0", "4.16.0", "latest"]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -136,7 +137,7 @@ jobs:
 
       - name: Install typing-extensions
         if: ${{ matrix.typing-extensions != 'latest' }}
-        run: uv pip install typing-extensions=="${{ matrix.typing-extensions }}"
+        run: uv pip install typing-extensions=="${{ matrix.typing-extensions }}" anyio
 
       - name: Install typing-extensions
         if: ${{ matrix.typing-extensions == 'latest' }}
@@ -149,17 +150,14 @@ jobs:
   test_integration:
     name: Test server integration
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        uvicorn-version: ["uvicorn<0.27.0", "uvicorn>=0.27.0"]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up python 3.11
+      - name: Set up python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: 3.14
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -169,16 +167,11 @@ jobs:
       - name: Install Build Dependencies
         run: sudo apt-get install build-essential libpq-dev python3-dev -y
 
-      - name: Install dependencies
-        run: |
-          uv sync
-          uv pip install -U "${{ matrix.uvicorn-version }}"
-
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
-        run: uv run --no-sync pytest tests -m server_integration
+        run: uv run pytest tests -m server_integration
 
   test-platform-compat:
     if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'test platform compat')

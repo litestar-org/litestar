@@ -15,7 +15,7 @@ from litestar.handlers import HTTPRouteHandler
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware import logging as middleware_logging
 from litestar.middleware.logging import LoggingMiddlewareConfig
-from litestar.params import Body
+from litestar.params import Body, JSONBody
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
 from tests.helpers import cleanup_logging_impl
@@ -192,7 +192,7 @@ def test_logging_middleware_compressed_response_body(
 
 def test_logging_middleware_post_body() -> None:
     @post("/")
-    def post_handler(data: Dict[str, str]) -> Dict[str, str]:
+    def post_handler(data: JSONBody[Dict[str, str]]) -> Dict[str, str]:
         return data
 
     with create_test_client(
@@ -298,7 +298,7 @@ def test_logging_middleware_with_session_middleware(session_backend_config_memor
 def test_structlog_invalid_request_body_handled() -> None:
     # https://github.com/litestar-org/litestar/issues/3063
     @post("/")
-    async def hello_world(data: Dict[str, Any]) -> Dict[str, Any]:
+    async def hello_world(data: JSONBody[Dict[str, Any]]) -> Dict[str, Any]:
         return data
 
     with create_test_client(

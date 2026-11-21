@@ -3,6 +3,7 @@ from uuid import UUID, uuid4
 
 from litestar import Litestar, post
 from litestar.dto import DataclassDTO, DTOConfig, DTOData
+from litestar.params import JSONBody
 
 
 @dataclass
@@ -19,7 +20,7 @@ class UserWriteDTO(DataclassDTO[User]):
 
 
 @post("/users", dto=UserWriteDTO, return_dto=None)
-async def create_user(data: DTOData[User]) -> User:
+async def create_user(data: JSONBody[DTOData[User]]) -> User:
     return data.create_instance(id=uuid4())
 
 

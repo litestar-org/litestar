@@ -271,11 +271,11 @@ def test_layered_parameters() -> None:
         def my_handler(
             self,
             local: FromPath[int],
-            controller1: int,
-            router1: str,
-            router2: float,
-            app1: str,
-            app2: List[str],
+            controller1: FromQuery[int],
+            router1: FromQuery[str],
+            router2: FromHeader[float],
+            app1: FromCookie[str],
+            app2: FromQuery[List[str]],
             controller2: Annotated[float, QueryParameter(ge=5.0)],
         ) -> dict:
             return {}
@@ -347,6 +347,18 @@ def test_layered_parameters() -> None:
     assert local.schema.examples  # type: ignore[union-attr]
 
 
+def test_bare_marker_binding_layer_parameter_documents_layer_declaration() -> None:
+    @get("/")
+    async def handler(token: FromHeader[float]) -> None: ...
+
+    app = Litestar([handler], parameters={"token": HeaderParameter(annotation=float, name="x-token", multiple_of=5.0)})
+    (parameter,) = _create_parameters(app=app, path="/")
+
+    assert parameter.param_in == ParamType.HEADER
+    assert parameter.name == "x-token"
+    assert parameter.schema.multiple_of == 5.0  # type: ignore[union-attr]
+
+
 def test_parameter_examples() -> None:
     @get(path="/")
     async def index(
@@ -400,7 +412,7 @@ def test_parameter_schema_extra() -> None:
             {"type": "string", "enum": ["denied", "values"]},
         ]
     }
-    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["$ref"] == "#/components/schemas/q2"
+    assert schema["paths"]["/"]["get"]["parameters"][1]["schema"]["allOf"] == [{"$ref": "#/components/schemas/q2"}]
     assert schema["paths"]["/"]["get"]["parameters"][1]["description"] == "gender description"
     assert schema["components"]["schemas"]["q2"]["format"] == "foo"
     assert schema["paths"]["/"]["get"]["parameters"][2]["schema"]["$ref"] == "#/components/schemas/q3"
@@ -599,6 +611,16 @@ def test_explicit_path_param_with_alias_excluded_when_alias_not_in_path() -> Non
         # routing also works for the aliased path parameter
         assert client.get("/foo").text == "foo"
         assert client.get("/").text == ""
+
+
+def test_reference_parameter_keeps_component_description_when_wrapper_has_none() -> None:
+    @get("/genders")
+    async def handler(gender: Annotated[Gender, Parameter(title="The gender")]) -> Any:
+        return gender
+
+    parameters = _create_parameters(app=Litestar(route_handlers=[handler]), path="/genders")
+
+    assert parameters[0].description == Gender.__doc__
 
 
 @pytest.mark.parametrize(
