@@ -158,7 +158,7 @@ class ParameterFactory:
         """
         layer_field = self.layered_parameters[field_name]
 
-        field = field_definition if field_definition.is_parameter_field else layer_field
+        field = field_definition if field_definition.is_non_marker_parameter_field else layer_field
         default = layer_field.default if field_definition.has_default else field_definition.default
         annotation = field_definition.annotation if field_definition is not Empty else layer_field.annotation
 

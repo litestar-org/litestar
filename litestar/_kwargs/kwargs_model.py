@@ -260,20 +260,22 @@ class KwargsModel:
             field = field_definition if field_definition.is_non_marker_parameter_field else layered_parameter
             default = field_definition.default if field_definition.has_default else layered_parameter.default
 
-            param_definitions.add(
-                create_parameter_definition(
-                    field_definition=FieldDefinition.from_kwarg(
-                        name=field.name,
-                        default=default,
-                        inner_types=field.inner_types,
-                        annotation=field.annotation,
-                        kwarg_definition=field.kwarg_definition,
-                        extra=field.extra,
-                    ),
-                    field_name=field_name,
-                    path_parameters=path_parameters,
-                )
+            param_definition = create_parameter_definition(
+                field_definition=FieldDefinition.from_kwarg(
+                    name=field.name,
+                    default=default,
+                    inner_types=field.inner_types,
+                    annotation=field.annotation,
+                    kwarg_definition=field.kwarg_definition,
+                    extra=field.extra,
+                ),
+                field_name=field_name,
+                path_parameters=path_parameters,
             )
+            if field_definition.kwarg_definition is None and not field_definition.is_di_field:
+                # a parameter without a marker, which takes the layer parameter of its name
+                param_definition = param_definition._replace(legacy_style="inferred_layer")
+            param_definitions.add(param_definition)
 
         return param_definitions, expected_dependencies
 
@@ -477,16 +479,20 @@ class KwargsModel:
             kwargs: Kwargs to pass to dependencies.
         """
         cleanup_group = DependencyCleanupGroup()
-        for batch in self.dependency_batches:
-            if len(batch) == 1:
-                await resolve_dependency(next(iter(batch)), connection, kwargs, cleanup_group)
-            else:
-                try:
-                    async with create_task_group() as task_group:
-                        for dependency in batch:
-                            task_group.start_soon(resolve_dependency, dependency, connection, kwargs, cleanup_group)
-                except _ExceptionGroup as excgroup:
-                    raise excgroup.exceptions[0] from excgroup  # type: ignore[attr-defined]
+        try:
+            for batch in self.dependency_batches:
+                if len(batch) == 1:
+                    await resolve_dependency(next(iter(batch)), connection, kwargs, cleanup_group)
+                else:
+                    try:
+                        async with create_task_group() as task_group:
+                            for dependency in batch:
+                                task_group.start_soon(resolve_dependency, dependency, connection, kwargs, cleanup_group)
+                    except _ExceptionGroup as excgroup:
+                        raise excgroup.exceptions[0] from excgroup  # type: ignore[attr-defined]
+        except BaseException as exc:
+            await cleanup_group.close(exc)
+            raise
 
         return cleanup_group
 
@@ -622,7 +628,12 @@ def _warn_deprecated_param_style(
         }
         short_alternative = alternatives[param_type]
         param_type_name = param_type.name.lower()
-        if style == "inferred":
+        if style == "inferred_layer":
+            msg = (
+                f"{param_type_name} parameter {field_name!r} declared using deprecated inferred "
+                f"style, by the name of a layer parameter. Use '{short_alternative}[<type>]' instead"
+            )
+        elif style == "inferred":
             msg = (
                 f"{param_type_name} parameter {field_name!r} declared using deprecated inferred "
                 f"style. Use '{short_alternative}[<type>]' or "

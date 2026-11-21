@@ -271,11 +271,11 @@ def test_layered_parameters() -> None:
         def my_handler(
             self,
             local: FromPath[int],
-            controller1: int,
-            router1: str,
-            router2: float,
-            app1: str,
-            app2: List[str],
+            controller1: FromQuery[int],
+            router1: FromQuery[str],
+            router2: FromHeader[float],
+            app1: FromCookie[str],
+            app2: FromQuery[List[str]],
             controller2: Annotated[float, QueryParameter(ge=5.0)],
         ) -> dict:
             return {}
@@ -345,6 +345,18 @@ def test_layered_parameters() -> None:
     assert local.schema.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
     assert local.required
     assert local.schema.examples  # type: ignore[union-attr]
+
+
+def test_bare_marker_binding_layer_parameter_documents_layer_declaration() -> None:
+    @get("/")
+    async def handler(token: FromHeader[float]) -> None: ...
+
+    app = Litestar([handler], parameters={"token": HeaderParameter(annotation=float, name="x-token", multiple_of=5.0)})
+    (parameter,) = _create_parameters(app=app, path="/")
+
+    assert parameter.param_in == ParamType.HEADER
+    assert parameter.name == "x-token"
+    assert parameter.schema.multiple_of == 5.0  # type: ignore[union-attr]
 
 
 def test_parameter_examples() -> None:

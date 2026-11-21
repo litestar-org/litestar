@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from litestar._kwargs.cleanup import DependencyCleanupGroup
 from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes.base import BaseRoute
 
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
-    from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.connection import WebSocket
     from litestar.handlers.websocket_handlers import WebsocketRouteHandler
     from litestar.types import Receive, Send, WebSocketScope
@@ -66,7 +66,7 @@ class WebSocketRoute(BaseRoute):
             await self.route_handler.authorize_connection(connection=websocket)
 
         parsed_kwargs: dict[str, Any] = {}
-        cleanup_group: DependencyCleanupGroup | None = None
+        cleanup_group = DependencyCleanupGroup()
 
         if self.handler_parameter_model.has_kwargs and self.route_handler.signature_model:
             parsed_kwargs = await self.handler_parameter_model.to_kwargs(connection=websocket)
@@ -74,12 +74,10 @@ class WebSocketRoute(BaseRoute):
             if self.handler_parameter_model.dependency_batches:
                 cleanup_group = await self.handler_parameter_model.resolve_dependencies(websocket, parsed_kwargs)
 
-            parsed_kwargs = self.route_handler.signature_model.parse_values_from_connection_kwargs(
-                connection=websocket, kwargs=parsed_kwargs
-            )
+        async with cleanup_group:
+            if self.handler_parameter_model.has_kwargs and self.route_handler.signature_model:
+                parsed_kwargs = self.route_handler.signature_model.parse_values_from_connection_kwargs(
+                    connection=websocket, kwargs=parsed_kwargs
+                )
 
-        if cleanup_group:
-            async with cleanup_group:
-                await self.route_handler.fn(**parsed_kwargs)
-        else:
             await self.route_handler.fn(**parsed_kwargs)
