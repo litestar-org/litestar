@@ -541,6 +541,40 @@
         inferred path parameter style, now raises ``ImproperlyConfiguredException`` when
         the application is created. Declare it with ``FromPath``.
 
+    .. change:: Migrate ``RateLimitMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 5005
+        :issue: 4009
+        :breaking:
+
+        ``RateLimitMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases.
+
+        Since the middleware is now directly constructible, the
+        :class:`~litestar.middleware.rate_limit.RateLimitConfig` configuration object is
+        obsolete and its ``middleware`` property is deprecated; it will be removed in
+        ``4.0``. Pass a configured ``RateLimitMiddleware`` instance to the middleware
+        list instead:
+
+        .. code-block:: python
+
+            # before
+            config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
+            app = Litestar(..., middleware=[config.middleware])
+
+            # after
+            app = Litestar(
+                ...,
+                middleware=[RateLimitMiddleware(rate_limit=("minute", 10), exclude=["/schema"])],
+            )
+
+        ``exclude`` patterns are still matched against the request path. The new
+        ``exclude_path_pattern`` argument matches against the handler's path (e.g.
+        ``/user/{user_id:int}``) instead; handlers excluded this way, or via
+        ``exclude_opt_key``, bypass the middleware entirely at startup rather than per
+        request.
+
     .. change:: Add support for ``leeway`` parameter in JWT security backends
         :type: feature
         :pr: 5037

@@ -815,9 +815,9 @@ features or third party integrations.</p>
 <p>In the following example, the store set up by the
 <a class="reference internal" href="../reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware" title="litestar.middleware.rate_limit.RateLimitMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code></a> is accessed via the registry:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.rate_limit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RateLimitConfig</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.rate_limit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RateLimitMiddleware</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">RateLimitConfig</span><span class="p">((</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">RateLimitMiddleware</span><span class="p">((</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))])</span>
 </span><span data-line="5"><span class="n">rate_limit_store</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">stores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rate_limit&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
@@ -875,7 +875,7 @@ values. Adjusting those default values allows to easily reuse stores, without th
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.response_cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseCacheConfig</span>
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.rate_limit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RateLimitConfig</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.rate_limit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RateLimitMiddleware</span>
 </span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
 </span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.file</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileStore</span>
 </span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.redis</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisStore</span>
@@ -885,7 +885,7 @@ values. Adjusting those default values allows to easily reuse stores, without th
 </span><span data-line="12">    <span class="n">response_cache_config</span><span class="o">=</span><span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="s2">&quot;redis&quot;</span><span class="p">),</span>
 </span><span data-line="13">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span>
 </span><span data-line="14">        <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="s2">&quot;file&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
-</span><span data-line="15">        <span class="n">RateLimitConfig</span><span class="p">(</span><span class="n">rate_limit</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">store</span><span class="o">=</span><span class="s2">&quot;redis&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
+</span><span data-line="15">        <span class="n">RateLimitMiddleware</span><span class="p">(</span><span class="n">rate_limit</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">store</span><span class="o">=</span><span class="s2">&quot;redis&quot;</span><span class="p">),</span>
 </span><span data-line="16">    <span class="p">],</span>
 </span><span data-line="17"><span class="p">)</span>
 </span></pre></div>
@@ -898,7 +898,7 @@ values. Adjusting those default values allows to easily reuse stores, without th
 <p>The default factory can be used in conjunction with <a class="reference internal" href="#namespacing">namespacing</a> to create isolated, hierarchically organized stores,
 with minimal boilerplate:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.rate_limit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RateLimitConfig</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.rate_limit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RateLimitMiddleware</span>
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.server_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
 </span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.redis</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisStore</span>
 </span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoreRegistry</span>
@@ -916,7 +916,7 @@ with minimal boilerplate:</p>
 </span><span data-line="17">    <span class="p">[</span><span class="n">cached_handler</span><span class="p">],</span>
 </span><span data-line="18">    <span class="n">stores</span><span class="o">=</span><span class="n">StoreRegistry</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">root_store</span><span class="o">.</span><span class="n">with_namespace</span><span class="p">),</span>
 </span><span data-line="19">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span>
-</span><span data-line="20">        <span class="n">RateLimitConfig</span><span class="p">((</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
+</span><span data-line="20">        <span class="n">RateLimitMiddleware</span><span class="p">((</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
 </span><span data-line="21">        <span class="n">ServerSideSessionConfig</span><span class="p">()</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span>
 </span><span data-line="22">    <span class="p">],</span>
 </span><span data-line="23"><span class="p">)</span>

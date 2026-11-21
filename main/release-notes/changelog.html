@@ -730,6 +730,34 @@ parameters must now be explicitly marked (e.g. with
 <p>References: </p>
 </div>
 </dd>
+<dt>Migrate <code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code> to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink reference internal" href="#3.0.0-migrate" id="3.0.0-migrate">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code> has been moved from the legacy <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code>
+base to <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>, as part of migrating all
+built-in middleware off the legacy bases.</p>
+<p>Since the middleware is now directly constructible, the
+<a class="reference internal" href="../reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig" title="litestar.middleware.rate_limit.RateLimitConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">RateLimitConfig</span></code></a> configuration object is
+obsolete and its <code class="docutils literal notranslate"><span class="pre">middleware</span></code> property is deprecated; it will be removed in
+<code class="docutils literal notranslate"><span class="pre">4.0</span></code>. Pass a configured <code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code> instance to the middleware
+list instead:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># before</span>
+</span><span data-line="2"><span class="n">config</span> <span class="o">=</span> <span class="n">RateLimitConfig</span><span class="p">(</span><span class="n">rate_limit</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;minute&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/schema&quot;</span><span class="p">])</span>
+</span><span data-line="3"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># after</span>
+</span><span data-line="6"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="7">    <span class="o">...</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">RateLimitMiddleware</span><span class="p">(</span><span class="n">rate_limit</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;minute&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/schema&quot;</span><span class="p">])],</span>
+</span><span data-line="9"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">exclude</span></code> patterns are still matched against the request path. The new
+<code class="docutils literal notranslate"><span class="pre">exclude_path_pattern</span></code> argument matches against the handler’s path (e.g.
+<code class="docutils literal notranslate"><span class="pre">/user/{user_id:int}</span></code>) instead; handlers excluded this way, or via
+<code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code>, bypass the middleware entirely at startup rather than per
+request.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4009">https://github.com/litestar-org/litestar/issues/4009</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5005">https://github.com/litestar-org/litestar/pull/5005</a></span></p>
+</div>
+</dd>
 <dt>Add support for <code class="docutils literal notranslate"><span class="pre">leeway</span></code> parameter in JWT security backends<a class="headerlink reference internal" href="#3.0.0-add support for" id="3.0.0-add support for">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Add support for <code class="docutils literal notranslate"><span class="pre">leeway</span></code> parameter in JWT security backends, which allows set
 a number of potential seconds as a clock error for expired tokens.</p>

@@ -1486,8 +1486,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.DefineMiddleware.__call__.params.app">(litestar.middleware.DefineMiddleware.__call__ parameter)</a>
 </li>
-        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.app">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
-</li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.params.app">(litestar.middleware.session.base.SessionMiddleware parameter)</a>
 </li>
         <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware.params.app">(litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware parameter)</a>
@@ -2078,7 +2076,11 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/di.html#litestar.di.DIRegistry.check_target">check_target() (litestar.di.DIRegistry method)</a>
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.check_throttle_handler">check_throttle_handler (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.check_throttle_handler">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
+      </ul></li>
       <li><a href="reference/response/index.html#litestar.response.File.params.chunk_size">chunk_size (litestar.response.File parameter)</a>
 
       <ul>
@@ -2219,8 +2221,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionFacade.params.config">(litestar.middleware.compression.CompressionFacade parameter)</a>
 </li>
         <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.params.config">(litestar.middleware.compression.CompressionMiddleware parameter)</a>
-</li>
-        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.config">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseSessionBackend.params.config">(litestar.middleware.session.base.BaseSessionBackend parameter)</a>
 </li>
@@ -3642,6 +3642,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.exclude">(litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
 </li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.exclude">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
+</li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.exclude">(litestar.middleware.session.base.BaseBackendConfig attribute)</a>
 </li>
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.CookieBackendConfig.exclude">(litestar.middleware.session.client_side.CookieBackendConfig attribute)</a>
@@ -3724,6 +3726,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.exclude_opt_key">(litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
 </li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.exclude_opt_key">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
+</li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.exclude_opt_key">(litestar.middleware.session.base.BaseBackendConfig attribute)</a>
 </li>
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.CookieBackendConfig.exclude_opt_key">(litestar.middleware.session.client_side.CookieBackendConfig attribute)</a>
@@ -3763,6 +3767,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/allowed_hosts.html#litestar.middleware.allowed_hosts.AllowedHostsMiddleware.params.exclude_path_pattern">(litestar.middleware.allowed_hosts.AllowedHostsMiddleware parameter)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.ASGIMiddleware.exclude_path_pattern">(litestar.middleware.ASGIMiddleware attribute)</a>
+</li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.exclude_path_pattern">(litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+</li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.exclude_path_pattern">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.config.OpenTelemetryConfig.exclude_spans">exclude_spans (litestar.plugins.opentelemetry.config.OpenTelemetryConfig attribute)</a>
@@ -4536,6 +4544,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddleware.handle">(litestar.middleware.logging.LoggingMiddleware method)</a>
 </li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.handle">(litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
+</li>
         <li><a href="reference/routes.html#litestar.routes.ASGIRoute.handle">(litestar.routes.ASGIRoute method)</a>
 </li>
         <li><a href="reference/routes.html#litestar.routes.BaseRoute.handle">(litestar.routes.BaseRoute method)</a>
@@ -4739,10 +4749,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXConfig">HTMXConfig (class in litestar.plugins.htmx)</a>
 </li>
-      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails">HTMXDetails (class in litestar.plugins.htmx)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails">HTMXDetails (class in litestar.plugins.htmx)</a>
+</li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXHeaders">HTMXHeaders (class in litestar.plugins.htmx)</a>
 </li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HtmxHeaderType">HtmxHeaderType (class in litestar.plugins.htmx)</a>
@@ -4997,6 +5007,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.login.params.identifier">(litestar.security.jwt.OAuth2PasswordBearerAuth.login parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.identifier_for_request">identifier_for_request (litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
+</li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.identifier_for_request">identifier_for_request() (litestar.middleware.rate_limit.RateLimitConfig method)</a>
 </li>
       <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.apply_after.params.ignore_import_error">ignore_import_error (litestar.middleware.constraints.MiddlewareConstraints.apply_after parameter)</a>
@@ -7154,6 +7166,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddleware.handle.params.next_app">(litestar.middleware.logging.LoggingMiddleware.handle parameter)</a>
 </li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.handle.params.next_app">(litestar.middleware.rate_limit.RateLimitMiddleware.handle parameter)</a>
+</li>
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.no_cache">no_cache (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
@@ -8108,15 +8122,35 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.random_seed">random_seed (litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.rate_limit">rate_limit (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.rate_limit">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
+      </ul></li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.rate_limit_limit_header_key">rate_limit_limit_header_key (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.rate_limit_limit_header_key">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
+      </ul></li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.rate_limit_policy_header_key">rate_limit_policy_header_key (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.rate_limit_policy_header_key">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
+      </ul></li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.rate_limit_remaining_header_key">rate_limit_remaining_header_key (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.rate_limit_remaining_header_key">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
+      </ul></li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.rate_limit_reset_header_key">rate_limit_reset_header_key (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.rate_limit_reset_header_key">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
+      </ul></li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig">RateLimitConfig (class in litestar.middleware.rate_limit)</a>
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware">RateLimitMiddleware (class in litestar.middleware.rate_limit)</a>
@@ -8189,6 +8223,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddleware.log_request.params.receive">(litestar.middleware.logging.LoggingMiddleware.log_request parameter)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.MiddlewareProtocol.__call__.params.receive">(litestar.middleware.MiddlewareProtocol.__call__ parameter)</a>
+</li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.handle.params.receive">(litestar.middleware.rate_limit.RateLimitMiddleware.handle parameter)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.__call__.params.receive">(litestar.response.base.ASGIResponse.__call__ parameter)</a>
 </li>
@@ -8549,6 +8585,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/enums.html#litestar.enums.RequestEncodingType">RequestEncodingType (class in litestar.enums)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/testing.html#litestar.testing.RequestFactory">RequestFactory (class in litestar.testing)</a>
 </li>
       <li><a href="reference/di.html#litestar.di.RequestParameter">RequestParameter (class in litestar.di)</a>
@@ -8569,8 +8607,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode.params.require_claims">(litestar.security.jwt.Token.decode parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/middleware/constraints.html#litestar.middleware.constraints.MiddlewareConstraints.require_unique">require_unique() (litestar.middleware.constraints.MiddlewareConstraints method)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.required">required (litestar.datastructures.ResponseHeader attribute)</a>
@@ -9177,6 +9213,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.MiddlewareProtocol.__call__.params.scope">(litestar.middleware.MiddlewareProtocol.__call__ parameter)</a>
 </li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.handle.params.scope">(litestar.middleware.rate_limit.RateLimitMiddleware.handle parameter)</a>
+</li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseSessionBackend.serialize_data.params.scope">(litestar.middleware.session.base.BaseSessionBackend.serialize_data parameter)</a>
 </li>
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data.params.scope">(litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data parameter)</a>
@@ -9232,6 +9270,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.scopes">(litestar.middleware.compression.CompressionMiddleware attribute)</a>
 </li>
         <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddleware.scopes">(litestar.middleware.logging.LoggingMiddleware attribute)</a>
+</li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.scopes">(litestar.middleware.rate_limit.RateLimitMiddleware attribute)</a>
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.scopes">(litestar.middleware.session.base.BaseBackendConfig attribute)</a>
 </li>
@@ -9412,6 +9452,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/index.html#litestar.middleware.MiddlewareProtocol.__call__.params.send">(litestar.middleware.MiddlewareProtocol.__call__ parameter)</a>
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.create_send_wrapper.params.send">(litestar.middleware.rate_limit.RateLimitMiddleware.create_send_wrapper parameter)</a>
+</li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.handle.params.send">(litestar.middleware.rate_limit.RateLimitMiddleware.handle parameter)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.__call__.params.send">(litestar.response.base.ASGIResponse.__call__ parameter)</a>
 </li>
@@ -9672,7 +9714,11 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.set_rate_limit_headers">set_rate_limit_headers (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.set_rate_limit_headers">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
+      </ul></li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXConfig.set_request_class_globally">set_request_class_globally (litestar.plugins.htmx.HTMXConfig attribute)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.set_session">set_session() (litestar.connection.ASGIConnection method)</a>
@@ -9969,6 +10015,8 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.store">(litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+</li>
+        <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.store">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.retrieve_cached_history.params.store">(litestar.middleware.rate_limit.RateLimitMiddleware.retrieve_cached_history parameter)</a>
 </li>
