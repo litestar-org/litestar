@@ -57,8 +57,9 @@ any :class:`~.stores.base.Store`, for example :class:`~.stores.redis.RedisStore`
 Specifying a cache key builder
 ++++++++++++++++++++++++++++++
 
-Litestar uses the request's path + sorted query parameters as the cache key. This can be adjusted by providing a
-"key builder" function, either at application or route handler level.
+Litestar uses an unambiguous combination of the request's method, origin, path, and sorted query parameters as the
+cache key. Responses that vary based on other request data, such as headers, cookies, or the authenticated user, need
+a custom "key builder" function. This can be provided either at application or route handler level.
 
 .. literalinclude:: /examples/caching/key_builder.py
     :language: python

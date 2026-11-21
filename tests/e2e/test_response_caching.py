@@ -116,9 +116,9 @@ def test_default_expiration_none(
         client.get("/cached")
 
     if expected_expiration is None:
-        assert memory_store._store["GET/cached"].expires_at is None
+        assert memory_store._store["v2:3:GET4:http16:testserver.local7:/cached0:"].expires_at is None
     else:
-        assert memory_store._store["GET/cached"].expires_at
+        assert memory_store._store["v2:3:GET4:http16:testserver.local7:/cached0:"].expires_at
 
 
 def test_cache_forever(memory_store: MemoryStore) -> None:
@@ -131,7 +131,7 @@ def test_cache_forever(memory_store: MemoryStore) -> None:
     with TestClient(app) as client:
         client.get("/cached")
 
-    assert memory_store._store["GET/cached"].expires_at is None
+    assert memory_store._store["v2:3:GET4:http16:testserver.local7:/cached0:"].expires_at is None
 
 
 @pytest.mark.parametrize("sync_to_thread", (True, False))
@@ -188,7 +188,7 @@ async def test_non_default_store_name(mock: MagicMock) -> None:
 
         assert mock.call_count == 1
 
-    assert await app.stores.get("some_store").exists("GET/")
+    assert await app.stores.get("some_store").exists("v2:3:GET4:http16:testserver.local1:/0:")
 
 
 async def test_with_stores(store: Store, mock: MagicMock) -> None:
@@ -240,8 +240,8 @@ async def test_does_not_cache_non_cached_handler_on_cached_route() -> None:
         client.post("/mix")
 
     store = app.stores.get("response_cache")
-    assert await store.exists("GET/mix")
-    assert not await store.exists("POST/mix")
+    assert await store.exists("v2:3:GET4:http16:testserver.local4:/mix0:")
+    assert not await store.exists("v2:4:POST4:http16:testserver.local4:/mix0:")
 
 
 @pytest.mark.parametrize(
@@ -261,7 +261,10 @@ async def test_middleware_not_applied_to_non_cached_routes(
 
     with create_test_client(route_handlers=[handler]) as client:
         client.get("/")
-        assert await client.app.stores.get("response_cache").exists("GET/") is expect_applied
+        assert (
+            await client.app.stores.get("response_cache").exists("v2:3:GET4:http16:testserver.local1:/0:")
+            is expect_applied
+        )
 
 
 async def test_compression_applies_before_cache() -> None:
@@ -280,7 +283,7 @@ async def test_compression_applies_before_cache() -> None:
     with TestClient(app) as client:
         client.get("/", headers={"Accept-Encoding": str(CompressionEncoding.GZIP.value)})
 
-    stored_value = await app.response_cache_config.get_store_from_app(app).get("GET/")
+    stored_value = await app.response_cache_config.get_store_from_app(app).get("v2:3:GET4:http16:testserver.local1:/0:")
     assert stored_value
     stored_messages = msgspec.msgpack.decode(stored_value)
     assert gzip.decompress(stored_messages[1]["body"]).decode() == return_value
@@ -359,3 +362,45 @@ def test_on_multiple_handlers(mock: MagicMock) -> None:
         assert second_post_response.text == "post_response"
         assert first_post_response.headers["unique-identifier"] == second_post_response.headers["unique-identifier"]
         assert mock.call_count == 2
+
+
+def test_default_cache_key_does_not_collide_between_path_and_query() -> None:
+    calls = {"with-query": 0, "without-query": 0}
+
+    @get("/foo", cache=True)
+    async def handler_with_query() -> Response[str]:
+        calls["with-query"] += 1
+        return Response("with-query", headers={"x-handler": "with-query"})
+
+    @get("/fooa=b", cache=True)
+    async def handler_without_query() -> Response[str]:
+        calls["without-query"] += 1
+        return Response("without-query", headers={"x-handler": "without-query"})
+
+    with create_test_client([handler_with_query, handler_without_query]) as client:
+        response_with_query = client.get("/foo?a=b")
+        response_without_query = client.get("/fooa=b")
+
+    assert response_with_query.text == "with-query"
+    assert response_with_query.headers["x-handler"] == "with-query"
+    assert response_without_query.text == "without-query"
+    assert response_without_query.headers["x-handler"] == "without-query"
+    assert calls == {"with-query": 1, "without-query": 1}
+
+
+def test_default_cache_key_varies_by_origin() -> None:
+    calls = 0
+
+    @get("/cached", cache=True)
+    async def handler(request: Request) -> str:
+        nonlocal calls
+        calls += 1
+        return request.url.netloc
+
+    with create_test_client([handler]) as client:
+        first_response = client.get("/cached", headers={"host": "first.example.com"})
+        second_response = client.get("/cached", headers={"host": "second.example.com"})
+
+    assert first_response.text == "first.example.com"
+    assert second_response.text == "second.example.com"
+    assert calls == 2

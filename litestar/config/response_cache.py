@@ -30,18 +30,28 @@ class CACHE_FOREVER:  # noqa: N801
 
 
 def default_cache_key_builder(request: Request[Any, Any, Any]) -> str:
-    """Given a request object, returns a cache key by combining
-    the request method and path with the sorted query params.
+    """Given a request object, return an unambiguous cache key.
+
+    The key contains length-prefixed request method, scheme, authority, path,
+    and sorted query parameter components. Length-prefixing prevents distinct
+    component sequences from producing the same key.
 
     Args:
         request: request used to generate cache key.
 
     Returns:
-        A combination of url path and query parameters
+        A combination of request method, origin, path, and query parameters.
     """
     query_params: list[tuple[str, Any]] = list(request.query_params.dict().items())
     query_params.sort(key=lambda x: x[0])
-    return request.method + request.url.path + urlencode(query_params, doseq=True)
+    components = (
+        request.method,
+        request.url.scheme,
+        request.url.netloc,
+        request.url.path,
+        urlencode(query_params, doseq=True),
+    )
+    return "v2:" + "".join(f"{len(component)}:{component}" for component in components)
 
 
 def default_do_cache_predicate(_: HTTPScope, status_code: int) -> bool:
