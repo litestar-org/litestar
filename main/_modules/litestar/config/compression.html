@@ -560,48 +560,54 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="56">    <span class="n">middleware_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">CompressionMiddleware</span><span class="p">]</span> <span class="o">=</span> <span class="n">CompressionMiddleware</span>
 </span><span data-line="57"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Middleware class to use, should be a subclass of :class:`CompressionMiddleware`.&quot;&quot;&quot;</span>
 </span><span data-line="58">    <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="59"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns to skip in the compression middleware.&quot;&quot;&quot;</span>
-</span><span data-line="60">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="61"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An identifier to use on routes to disable compression for a particular route.&quot;&quot;&quot;</span>
-</span><span data-line="62">    <span class="n">compression_facade</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">CompressionFacade</span><span class="p">]</span> <span class="o">=</span> <span class="n">GzipCompression</span>
-</span><span data-line="63"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The compression facade to use for the actual compression.&quot;&quot;&quot;</span>
-</span><span data-line="64">    <span class="n">backend_config</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="65"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration specific to the backend.&quot;&quot;&quot;</span>
-</span><span data-line="66">    <span class="n">zstd_gzip_fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="67"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Use GZIP as a fallback if Zstd is not supported by the client.&quot;&quot;&quot;</span>
-</span><span data-line="68">    <span class="n">gzip_fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="69"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Use GZIP as a fallback if the provided backend is not supported by the client.&quot;&quot;&quot;</span>
-</span><span data-line="70">
-</span><span data-line="71">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="72">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="73">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;minimum_size must be greater than 0&quot;</span><span class="p">)</span>
-</span><span data-line="74">
-</span><span data-line="75">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;gzip&quot;</span><span class="p">:</span>
-</span><span data-line="76">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gzip_compress_level</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">gzip_compress_level</span> <span class="o">&gt;</span> <span class="mi">9</span><span class="p">:</span>
-</span><span data-line="77">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;gzip_compress_level must be a value between 0 and 9&quot;</span><span class="p">)</span>
-</span><span data-line="78">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;brotli&quot;</span><span class="p">:</span>
-</span><span data-line="79">            <span class="c1"># Brotli is not guaranteed to be installed.</span>
-</span><span data-line="80">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.compression.brotli_facade</span><span class="w"> </span><span class="kn">import</span> <span class="n">BrotliCompression</span>
-</span><span data-line="81">
-</span><span data-line="82">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">brotli_quality</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">brotli_quality</span> <span class="o">&gt;</span> <span class="mi">11</span><span class="p">:</span>
-</span><span data-line="83">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;brotli_quality must be a value between 0 and 11&quot;</span><span class="p">)</span>
-</span><span data-line="84">
-</span><span data-line="85">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">brotli_lgwin</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">brotli_lgwin</span> <span class="o">&gt;</span> <span class="mi">24</span><span class="p">:</span>
-</span><span data-line="86">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;brotli_lgwin must be a value between 10 and 24&quot;</span><span class="p">)</span>
+</span><span data-line="59"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns to skip in the compression middleware, matched against the request path.&quot;&quot;&quot;</span>
+</span><span data-line="60">    <span class="n">exclude_path_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="61"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns to skip in the compression middleware, matched against the handler path at</span>
+</span><span data-line="62"><span class="sd">    startup.</span>
+</span><span data-line="63">
+</span><span data-line="64"><span class="sd">    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.</span>
+</span><span data-line="65"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="66">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="67"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An identifier to use on routes to disable compression for a particular route.&quot;&quot;&quot;</span>
+</span><span data-line="68">    <span class="n">compression_facade</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">CompressionFacade</span><span class="p">]</span> <span class="o">=</span> <span class="n">GzipCompression</span>
+</span><span data-line="69"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The compression facade to use for the actual compression.&quot;&quot;&quot;</span>
+</span><span data-line="70">    <span class="n">backend_config</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="71"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration specific to the backend.&quot;&quot;&quot;</span>
+</span><span data-line="72">    <span class="n">zstd_gzip_fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="73"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Use GZIP as a fallback if Zstd is not supported by the client.&quot;&quot;&quot;</span>
+</span><span data-line="74">    <span class="n">gzip_fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="75"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Use GZIP as a fallback if the provided backend is not supported by the client.&quot;&quot;&quot;</span>
+</span><span data-line="76">
+</span><span data-line="77">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="78">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="79">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;minimum_size must be greater than 0&quot;</span><span class="p">)</span>
+</span><span data-line="80">
+</span><span data-line="81">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;gzip&quot;</span><span class="p">:</span>
+</span><span data-line="82">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gzip_compress_level</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">gzip_compress_level</span> <span class="o">&gt;</span> <span class="mi">9</span><span class="p">:</span>
+</span><span data-line="83">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;gzip_compress_level must be a value between 0 and 9&quot;</span><span class="p">)</span>
+</span><span data-line="84">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;brotli&quot;</span><span class="p">:</span>
+</span><span data-line="85">            <span class="c1"># Brotli is not guaranteed to be installed.</span>
+</span><span data-line="86">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.compression.brotli_facade</span><span class="w"> </span><span class="kn">import</span> <span class="n">BrotliCompression</span>
 </span><span data-line="87">
-</span><span data-line="88">            <span class="bp">self</span><span class="o">.</span><span class="n">gzip_fallback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">brotli_gzip_fallback</span>
-</span><span data-line="89">            <span class="bp">self</span><span class="o">.</span><span class="n">compression_facade</span> <span class="o">=</span> <span class="n">BrotliCompression</span>
-</span><span data-line="90">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;zstd&quot;</span><span class="p">:</span>
-</span><span data-line="91">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.compression.zstd_facade</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZstdCompression</span>
-</span><span data-line="92">
-</span><span data-line="93">            <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">ZstdCompression</span><span class="o">.</span><span class="n">upper_bound</span>
-</span><span data-line="94">            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zstd_compress_level</span> <span class="o">&lt;=</span> <span class="n">upper_bound</span><span class="p">):</span>
-</span><span data-line="95">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="96">                    <span class="sa">f</span><span class="s2">&quot;zstd_compress_level must be between 0 and </span><span class="si">{</span><span class="n">upper_bound</span><span class="si">}</span><span class="s2">, given: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">zstd_compress_level</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="97">                <span class="p">)</span>
+</span><span data-line="88">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">brotli_quality</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">brotli_quality</span> <span class="o">&gt;</span> <span class="mi">11</span><span class="p">:</span>
+</span><span data-line="89">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;brotli_quality must be a value between 0 and 11&quot;</span><span class="p">)</span>
+</span><span data-line="90">
+</span><span data-line="91">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">brotli_lgwin</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">brotli_lgwin</span> <span class="o">&gt;</span> <span class="mi">24</span><span class="p">:</span>
+</span><span data-line="92">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="s2">&quot;brotli_lgwin must be a value between 10 and 24&quot;</span><span class="p">)</span>
+</span><span data-line="93">
+</span><span data-line="94">            <span class="bp">self</span><span class="o">.</span><span class="n">gzip_fallback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">brotli_gzip_fallback</span>
+</span><span data-line="95">            <span class="bp">self</span><span class="o">.</span><span class="n">compression_facade</span> <span class="o">=</span> <span class="n">BrotliCompression</span>
+</span><span data-line="96">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;zstd&quot;</span><span class="p">:</span>
+</span><span data-line="97">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.compression.zstd_facade</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZstdCompression</span>
 </span><span data-line="98">
-</span><span data-line="99">            <span class="bp">self</span><span class="o">.</span><span class="n">gzip_fallback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zstd_gzip_fallback</span>
-</span><span data-line="100">            <span class="bp">self</span><span class="o">.</span><span class="n">compression_facade</span> <span class="o">=</span> <span class="n">ZstdCompression</span></div>
+</span><span data-line="99">            <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">ZstdCompression</span><span class="o">.</span><span class="n">upper_bound</span>
+</span><span data-line="100">            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zstd_compress_level</span> <span class="o">&lt;=</span> <span class="n">upper_bound</span><span class="p">):</span>
+</span><span data-line="101">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="102">                    <span class="sa">f</span><span class="s2">&quot;zstd_compress_level must be between 0 and </span><span class="si">{</span><span class="n">upper_bound</span><span class="si">}</span><span class="s2">, given: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">zstd_compress_level</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="103">                <span class="p">)</span>
+</span><span data-line="104">
+</span><span data-line="105">            <span class="bp">self</span><span class="o">.</span><span class="n">gzip_fallback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zstd_gzip_fallback</span>
+</span><span data-line="106">            <span class="bp">self</span><span class="o">.</span><span class="n">compression_facade</span> <span class="o">=</span> <span class="n">ZstdCompression</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">
