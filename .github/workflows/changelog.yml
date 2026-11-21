@@ -1,0 +1,83 @@
+name: "Changelog Fragment"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+
+jobs:
+  check-fragment:
+    name: Require changelog fragment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide whether a fragment is required
+        id: gate
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const title = pr.title || "";
+            const labels = pr.labels.map(l => l.name);
+            const isBot = pr.user.type === "Bot";
+            const skip = labels.includes("skip-changelog");
+            const requiredTypes = ["feat", "fix", "perf", "refactor"];
+            const m = title.match(/^([a-z]+)(\([^)]+\))?!?:\s*(.*)$/);
+            const ccType = m ? m[1] : null;
+            const summary = m ? m[3] : title;
+            const required = !isBot && !skip && requiredTypes.includes(ccType);
+            const changeType = ({ feat: "feature", fix: "bugfix" })[ccType] || "misc";
+            core.info(`title=${JSON.stringify(title)} ccType=${ccType} isBot=${isBot} skip=${skip} required=${required}`);
+            core.setOutput("required", String(required));
+            core.setOutput("summary", summary);
+            core.setOutput("change_type", changeType);
+
+      - name: Check out repository
+        if: steps.gate.outputs.required == 'true'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Ensure base ref is available
+        if: steps.gate.outputs.required == 'true'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: git fetch --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+
+      - name: Install uv
+        if: steps.gate.outputs.required == 'true'
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Check for news fragment (warn-only)
+        if: steps.gate.outputs.required == 'true'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          CHANGE_TYPE: ${{ steps.gate.outputs.change_type }}
+          SUMMARY: ${{ steps.gate.outputs.summary }}
+        run: |
+          # shellcheck source=tools/release_lib.sh
+          source tools/release_lib.sh
+          if towncrier check --compare-with "origin/${BASE_REF}"; then
+            echo "✅ Changelog fragment present."
+            exit 0
+          fi
+          echo "::warning title=Missing changelog fragment::Add docs/release-notes/fragments/${PR_NUMBER}.change.rst (skeleton in the job summary), or apply the 'skip-changelog' label. WARN-ONLY now; becomes REQUIRED at 3.0 final."
+          {
+            echo "### ⚠️ No changelog fragment found"
+            echo ""
+            echo "This PR looks changelog-worthy but adds no news fragment. Create"
+            echo "**\`docs/release-notes/fragments/${PR_NUMBER}.change.rst\`** with the entry below"
+            echo "(edit the body), or apply the **skip-changelog** label."
+            echo ""
+            echo '```rst'
+            echo ".. change:: ${SUMMARY}"
+            echo "    :type: ${CHANGE_TYPE}"
+            echo "    :pr: ${PR_NUMBER}"
+            echo ""
+            echo "    Describe the change here. For breaking changes add a ':breaking:' line"
+            echo "    under ':type:' and explain how to migrate."
+            echo '```'
+            echo ""
+            echo "_Warn-only for now — becomes a required check at 3.0 final. See CONTRIBUTING → Changelog fragments._"
+          } >> "$GITHUB_STEP_SUMMARY"

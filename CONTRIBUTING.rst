@@ -71,6 +71,8 @@ Workflow
 #. Clone your fork locally with git
 #. `Set up the environment <#setting-up-the-environment>`_
 #. Make your changes
+#. If your change is user-facing (``feat`` / ``fix`` / ``perf`` / ``refactor``), add a changelog fragment
+   (see `Changelog fragments`_)
 #. (Optional) Run ``pre-commit run --all-files`` to run linters and formatters. This step is optional and will be executed
    automatically by git before you make a commit, but you may want to run it manually in order to apply fixes
 #. Commit your changes to git. We follow `conventional commits <https://www.conventionalcommits.org/>`_
@@ -80,6 +82,42 @@ Workflow
    indicating what it changes. The style of the PR title should also follow
    `conventional commits <https://www.conventionalcommits.org/>`_, and this is enforced using a GitHub action.
 #. Add yourself as a contributor using the `all-contributors bot <https://allcontributors.org/docs/en/bot/usage>`_
+
+Changelog fragments
++++++++++++++++++++
+
+Changelog entries are assembled from *news fragments* with
+`towncrier <https://towncrier.readthedocs.io>`_. Every PR that adds a feature or fixes a
+bug (conventional-commit ``feat`` / ``fix`` / ``perf`` / ``refactor``) should include a
+fragment under ``docs/release-notes/fragments/``.
+
+Create ``docs/release-notes/fragments/<PR_NUMBER>.change.rst`` with a single
+``.. change::`` directive:
+
+.. code-block:: rst
+
+    .. change:: Short, imperative summary of the change
+        :type: bugfix          # one of: feature | bugfix | misc
+        :pr: 1234
+        :issue: 567            # optional; space-separated for multiple
+
+        A longer description in reStructuredText. For breaking changes, add a
+        ``:breaking:`` line under ``:type:`` and explain how to migrate.
+
+If a single PR introduces several distinct entries, add ``<PR_NUMBER>-2.change.rst``,
+``<PR_NUMBER>-3.change.rst``, and so on.
+
+Optionally scaffold the file::
+
+    uvx --from 'towncrier>=24,<26' towncrier create --edit 1234.change.rst
+
+Preview the assembled changelog without writing anything::
+
+    uvx --from 'towncrier>=24,<26' towncrier build --draft --version 3.0.0
+
+Docs-only, chore, CI, or other non-user-facing PRs don't need a fragment — apply the
+``skip-changelog`` label to bypass the check. The check is currently *advisory* (warn-only)
+and will become required at the 3.0 final release.
 
 Guidelines for writing code
 ----------------------------
@@ -296,62 +334,32 @@ This is equivalent to:
 Creating a New Release
 ----------------------
 
-#. Checkout the ``main`` branch:
+Run the `Release workflow <https://github.com/litestar-org/litestar/actions/workflows/release.yml>`_
+from the Actions tab:
 
-   .. code-block:: shell
-        :caption: Checking out the main branch of the ``litestar`` repository
+#. Run it with ``dry_run: true``. Nothing is written — it reports readiness, previews the
+   changelog entry and prints the GitHub release notes. Read the notes, especially the
+   *Other changes* section: not every entry belongs in the final notes.
+#. Run it again with ``dry_run: false``. It bumps the version, assembles the changelog,
+   and opens a ``vX.Y.Z`` pull request. Each pre-release keeps its own changelog section.
+#. Review and merge that PR. Merging creates a **draft** GitHub release with the generated
+   notes.
+#. Open the draft release, edit the notes if needed, and click "Publish release". That
+   triggers ``publish.yml``; approve it if prompted and check that it succeeds.
 
-        git checkout main
+While a pre-release is pending, a bump may only continue that line (``alpha`` / ``beta`` /
+``rc``) or finish it (``stable``). Pass an explicit ``version`` to override. Versions follow
+`semantic versioning <https://semver.org/>`_, `PEP 440 <https://peps.python.org/pep-0440/>`_
+and the `versioning scheme <https://litestar.dev/about/litestar-releases#version-numbering>`_.
 
-#. Run the release preparation script:
+Locally
+~~~~~~~
 
-   .. code-block:: shell
-        :caption: Preparing  a new release
+The same two steps, without touching GitHub:
 
-        python tools/prepare_release.py <new version number> --update-version --create-draft-release
+.. code-block:: shell
 
-   Replace ``<new version number>`` with the desired version number following the
-   `versioning scheme <https://litestar.dev/about/litestar-releases#version-numbering>`_.
+    make release-preview BUMP=patch        # writes nothing; VERSION=3.0.0rc1 also works
+    make release-prepare BUMP=patch        # branch + bump + changelog + commit, no push
 
-   This script will:
-
-   - Update the version in ``pyproject.toml``
-   - Generate a changelog entry in :doc:`/release-notes/changelog`
-   - Create a draft release on GitHub
-
-#. Review the generated changelog entry in :doc:`/release-notes/changelog` to ensure it looks correct.
-
-#. Commit the changes to ``main``:
-
-   .. code-block:: shell
-        :caption: Committing the changes to the main branch
-
-        git commit -am "chore(release): prepare release vX.Y.Z"
-
-   Replace ``vX.Y.Z`` with the actual version number.
-
-#. Create a new branch for the release:
-
-   .. code-block:: shell
-        :caption: Creating a new branch for the release
-
-        git checkout -b vX.Y.Z
-
-#. Push the changes to a ``vX.Y.Z`` branch:
-
-   .. code-block:: shell
-        :caption: Pushing the changes to the ``vX.Y.Z`` branch
-
-        git push origin vX.Y.Z
-
-#. Open a pull request from the ``vX.Y.Z`` branch to ``main``.
-#. Once the pull request is approved, go to the draft release on GitHub
-   (the release preparation script will provide a link).
-#. Review the release notes in the draft release to ensure they look correct.
-#. If everything looks good, click "Publish release" to make the release official.
-#. Go to the `Release Action <https://github.com/litestar-org/litestar/actions/workflows/publish.yml>`_ and approve
-   the release workflow if necessary.
-#. Check that the release workflow runs successfully.
-
-.. note:: The version number should follow `semantic versioning <https://semver.org/>`_ and
-   `PEP 440 <https://peps.python.org/pep-0440/>`_.
+Then push the branch and open the PR; merging it creates the draft release as above.
