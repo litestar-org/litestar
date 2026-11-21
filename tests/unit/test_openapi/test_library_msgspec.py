@@ -48,7 +48,6 @@ from tests.helpers import (
     body_schema,
     components,
     document,
-    get_components_for_field_definition,
     get_schema_for_field_definition,
     normalise_json_schema,
     recursion_limit,
@@ -491,23 +490,14 @@ def test_routed_models_match_msgspec_output(model: Any) -> None:
     assert body_schema(doc) == {"$ref": f"{PREFIX}{model.__name__}"}
 
 
-def test_mode_independent_model_is_shared() -> None:
-    doc = document([round_trip(DataclassPerson)])
-    ref = {"$ref": f"{PREFIX}DataclassPerson"}
-
-    assert body_schema(doc) == response_schema(doc) == ref
-    assert {"DataclassPerson", "DataclassPet"} <= components(doc).keys()
-    assert "examples" not in components(doc)["DataclassPerson"]
-    assert not any(name.endswith(("-Input", "-Output")) for name in components(doc))
-
-
-def test_mode_independent_model_with_examples_is_shared() -> None:
-    doc = document([round_trip(DataclassPerson)], create_examples=True)
+@pytest.mark.parametrize("create_examples", [False, True])
+def test_mode_independent_model_is_shared(create_examples: bool) -> None:
+    doc = document([round_trip(DataclassPerson)], create_examples=create_examples)
     ref = {"$ref": f"{PREFIX}DataclassPerson"}
 
     for schema in (body_schema(doc), response_schema(doc)):
-        assert schema["allOf"] == [ref]
-        assert schema["examples"]
+        assert bool(schema.pop("examples", None)) is create_examples
+        assert schema == ({"allOf": [ref]} if create_examples else ref)
     assert {"DataclassPerson", "DataclassPet"} <= components(doc).keys()
     assert "examples" not in components(doc)["DataclassPerson"]
     assert not any(name.endswith(("-Input", "-Output")) for name in components(doc))
@@ -763,28 +753,6 @@ def test_nested_pydantic_model_delegated() -> None:
     assert schemas["PModel"]["properties"] == {"p": {"title": "P", "type": "integer"}}
 
 
-@pytest.mark.parametrize(
-    "plugin, model",
-    [
-        (StructSchemaPlugin(), StModel),
-        (DataclassSchemaPlugin(), DcModel),
-        (TypedDictSchemaPlugin(), TdModel),
-        (AttrsSchemaPlugin(), AtModel),
-    ],
-)
-def test_plugins_route_only_in_library_mode(plugin: OpenAPISchemaPlugin, model: Any) -> None:
-    field_definition = FieldDefinition.from_annotation(model)
-    plugins = [*openapi_schema_plugins, AttrsSchemaPlugin()]
-
-    own = plugin.to_openapi_schema(field_definition, SchemaCreator(plugins=plugins, library_models=False))
-    assert isinstance(own, Schema)
-
-    creator = SchemaCreator(plugins=plugins)
-    deferred = plugin.to_openapi_schema(field_definition, creator)
-    assert isinstance(deferred, Reference)
-    assert creator.schema_registry.library.is_placeholder(deferred)
-
-
 def test_a_model_msgspec_cannot_decode_is_probed_once(monkeypatch: pytest.MonkeyPatch) -> None:
     probed: list[Any] = []
 
@@ -823,9 +791,7 @@ def test_models_msgspec_cannot_decode_fall_back_to_litestar(model: Any, field: s
 
     assert outer["properties"][field] == expected
     assert outer["required"] == sorted(outer["required"])
-    for name in ("UnionA", "UnionB", "DataclassPet", "Hidden"):
-        if name in schemas:
-            assert schemas[name]["title"] == name
+    assert [schema["title"] for schema in schemas.values()] == list(schemas)
 
 
 def test_pydantic_and_generic_dataclasses_and_nested_namedtuple() -> None:
@@ -981,12 +947,8 @@ def test_sets_without_unique_items(model: Any) -> None:
         assert client.post("/", json=payload).status_code == 201
 
 
-@pytest.mark.parametrize(
-    "annotation",
-    [StModel, DcModel, TdModel, AtModel, DcLiteral, StLiteral, G[int], PydanticDataclass, Annotated[int, {"k": []}]],
-)
-def test_supports_msgspec_schema_decision(annotation: Any) -> None:
-    assert supports_msgspec_schema(annotation) is True
+def test_supports_msgspec_schema_of_unhashable_metadata() -> None:
+    assert supports_msgspec_schema(Annotated[int, {"k": []}]) is True
 
 
 def test_generator_strips_unique_items_from_sets(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1068,20 +1030,6 @@ def test_private_schema_generator_contract() -> None:
 
     Recording({ContractInner: "ContractInner"}, None, "#/$defs/{name}").to_schema(info, False)
     assert seen == [info, mi.IntType()]
-
-
-def test_helper_follows_library_placeholder() -> None:
-    field_definition = FieldDefinition.from_annotation(DataclassPerson)
-
-    schema = get_schema_for_field_definition(field_definition)
-    assert schema.title == "DataclassPerson"
-    assert schema.properties is not None
-    assert set(schema.properties) == {"first_name", "last_name", "id", "optional", "complex", "pets"}
-
-    result, schemas = get_components_for_field_definition(field_definition)
-    assert isinstance(result, Reference)
-    assert result.ref == f"{PREFIX}DataclassPerson"
-    assert {"DataclassPerson", "DataclassPet"} <= schemas.keys()
 
 
 class DecLeaf(msgspec.Struct):

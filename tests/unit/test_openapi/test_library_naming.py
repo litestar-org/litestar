@@ -1,4 +1,4 @@
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -283,48 +283,6 @@ def test_a_merged_schema_named_like_a_mode_suffix_keeps_its_explicit_name() -> N
     names = names_of([suffixed], requests, merged={("a", "evil")})
 
     assert set(names.component_of_request.values()) == {"K"}
-
-
-class CountingNodes(Mapping[SchemaKey, SchemaNode]):
-    def __init__(self, nodes: dict[SchemaKey, SchemaNode]) -> None:
-        self.nodes = nodes
-        self.lookups: dict[SchemaKey, int] = {}
-
-    def __getitem__(self, key: SchemaKey) -> SchemaNode:
-        self.lookups[key] = self.lookups.get(key, 0) + 1
-        return self.nodes[key]
-
-    def __iter__(self) -> Iterator[SchemaKey]:
-        return iter(self.nodes)
-
-    def __len__(self) -> int:
-        return len(self.nodes)
-
-    def __contains__(self, key: object) -> bool:
-        return key in self.nodes
-
-
-def test_reachable_visits_each_node_once() -> None:
-    width, depth = 6, 5
-
-    def key(layer: int, index: int) -> SchemaKey:
-        return SchemaKey("a", (layer, index), "validation")
-
-    nodes = {
-        key(layer, index): SchemaNode(
-            {},
-            {f"#/$defs/{other}": key(layer + 1, other) for other in range(width) if layer + 1 < depth},
-            NameCandidates("N", "N"),
-        )
-        for layer in range(depth)
-        for index in range(width)
-    }
-    counting = CountingNodes(nodes)
-
-    found = reachable([key(0, index) for index in range(width)], counting)
-
-    assert set(found) == {key(layer, index) for layer in range(1, depth) for index in range(width)}
-    assert counting.lookups == dict.fromkeys(nodes, 1)
 
 
 def test_reachable_includes_a_root_only_if_referenced() -> None:

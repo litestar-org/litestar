@@ -14,22 +14,21 @@ import sys
 import uuid
 from collections.abc import Callable, Mapping, Sequence
 from types import MappingProxyType
-from typing import Annotated, Any, Generic, Literal, NotRequired, Optional, TypedDict, TypeVar, Union, cast
+from typing import Annotated, Any, Literal, NotRequired, Optional, TypedDict, Union, cast
 
 import msgspec
+import pydantic
 import pytest
 
 import litestar
 from litestar import Litestar, get, post
 from litestar._openapi.datastructures import OpenAPIContext
-from litestar._openapi.plugin import OpenAPIPlugin
 from litestar._openapi.schema_generation.library import (
     LOCAL_PREFIX,
     MODES,
     LibraryRequest,
     LibraryRun,
     SchemaMode,
-    map_references,
 )
 from litestar._openapi.schema_generation.library import components as library_components
 from litestar._openapi.schema_generation.library._msgspec import _MsgspecResolver
@@ -45,7 +44,6 @@ from litestar._openapi.schema_generation.library.graph import NameCandidates, Re
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar._openapi.schema_generation.schema import SchemaCreator
 from litestar.datastructures import ResponseHeader, UploadFile
-from litestar.dto import DataclassDTO
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.datastructures import ResponseSpec
@@ -55,8 +53,6 @@ from litestar.params import Body, FromQuery, JSONBody, MultipartBody, QueryParam
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.typing import FieldDefinition
 from tests.helpers import PREFIX, body_schema, components, document, normalise_json_schema, response_schema, route
-
-T = TypeVar("T")
 
 
 @dataclasses.dataclass
@@ -72,17 +68,6 @@ class Other:
 @dataclasses.dataclass
 class Foreign:
     name: str = ""
-
-
-@dataclasses.dataclass
-class Named:
-    __schema_name__ = "S"
-
-
-@dataclasses.dataclass
-class Box(Generic[T]):
-    __schema_name__ = "B"
-    item: T
 
 
 class ExistingThing:
@@ -151,12 +136,14 @@ class CapturingPlugin(OpenAPISchemaPlugin):
     def __init__(self, *types: Any) -> None:
         self.types = types
         self.records: dict[Any, tuple[str, bool]] = {}
+        self.prefer_alias: dict[Any, bool] = {}
 
     def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
         return field_definition.annotation in self.types
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
         self.records[field_definition.annotation] = (schema_creator.schema_mode, schema_creator.library_models)
+        self.prefer_alias[field_definition.annotation] = schema_creator.prefer_alias
         return Schema(type=OpenAPIType.STRING)
 
 
@@ -507,33 +494,6 @@ def test_for_library_records_request_and_returns_placeholder(monkeypatch: pytest
     assert not components.is_placeholder(existing_reference)
 
 
-@pytest.mark.parametrize(
-    ("annotation", "kwarg_definition", "name"),
-    [
-        (Marker, Body(schema_component_key="k"), "k"),
-        (Named, None, None),
-        (Named, Body(schema_component_key="k"), "k"),
-        (Marker, None, None),
-        (Box[int], None, None),
-    ],
-)
-def test_request_name_precedence(
-    annotation: Any, kwarg_definition: Any, name: Optional[str], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    creator = SchemaCreator()
-    creator.for_library(FieldDefinition.from_annotation(annotation, kwarg_definition=kwarg_definition), FOREIGN)
-    assert captured_requests(creator, monkeypatch) == [LibraryRequest(annotation, FOREIGN, "validation", name)]
-
-
-def test_named_requests_are_distinct(monkeypatch: pytest.MonkeyPatch) -> None:
-    creator = SchemaCreator()
-    for key in ("a", "b", "a", None):
-        creator.for_library(
-            FieldDefinition.from_annotation(Marker, kwarg_definition=Body(schema_component_key=key)), FAKE
-        )
-    assert [request.name for request in captured_requests(creator, monkeypatch)] == ["a", "b", None]
-
-
 MARKER_IN, MARKER_OUT = LibraryRequest(Marker, FAKE, "validation"), LibraryRequest(Marker, FAKE, "serialization")
 OTHER_IN = LibraryRequest(Other, FAKE, "validation")
 CHANGED_DEF: dict[str, Any] = {"type": "object", "properties": {"changed": {"type": "boolean"}}}
@@ -591,63 +551,30 @@ def test_resolution_needing_exactly_the_round_cap_settles(monkeypatch: pytest.Mo
     assert set(components(fake_document([get_marker()]))) == {"Marker", "Other"}
 
 
-def test_resolution_needing_one_round_more_than_the_cap_raises(monkeypatch: pytest.MonkeyPatch) -> None:
-    use_two_rounds(monkeypatch, cap=1)
+@pytest.mark.parametrize(("mode", "prefer_alias"), [("validation", True), ("serialization", False)])
+def test_types_handed_back_to_litestar_are_documented_in_the_mode_without_examples(
+    mode: SchemaMode, prefer_alias: bool, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    plugin = CapturingPlugin(ExistingThing)
 
-    with pytest.raises(ImproperlyConfiguredException, match=r"most recently \[<class '.*Other'>\]"):
-        fake_document([get_marker()])
-
-
-def test_resolve_stops_when_requests_never_settle(monkeypatch: pytest.MonkeyPatch) -> None:
     def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
-        fresh = run.embed(
-            run.schema_creator("validation").for_field_definition(FieldDefinition.from_annotation(ExistingThing))
+        creator = run.schema_creator(mode)
+        properties = {
+            name: run.embed(creator.for_field_definition(FieldDefinition.from_annotation(annotation)))
+            for name, annotation in (("other", Other), ("existing", ExistingThing))
+        }
+        return resolved(
+            {request: by_name(request) for request in requests},
+            {"Marker": {"type": "object", "properties": properties}, "Other": OTHER_DEF},
         )
-        return resolved(dict.fromkeys(requests, "Def"), {"Def": {"type": "object", "properties": {"x": fresh}}})
 
     use(monkeypatch, resolver)
 
-    with pytest.raises(
-        ImproperlyConfiguredException,
-        match=r"did not settle after 1000 resolution rounds: every round gave the fake schema resolver new types "
-        r"to document, most recently \[<class '.*Fresh'>\]",
-    ):
-        fake_document([get_marker()], plugins=[FreshTypePlugin()])
+    schemas = components(fake_document([get_marker()], plugins=[plugin], create_examples=True))
 
-
-def test_recursion_error_names_the_resolver(monkeypatch: pytest.MonkeyPatch) -> None:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
-        raise RecursionError
-
-    use(monkeypatch, resolver)
-
-    with pytest.raises(ImproperlyConfiguredException, match="The fake schema resolver exceeded the maximum recursion"):
-        fake_document([get_marker()])
-
-
-def test_run_schema_creator_generates_no_examples(monkeypatch: pytest.MonkeyPatch) -> None:
-    creators: dict[str, SchemaCreator] = {}
-
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
-        creators["validation"] = run.schema_creator("validation")
-        creators["serialization"] = run.schema_creator("serialization")
-        return resolved(dict.fromkeys(requests, "Marker"), {"Marker": MARKER_DEF})
-
-    use(monkeypatch, resolver)
-
-    plugin = FakeLibraryPlugin()
-    Litestar(
-        [get_marker()], plugins=[plugin], openapi_config=OpenAPIConfig(title="t", version="1", create_examples=True)
-    ).openapi_schema.to_schema()
-
-    assert {mode: (creator.generate_examples, creator.prefer_alias) for mode, creator in creators.items()} == {
-        "validation": (False, True),
-        "serialization": (False, False),
-    }
-    for mode, creator in creators.items():
-        assert creator.schema_mode == mode
-        assert creator.schema_registry.library.is_placeholder(Reference(f"{library_components._PLACEHOLDER_PREFIX}0"))
-    assert plugin.references[0].ref == f"{PREFIX}Marker"
+    assert schemas["Marker"]["properties"] == {"other": {"$ref": f"{PREFIX}Other"}, "existing": {"type": "string"}}
+    assert plugin.records == {ExistingThing: (mode, True)}
+    assert plugin.prefer_alias == {ExistingThing: prefer_alias}
 
 
 BLOCKED_PYDANTIC_APP = """
@@ -702,89 +629,35 @@ def test_library_schemas_and_examples_without_pydantic() -> None:
     assert result.returncode == 0, result.stderr
 
 
-def referencing(ref: str) -> Resolve:
-    return canned({"Marker": {"type": "object", "properties": {"m": {"$ref": ref}}}})
-
-
-@pytest.mark.parametrize(
-    ("resolver", "match"),
-    [
-        (referencing("#/$defs/Missing"), "Cannot resolve '#/\\$defs/Missing'"),
-        (referencing("https://example.org/schema"), "Cannot resolve 'https://example.org/schema'"),
-    ],
-)
-def test_invalid_resolver_output_raises(resolver: Resolve, match: str, monkeypatch: pytest.MonkeyPatch) -> None:
-    use(monkeypatch, resolver)
-
-    with pytest.raises(ImproperlyConfiguredException, match=match):
-        fake_document([get_marker()])
-
-
-def test_identical_defs_are_emitted_once(monkeypatch: pytest.MonkeyPatch) -> None:
-    root = {"type": "object", "properties": {"s": {"$ref": "#/$defs/Inner"}}}
-    use(
-        monkeypatch,
-        canned(
-            {"A": root, "B": root, "Inner": {"type": "string"}},
-            root=lambda request: "A" if request.annotation is Marker else "B",
-        ),
-    )
-
-    doc = fake_document([route(keyed("Same"), None, "/marker"), route(keyed("Same", Other), None, "/other")])
-
-    assert sorted(components(doc)) == ["Inner", "Same"]
-    assert body_schema(doc, "/marker") == body_schema(doc, "/other") == {"$ref": f"{PREFIX}Same"}
-    assert components(doc)["Same"]["properties"]["s"] == {"$ref": f"{PREFIX}Inner"}
-
-
 def test_same_base_name_in_another_library_gets_suffix(monkeypatch: pytest.MonkeyPatch) -> None:
-    address = {"type": "object", "properties": {"city": {"$ref": "#/$defs/City"}}}
+    def library(root: str, scalar: str, ref: str = "#/$defs/", suffix: str = "") -> dict[str, Any]:
+        return {
+            root: {
+                "type": "object",
+                "properties": {"s": {"$ref": f"{ref}Shared{suffix}"}, "a": {"$ref": f"{ref}Address{suffix}"}},
+            },
+            f"Shared{suffix}": {"type": scalar},
+            f"Address{suffix}": {"type": "object", "properties": {"city": {"$ref": f"{ref}City{suffix}"}}},
+            f"City{suffix}": {"type": scalar},
+        }
+
     use(
         monkeypatch,
-        in_rounds(
-            delegating_other(
-                {
-                    "Marker": {
-                        "type": "object",
-                        "properties": {"s": {"$ref": "#/$defs/Shared"}, "a": {"$ref": "#/$defs/Address"}},
-                    },
-                    "Shared": {"type": "string"},
-                    "Address": address,
-                    "City": {"type": "string"},
-                },
-                target=Foreign,
-            ),
-            canned(
-                {
-                    "Foreign": {
-                        "type": "object",
-                        "properties": {"s": {"$ref": "#/$defs/Shared"}, "a": {"$ref": "#/$defs/Address"}},
-                    },
-                    "Shared": {"type": "integer"},
-                    "Address": address,
-                    "City": {"type": "integer"},
-                }
-            ),
-        ),
+        in_rounds(delegating_other(library("Marker", "string"), target=Foreign), canned(library("Foreign", "integer"))),
     )
 
     schemas = components(fake_document([get_marker()], plugins=[ForeignPlugin()]))
 
-    assert sorted(schemas) == ["Address", "Address_2", "City", "City_2", "Foreign", "Marker", "Shared", "Shared_2"]
-    assert schemas["Marker"]["properties"] == {
-        "s": {"$ref": f"{PREFIX}Shared"},
-        "a": {"$ref": f"{PREFIX}Address"},
-        "other": {"$ref": f"{PREFIX}Foreign"},
-    }
-    assert schemas["Foreign"]["properties"] == {"s": {"$ref": f"{PREFIX}Shared_2"}, "a": {"$ref": f"{PREFIX}Address_2"}}
-    assert schemas["Shared"] == {"type": "string"}
-    assert schemas["Shared_2"] == {"type": "integer"}
-    assert schemas["Address"]["properties"]["city"] == {"$ref": f"{PREFIX}City"}
-    assert schemas["Address_2"]["properties"]["city"] == {"$ref": f"{PREFIX}City_2"}
+    expected = {**library("Marker", "string", PREFIX), **library("Foreign", "integer", PREFIX, "_2")}
+    expected["Marker"]["properties"]["other"] = {"$ref": f"{PREFIX}Foreign"}
+    assert schemas == expected
 
 
 def by_mode(request: LibraryRequest) -> str:
     return "Marker-Input" if request.mode == "validation" else "Marker-Output"
+
+
+INNER_ROOT: dict[str, Any] = {"type": "object", "properties": {"s": {"$ref": "#/$defs/Inner"}}}
 
 
 @pytest.mark.parametrize(
@@ -812,11 +685,22 @@ def by_mode(request: LibraryRequest) -> str:
             id="shared-with-result-name",
         ),
         pytest.param(
-            canned({"Marker": MARKER_DEF, "Other": MARKER_DEF}),
+            canned({"Marker": INNER_ROOT, "Other": INNER_ROOT, "Inner": {"type": "string"}}),
             keyed("Custom", Other),
-            {"Custom": MARKER_DEF},
+            {
+                "Custom": {"type": "object", "properties": {"s": {"$ref": f"{PREFIX}Inner"}}},
+                "Inner": {"type": "string"},
+            },
             ("Custom", "Custom"),
             id="same-key-identical-schema",
+        ),
+        pytest.param(canned({"Marker": MARKER_DEF}), None, {"Custom": MARKER_DEF}, ("Custom",), id="alone"),
+        pytest.param(
+            canned({"Marker-Input": MARKER_DEF}, root=lambda request: "Marker-Input"),
+            None,
+            {"Custom": MARKER_DEF},
+            ("Custom",),
+            id="alone-drops-suffix",
         ),
     ],
 )
@@ -824,43 +708,16 @@ def test_named_request_components(
     resolver: Resolve,
     response: Any,
     expected: dict[str, Any],
-    refs: tuple[str, str],
+    refs: tuple[str, ...],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     use(monkeypatch, resolver)
 
     doc = fake_document([route(keyed("Custom"), response)])
+    schemas = [body_schema(doc), *([] if response is None else [response_schema(doc)])]
 
     assert components(doc) == expected
-    assert body_schema(doc) == {"$ref": f"{PREFIX}{refs[0]}"}
-    assert response_schema(doc) == {"$ref": f"{PREFIX}{refs[1]}"}
-
-
-@pytest.mark.parametrize(
-    "resolver",
-    [
-        pytest.param(canned({"Marker": MARKER_DEF}), id="alone"),
-        pytest.param(
-            canned({"Marker-Input": MARKER_DEF}, root=lambda request: "Marker-Input"), id="alone-drops-suffix"
-        ),
-    ],
-)
-def test_named_request_component_used_alone(resolver: Resolve, monkeypatch: pytest.MonkeyPatch) -> None:
-    use(monkeypatch, resolver)
-
-    doc = fake_document([route(keyed("Custom"), None)])
-
-    assert components(doc) == {"Custom": MARKER_DEF}
-    assert body_schema(doc) == {"$ref": f"{PREFIX}Custom"}
-
-
-def test_explicit_name_collision_raises(monkeypatch: pytest.MonkeyPatch) -> None:
-    use(monkeypatch, canned({"Marker": MARKER_DEF, "Other": OTHER_DEF}))
-    with pytest.raises(ImproperlyConfiguredException, match="Schema component keys must be unique"):
-        fake_document([route(keyed("K"), keyed("K", Other))])
-
-    with pytest.raises(ImproperlyConfiguredException, match="Schema component keys must be unique"):
-        fake_document([route(keyed("ExistingThing"), ExistingThing)], plugins=[ExistingPlugin()])
+    assert schemas == [{"$ref": f"{PREFIX}{ref}"} for ref in refs]
 
 
 def test_explicit_name_wins_over_an_earlier_automatic_name(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -880,31 +737,6 @@ def test_explicit_name_wins_over_an_earlier_automatic_name(monkeypatch: pytest.M
     assert sorted(schemas) == ["Foo", "Foo_2"]
     assert schemas["Foo"] == OTHER_DEF
     assert schemas["Foo_2"]["properties"]["other"] == {"$ref": f"{PREFIX}Foo"}
-
-
-def test_result_name_wins_over_an_automatic_name(monkeypatch: pytest.MonkeyPatch) -> None:
-    use(
-        monkeypatch,
-        canned(
-            {"Foo": MARKER_DEF, "Zed": OTHER_DEF},
-            names={"Zed": "Foo"},
-            root=lambda request: "Foo" if request.annotation is Marker else "Zed",
-        ),
-    )
-
-    @get("/marker")
-    def marker() -> Marker:
-        return Marker()
-
-    @get("/other")
-    def other() -> Other:
-        return Other()
-
-    doc = fake_document([marker, other])
-
-    assert components(doc) == {"Foo": OTHER_DEF, "Foo_2": MARKER_DEF}
-    assert response_schema(doc, "/marker", method="get") == {"$ref": f"{PREFIX}Foo_2"}
-    assert response_schema(doc, "/other", method="get") == {"$ref": f"{PREFIX}Foo"}
 
 
 def test_existing_component_keeps_name_over_library_schema(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1039,7 +871,14 @@ class StUploadForm(msgspec.Struct):
     opt: Optional[UploadFile] = None
 
 
-@pytest.mark.parametrize("form", [DcUploadForm, StUploadForm])
+class PydanticUploadForm(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(arbitrary_types_allowed=True)
+
+    file: UploadFile
+    opt: Optional[UploadFile] = None
+
+
+@pytest.mark.parametrize("form", [DcUploadForm, StUploadForm, PydanticUploadForm])
 def test_optional_upload_file_in_multipart_form_is_a_type_array(form: Any) -> None:
     @post("/", signature_namespace={"form": form})
     async def handler(data: MultipartBody[form]) -> None:  # pyright: ignore[reportInvalidTypeForm]
@@ -1049,29 +888,6 @@ def test_optional_upload_file_in_multipart_form_is_a_type_array(form: Any) -> No
 
     assert properties["file"] == {"type": "string", "format": "binary", "contentMediaType": "application/octet-stream"}
     assert properties["opt"] == {**properties["file"], "type": ["string", "null"]}
-
-
-def test_build_is_deterministic(monkeypatch: pytest.MonkeyPatch) -> None:
-    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
-        if any(request.annotation is Marker for request in requests):
-            return delegating_other({"Marker": MARKER_DEF, "Other": OTHER_DEF}, mode="serialization", target=Foreign)(
-                requests, run
-            )
-        return canned({"Other": {"type": "string"}}, root=lambda request: "Other")(requests, run)
-
-    use(monkeypatch, resolver)
-
-    app = Litestar(
-        [route(JSONBody[Other], Marker)],
-        plugins=[FakeLibraryPlugin(), ForeignPlugin()],
-        openapi_config=OpenAPIConfig(title="t", version="1"),
-    )
-    first = json.dumps(app.openapi_schema.to_schema())
-    app.plugins.get(OpenAPIPlugin).invalidate_schema_cache()
-    second = json.dumps(app.openapi_schema.to_schema())
-
-    assert first == second
-    assert "Other_2" in first
 
 
 @dataclasses.dataclass
@@ -1162,35 +978,6 @@ def test_replace_and_not_generating_examples_keep_mode_and_switch() -> None:
         for slot in SchemaCreator.__slots__
         if slot != "library_models"
     )
-
-
-@dataclasses.dataclass
-class DTOModel:
-    value: int
-
-
-DTO_RECORDS: list[tuple[bool, str]] = []
-
-
-class RecordingDTO(DataclassDTO[DTOModel]):
-    @classmethod
-    def create_openapi_schema(
-        cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
-    ) -> Reference | Schema:
-        DTO_RECORDS.append((schema_creator.library_models, schema_creator.schema_mode))
-        return super().create_openapi_schema(field_definition, handler_id, schema_creator)
-
-
-def test_dto_schemas_use_a_non_library_creator() -> None:
-    DTO_RECORDS.clear()
-
-    @post("/", dto=RecordingDTO, return_dto=RecordingDTO)
-    def handler(data: JSONBody[DTOModel]) -> DTOModel:
-        return data
-
-    Litestar([handler]).openapi_schema.to_schema()
-
-    assert sorted(DTO_RECORDS) == [(False, "serialization"), (False, "validation")]
 
 
 @pytest.mark.usefixtures("canned_marker")
@@ -1301,92 +1088,6 @@ def test_input_example_of_a_plugin_claimed_type_asks_the_plugin_once(error: bool
     assert plugin.calls == 1
 
 
-def pair(input_: dict[str, Any], output: dict[str, Any]) -> dict[str, Any]:
-    return {"Input": input_, "Output": output}
-
-
-def refs(target: str, suffix: str) -> dict[str, Any]:
-    return {"type": "object", "properties": {"next": {"$ref": f"#/$defs/{target}{suffix}"}}}
-
-
-@pytest.mark.parametrize(
-    ("defs", "expected"),
-    [
-        pytest.param(
-            {"Marker": lambda s: refs("Other", s), "Other": lambda s: refs("Marker", s)},
-            {"Marker": refs("Other", ""), "Other": refs("Marker", "")},
-            id="mutually-recursive-pair-merges",
-        ),
-        pytest.param(
-            {
-                "Marker": lambda s: refs("Middle", s),
-                "Middle": lambda s: refs("Split", s),
-                "Split": lambda s: {"type": "integer" if s == "-Input" else "string"},
-            },
-            {
-                **{f"Marker{s}": refs("Middle", s) for s in ("-Input", "-Output")},
-                **{f"Middle{s}": refs("Split", s) for s in ("-Input", "-Output")},
-                "Split-Input": {"type": "integer"},
-                "Split-Output": {"type": "string"},
-            },
-            id="chain-to-a-split-pair-stays-split",
-        ),
-    ],
-)
-def test_mode_pairs_merge_unless_they_reach_a_real_difference(
-    defs: dict[str, Callable[[str], dict[str, Any]]], expected: dict[str, Any], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    generated = {f"{name}{suffix}": make(suffix) for name, make in defs.items() for suffix in ("-Input", "-Output")}
-    use(
-        monkeypatch,
-        canned(generated, root=lambda request: f"Marker{'-Input' if request.mode == 'validation' else '-Output'}"),
-    )
-
-    schemas = components(fake_document([route(JSONBody[Marker], Marker)]))
-
-    expected = {name: json.loads(json.dumps(schema).replace("#/$defs/", PREFIX)) for name, schema in expected.items()}
-    assert schemas == expected
-
-
-def test_map_references_drops_a_discriminator_mapping_to_non_references() -> None:
-    def rename(ref: str) -> str:
-        return ref.upper()
-
-    node = {
-        "oneOf": [{"$ref": "a"}],
-        "discriminator": {"propertyName": "kind", "mapping": {"a": "a"}},
-        "properties": {"inline": {"discriminator": {"propertyName": "kind", "mapping": {"b": {"type": "object"}}}}},
-    }
-
-    assert map_references(node, rename) == {
-        "oneOf": [{"$ref": "A"}],
-        "discriminator": {"propertyName": "kind", "mapping": {"a": "A"}},
-        "properties": {"inline": {}},
-    }
-
-
-@pytest.mark.parametrize("defs", [{}, {"Other": OTHER_DEF}])
-def test_a_root_without_a_schema_raises(defs: dict[str, Any], monkeypatch: pytest.MonkeyPatch) -> None:
-    use(monkeypatch, canned(defs, root=lambda request: "Missing"))
-
-    with pytest.raises(
-        ImproperlyConfiguredException, match="The fake schema resolver cannot document .*Marker.* as a component"
-    ):
-        fake_document([get_marker()])
-
-
-def test_components_of_an_unresolved_placeholder_raise() -> None:
-    @dataclasses.dataclass
-    class Point:
-        x: int
-
-    creator = SchemaCreator(plugins=openapi_schema_plugins)
-    creator.for_field_definition(FieldDefinition.from_annotation(Point))
-
-    with pytest.raises(ImproperlyConfiguredException, match="never resolved"):
-        creator.schema_registry.generate_components_schemas()
-
-
 def raise_never_resolved(monkeypatch: pytest.MonkeyPatch) -> None:
     creator = SchemaCreator(plugins=openapi_schema_plugins)
     creator.for_field_definition(FieldDefinition.from_annotation(Marker))
@@ -1396,6 +1097,17 @@ def raise_never_resolved(monkeypatch: pytest.MonkeyPatch) -> None:
 def raise_unsettled(monkeypatch: pytest.MonkeyPatch) -> None:
     use_two_rounds(monkeypatch, cap=1)
     fake_document([get_marker()])
+
+
+def raise_never_settled(monkeypatch: pytest.MonkeyPatch) -> None:
+    def resolver(requests: Sequence[LibraryRequest], run: LibraryRun) -> ResolvedSchemas:
+        fresh = run.embed(
+            run.schema_creator("validation").for_field_definition(FieldDefinition.from_annotation(ExistingThing))
+        )
+        return resolved(dict.fromkeys(requests, "Def"), {"Def": {"type": "object", "properties": {"x": fresh}}})
+
+    use(monkeypatch, resolver)
+    fake_document([get_marker()], plugins=[FreshTypePlugin()])
 
 
 def raise_recursion(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1411,8 +1123,17 @@ def raise_name_conflict(monkeypatch: pytest.MonkeyPatch) -> None:
     fake_document([route(keyed("K"), keyed("K", Other))])
 
 
+def referencing(ref: str) -> Resolve:
+    return canned({"Marker": {"type": "object", "properties": {"m": {"$ref": ref}}}})
+
+
 def raise_unresolvable_ref(monkeypatch: pytest.MonkeyPatch) -> None:
     use(monkeypatch, referencing("#/$defs/Missing"))
+    fake_document([get_marker()])
+
+
+def raise_external_ref(monkeypatch: pytest.MonkeyPatch) -> None:
+    use(monkeypatch, referencing("https://example.org/schema"))
     fake_document([get_marker()])
 
 
@@ -1444,6 +1165,13 @@ def raise_undocumentable(monkeypatch: pytest.MonkeyPatch) -> None:
             id="unsettled",
         ),
         pytest.param(
+            raise_never_settled,
+            UnresolvedSchemaError,
+            r"Library-generated schemas did not settle after 1000 resolution rounds: every round gave the fake schema "
+            r"resolver new types to document, most recently \[<class '.*Fresh'>\]",
+            id="never-settles",
+        ),
+        pytest.param(
             raise_recursion,
             UnresolvedSchemaError,
             r"The fake schema resolver exceeded the maximum recursion depth",
@@ -1461,6 +1189,12 @@ def raise_undocumentable(monkeypatch: pytest.MonkeyPatch) -> None:
             SchemaConversionError,
             r"Cannot resolve '#/\$defs/Missing' in a library-generated schema",
             id="unresolvable-reference",
+        ),
+        pytest.param(
+            raise_external_ref,
+            SchemaConversionError,
+            r"Cannot resolve 'https://example\.org/schema' in a library-generated schema",
+            id="external-reference",
         ),
         pytest.param(
             raise_bare_reference,

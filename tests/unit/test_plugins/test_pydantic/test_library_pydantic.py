@@ -42,12 +42,11 @@ from litestar._openapi.schema_generation.library import LibraryRun
 from litestar._openapi.schema_generation.library.converter import json_schema_to_spec
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar._openapi.schema_generation.schema import SchemaCreator
-from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Reference, Schema
-from litestar.params import Body, FromQuery, JSONBody, KwargDefinition, MultipartBody
+from litestar.params import Body, FromQuery, JSONBody, KwargDefinition
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.plugins.pydantic import PydanticDTO, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
 from litestar.plugins.pydantic.plugins import schema as schema_module
@@ -476,29 +475,20 @@ def generator_inputs(monkeypatch: pytest.MonkeyPatch) -> list[list[tuple[Any, st
     return calls
 
 
-@pytest.mark.parametrize("model", [Plain, Pets, Page[int]])
-def test_models_are_deferred_scalars_are_not(model: Any) -> None:
-    plugin = PydanticSchemaPlugin()
-    creator = SchemaCreator(plugins=[plugin], prefer_alias=False)
-
-    result = plugin.to_openapi_schema(FieldDefinition.from_annotation(model), creator)
-
-    assert isinstance(result, Reference)
-    assert creator.schema_registry.library.is_placeholder(result)
-    assert creator.prefer_alias is False
-    email = plugin.to_openapi_schema(FieldDefinition.from_annotation(pydantic.EmailStr), creator)
-    assert email == Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL)
-
-
 @pytest.mark.parametrize("library_models", [True, False])
 @pytest.mark.parametrize("plugin", [PydanticSchemaPlugin(), InheritingPydanticPlugin(), PatchingPydanticPlugin()])
-def test_models_are_always_deferred_to_pydantic(plugin: PydanticSchemaPlugin, library_models: bool) -> None:
+def test_models_are_always_deferred_to_pydantic_scalars_are_not(
+    plugin: PydanticSchemaPlugin, library_models: bool
+) -> None:
     creator = SchemaCreator(plugins=[plugin], library_models=library_models)
 
-    result = plugin.to_openapi_schema(FieldDefinition.from_annotation(Plain), creator)
-
-    assert isinstance(result, Reference)
-    assert creator.schema_registry.library.is_placeholder(result)
+    for model in (Plain, Pets, Page[int]):
+        result = plugin.to_openapi_schema(FieldDefinition.from_annotation(model), creator)
+        assert isinstance(result, Reference)
+        assert creator.schema_registry.library.is_placeholder(result)
+    email = plugin.to_openapi_schema(FieldDefinition.from_annotation(pydantic.EmailStr), creator)
+    assert isinstance(email, Schema)
+    assert (email.type, email.format) == (OpenAPIType.STRING, OpenAPIFormat.EMAIL)
 
 
 def test_subclass_overriding_to_openapi_schema_keeps_its_change() -> None:
@@ -1136,6 +1126,20 @@ class MoneyPlugin(OpenAPISchemaPlugin):
         return Schema(type=OpenAPIType.STRING, description="money")
 
 
+MONEY = {"type": "string", "description": "money"}
+
+
+def unclaimed_field_warnings(recwarn: pytest.WarningsRecorder) -> list[str]:
+    return sorted(str(warning.message) for warning in recwarn if issubclass(warning.category, LitestarWarning))
+
+
+def unclaimed_field_warning(field: str) -> str:
+    return (
+        f"Pydantic cannot generate a JSON schema for the field {field} and no schema plugin documents its type, "
+        "so it is documented as any value"
+    )
+
+
 class Wallet(pydantic.BaseModel):
     amount: Money
     maybe: Optional[Money] = None
@@ -1216,30 +1220,35 @@ def test_serialization_aliases_follow_the_serializing_plugin(plugins: list[Any],
         assert list(client.post("/", json={"userName": "a"}).json()) == response_keys
 
 
-def test_type_pydantic_cannot_describe_is_handed_to_the_plugin_claiming_it(recwarn: pytest.WarningsRecorder) -> None:
-    app = pydantic_app(Wallet, plugins=[MoneyPlugin()])
+@pytest.mark.parametrize(
+    "plugins, properties, unclaimed",
+    [
+        pytest.param(
+            [MoneyPlugin()],
+            {
+                "amount": {**MONEY, "title": "Amount"},
+                "maybe": {**MONEY, "type": ["string", "null"], "title": "Maybe"},
+            },
+            [],
+            id="claimed",
+        ),
+        pytest.param(
+            [],
+            {"amount": {"title": "Amount"}, "maybe": {"anyOf": [{}, {"type": "null"}], "title": "Maybe"}},
+            ["'amount' of 'Wallet'", "'maybe' of 'Wallet'"],
+            id="unclaimed-warns-once-per-field",
+        ),
+    ],
+)
+def test_type_pydantic_cannot_describe_is_handed_to_the_plugin_claiming_it(
+    plugins: list[Any], properties: dict[str, Any], unclaimed: list[str], recwarn: pytest.WarningsRecorder
+) -> None:
+    app = pydantic_app(Wallet, plugins=plugins)
 
-    assert components(app.openapi_schema.to_schema())["Wallet"]["properties"] == {
-        "amount": {"type": "string", "description": "money", "title": "Amount"},
-        "maybe": {"type": ["string", "null"], "description": "money", "title": "Maybe"},
-    }
-    assert not [warning for warning in recwarn if issubclass(warning.category, LitestarWarning)]
+    assert components(app.openapi_schema.to_schema())["Wallet"]["properties"] == properties
+    assert unclaimed_field_warnings(recwarn) == [unclaimed_field_warning(field) for field in unclaimed]
     with TestClient(app) as client:
         assert client.post("/", json={"amount": "5"}).json() == {"amount": "5", "maybe": None}
-
-
-def test_type_nobody_describes_warns_once_per_field() -> None:
-    with pytest.warns(LitestarWarning) as recorded:
-        schemas = components(pydantic_document(Wallet))
-
-    assert schemas["Wallet"]["properties"] == {
-        "amount": {"title": "Amount"},
-        "maybe": {"anyOf": [{}, {"type": "null"}], "title": "Maybe"},
-    }
-    messages = sorted(str(warning.message) for warning in recorded if issubclass(warning.category, LitestarWarning))
-    assert len(messages) == 2
-    assert "'amount'" in messages[0] and "Wallet" in messages[0]
-    assert "'maybe'" in messages[1] and "Wallet" in messages[1]
 
 
 @pytest.mark.parametrize("model", [RefToComponent, RefToLocalDefinition])
@@ -1289,26 +1298,27 @@ def test_only_the_slot_matching_a_claimed_type_is_handed_back() -> None:
     assert "'pair' of 'MixedSlots'" in messages[1]
 
 
-def test_dataclass_typed_dict_and_computed_fields_are_handed_back(recwarn: pytest.WarningsRecorder) -> None:
-    schemas = components(pydantic_document(HoldsWallets, request=False, plugins=[MoneyPlugin()]))
+@pytest.mark.parametrize(
+    "plugins, money, unclaimed",
+    [
+        pytest.param([MoneyPlugin()], MONEY, [], id="claimed"),
+        pytest.param(
+            [],
+            {},
+            ["'amount' of 'DcWallet'", "'amount' of 'TdWallet'", "'total' of 'ComputedWallet'"],
+            id="unclaimed-are-named",
+        ),
+    ],
+)
+def test_dataclass_typed_dict_and_computed_fields_are_handed_back(
+    plugins: list[Any], money: dict[str, Any], unclaimed: list[str], recwarn: pytest.WarningsRecorder
+) -> None:
+    schemas = components(pydantic_document(HoldsWallets, request=False, plugins=plugins))
 
-    money = {"type": "string", "description": "money", "title": "Amount"}
-    assert schemas["DcWallet"]["properties"]["amount"] == money
-    assert schemas["TdWallet"]["properties"]["amount"] == money
+    assert schemas["DcWallet"]["properties"]["amount"] == {**money, "title": "Amount"}
+    assert schemas["TdWallet"]["properties"]["amount"] == {**money, "title": "Amount"}
     assert schemas["ComputedWallet"]["properties"]["total"] == {**money, "title": "Total", "readOnly": True}
-    assert not [warning for warning in recwarn if issubclass(warning.category, LitestarWarning)]
-
-
-def test_dataclass_typed_dict_and_computed_fields_nobody_describes_are_named() -> None:
-    with pytest.warns(LitestarWarning) as recorded:
-        pydantic_document(HoldsWallets, request=False)
-
-    messages = {str(warning.message) for warning in recorded if issubclass(warning.category, LitestarWarning)}
-    assert {message.split(" and ")[0] for message in messages} == {
-        "Pydantic cannot generate a JSON schema for the field 'amount' of 'DcWallet'",
-        "Pydantic cannot generate a JSON schema for the field 'amount' of 'TdWallet'",
-        "Pydantic cannot generate a JSON schema for the field 'total' of 'ComputedWallet'",
-    }
+    assert unclaimed_field_warnings(recwarn) == [unclaimed_field_warning(field) for field in unclaimed]
 
 
 MoneyAlias = TypeAliasType("MoneyAlias", Money)
@@ -1316,7 +1326,6 @@ MoneyList = TypeAliasType("MoneyList", list[Money])
 Box = TypeAliasType("Box", list[T], type_params=(T,))
 MoneyNewType = NewType("MoneyNewType", Money)
 MoneyListNewType = NewType("MoneyListNewType", MoneyList)
-MONEY = {"type": "string", "description": "money"}
 
 
 @pytest.mark.parametrize(
@@ -1353,8 +1362,25 @@ def test_aliases_shared_between_fields_are_handed_back(recwarn: pytest.WarningsR
 
     schemas = components(pydantic_document(model, response=False, plugins=[MoneyPlugin()]))
 
-    assert schemas["MoneyList"] == {"type": "array", "items": MONEY}
-    assert schemas["SharesAlias"]["properties"]["a"] == {"$ref": f"{PREFIX}MoneyList"}
+    money_list = {"$ref": f"{PREFIX}MoneyList"}
+    assert schemas == {
+        "MoneyList": {"type": "array", "items": MONEY},
+        "SharesAlias": {
+            "properties": {
+                "a": money_list,
+                "b": {
+                    "type": "array",
+                    "prefixItems": [money_list, money_list],
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "title": "B",
+                },
+            },
+            "required": ["a", "b"],
+            "title": "SharesAlias",
+            "type": "object",
+        },
+    }
     assert not [warning for warning in recwarn if issubclass(warning.category, LitestarWarning)]
 
 
@@ -1690,24 +1716,6 @@ def test_unsupported_keys_are_dropped_with_one_warning_per_model_and_key() -> No
         for key in keys
     ]
     assert not [key for key in keys if key in json.dumps(document)]
-
-
-class UploadForm(pydantic.BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    file: UploadFile
-    opt: Optional[UploadFile] = None
-
-
-def test_optional_upload_file_in_multipart_form_is_a_type_array() -> None:
-    @post("/")
-    async def handler(data: MultipartBody[UploadForm]) -> None:
-        return None
-
-    properties = components(Litestar([handler]).openapi_schema.to_schema())["UploadForm"]["properties"]
-
-    assert properties["file"] == {"type": "string", "format": "binary", "contentMediaType": "application/octet-stream"}
-    assert properties["opt"] == {**properties["file"], "type": ["string", "null"]}
 
 
 class PLeaf(pydantic.BaseModel):
