@@ -461,6 +461,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.handlers.BaseRouteHandler.handler_name"><code class="docutils literal notranslate">handler_name</span></code></a></li>
 <li><a class="reference internal" href="#litestar.handlers.BaseRouteHandler.on_registration"><code class="docutils literal notranslate">on_registration()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.handlers.BaseRouteHandler.parameter_field_definitions"><code class="docutils literal notranslate">parameter_field_definitions</span></code></a></li>
+<li><a class="reference internal" href="#litestar.handlers.BaseRouteHandler.parsed_data_field"><code class="docutils literal notranslate">parsed_data_field</span></code></a></li>
 <li><a class="reference internal" href="#litestar.handlers.BaseRouteHandler.parsed_fn_signature"><code class="docutils literal notranslate">parsed_fn_signature</span></code></a></li>
 <li><a class="reference internal" href="#litestar.handlers.BaseRouteHandler.resolve_dependencies"><code class="docutils literal notranslate">resolve_dependencies()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.handlers.BaseRouteHandler.resolve_exception_handlers"><code class="docutils literal notranslate">resolve_exception_handlers()</span></code></a></li>
@@ -809,6 +810,12 @@ These types will be added to the signature namespace using their <code class="do
 <dt class="sig sig-object py" id="litestar.handlers.BaseRouteHandler.parameter_field_definitions">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">parameter_field_definitions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures/index.html#litestar.datastructures.Cookie.dict" title="litestar.datastructures.Cookie.dict"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#litestar.handlers.BaseRouteHandler.parameter_field_definitions" title="Link to this definition">¶</a></dt>
 <dd><p>Return all parameters declared above the handler.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.handlers.BaseRouteHandler.parsed_data_field">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">parsed_data_field</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><a class="headerlink" href="#litestar.handlers.BaseRouteHandler.parsed_data_field" title="Link to this definition">¶</a></dt>
+<dd><p>The request body of an HTTP handler, or the data a websocket listener receives. Set on registration</p>
 </dd></dl>
 
 <dl class="py property">

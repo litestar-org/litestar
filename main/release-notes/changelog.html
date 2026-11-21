@@ -553,7 +553,7 @@ data-aria-dark="Switch to auto color mode">
 request parameters.</p>
 <p><a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a>‘s <code class="docutils literal notranslate"><span class="pre">headers</span></code>, <code class="docutils literal notranslate"><span class="pre">query_params</span></code>,
 <code class="docutils literal notranslate"><span class="pre">cookies</span></code>, or <code class="docutils literal notranslate"><span class="pre">scope</span></code> attributes should be used instead.</p>
-<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/TBD">https://github.com/litestar-org/litestar/pull/TBD</a></span></p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5238">https://github.com/litestar-org/litestar/pull/5238</a></span></p>
 </div>
 </dd>
 <dt>Drop reserved keyword arguments in handlers and DI<a class="headerlink reference internal" href="#3.0.0-drop reserved keyword arguments in handlers and di" id="3.0.0-drop reserved keyword arguments in handlers and di">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
@@ -1287,6 +1287,15 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Apply the DTO of a handler to a request body declared only in a dependency provider<a class="headerlink reference internal" href="#3.0.0-apply the dto of a handler to a request body declared only in a dependency provider" id="3.0.0-apply the dto of a handler to a request body declared only in a dependency provider">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that occurred when a request body was only declared in a dependency
+provider of a handler, with that handler setting a <code class="docutils literal notranslate"><span class="pre">dto=</span></code>. The request body
+would not be decoded by the DTO, and would receive the raw DTO data, e.g. a
+<code class="docutils literal notranslate"><span class="pre">dict</span></code>. The DTO will now always be taken into consideration, independent of
+the point the request body is declared.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5241">https://github.com/litestar-org/litestar/pull/5241</a></span></p>
+</div>
+</dd>
 <dt>Apply the constraints of a layer parameter to corresponding handler / DI parameters<a class="headerlink reference internal" href="#3.0.0-apply the constraints of a layer parameter to corresponding handler / di parameters" id="3.0.0-apply the constraints of a layer parameter to corresponding handler / di parameters">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that would cause the constraints of a layer parameter, e.g.
 <code class="docutils literal notranslate"><span class="pre">parameters={&quot;limit&quot;:</span> <span class="pre">QueryParameter(gt=0)}</span></code>, to not be applied for a

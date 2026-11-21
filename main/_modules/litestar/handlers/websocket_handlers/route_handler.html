@@ -504,212 +504,219 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 </span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebSocket</span>
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfiguredException</span>
-</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRouteHandler</span>
-</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.builtin_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoneType</span>
-</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated</span>
-</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.predicates</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_async_callable</span>
-</span><span data-line="11">
-</span><span data-line="12"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="13">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
-</span><span data-line="14">
-</span><span data-line="15">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span>
-</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRoute</span>
-</span><span data-line="17">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncAnyCallable</span><span class="p">,</span> <span class="n">Dependencies</span><span class="p">,</span> <span class="n">ExceptionHandler</span><span class="p">,</span> <span class="n">Guard</span><span class="p">,</span> <span class="n">Middleware</span><span class="p">,</span> <span class="n">ParametersMap</span>
-</span><span data-line="18">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar._request_parameters.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_request_param_validaton_fn</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebSocket</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfiguredException</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRouteHandler</span>
+</span><span data-line="9"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.builtin_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoneType</span>
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated</span>
+</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.utils.predicates</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_async_callable</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="14">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Router</span>
+</span><span data-line="17">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRoute</span>
+</span><span data-line="18">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncAnyCallable</span><span class="p">,</span> <span class="n">Dependencies</span><span class="p">,</span> <span class="n">ExceptionHandler</span><span class="p">,</span> <span class="n">Guard</span><span class="p">,</span> <span class="n">Middleware</span><span class="p">,</span> <span class="n">ParametersMap</span>
 </span><span data-line="19">
+</span><span data-line="20">
 <div class="viewcode-block" id="WebsocketRouteHandler">
 <a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler">[docs]</a>
-</span><span data-line="20"><span class="k">class</span><span class="w"> </span><span class="nc">WebsocketRouteHandler</span><span class="p">(</span><span class="n">BaseRouteHandler</span><span class="p">):</span>
-</span><span data-line="21">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_websocket_class&quot;</span><span class="p">,)</span>
-</span><span data-line="22">
+</span><span data-line="21"><span class="k">class</span><span class="w"> </span><span class="nc">WebsocketRouteHandler</span><span class="p">(</span><span class="n">BaseRouteHandler</span><span class="p">):</span>
+</span><span data-line="22">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_websocket_class&quot;</span><span class="p">,)</span>
+</span><span data-line="23">
 <div class="viewcode-block" id="WebsocketRouteHandler.__init__">
 <a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler.__init__">[docs]</a>
-</span><span data-line="23">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="24">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="25">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="26">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="27">        <span class="n">fn</span><span class="p">:</span> <span class="n">AsyncAnyCallable</span><span class="p">,</span>
-</span><span data-line="28">        <span class="n">dependencies</span><span class="p">:</span> <span class="n">Dependencies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="29">        <span class="n">exception_handlers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">],</span> <span class="n">ExceptionHandler</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="30">        <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="31">        <span class="n">middleware</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Middleware</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="32">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="33">        <span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="34">        <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="35">        <span class="n">websocket_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="36">        <span class="n">parameters</span><span class="p">:</span> <span class="n">ParametersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="37">        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-</span><span data-line="38">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="39"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Route handler for WebSocket routes.</span>
-</span><span data-line="40">
-</span><span data-line="41"><span class="sd">        Args:</span>
-</span><span data-line="42"><span class="sd">            path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults</span>
-</span><span data-line="43"><span class="sd">                to ``/``</span>
-</span><span data-line="44"><span class="sd">            fn: The handler function</span>
-</span><span data-line="45">
-</span><span data-line="46"><span class="sd">                .. versionadded:: 3.0</span>
-</span><span data-line="47"><span class="sd">            dependencies: A sequence of :class:`Provider &lt;.di.Provider&gt;` instances, or a mapping of names or types to providers, :class:`Provide &lt;.di.Provide&gt;` instances or callables.</span>
-</span><span data-line="48"><span class="sd">            exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
-</span><span data-line="49"><span class="sd">            guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
-</span><span data-line="50"><span class="sd">            middleware: A sequence of :class:`Middleware &lt;.types.Middleware&gt;`.</span>
-</span><span data-line="51"><span class="sd">            name: A string identifying the route handler.</span>
-</span><span data-line="52"><span class="sd">            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
-</span><span data-line="53"><span class="sd">                wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
-</span><span data-line="54"><span class="sd">                :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
-</span><span data-line="55"><span class="sd">            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.</span>
-</span><span data-line="56"><span class="sd">            type_encoders: A mapping of types to callables that transform them into types supported for serialization.</span>
-</span><span data-line="57"><span class="sd">            websocket_class: A custom subclass of :class:`WebSocket &lt;.connection.WebSocket&gt;` to be used as route handler&#39;s</span>
-</span><span data-line="58"><span class="sd">                default websocket class.</span>
-</span><span data-line="59"><span class="sd">            parameters: A mapping of :func:`Parameter &lt;.params.ParameterKwarg&gt;` definitions</span>
-</span><span data-line="60"><span class="sd">            **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
-</span><span data-line="61"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="62">        <span class="bp">self</span><span class="o">.</span><span class="n">_websocket_class</span> <span class="o">=</span> <span class="n">websocket_class</span>
-</span><span data-line="63">
-</span><span data-line="64">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="65">            <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span>
-</span><span data-line="66">            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-</span><span data-line="67">            <span class="n">dependencies</span><span class="o">=</span><span class="n">dependencies</span><span class="p">,</span>
-</span><span data-line="68">            <span class="n">exception_handlers</span><span class="o">=</span><span class="n">exception_handlers</span><span class="p">,</span>
-</span><span data-line="69">            <span class="n">guards</span><span class="o">=</span><span class="n">guards</span><span class="p">,</span>
-</span><span data-line="70">            <span class="n">middleware</span><span class="o">=</span><span class="n">middleware</span><span class="p">,</span>
-</span><span data-line="71">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-</span><span data-line="72">            <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
-</span><span data-line="73">            <span class="n">signature_namespace</span><span class="o">=</span><span class="n">signature_namespace</span><span class="p">,</span>
-</span><span data-line="74">            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
-</span><span data-line="75">            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-</span><span data-line="76">        <span class="p">)</span></div>
+</span><span data-line="24">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="25">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="26">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="27">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="28">        <span class="n">fn</span><span class="p">:</span> <span class="n">AsyncAnyCallable</span><span class="p">,</span>
+</span><span data-line="29">        <span class="n">dependencies</span><span class="p">:</span> <span class="n">Dependencies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="30">        <span class="n">exception_handlers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">],</span> <span class="n">ExceptionHandler</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="31">        <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="32">        <span class="n">middleware</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Middleware</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="33">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="34">        <span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="35">        <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="36">        <span class="n">websocket_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="37">        <span class="n">parameters</span><span class="p">:</span> <span class="n">ParametersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="38">        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+</span><span data-line="39">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="40"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Route handler for WebSocket routes.</span>
+</span><span data-line="41">
+</span><span data-line="42"><span class="sd">        Args:</span>
+</span><span data-line="43"><span class="sd">            path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults</span>
+</span><span data-line="44"><span class="sd">                to ``/``</span>
+</span><span data-line="45"><span class="sd">            fn: The handler function</span>
+</span><span data-line="46">
+</span><span data-line="47"><span class="sd">                .. versionadded:: 3.0</span>
+</span><span data-line="48"><span class="sd">            dependencies: A sequence of :class:`Provider &lt;.di.Provider&gt;` instances, or a mapping of names or types to providers, :class:`Provide &lt;.di.Provide&gt;` instances or callables.</span>
+</span><span data-line="49"><span class="sd">            exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
+</span><span data-line="50"><span class="sd">            guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
+</span><span data-line="51"><span class="sd">            middleware: A sequence of :class:`Middleware &lt;.types.Middleware&gt;`.</span>
+</span><span data-line="52"><span class="sd">            name: A string identifying the route handler.</span>
+</span><span data-line="53"><span class="sd">            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
+</span><span data-line="54"><span class="sd">                wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
+</span><span data-line="55"><span class="sd">                :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
+</span><span data-line="56"><span class="sd">            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.</span>
+</span><span data-line="57"><span class="sd">            type_encoders: A mapping of types to callables that transform them into types supported for serialization.</span>
+</span><span data-line="58"><span class="sd">            websocket_class: A custom subclass of :class:`WebSocket &lt;.connection.WebSocket&gt;` to be used as route handler&#39;s</span>
+</span><span data-line="59"><span class="sd">                default websocket class.</span>
+</span><span data-line="60"><span class="sd">            parameters: A mapping of :func:`Parameter &lt;.params.ParameterKwarg&gt;` definitions</span>
+</span><span data-line="61"><span class="sd">            **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
+</span><span data-line="62"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="63">        <span class="bp">self</span><span class="o">.</span><span class="n">_websocket_class</span> <span class="o">=</span> <span class="n">websocket_class</span>
+</span><span data-line="64">
+</span><span data-line="65">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="66">            <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span>
+</span><span data-line="67">            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+</span><span data-line="68">            <span class="n">dependencies</span><span class="o">=</span><span class="n">dependencies</span><span class="p">,</span>
+</span><span data-line="69">            <span class="n">exception_handlers</span><span class="o">=</span><span class="n">exception_handlers</span><span class="p">,</span>
+</span><span data-line="70">            <span class="n">guards</span><span class="o">=</span><span class="n">guards</span><span class="p">,</span>
+</span><span data-line="71">            <span class="n">middleware</span><span class="o">=</span><span class="n">middleware</span><span class="p">,</span>
+</span><span data-line="72">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="73">            <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
+</span><span data-line="74">            <span class="n">signature_namespace</span><span class="o">=</span><span class="n">signature_namespace</span><span class="p">,</span>
+</span><span data-line="75">            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+</span><span data-line="76">            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+</span><span data-line="77">        <span class="p">)</span></div>
 
-</span><span data-line="77">
-</span><span data-line="78">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_merge_opts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Router</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="79">        <span class="n">merge_opts</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_merge_opts</span><span class="p">(</span><span class="n">others</span><span class="p">)</span>
-</span><span data-line="80">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;websocket_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_websocket_class</span> <span class="ow">or</span> <span class="nb">next</span><span class="p">(</span>
-</span><span data-line="81">            <span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">websocket_class</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">others</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">websocket_class</span><span class="p">),</span> <span class="kc">None</span>
-</span><span data-line="82">        <span class="p">)</span>
-</span><span data-line="83">
-</span><span data-line="84">        <span class="k">return</span> <span class="n">merge_opts</span>
-</span><span data-line="85">
+</span><span data-line="78">
+</span><span data-line="79">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_merge_opts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Router</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="80">        <span class="n">merge_opts</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_merge_opts</span><span class="p">(</span><span class="n">others</span><span class="p">)</span>
+</span><span data-line="81">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;websocket_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_websocket_class</span> <span class="ow">or</span> <span class="nb">next</span><span class="p">(</span>
+</span><span data-line="82">            <span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">websocket_class</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">others</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">websocket_class</span><span class="p">),</span> <span class="kc">None</span>
+</span><span data-line="83">        <span class="p">)</span>
+</span><span data-line="84">
+</span><span data-line="85">        <span class="k">return</span> <span class="n">merge_opts</span>
+</span><span data-line="86">
 <div class="viewcode-block" id="WebsocketRouteHandler.resolve_websocket_class">
 <a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler.resolve_websocket_class">[docs]</a>
-</span><span data-line="86">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.websocket_class property&quot;</span><span class="p">)</span>
-</span><span data-line="87">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_websocket_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">]:</span>
-</span><span data-line="88"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the closest custom WebSocket class in the owner graph or the default Websocket class.</span>
-</span><span data-line="89">
-</span><span data-line="90"><span class="sd">        This method is memoized so the computation occurs only once.</span>
-</span><span data-line="91">
-</span><span data-line="92"><span class="sd">        Returns:</span>
-</span><span data-line="93"><span class="sd">            The default :class:`WebSocket &lt;.connection.WebSocket&gt;` class for the route handler.</span>
-</span><span data-line="94"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="95">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket_class</span></div>
+</span><span data-line="87">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.websocket_class property&quot;</span><span class="p">)</span>
+</span><span data-line="88">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_websocket_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">]:</span>
+</span><span data-line="89"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the closest custom WebSocket class in the owner graph or the default Websocket class.</span>
+</span><span data-line="90">
+</span><span data-line="91"><span class="sd">        This method is memoized so the computation occurs only once.</span>
+</span><span data-line="92">
+</span><span data-line="93"><span class="sd">        Returns:</span>
+</span><span data-line="94"><span class="sd">            The default :class:`WebSocket &lt;.connection.WebSocket&gt;` class for the route handler.</span>
+</span><span data-line="95"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="96">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket_class</span></div>
 
-</span><span data-line="96">
-</span><span data-line="97">    <span class="nd">@property</span>
-</span><span data-line="98">    <span class="k">def</span><span class="w"> </span><span class="nf">websocket_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">]:</span>
-</span><span data-line="99">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_websocket_class</span> <span class="ow">or</span> <span class="n">WebSocket</span>
-</span><span data-line="100">
-</span><span data-line="101">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_handler_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="102"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the route handler function once it&#39;s set by inspecting its return annotations.&quot;&quot;&quot;</span>
-</span><span data-line="103">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate_handler_function</span><span class="p">()</span>
-</span><span data-line="104">
-</span><span data-line="105">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">return_type</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">NoneType</span><span class="p">):</span>
-</span><span data-line="106">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">: WebSocket handlers must return &#39;None&#39;&quot;</span><span class="p">)</span>
-</span><span data-line="107">
-</span><span data-line="108">        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_async_callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">):</span>
-</span><span data-line="109">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">: WebSocket handler functions must be asynchronous&quot;</span><span class="p">)</span>
-</span><span data-line="110">
+</span><span data-line="97">
+</span><span data-line="98">    <span class="nd">@property</span>
+</span><span data-line="99">    <span class="k">def</span><span class="w"> </span><span class="nf">websocket_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">]:</span>
+</span><span data-line="100">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_websocket_class</span> <span class="ow">or</span> <span class="n">WebSocket</span>
+</span><span data-line="101">
+</span><span data-line="102">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_handler_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="103"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the route handler function once it&#39;s set by inspecting its return annotations.&quot;&quot;&quot;</span>
+</span><span data-line="104">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate_handler_function</span><span class="p">()</span>
+</span><span data-line="105">
+</span><span data-line="106">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">return_type</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">NoneType</span><span class="p">):</span>
+</span><span data-line="107">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">: WebSocket handlers must return &#39;None&#39;&quot;</span><span class="p">)</span>
+</span><span data-line="108">
+</span><span data-line="109">        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_async_callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">):</span>
+</span><span data-line="110">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">: WebSocket handler functions must be asynchronous&quot;</span><span class="p">)</span>
+</span><span data-line="111">
 <div class="viewcode-block" id="WebsocketRouteHandler.on_registration">
 <a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler.on_registration">[docs]</a>
-</span><span data-line="111">    <span class="k">def</span><span class="w"> </span><span class="nf">on_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="112">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_registration</span><span class="p">(</span><span class="n">route</span><span class="o">=</span><span class="n">route</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="113">
-</span><span data-line="114">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di._route_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_handler_injection_setup</span>
-</span><span data-line="115">
-</span><span data-line="116">        <span class="bp">self</span><span class="o">.</span><span class="n">_injection_setup</span> <span class="o">=</span> <span class="n">create_handler_injection_setup</span><span class="p">(</span>
-</span><span data-line="117">            <span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">connection_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">websocket_class</span><span class="p">,</span> <span class="n">accepts_body</span><span class="o">=</span><span class="kc">False</span>
-</span><span data-line="118">        <span class="p">)</span></div>
+</span><span data-line="112">    <span class="k">def</span><span class="w"> </span><span class="nf">on_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="113">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_registration</span><span class="p">(</span><span class="n">route</span><span class="o">=</span><span class="n">route</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="114">
+</span><span data-line="115">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di._route_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_handler_injection_setup</span>
+</span><span data-line="116">
+</span><span data-line="117">        <span class="bp">self</span><span class="o">.</span><span class="n">_injection_setup</span> <span class="o">=</span> <span class="n">create_handler_injection_setup</span><span class="p">(</span>
+</span><span data-line="118">            <span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">connection_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">websocket_class</span><span class="p">,</span> <span class="n">accepts_body</span><span class="o">=</span><span class="kc">False</span>
+</span><span data-line="119">        <span class="p">)</span>
+</span><span data-line="120">        <span class="n">definitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_injection_setup</span><span class="o">.</span><span class="n">request_parameter_definitions</span>
+</span><span data-line="121">        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_request_parameters</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="122">            <span class="n">create_request_param_validaton_fn</span><span class="p">(</span><span class="n">definitions</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">data_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">type_decoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_decoders</span><span class="p">)</span>
+</span><span data-line="123">            <span class="k">if</span> <span class="n">definitions</span>
+</span><span data-line="124">            <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="125">        <span class="p">)</span></div>
 
-</span><span data-line="119">
+</span><span data-line="126">
 <div class="viewcode-block" id="WebsocketRouteHandler.handle">
 <a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler.handle">[docs]</a>
-</span><span data-line="120">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="121"><span class="w">        </span><span class="sd">&quot;&quot;&quot;ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function.</span>
-</span><span data-line="122">
-</span><span data-line="123"><span class="sd">        Args:</span>
-</span><span data-line="124"><span class="sd">            connection: WebSocket connection</span>
-</span><span data-line="125">
-</span><span data-line="126"><span class="sd">        Returns:</span>
-</span><span data-line="127"><span class="sd">            None</span>
-</span><span data-line="128"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="127">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="128"><span class="w">        </span><span class="sd">&quot;&quot;&quot;ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function.</span>
 </span><span data-line="129">
-</span><span data-line="130">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
-</span><span data-line="131">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">authorize_connection</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+</span><span data-line="130"><span class="sd">        Args:</span>
+</span><span data-line="131"><span class="sd">            connection: WebSocket connection</span>
 </span><span data-line="132">
-</span><span data-line="133">        <span class="n">setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_injection_setup</span>
-</span><span data-line="134">        <span class="n">validate</span> <span class="o">=</span> <span class="n">setup</span><span class="o">.</span><span class="n">validate_request_parameters</span>
-</span><span data-line="135">        <span class="n">seeds</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">validate</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span> <span class="k">if</span> <span class="n">validate</span> <span class="k">else</span> <span class="p">{}</span>
-</span><span data-line="136">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">setup</span><span class="o">.</span><span class="n">connection_seed_keys</span><span class="p">:</span>
-</span><span data-line="137">            <span class="n">seeds</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">connection</span>
-</span><span data-line="138">        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">seeds</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">setup</span><span class="o">.</span><span class="n">fn_seed_parameters</span><span class="p">}</span>
-</span><span data-line="139">        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_di_handler_context</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span> <span class="k">as</span> <span class="n">handler_context</span><span class="p">:</span>
-</span><span data-line="140">            <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="k">await</span> <span class="n">handler_context</span><span class="o">.</span><span class="n">solve_arguments</span><span class="p">(</span><span class="n">setup</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">supplied</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
-</span><span data-line="141">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</span><span data-line="133"><span class="sd">        Returns:</span>
+</span><span data-line="134"><span class="sd">            None</span>
+</span><span data-line="135"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="136">
+</span><span data-line="137">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
+</span><span data-line="138">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">authorize_connection</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+</span><span data-line="139">
+</span><span data-line="140">        <span class="n">setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_injection_setup</span>
+</span><span data-line="141">        <span class="n">validate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_request_parameters</span>
+</span><span data-line="142">        <span class="n">seeds</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">validate</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span> <span class="k">if</span> <span class="n">validate</span> <span class="k">else</span> <span class="p">{}</span>
+</span><span data-line="143">        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">setup</span><span class="o">.</span><span class="n">connection_seed_keys</span><span class="p">:</span>
+</span><span data-line="144">            <span class="n">seeds</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">connection</span>
+</span><span data-line="145">        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">seeds</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">setup</span><span class="o">.</span><span class="n">fn_seed_parameters</span><span class="p">}</span>
+</span><span data-line="146">        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_di_handler_context</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span> <span class="k">as</span> <span class="n">handler_context</span><span class="p">:</span>
+</span><span data-line="147">            <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="k">await</span> <span class="n">handler_context</span><span class="o">.</span><span class="n">solve_arguments</span><span class="p">(</span><span class="n">setup</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">supplied</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</span><span data-line="148">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </div>
 
-</span><span data-line="142">
-</span><span data-line="143">
+</span><span data-line="149">
+</span><span data-line="150">
 <div class="viewcode-block" id="websocket">
 <a class="viewcode-back" href="../../../../reference/handlers.html#litestar.handlers.websocket">[docs]</a>
-</span><span data-line="144"><span class="k">def</span><span class="w"> </span><span class="nf">websocket</span><span class="p">(</span>
-</span><span data-line="145">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="146">    <span class="o">*</span><span class="p">,</span>
-</span><span data-line="147">    <span class="n">dependencies</span><span class="p">:</span> <span class="n">Dependencies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="148">    <span class="n">exception_handlers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">],</span> <span class="n">ExceptionHandler</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="149">    <span class="n">guards</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="150">    <span class="n">middleware</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Middleware</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="151">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="152">    <span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="153">    <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="154">    <span class="n">websocket_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="155">    <span class="n">handler_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">WebsocketRouteHandler</span><span class="p">]</span> <span class="o">=</span> <span class="n">WebsocketRouteHandler</span><span class="p">,</span>
-</span><span data-line="156">    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-</span><span data-line="157"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">AsyncAnyCallable</span><span class="p">],</span> <span class="n">WebsocketRouteHandler</span><span class="p">]:</span>
-</span><span data-line="158"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a :class:`WebsocketRouteHandler`.</span>
-</span><span data-line="159">
-</span><span data-line="160"><span class="sd">    Args:</span>
-</span><span data-line="161"><span class="sd">        path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults</span>
-</span><span data-line="162"><span class="sd">            to ``/``</span>
-</span><span data-line="163"><span class="sd">        dependencies: A sequence of :class:`Provider &lt;.di.Provider&gt;` instances, or a mapping of names or types to providers, :class:`Provide &lt;.di.Provide&gt;` instances or callables.</span>
-</span><span data-line="164"><span class="sd">        exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
-</span><span data-line="165"><span class="sd">        guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
-</span><span data-line="166"><span class="sd">        middleware: A sequence of :class:`Middleware &lt;.types.Middleware&gt;`.</span>
-</span><span data-line="167"><span class="sd">        name: A string identifying the route handler.</span>
-</span><span data-line="168"><span class="sd">        opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
-</span><span data-line="169"><span class="sd">            wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
-</span><span data-line="170"><span class="sd">            :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
-</span><span data-line="171"><span class="sd">        signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.</span>
-</span><span data-line="172"><span class="sd">        websocket_class: A custom subclass of :class:`WebSocket &lt;.connection.WebSocket&gt;` to be used as route handler&#39;s</span>
-</span><span data-line="173"><span class="sd">            default websocket class.</span>
-</span><span data-line="174"><span class="sd">        handler_class: Route handler class instantiated by the decorator</span>
-</span><span data-line="175"><span class="sd">        **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
-</span><span data-line="176"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="177">
-</span><span data-line="178">    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AsyncAnyCallable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WebsocketRouteHandler</span><span class="p">:</span>
-</span><span data-line="179">        <span class="k">return</span> <span class="n">handler_class</span><span class="p">(</span>
-</span><span data-line="180">            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-</span><span data-line="181">            <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span>
-</span><span data-line="182">            <span class="n">dependencies</span><span class="o">=</span><span class="n">dependencies</span><span class="p">,</span>
-</span><span data-line="183">            <span class="n">exception_handlers</span><span class="o">=</span><span class="n">exception_handlers</span><span class="p">,</span>
-</span><span data-line="184">            <span class="n">guards</span><span class="o">=</span><span class="n">guards</span><span class="p">,</span>
-</span><span data-line="185">            <span class="n">middleware</span><span class="o">=</span><span class="n">middleware</span><span class="p">,</span>
-</span><span data-line="186">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-</span><span data-line="187">            <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
-</span><span data-line="188">            <span class="n">signature_namespace</span><span class="o">=</span><span class="n">signature_namespace</span><span class="p">,</span>
-</span><span data-line="189">            <span class="n">websocket_class</span><span class="o">=</span><span class="n">websocket_class</span><span class="p">,</span>
-</span><span data-line="190">            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-</span><span data-line="191">        <span class="p">)</span>
-</span><span data-line="192">
-</span><span data-line="193">    <span class="k">return</span> <span class="n">decorator</span></div>
+</span><span data-line="151"><span class="k">def</span><span class="w"> </span><span class="nf">websocket</span><span class="p">(</span>
+</span><span data-line="152">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="153">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="154">    <span class="n">dependencies</span><span class="p">:</span> <span class="n">Dependencies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="155">    <span class="n">exception_handlers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">],</span> <span class="n">ExceptionHandler</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="156">    <span class="n">guards</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="157">    <span class="n">middleware</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Middleware</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="158">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="159">    <span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="160">    <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="161">    <span class="n">websocket_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="162">    <span class="n">handler_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">WebsocketRouteHandler</span><span class="p">]</span> <span class="o">=</span> <span class="n">WebsocketRouteHandler</span><span class="p">,</span>
+</span><span data-line="163">    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+</span><span data-line="164"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">AsyncAnyCallable</span><span class="p">],</span> <span class="n">WebsocketRouteHandler</span><span class="p">]:</span>
+</span><span data-line="165"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a :class:`WebsocketRouteHandler`.</span>
+</span><span data-line="166">
+</span><span data-line="167"><span class="sd">    Args:</span>
+</span><span data-line="168"><span class="sd">        path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults</span>
+</span><span data-line="169"><span class="sd">            to ``/``</span>
+</span><span data-line="170"><span class="sd">        dependencies: A sequence of :class:`Provider &lt;.di.Provider&gt;` instances, or a mapping of names or types to providers, :class:`Provide &lt;.di.Provide&gt;` instances or callables.</span>
+</span><span data-line="171"><span class="sd">        exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
+</span><span data-line="172"><span class="sd">        guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
+</span><span data-line="173"><span class="sd">        middleware: A sequence of :class:`Middleware &lt;.types.Middleware&gt;`.</span>
+</span><span data-line="174"><span class="sd">        name: A string identifying the route handler.</span>
+</span><span data-line="175"><span class="sd">        opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
+</span><span data-line="176"><span class="sd">            wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
+</span><span data-line="177"><span class="sd">            :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
+</span><span data-line="178"><span class="sd">        signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.</span>
+</span><span data-line="179"><span class="sd">        websocket_class: A custom subclass of :class:`WebSocket &lt;.connection.WebSocket&gt;` to be used as route handler&#39;s</span>
+</span><span data-line="180"><span class="sd">            default websocket class.</span>
+</span><span data-line="181"><span class="sd">        handler_class: Route handler class instantiated by the decorator</span>
+</span><span data-line="182"><span class="sd">        **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
+</span><span data-line="183"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="184">
+</span><span data-line="185">    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AsyncAnyCallable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WebsocketRouteHandler</span><span class="p">:</span>
+</span><span data-line="186">        <span class="k">return</span> <span class="n">handler_class</span><span class="p">(</span>
+</span><span data-line="187">            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+</span><span data-line="188">            <span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span>
+</span><span data-line="189">            <span class="n">dependencies</span><span class="o">=</span><span class="n">dependencies</span><span class="p">,</span>
+</span><span data-line="190">            <span class="n">exception_handlers</span><span class="o">=</span><span class="n">exception_handlers</span><span class="p">,</span>
+</span><span data-line="191">            <span class="n">guards</span><span class="o">=</span><span class="n">guards</span><span class="p">,</span>
+</span><span data-line="192">            <span class="n">middleware</span><span class="o">=</span><span class="n">middleware</span><span class="p">,</span>
+</span><span data-line="193">            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="194">            <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
+</span><span data-line="195">            <span class="n">signature_namespace</span><span class="o">=</span><span class="n">signature_namespace</span><span class="p">,</span>
+</span><span data-line="196">            <span class="n">websocket_class</span><span class="o">=</span><span class="n">websocket_class</span><span class="p">,</span>
+</span><span data-line="197">            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+</span><span data-line="198">        <span class="p">)</span>
+</span><span data-line="199">
+</span><span data-line="200">    <span class="k">return</span> <span class="n">decorator</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

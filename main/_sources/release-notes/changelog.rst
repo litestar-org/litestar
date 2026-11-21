@@ -6,9 +6,20 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Apply the DTO of a handler to a request body declared only in a dependency provider
+        :type: bugfix
+        :breaking:
+        :pr: 5241
+
+        Fix a bug that occurred when a request body was only declared in a dependency
+        provider of a handler, with that handler setting a ``dto=``. The request body
+        would not be decoded by the DTO, and would receive the raw DTO data, e.g. a
+        ``dict``. The DTO will now always be taken into consideration, independent of
+        the point the request body is declared.
+
     .. change:: Deprecate request parameters ``Headers``, ``QueryParams``, ``RequestCookies`` and ``Scope``
         :type: feature
-        :pr: TBD
+        :pr: 5238
 
         Deprecate
         :class:`~litestar.datastructures.Headers`, :data:`~litestar.params.QueryParams`,
