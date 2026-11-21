@@ -6,6 +6,16 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Identify the data a handler receives through its body marker
+        :type: misc
+        :breaking:
+        :pr: 5242
+
+        Refactor :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition`
+        and :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` to identify
+        request vs. response body by the markers on the parameter itself, instead of its
+        name (``data``).
+
     .. change:: Apply the DTO of a handler to a request body declared only in a dependency provider
         :type: bugfix
         :breaking:

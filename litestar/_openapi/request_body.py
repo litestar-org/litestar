@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import replace
 from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.schema_generation import SchemaCreator
@@ -37,8 +36,6 @@ def create_request_body(
     Returns:
         A RequestBody instance.
     """
-    # a DTO and the schema of an upload know the request body by the name 'data'
-    data_field = replace(data_field, name="data")
     media_type: RequestEncodingType | str = RequestEncodingType.JSON
     schema_creator = SchemaCreator.from_openapi_context(
         context, prefer_alias=True, signature_namespace=signature_namespace
