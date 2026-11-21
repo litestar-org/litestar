@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar import Litestar, Request, get
 from litestar.datastructures import State
-from litestar.di import NamedDependency, Provide
+from litestar.di import NamedDependency
 
 if TYPE_CHECKING:
     from litestar.types import ASGIApp, Receive, Scope, Send
@@ -32,7 +32,7 @@ async def my_dependency(state: State) -> Any:
     logger.info("state value in dependency: %s", state.value)
 
 
-@get("/", dependencies={"dep": Provide(my_dependency)}, middleware=[middleware_factory], sync_to_thread=False)
+@get("/", dependencies={"dep": my_dependency}, middleware=[middleware_factory], sync_to_thread=False)
 def get_handler(state: State, request: Request, dep: NamedDependency[Any]) -> None:
     """Handlers can receive state via injection."""
     logger.info("state value in handler from `State`: %s", state.value)

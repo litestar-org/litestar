@@ -239,18 +239,18 @@ different levels of the application, and then selective use or overwrite them.
 
 ```python
 from litestar import Litestar, get
-from litestar.di import Provide
+from litestar.di import NamedDependency
 
 
 async def my_dependency() -> str: ...
 
 
 @get("/")
-async def index(injected: str) -> str:
+async def index(injected: NamedDependency[str]) -> str:
     return injected
 
 
-app = Litestar([index], dependencies={"injected": Provide(my_dependency)})
+app = Litestar([index], dependencies={"injected": my_dependency})
 ```
 
 </details>

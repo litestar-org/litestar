@@ -19,7 +19,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
 from litestar.controller import Controller
-from litestar.di import NamedDependency, Provide
+from litestar.di import NamedDependency, TypeDependency, provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.params import JSONBody, PathParameter, QueryParameter
 
@@ -94,6 +94,7 @@ async def provide_author_details_repo(db_session: NamedDependency[Session]) -> A
     )
 
 
+@provide(kind="type", sync_to_thread=False)
 def provide_limit_offset_pagination(
     current_page: Annotated[int, QueryParameter(name="currentPage", ge=1, required=False)] = 1,
     page_size: Annotated[int, QueryParameter(name="pageSize", ge=1, required=False)] = 10,
@@ -115,13 +116,13 @@ def provide_limit_offset_pagination(
 class AuthorController(Controller):
     """Author CRUD"""
 
-    dependencies = {"authors_repo": Provide(provide_authors_repo)}
+    dependencies = {AuthorRepository: provide_authors_repo}
 
     @get(path="/authors")
     def list_authors(
         self,
-        authors_repo: NamedDependency[AuthorRepository],
-        limit_offset: NamedDependency[LimitOffset],
+        authors_repo: TypeDependency[AuthorRepository],
+        limit_offset: TypeDependency[LimitOffset],
     ) -> OffsetPagination[Author]:
         """List authors."""
         results, total = authors_repo.list_and_count(limit_offset)
@@ -136,7 +137,7 @@ class AuthorController(Controller):
     @post(path="/authors")
     def create_author(
         self,
-        authors_repo: NamedDependency[AuthorRepository],
+        authors_repo: TypeDependency[AuthorRepository],
         data: JSONBody[AuthorCreate],
     ) -> Author:
         """Create a new author."""
@@ -149,11 +150,11 @@ class AuthorController(Controller):
     # we override the authors_repo to use the version that joins the Books in
     @get(
         path="/authors/{author_id:uuid}",
-        dependencies={"authors_repo": Provide(provide_author_details_repo)},
+        dependencies={AuthorRepository: provide_author_details_repo},
     )
     def get_author(
         self,
-        authors_repo: NamedDependency[AuthorRepository],
+        authors_repo: TypeDependency[AuthorRepository],
         author_id: Annotated[
             UUID,
             PathParameter(
@@ -168,11 +169,11 @@ class AuthorController(Controller):
 
     @patch(
         path="/authors/{author_id:uuid}",
-        dependencies={"authors_repo": Provide(provide_author_details_repo)},
+        dependencies={AuthorRepository: provide_author_details_repo},
     )
     def update_author(
         self,
-        authors_repo: NamedDependency[AuthorRepository],
+        authors_repo: TypeDependency[AuthorRepository],
         data: JSONBody[AuthorUpdate],
         author_id: Annotated[
             UUID,
@@ -192,7 +193,7 @@ class AuthorController(Controller):
     @delete(path="/authors/{author_id:uuid}")
     def delete_author(
         self,
-        authors_repo: NamedDependency[AuthorRepository],
+        authors_repo: TypeDependency[AuthorRepository],
         author_id: Annotated[
             UUID,
             PathParameter(
@@ -220,5 +221,5 @@ app = Litestar(
     route_handlers=[AuthorController],
     on_startup=[on_startup],
     plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
-    dependencies={"limit_offset": Provide(provide_limit_offset_pagination, sync_to_thread=False)},
+    dependencies=[provide_limit_offset_pagination],
 )
