@@ -753,6 +753,38 @@ plugin, such as <code class="docutils literal notranslate"><span class="pre">Sca
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4977">https://github.com/litestar-org/litestar/pull/4977</a></span></p>
 </div>
 </dd>
+<dt>Migrate <code class="docutils literal notranslate"><span class="pre">AllowedHostsMiddleware</span></code> to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink reference internal" href="#3.0.0-migrate" id="3.0.0-migrate">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">AllowedHostsMiddleware</span></code> has been moved from the legacy <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code>
+base to <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>, as part of migrating all
+built-in middleware off the legacy bases.</p>
+<p>Applications that configure allowed hosts through
+<a class="reference internal" href="../reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig" title="litestar.config.allowed_hosts.AllowedHostsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AllowedHostsConfig</span></code></a> or the
+<code class="docutils literal notranslate"><span class="pre">allowed_hosts</span></code> argument are unaffected, since Litestar constructs the
+middleware itself. The constructor takes keyword arguments now instead of an
+<code class="docutils literal notranslate"><span class="pre">app</span></code> and an <code class="docutils literal notranslate"><span class="pre">AllowedHostsConfig</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># before</span>
+</span><span data-line="2"><span class="n">middleware</span> <span class="o">=</span> <span class="n">AllowedHostsMiddleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">next_app</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># after</span>
+</span><span data-line="5"><span class="n">middleware</span> <span class="o">=</span> <span class="n">AllowedHostsMiddleware</span><span class="p">(</span>
+</span><span data-line="6">    <span class="n">allowed_hosts</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">allowed_hosts</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">exclude</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">exclude_opt_key</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">exclude_opt_key</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">scopes</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">scopes</span><span class="p">,</span>
+</span><span data-line="10">    <span class="n">www_redirect</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">www_redirect</span><span class="p">,</span>
+</span><span data-line="11"><span class="p">)</span>
+</span><span data-line="12"><span class="n">asgi_app</span> <span class="o">=</span> <span class="n">middleware</span><span class="p">(</span><span class="n">next_app</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p><a class="reference internal" href="../reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig.exclude" title="litestar.config.allowed_hosts.AllowedHostsConfig.exclude"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude</span></code></a> patterns are
+still matched against the request path. The new
+<a class="reference internal" href="../reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig.exclude_path_pattern" title="litestar.config.allowed_hosts.AllowedHostsConfig.exclude_path_pattern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude_path_pattern</span></code></a>
+matches against the handler’s path (e.g. <code class="docutils literal notranslate"><span class="pre">/user/{user_id:int}</span></code>) instead;
+handlers excluded this way, or via <code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code>, bypass the middleware
+entirely at startup rather than per request.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4009">https://github.com/litestar-org/litestar/issues/4009</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5001">https://github.com/litestar-org/litestar/pull/5001</a></span></p>
+</div>
+</dd>
 <dt>Migrate <code class="docutils literal notranslate"><span class="pre">CompressionMiddleware</span></code> to <code class="docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code><a class="headerlink reference internal" href="#3.0.0-migrate" id="3.0.0-migrate">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p><code class="docutils literal notranslate"><span class="pre">CompressionMiddleware</span></code> has been moved from the legacy <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code>
 base to <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>, as part of migrating all

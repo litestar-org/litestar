@@ -530,23 +530,29 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="26"><span class="sd">    Use ``*.`` to allow all hosts, or prefix domains with ``*.`` to allow all sub domains.</span>
 </span><span data-line="27"><span class="sd">    &quot;&quot;&quot;</span>
 </span><span data-line="28">    <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="29"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns to skip in the Allowed Hosts middleware.&quot;&quot;&quot;</span>
-</span><span data-line="30">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="31"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An identifier to use on routes to disable hosts check for a particular route.&quot;&quot;&quot;</span>
-</span><span data-line="32">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="33"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed.&quot;&quot;&quot;</span>
-</span><span data-line="34">    <span class="n">www_redirect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="35"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A boolean dictating whether to redirect requests that start with ``www.`` and otherwise match a trusted host.&quot;&quot;&quot;</span>
-</span><span data-line="36">
+</span><span data-line="29"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns to skip in the Allowed Hosts middleware, matched against the request path.&quot;&quot;&quot;</span>
+</span><span data-line="30">    <span class="n">exclude_path_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="31"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A pattern or list of patterns to skip in the Allowed Hosts middleware, matched against the handler path at</span>
+</span><span data-line="32"><span class="sd">    startup.</span>
+</span><span data-line="33">
+</span><span data-line="34"><span class="sd">    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.</span>
+</span><span data-line="35"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="36">    <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="37"><span class="w">    </span><span class="sd">&quot;&quot;&quot;An identifier to use on routes to disable hosts check for a particular route.&quot;&quot;&quot;</span>
+</span><span data-line="38">    <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="39"><span class="w">    </span><span class="sd">&quot;&quot;&quot;ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed.&quot;&quot;&quot;</span>
+</span><span data-line="40">    <span class="n">www_redirect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="41"><span class="w">    </span><span class="sd">&quot;&quot;&quot;A boolean dictating whether to redirect requests that start with ``www.`` and otherwise match a trusted host.&quot;&quot;&quot;</span>
+</span><span data-line="42">
 <div class="viewcode-block" id="AllowedHostsConfig.__post_init__">
 <a class="viewcode-back" href="../../../reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig.__post_init__">[docs]</a>
-</span><span data-line="37">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="38"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure that the trusted hosts have correct domain wildcards.&quot;&quot;&quot;</span>
-</span><span data-line="39">        <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_hosts</span><span class="p">:</span>
-</span><span data-line="40">            <span class="k">if</span> <span class="n">host</span> <span class="o">!=</span> <span class="s2">&quot;*&quot;</span> <span class="ow">and</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">host</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">host</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span><span class="p">):</span>
-</span><span data-line="41">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="42">                    <span class="s2">&quot;domain wildcards can only appear in the beginning of the domain, e.g. ``*.example.com``&quot;</span>
-</span><span data-line="43">                <span class="p">)</span></div>
+</span><span data-line="43">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="44"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure that the trusted hosts have correct domain wildcards.&quot;&quot;&quot;</span>
+</span><span data-line="45">        <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_hosts</span><span class="p">:</span>
+</span><span data-line="46">            <span class="k">if</span> <span class="n">host</span> <span class="o">!=</span> <span class="s2">&quot;*&quot;</span> <span class="ow">and</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">host</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">host</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span><span class="p">):</span>
+</span><span data-line="47">                <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="48">                    <span class="s2">&quot;domain wildcards can only appear in the beginning of the domain, e.g. ``*.example.com``&quot;</span>
+</span><span data-line="49">                <span class="p">)</span></div>
 </div>
 
 </span></pre></div>
