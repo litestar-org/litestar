@@ -492,8 +492,8 @@ The ``middleware`` property of :class:`~litestar.security.jwt.JWTAuth`,
 ``SessionAuth.on_app_init`` now installs the session middleware and the authentication
 middleware as two application-level middleware; ``SessionAuth.middleware`` returns the
 authentication middleware only. The ``exclude`` patterns of these configurations are
-matched against the **handler's path template** (e.g. ``/user/{user_id:int}``) at startup,
-instead of the request path (e.g. ``/user/1``) at runtime.
+still matched against the request path; the new ``exclude_path_pattern`` option matches
+against the handler's path (e.g. ``/user/{user_id:int}``) at startup.
 
 Code that composed one of the others directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and

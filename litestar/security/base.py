@@ -48,7 +48,13 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     guards: Iterable[Guard] | None = None
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = None
-    """A pattern or list of patterns to skip in the authentication middleware."""
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = None
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str = "exclude_from_auth"
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     exclude_http_methods: Sequence[Method] | None = field(

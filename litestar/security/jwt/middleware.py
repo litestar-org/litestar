@@ -39,6 +39,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         scopes: Scopes | None,
         token_secret: str,
         token_cls: type[Token] = Token,
+        exclude_path_pattern: str | list[str] | None = None,
         token_audience: Sequence[str] | None = None,
         token_issuer: Sequence[str] | None = None,
         require_claims: Sequence[str] | None = None,
@@ -55,7 +56,9 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         Args:
             algorithm: JWT hashing algorithm to use.
             auth_header: Request header key from which to retrieve the token. E.g. ``Authorization`` or ``X-Api-Key``.
-            exclude: A pattern or list of patterns to skip.
+            exclude: A pattern or list of patterns to skip, matched against the request path.
+            exclude_path_pattern: A pattern or list of patterns to skip, matched against the handler path at
+                startup.
             exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
             exclude_http_methods: A sequence of http methods that do not require authentication.
             retrieve_user_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a user,
@@ -82,6 +85,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         """
         super().__init__(
             exclude=exclude,
+            exclude_path_pattern=exclude_path_pattern,
             exclude_from_auth_key=exclude_opt_key,
             exclude_http_methods=exclude_http_methods,
             scopes=scopes,
@@ -184,6 +188,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         scopes: Scopes | None,
         token_secret: str,
         token_cls: type[Token] = Token,
+        exclude_path_pattern: str | list[str] | None = None,
         token_audience: Sequence[str] | None = None,
         token_issuer: Sequence[str] | None = None,
         require_claims: Sequence[str] | None = None,
@@ -201,7 +206,9 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             algorithm: JWT hashing algorithm to use.
             auth_cookie_key: Cookie name from which to retrieve the token. E.g. ``token`` or ``accessToken``.
             auth_header: Request header key from which to retrieve the token. E.g. ``Authorization`` or ``X-Api-Key``.
-            exclude: A pattern or list of patterns to skip.
+            exclude: A pattern or list of patterns to skip, matched against the request path.
+            exclude_path_pattern: A pattern or list of patterns to skip, matched against the handler path at
+                startup.
             exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
             exclude_http_methods: A sequence of http methods that do not require authentication.
             retrieve_user_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a user,
@@ -230,6 +237,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             algorithm=algorithm,
             auth_header=auth_header,
             exclude=exclude,
+            exclude_path_pattern=exclude_path_pattern,
             exclude_http_methods=exclude_http_methods,
             exclude_opt_key=exclude_opt_key,
             retrieve_user_handler=retrieve_user_handler,

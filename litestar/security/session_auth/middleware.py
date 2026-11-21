@@ -31,11 +31,15 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         exclude_opt_key: str,
         retrieve_user_handler: Callable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], SyncOrAsyncUnion[Any]],
         scopes: Scopes | None,
+        exclude_path_pattern: str | list[str] | None = None,
     ) -> None:
         """Session based authentication middleware.
 
         Args:
-            exclude: A pattern or list of patterns to skip in the authentication middleware.
+            exclude: A pattern or list of patterns to skip in the authentication middleware, matched against the
+                request path.
+            exclude_path_pattern: A pattern or list of patterns to skip in the authentication middleware, matched
+                against the handler path at startup.
             exclude_http_methods: A sequence of http methods that do not require authentication.
             exclude_opt_key: An identifier to use on routes to disable authentication and authorization checks for a particular route.
             scopes: ASGI scopes processed by the authentication middleware.
@@ -43,6 +47,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         """
         super().__init__(
             exclude=exclude,
+            exclude_path_pattern=exclude_path_pattern,
             exclude_from_auth_key=exclude_opt_key,
             exclude_http_methods=exclude_http_methods,
             scopes=scopes,

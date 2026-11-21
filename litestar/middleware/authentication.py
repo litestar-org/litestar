@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.connection import ASGIConnection
 from litestar.enums import HttpMethod, ScopeType
+from litestar.middleware._utils import build_exclude_bypass
 from litestar.middleware.base import ASGIMiddleware
 
 __all__ = ("AbstractAuthenticationMiddleware", "AuthenticationResult")
@@ -43,6 +44,7 @@ class AbstractAuthenticationMiddleware(ASGIMiddleware):
         self,
         *,
         exclude: str | list[str] | None = None,
+        exclude_path_pattern: str | list[str] | None = None,
         exclude_from_auth_key: str | None = None,
         exclude_http_methods: Sequence[Method] | None = None,
         scopes: Scopes | None = None,
@@ -52,13 +54,19 @@ class AbstractAuthenticationMiddleware(ASGIMiddleware):
         Arguments that are not given fall back to the corresponding class attribute.
 
         Args:
-            exclude: A pattern or list of patterns to skip in the authentication middleware.
+            exclude: A pattern or list of patterns to skip in the authentication middleware, matched against the
+                request path.
+            exclude_path_pattern: A pattern or list of patterns to skip in the authentication middleware, matched
+                against the handler path at startup. See
+                :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
             exclude_from_auth_key: An identifier to use on routes to disable authentication for a particular route.
             exclude_http_methods: A sequence of http methods that do not require authentication.
             scopes: ASGI scopes processed by the authentication middleware.
         """
-        if exclude is not None:
-            self.exclude_path_pattern = (tuple(exclude) if isinstance(exclude, list) else exclude) or None
+        if exclude_path_pattern is not None:
+            self.exclude_path_pattern = (
+                tuple(exclude_path_pattern) if isinstance(exclude_path_pattern, list) else exclude_path_pattern
+            ) or None
         if exclude_http_methods is not None:
             self.exclude_http_methods = exclude_http_methods
         if exclude_from_auth_key is not None:
@@ -68,6 +76,9 @@ class AbstractAuthenticationMiddleware(ASGIMiddleware):
         if scope_types != {ScopeType.HTTP, ScopeType.WEBSOCKET, ScopeType.ASGI}:
             self._scope_bypass_hook = self.should_bypass_for_scope
             self.should_bypass_for_scope = self._should_bypass_for_scope
+        self.should_bypass_for_scope = build_exclude_bypass(
+            exclude, middleware_cls=type(self), also=self.should_bypass_for_scope
+        )
 
     def _should_bypass_for_scope(self, scope: Scope) -> bool:
         if scope["type"] not in self.scopes:

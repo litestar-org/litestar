@@ -174,6 +174,47 @@ def test_authentication_middleware_exclude() -> None:
         assert response.status_code == HTTP_403_FORBIDDEN
 
 
+@pytest.mark.parametrize(
+    "exclude_kwargs, second_status",
+    [
+        ({"exclude": ["^/north/1$"]}, HTTP_403_FORBIDDEN),
+        ({"exclude_path_pattern": [r"^/north/\{value:int\}$"]}, HTTP_200_OK),
+    ],
+    ids=["request_path", "handler_path"],
+)
+def test_authentication_middleware_exclude_dynamic_path(exclude_kwargs: dict[str, Any], second_status: int) -> None:
+    auth_mw = AuthMiddleware(**exclude_kwargs)
+
+    @get("/north/{value:int}")
+    def north_handler(value: FromPath[int]) -> dict[str, int]:
+        return {"value": value}
+
+    @get("/west")
+    def west_handler() -> None:
+        return None
+
+    with create_test_client(route_handlers=[north_handler, west_handler], middleware=[auth_mw]) as client:
+        assert client.get("/north/1").status_code == HTTP_200_OK
+        assert client.get("/north/2").status_code == second_status
+        assert client.get("/west").status_code == HTTP_403_FORBIDDEN
+
+
+def test_authentication_middleware_exclude_request_path_with_scopes() -> None:
+    auth_mw = AuthMiddleware(exclude=["^/north$"], scopes={ScopeType.HTTP})
+
+    @get("/north")
+    def north_handler() -> None:
+        return None
+
+    @get("/west")
+    def west_handler() -> None:
+        return None
+
+    with create_test_client(route_handlers=[north_handler, west_handler], middleware=[auth_mw]) as client:
+        assert client.get("/north").status_code == HTTP_200_OK
+        assert client.get("/west").status_code == HTTP_403_FORBIDDEN
+
+
 def test_authentication_middleware_exclude_from_auth() -> None:
     auth_mw = AuthMiddleware(exclude=["south", "east"])
 

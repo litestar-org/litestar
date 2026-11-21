@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from uuid import uuid4
 
 import msgspec
+import pytest
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -14,7 +15,7 @@ from litestar.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
-from litestar.params import JSONBody
+from litestar.params import FromPath, JSONBody
 from litestar.security.session_auth import SessionAuth
 from litestar.security.session_auth.middleware import SessionAuthMiddleware
 from litestar.testing import create_test_client
@@ -101,6 +102,32 @@ def test_session_backend_exclusions_apply_under_session_auth(
     ) as client:
         assert client.get("/excluded").json() == {"has_session": False}
         assert client.get("/opt-out").json() == {"has_session": False}
+
+
+@pytest.mark.parametrize(
+    "exclude_kwargs, second_status",
+    [
+        ({"exclude": ["^/user/1$"]}, HTTP_401_UNAUTHORIZED),
+        ({"exclude_path_pattern": [r"^/user/\{user_id:int\}$"]}, HTTP_200_OK),
+    ],
+    ids=["request_path", "handler_path"],
+)
+def test_session_auth_exclude_dynamic_path(
+    session_backend_config_memory: ServerSideSessionConfig, exclude_kwargs: dict[str, Any], second_status: int
+) -> None:
+    session_auth = SessionAuth[Any, ServerSideSessionBackend](
+        retrieve_user_handler=retrieve_user_handler,
+        session_backend_config=session_backend_config_memory,
+        **exclude_kwargs,
+    )
+
+    @get("/user/{user_id:int}")
+    def handler(user_id: FromPath[int]) -> None:
+        return None
+
+    with create_test_client(route_handlers=[handler], on_app_init=[session_auth.on_app_init]) as client:
+        assert client.get("/user/1").status_code == HTTP_200_OK
+        assert client.get("/user/2").status_code == second_status
 
 
 def test_unauthorized_response_clears_session_cookie(session_backend_config_memory: ServerSideSessionConfig) -> None:

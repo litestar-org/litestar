@@ -138,6 +138,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             algorithm=self.algorithm,
             auth_header=self.auth_header,
             exclude=self.exclude,
+            exclude_path_pattern=self.exclude_path_pattern,
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
@@ -287,7 +288,13 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns to skip in the authentication middleware."""
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     exclude_http_methods: Sequence[Method] | None = field(
@@ -380,7 +387,13 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns to skip in the authentication middleware."""
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     scopes: Scopes | None = field(default=None)
@@ -487,6 +500,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
             auth_cookie_key=self.key,
             auth_header=self.auth_header,
             exclude=self.exclude,
+            exclude_path_pattern=self.exclude_path_pattern,
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
@@ -619,7 +633,13 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns to skip in the authentication middleware."""
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     exclude_http_methods: Sequence[Method] | None = field(
@@ -708,6 +728,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
             auth_cookie_key=self.key,
             auth_header=self.auth_header,
             exclude=self.exclude,
+            exclude_path_pattern=self.exclude_path_pattern,
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,

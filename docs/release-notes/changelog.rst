@@ -623,15 +623,14 @@
             # after
             middleware = MyAuthenticationMiddleware(exclude="schema")
 
-        Two behavioural changes for excluded routes:
+        Changes for excluded routes:
 
-        - ``exclude`` patterns are now matched against the **handler's path template**
-          (e.g. ``/user/{user_id:int}``) at startup, instead of the request path (e.g.
-          ``/user/1``) at runtime. Since the template includes the names and types of
-          path parameters, unanchored patterns should be anchored: ``exclude="schema"``
-          would also exclude a handler for ``/items/{schema_id:int}``.
-        - Handlers excluded via ``exclude`` or the exclude opt key now bypass the
-          middleware entirely at startup rather than per request.
+        - ``exclude`` patterns are still matched against the request path. The new
+          ``exclude_path_pattern`` argument, also available on the security
+          configurations, matches against the handler's path (e.g.
+          ``/user/{user_id:int}``) instead.
+        - Handlers excluded via ``exclude_path_pattern`` or the exclude opt key now
+          bypass the middleware entirely at startup rather than per request.
         - An empty ``exclude`` (``[]`` or ``""``) now excludes nothing, where it
           previously matched every path and disabled authentication entirely.
 
