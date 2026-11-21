@@ -584,6 +584,44 @@
         plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
         ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
 
+    .. change:: Migrate ``AllowedHostsMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 5001
+        :issue: 4009
+        :breaking:
+
+        ``AllowedHostsMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases.
+
+        Applications that configure allowed hosts through
+        :class:`~litestar.config.allowed_hosts.AllowedHostsConfig` or the
+        ``allowed_hosts`` argument are unaffected, since Litestar constructs the
+        middleware itself. The constructor takes keyword arguments now instead of an
+        ``app`` and an ``AllowedHostsConfig``:
+
+        .. code-block:: python
+
+            # before
+            middleware = AllowedHostsMiddleware(app=next_app, config=config)
+
+            # after
+            middleware = AllowedHostsMiddleware(
+                allowed_hosts=config.allowed_hosts,
+                exclude=config.exclude,
+                exclude_opt_key=config.exclude_opt_key,
+                scopes=config.scopes,
+                www_redirect=config.www_redirect,
+            )
+            asgi_app = middleware(next_app)
+
+        :attr:`~litestar.config.allowed_hosts.AllowedHostsConfig.exclude` patterns are
+        still matched against the request path. The new
+        :attr:`~litestar.config.allowed_hosts.AllowedHostsConfig.exclude_path_pattern`
+        matches against the handler's path (e.g. ``/user/{user_id:int}``) instead;
+        handlers excluded this way, or via ``exclude_opt_key``, bypass the middleware
+        entirely at startup rather than per request.
+
     .. change:: Migrate ``CompressionMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 4999
