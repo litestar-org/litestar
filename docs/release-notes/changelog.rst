@@ -584,6 +584,43 @@
         plugin, such as ``ScalarRenderPlugin`` (the default), ``SwaggerRenderPlugin``,
         ``RedocRenderPlugin`` or ``StoplightRenderPlugin``.
 
+    .. change:: Migrate ``CompressionMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :pr: 4999
+        :issue: 4009
+        :breaking:
+
+        ``CompressionMiddleware`` has been moved from the legacy ``AbstractMiddleware``
+        base to :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all
+        built-in middleware off the legacy bases.
+
+        Applications that configure compression through
+        :class:`~litestar.config.compression.CompressionConfig` are unaffected, since
+        Litestar constructs the middleware itself. The middleware still takes the
+        ``CompressionConfig`` - which the ``CompressionFacade`` protocol continues to
+        receive unchanged - but no longer wraps an ``app``:
+
+        .. code-block:: python
+
+            # before
+            middleware = CompressionMiddleware(app=next_app, config=config)
+
+            # after
+            middleware = CompressionMiddleware(config=config)
+            asgi_app = middleware(next_app)
+
+        Subclasses set via
+        :attr:`~litestar.config.compression.CompressionConfig.middleware_class` must
+        rename ``__call__`` to ``handle``, which receives the next ASGI app as an
+        additional ``next_app`` argument in place of ``self.app``.
+
+        :attr:`~litestar.config.compression.CompressionConfig.exclude` patterns are still
+        matched against the request path. The new
+        :attr:`~litestar.config.compression.CompressionConfig.exclude_path_pattern`
+        matches against the handler's path (e.g. ``/user/{user_id:int}``) instead;
+        handlers excluded this way, or via ``exclude_opt_key``, bypass the middleware
+        entirely at startup rather than per request.
+
     .. change:: Migrate ``CSRFMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :pr: 4998
