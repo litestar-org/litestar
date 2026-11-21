@@ -986,11 +986,11 @@ configure them - for CORS, via
 <a class="reference internal" href="../reference/config.html#litestar.config.cors.CORSConfig" title="litestar.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CORSConfig</span></code></a>, for response caching, via
 <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.ResponseCacheConfig" title="litestar.config.response_cache.ResponseCacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseCacheConfig</span></code></a> and the handler-level
 <code class="docutils literal notranslate"><span class="pre">cache</span></code> argument, and for CSRF, via <a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig" title="litestar.config.csrf.CSRFConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSRFConfig</span></code></a> - are
-unaffected, with one exception: <a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig.exclude" title="litestar.config.csrf.CSRFConfig.exclude"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude</span></code></a>
-patterns are now matched against the <strong>handler’s path template</strong>
-(e.g. <code class="docutils literal notranslate"><span class="pre">/user/{user_id:int}</span></code>) at startup, instead of the request path
-(e.g. <code class="docutils literal notranslate"><span class="pre">/user/1</span></code>) at runtime. Patterns targeting literal paths keep working; patterns
-written to match expanded path parameters must be rewritten against the template.</p>
+unaffected. <a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig.exclude" title="litestar.config.csrf.CSRFConfig.exclude"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude</span></code></a> patterns are still matched
+against the request path; the new
+<a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig.exclude_path_pattern" title="litestar.config.csrf.CSRFConfig.exclude_path_pattern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude_path_pattern</span></code></a> is matched against the
+handler’s path (e.g. <code class="docutils literal notranslate"><span class="pre">/user/{user_id:int}</span></code>) at startup, as described in
+<a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware.exclude_path_pattern" title="litestar.middleware.ASGIMiddleware.exclude_path_pattern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude_path_pattern</span></code></a>.</p>
 <p>Code that composed one of them directly into an ASGI stack must drop the <code class="docutils literal notranslate"><span class="pre">app</span></code>
 argument, pass the settings as keyword arguments rather than a configuration object, and
 apply the instance to the next ASGI app:</p>

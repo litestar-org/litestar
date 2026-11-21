@@ -601,15 +601,12 @@
         constructs the middleware itself, via a ``from_config`` classmethod on the
         middleware.
 
-        Two behavioural changes for excluded routes:
-
-        - :attr:`~litestar.config.csrf.CSRFConfig.exclude` patterns are now matched against
-          the **handler's path template** (e.g. ``/user/{user_id:int}``) at startup, instead
-          of the request path (e.g. ``/user/1``) at runtime. Patterns targeting literal
-          paths keep working; patterns written to match expanded path parameters must be
-          rewritten against the template.
-        - Handlers excluded via ``exclude`` or ``exclude_from_csrf`` now bypass the
-          middleware entirely at startup rather than per request.
+        :attr:`~litestar.config.csrf.CSRFConfig.exclude` patterns are still matched
+        against the request path. The new
+        :attr:`~litestar.config.csrf.CSRFConfig.exclude_path_pattern` matches against the
+        handler's path (e.g. ``/user/{user_id:int}``) instead; handlers excluded this way,
+        or via ``exclude_from_csrf``, bypass the middleware entirely at startup rather
+        than per request.
 
     .. change:: Migrate ``ResponseCacheMiddleware`` to ``ASGIMiddleware``
         :type: feature

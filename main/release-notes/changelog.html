@@ -763,16 +763,12 @@ This removes the <code class="docutils literal notranslate"><span class="pre">li
 <a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig" title="litestar.config.csrf.CSRFConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSRFConfig</span></code></a> are unaffected, since Litestar
 constructs the middleware itself, via a <code class="docutils literal notranslate"><span class="pre">from_config</span></code> classmethod on the
 middleware.</p>
-<p>Two behavioural changes for excluded routes:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig.exclude" title="litestar.config.csrf.CSRFConfig.exclude"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude</span></code></a> patterns are now matched against
-the <strong>handler’s path template</strong> (e.g. <code class="docutils literal notranslate"><span class="pre">/user/{user_id:int}</span></code>) at startup, instead
-of the request path (e.g. <code class="docutils literal notranslate"><span class="pre">/user/1</span></code>) at runtime. Patterns targeting literal
-paths keep working; patterns written to match expanded path parameters must be
-rewritten against the template.</p></li>
-<li><p>Handlers excluded via <code class="docutils literal notranslate"><span class="pre">exclude</span></code> or <code class="docutils literal notranslate"><span class="pre">exclude_from_csrf</span></code> now bypass the
-middleware entirely at startup rather than per request.</p></li>
-</ul>
+<p><a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig.exclude" title="litestar.config.csrf.CSRFConfig.exclude"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude</span></code></a> patterns are still matched
+against the request path. The new
+<a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig.exclude_path_pattern" title="litestar.config.csrf.CSRFConfig.exclude_path_pattern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude_path_pattern</span></code></a> matches against the
+handler’s path (e.g. <code class="docutils literal notranslate"><span class="pre">/user/{user_id:int}</span></code>) instead; handlers excluded this way,
+or via <code class="docutils literal notranslate"><span class="pre">exclude_from_csrf</span></code>, bypass the middleware entirely at startup rather
+than per request.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/4009">https://github.com/litestar-org/litestar/issues/4009</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4998">https://github.com/litestar-org/litestar/pull/4998</a></span></p>
 </div>
 </dd>
