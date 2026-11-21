@@ -6,6 +6,27 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: OpenAPI: Emit valid security schemes for ``JWTCookieAuth`` and ``OAuth2PasswordBearerAuth``
+        :type: bugfix
+        :issue: 3642
+        :pr: 5240
+        :breaking:
+
+        Fix the security schemes generated for :class:`~litestar.security.jwt.JWTCookieAuth` and
+        :class:`~litestar.security.jwt.OAuth2PasswordBearerAuth`, which did not validate against the OpenAPI
+        specification. Both backends accept the token in a header or in a cookie, and now document each with its own
+        scheme: the header with an ``http`` Bearer scheme, respectively an ``oauth2`` scheme whose password flow
+        always includes ``scopes``, and the cookie with an ``apiKey`` scheme named after
+        ``openapi_security_scheme_name`` followed by ``Cookie``. The document's security requirements list both, so
+        either is accepted. Security configs can return several requirements from the new
+        :attr:`~litestar.security.AbstractSecurityConfig.security_requirements` property; the cookie's requirement
+        is only added if ``openapi_components`` declares its scheme.
+
+        When ``auth_header`` is not ``Authorization``, :class:`~litestar.security.jwt.JWTAuth` and
+        :class:`~litestar.security.jwt.JWTCookieAuth` document the header with an ``apiKey`` scheme naming that header
+        instead of an ``http`` Bearer scheme, which implies the ``Authorization`` header. Its value is still
+        ``Bearer <token>``.
+
     .. change:: OpenAPI: Generate model schemas with pydantic and msgspec
         :type: feature
         :breaking:

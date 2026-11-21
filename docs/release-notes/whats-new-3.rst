@@ -185,6 +185,18 @@ as plain strings. Component schemas of DTOs that forbid unknown fields set
 ``additionalProperties`` to ``false``.
 
 
+OpenAPI security schemes of the JWT backends
+--------------------------------------------
+
+:class:`~litestar.security.jwt.JWTCookieAuth` and
+:class:`~litestar.security.jwt.OAuth2PasswordBearerAuth` document the cookie with a second
+``apiKey`` security scheme, named after ``openapi_security_scheme_name`` followed by
+``Cookie``, and add a security requirement for it next to the existing one. With an
+``auth_header`` other than ``Authorization``, :class:`~litestar.security.jwt.JWTAuth` and
+:class:`~litestar.security.jwt.JWTCookieAuth` document the header as an ``apiKey`` scheme.
+Clients generated from the document may need to be regenerated.
+
+
 Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
 -------------------------------------------------------------------------------
 

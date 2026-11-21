@@ -31,6 +31,10 @@ UserType = TypeVar("UserType")
 TokenT = TypeVar("TokenT", bound=Token, default=Token)
 
 
+def _cookie_security_scheme(key: str, description: str) -> SecurityScheme:
+    return SecurityScheme(type="apiKey", name=key, security_scheme_in="cookie", description=description)
+
+
 class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, TokenT]):
     """Base class for JWT Auth backends"""
 
@@ -104,16 +108,24 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         Returns:
             An :class:`Components <litestar.openapi.spec.components.Components>` instance.
         """
-        return Components(
-            security_schemes={
-                self.openapi_security_scheme_name: SecurityScheme(
-                    type="http",
-                    scheme="Bearer",
-                    bearer_format="JWT",
-                    description=self.description,
-                )
-            }
+        return Components(security_schemes={self.openapi_security_scheme_name: self._header_security_scheme})
+
+    @property
+    def _header_security_scheme(self) -> SecurityScheme:
+        if self.auth_header.lower() == "authorization":
+            return SecurityScheme(type="http", scheme="Bearer", bearer_format="JWT", description=self.description)
+        return SecurityScheme(
+            type="apiKey", name=self.auth_header, security_scheme_in="header", description=self.description
         )
+
+    @property
+    def openapi_cookie_security_scheme_name(self) -> str:
+        """The name of the OpenAPI security scheme documenting the cookie, for backends that accept one.
+
+        Returns:
+            :attr:`openapi_security_scheme_name` followed by ``Cookie``.
+        """
+        return f"{self.openapi_security_scheme_name}Cookie"
 
     @property
     def security_requirement(self) -> SecurityRequirement:
@@ -127,6 +139,18 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             dictionary.
         """
         return {self.openapi_security_scheme_name: []}
+
+    @property
+    def security_requirements(self) -> list[SecurityRequirement]:
+        """Return :attr:`security_requirement`, and the cookie's requirement if :attr:`openapi_components` declares it.
+
+        Returns:
+            A list of OpenAPI 3.1 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` dictionaries.
+        """
+        requirements = [self.security_requirement]
+        if self.openapi_cookie_security_scheme_name in (self.openapi_components.security_schemes or {}):
+            requirements.append({self.openapi_cookie_security_scheme_name: []})
+        return requirements
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -257,7 +281,9 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             The encoded token formatted for the HTTP headers
         """
         security = self.openapi_components.security_schemes.get(self.openapi_security_scheme_name, None)  # type: ignore[union-attr]
-        return f"{security.scheme} {encoded_token}" if isinstance(security, SecurityScheme) else encoded_token
+        if not isinstance(security, SecurityScheme):
+            return encoded_token
+        return f"{security.scheme or 'Bearer'} {encoded_token}"
 
 
 @dataclass
@@ -462,19 +488,15 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     def openapi_components(self) -> Components:
         """Create OpenAPI documentation for the JWT Cookie auth scheme.
 
+        The token is accepted in the ``auth_header`` header or in the cookie, documented by two security schemes.
+
         Returns:
             A :class:`Components <litestar.openapi.spec.components.Components>` instance.
         """
         return Components(
             security_schemes={
-                self.openapi_security_scheme_name: SecurityScheme(
-                    type="http",
-                    scheme="Bearer",
-                    name=self.key,
-                    security_scheme_in="cookie",
-                    bearer_format="JWT",
-                    description=self.description,
-                )
+                self.openapi_security_scheme_name: self._header_security_scheme,
+                self.openapi_cookie_security_scheme_name: _cookie_security_scheme(self.key, self.description),
             }
         )
 
@@ -740,12 +762,14 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
         """
         return OAuthFlow(
             token_url=self.token_url,
-            scopes=self.oauth_scopes,
+            scopes=self.oauth_scopes or {},
         )
 
     @property
     def openapi_components(self) -> Components:
         """Create OpenAPI documentation for the OAUTH2 Password bearer auth scheme.
+
+        The token is accepted in the ``auth_header`` header or in the cookie, documented by two security schemes.
 
         Returns:
             An :class:`Components <litestar.openapi.spec.components.Components>` instance.
@@ -754,13 +778,10 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
             security_schemes={
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="oauth2",
-                    scheme="Bearer",
-                    name=self.auth_header,
-                    security_scheme_in="header",
                     flows=OAuthFlows(password=self.oauth_flow),
-                    bearer_format="JWT",
                     description=self.description,
-                )
+                ),
+                self.openapi_cookie_security_scheme_name: _cookie_security_scheme(self.key, self.description),
             }
         )
 
