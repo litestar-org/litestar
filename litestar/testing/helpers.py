@@ -169,7 +169,7 @@ def create_test_client(
         cors_config: If set, configures CORS handling for the application.
         csrf_config: If set, enables CSRF protection.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
-        dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
@@ -423,7 +423,7 @@ def create_async_test_client(
         cors_config: If set, configures CORS handling for the application.
         csrf_config: If set, enables CSRF protection.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
-        dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.

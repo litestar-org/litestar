@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional
 import pytest
 
 from litestar import get
-from litestar.di import Provide
+from litestar.di import Provide, Provider
 from litestar.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
@@ -46,6 +46,23 @@ def test_abstract_security_config_sets_dependencies(session_backend_config_memor
 
     with create_test_client([], on_app_init=[security_config.on_app_init]) as client:
         assert client.app.dependencies.get("value")
+
+
+def test_abstract_security_config_sets_sequence_of_providers(
+    session_backend_config_memory: ServerSideSessionConfig,
+) -> None:
+    async def provide_value() -> int:
+        return 13
+
+    provider = Provider(provide_value, key="value")
+    security_config = SessionAuth[Any, ServerSideSessionBackend](
+        retrieve_user_handler=retrieve_user_handler,
+        session_backend_config=session_backend_config_memory,
+        dependencies=[provider],
+    )
+
+    with create_test_client([], on_app_init=[security_config.on_app_init]) as client:
+        assert client.app.dependencies == {"value": provider}
 
 
 @pytest.mark.filterwarnings("ignore:Middleware 'SessionAuthMiddleware' exclude pattern")

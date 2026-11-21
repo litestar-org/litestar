@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeGuard, TypeVar, cast
 
 import pydantic
 
-from litestar._signature.types import ExtendedMsgSpecValidationError
+from litestar._request_parameters.validation import ExtendedMsgSpecValidationError
 from litestar.plugins import InitPlugin
 from litestar.utils import is_class_and_subclass
 

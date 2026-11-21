@@ -10,7 +10,7 @@ from pytest_codspeed import BenchmarkFixture
 
 from litestar import Litestar, get
 from litestar._openapi.plugin import OpenAPIPlugin
-from litestar._signature import SignatureModel
+from litestar.di._route_handler import HandlerInjectionSetup, create_handler_injection_setup
 from litestar.dto import DataclassDTO
 from litestar.dto._backend import DTOBackend
 from litestar.dto._codegen_backend import DTOCodegenBackend
@@ -18,7 +18,6 @@ from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.params import FromPath, FromQuery
 from litestar.typing import FieldDefinition
-from litestar.utils.signature import ParsedSignature
 
 pytestmark = pytest.mark.benchmark
 
@@ -57,7 +56,8 @@ def test_openapi_schema_500_routes(benchmark: BenchmarkFixture) -> None:
     assert len(schema["paths"]) == 500
 
 
-def test_signature_model_create(benchmark: BenchmarkFixture) -> None:
+def test_handler_injection_setup_create(benchmark: BenchmarkFixture) -> None:
+    @get("/")
     async def fn(
         a: FromQuery[int],
         b: FromQuery[str],
@@ -70,17 +70,15 @@ def test_signature_model_create(benchmark: BenchmarkFixture) -> None:
     ) -> None:
         return None
 
-    parsed_signature = ParsedSignature.from_fn(fn, {})
-    model = benchmark(
-        lambda: SignatureModel.create(
-            dependency_name_set=set(),
-            fn=fn,
-            parsed_signature=parsed_signature,
-            data_dto=None,
-            type_decoders=[],
+    app = Litestar(route_handlers=[fn], openapi_config=None)
+    route_handler = app.routes[0].route_handlers[0]  # type: ignore[union-attr]
+    setup = benchmark(
+        lambda: create_handler_injection_setup(
+            route_handler, app, connection_class=route_handler.request_class, accepts_body=False
         )
     )
-    assert issubclass(model, SignatureModel)
+    assert isinstance(setup, HandlerInjectionSetup)
+    assert len(setup.request_parameter_definitions) == 8
 
 
 @dataclass

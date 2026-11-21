@@ -197,7 +197,7 @@ requires = ["hatchling"]
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
-omit = ["*/tests/*", "*/litestar/_kwargs/types.py"]
+omit = ["*/tests/*"]
 parallel = true
 plugins = ["covdefaults"]
 source = ["litestar"]
@@ -245,6 +245,7 @@ enable_error_code = [
   "possibly-undefined",
   "redundant-self",
 ]
+enable_incomplete_feature = ["TypeForm"]
 packages = ["litestar", "tests", "docs.examples"]
 plugins = ["pydantic.mypy"]
 python_version = "3.11"

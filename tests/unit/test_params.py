@@ -5,9 +5,10 @@ import pytest
 
 from litestar import Controller, Litestar, MediaType, get, post
 from litestar.di import NamedDependency, Provide
+from litestar.di.exceptions import MissingProviderError
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import Body, FromQuery, QueryParameter, SkipValidation
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import TestClient, create_test_client
 
 pytestmark = pytest.mark.filterwarnings("ignore::litestar.exceptions.LitestarDeprecationWarning")
@@ -85,7 +86,7 @@ def test_dependency_not_provided_and_no_default() -> None:
     def test(value: NamedDependency[int]) -> dict[str, int]:
         return {"value": value}
 
-    with pytest.raises(ImproperlyConfiguredException):
+    with pytest.raises(MissingProviderError, match="has no provider for dependency 'value'"):
         Litestar(route_handlers=[test])
 
 
@@ -105,25 +106,6 @@ def test_dependency_provided_on_controller() -> None:
     with create_test_client(route_handlers=[C]) as client:
         resp = client.get("/")
     assert resp.json() == {"value": 13}
-
-
-def test_dependency_skip_validation() -> None:
-    @get("/validated")
-    def validated(value: NamedDependency[int]) -> dict[str, int]:
-        return {"value": value}
-
-    @get("/skipped")
-    def skipped(value: NamedDependency[SkipValidation[int]]) -> dict[str, int]:
-        return {"value": value}
-
-    with create_test_client(
-        route_handlers=[validated, skipped], dependencies={"value": Provide(lambda: "str", sync_to_thread=False)}
-    ) as client:
-        validated_resp = client.get("/validated")
-        assert validated_resp.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        skipped_resp = client.get("/skipped")
-        assert skipped_resp.status_code == HTTP_200_OK
-        assert skipped_resp.json() == {"value": "str"}
 
 
 def test_dependency_skip_validation_with_default() -> None:
