@@ -245,7 +245,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
                 channels_to_unsubscribe.add(channel)
 
         if all(subscriber not in queues for queues in self._channels.values()):
-            await subscriber.put(None)  # this will stop any running task or generator by breaking the inner loop
+            subscriber._close()  # this will stop any running task or generator by breaking the inner loop
             if subscriber.is_running:
                 await subscriber.stop()
 
@@ -288,7 +288,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         for channel in channels:
             history = await self._backend.get_history(channel, limit)
             for entry in history:
-                await subscriber.put(entry)
+                subscriber.put_nowait(entry)
 
     async def _ws_handler_func(self, channel_name: FromPath[str], socket: WebSocket) -> None:
         await socket.accept()
@@ -301,7 +301,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
                 await self.put_subscriber_history(subscriber, channels=channel_name, limit=self._history_limit)
 
             # use the background task, so we can block on receive(), breaking the loop when a connection closes
-            async with subscriber.run_in_background(on_event):
+            async with subscriber.run_in_background(on_event, join=False):
                 while (await socket.receive())["type"] != "websocket.disconnect":
                     continue
 
