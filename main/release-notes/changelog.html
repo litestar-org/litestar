@@ -1517,6 +1517,17 @@ a WebSocket handler with such a declaration would fail.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5227">https://github.com/litestar-org/litestar/pull/5227</a></span></p>
 </div>
 </dd>
+<dt>Fix channel subscriptions hanging after a send error or a full backlog<a class="headerlink reference internal" href="#3.0.0-fix channel subscriptions hanging after a send error or a full backlog" id="3.0.0-fix channel subscriptions hanging after a send error or a full backlog">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where a channel subscription could hang forever, keeping the
+subscriber registered: after an error while sending an event (for example to a
+disconnected WebSocket client), after a <code class="docutils literal notranslate"><span class="pre">dropleft</span></code> backlog had overflowed,
+when unsubscribing or replaying history with a full <code class="docutils literal notranslate"><span class="pre">backoff</span></code> backlog, or when
+a WebSocket client stopped reading before disconnecting. The send error is now
+logged, a full backlog no longer blocks, and the WebSocket handler no longer
+waits to send queued events after the client disconnects.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5218">https://github.com/litestar-org/litestar/pull/5218</a></span></p>
+</div>
+</dd>
 <dt>Keep publishing channel messages after a backend error<a class="headerlink reference internal" href="#3.0.0-keep publishing channel messages after a backend error" id="3.0.0-keep publishing channel messages after a backend error">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that stopped <a class="reference internal" href="../reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin" title="litestar.channels.plugin.ChannelsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelsPlugin</span></code></a> from publishing
 any further messages after the backend raised an error for one of them, for
