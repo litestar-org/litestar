@@ -449,6 +449,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#3.0.0">3.0.0</a><ul>
 <li><a class="reference internal" href="#3.0.0-feature">Features</a></li>
 <li><a class="reference internal" href="#3.0.0-bugfix">Bugfixes</a></li>
+<li><a class="reference internal" href="#3.0.0-misc">Other changes</a></li>
 </ul>
 </li>
 </ul>
@@ -1640,6 +1641,19 @@ Previously, this fields was nullable and not required.</p>
 <dt>Fix KeyError when ClassVar exists on msgspec Struct<a class="headerlink reference internal" href="#3.0.0-fix keyerror when classvar exists on msgspec struct" id="3.0.0-fix keyerror when classvar exists on msgspec struct">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug in <a class="reference internal" href="../reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO" title="litestar.dto.msgspec_dto.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">MsgspecDTO</span></code></a> where a KeyError was raised if a <a class="reference external" href="https://msgspec.dev/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a> contained a <code class="xref py py-class docutils literal notranslate"><span class="pre">ClassVar</span></code>. ClassVars are now correctly skipped when generating field definitions.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/4665">https://github.com/litestar-org/litestar/pull/4665</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="3.0.0-misc">
+<h3>Other changes<a class="headerlink" href="#3.0.0-misc" title="Link to this heading">¶</a></h3>
+<dl>
+<dt>DTO: Identify the data a handler receives through its body marker<a class="headerlink reference internal" href="#3.0.0-dto: identify the data a handler receives through its body marker" id="3.0.0-dto: identify the data a handler receives through its body marker">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Refactor <a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_for_field_definition" title="litestar.dto.base_dto.AbstractDTO.create_for_field_definition"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_for_field_definition()</span></code></a>
+and <a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema" title="litestar.dto.base_dto.AbstractDTO.create_openapi_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_openapi_schema()</span></code></a> to identify
+request vs. response body by the markers on the parameter itself, instead of its
+name (<code class="docutils literal notranslate"><span class="pre">data</span></code>).</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5242">https://github.com/litestar-org/litestar/pull/5242</a></span></p>
 </div>
 </dd>
 </dl>
