@@ -1,19 +1,3 @@
-"""Library-generated schemas: the types schema plugins defer to a library such as msgspec or pydantic.
-
-Documenting one OpenAPI document runs four phases, all driven by
-:class:`~litestar._openapi.schema_generation.library.components.LibraryComponents`:
-
-1. Collect: while paths are documented, schema plugins get a placeholder reference for each deferred type
-   (``LibraryComponents.placeholder``, reached through ``SchemaCreator.for_library``).
-2. Resolve: ``LibraryComponents.resolve`` runs each :class:`LibraryResolver` in rounds until every request has a
-   schema; a resolver returns :class:`~litestar._openapi.schema_generation.library.graph.ResolvedSchemas`, schemas
-   keyed by :class:`~litestar._openapi.schema_generation.library.graph.SchemaKey` with their name candidates.
-3. Freeze: ``LibraryComponents.freeze`` merges identical mode pairs and finds the reachable schemas (``graph``),
-   names every component (``naming.name_components``), converts the schemas to OpenAPI (``converter``) and returns
-   an immutable ``FrozenLibrarySchemas``.
-4. Point references: ``LibraryComponents.point_references`` points the placeholders at their components.
-"""
-
 import math
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable, Sequence
