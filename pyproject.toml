@@ -284,7 +284,6 @@ module = [
   "jsbeautifier.*",
   "pytimeparse.*",
   "importlib_resources",
-  "exceptiongroup",
   "zstandard",
   "zstandard.*"
 ]
