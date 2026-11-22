@@ -386,7 +386,8 @@ an informative exception will be raised.
 The ``scope`` the handler receives is a copy, whether or not the handler is a mount, so top-level keys the wrapped
 application adds, replaces or removes are not seen by the outer application. The copy is shallow, so nested values such
 as ``scope["state"]`` are still shared. Pass ``copy_scope=False`` if the wrapped application is meant to communicate with
-the outer application through the scope.
+the outer application through the scope. If applications should only share the scope, but not its state, set
+``copy_state=True``.
 
 See the :class:`ASGIRouteHandler API reference documentation <.handlers.asgi_handlers.ASGIRouteHandler>` for full
 details on the :func:`@asgi() <.handlers.asgi>` :term:`decorator` and the :term:`kwargs <argument>` it accepts.
