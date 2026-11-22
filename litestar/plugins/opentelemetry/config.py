@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.exceptions import MissingDependencyException
-from litestar.middleware.base import DefineMiddleware
 from litestar.plugins.opentelemetry._utils import get_route_details_from_scope
 from litestar.plugins.opentelemetry.middleware import (
     OpenTelemetryInstrumentationMiddleware,
@@ -109,10 +108,10 @@ class OpenTelemetryConfig:
     """
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Create an instance of :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>`.
+    def middleware(self) -> OpenTelemetryInstrumentationMiddleware:
+        """Create an instance of :attr:`middleware_class`, configured from this config instance.
 
         Returns:
-            An instance of ``DefineMiddleware``.
+            An instance of :attr:`middleware_class`.
         """
-        return DefineMiddleware(self.middleware_class, config=self)
+        return self.middleware_class(config=self)
