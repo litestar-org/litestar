@@ -217,7 +217,10 @@ def test_provider_binding_layer_parameter_is_copied() -> None:
 
     provider = Provider(provide_value, key="value", sync_to_thread=True)
     app = Litestar(
-        [handler], dependencies=[provider], parameters={"limit": QueryParameter(name="page-limit")}, openapi_config=None
+        [handler],
+        dependencies=[provider],
+        parameters={"limit": QueryParameter(annotation=int, name="page-limit")},
+        openapi_config=None,
     )
     held = app.route_handler_method_map["/"]["GET"]._injection_setup.registry.providers["value"]
 

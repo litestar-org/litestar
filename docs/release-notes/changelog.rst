@@ -6,6 +6,29 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Don't allow layer parameters without an associated type
+        :type: bugfix
+        :breaking:
+        :pr: 5247
+
+        Fix a bug that would cause the constraints of a layer parameter, e.g.
+        ``parameters={"limit": QueryParameter(gt=0)}``, to be silently ignored if no
+        type information was associated with it. That is, it was declared without an
+        explicit ``annotation=`` and did not correspond to any declared parameter in a
+        handler or dependency provider.
+
+        Since these cases are ambiguous (no type declared anywhere means there's no
+        type to provide in the OpenAPI schema, and no type to validate against), they
+        will now raise an :exc:`ImproperlyConfiguredException`.
+
+    .. change:: Add ``documentation_only`` to parameter declarations
+        :type: feature
+        :pr: 5247
+
+        Add :attr:`~litestar.params.ParameterKwarg.documentation_only`. If set, the
+        constraints of a parameter are included in the OpenAPI schema, but not applied
+        to the value of a request.
+
     .. change:: DTO: Identify the data a handler receives through its body marker
         :type: misc
         :breaking:

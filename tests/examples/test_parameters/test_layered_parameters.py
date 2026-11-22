@@ -53,3 +53,14 @@ def test_layered_parameters(params: dict[str, Any], status_code: int, expected: 
         assert response.status_code == status_code, response.json()
         if expected:
             assert response.json() == expected
+
+
+def test_layered_parameters_documentation_only() -> None:
+    from docs.examples.parameters.layered_parameters_documentation_only import app
+
+    with TestClient(app=app) as client:
+        assert client.get("/", headers={"X-API-Version": "latest"}).status_code == 200
+        assert client.get("/").status_code == 400
+
+    (parameter,) = app.openapi_schema.to_schema()["paths"]["/"]["get"]["parameters"]
+    assert parameter["schema"] == {"type": "string", "pattern": r"^\d+\.\d+$"}
