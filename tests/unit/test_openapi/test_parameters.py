@@ -338,6 +338,20 @@ def test_layer_parameter_bound_by_marker_documents_handler_default() -> None:
     assert parameter["schema"]["default"] == 5
 
 
+def test_documentation_only_parameter_documents_constraint() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    app = Litestar(
+        route_handlers=[handler],
+        parameters={"limit": QueryParameter(annotation=int, gt=3, documentation_only=True)},
+    )
+    (parameter,) = app.openapi_schema.to_schema()["paths"]["/"]["get"]["parameters"]
+
+    assert parameter["schema"]["exclusiveMinimum"] == 3
+
+
 def test_parameters_of_provider_handler_does_not_use_not_documented() -> None:
     async def provide_limit(limit: FromQuery[int]) -> int:
         return limit

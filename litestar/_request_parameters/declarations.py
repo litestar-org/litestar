@@ -199,8 +199,9 @@ def merge_request_parameters(
 
     Raises:
         ImproperlyConfiguredException: If the declarations of a parameter differ, a parameter
-            declares a request parameter that is neither required nor has a default, or a
-            required path parameter is missing from one of ``paths``.
+            declares a request parameter that is neither required nor has a default, a
+            required path parameter is missing from one of ``paths``, or only layer parameters
+            without ``annotation`` declare a request parameter.
     """
     declarations: dict[str, list[_Declaration]] = {}
     for name, field in layer_parameters.items():
@@ -218,6 +219,11 @@ def merge_request_parameters(
         source = _describe_source(param_type, name)
         field_definition = _merge_declarations(source, key_declarations)
         declarers = f"{' and '.join(map(str, key_declarations))} declare{'s' if len(key_declarations) == 1 else ''}"
+        if not any(declaration.declares_type for declaration in key_declarations):
+            raise ImproperlyConfiguredException(
+                f"{declarers} {source} without 'annotation', and no parameter of the handler or its "
+                "dependencies declares it"
+            )
         # a layer parameter cannot declare a default; a parameter receiving the value must
         if (
             not field_definition.is_required
