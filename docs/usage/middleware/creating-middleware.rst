@@ -2,8 +2,8 @@ Creating Middleware
 ===================
 
 As mentioned in :ref:`using middleware <using-middleware>`, a middleware in Litestar
-is **any callable** that takes a kwarg called ``app``, which is the next ASGI handler, i.e. an
-:class:`~litestar.types.ASGIApp`, and returns an ``ASGIApp``.
+is **any callable** that takes the next ASGI handler, i.e. an
+:class:`~litestar.types.ASGIApp`, as its only argument, and returns an ``ASGIApp``.
 
 The example previously given was using a factory function, i.e.:
 

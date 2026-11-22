@@ -1,7 +1,6 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
 import logging
-from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from functools import partial
 from typing import TYPE_CHECKING, Any, cast
@@ -40,22 +39,10 @@ class BaseMiddlewareRequestLoggingMiddleware(BaseHTTPMiddleware):
         return await call_next(request)  # type: ignore[arg-type, return-value]
 
 
-class MiddlewareWithArgsAndKwargs(BaseHTTPMiddleware):
-    def __init__(self, app: Any, arg: int = 0, *, kwarg: str) -> None:
-        super().__init__(app)
-        self.arg = arg
-        self.kwarg = kwarg
-
-    async def dispatch(  # type: ignore[empty-body, override]
-        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
-    ) -> Response: ...
-
-
 @pytest.mark.parametrize(
     "middleware",
     [
         BaseMiddlewareRequestLoggingMiddleware,
-        partial(MiddlewareWithArgsAndKwargs, arg=1, kwarg="123Jeronimo"),
         partial(RequestLoggingMiddleware, kwarg="123Jeronimo"),
     ],
 )
@@ -76,18 +63,9 @@ def test_custom_middleware_processing(middleware: Any) -> None:
 
         middleware_instance, *_ = unpacked_middleware
 
-        assert isinstance(
-            middleware_instance,
-            (
-                RequestLoggingMiddleware,
-                BaseMiddlewareRequestLoggingMiddleware,
-                MiddlewareWithArgsAndKwargs,
-            ),
-        )
-        if isinstance(middleware_instance, (RequestLoggingMiddleware, MiddlewareWithArgsAndKwargs)):
+        assert isinstance(middleware_instance, (RequestLoggingMiddleware, BaseMiddlewareRequestLoggingMiddleware))
+        if isinstance(middleware_instance, RequestLoggingMiddleware):
             assert middleware_instance.kwarg == "123Jeronimo"
-        if isinstance(middleware_instance, MiddlewareWithArgsAndKwargs):
-            assert middleware_instance.arg == 1
 
 
 def test_request_body_logging_middleware(mocker: MockerFixture) -> None:
