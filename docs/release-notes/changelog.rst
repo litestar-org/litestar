@@ -6,6 +6,21 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Add option to run the ASGI lifespan protocol for ``asgi`` handlers
+        :type: feature
+
+        Add a flag ``lifespan`` to :func:`~litestar.handlers.asgi`, defaulting to
+        ``False``. When set to ``True``, the ASGI lifespan protocol will be ran for the
+        handler, after the host app's ``on_startup`` hooks.
+
+    .. change:: Add ``copy_state`` option to ASGI route handlers
+        :type: feature
+
+        Add a ``copy_state`` flag to :func:`~litestar.handlers.asgi`, defaulting to
+        ``False``. It works similar to ``copy_scope``, and, if set, the mounted
+        application will receive a shallow copy of ``scope["state"]``, so values it sets
+        there are not seen by the outer application.
+
     .. change:: Don't allow layer parameters without an associated type
         :type: bugfix
         :breaking:

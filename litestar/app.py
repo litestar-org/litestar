@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
 from uuid import UUID
 
 from litestar._asgi import ASGIRouter
-from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
+from litestar._asgi.utils import get_route_handlers, run_asgi_lifespan, wrap_in_exception_handler
 from litestar._layers.utils import narrow_dependencies
 from litestar._openapi.plugin import OpenAPIPlugin
 from litestar._openapi.schema_generation import openapi_schema_plugins
@@ -653,8 +653,13 @@ class Litestar(Router):
         managers, before the ``on_startup`` hooks, and closes it before the lifespan
         managers exit.
 
+        It runs the ASGI lifespan of every :class:`~.handlers.ASGIRouteHandler` declared
+        with ``lifespan=True``.
+
         Raises:
-            RuntimeError: If the lifespan of this app is already running.
+            RuntimeError: If the lifespan of this app is already running, or if an ASGI
+                application run with ``lifespan=True`` does not complete its startup or
+                shutdown and raises no exception of its own.
         """
         from litestar.di import DIContext
 
@@ -685,6 +690,14 @@ class Litestar(Router):
 
             for hook in self.on_startup:
                 await self._call_lifespan_hook(hook)
+
+            # a handler has a route per path
+            for handler in dict.fromkeys(
+                route.route_handler
+                for route in self.routes
+                if isinstance(route, ASGIRoute) and route.route_handler.lifespan
+            ):
+                await exit_stack.enter_async_context(run_asgi_lifespan(handler))
 
             yield
 
