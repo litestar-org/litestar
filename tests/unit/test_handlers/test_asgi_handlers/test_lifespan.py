@@ -129,7 +129,7 @@ def test_lifespan_state_per_handler() -> None:
 
 def test_lifespan_state_not_in_request_scope_of_other_handler() -> None:
     @asgi("/sub", is_mount=True, lifespan=True)
-    async def mounted_app(scope: LifeSpanScope, receive: LifeSpanReceive, send: LifeSpanSend) -> None:
+    async def mounted_app(scope: Any, receive: LifeSpanReceive, send: LifeSpanSend) -> None:
         await receive()
         scope["state"]["client"] = "client"
         await send({"type": "lifespan.startup.complete"})
@@ -229,7 +229,7 @@ async def test_second_lifespan_starts_with_empty_state() -> None:
     states_at_startup: list[dict[str, Any]] = []
 
     @asgi("/sub", is_mount=True, lifespan=True)
-    async def mounted_app(scope: LifeSpanScope, receive: LifeSpanReceive, send: LifeSpanSend) -> None:
+    async def mounted_app(scope: Any, receive: LifeSpanReceive, send: LifeSpanSend) -> None:
         await receive()
         states_at_startup.append(dict(scope["state"]))
         scope["state"]["client"] = "client"
