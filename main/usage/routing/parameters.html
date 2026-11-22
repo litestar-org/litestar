@@ -465,7 +465,11 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#validation-constraints">Validation constraints</a></li>
 <li><a class="reference internal" href="#openapi-metadata">OpenAPI metadata</a></li>
 <li><a class="reference internal" href="#customizing-enum-schemas">Customizing enum schemas</a></li>
-<li><a class="reference internal" href="#layered-parameters">Layered Parameters</a></li>
+<li><a class="reference internal" href="#layered-parameters">Layered Parameters</a><ul>
+<li><a class="reference internal" href="#the-type-of-a-layered-parameter">The type of a layered parameter</a></li>
+<li><a class="reference internal" href="#documenting-constraints-without-applying-them">Documenting constraints without applying them</a></li>
+</ul>
+</li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -1217,6 +1221,54 @@ particular route.</p></li>
 (<code class="docutils literal notranslate"><span class="pre">FromQuery[str]</span></code>), and <code class="docutils literal notranslate"><span class="pre">path_param</span></code> is a <a class="reference internal" href="#path-parameters"><span class="std std-ref">path parameter</span></a>
 (<code class="docutils literal notranslate"><span class="pre">FromPath[int]</span></code>).</p></li>
 </ul>
+<section id="the-type-of-a-layered-parameter">
+<h3>The type of a layered parameter<a class="headerlink" href="#the-type-of-a-layered-parameter" title="Link to this heading">¶</a></h3>
+<p>The type information of a layer parameter can come from one of two sources:</p>
+<ol class="arabic simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">annotation</span></code> parameter on the declaration itself</p></li>
+<li><p>The type annotation at the corresponding usage site</p></li>
+</ol>
+<p>A layer parameter <em>must</em> be declared with a type in at least one of those locations,
+so an OpenAPI schema can be generated for it, and validations performed against it.</p>
+<p>If a layer parameter does not have any type information associated with it, an exception
+will be raised at app startup.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A parameter declared on the application layer applies to <em>all</em> routes, including
+the automatically generated <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code>. Since these handlers don’t declare any
+parameters, layer parameters on the app level always needs to set <code class="docutils literal notranslate"><span class="pre">annotation=</span></code>
+explicitly.</p>
+</div>
+</section>
+<section id="documenting-constraints-without-applying-them">
+<h3>Documenting constraints without applying them<a class="headerlink" href="#documenting-constraints-without-applying-them" title="Link to this heading">¶</a></h3>
+<p>Constraints set in layer parameters are enforced by Litestar’s validation machinery, but
+should this not be desired, setting <code class="docutils literal notranslate"><span class="pre">documentation_only=True</span></code> on the parameter will
+skip this validation step:</p>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Documenting the pattern of a header without validating it</span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.params</span><span class="w"> </span><span class="kn">import</span> <span class="n">HeaderParameter</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="7">    <span class="k">return</span> <span class="s2">&quot;ok&quot;</span>
+</span><span data-line="8">
+</span><span data-line="9">
+</span><span data-line="10"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="11">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span>
+</span><span data-line="12">    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="13">        <span class="s2">&quot;api_version&quot;</span><span class="p">:</span> <span class="n">HeaderParameter</span><span class="p">(</span>
+</span><span data-line="14">            <span class="n">annotation</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;X-API-Version&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^\d+\.\d+$&quot;</span><span class="p">,</span> <span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span>
+</span><span data-line="15">        <span class="p">),</span>
+</span><span data-line="16">    <span class="p">},</span>
+</span><span data-line="17"><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<p>The header is still required, since it is not declared with <code class="docutils literal notranslate"><span class="pre">required=False</span></code>.</p>
+</section>
 </section>
 </section>
 
