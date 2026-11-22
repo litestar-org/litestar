@@ -755,9 +755,13 @@ custom lifespan managers.</p>
 <p>It enters the app’s dependency context, if the app has one, after the lifespan
 managers, before the <code class="docutils literal notranslate"><span class="pre">on_startup</span></code> hooks, and closes it before the lifespan
 managers exit.</p>
+<p>It runs the ASGI lifespan of every <a class="reference internal" href="handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRouteHandler</span></code></a> declared
+with <code class="docutils literal notranslate"><span class="pre">lifespan=True</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.15)"><strong>RuntimeError</strong></a> – If the lifespan of this app is already running.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.15)"><strong>RuntimeError</strong></a> – If the lifespan of this app is already running, or if an ASGI
+    application run with <code class="docutils literal notranslate"><span class="pre">lifespan=True</span></code> does not complete its startup or
+    shutdown and raises no exception of its own.</p>
 </dd>
 </dl>
 </dd></dl>

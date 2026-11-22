@@ -457,7 +457,10 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#route-handlers">Route handlers</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#mounting-asgi-apps">Mounting ASGI Apps</a></li>
+<li><a class="reference internal" href="#mounting-asgi-apps">Mounting ASGI Apps</a><ul>
+<li><a class="reference internal" href="#running-the-lifespan-of-a-mounted-app">Running the lifespan of a mounted app</a></li>
+</ul>
+</li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -892,6 +895,8 @@ seen by the outer application - the path rewriting described above is performed 
 is shallow, so nested values such as <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code> are still shared. Pass <code class="docutils literal notranslate"><span class="pre">copy_scope=False</span></code> if the mounted
 application is meant to communicate with the outer application through the scope, for example by writing
 <code class="docutils literal notranslate"><span class="pre">scope[&quot;user&quot;]</span></code> for outer middleware to read.</p>
+<p>Pass <code class="docutils literal notranslate"><span class="pre">copy_state=True</span></code> to give the mounted application a shallow copy of <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code> as well, so the host application
+does not see the values set by the mounted application.</p>
 <p>Mounting is especially useful when you need to combine components of other ASGI applications - for example, for third
 party libraries. The following example is identical in principle to the one above, but it uses
 <a class="reference external" href="https://starlette.dev/">Starlette</a>:</p>
@@ -977,7 +982,34 @@ Python 3.14+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-</details><div class="admonition-why-litestar-uses-radix-based-routing admonition">
+</details><section id="running-the-lifespan-of-a-mounted-app">
+<h3>Running the lifespan of a mounted app<a class="headerlink" href="#running-the-lifespan-of-a-mounted-app" title="Link to this heading">¶</a></h3>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">lifespan=True</span></code> on the handler will run the ASGI lifespan protocol for the mounted application, as part of
+the host application’s lifespan.</p>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Mounting a Litestar app</span><a class="headerlink" href="#id14" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">asgi</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="6">    <span class="k">return</span> <span class="s2">&quot;Hello from the mounted app&quot;</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="n">mounted_app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">asgi</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some/sub-path&quot;</span><span class="p">,</span> <span class="n">is_mount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lifespan</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">mounted_app</span><span class="p">)])</span>
+</span></pre></div>
+</div>
+</div>
+<p>The mounted application starts after the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.params.on_startup" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_startup</span></code></a> hooks of the outer application
+and shuts down before the outer application does.</p>
+<p>Startup and shutdown failures of the mounted applications will be passed through, reporting as regular
+<code class="docutils literal notranslate"><span class="pre">lifespan.startup.failed</span></code> / <code class="docutils literal notranslate"><span class="pre">lifespan.shutdown.failed</span></code> events to the server.</p>
+<p>Litestar will merge the <code class="docutils literal notranslate"><span class="pre">state</span></code> of the <code class="docutils literal notranslate"><span class="pre">lifespan</span></code> scope into the outer application’s
+state. To isolate state of mounted apps, set <code class="docutils literal notranslate"><span class="pre">copy_state=True</span></code>, which will pass state
+as a shallow copy.</p>
+<div class="admonition-why-litestar-uses-radix-based-routing admonition">
 <p class="admonition-title">Why Litestar uses radix based routing</p>
 <p>The regex matching used by popular frameworks such as Starlette, FastAPI or Flask is very good at
 resolving path parameters fast, giving it an advantage when a URL has a lot of path parameters - what we can think
@@ -995,6 +1027,7 @@ somewhat slower resolution of path parameters.</p>
 an indepth discussion of the pertinent code.</p>
 </div>
 </div>
+</section>
 </section>
 </section>
 

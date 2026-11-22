@@ -547,6 +547,21 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Add option to run the ASGI lifespan protocol for <code class="docutils literal notranslate"><span class="pre">asgi</span></code> handlers<a class="headerlink reference internal" href="#3.0.0-add option to run the asgi lifespan protocol for" id="3.0.0-add option to run the asgi lifespan protocol for">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a flag <code class="docutils literal notranslate"><span class="pre">lifespan</span></code> to <a class="reference internal" href="../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">asgi()</span></code></a>, defaulting to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>. When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the ASGI lifespan protocol will be ran for the
+handler, after the host app’s <code class="docutils literal notranslate"><span class="pre">on_startup</span></code> hooks.</p>
+<p>References: </p>
+</div>
+</dd>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">copy_state</span></code> option to ASGI route handlers<a class="headerlink reference internal" href="#3.0.0-add" id="3.0.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a <code class="docutils literal notranslate"><span class="pre">copy_state</span></code> flag to <a class="reference internal" href="../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">asgi()</span></code></a>, defaulting to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>. It works similar to <code class="docutils literal notranslate"><span class="pre">copy_scope</span></code>, and, if set, the mounted
+application will receive a shallow copy of <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code>, so values it sets
+there are not seen by the outer application.</p>
+<p>References: </p>
+</div>
+</dd>
 <dt>Add <code class="docutils literal notranslate"><span class="pre">documentation_only</span></code> to parameter declarations<a class="headerlink reference internal" href="#3.0.0-add" id="3.0.0-add">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Add <a class="reference internal" href="../reference/params.html#litestar.params.ParameterKwarg.documentation_only" title="litestar.params.ParameterKwarg.documentation_only"><code class="xref py py-attr docutils literal notranslate"><span class="pre">documentation_only</span></code></a>. If set, the
 constraints of a parameter are included in the OpenAPI schema, but not applied
