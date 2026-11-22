@@ -541,78 +541,85 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="37">    <span class="n">field_definition</span><span class="p">:</span> <span class="n">FieldDefinition</span>
 </span><span data-line="38"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The parameter&#39;s declaration. Its ``kwarg_definition`` is the marker&quot;&quot;&quot;</span>
 </span><span data-line="39">
-</span><span data-line="40">    <span class="nd">@property</span>
-</span><span data-line="41">    <span class="k">def</span><span class="w"> </span><span class="nf">is_body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="42"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether a body marker declares the parameter&quot;&quot;&quot;</span>
-</span><span data-line="43">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span> <span class="ow">is</span> <span class="kc">None</span>
-</span><span data-line="44">
-</span><span data-line="45">    <span class="nd">@property</span>
-</span><span data-line="46">    <span class="k">def</span><span class="w"> </span><span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="47"><span class="w">        </span><span class="sd">&quot;&quot;&quot;The dependency key, ``&quot;&lt;param type&gt;:&lt;name&gt;&quot;`` with a header&#39;s name lower-cased, or</span>
-</span><span data-line="48"><span class="sd">        ``&quot;body:&quot;`` for the request body</span>
-</span><span data-line="49"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="50">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="51">            <span class="k">return</span> <span class="s2">&quot;body:&quot;</span>
-</span><span data-line="52">        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span> <span class="ow">is</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">HEADER</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-</span><span data-line="53">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">param_type</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span></div>
+</span><span data-line="40">    <span class="n">marker</span><span class="p">:</span> <span class="n">ParameterKwarg</span> <span class="o">|</span> <span class="n">BodyKwarg</span>
+</span><span data-line="41"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The parameter marker or body marker declaring the parameter&quot;&quot;&quot;</span>
+</span><span data-line="42">
+</span><span data-line="43">    <span class="nd">@property</span>
+</span><span data-line="44">    <span class="k">def</span><span class="w"> </span><span class="nf">is_body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="45"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether a body marker declares the parameter&quot;&quot;&quot;</span>
+</span><span data-line="46">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span> <span class="ow">is</span> <span class="kc">None</span>
+</span><span data-line="47">
+</span><span data-line="48">    <span class="nd">@property</span>
+</span><span data-line="49">    <span class="k">def</span><span class="w"> </span><span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="50"><span class="w">        </span><span class="sd">&quot;&quot;&quot;The dependency key, ``&quot;&lt;param type&gt;:&lt;name&gt;&quot;`` with a header&#39;s name lower-cased, or</span>
+</span><span data-line="51"><span class="sd">        ``&quot;body:&quot;`` for the request body</span>
+</span><span data-line="52"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="53">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="54">            <span class="k">return</span> <span class="s2">&quot;body:&quot;</span>
+</span><span data-line="55">        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span> <span class="ow">is</span> <span class="n">ParamType</span><span class="o">.</span><span class="n">HEADER</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</span><span data-line="56">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">param_type</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
-</span><span data-line="54">
-</span><span data-line="55">
-</span><span data-line="56"><span class="n">_RESERVED_REQUEST_VALUE_TYPES</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">(</span><span class="n">Headers</span><span class="p">,</span> <span class="n">QueryParams</span><span class="p">,</span> <span class="n">RequestCookies</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">RawBody</span><span class="p">)</span>
-</span><span data-line="57"><span class="sd">&quot;&quot;&quot;Annotations of the reserved request values, besides connection and state classes&quot;&quot;&quot;</span>
+</span><span data-line="57">
 </span><span data-line="58">
-</span><span data-line="59">
-</span><span data-line="60"><span class="k">def</span><span class="w"> </span><span class="nf">_reserved_request_value_key</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DependencyKey</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="61"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the key of the reserved request value ``field``&#39;s annotation names: the type, with a</span>
-</span><span data-line="62"><span class="sd">    parameterised class keyed by its class (``Request[Any, Any, State]`` by ``Request``). ``None``</span>
-</span><span data-line="63"><span class="sd">    if it names none</span>
-</span><span data-line="64"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="65">    <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">annotation</span> <span class="ow">in</span> <span class="n">_RESERVED_REQUEST_VALUE_TYPES</span><span class="p">:</span>
-</span><span data-line="66">        <span class="k">return</span> <span class="n">field</span><span class="o">.</span><span class="n">annotation</span>  <span class="c1"># type: ignore[no-any-return]</span>
-</span><span data-line="67">    <span class="k">if</span> <span class="ow">not</span> <span class="n">field</span><span class="o">.</span><span class="n">is_union</span> <span class="ow">and</span> <span class="n">field</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">((</span><span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">ImmutableState</span><span class="p">)):</span>
-</span><span data-line="68">        <span class="k">return</span> <span class="n">field</span><span class="o">.</span><span class="n">type_</span>  <span class="c1"># type: ignore[no-any-return]</span>
-</span><span data-line="69">    <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="70">
-</span><span data-line="71">
-</span><span data-line="72"><span class="k">def</span><span class="w"> </span><span class="nf">_request_parameter_for</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RequestParameter</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="73">    <span class="n">kwarg</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">kwarg_definition</span>
-</span><span data-line="74">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwarg</span><span class="p">,</span> <span class="n">ParameterKwarg</span><span class="p">):</span>
-</span><span data-line="75">        <span class="k">return</span> <span class="n">RequestParameter</span><span class="p">(</span>
-</span><span data-line="76">            <span class="n">parameter_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">kwarg</span><span class="o">.</span><span class="n">param_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">kwarg</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="n">name</span><span class="p">,</span> <span class="n">field_definition</span><span class="o">=</span><span class="n">field</span>
-</span><span data-line="77">        <span class="p">)</span>
-</span><span data-line="78">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwarg</span><span class="p">,</span> <span class="n">BodyKwarg</span><span class="p">):</span>
-</span><span data-line="79">        <span class="k">return</span> <span class="n">RequestParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">field_definition</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
-</span><span data-line="80">    <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="81">
-</span><span data-line="82">
-</span><span data-line="83"><span class="k">def</span><span class="w"> </span><span class="nf">_request_dependency</span><span class="p">(</span>
-</span><span data-line="84">    <span class="n">fn</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="n">FieldDefinition</span>
-</span><span data-line="85"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DependencyKey</span><span class="p">,</span> <span class="n">RequestParameter</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="86"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the key of the value of the request the parameter ``name`` declares, with</span>
-</span><span data-line="87"><span class="sd">    its :class:`RequestParameter` if it has a parameter or body marker. ``None`` if it</span>
-</span><span data-line="88"><span class="sd">    doesn&#39;t declare one.</span>
+</span><span data-line="59"><span class="n">_RESERVED_REQUEST_VALUE_TYPES</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">(</span><span class="n">Headers</span><span class="p">,</span> <span class="n">QueryParams</span><span class="p">,</span> <span class="n">RequestCookies</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">RawBody</span><span class="p">)</span>
+</span><span data-line="60"><span class="sd">&quot;&quot;&quot;Annotations of the reserved request values, besides connection and state classes&quot;&quot;&quot;</span>
+</span><span data-line="61">
+</span><span data-line="62">
+</span><span data-line="63"><span class="k">def</span><span class="w"> </span><span class="nf">_reserved_request_value_key</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DependencyKey</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="64"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the key of the reserved request value ``field``&#39;s annotation names: the type, with a</span>
+</span><span data-line="65"><span class="sd">    parameterised class keyed by its class (``Request[Any, Any, State]`` by ``Request``). ``None``</span>
+</span><span data-line="66"><span class="sd">    if it names none</span>
+</span><span data-line="67"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="68">    <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">annotation</span> <span class="ow">in</span> <span class="n">_RESERVED_REQUEST_VALUE_TYPES</span><span class="p">:</span>
+</span><span data-line="69">        <span class="k">return</span> <span class="n">field</span><span class="o">.</span><span class="n">annotation</span>  <span class="c1"># type: ignore[no-any-return]</span>
+</span><span data-line="70">    <span class="k">if</span> <span class="ow">not</span> <span class="n">field</span><span class="o">.</span><span class="n">is_union</span> <span class="ow">and</span> <span class="n">field</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">((</span><span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">ImmutableState</span><span class="p">)):</span>
+</span><span data-line="71">        <span class="k">return</span> <span class="n">field</span><span class="o">.</span><span class="n">type_</span>  <span class="c1"># type: ignore[no-any-return]</span>
+</span><span data-line="72">    <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="73">
+</span><span data-line="74">
+</span><span data-line="75"><span class="k">def</span><span class="w"> </span><span class="nf">_request_parameter_for</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RequestParameter</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="76">    <span class="n">kwarg</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">kwarg_definition</span>
+</span><span data-line="77">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwarg</span><span class="p">,</span> <span class="n">ParameterKwarg</span><span class="p">):</span>
+</span><span data-line="78">        <span class="k">return</span> <span class="n">RequestParameter</span><span class="p">(</span>
+</span><span data-line="79">            <span class="n">parameter_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="80">            <span class="n">param_type</span><span class="o">=</span><span class="n">kwarg</span><span class="o">.</span><span class="n">param_type</span><span class="p">,</span>
+</span><span data-line="81">            <span class="n">name</span><span class="o">=</span><span class="n">kwarg</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="n">name</span><span class="p">,</span>
+</span><span data-line="82">            <span class="n">field_definition</span><span class="o">=</span><span class="n">field</span><span class="p">,</span>
+</span><span data-line="83">            <span class="n">marker</span><span class="o">=</span><span class="n">kwarg</span><span class="p">,</span>
+</span><span data-line="84">        <span class="p">)</span>
+</span><span data-line="85">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwarg</span><span class="p">,</span> <span class="n">BodyKwarg</span><span class="p">):</span>
+</span><span data-line="86">        <span class="k">return</span> <span class="n">RequestParameter</span><span class="p">(</span><span class="n">parameter_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">field_definition</span><span class="o">=</span><span class="n">field</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="n">kwarg</span><span class="p">)</span>
+</span><span data-line="87">    <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="88">
 </span><span data-line="89">
-</span><span data-line="90"><span class="sd">    Without a marker, the annotation declares a reserved request value, with its type</span>
-</span><span data-line="91"><span class="sd">    becoming the key (e.g. ``Request[Any, Any, State]`` will use ``Request`` as a type</span>
-</span><span data-line="92"><span class="sd">    key)</span>
-</span><span data-line="93"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="94">    <span class="n">request_parameter</span> <span class="o">=</span> <span class="n">_request_parameter_for</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
-</span><span data-line="95">    <span class="k">if</span> <span class="n">request_parameter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="96">        <span class="k">return</span> <span class="n">request_parameter</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">request_parameter</span>
-</span><span data-line="97">
-</span><span data-line="98">    <span class="n">member_markers</span> <span class="o">=</span> <span class="p">[</span>
-</span><span data-line="99">        <span class="n">member</span><span class="o">.</span><span class="n">kwarg_definition</span>
-</span><span data-line="100">        <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">inner_types</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">is_union</span> <span class="k">else</span> <span class="p">())</span>
-</span><span data-line="101">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">member</span><span class="o">.</span><span class="n">kwarg_definition</span><span class="p">,</span> <span class="p">(</span><span class="n">ParameterKwarg</span><span class="p">,</span> <span class="n">BodyKwarg</span><span class="p">))</span>
-</span><span data-line="102">    <span class="p">]</span>
-</span><span data-line="103">    <span class="k">if</span> <span class="n">member_markers</span><span class="p">:</span>
-</span><span data-line="104">        <span class="k">raise</span> <span class="n">DIRegistrationError</span><span class="p">(</span>
-</span><span data-line="105">            <span class="sa">f</span><span class="s2">&quot;Parameter </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> of </span><span class="si">{</span><span class="n">_describe_callable</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="si">}</span><span class="s2"> carries a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">member_markers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &quot;</span>
-</span><span data-line="106">            <span class="s2">&quot;marker on a member of its union annotation. The marker must be on the whole annotation&quot;</span>
-</span><span data-line="107">        <span class="p">)</span>
-</span><span data-line="108">
-</span><span data-line="109">    <span class="n">key</span> <span class="o">=</span> <span class="n">_reserved_request_value_key</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
-</span><span data-line="110">    <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="90"><span class="k">def</span><span class="w"> </span><span class="nf">_request_dependency</span><span class="p">(</span>
+</span><span data-line="91">    <span class="n">fn</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="n">FieldDefinition</span>
+</span><span data-line="92"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DependencyKey</span><span class="p">,</span> <span class="n">RequestParameter</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="93"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the key of the value of the request the parameter ``name`` declares, with</span>
+</span><span data-line="94"><span class="sd">    its :class:`RequestParameter` if it has a parameter or body marker. ``None`` if it</span>
+</span><span data-line="95"><span class="sd">    doesn&#39;t declare one.</span>
+</span><span data-line="96">
+</span><span data-line="97"><span class="sd">    Without a marker, the annotation declares a reserved request value, with its type</span>
+</span><span data-line="98"><span class="sd">    becoming the key (e.g. ``Request[Any, Any, State]`` will use ``Request`` as a type</span>
+</span><span data-line="99"><span class="sd">    key)</span>
+</span><span data-line="100"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="101">    <span class="n">request_parameter</span> <span class="o">=</span> <span class="n">_request_parameter_for</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+</span><span data-line="102">    <span class="k">if</span> <span class="n">request_parameter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="103">        <span class="k">return</span> <span class="n">request_parameter</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">request_parameter</span>
+</span><span data-line="104">
+</span><span data-line="105">    <span class="n">member_markers</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="106">        <span class="n">member</span><span class="o">.</span><span class="n">kwarg_definition</span>
+</span><span data-line="107">        <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">inner_types</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">is_union</span> <span class="k">else</span> <span class="p">())</span>
+</span><span data-line="108">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">member</span><span class="o">.</span><span class="n">kwarg_definition</span><span class="p">,</span> <span class="p">(</span><span class="n">ParameterKwarg</span><span class="p">,</span> <span class="n">BodyKwarg</span><span class="p">))</span>
+</span><span data-line="109">    <span class="p">]</span>
+</span><span data-line="110">    <span class="k">if</span> <span class="n">member_markers</span><span class="p">:</span>
+</span><span data-line="111">        <span class="k">raise</span> <span class="n">DIRegistrationError</span><span class="p">(</span>
+</span><span data-line="112">            <span class="sa">f</span><span class="s2">&quot;Parameter </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> of </span><span class="si">{</span><span class="n">_describe_callable</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="si">}</span><span class="s2"> carries a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">member_markers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span data-line="113">            <span class="s2">&quot;marker on a member of its union annotation. The marker must be on the whole annotation&quot;</span>
+</span><span data-line="114">        <span class="p">)</span>
+</span><span data-line="115">
+</span><span data-line="116">    <span class="n">key</span> <span class="o">=</span> <span class="n">_reserved_request_value_key</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+</span><span data-line="117">    <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
