@@ -3,13 +3,13 @@ from http import HTTPStatus
 from litestar import Litestar, get
 from litestar.config.cors import CORSConfig
 from litestar.exceptions import HTTPException
-from litestar.middleware import AbstractMiddleware
+from litestar.middleware import ASGIMiddleware
 from litestar.testing import TestClient
-from litestar.types.asgi_types import Receive, Scope, Send
+from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send
 
 
-class ExceptionMiddleware(AbstractMiddleware):
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+class ExceptionMiddleware(ASGIMiddleware):
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
         raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail="Intentional Error")
 
 
@@ -19,7 +19,7 @@ async def handler() -> str:
 
 
 cors_config = CORSConfig(allow_methods=["GET"], allow_origins=["https://allowed-origin.com"], allow_credentials=True)
-app = Litestar(route_handlers=[handler], cors_config=cors_config, middleware=[ExceptionMiddleware])
+app = Litestar(route_handlers=[handler], cors_config=cors_config, middleware=[ExceptionMiddleware()])
 
 
 def test_cors_on_middleware_exception() -> None:

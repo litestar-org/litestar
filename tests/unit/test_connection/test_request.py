@@ -21,7 +21,6 @@ from litestar.exceptions import (
     LitestarWarning,
     SerializationException,
 )
-from litestar.middleware import MiddlewareProtocol
 from litestar.params import RawBody
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json, encode_msgpack
@@ -480,7 +479,7 @@ def test_request_send_push_promise_without_push_extension_raises() -> None:
             client.get("/")
 
 
-class BeforeRequestMiddleWare(MiddlewareProtocol):
+class BeforeRequestMiddleWare:
     def __init__(self, app: ASGIApp) -> None:
         self.app = app
 

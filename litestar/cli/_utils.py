@@ -35,7 +35,6 @@ from rich.table import Table
 from typing_extensions import ParamSpec
 
 from litestar import Litestar, __version__
-from litestar.middleware import DefineMiddleware
 from litestar.utils import envflag, get_name
 
 if TYPE_CHECKING:
@@ -426,10 +425,7 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
     if app.template_engine:
         table.add_row("Template engine", type(app.template_engine).__name__)
 
-    middlewares = []
-    for middleware in app.middleware:
-        updated_middleware = middleware.middleware if isinstance(middleware, DefineMiddleware) else middleware
-        middlewares.append(get_name(updated_middleware))
+    middlewares = [get_name(middleware) for middleware in app.middleware]
     if middlewares:
         table.add_row("Middlewares", ", ".join(middlewares))
 
