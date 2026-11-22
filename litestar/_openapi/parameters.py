@@ -8,7 +8,7 @@ from litestar.enums import ParamType
 from litestar.openapi.spec.parameter import Parameter
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
-from litestar.params import ParameterKwarg, PathParameter
+from litestar.params import BodyKwarg, ParameterKwarg, PathParameter
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -60,13 +60,14 @@ def create_parameters_for_handler(
     parameters: list[Parameter] = []
     declared_path_parameters: set[str] = set()
     for definition in route_handler._injection_setup.request_parameter_definitions.values():
-        if definition.is_body:
+        marker = definition.marker
+        if isinstance(marker, BodyKwarg):
             continue
         if definition.param_type is ParamType.PATH:
             declared_path_parameters.add(definition.name)
             if definition.name not in path_parameters:
                 continue
-        if cast("ParameterKwarg", definition.field_definition.kwarg_definition).include_in_schema:
+        if marker.include_in_schema:
             parameters.append(_create_parameter(schema_creator, definition.name, definition.field_definition))
 
     parameters.extend(

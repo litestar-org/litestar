@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import Collection, Iterable, Mapping
 
     from litestar.di import RequestParameter
+    from litestar.params import BodyKwarg
     from litestar.utils.signature import ParsedSignature
 
 __all__ = ("RequestParameterDefinition", "apply_layer_parameters", "merge_request_parameters")
@@ -34,6 +35,9 @@ class RequestParameterDefinition:
 
     field_definition: FieldDefinition
     """The merged declarations"""
+
+    marker: ParameterKwarg | BodyKwarg
+    """The parameter marker or body marker of the merged declarations"""
 
     @property
     def is_body(self) -> bool:
@@ -105,12 +109,8 @@ def _merge_declarations(source: str, declarations: list[_Declaration]) -> FieldD
     first = declarations[0]
     typed = next((declaration for declaration in declarations if declaration.declares_type), first)
     defaulted = next((declaration for declaration in declarations if declaration.declares_default), None)
-    kwarg_definition = first.field_definition.kwarg_definition
-    compared = [
-        field.name
-        for field in dataclasses.fields(kwarg_definition)  # type: ignore[arg-type]
-        if field.name not in _FIELDS_NOT_COMPARED
-    ]
+    kwarg_definition = first.parameter.marker
+    compared = [field.name for field in dataclasses.fields(kwarg_definition) if field.name not in _FIELDS_NOT_COMPARED]
     for other in declarations[1:]:
         if other.declares_type and other.field_definition.annotation != typed.field_definition.annotation:
             raise _mismatch(
@@ -238,6 +238,10 @@ def merge_request_parameters(
                         f"{declarers} the required path parameter {name!r}, which the route {path!r} does not have"
                     )
         definitions[key] = RequestParameterDefinition(
-            key=key, param_type=param_type, name=name, field_definition=field_definition
+            key=key,
+            param_type=param_type,
+            name=name,
+            field_definition=field_definition,
+            marker=key_declarations[0].parameter.marker,
         )
     return definitions
