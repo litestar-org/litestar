@@ -510,125 +510,128 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="8">    <span class="n">AbstractAuthenticationMiddleware</span><span class="p">,</span>
 </span><span data-line="9">    <span class="n">AuthenticationResult</span><span class="p">,</span>
 </span><span data-line="10"><span class="p">)</span>
-</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">Method</span><span class="p">,</span> <span class="n">Scopes</span>
-</span><span data-line="12">
-</span><span data-line="13"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MiddlewareWrapper&quot;</span><span class="p">,</span> <span class="s2">&quot;SessionAuthMiddleware&quot;</span><span class="p">)</span>
-</span><span data-line="14">
-</span><span data-line="15"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-</span><span data-line="16">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
-</span><span data-line="17">
-</span><span data-line="18">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.session_auth.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionAuth</span>
-</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
-</span><span data-line="21">
+</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionMiddleware</span>
+</span><span data-line="12"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span><span class="p">,</span> <span class="n">Method</span><span class="p">,</span> <span class="n">Scopes</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MiddlewareWrapper&quot;</span><span class="p">,</span> <span class="s2">&quot;SessionAuthMiddleware&quot;</span><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+</span><span data-line="17">    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="20">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.security.session_auth.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionAuth</span>
+</span><span data-line="21">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 </span><span data-line="22">
-</span><span data-line="23"><span class="k">class</span><span class="w"> </span><span class="nc">MiddlewareWrapper</span><span class="p">:</span>
-</span><span data-line="24"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper class that serves as the middleware entry point.&quot;&quot;&quot;</span>
-</span><span data-line="25">
-</span><span data-line="26">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="27"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap the SessionAuthMiddleware inside ExceptionHandlerMiddleware, and it wraps this inside SessionMiddleware.</span>
-</span><span data-line="28"><span class="sd">        This allows the auth middleware to raise exceptions and still have the response handled, while having the</span>
-</span><span data-line="29"><span class="sd">        session cleared.</span>
-</span><span data-line="30">
-</span><span data-line="31"><span class="sd">        Args:</span>
-</span><span data-line="32"><span class="sd">            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.</span>
-</span><span data-line="33"><span class="sd">            config: An instance of SessionAuth.</span>
-</span><span data-line="34"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="35">        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
-</span><span data-line="36">        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
-</span><span data-line="37">        <span class="bp">self</span><span class="o">.</span><span class="n">has_wrapped_middleware</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="38">
-</span><span data-line="39">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="40"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle creating a middleware stack and calling it.</span>
-</span><span data-line="41">
-</span><span data-line="42"><span class="sd">        Args:</span>
-</span><span data-line="43"><span class="sd">            scope: The ASGI connection scope.</span>
-</span><span data-line="44"><span class="sd">            receive: The ASGI receive function.</span>
-</span><span data-line="45"><span class="sd">            send: The ASGI send function.</span>
-</span><span data-line="46">
-</span><span data-line="47"><span class="sd">        Returns:</span>
-</span><span data-line="48"><span class="sd">            None</span>
-</span><span data-line="49"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="50">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_wrapped_middleware</span><span class="p">:</span>
-</span><span data-line="51">            <span class="n">auth_middleware</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">authentication_middleware_class</span><span class="p">(</span>
-</span><span data-line="52">                <span class="n">app</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span>
-</span><span data-line="53">                <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span>
-</span><span data-line="54">                <span class="n">exclude_http_methods</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exclude_http_methods</span><span class="p">,</span>
-</span><span data-line="55">                <span class="n">exclude_opt_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exclude_opt_key</span><span class="p">,</span>
-</span><span data-line="56">                <span class="n">scopes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scopes</span><span class="p">,</span>
-</span><span data-line="57">                <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">retrieve_user_handler</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
-</span><span data-line="58">            <span class="p">)</span>
-</span><span data-line="59">            <span class="n">exception_middleware</span> <span class="o">=</span> <span class="n">ExceptionHandlerMiddleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">auth_middleware</span><span class="p">)</span>
-</span><span data-line="60">            <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">session_backend_config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">middleware</span><span class="p">(</span>
-</span><span data-line="61">                <span class="n">app</span><span class="o">=</span><span class="n">exception_middleware</span><span class="p">,</span>
-</span><span data-line="62">                <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">session_backend</span><span class="p">,</span>
-</span><span data-line="63">            <span class="p">)</span>
-</span><span data-line="64">            <span class="bp">self</span><span class="o">.</span><span class="n">has_wrapped_middleware</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span data-line="65">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
-</span><span data-line="66">
-</span><span data-line="67">
+</span><span data-line="23">
+</span><span data-line="24"><span class="k">class</span><span class="w"> </span><span class="nc">MiddlewareWrapper</span><span class="p">:</span>
+</span><span data-line="25"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper class that serves as the middleware entry point.&quot;&quot;&quot;</span>
+</span><span data-line="26">
+</span><span data-line="27">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="28"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap the SessionAuthMiddleware inside ExceptionHandlerMiddleware, and it wraps this inside SessionMiddleware.</span>
+</span><span data-line="29"><span class="sd">        This allows the auth middleware to raise exceptions and still have the response handled, while having the</span>
+</span><span data-line="30"><span class="sd">        session cleared.</span>
+</span><span data-line="31">
+</span><span data-line="32"><span class="sd">        Args:</span>
+</span><span data-line="33"><span class="sd">            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.</span>
+</span><span data-line="34"><span class="sd">            config: An instance of SessionAuth.</span>
+</span><span data-line="35"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="36">        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+</span><span data-line="37">        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+</span><span data-line="38">        <span class="bp">self</span><span class="o">.</span><span class="n">has_wrapped_middleware</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="39">
+</span><span data-line="40">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="41"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle creating a middleware stack and calling it.</span>
+</span><span data-line="42">
+</span><span data-line="43"><span class="sd">        Args:</span>
+</span><span data-line="44"><span class="sd">            scope: The ASGI connection scope.</span>
+</span><span data-line="45"><span class="sd">            receive: The ASGI receive function.</span>
+</span><span data-line="46"><span class="sd">            send: The ASGI send function.</span>
+</span><span data-line="47">
+</span><span data-line="48"><span class="sd">        Returns:</span>
+</span><span data-line="49"><span class="sd">            None</span>
+</span><span data-line="50"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="51">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_wrapped_middleware</span><span class="p">:</span>
+</span><span data-line="52">            <span class="n">auth_middleware</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">authentication_middleware_class</span><span class="p">(</span>
+</span><span data-line="53">                <span class="n">app</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span>
+</span><span data-line="54">                <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span>
+</span><span data-line="55">                <span class="n">exclude_http_methods</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exclude_http_methods</span><span class="p">,</span>
+</span><span data-line="56">                <span class="n">exclude_opt_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exclude_opt_key</span><span class="p">,</span>
+</span><span data-line="57">                <span class="n">scopes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scopes</span><span class="p">,</span>
+</span><span data-line="58">                <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">retrieve_user_handler</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
+</span><span data-line="59">            <span class="p">)</span>
+</span><span data-line="60">            <span class="n">exception_middleware</span> <span class="o">=</span> <span class="n">ExceptionHandlerMiddleware</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">auth_middleware</span><span class="p">)</span>
+</span><span data-line="61">            <span class="n">session_middleware</span> <span class="o">=</span> <span class="n">SessionMiddleware</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">session_backend</span><span class="p">)</span>
+</span><span data-line="62">            <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="63">                <span class="n">exception_middleware</span>
+</span><span data-line="64">                <span class="k">if</span> <span class="n">session_middleware</span><span class="o">.</span><span class="n">should_bypass_for_handler</span><span class="p">(</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;route_handler&quot;</span><span class="p">])</span>
+</span><span data-line="65">                <span class="k">else</span> <span class="n">session_middleware</span><span class="p">(</span><span class="n">exception_middleware</span><span class="p">)</span>
+</span><span data-line="66">            <span class="p">)</span>
+</span><span data-line="67">            <span class="bp">self</span><span class="o">.</span><span class="n">has_wrapped_middleware</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="68">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</span><span data-line="69">
+</span><span data-line="70">
 <div class="viewcode-block" id="SessionAuthMiddleware">
 <a class="viewcode-back" href="../../../../reference/security/session_auth.html#litestar.security.session_auth.SessionAuthMiddleware">[docs]</a>
-</span><span data-line="68"><span class="k">class</span><span class="w"> </span><span class="nc">SessionAuthMiddleware</span><span class="p">(</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">):</span>
-</span><span data-line="69"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Session Authentication Middleware.&quot;&quot;&quot;</span>
-</span><span data-line="70">
+</span><span data-line="71"><span class="k">class</span><span class="w"> </span><span class="nc">SessionAuthMiddleware</span><span class="p">(</span><span class="n">AbstractAuthenticationMiddleware</span><span class="p">):</span>
+</span><span data-line="72"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Session Authentication Middleware.&quot;&quot;&quot;</span>
+</span><span data-line="73">
 <div class="viewcode-block" id="SessionAuthMiddleware.__init__">
 <a class="viewcode-back" href="../../../../reference/security/session_auth.html#litestar.security.session_auth.SessionAuthMiddleware.__init__">[docs]</a>
-</span><span data-line="71">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="72">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="73">        <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">,</span>
-</span><span data-line="74">        <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="75">        <span class="n">exclude_http_methods</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Method</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="76">        <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="77">        <span class="n">retrieve_user_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">ASGIConnection</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span>
-</span><span data-line="78">        <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="79">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="80"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Session based authentication middleware.</span>
-</span><span data-line="81">
-</span><span data-line="82"><span class="sd">        Args:</span>
-</span><span data-line="83"><span class="sd">            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.</span>
-</span><span data-line="84"><span class="sd">            exclude: A pattern or list of patterns to skip in the authentication middleware.</span>
-</span><span data-line="85"><span class="sd">            exclude_http_methods: A sequence of http methods that do not require authentication.</span>
-</span><span data-line="86"><span class="sd">            exclude_opt_key: An identifier to use on routes to disable authentication and authorization checks for a particular route.</span>
-</span><span data-line="87"><span class="sd">            scopes: ASGI scopes processed by the authentication middleware.</span>
-</span><span data-line="88"><span class="sd">            retrieve_user_handler: Callable that receives the ``session`` value from the authentication middleware and returns a ``user`` value.</span>
-</span><span data-line="89"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="90">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="91">            <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span>
-</span><span data-line="92">            <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
-</span><span data-line="93">            <span class="n">exclude_from_auth_key</span><span class="o">=</span><span class="n">exclude_opt_key</span><span class="p">,</span>
-</span><span data-line="94">            <span class="n">exclude_http_methods</span><span class="o">=</span><span class="n">exclude_http_methods</span><span class="p">,</span>
-</span><span data-line="95">            <span class="n">scopes</span><span class="o">=</span><span class="n">scopes</span><span class="p">,</span>
-</span><span data-line="96">        <span class="p">)</span>
-</span><span data-line="97">        <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_user_handler</span> <span class="o">=</span> <span class="n">retrieve_user_handler</span></div>
+</span><span data-line="74">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="75">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="76">        <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">,</span>
+</span><span data-line="77">        <span class="n">exclude</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="78">        <span class="n">exclude_http_methods</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Method</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="79">        <span class="n">exclude_opt_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="80">        <span class="n">retrieve_user_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">ASGIConnection</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span>
+</span><span data-line="81">        <span class="n">scopes</span><span class="p">:</span> <span class="n">Scopes</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="82">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="83"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Session based authentication middleware.</span>
+</span><span data-line="84">
+</span><span data-line="85"><span class="sd">        Args:</span>
+</span><span data-line="86"><span class="sd">            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.</span>
+</span><span data-line="87"><span class="sd">            exclude: A pattern or list of patterns to skip in the authentication middleware.</span>
+</span><span data-line="88"><span class="sd">            exclude_http_methods: A sequence of http methods that do not require authentication.</span>
+</span><span data-line="89"><span class="sd">            exclude_opt_key: An identifier to use on routes to disable authentication and authorization checks for a particular route.</span>
+</span><span data-line="90"><span class="sd">            scopes: ASGI scopes processed by the authentication middleware.</span>
+</span><span data-line="91"><span class="sd">            retrieve_user_handler: Callable that receives the ``session`` value from the authentication middleware and returns a ``user`` value.</span>
+</span><span data-line="92"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="93">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="94">            <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span>
+</span><span data-line="95">            <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span>
+</span><span data-line="96">            <span class="n">exclude_from_auth_key</span><span class="o">=</span><span class="n">exclude_opt_key</span><span class="p">,</span>
+</span><span data-line="97">            <span class="n">exclude_http_methods</span><span class="o">=</span><span class="n">exclude_http_methods</span><span class="p">,</span>
+</span><span data-line="98">            <span class="n">scopes</span><span class="o">=</span><span class="n">scopes</span><span class="p">,</span>
+</span><span data-line="99">        <span class="p">)</span>
+</span><span data-line="100">        <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_user_handler</span> <span class="o">=</span> <span class="n">retrieve_user_handler</span></div>
 
-</span><span data-line="98">
+</span><span data-line="101">
 <div class="viewcode-block" id="SessionAuthMiddleware.authenticate_request">
 <a class="viewcode-back" href="../../../../reference/security/session_auth.html#litestar.security.session_auth.SessionAuthMiddleware.authenticate_request">[docs]</a>
-</span><span data-line="99">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AuthenticationResult</span><span class="p">:</span>
-</span><span data-line="100"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Authenticate an incoming connection.</span>
-</span><span data-line="101">
-</span><span data-line="102"><span class="sd">        Args:</span>
-</span><span data-line="103"><span class="sd">            connection: An :class:`ASGIConnection &lt;.connection.ASGIConnection&gt;` instance.</span>
+</span><span data-line="102">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AuthenticationResult</span><span class="p">:</span>
+</span><span data-line="103"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Authenticate an incoming connection.</span>
 </span><span data-line="104">
-</span><span data-line="105"><span class="sd">        Raises:</span>
-</span><span data-line="106"><span class="sd">            NotAuthorizedException: if session data is empty or user is not found.</span>
+</span><span data-line="105"><span class="sd">        Args:</span>
+</span><span data-line="106"><span class="sd">            connection: An :class:`ASGIConnection &lt;.connection.ASGIConnection&gt;` instance.</span>
 </span><span data-line="107">
-</span><span data-line="108"><span class="sd">        Returns:</span>
-</span><span data-line="109"><span class="sd">            :class:`AuthenticationResult &lt;.middleware.authentication.AuthenticationResult&gt;`</span>
-</span><span data-line="110"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="111">        <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">session</span> <span class="ow">or</span> <span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="112">            <span class="c1"># the assignment of &#39;Empty&#39; forces the session middleware to clear session data.</span>
-</span><span data-line="113">            <span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="114">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">(</span><span class="s2">&quot;no session data found&quot;</span><span class="p">)</span>
-</span><span data-line="115">
-</span><span data-line="116">        <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_user_handler</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
-</span><span data-line="117">
-</span><span data-line="118">        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
-</span><span data-line="119">            <span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="120">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">(</span><span class="s2">&quot;no user correlating to session found&quot;</span><span class="p">)</span>
-</span><span data-line="121">
-</span><span data-line="122">        <span class="k">return</span> <span class="n">AuthenticationResult</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">connection</span><span class="o">.</span><span class="n">session</span><span class="p">)</span></div>
+</span><span data-line="108"><span class="sd">        Raises:</span>
+</span><span data-line="109"><span class="sd">            NotAuthorizedException: if session data is empty or user is not found.</span>
+</span><span data-line="110">
+</span><span data-line="111"><span class="sd">        Returns:</span>
+</span><span data-line="112"><span class="sd">            :class:`AuthenticationResult &lt;.middleware.authentication.AuthenticationResult&gt;`</span>
+</span><span data-line="113"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="114">        <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">session</span> <span class="ow">or</span> <span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="115">            <span class="c1"># the assignment of &#39;Empty&#39; forces the session middleware to clear session data.</span>
+</span><span data-line="116">            <span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="117">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">(</span><span class="s2">&quot;no session data found&quot;</span><span class="p">)</span>
+</span><span data-line="118">
+</span><span data-line="119">        <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_user_handler</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+</span><span data-line="120">
+</span><span data-line="121">        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+</span><span data-line="122">            <span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="123">            <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">(</span><span class="s2">&quot;no user correlating to session found&quot;</span><span class="p">)</span>
+</span><span data-line="124">
+</span><span data-line="125">        <span class="k">return</span> <span class="n">AuthenticationResult</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">connection</span><span class="o">.</span><span class="n">session</span><span class="p">)</span></div>
 </div>
 
 </span></pre></div>

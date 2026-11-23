@@ -1486,8 +1486,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.DefineMiddleware.__call__.params.app">(litestar.middleware.DefineMiddleware.__call__ parameter)</a>
 </li>
-        <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.params.app">(litestar.middleware.session.base.SessionMiddleware parameter)</a>
-</li>
         <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware.params.app">(litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware parameter)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.app">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
@@ -3788,6 +3786,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.exclude_path_pattern">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
+        <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.exclude_path_pattern">(litestar.middleware.session.base.BaseBackendConfig attribute)</a>
+</li>
+        <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.CookieBackendConfig.exclude_path_pattern">(litestar.middleware.session.client_side.CookieBackendConfig attribute)</a>
+</li>
+        <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.exclude_path_pattern">(litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
+</li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.exclude_path_pattern">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware.params.exclude_path_pattern">(litestar.plugins.prometheus.PrometheusMiddleware parameter)</a>
@@ -4578,6 +4582,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.handle">(litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
+        <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.handle">(litestar.middleware.session.base.SessionMiddleware method)</a>
+</li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware.handle">(litestar.plugins.prometheus.PrometheusMiddleware method)</a>
 </li>
         <li><a href="reference/routes.html#litestar.routes.ASGIRoute.handle">(litestar.routes.ASGIRoute method)</a>
@@ -4781,10 +4787,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.html_mode">html_mode (litestar.static_files.create_static_files_router parameter)</a>
 </li>
-      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXConfig">HTMXConfig (class in litestar.plugins.htmx)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXConfig">HTMXConfig (class in litestar.plugins.htmx)</a>
+</li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails">HTMXDetails (class in litestar.plugins.htmx)</a>
 </li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXHeaders">HTMXHeaders (class in litestar.plugins.htmx)</a>
@@ -7212,6 +7218,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.handle.params.next_app">(litestar.middleware.rate_limit.RateLimitMiddleware.handle parameter)</a>
 </li>
+        <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.handle.params.next_app">(litestar.middleware.session.base.SessionMiddleware.handle parameter)</a>
+</li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware.handle.params.next_app">(litestar.plugins.prometheus.PrometheusMiddleware.handle parameter)</a>
 </li>
       </ul></li>
@@ -8274,6 +8282,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.handle.params.receive">(litestar.middleware.rate_limit.RateLimitMiddleware.handle parameter)</a>
 </li>
+        <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.handle.params.receive">(litestar.middleware.session.base.SessionMiddleware.handle parameter)</a>
+</li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware.handle.params.receive">(litestar.plugins.prometheus.PrometheusMiddleware.handle parameter)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.__call__.params.receive">(litestar.response.base.ASGIResponse.__call__ parameter)</a>
@@ -8633,10 +8643,10 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/params.html#litestar.params.RequestCookies">RequestCookies (class in litestar.params)</a>
 </li>
-      <li><a href="reference/enums.html#litestar.enums.RequestEncodingType">RequestEncodingType (class in litestar.enums)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/enums.html#litestar.enums.RequestEncodingType">RequestEncodingType (class in litestar.enums)</a>
+</li>
       <li><a href="reference/testing.html#litestar.testing.RequestFactory">RequestFactory (class in litestar.testing)</a>
 </li>
       <li><a href="reference/di.html#litestar.di.RequestParameter">RequestParameter (class in litestar.di)</a>
@@ -9267,6 +9277,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseSessionBackend.serialize_data.params.scope">(litestar.middleware.session.base.BaseSessionBackend.serialize_data parameter)</a>
 </li>
+        <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.handle.params.scope">(litestar.middleware.session.base.SessionMiddleware.handle parameter)</a>
+</li>
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data.params.scope">(litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data parameter)</a>
 </li>
         <li><a href="reference/plugins/opentelemetry.html#litestar.plugins.opentelemetry.OpenTelemetryConfig.scope_span_details_extractor.params.scope">(litestar.plugins.opentelemetry.OpenTelemetryConfig.scope_span_details_extractor parameter)</a>
@@ -9509,6 +9521,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.handle.params.send">(litestar.middleware.rate_limit.RateLimitMiddleware.handle parameter)</a>
 </li>
+        <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.handle.params.send">(litestar.middleware.session.base.SessionMiddleware.handle parameter)</a>
+</li>
         <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware.handle.params.send">(litestar.plugins.prometheus.PrometheusMiddleware.handle parameter)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.__call__.params.send">(litestar.response.base.ASGIResponse.__call__ parameter)</a>
@@ -9709,6 +9723,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/cli.html#cmdoption-litestar-sessions-delete-arg-SESSION_ID">litestar-sessions-delete command line option</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.delete.params.session_id">session_id (litestar.middleware.session.server_side.ServerSideSessionBackend.delete parameter)</a>
 
       <ul>
@@ -9717,8 +9733,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.set.params.session_id">(litestar.middleware.session.server_side.ServerSideSessionBackend.set parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.session_id_bytes">session_id_bytes (litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
 </li>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth">SessionAuth (class in litestar.security.session_auth)</a>

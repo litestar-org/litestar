@@ -456,6 +456,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.middleware.session.base.BaseBackendConfig.httponly"><code class="docutils literal notranslate">httponly</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.session.base.BaseBackendConfig.samesite"><code class="docutils literal notranslate">samesite</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.session.base.BaseBackendConfig.exclude"><code class="docutils literal notranslate">exclude</span></code></a></li>
+<li><a class="reference internal" href="#litestar.middleware.session.base.BaseBackendConfig.exclude_path_pattern"><code class="docutils literal notranslate">exclude_path_pattern</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.session.base.BaseBackendConfig.exclude_opt_key"><code class="docutils literal notranslate">exclude_opt_key</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.session.base.BaseBackendConfig.middleware"><code class="docutils literal notranslate">middleware</span></code></a></li>
 </ul>
@@ -472,6 +473,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.middleware.session.base.SessionMiddleware"><code class="docutils literal notranslate"><span class="pre">SessionMiddleware</span></code></a><ul>
 <li><a class="reference internal" href="#litestar.middleware.session.base.SessionMiddleware.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.session.base.SessionMiddleware.create_send_wrapper"><code class="docutils literal notranslate">create_send_wrapper()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.middleware.session.base.SessionMiddleware.handle"><code class="docutils literal notranslate">handle()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -642,7 +644,14 @@ data-aria-dark="Switch to auto color mode">
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.middleware.session.base.BaseBackendConfig.exclude">
 <span class="sig-name descname"><span class="pre">exclude</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><a class="headerlink" href="#litestar.middleware.session.base.BaseBackendConfig.exclude" title="Link to this definition">¶</a></dt>
-<dd><p>A pattern or list of patterns to skip in the session middleware.</p>
+<dd><p>A pattern or list of patterns to skip in the session middleware, matched against the request path.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.middleware.session.base.BaseBackendConfig.exclude_path_pattern">
+<span class="sig-name descname"><span class="pre">exclude_path_pattern</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#litestar.middleware.session.base.BaseBackendConfig.exclude_path_pattern" title="Link to this definition">¶</a></dt>
+<dd><p>A pattern or list of patterns to skip in the session middleware, matched against the handler path at startup.</p>
+<p>See <a class="reference internal" href="../index.html#litestar.middleware.ASGIMiddleware.exclude_path_pattern" title="litestar.middleware.ASGIMiddleware.exclude_path_pattern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude_path_pattern</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -653,14 +662,14 @@ data-aria-dark="Switch to auto color mode">
 
 <dl class="py property">
 <dt class="sig sig-object py" id="litestar.middleware.session.base.BaseBackendConfig.middleware">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">middleware</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../index.html#litestar.middleware.DefineMiddleware" title="litestar.middleware.base.DefineMiddleware"><span class="pre">DefineMiddleware</span></a></span><a class="headerlink" href="#litestar.middleware.session.base.BaseBackendConfig.middleware" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">middleware</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#litestar.middleware.session.base.SessionMiddleware" title="litestar.middleware.session.base.SessionMiddleware"><span class="pre">SessionMiddleware</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BaseSessionBackendT</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#litestar.middleware.session.base.BaseBackendConfig.middleware" title="Link to this definition">¶</a></dt>
 <dd><p>Use this property to insert the config into a middleware list on one of the application layers.</p>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">urandom</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.sessions.cookie_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieBackendConfig</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.middleware.session.client_side</span><span class="w"> </span><span class="kn">import</span> <span class="n">CookieBackendConfig</span>
 </span><span data-line="5">
 </span><span data-line="6"><span class="n">session_config</span> <span class="o">=</span> <span class="n">CookieBackendConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>
 </span><span data-line="7">
@@ -675,7 +684,7 @@ data-aria-dark="Switch to auto color mode">
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An instance of DefineMiddleware including <code class="docutils literal notranslate"><span class="pre">self</span></code> as the config kwarg value.</p>
+<dd class="field-odd"><p>A <a class="reference internal" href="#litestar.middleware.session.base.SessionMiddleware" title="litestar.middleware.session.base.SessionMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionMiddleware</span></code></a> instance created with a backend built from <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -802,18 +811,15 @@ method will be stored in the application scope by the middleware</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.middleware.session.base.SessionMiddleware">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">litestar.middleware.session.base.</span></span><span class="sig-name descname"><span class="pre">SessionMiddleware</span></span><a class="reference internal" href="../../../_modules/litestar/middleware/session/base.html#SessionMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.middleware.session.base.SessionMiddleware" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../index.html#litestar.middleware.AbstractMiddleware" title="litestar.middleware.base.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseSessionBackendT</span></code>]</p>
+<dd><p>Bases: <a class="reference internal" href="../index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.base.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseSessionBackendT</span></code>]</p>
 <p>Litestar session middleware for storing session data.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.session.base.SessionMiddleware.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><span class="pre">ASGIApp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseSessionBackendT</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/litestar/middleware/session/base.html#SessionMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.middleware.session.base.SessionMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseSessionBackendT</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/litestar/middleware/session/base.html#SessionMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.middleware.session.base.SessionMiddleware.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">SessionMiddleware</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.params.app">¶</a> – An ASGI application</p></li>
-<li><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.params.backend"></span><strong>backend</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.params.backend">¶</a> – A <a class="reference internal" href="#litestar.middleware.session.base.BaseSessionBackend" title="litestar.middleware.session.base.BaseSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSessionBackend</span></code></a> instance used to store and retrieve session data</p></li>
-</ul>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.params.backend"></span><strong>backend</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.params.backend">¶</a> – A <a class="reference internal" href="#litestar.middleware.session.base.BaseSessionBackend" title="litestar.middleware.session.base.BaseSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSessionBackend</span></code></a> instance used to store and retrieve session data</p>
 </dd>
 </dl>
 </dd></dl>
@@ -825,6 +831,25 @@ method will be stored in the application scope by the middleware</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.create_send_wrapper.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.create_send_wrapper.params.connection">¶</a> – ASGIConnection</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.middleware.session.base.SessionMiddleware.handle">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><span class="pre">ASGIApp</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/litestar/middleware/session/base.html#SessionMiddleware.handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar.middleware.session.base.SessionMiddleware.handle" title="Link to this definition">¶</a></dt>
+<dd><p>Handle ASGI call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.handle.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.handle.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.handle.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.handle.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.handle.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.handle.params.send">¶</a> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.handle.params.next_app"></span><strong>next_app</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.handle.params.next_app">¶</a> – The next ASGI application in the middleware stack to call.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>

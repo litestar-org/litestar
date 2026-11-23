@@ -563,8 +563,8 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="51"><span class="sd">            The application configuration with the message callable registered.</span>
 </span><span data-line="52"><span class="sd">        &quot;&quot;&quot;</span>
 </span><span data-line="53">        <span class="k">for</span> <span class="n">mw</span> <span class="ow">in</span> <span class="n">app_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">:</span>
-</span><span data-line="54">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mw</span><span class="p">,</span> <span class="n">DefineMiddleware</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_class_and_subclass</span><span class="p">(</span>
-</span><span data-line="55">                <span class="n">mw</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="p">(</span><span class="n">MiddlewareWrapper</span><span class="p">,</span> <span class="n">SessionMiddleware</span><span class="p">)</span>
+</span><span data-line="54">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mw</span><span class="p">,</span> <span class="n">SessionMiddleware</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+</span><span data-line="55">                <span class="nb">isinstance</span><span class="p">(</span><span class="n">mw</span><span class="p">,</span> <span class="n">DefineMiddleware</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_class_and_subclass</span><span class="p">(</span><span class="n">mw</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="n">MiddlewareWrapper</span><span class="p">)</span>
 </span><span data-line="56">            <span class="p">):</span>
 </span><span data-line="57">                <span class="k">break</span>
 </span><span data-line="58">        <span class="k">else</span><span class="p">:</span>

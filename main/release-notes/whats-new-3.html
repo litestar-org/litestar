@@ -976,11 +976,12 @@ callable as its only argument and returns another ASGI callable:</p>
 <p>Litestar’s built-in middleware are being moved from the legacy <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code> and
 <code class="docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code> bases onto <a class="reference internal" href="../reference/middleware/index.html#litestar.middleware.ASGIMiddleware" title="litestar.middleware.ASGIMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIMiddleware</span></code></a>.
 <code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code>, <code class="docutils literal notranslate"><span class="pre">ResponseCacheMiddleware</span></code>, <code class="docutils literal notranslate"><span class="pre">CSRFMiddleware</span></code>,
-<code class="docutils literal notranslate"><span class="pre">CompressionMiddleware</span></code>, <code class="docutils literal notranslate"><span class="pre">AllowedHostsMiddleware</span></code>, <code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code> and
-<code class="docutils literal notranslate"><span class="pre">PrometheusMiddleware</span></code> have made this move. <code class="docutils literal notranslate"><span class="pre">ResponseCacheMiddleware</span></code> and
-<code class="docutils literal notranslate"><span class="pre">CSRFMiddleware</span></code> have also been moved into <code class="docutils literal notranslate"><span class="pre">litestar.middleware._internal</span></code>, removing
-them from the public API; for CSRF this includes the <code class="docutils literal notranslate"><span class="pre">litestar.middleware.csrf</span></code> module
-and its <code class="docutils literal notranslate"><span class="pre">generate_csrf_token</span></code> / <code class="docutils literal notranslate"><span class="pre">generate_csrf_hash</span></code> helpers.</p>
+<code class="docutils literal notranslate"><span class="pre">CompressionMiddleware</span></code>, <code class="docutils literal notranslate"><span class="pre">AllowedHostsMiddleware</span></code>, <code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code>,
+<code class="docutils literal notranslate"><span class="pre">PrometheusMiddleware</span></code> and <code class="docutils literal notranslate"><span class="pre">SessionMiddleware</span></code> have made this move.
+<code class="docutils literal notranslate"><span class="pre">ResponseCacheMiddleware</span></code> and <code class="docutils literal notranslate"><span class="pre">CSRFMiddleware</span></code> have also been moved into
+<code class="docutils literal notranslate"><span class="pre">litestar.middleware._internal</span></code>, removing them from the public API; for CSRF this
+includes the <code class="docutils literal notranslate"><span class="pre">litestar.middleware.csrf</span></code> module and its <code class="docutils literal notranslate"><span class="pre">generate_csrf_token</span></code> /
+<code class="docutils literal notranslate"><span class="pre">generate_csrf_hash</span></code> helpers.</p>
 <p>These classes are constructed by Litestar itself from their configuration objects (for
 CSRF, via a <code class="docutils literal notranslate"><span class="pre">from_config</span></code> classmethod on the middleware), so applications that only
 configure them - for CORS, via
@@ -1000,6 +1001,16 @@ protocol, which is unchanged. Subclasses set via
 <a class="reference internal" href="../reference/config.html#litestar.config.compression.CompressionConfig.middleware_class" title="litestar.config.compression.CompressionConfig.middleware_class"><code class="xref py py-attr docutils literal notranslate"><span class="pre">middleware_class</span></code></a> must rename
 <code class="docutils literal notranslate"><span class="pre">__call__</span></code> to <code class="docutils literal notranslate"><span class="pre">handle</span></code>, which receives the next ASGI app as an additional
 <code class="docutils literal notranslate"><span class="pre">next_app</span></code> argument in place of <code class="docutils literal notranslate"><span class="pre">self.app</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SessionMiddleware</span></code> keeps its backend-based constructor (minus the <code class="docutils literal notranslate"><span class="pre">app</span></code> argument),
+since the session backends remain a public extension point that receives the
+configuration unchanged. The <code class="docutils literal notranslate"><span class="pre">middleware</span></code> property of the session configurations now
+returns a <code class="docutils literal notranslate"><span class="pre">SessionMiddleware</span></code> instance instead of a <code class="docutils literal notranslate"><span class="pre">DefineMiddleware</span></code>, so
+<code class="docutils literal notranslate"><span class="pre">middleware=[session_config.middleware]</span></code> keeps working, while code reaching into
+<code class="docutils literal notranslate"><span class="pre">session_config.middleware.kwargs[&quot;backend&quot;]</span></code> must use
+<code class="docutils literal notranslate"><span class="pre">session_config.middleware.backend</span></code> instead. The <code class="docutils literal notranslate"><span class="pre">exclude</span></code> patterns of the session
+configurations are still matched against the request path; the new
+<code class="docutils literal notranslate"><span class="pre">exclude_path_pattern</span></code> option matches against the handler’s path (e.g.
+<code class="docutils literal notranslate"><span class="pre">/user/{user_id:int}</span></code>) at startup.</p>
 <p>Code that composed one of the others directly into an ASGI stack must drop the <code class="docutils literal notranslate"><span class="pre">app</span></code>
 argument, pass the settings as keyword arguments rather than a configuration object, and
 apply the instance to the next ASGI app:</p>

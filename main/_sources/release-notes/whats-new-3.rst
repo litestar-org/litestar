@@ -432,11 +432,12 @@ Built-in middleware migrated to ``ASGIMiddleware``
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
 ``CORSMiddleware``, ``ResponseCacheMiddleware``, ``CSRFMiddleware``,
-``CompressionMiddleware``, ``AllowedHostsMiddleware``, ``RateLimitMiddleware`` and
-``PrometheusMiddleware`` have made this move. ``ResponseCacheMiddleware`` and
-``CSRFMiddleware`` have also been moved into ``litestar.middleware._internal``, removing
-them from the public API; for CSRF this includes the ``litestar.middleware.csrf`` module
-and its ``generate_csrf_token`` / ``generate_csrf_hash`` helpers.
+``CompressionMiddleware``, ``AllowedHostsMiddleware``, ``RateLimitMiddleware``,
+``PrometheusMiddleware`` and ``SessionMiddleware`` have made this move.
+``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
+``litestar.middleware._internal``, removing them from the public API; for CSRF this
+includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
+``generate_csrf_hash`` helpers.
 
 These classes are constructed by Litestar itself from their configuration objects (for
 CSRF, via a ``from_config`` classmethod on the middleware), so applications that only
@@ -458,6 +459,17 @@ protocol, which is unchanged. Subclasses set via
 :attr:`~litestar.config.compression.CompressionConfig.middleware_class` must rename
 ``__call__`` to ``handle``, which receives the next ASGI app as an additional
 ``next_app`` argument in place of ``self.app``.
+
+``SessionMiddleware`` keeps its backend-based constructor (minus the ``app`` argument),
+since the session backends remain a public extension point that receives the
+configuration unchanged. The ``middleware`` property of the session configurations now
+returns a ``SessionMiddleware`` instance instead of a ``DefineMiddleware``, so
+``middleware=[session_config.middleware]`` keeps working, while code reaching into
+``session_config.middleware.kwargs["backend"]`` must use
+``session_config.middleware.backend`` instead. The ``exclude`` patterns of the session
+configurations are still matched against the request path; the new
+``exclude_path_pattern`` option matches against the handler's path (e.g.
+``/user/{user_id:int}``) at startup.
 
 Code that composed one of the others directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and
