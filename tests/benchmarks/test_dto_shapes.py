@@ -186,11 +186,11 @@ def test_dto_backend_create_self_referential(benchmark: BenchmarkFixture, depth:
     field_definition = FieldDefinition.from_annotation(Node)
 
     def create() -> None:
-        NodeDTO._dto_backends.clear()
+        NodeDTO._dto_backends.pop("self_referential", None)
         DTOBackend._seen_model_names = set()
-        NodeDTO.create_for_field_definition(field_definition, handler_id="bench")
+        NodeDTO.create_for_field_definition(field_definition, handler_id="self_referential")
 
     benchmark(create)
-    backend = NodeDTO._dto_backends["bench"].get("return_backend")
+    backend = NodeDTO._dto_backends.pop("self_referential").get("return_backend")
     assert backend is not None
     assert len(backend.parsed_field_definitions) == 3
