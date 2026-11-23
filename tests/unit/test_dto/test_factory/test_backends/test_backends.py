@@ -10,7 +10,7 @@ from dataclasses import dataclass, field, make_dataclass
 from datetime import date
 from decimal import Decimal
 from types import ModuleType
-from typing import TYPE_CHECKING, Annotated, Optional, Union
+from typing import TYPE_CHECKING, Annotated, ClassVar, Optional, Union
 from unittest.mock import MagicMock
 
 import annotated_types
@@ -559,6 +559,11 @@ def test_codegen_backend_is_dto_backend() -> None:
 def test_create_for_field_definition_uses_explicit_backend_class() -> None:
     class CustomBackend(DTOBackend):
         __slots__ = ()
+        created: ClassVar[list[DTOBackend]] = []
+
+        def __init__(self, **kwargs: Any) -> None:
+            super().__init__(**kwargs)
+            self.created.append(self)
 
     class Factory(DataclassDTO[DC]):
         pass
@@ -567,7 +572,7 @@ def test_create_for_field_definition_uses_explicit_backend_class() -> None:
         FieldDefinition.from_annotation(DC), handler_id="test", backend_cls=CustomBackend
     )
 
-    assert type(Factory._dto_backends["test"].get("return_backend")) is CustomBackend
+    assert [type(b) for b in CustomBackend.created] == [CustomBackend]
 
 
 def test_parse_model_nested_exclude(create_module: Callable[[str], ModuleType]) -> None:
