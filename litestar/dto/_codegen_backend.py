@@ -6,10 +6,12 @@ back again, to bytes.
 
 from __future__ import annotations
 
+import keyword
 import linecache
 import re
 import secrets
 import textwrap
+import unicodedata
 from collections.abc import Callable, Generator, Mapping
 from contextlib import AbstractContextManager, contextmanager, nullcontext
 from typing import (
@@ -293,8 +295,14 @@ class TransferFunctionFactory:
 
         if self.attribute_accessor_name:
             value_expr = f"{self.attribute_accessor_name}({source_name}, '{field_name}')"
-        else:
+        elif (
+            field_name.isidentifier()
+            and not keyword.iskeyword(field_name)
+            and field_name == unicodedata.normalize("NFKC", field_name)
+        ):
             value_expr = f"{source_name}.{field_name}"
+        else:
+            value_expr = f"getattr({source_name}, '{field_name}')"
 
         # if we expect an optional attribute it's faster to check with hasattr
         if expect_optional:

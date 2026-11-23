@@ -418,6 +418,38 @@ def test_backend_transfer_nested_model_behind_non_word_field_name(backend_cls: t
     assert to_builtins(backend.encode_data(instance)) == {"name": "test", "a·b": {"a": 1, "b": "two"}}
 
 
+@pytest.mark.parametrize(
+    "field_names",
+    [
+        pytest.param(("class", "b"), id="keyword"),
+        pytest.param(("\u00b5", "\u03bc"), id="nfkc_pair"),
+        pytest.param(("\ufb01eld",), id="nfkc_unstable"),
+    ],
+)
+def test_backend_transfer_field_name_not_valid_as_attribute_syntax(
+    asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend], field_names: tuple[str, ...]
+) -> None:
+    """Field names may be keywords, or change under the NFKC normalisation Python applies to identifiers."""
+
+    class Factory(MsgspecDTO):
+        config = DTOConfig()
+
+    model_type = msgspec.defstruct("AttributeSyntaxFieldNames", [(name, int) for name in field_names])
+    backend = backend_cls(
+        handler_id="test",
+        dto_factory=Factory,
+        field_definition=FieldDefinition.from_annotation(model_type),
+        model_type=model_type,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+    destructured = {name: index for index, name in enumerate(field_names, start=1)}
+    structured = model_type(**destructured)
+
+    assert to_builtins(backend.encode_data(structured)) == destructured
+    assert backend.populate_data_from_builtins(destructured, asgi_connection) == structured
+
+
 def test_transfer_only_touches_included_attributes(backend_cls: type[DTOBackend]) -> None:
     """Ensure attribute that are not included are never touched in any way during
     transfer.
