@@ -1,6 +1,6 @@
 import dataclasses
 import json
-from collections.abc import Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from typing import Annotated, Any, Final, Literal
 
 import msgspec
@@ -48,7 +48,9 @@ def dump(value: Any) -> Any:
     return {"$model": label, **{name: dump(getattr(value, name)) for name in names}}
 
 
-def build_app(feature: Feature, m: Maker, case: Case, direction: Direction, backend: Backend) -> Litestar:
+def prepare_handler(
+    feature: Feature, m: Maker, case: Case, direction: Direction, backend: Backend
+) -> tuple[Callable[..., Any], Any]:
     config = DTOConfig(**feature.config, experimental_codegen_backend=backend == "codegen")
     base: Any = (
         m.dto if feature.accessor is None else type("AccessorDTO", (m.dto,), {"attribute_accessor": feature.accessor})
@@ -67,11 +69,17 @@ def build_app(feature: Feature, m: Maker, case: Case, direction: Direction, back
     if direction == "in":
         create.__qualname__ = f"create_{name}"
         create.__annotations__["data"] = _json_body[_dto_data[annotation] if feature.dto_data else annotation]
-        handler: Any = post("/", dto=dto, return_dto=None, sync_to_thread=False)(create)
+        return create, dto
+    read.__qualname__ = f"read_{name}"
+    read.__annotations__["return"] = annotation
+    return read, dto
+
+
+def build_app(fn: Callable[..., Any], dto: Any, direction: Direction) -> Litestar:
+    if direction == "in":
+        handler: Any = post("/", dto=dto, return_dto=None, sync_to_thread=False)(fn)
     else:
-        read.__qualname__ = f"read_{name}"
-        read.__annotations__["return"] = annotation
-        handler = get("/", return_dto=dto, sync_to_thread=False)(read)
+        handler = get("/", return_dto=dto, sync_to_thread=False)(fn)
     return Litestar([handler], openapi_config=None)
 
 
@@ -82,8 +90,9 @@ def _show(status: int, body: Any) -> str:
 def find_gap(feature: Feature, library: Library, direction: Direction, backend: Backend) -> str | None:
     m = maker(library)
     case = feature.build(m)
+    fn, dto = prepare_handler(feature, m, case, direction, backend)
     try:
-        app = build_app(feature, m, case, direction, backend)
+        app = build_app(fn, dto, direction)
     except Exception as exc:
         return f"startup: {type(exc).__name__}: {exc.msg if isinstance(exc, SyntaxError) else exc}"
     gaps: list[str] = []

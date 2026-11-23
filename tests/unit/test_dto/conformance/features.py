@@ -302,6 +302,7 @@ feature(
 feature(
     "max_nested_depth_1",
     _chain,
+    config={"max_nested_depth": 1},
     requests=(Req("deep", _CHAIN_BODY, 201, _chain_received("b", "d2", "d3")),),
     response={"name": "a", "down": {"name": "b"}},
 )

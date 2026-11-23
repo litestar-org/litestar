@@ -15,7 +15,8 @@ A cell is `<feature>-<library>-<direction>`, for example `exclude_nested-ms-out`
   `{"$model": "<class name>", ...}` with its Python attribute names.
 - `out`: the handler returns an instance and the response body is compared.
 
-A row can mark a library or a direction as not applicable with `NA(reason)`; such cells are not collected.
+A row marks a direction as not applicable by passing `NA(reason)` as its `requests` or `response`, and a
+library with `na={"py": reason}`; such cells are not collected.
 Cells for `py` are skipped when pydantic is not installed.
 
 ## Known gaps
@@ -41,4 +42,7 @@ members of nested collections) and `constraint_partial_length-py-in`, `constrain
 (pydantic does not validate a `DTOData` payload). They record accepted limits, not planned work.
 
 To record a new gap, add the row to `features.py`, run the grid, and copy the text shown on the left of
-the failing assertion into `KNOWN_GAPS`.
+the failing assertion into `KNOWN_GAPS`; add `-vv` when pytest truncates it.
+
+Test ids end in `-codegen` or `-interp`, the DTO backend the cell ran on. When only one backend fails, or the
+two texts differ, key the entry `<cell>@<backend>`; when both fail with the same text, use the bare `<cell>`.
