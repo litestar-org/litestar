@@ -34,6 +34,7 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
+from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
@@ -133,6 +134,25 @@ class DTOBackend:
         self._transfer_to_dict = self._create_transfer_data_fn(destination_type=dict)
         self._transfer_to_model_type = self._create_transfer_data_fn(destination_type=self.model_type)
         self._encode_data = self._create_transfer_data_fn(destination_type=self.transfer_model_type)
+        if self.is_data_field and self._decodes_with_annotation():
+            try:
+                msgspec.json.Decoder(self.annotation, strict=False)
+            except TypeError as exc:
+                raise InvalidAnnotationException(
+                    f"msgspec cannot decode the transfer model of {model_type.__name__!r}: {exc}"
+                ) from exc
+
+    def _decodes_with_annotation(self) -> bool:
+        from litestar.dto.base_dto import AbstractDTO
+
+        return (
+            self.dto_factory.decode_bytes is AbstractDTO.decode_bytes
+            and self.dto_factory.decode_builtins is AbstractDTO.decode_builtins
+            and all(
+                getattr(type(self), name) is getattr(DTOBackend, name)
+                for name in ("parse_raw", "parse_builtins", "populate_data_from_raw", "populate_data_from_builtins")
+            )
+        )
 
     def parse_model(
         self,

@@ -9,6 +9,7 @@ from msgspec import NODEFAULT, Struct, structs
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, extract_dto_field
+from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.plugins.core._msgspec import kwarg_definition_from_field
 from litestar.types.empty import Empty
 
@@ -39,9 +40,14 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
     def generate_field_definitions(cls, model_type: type[Struct]) -> Generator[DTOFieldDefinition, None, None]:
         msgspec_fields = {f.name: f for f in structs.fields(model_type)}
 
+        try:
+            struct_info = msgspec.inspect.type_info(model_type)
+        except TypeError as exc:
+            raise InvalidAnnotationException(f"msgspec cannot inspect {model_type.__name__!r}: {exc}") from exc
+
         inspect_fields: dict[str, msgspec.inspect.Field] = {
             field.name: field
-            for field in msgspec.inspect.type_info(model_type).fields  # type: ignore[attr-defined]
+            for field in struct_info.fields  # type: ignore[attr-defined]
         }
 
         property_fields = cls.get_property_fields(model_type)
