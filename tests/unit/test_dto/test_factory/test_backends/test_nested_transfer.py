@@ -170,3 +170,41 @@ def test_codegen_nested_optional_model_in_dto_data_builtins(asgi_connection: "Re
         leaves=[DeepLeaf(x=32)],
     )
     assert builtins["middles"] == [_deep_middle(40)]
+
+
+def test_custom_attribute_accessor_reads_nested_model_once(backend_cls: "type[DTOBackend]") -> None:
+    calls: list[tuple[str, str]] = []
+
+    def accessor(obj: object, name: str) -> Any:
+        calls.append((type(obj).__name__, name))
+        return getattr(obj, name)
+
+    backend = _create_backend(
+        backend_cls, DeepRoot, DTOConfig(max_nested_depth=2), is_data_field=False, accessor=accessor
+    )
+
+    backend.encode_data(_deep_root())
+
+    assert calls.count(("DeepRoot", "middle")) == 1
+    assert calls.count(("DeepMiddle", "leaf")) == 3
+
+
+@pytest.mark.parametrize("as_mapping", [False, True])
+def test_custom_attribute_accessor_reads_deeply_nested_models_once(
+    backend_cls: "type[DTOBackend]", as_mapping: bool
+) -> None:
+    calls: list[tuple[str, str]] = []
+
+    def accessor(obj: object, name: str) -> Any:
+        calls.append((type(obj).__name__, name))
+        return getattr(obj, name)
+
+    backend = _create_backend(
+        backend_cls, DeepRoot, DTOConfig(max_nested_depth=3), is_data_field=False, accessor=accessor
+    )
+    source = _deep_root_with_mapping_levels() if as_mapping else _deep_root()
+
+    assert to_builtins(backend.encode_data(source)) == _deep_root_builtins()
+    assert calls.count(("DeepRoot", "middle")) == (0 if as_mapping else 1)
+    assert calls.count(("DeepLink", "middle")) == (0 if as_mapping else 1)
+    assert calls.count(("DeepMiddle", "leaf")) == 4
