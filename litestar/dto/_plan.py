@@ -11,6 +11,7 @@ from litestar.params import BodyKwarg
 from litestar.response.base import Response
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
+from litestar.utils.deprecation import warn_deprecation
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
+    from litestar.utils.deprecation import DeprecatedKind
 
 __all__ = (
     "DTODirectionPlan",
@@ -142,6 +144,7 @@ def _create_decoder(
 
     if getattr(dto, name) is getattr(AbstractDTO, name):
         return dto._wrap_decoder(backend_method)
+    _warn_override(dto, name, "method", "it is still called for every request.")
     if name == "decode_bytes":
         return lambda value, connection: dto(connection).decode_bytes(value)
     return lambda value, connection: dto(connection).decode_builtins(value)
@@ -151,6 +154,7 @@ def _create_encoder(dto: type[AbstractDTO[Any]], backend: DTOBackend) -> EncodeF
     from litestar.dto.base_dto import AbstractDTO
 
     if dto.data_to_encodable_type is not AbstractDTO.data_to_encodable_type:
+        _warn_override(dto, "data_to_encodable_type", "method", "it is still called for every request.")
         return lambda data, connection: dto(connection).data_to_encodable_type(data)
 
     encode_data = backend.encode_data
@@ -209,6 +213,9 @@ def _build_direction(
     ):
         backend = create_backend(dto, field_definition, is_data_field=is_data_field, handler_id=str(handler.handler_id))
     else:
+        _warn_override(
+            dto, "create_for_field_definition", "classmethod", "it is still called when a route handler is registered."
+        )
         build = _PlanBuild(dto=dto, is_data_field=is_data_field)
         field = field_definition
         if is_data_field and not isinstance(field_definition.kwarg_definition, BodyKwarg):
@@ -228,6 +235,17 @@ def _build_direction(
     backend._bind_handler(type_decoders=handler.type_decoders, default_deserializer=handler.default_deserializer)
     return DTODirectionPlan(
         dto=dto, backend=backend, schema_annotation=build_schema_annotation(dto, backend, field_definition)
+    )
+
+
+def _warn_override(dto: type[AbstractDTO[Any]], name: str, kind: DeprecatedKind, when: str) -> None:
+    warn_deprecation(
+        "3.0",
+        f"{dto.__name__}.{name}",
+        kind,
+        removal_in="4.0",
+        info=f"Overriding this method is deprecated; {when}",
+        stacklevel=2,
     )
 
 
