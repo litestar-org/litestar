@@ -179,7 +179,6 @@ def test_fields_alias_generator(
     tested_fields: list[str],
     data: dict[str, str],
 ) -> None:
-    DataclassDTO._dto_backends = {}
     config = DTOConfig(rename_strategy=rename_strategy)
     dto = DataclassDTO[Annotated[Fzop, config]]
 
