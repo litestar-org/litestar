@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, make_dataclass
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Generic, Optional, TypeVar, Union, cast
 from unittest.mock import MagicMock
 
 import msgspec
 import pytest
-from msgspec import Struct
+from msgspec import UNSET, Meta, Struct, UnsetType
 
 from litestar import Controller, Response, get, patch, post
 from litestar.connection.request import Request
@@ -956,6 +956,99 @@ def test_msgspec_dto_dont_copy_length_constraint_for_partial_dto() -> None:
 
     with create_test_client([handler]) as client:
         assert client.post("/", json={"bar": "1", "baz": "123"}).status_code == 201
+
+
+def _make_model(dto_type: Any, annotation: Any, *default: Any) -> Any:
+    if dto_type is DataclassDTO:
+        return make_dataclass("Model", [("f", annotation, field(default=default[0])) if default else ("f", annotation)])
+    return msgspec.defstruct("Model", [("f", annotation, *default)])
+
+
+_MEMBER_CONSTRAINT_CASES = [
+    pytest.param(list[Annotated[str, Meta(min_length=5)]], ["12"], ["12345"], id="list_item"),
+    pytest.param(dict[str, Annotated[str, Meta(min_length=5)]], {"k": "12"}, {"k": "12345"}, id="dict_value"),
+    pytest.param(dict[Annotated[str, Meta(min_length=5)], int], {"k": 1}, {"kkkkk": 1}, id="dict_key"),
+    pytest.param(tuple[Annotated[str, Meta(min_length=5)], int], ["12", 1], ["12345", 1], id="tuple_member"),
+    pytest.param(Union[Annotated[str, Meta(min_length=5)], int], "12", 3, id="union_member"),
+]
+
+
+@pytest.mark.parametrize(
+    "dto_type, annotation, invalid, valid",
+    [
+        *(
+            pytest.param(dto_type, *case.values, id=f"{dto_type.__name__}-{case.id}")
+            for dto_type in (DataclassDTO, MsgspecDTO)
+            for case in _MEMBER_CONSTRAINT_CASES
+        ),
+        pytest.param(
+            DataclassDTO, Optional[Annotated[str, Meta(pattern="^a")]], "b", None, id="DataclassDTO-optional_member"
+        ),
+    ],
+)
+def test_dto_enforces_member_constraints(dto_type: Any, annotation: Any, invalid: Any, valid: Any) -> None:
+    model = _make_model(dto_type, annotation)
+
+    @post("/", dto=dto_type[model], return_dto=None, signature_namespace={"model": model})
+    def create_member_constrained(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
+        pass
+
+    with create_test_client([create_member_constrained]) as client:
+        assert client.post("/", json={"f": invalid}).status_code == 400
+        assert client.post("/", json={"f": valid}).status_code == 201
+
+
+@pytest.mark.parametrize(
+    "dto_type, annotation, default, invalid, valid",
+    [
+        *(
+            pytest.param(dto_type, annotation, (), invalid, valid, id=f"{dto_type.__name__}-{case_id}")
+            for dto_type in (DataclassDTO, MsgspecDTO)
+            for annotation, invalid, valid, case_id in (
+                (list[Annotated[str, Meta(min_length=5)]], ["12"], ["12345"], "list_item"),
+                (Union[Annotated[str, Meta(min_length=5)], int], "12", 3, "union_member"),
+            )
+        ),
+        pytest.param(
+            MsgspecDTO,
+            Union[Annotated[str, Meta(min_length=8)], UnsetType],
+            (UNSET,),
+            "12",
+            "12345678",
+            id="MsgspecDTO-unset_union_member",
+        ),
+    ],
+)
+def test_dto_enforces_member_constraints_with_partial(
+    dto_type: Any, annotation: Any, default: tuple[Any, ...], invalid: Any, valid: Any
+) -> None:
+    model = _make_model(dto_type, annotation, *default)
+
+    @post(
+        "/",
+        dto=dto_type[Annotated[model, DTOConfig(partial=True)]],
+        return_dto=None,
+        signature_namespace={"model": model},
+    )
+    def patch_member_constrained(data: JSONBody[DTOData[model]]) -> None:  # type: ignore[valid-type]
+        pass
+
+    with create_test_client([patch_member_constrained]) as client:
+        assert client.post("/", json={"f": invalid}).status_code == 400
+        assert client.post("/", json={"f": valid}).status_code == 201
+        assert client.post("/", json={}).status_code == 201
+
+
+def test_return_dto_schema_builds_with_member_meta_msgspec_rejects() -> None:
+    model = make_dataclass("Model", [("f", list[Annotated[int, Meta(min_length=1, description="d")]])])
+
+    @get("/", return_dto=DataclassDTO[model], signature_namespace={"model": model})  # type: ignore[valid-type]
+    def read_member_meta() -> model:  # type: ignore[valid-type]
+        return model(f=[1])  # type: ignore[no-any-return]
+
+    with create_test_client([read_member_meta]) as client:
+        assert client.get("/").status_code == 200
+        assert client.get("/schema/openapi.json").status_code == 200
 
 
 def test_openapi_schema_for_type_with_custom_generic_type(create_module: Callable[[str], ModuleType]) -> None:
