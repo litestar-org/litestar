@@ -6,6 +6,23 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Fix the codegen DTO backend crashing for nested models
+        :type: bugfix
+        :pr: 4670
+
+        An application failed to start with a :exc:`SyntaxError` when a DTO nested models
+        more than one level deep behind an intermediate model holding a single field, or
+        behind any intermediate model when it declared a custom ``attribute_accessor``. The
+        codegen backend -- the default backend -- derived a local variable name from an
+        access expression without stripping the attribute and item access syntax from it,
+        and raised a :exc:`ValueError` instead for a field name holding a character that is
+        not a word character, such as ``a·b``.
+
+        The codegen backend also read a field with attribute syntax whatever its name. A
+        field named after a keyword, such as ``class``, raised a :exc:`SyntaxError` at
+        startup, and a field whose name Python normalises as an identifier, such as ``µ``
+        or ``ﬁeld``, returned the value of another field or failed with a 500.
+
     .. change:: Add option to run the ASGI lifespan protocol for ``asgi`` handlers
         :type: feature
 
