@@ -126,7 +126,11 @@ def _create_backend(
 def _generated_sources(model: type[Any], max_nested_depth: int) -> list[str]:
     before = set(linecache.cache)
     _create_backend(DTOCodegenBackend, model, DTOConfig(max_nested_depth=max_nested_depth), is_data_field=False)
-    return ["".join(linecache.getlines(key)) for key in set(linecache.cache) - before]
+    return [
+        "".join(linecache.getlines(key))
+        for key in set(linecache.cache) - before
+        if key.startswith("dto_transfer_function_")
+    ]
 
 
 @pytest.mark.parametrize("as_mapping", [False, True])
@@ -156,6 +160,60 @@ def test_nested_depth_cut_is_kept_per_path(backend_cls: "type[DTOBackend]") -> N
     expected = _deep_root_builtins()
     expected["link"] = {"middle": {"a": 20}}
     assert to_builtins(backend.encode_data(_deep_root())) == expected
+
+
+def test_collection_item_exclude_is_kept_per_path_when_encoding(backend_cls: "type[DTOBackend]") -> None:
+    backend = _create_backend(
+        backend_cls, DeepRoot, DTOConfig(max_nested_depth=3, exclude={"middles.0.leaves.0.y"}), is_data_field=False
+    )
+
+    encoded: Any = to_builtins(backend.encode_data(_deep_root()))
+
+    assert encoded["middle"]["leaves"] == [{"x": 12, "y": "y"}]
+    assert encoded["middles"][0]["leaves"] == [{"x": 42}]
+
+
+def test_collection_item_exclude_is_kept_per_path_when_decoding(
+    backend_cls: "type[DTOBackend]", asgi_connection: "Request[Any, Any, Any]"
+) -> None:
+    backend = _create_backend(
+        backend_cls, DeepRoot, DTOConfig(max_nested_depth=3, exclude={"middles.0.leaves.0.y"}), is_data_field=True
+    )
+    builtins = _deep_root_builtins()
+    builtins["middle"]["leaves"] = [{"x": 12, "y": "kept"}]
+    builtins["middles"][0]["leaves"] = [{"x": 42, "y": "dropped"}]
+
+    data = backend.populate_data_from_builtins(builtins, asgi_connection)
+
+    assert data.middle.leaves == [DeepLeaf(x=12, y="kept")]
+    assert data.middles[0].leaves == [DeepLeaf(x=42, y="y")]
+
+
+def test_nested_model_exclude_is_kept_per_path_when_encoding(backend_cls: "type[DTOBackend]") -> None:
+    backend = _create_backend(
+        backend_cls, DeepRoot, DTOConfig(max_nested_depth=3, exclude={"middle.leaf.y"}), is_data_field=False
+    )
+
+    encoded: Any = to_builtins(backend.encode_data(_deep_root()))
+
+    assert encoded["middle"]["leaf"] == {"x": 10}
+    assert encoded["maybe_middle"]["leaf"] == {"x": 30, "y": "y"}
+
+
+def test_nested_model_exclude_is_kept_per_path_when_decoding(
+    backend_cls: "type[DTOBackend]", asgi_connection: "Request[Any, Any, Any]"
+) -> None:
+    backend = _create_backend(
+        backend_cls, DeepRoot, DTOConfig(max_nested_depth=3, exclude={"middle.leaf.y"}), is_data_field=True
+    )
+    builtins = _deep_root_builtins()
+    builtins["middle"]["leaf"] = {"x": 10, "y": "dropped"}
+    builtins["maybe_middle"]["leaf"] = {"x": 30, "y": "kept"}
+
+    data = backend.populate_data_from_builtins(builtins, asgi_connection)
+
+    assert data.middle.leaf == DeepLeaf(x=10, y="y")
+    assert data.maybe_middle.leaf == DeepLeaf(x=30, y="kept")
 
 
 @pytest.mark.parametrize("max_nested_depth", [1, 3, 5])
