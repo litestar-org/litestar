@@ -1393,6 +1393,93 @@ def test_msgspec_dto_raises_invalid_annotation_for_mixed_type_literal() -> None:
     assert isinstance(exc_info.value.__cause__, TypeError)
 
 
+_CONFLICTING_DERIVED_CASES = [
+    pytest.param(Annotated[int, annotated_types.Ge(1), annotated_types.Gt(0)], 0, 3, 201, None, id="derived_ge_and_gt"),
+    pytest.param(Annotated[int, QueryParameter(ge=1, gt=0)], 0, 3, 201, None, id="parameter_ge_and_gt"),
+    pytest.param(Annotated[int, annotated_types.Le(5), annotated_types.Lt(9)], 7, 3, 201, None, id="derived_le_and_lt"),
+    pytest.param(
+        Annotated[int, Meta(gt=0), annotated_types.Ge(5)],
+        0,
+        3,
+        400,
+        ("exclusiveMinimum", 0),
+        id="own_gt_and_derived_ge",
+    ),
+    pytest.param(
+        Annotated[int, Meta(lt=9), annotated_types.Le(5)],
+        9,
+        7,
+        400,
+        ("exclusiveMaximum", 9),
+        id="own_lt_and_derived_le",
+    ),
+    pytest.param(Annotated[str, QueryParameter(pattern="(")], "a", "b", 201, None, id="parameter_invalid_pattern"),
+]
+
+
+@pytest.mark.parametrize("partial", [False, True], ids=["full", "partial"])
+@pytest.mark.parametrize("dto_type", [DataclassDTO, MsgspecDTO])
+@pytest.mark.parametrize("annotation, rejected, accepted, rejected_status, own_bound", _CONFLICTING_DERIVED_CASES)
+def test_dto_drops_derived_constraints_that_conflict(
+    dto_type: Any,
+    partial: bool,
+    annotation: Any,
+    rejected: Any,
+    accepted: Any,
+    rejected_status: int,
+    own_bound: tuple[str, int] | None,
+) -> None:
+    model = _make_model(dto_type, annotation)
+
+    if partial:
+
+        @post(
+            "/",
+            dto=dto_type[Annotated[model, DTOConfig(partial=True)]],
+            return_dto=None,
+            signature_namespace={"model": model},
+        )
+        def create_conflicting(data: JSONBody[DTOData[model]]) -> None:  # type: ignore[valid-type]
+            pass
+
+    else:
+
+        @post("/", dto=dto_type[model], return_dto=None, signature_namespace={"model": model})
+        def create_conflicting(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
+            pass
+
+    with create_test_client([create_conflicting], openapi_config=None) as client:
+        assert client.post("/", json={"f": rejected}).status_code == rejected_status
+        assert client.post("/", json={"f": accepted}).status_code == 201
+
+
+@pytest.mark.parametrize("dto_type", [DataclassDTO, MsgspecDTO])
+@pytest.mark.parametrize("annotation, rejected, accepted, rejected_status, own_bound", _CONFLICTING_DERIVED_CASES)
+def test_return_dto_drops_derived_constraints_that_conflict(
+    dto_type: Any,
+    annotation: Any,
+    rejected: Any,
+    accepted: Any,
+    rejected_status: int,
+    own_bound: tuple[str, int] | None,
+) -> None:
+    model = _make_model(dto_type, annotation)
+
+    @get("/", return_dto=dto_type[model], signature_namespace={"model": model})
+    def read_conflicting() -> model:  # type: ignore[valid-type]
+        return model(f=accepted)  # type: ignore[no-any-return]
+
+    with create_test_client([read_conflicting]) as client:
+        assert client.get("/").json() == {"f": accepted}
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == 200
+
+    if own_bound is not None:
+        keyword, value = own_bound
+        (component,) = response.json()["components"]["schemas"].values()
+        assert component["properties"]["f"][keyword] == value
+
+
 def test_return_dto_schema_builds_with_field_constraint_msgspec_rejects() -> None:
     misplaced_meta = make_dataclass(
         "MisplacedMeta", [("f", Annotated[Optional[str], Meta(min_length=5)], field(default=None))]

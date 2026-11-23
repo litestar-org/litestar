@@ -189,8 +189,9 @@ Constraints from ``annotated_types`` metadata and from Litestar parameter defini
 express them. Where it cannot, for example a ``gt`` bound on a ``Decimal`` or a length on ``str | None``, the DTO does
 not enforce them.
 
-When a field carries both a ``msgspec.Meta`` and another constraint for the same attribute, such as
-``Annotated[int, Meta(ge=1), annotated_types.Ge(3)]``, the ``Meta`` wins.
+When a field carries both a ``msgspec.Meta`` and another constraint for the same attribute or a conflicting bound, such
+as ``Annotated[int, Meta(ge=1), annotated_types.Ge(3)]`` or ``Annotated[int, Meta(gt=0), annotated_types.Ge(5)]``, the
+``Meta`` wins and the other constraint is not enforced.
 
 The startup check does not apply to :class:`~litestar.plugins.pydantic.PydanticDTO` or to DTO classes that decode the
 request body themselves by overriding ``decode_bytes`` or ``decode_builtins``.

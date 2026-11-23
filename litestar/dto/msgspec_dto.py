@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from dataclasses import replace
 from typing import TYPE_CHECKING, Generic, TypeVar
 
@@ -34,9 +35,10 @@ def _default_or_none(value: Any) -> Any:
     return None if value is NODEFAULT else value
 
 
-def _inspect_error_message(
-    model_type: type[Struct], field_names: Collection[str], type_hints: dict[str, FieldDefinition], exc: TypeError
-) -> str:
+def _rejected_field_message(
+    model_type: type[Struct], field_names: Collection[str], dto_type: type[MsgspecDTO]
+) -> str | None:
+    type_hints = dto_type.get_model_type_hints(model_type)
     for name in field_names:
         field_definition = type_hints[name]
         try:
@@ -47,7 +49,7 @@ def _inspect_error_message(
                 f"msgspec cannot inspect {_qualified_name(model_type)!r}: field {name!r}, annotated "
                 f"{field_definition.raw!r}, is rejected by msgspec ({_msgspec_reason(field_exc)}){hint}"
             )
-    return f"msgspec cannot inspect {model_type.__name__!r}: {exc}"
+    return None
 
 
 class MsgspecDTO(AbstractDTO[T], Generic[T]):
@@ -60,8 +62,11 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
         try:
             struct_info = msgspec.inspect.type_info(model_type)
         except TypeError as exc:
+            message = None
+            with suppress(Exception):
+                message = _rejected_field_message(model_type, msgspec_fields, cls)
             raise InvalidAnnotationException(
-                _inspect_error_message(model_type, msgspec_fields, cls.get_model_type_hints(model_type), exc)
+                message or f"msgspec cannot inspect {model_type.__name__!r}: {exc}"
             ) from exc
 
         inspect_fields: dict[str, msgspec.inspect.Field] = {

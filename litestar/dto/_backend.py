@@ -4,6 +4,8 @@ back again, to bytes.
 
 from __future__ import annotations
 
+import re
+from contextlib import suppress
 from dataclasses import replace
 from typing import (
     TYPE_CHECKING,
@@ -142,16 +144,17 @@ class DTOBackend:
 
     def _startup_error_message(self, exc: TypeError) -> str:
         prefix = "msgspec cannot decode the transfer model of"
-        rejected = _find_rejected_field(self.model_type, self.parsed_field_definitions, self.transfer_model_type)
-        if rejected is None:
-            return f"{prefix} {self.model_type.__name__!r}: {exc}"
-        owner, field_definition, field_exc = rejected
-        hint = _rejection_hint(field_definition)
-        return (
-            f"{prefix} {_qualified_name(self.model_type)!r}: field {field_definition.name!r} of "
-            f"{_qualified_name(owner)!r}, annotated {field_definition.raw!r}, is rejected by msgspec "
-            f"({_msgspec_reason(field_exc)}){f'; {hint}' if hint else ''} (handler {self.handler_id!r})"
-        )
+        with suppress(Exception):
+            rejected = _find_rejected_field(self.model_type, self.parsed_field_definitions, self.transfer_model_type)
+            if rejected is not None:
+                owner, field_definition, field_exc = rejected
+                hint = _rejection_hint(field_definition)
+                return (
+                    f"{prefix} {_qualified_name(self.model_type)!r}: field {field_definition.name!r} of "
+                    f"{_qualified_name(owner)!r}, annotated {field_definition.raw!r}, is rejected by msgspec "
+                    f"({_msgspec_reason(field_exc)}){f'; {hint}' if hint else ''} (handler {self.handler_id!r})"
+                )
+        return f"{prefix} {self.model_type.__name__!r}: {exc}"
 
     def _decodes_with_annotation(self) -> bool:
         from litestar.dto.base_dto import AbstractDTO
@@ -739,10 +742,10 @@ def _should_exclude_field(
 _SCHEMA_META_ATTRIBUTES: Final = ("title", "description", "examples", "extra_json_schema", "extra")
 
 
-def _msgspec_accepts(annotation: Any, constraint_kwargs: dict[str, Any]) -> bool:
+def _msgspec_accepts(annotation: Any, own: tuple[msgspec.Meta, ...], constraint_kwargs: dict[str, Any]) -> bool:
     try:
-        msgspec.json.Decoder(Annotated[annotation, msgspec.Meta(**constraint_kwargs)])
-    except (TypeError, ValueError):
+        msgspec.json.Decoder(Annotated[(annotation, *own, msgspec.Meta(**constraint_kwargs))])
+    except (TypeError, ValueError, re.error):
         return False
     return True
 
@@ -754,12 +757,14 @@ def _constraints_for_field_definition(field_definition: FieldDefinition, annotat
         for name, value in _derived_constraint_kwargs(field_definition).items()
         if all(getattr(m, name) is None for m in own)
     }
-    if derived and not _msgspec_accepts(annotation, derived):
+    if derived and not _msgspec_accepts(annotation, own, derived):
         derived = {
             name: value
             for name, value in derived.items()
-            if name in _SCHEMA_META_ATTRIBUTES or _msgspec_accepts(annotation, {name: value})
+            if name in _SCHEMA_META_ATTRIBUTES or _msgspec_accepts(annotation, own, {name: value})
         }
+        if not _msgspec_accepts(annotation, own, derived):
+            derived = {name: value for name, value in derived.items() if name in _SCHEMA_META_ATTRIBUTES}
     return (*own, msgspec.Meta(**derived)) if derived else own
 
 

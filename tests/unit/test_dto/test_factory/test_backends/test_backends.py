@@ -1002,3 +1002,25 @@ def test_backend_subclass_with_own_parsing_is_not_checked(method_name: str) -> N
     own_parsing_backend(**backend_kwargs)
     with pytest.raises(InvalidAnnotationException):
         DTOBackend(**backend_kwargs)
+
+
+def test_startup_error_falls_back_to_msgspec_message_when_field_search_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    def failing_search(*args: Any) -> Any:
+        raise KeyError("f")
+
+    monkeypatch.setattr("litestar.dto._backend._find_rejected_field", failing_search)
+
+    with pytest.raises(InvalidAnnotationException) as exc_info:
+        DTOBackend(
+            handler_id="test",
+            dto_factory=DataclassDTO[UnionHolder],
+            field_definition=FieldDefinition.from_annotation(UnionHolder),
+            model_type=UnionHolder,
+            wrapper_attribute_name=None,
+            is_data_field=True,
+        )
+
+    assert isinstance(exc_info.value.__cause__, TypeError)
+    assert (
+        str(exc_info.value) == f"msgspec cannot decode the transfer model of 'UnionHolder': {exc_info.value.__cause__}"
+    )
