@@ -594,29 +594,26 @@ def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> Any:
     return field(**kwargs)
 
 
-def _numeric_bound(value: Any) -> int | float | None:
-    return value if isinstance(value, (int, float)) else None
-
-
-def _create_struct_field_meta_for_field_definition(field_definition: FieldDefinition) -> msgspec.Meta | None:
+def _derived_constraint_kwargs(field_definition: FieldDefinition) -> dict[str, Any]:
     if (kwarg_definition := field_definition.kwarg_definition) is None or not isinstance(
         kwarg_definition, KwargDefinition
     ):
-        return None
+        return {}
 
-    return msgspec.Meta(
-        description=kwarg_definition.description,
-        examples=[e.value for e in kwarg_definition.examples or []],
-        ge=_numeric_bound(kwarg_definition.ge),
-        gt=_numeric_bound(kwarg_definition.gt),
-        le=_numeric_bound(kwarg_definition.le),
-        lt=_numeric_bound(kwarg_definition.lt),
-        max_length=kwarg_definition.max_length,
-        min_length=kwarg_definition.min_length,
-        multiple_of=_numeric_bound(kwarg_definition.multiple_of),
-        pattern=kwarg_definition.pattern,
-        title=kwarg_definition.title,
-    )
+    kwargs = {
+        "description": kwarg_definition.description,
+        "examples": [e.value for e in kwarg_definition.examples or []],
+        "ge": kwarg_definition.ge,
+        "gt": kwarg_definition.gt,
+        "le": kwarg_definition.le,
+        "lt": kwarg_definition.lt,
+        "max_length": kwarg_definition.max_length,
+        "min_length": kwarg_definition.min_length,
+        "multiple_of": kwarg_definition.multiple_of,
+        "pattern": kwarg_definition.pattern,
+        "title": kwarg_definition.title,
+    }
+    return {name: value for name, value in kwargs.items() if value is not None}
 
 
 def _create_struct_for_field_definitions(
@@ -625,7 +622,7 @@ def _create_struct_for_field_definitions(
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     rename_strategy: RenameStrategy | dict[str, str] | None,
     forbid_unknown_fields: bool,
-    is_data_field: bool = True,
+    is_data_field: bool,
 ) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, type]] = []
 
@@ -728,34 +725,31 @@ def _should_exclude_field(
     return not is_data_field and field_definition.dto_field.mark is Mark.WRITE_ONLY
 
 
-_DERIVED_META_ATTRIBUTES: Final = (
-    "description",
-    "examples",
-    "ge",
-    "gt",
-    "le",
-    "lt",
-    "max_length",
-    "min_length",
-    "multiple_of",
-    "pattern",
-    "title",
-)
-
 _SCHEMA_META_ATTRIBUTES: Final = ("title", "description", "examples", "extra_json_schema", "extra")
 
 
-def _constraints_for_field_definition(field_definition: FieldDefinition) -> tuple[msgspec.Meta, ...]:
-    constraints = [m for m in field_definition.metadata if isinstance(m, msgspec.Meta)]
-    if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
+def _msgspec_accepts(annotation: Any, constraint_kwargs: dict[str, Any]) -> bool:
+    try:
+        msgspec.json.Decoder(Annotated[annotation, msgspec.Meta(**constraint_kwargs)])
+    except (TypeError, ValueError):
+        return False
+    return True
+
+
+def _constraints_for_field_definition(field_definition: FieldDefinition, annotation: Any) -> tuple[msgspec.Meta, ...]:
+    own = tuple(m for m in field_definition.metadata if isinstance(m, msgspec.Meta))
+    derived = {
+        name: value
+        for name, value in _derived_constraint_kwargs(field_definition).items()
+        if all(getattr(m, name) is None for m in own)
+    }
+    if derived and not _msgspec_accepts(annotation, derived):
         derived = {
             name: value
-            for name in _DERIVED_META_ATTRIBUTES
-            if (value := getattr(field_meta, name)) is not None and all(getattr(m, name) is None for m in constraints)
+            for name, value in derived.items()
+            if name in _SCHEMA_META_ATTRIBUTES or _msgspec_accepts(annotation, {name: value})
         }
-        if derived:
-            constraints.append(msgspec.Meta(**derived))
-    return tuple(constraints)
+    return (*own, msgspec.Meta(**derived)) if derived else own
 
 
 def _schema_only_constraints(constraints: tuple[msgspec.Meta, ...]) -> tuple[msgspec.Meta, ...]:
@@ -780,7 +774,7 @@ def _create_transfer_model_type_annotation(
     """
     annotation = _create_bare_transfer_model_type_annotation(transfer_type, passthrough_constraints, is_data_field)
     if not passthrough_constraints or not (
-        constraints := _constraints_for_field_definition(transfer_type.field_definition)
+        constraints := _constraints_for_field_definition(transfer_type.field_definition, annotation)
     ):
         return annotation
     constrained: Any = Annotated[(annotation, *constraints)]
@@ -795,7 +789,7 @@ def _create_transfer_model_type_annotation(
 
 
 def _create_bare_transfer_model_type_annotation(
-    transfer_type: TransferType, passthrough_constraints: bool, is_data_field: bool = True
+    transfer_type: TransferType, passthrough_constraints: bool, is_data_field: bool
 ) -> Any:
     if isinstance(transfer_type, SimpleType):
         if transfer_type.nested_field_info:
@@ -818,7 +812,7 @@ def _create_bare_transfer_model_type_annotation(
 
 
 def _create_transfer_model_collection_type(
-    transfer_type: CollectionType, passthrough_constraints: bool, is_data_field: bool = True
+    transfer_type: CollectionType, passthrough_constraints: bool, is_data_field: bool
 ) -> Any:
     generic_collection_type = transfer_type.field_definition.safe_generic_origin
     inner_type = _create_transfer_model_type_annotation(
@@ -830,7 +824,7 @@ def _create_transfer_model_collection_type(
 
 
 def _create_transfer_model_tuple_type(
-    transfer_type: TupleType, passthrough_constraints: bool, is_data_field: bool = True
+    transfer_type: TupleType, passthrough_constraints: bool, is_data_field: bool
 ) -> Any:
     inner_types = tuple(
         _create_transfer_model_type_annotation(t, passthrough_constraints, is_data_field)
@@ -840,7 +834,7 @@ def _create_transfer_model_tuple_type(
 
 
 def _create_transfer_model_union_type(
-    transfer_type: UnionType, passthrough_constraints: bool, is_data_field: bool = True
+    transfer_type: UnionType, passthrough_constraints: bool, is_data_field: bool
 ) -> Any:
     inner_types = tuple(
         _create_transfer_model_type_annotation(t, passthrough_constraints, is_data_field)
@@ -850,7 +844,7 @@ def _create_transfer_model_union_type(
 
 
 def _create_transfer_model_mapping_type(
-    transfer_type: MappingType, passthrough_constraints: bool, is_data_field: bool = True
+    transfer_type: MappingType, passthrough_constraints: bool, is_data_field: bool
 ) -> Any:
     key_type = _create_transfer_model_type_annotation(transfer_type.key_type, passthrough_constraints, is_data_field)
     value_type = _create_transfer_model_type_annotation(

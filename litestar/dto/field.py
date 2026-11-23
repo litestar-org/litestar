@@ -60,7 +60,7 @@ def dto_field(mark: Literal["read-only", "write-only", "private"] | Mark) -> dic
 
         Marking a field automates its inclusion/exclusion from DTO field definitions, depending on the DTO's purpose.
     """
-    return {DTO_FIELD_META_KEY: DTOField(mark=Mark(mark))}
+    return {DTO_FIELD_META_KEY: DTOField(mark=mark)}
 
 
 def extract_dto_field(field_definition: FieldDefinition, field_info_mapping: Mapping[str, Any]) -> DTOField:

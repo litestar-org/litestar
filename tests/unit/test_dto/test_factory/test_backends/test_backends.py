@@ -7,6 +7,8 @@ import re
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass, field, make_dataclass
+from datetime import date
+from decimal import Decimal
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Optional, Union
 from unittest.mock import MagicMock
@@ -23,7 +25,7 @@ from litestar.dto import DataclassDTO, DTOConfig, DTOField, MsgspecDTO
 from litestar.dto._backend import (
     DTOBackend,
     _constraints_for_field_definition,
-    _create_struct_field_meta_for_field_definition,
+    _derived_constraint_kwargs,
 )
 from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
@@ -681,16 +683,16 @@ dto_type = DataclassDTO[Model]
 
 
 @pytest.mark.parametrize(
-    ("constraint_kwargs",),
-    (
-        ({},),
-        ({"gt": 0, "lt": 2},),
-        ({"ge": 0, "le": 2},),
-        ({"min_length": 1, "max_length": 2},),
-        ({"pattern": "test"},),
-    ),
+    "constraint_kwargs",
+    [
+        pytest.param({}, id="schema_only"),
+        pytest.param({"gt": 0, "lt": 2}, id="exclusive_bounds"),
+        pytest.param({"ge": 0, "le": 2}, id="inclusive_bounds"),
+        pytest.param({"min_length": 1, "max_length": 2}, id="lengths"),
+        pytest.param({"pattern": "test"}, id="pattern"),
+    ],
 )
-def test_create_struct_field_meta_for_field_definition(constraint_kwargs: Any) -> None:
+def test_derived_constraint_kwargs(constraint_kwargs: Any) -> None:
     mock_field = MagicMock(spec=TransferDTOFieldDefinition, is_partial=False)
     mock_field.kwarg_definition = KwargDefinition(
         description="test",
@@ -698,12 +700,12 @@ def test_create_struct_field_meta_for_field_definition(constraint_kwargs: Any) -
         title="test",
         **constraint_kwargs,
     )
-    assert _create_struct_field_meta_for_field_definition(mock_field) == Meta(
-        description="test",
-        examples=[1],
-        title="test",
+    assert _derived_constraint_kwargs(mock_field) == {
+        "description": "test",
+        "examples": [1],
+        "title": "test",
         **constraint_kwargs,
-    )
+    }
 
 
 @pytest.mark.parametrize(
@@ -861,6 +863,17 @@ M5 = Meta(min_length=5)
             Union[Annotated[str, Meta(min_length=8)], UnsetType],
             id="MsgspecDTO-unset_union_member",
         ),
+        *(
+            pytest.param(
+                dto_type,
+                Annotated[int, Meta(ge=1, extra_json_schema={"x-unit": "s"})],
+                False,
+                1,
+                Annotated[int, Meta(ge=1, extra_json_schema={"x-unit": "s"})],
+                id=f"{dto_type.__name__}-extra_json_schema",
+            )
+            for dto_type in (DataclassDTO, MsgspecDTO)
+        ),
         pytest.param(
             MsgspecDTO,
             Limit,
@@ -924,15 +937,34 @@ def test_transfer_model_field_annotations(
 @pytest.mark.parametrize(
     "annotation, expected",
     [
-        (Annotated[int, Meta(ge=1)], (Meta(ge=1),)),
-        (Annotated[int, annotated_types.Ge(1)], (Meta(ge=1, examples=[]),)),
-        (Annotated[int, Meta(ge=1), annotated_types.Ge(3)], (Meta(ge=1), Meta(examples=[]))),
-        (Annotated[int, Meta(ge=1), annotated_types.Le(5)], (Meta(ge=1), Meta(le=5, examples=[]))),
-        (int, ()),
+        pytest.param(Annotated[int, Meta(ge=1)], (Meta(ge=1),), id="own_meta"),
+        pytest.param(Annotated[int, annotated_types.Ge(1)], (Meta(ge=1, examples=[]),), id="derived"),
+        pytest.param(
+            Annotated[int, Meta(ge=1), annotated_types.Ge(3)],
+            (Meta(ge=1), Meta(examples=[])),
+            id="own_meta_wins_same_attribute",
+        ),
+        pytest.param(
+            Annotated[int, Meta(ge=1), annotated_types.Le(5)],
+            (Meta(ge=1), Meta(le=5, examples=[])),
+            id="own_meta_and_derived_different_attributes",
+        ),
+        pytest.param(int, (), id="unconstrained"),
+        pytest.param(Annotated[Decimal, annotated_types.Gt(0)], (Meta(examples=[]),), id="derived_rejected_type"),
+        pytest.param(Annotated[int, annotated_types.Ge(1.5)], (Meta(examples=[]),), id="derived_rejected_value"),
+        pytest.param(
+            Annotated[date, annotated_types.Ge(date(2020, 1, 1))], (Meta(examples=[]),), id="derived_not_numeric"
+        ),
+        pytest.param(
+            Annotated[str, KwargDefinition(min_length=2, ge=1)],
+            (Meta(min_length=2, examples=[]),),
+            id="derived_partly_rejected",
+        ),
     ],
 )
 def test_constraints_for_field_definition(annotation: Any, expected: tuple[Meta, ...]) -> None:
-    assert _constraints_for_field_definition(FieldDefinition.from_annotation(annotation)) == expected
+    field_definition = FieldDefinition.from_annotation(annotation)
+    assert _constraints_for_field_definition(field_definition, field_definition.annotation) == expected
 
 
 @dataclass
