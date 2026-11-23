@@ -193,9 +193,9 @@ class TransferFunctionFactory:
         is_data_field: bool,
         nested_as_dict: bool,
         attribute_accessor: Callable[[object, str], Any],
-        cache: TransferFunctionCache | None = None,
+        cache: TransferFunctionCache,
     ) -> None:
-        self._cache: TransferFunctionCache = {} if cache is None else cache
+        self._cache = cache
         self.attribute_accessor = attribute_accessor
         self.is_data_field = is_data_field
         self._fn_locals: dict[str, Any] = {
@@ -327,13 +327,9 @@ class TransferFunctionFactory:
         destination_type: type[Any],
         is_data_field: bool,
         attribute_accessor: Callable[[object, str], Any],
-        nested_as_dict: bool | None = None,
-        cache: TransferFunctionCache | None = None,
+        nested_as_dict: bool,
+        cache: TransferFunctionCache,
     ) -> Callable[[Any], Any]:
-        if nested_as_dict is None:
-            nested_as_dict = destination_type is dict
-        if cache is None:
-            cache = {}
         key = ("instance", id(field_definitions), id(destination_type), nested_as_dict)
         if key in cache:
             return cache[key]
@@ -364,10 +360,8 @@ class TransferFunctionFactory:
         transfer_type: TransferType,
         is_data_field: bool,
         attribute_accessor: Callable[[object, str], Any],
-        cache: TransferFunctionCache | None = None,
+        cache: TransferFunctionCache,
     ) -> Callable[[Any], Any]:
-        if cache is None:
-            cache = {}
         key = ("type", id(transfer_type))
         if key in cache:
             return cache[key]
@@ -399,10 +393,8 @@ class TransferFunctionFactory:
         is_data_field: bool,
         field_definition: FieldDefinition | None = None,
         attribute_accessor: Callable[[object, str], Any],
-        cache: TransferFunctionCache | None = None,
+        cache: TransferFunctionCache,
     ) -> Callable[[Any], Any]:
-        if cache is None:
-            cache = {}
         if field_definition and field_definition.is_non_string_collection:
             factory = cls(
                 is_data_field=is_data_field,
@@ -426,6 +418,7 @@ class TransferFunctionFactory:
             field_definitions=field_definitions,
             is_data_field=is_data_field,
             attribute_accessor=attribute_accessor,
+            nested_as_dict=destination_type is dict,
             cache=cache,
         )
 
@@ -605,6 +598,14 @@ class TransferFunctionFactory:
 
         self._add_stmt(f"{assignment_target} = {source_value_name}")
 
+    @staticmethod
+    def _contains_nested_instance(transfer_type: TransferType) -> bool:
+        if isinstance(transfer_type, SimpleType):
+            return transfer_type.has_nested
+        if isinstance(transfer_type, UnionType):
+            return any(isinstance(t, SimpleType) and t.has_nested for t in transfer_type.inner_types)
+        return False
+
     def _create_nested_transfer_instance_data(
         self,
         tmp_return_type_name: str,
@@ -613,7 +614,7 @@ class TransferFunctionFactory:
         destination_type_name: str,
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
     ) -> None:
-        if not any(_contains_nested_instance(f.transfer_type) for f in field_definitions):
+        if not any(self._contains_nested_instance(f.transfer_type) for f in field_definitions):
             self._create_transfer_instance_data(
                 tmp_return_type_name=tmp_return_type_name,
                 source_instance_name=source_instance_name,
@@ -720,11 +721,3 @@ class TransferFunctionFactory:
                 conditional = "elif"
         with self._start_block("else:"):
             self._add_stmt(f"{assignment_target} = {source_value_name}")
-
-
-def _contains_nested_instance(transfer_type: TransferType) -> bool:
-    if isinstance(transfer_type, SimpleType):
-        return transfer_type.nested_field_info is not None
-    if isinstance(transfer_type, UnionType):
-        return any(isinstance(t, SimpleType) and t.nested_field_info is not None for t in transfer_type.inner_types)
-    return False
