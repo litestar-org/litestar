@@ -41,7 +41,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils import unique_name_for_scope
 
 if TYPE_CHECKING:
-    from collections.abc import Collection, Mapping, Set
+    from collections.abc import Callable, Collection, Mapping, Set
 
     from litestar.connection import ASGIConnection
     from litestar.dto import AbstractDTO, RenameStrategy
@@ -130,18 +130,9 @@ class DTOBackend:
 
         self.annotation = build_annotation_for_backend(model_type, field_definition, self.transfer_model_type)
         self._transfer_function_cache: TransferFunctionCache = {}
-        self._transfer_to_dict = self._create_transfer_data_fn(
-            destination_type=dict,
-            field_definition=self.field_definition,
-        )
-        self._transfer_to_model_type = self._create_transfer_data_fn(
-            destination_type=self.model_type,
-            field_definition=self.field_definition,
-        )
-        self._encode_data = self._create_transfer_data_fn(
-            destination_type=self.transfer_model_type,
-            field_definition=self.field_definition,
-        )
+        self._transfer_to_dict = self._create_transfer_data_fn(destination_type=dict)
+        self._transfer_to_model_type = self._create_transfer_data_fn(destination_type=self.model_type)
+        self._encode_data = self._create_transfer_data_fn(destination_type=self.transfer_model_type)
 
     def parse_model(
         self,
@@ -350,26 +341,20 @@ class DTOBackend:
 
         return cast("LitestarEncodableType", self._encode_data(data))
 
-    def _create_transfer_data_fn(
-        self,
-        destination_type: type[Any],
-        field_definition: FieldDefinition,
-    ) -> Any:
-        """Create instance or iterable of instances of ``destination_type``.
+    def _create_transfer_data_fn(self, destination_type: type[Any]) -> Callable[[Any], Any]:
+        """Generate a function that transfers data shaped like the handler annotation into ``destination_type``.
 
         Args:
-            destination_type: the model type received by the DTO on type narrowing.
-            field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
+            destination_type: The type that the generated function creates for each model instance.
 
         Returns:
-            Data parsed into ``destination_type``.
+            The generated transfer function.
         """
-
         return TransferFunctionFactory.create_transfer_data(
             destination_type=destination_type,
             field_definitions=self.parsed_field_definitions,
             is_data_field=self.is_data_field,
-            field_definition=field_definition,
+            field_definition=self.field_definition,
             attribute_accessor=self.attribute_accessor,
             cache=self._transfer_function_cache,
         )

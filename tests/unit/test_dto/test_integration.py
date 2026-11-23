@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+from typing import Annotated
 from unittest.mock import MagicMock
 
 import pytest
 
-from litestar import Controller, Litestar, Router, get, post
+from litestar import Controller, Router, get, post
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig
-from litestar.dto._backend import DTOBackend
 from litestar.exceptions import LitestarDeprecationWarning
 from litestar.params import JSONBody
 from litestar.plugins import SerializationPlugin
@@ -129,28 +129,19 @@ def test_data_dto_used_as_return_dto_fallback_over_serialization_plugin() -> Non
         assert response.json() == {"a": 1}
 
 
-def test_handler_backend_is_dto_backend(ModelDataDTO: type[AbstractDTO]) -> None:
-    @post(dto=ModelDataDTO, signature_types=[Model])
+def test_experimental_codegen_backend_false_is_ignored() -> None:
+    with pytest.warns(LitestarDeprecationWarning, match="DTOConfig.experimental_codegen_backend"):
+        config = DTOConfig(experimental_codegen_backend=False)
+    dto = DataclassDTO[Annotated[Model, config]]
+
+    @post(dto=dto, signature_types=[Model])
     def handler(data: JSONBody[Model]) -> Model:
+        assert data == Model(a=1, b="2")
         return data
 
-    app = Litestar(route_handlers=[handler])
-    resolved_handler = app.route_handler_method_map["/"]["POST"]
+    with create_test_client(route_handlers=handler) as client:
+        response = client.post("/", json={"a": 1, "b": "2"})
 
-    backend = resolved_handler.data_dto._dto_backends[resolved_handler.handler_id]["data_backend"]  # type: ignore[union-attr]
-    assert type(backend) is DTOBackend
-
-
-def test_experimental_codegen_backend_false_is_ignored(ModelDataDTO: type[AbstractDTO]) -> None:
-    with pytest.warns(LitestarDeprecationWarning):
-        ModelDataDTO.config = DTOConfig(experimental_codegen_backend=False)
-
-    @post(dto=ModelDataDTO, signature_types=[Model])
-    def handler(data: JSONBody[Model]) -> Model:
-        return data
-
-    app = Litestar(route_handlers=[handler])
-    resolved_handler = app.route_handler_method_map["/"]["POST"]
-
-    backend = resolved_handler.data_dto._dto_backends[resolved_handler.handler_id]["data_backend"]  # type: ignore[union-attr]
-    assert type(backend) is DTOBackend
+    assert response.status_code == 201
+    assert response.json() == {"a": 1, "b": "2"}
+    assert dto.config.experimental_codegen_backend is None

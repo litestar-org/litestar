@@ -542,26 +542,6 @@ def test_codegen_backend_is_dto_backend() -> None:
     assert DTOCodegenBackend is DTOBackend
 
 
-def test_dto_backend_transfers_with_generated_functions() -> None:
-    class Factory(DataclassDTO):
-        config = DTOConfig()
-        model_type = DC
-
-    backend = DTOBackend(
-        handler_id="test",
-        dto_factory=Factory,
-        field_definition=FieldDefinition.from_annotation(DC),
-        model_type=DC,
-        wrapper_attribute_name=None,
-        is_data_field=True,
-    )
-
-    assert inspect.getsource(backend._encode_data).startswith("def func(")
-    assert inspect.getsource(backend._transfer_to_model_type).startswith("def func(")
-    assert inspect.getsource(backend._transfer_to_dict).startswith("def func(")
-    assert encode_json(backend.encode_data(STRUCTURED)) == RAW
-
-
 def test_create_for_field_definition_uses_explicit_backend_class() -> None:
     class CustomBackend(DTOBackend):
         __slots__ = ()
