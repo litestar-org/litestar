@@ -1,3 +1,4 @@
+import linecache
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -46,6 +47,13 @@ class ChainNode:
     id: int
     name: str
     child: "ChainNode | None" = None
+
+
+@dataclass
+class TreeNode:
+    name: str
+    children: "list[TreeNode]" = field(default_factory=list)
+    parent: "TreeNode | None" = None
 
 
 def _deep_middle(a: int) -> DeepMiddle:
@@ -107,6 +115,12 @@ def _create_backend(
         model_type=model,
         wrapper_attribute_name=None,
     )
+
+
+def _generated_sources(model: type[Any], max_nested_depth: int) -> list[str]:
+    before = set(linecache.cache)
+    _create_backend(DTOCodegenBackend, model, DTOConfig(max_nested_depth=max_nested_depth), is_data_field=False)
+    return ["".join(linecache.getlines(key)) for key in set(linecache.cache) - before]
 
 
 @pytest.mark.parametrize("as_mapping", [False, True])
@@ -208,3 +222,19 @@ def test_custom_attribute_accessor_reads_deeply_nested_models_once(
     assert calls.count(("DeepRoot", "middle")) == (0 if as_mapping else 1)
     assert calls.count(("DeepLink", "middle")) == (0 if as_mapping else 1)
     assert calls.count(("DeepMiddle", "leaf")) == 4
+
+
+def test_codegen_generated_source_grows_linearly_with_nested_depth() -> None:
+    shallow = _generated_sources(ChainNode, max_nested_depth=4)
+    deep = _generated_sources(ChainNode, max_nested_depth=8)
+
+    assert len(deep) - len(shallow) == 8
+    assert sum(map(len, deep)) < 2 * sum(map(len, shallow))
+
+
+def test_codegen_generates_one_function_per_nested_collection_item_type() -> None:
+    shallow = _generated_sources(TreeNode, max_nested_depth=3)
+    deep = _generated_sources(TreeNode, max_nested_depth=4)
+
+    assert len(deep) < 3 * len(shallow)
+    assert sum(map(len, deep)) < 3 * sum(map(len, shallow))
