@@ -44,6 +44,9 @@ configuration.
 Fields marked as ``"private"`` or ``"read-only"`` will not be parsed from client data into the user model, and
 ``"private"`` fields are never serialized into return data.
 
+A mark can also be declared in the annotation with :class:`DTOField <litestar.dto.field.DTOField>`, as a
+:class:`Mark <litestar.dto.field.Mark>` member or as its string value: ``Annotated[str, DTOField(mark="private")]``.
+
 .. literalinclude:: /examples/data_transfer_objects/factory/marking_fields.py
     :caption: Marking fields
     :language: python
@@ -96,7 +99,8 @@ represent fields of the ``Address`` object nested inside the ``User`` object, an
     Given a generic type, with an arbitrary number of type parameters (e.g., ``GenericType[Type0, Type1, ..., TypeN]``),
     we use the index of the type parameter to indicate which type the exclusion should refer to. For example, ``a.0.b``,
     excludes the ``b`` field from the first type parameter of ``a``, ``a.1.b`` excludes the ``b`` field from the second
-    type parameter of ``a``, and so on.
+    type parameter of ``a``, and so on. For a fixed-length tuple such as ``tuple[Dog, Cat]``, the index is the position
+    of the member: ``pets.0.id`` refers to ``Dog.id`` and ``pets.1.id`` to ``Cat.id``.
 
 Renaming fields
 ---------------
@@ -141,6 +145,48 @@ However, we annotate the handler with the ``Foo`` type. This will raise an error
     litestar.exceptions.dto.InvalidAnnotationException: DTO narrowed with
     '<class 'docs.examples.data_transfer_objects.factory.type_checking.User'>', handler type is
     '<class 'docs.examples.data_transfer_objects.factory.type_checking.Foo'>'
+
+Constraints
+-----------
+
+Constraints declared with ``msgspec.Meta`` or with ``annotated_types`` metadata are part of the type a DTO validates
+inbound data against. They are enforced wherever they are declared: on the field itself, on the items of a collection,
+on the keys and values of a mapping, on the members of a tuple and on the members of a union.
+
+.. code-block:: python
+
+    from dataclasses import dataclass, field
+    from typing import Annotated
+
+    from msgspec import Meta
+
+    from litestar.dto import DataclassDTO, DTOConfig
+
+
+    @dataclass
+    class User:
+        name: Annotated[str, Meta(min_length=2)]
+        nickname: Annotated[str, Meta(pattern="^[a-z]+$")] | None = None
+        tags: list[Annotated[str, Meta(max_length=10)]] = field(default_factory=list)
+
+
+    class PatchUserDTO(DataclassDTO[User]):
+        config = DTOConfig(partial=True)
+
+A request whose data violates one of these constraints receives a ``400 Bad Request`` response. With
+``DTOConfig(partial=True)``, a field that is not sent is not validated and a field that is sent is validated in full.
+Constraints are not applied to data returned from a handler.
+
+A DTO does not move a constraint. A constraint placed where msgspec does not support it, such as a length on a union in
+``Annotated[str | None, Meta(min_length=2)]``, is an error: a DTO used for inbound data raises
+:exc:`~litestar.exceptions.dto_exceptions.InvalidAnnotationException` when the application starts. Attach the
+constraint to the member it applies to instead, as ``nickname`` does above.
+A DTO used only for returned data is not affected by such a constraint.
+
+.. note::
+
+    :class:`~litestar.plugins.pydantic.PydanticDTO` leaves constraints to Pydantic, which validates them when the model
+    instance is created.
 
 Nested fields
 -------------

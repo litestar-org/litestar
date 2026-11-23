@@ -275,6 +275,81 @@ generic wrapper that holds the data is read with :func:`getattr`, not with the c
 ``attribute_accessor``.
 
 
+DTOs enforce ``Annotated`` constraints and string marks
+-------------------------------------------------------
+
+DTOs now keep the constraints declared with ``msgspec.Meta`` or ``annotated_types``
+metadata on every part of a field's type: the field itself, collection items, mapping
+keys and values, tuple members and union members. In 2.x many of them were dropped when
+the DTO rebuilt the type, so data violating them was accepted. Such requests now receive
+a ``400 Bad Request`` response, as they do for the same model without a DTO.
+
+This includes ``DTOConfig(partial=True)``: ``min_length`` and ``max_length`` used to be
+ignored for partial DTOs and now apply to every value that is sent. A field that is
+omitted is still accepted.
+
+.. code-block:: python
+
+    from typing import Annotated
+
+    from msgspec import Meta, Struct
+
+
+    class User(Struct):
+        name: Annotated[str, Meta(min_length=2)]
+        tags: list[Annotated[str, Meta(max_length=10)]] = []
+        nickname: Annotated[str, Meta(pattern="^[a-z]+$")] | None = None
+
+Previously, with ``MsgspecDTO[User]``, the constraint on ``tags`` was ignored and the one
+on ``nickname`` made every request fail with a ``500`` response. All three constraints
+are now enforced.
+
+A constraint in a position msgspec does not support, for example
+``Annotated[str | None, Meta(min_length=2)]``, is not moved to the member it was meant
+for. ``DataclassDTO`` used to ignore such a constraint and accept the request. A DTO
+used for inbound data now raises
+:exc:`~litestar.exceptions.dto_exceptions.InvalidAnnotationException` when the
+application starts, and the application does not start until the constraint is attached
+to the member: ``Annotated[str, Meta(min_length=2)] | None``. ``MsgspecDTO`` already
+failed at startup for this annotation and now raises the same exception type.
+
+The same startup error is raised for any DTO used for inbound data whose type msgspec
+cannot decode, for example a field typed as a union of two models without tags, where
+every request received a ``500`` response before. DTO classes that override
+``decode_bytes`` or ``decode_builtins`` are not checked, and DTOs used only for returned
+data are not affected.
+
+Constraints declared with ``annotated_types`` metadata, such as
+``Annotated[str, annotated_types.MinLen(2)]``, are enforced by DTOs in all of these
+positions as well. This is stricter than a handler without a DTO, where msgspec ignores
+that metadata.
+
+A mark passed to :class:`~litestar.dto.field.DTOField` as a string is now honoured.
+``Annotated[str, DTOField(mark="private")]`` was previously ignored: the field was returned
+in responses and accepted from request data. Such fields are now excluded exactly like
+fields marked with :class:`~litestar.dto.field.Mark` or
+:func:`~litestar.dto.field.dto_field`, and an unknown mark raises :exc:`ValueError`.
+Because properties are marked this way internally, ``DataclassDTO`` and ``MsgspecDTO``
+no longer require a model's properties in request data.
+
+Two consequences for applications that wrote the mark as a string: with
+``DTOConfig(forbid_unknown_fields=True)``, a client that still sends the now-excluded
+field receives a ``400 Bad Request`` response; and a ``"private"`` or ``"read-only"``
+field without a default can no longer be populated from request data, so the model
+cannot be created. Give such a field a default.
+
+DTOs also apply ``exclude``, ``include``, renaming and field marks to models nested in
+fixed-length tuples such as ``tuple[Dog, Cat]``; fields that were returned unfiltered
+from such tuples are no longer part of the response. A handler that returns a tuple
+whose length differs from such an annotation now fails with a ``500`` response, where
+the value was serialized as returned.
+
+The OpenAPI schemas of DTO models change accordingly: constraints are documented on the
+properties concerned (``minimum``, ``minLength``, ``pattern``, ``minItems``), and a
+field of a partial DTO whose type is an annotated union lists that union as a single
+``oneOf`` member. Component names are unchanged.
+
+
 Removal of the ``litestar.pagination`` module
 ---------------------------------------------
 
