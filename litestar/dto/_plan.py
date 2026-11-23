@@ -10,16 +10,18 @@ from litestar.exceptions.dto_exceptions import DTOFactoryException, InvalidAnnot
 from litestar.params import BodyKwarg
 from litestar.response.base import Response
 from litestar.types import Empty
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from litestar._openapi.schema_generation import SchemaCreator
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
     from litestar.dto.base_dto import AbstractDTO
     from litestar.handlers.base import BaseRouteHandler
+    from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
-    from litestar.typing import FieldDefinition
 
 __all__ = (
     "DTODirectionPlan",
@@ -29,6 +31,7 @@ __all__ = (
     "build_dto_plan",
     "build_schema_annotation",
     "create_backend",
+    "create_dto_openapi_schema",
     "get_direction_plan",
 )
 
@@ -246,3 +249,21 @@ def _direct_direction(dto: type[AbstractDTO[Any]], handler_id: str, is_data_fiel
     if (backend := _get_direct_backend(dto, handler_id, is_data_field)) is None:
         return None
     return DTODirectionPlan(dto=dto, backend=backend, schema_annotation=backend.annotation)
+
+
+def create_dto_openapi_schema(
+    direction: DTODirectionPlan,
+    field_definition: FieldDefinition,
+    handler: BaseRouteHandler,
+    schema_creator: SchemaCreator,
+) -> Reference | Schema:
+    from litestar.dto.base_dto import AbstractDTO
+
+    dto = direction.dto
+    if getattr(dto.create_openapi_schema, "__func__", None) is not vars(AbstractDTO)["create_openapi_schema"].__func__:
+        return dto.create_openapi_schema(
+            field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
+        )
+    return schema_creator.for_field_definition(
+        FieldDefinition.from_annotation(direction.schema_annotation, kwarg_definition=field_definition.kwarg_definition)
+    )

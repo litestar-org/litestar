@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.utils import get_formatted_examples
+from litestar.dto._plan import create_dto_openapi_schema
 from litestar.enums import MediaType
 from litestar.exceptions import HTTPException, ValidationException
 from litestar.openapi.spec import Example, OpenAPIResponse, Reference
@@ -138,11 +139,9 @@ class ResponseFactory:
         else:
             media_type = self.route_handler.media_type
 
-            if dto := self.route_handler.return_dto:
-                result = dto.create_openapi_schema(
-                    field_definition=self.field_definition,
-                    handler_id=self.route_handler.handler_id,
-                    schema_creator=self.schema_creator,
+            if (plan := self.route_handler._dto_plan) is not None and plan.return_ is not None:
+                result = create_dto_openapi_schema(
+                    plan.return_, self.field_definition, self.route_handler, self.schema_creator
                 )
             else:
                 if self.field_definition.is_subclass_of(Template):

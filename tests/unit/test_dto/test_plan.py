@@ -6,7 +6,7 @@ import json
 import pickle
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
-from typing import Annotated, Any, ClassVar, Generic, TypeVar
+from typing import Annotated, Any, ClassVar, Generic, Optional, TypeVar
 
 import msgspec
 import pytest
@@ -24,11 +24,12 @@ from litestar.dto._plan import (
     build_dto_plan,
     build_schema_annotation,
     create_backend,
+    create_dto_openapi_schema,
 )
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, LitestarException, LitestarWarning
 from litestar.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketListenerRouteHandler, websocket_stream
-from litestar.openapi.spec import Reference
+from litestar.openapi.spec import Reference, Schema
 from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.serialization import encode_json
@@ -908,3 +909,81 @@ async def test_to_response_on_unregistered_handler_raises() -> None:
 
     with pytest.raises(LitestarException):
         await handler.to_response(Model(a=1, b="two"), RequestFactory().get("/", route_handler=handler))
+
+
+@pytest.mark.parametrize(
+    ("is_data_field", "annotation"),
+    [
+        pytest.param(True, Model, id="data-model"),
+        pytest.param(True, list[Model], id="data-list"),
+        pytest.param(True, Optional[Model], id="data-optional"),
+        pytest.param(False, Model, id="return-model"),
+        pytest.param(False, list[Model], id="return-list"),
+        pytest.param(False, Optional[Model], id="return-optional"),
+        pytest.param(False, WithCount[Model], id="return-generic-wrapper"),
+        pytest.param(False, Response[Model], id="return-response"),
+    ],
+)
+def test_plan_schema_matches_create_openapi_schema(is_data_field: bool, annotation: Any) -> None:
+    if is_data_field:
+        handler_fn = make_rule_handler(ModelDTO, None, annotation, None)
+    else:
+        handler_fn = make_rule_handler(Empty, ModelDTO, None, annotation)
+    handler = registered(Litestar([handler_fn]))
+    plan = handler._dto_plan
+    direction = plan.data if is_data_field else plan.return_
+    field_definition = handler.parsed_data_field if is_data_field else handler.parsed_fn_signature.return_type
+    assert direction is not None
+
+    plan_creator = SchemaCreator(plugins=openapi_schema_plugins)
+    shim_creator = SchemaCreator(plugins=openapi_schema_plugins)
+    from_plan = create_dto_openapi_schema(direction, field_definition, handler, plan_creator)
+    from_shim = ModelDTO.create_openapi_schema(
+        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=shim_creator
+    )
+
+    assert from_plan == from_shim
+    assert (
+        plan_creator.schema_registry.generate_components_schemas()
+        == shim_creator.schema_registry.generate_components_schemas()
+    )
+
+
+def test_openapi_generation_does_not_call_create_openapi_schema(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fail(cls: Any, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator) -> Any:
+        raise AssertionError("OpenAPI generation must read the plan")
+
+    monkeypatch.setattr(AbstractDTO, "create_openapi_schema", classmethod(fail))
+    app = Litestar([make_rule_handler(ModelDTO, ModelReadDTO, Model, Model)])
+
+    names = list(app.openapi_schema.components.schemas)
+
+    assert sum(name.endswith("ModelRequestBody") for name in names) == 1
+    assert sum(name.endswith("ModelResponseBody") for name in names) == 1
+
+
+def test_openapi_generation_calls_create_openapi_schema_override() -> None:
+    calls: list[dict[str, Any]] = []
+
+    class RecordingSchemaDTO(DataclassDTO[Model]):
+        @classmethod
+        def create_openapi_schema(
+            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+        ) -> Reference | Schema:
+            calls.append(
+                {"field_definition": field_definition, "handler_id": handler_id, "schema_creator": schema_creator}
+            )
+            return Schema()
+
+    app = Litestar([make_rule_handler(RecordingSchemaDTO, Empty, Model, Model)])
+    handler = registered(app)
+    assert app.openapi_schema
+
+    assert [call["field_definition"] for call in calls] == [
+        handler.parsed_data_field,
+        handler.parsed_fn_signature.return_type,
+    ]
+    assert calls[0]["field_definition"] is handler.parsed_data_field
+    assert all(call["handler_id"] == handler.handler_id for call in calls)
+    assert all(call["handler_id"].handler is handler for call in calls)
+    assert all(isinstance(call["schema_creator"], SchemaCreator) for call in calls)

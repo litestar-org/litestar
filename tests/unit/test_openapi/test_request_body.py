@@ -45,12 +45,7 @@ def openapi_context() -> OpenAPIContext:
 @pytest.fixture()
 def create_request(openapi_context: OpenAPIContext) -> RequestBodyFactory:
     def _factory(route_handler: BaseRouteHandler, data_field: FieldDefinition) -> RequestBody:
-        return create_request_body(
-            context=openapi_context,
-            handler_id=route_handler.handler_id,
-            resolved_data_dto=route_handler.data_dto,
-            data_field=data_field,
-        )
+        return create_request_body(context=openapi_context, route_handler=route_handler, data_field=data_field)
 
     return _factory
 
