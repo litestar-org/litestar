@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 import msgspec.inspect
 from msgspec import NODEFAULT, Struct, structs
 
+from litestar.dto._backend import _CONSTRAINT_HINT, _contains_meta, _msgspec_reason, _qualified_name
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, extract_dto_field
@@ -33,6 +34,22 @@ def _default_or_none(value: Any) -> Any:
     return None if value is NODEFAULT else value
 
 
+def _inspect_error_message(
+    model_type: type[Struct], field_names: Collection[str], type_hints: dict[str, FieldDefinition], exc: TypeError
+) -> str:
+    for name in field_names:
+        field_definition = type_hints[name]
+        try:
+            msgspec.inspect.type_info(field_definition.raw)
+        except TypeError as field_exc:
+            hint = f"; {_CONSTRAINT_HINT}" if _contains_meta(field_definition) else ""
+            return (
+                f"msgspec cannot inspect {_qualified_name(model_type)!r}: field {name!r}, annotated "
+                f"{field_definition.raw!r}, is rejected by msgspec ({_msgspec_reason(field_exc)}){hint}"
+            )
+    return f"msgspec cannot inspect {model_type.__name__!r}: {exc}"
+
+
 class MsgspecDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with Msgspec."""
 
@@ -43,7 +60,9 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
         try:
             struct_info = msgspec.inspect.type_info(model_type)
         except TypeError as exc:
-            raise InvalidAnnotationException(f"msgspec cannot inspect {model_type.__name__!r}: {exc}") from exc
+            raise InvalidAnnotationException(
+                _inspect_error_message(model_type, msgspec_fields, cls.get_model_type_hints(model_type), exc)
+            ) from exc
 
         inspect_fields: dict[str, msgspec.inspect.Field] = {
             field.name: field

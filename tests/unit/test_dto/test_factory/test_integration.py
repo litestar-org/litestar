@@ -1455,7 +1455,37 @@ def test_data_dto_raises_at_startup_when_msgspec_rejects_the_transfer_type(annot
     with pytest.raises(InvalidAnnotationException, match="min_length") as exc_info:
         Litestar(route_handlers=[create_rejected], openapi_config=None)
 
+    message = str(exc_info.value)
+    assert message.startswith("msgspec cannot decode the transfer model of ")
+    assert "field 'f'" in message
+    assert repr(annotation) in message
+    assert "create_rejected" in message
+    assert "attach the constraint to the member type it applies to" in message
     assert isinstance(exc_info.value.__cause__, TypeError)
+
+
+@dataclass
+class RejectedInner:
+    g: Annotated[Optional[str], Meta(min_length=5)] = None
+
+
+@dataclass
+class RejectedOuter:
+    inner: RejectedInner
+
+
+def test_data_dto_startup_error_names_the_nested_field() -> None:
+    @post("/", dto=DataclassDTO[RejectedOuter], return_dto=None)
+    def create_rejected_outer(data: JSONBody[RejectedOuter]) -> None:
+        pass
+
+    with pytest.raises(InvalidAnnotationException) as exc_info:
+        Litestar(route_handlers=[create_rejected_outer], openapi_config=None)
+
+    message = str(exc_info.value)
+    assert message.startswith("msgspec cannot decode the transfer model of ")
+    assert f"field 'g' of '{RejectedInner.__module__}.RejectedInner'" in message
+    assert "RequestBody" not in message
 
 
 @pytest.mark.parametrize("direction", ["data", "return"])
@@ -1463,7 +1493,10 @@ def test_msgspec_dto_raises_invalid_annotation_when_msgspec_rejects_the_model(di
     annotation: Any = Annotated[Optional[str], Meta(min_length=5)]
     struct = msgspec.defstruct("Model", [("f", annotation, None)])
 
-    with pytest.raises(InvalidAnnotationException, match="min_length"):
+    with pytest.raises(
+        InvalidAnnotationException,
+        match=r"^msgspec cannot inspect .*field 'f'.*min_length.*attach the constraint to the member type it applies to",
+    ):
         if direction == "data":
 
             @post("/", dto=MsgspecDTO[struct], return_dto=None, signature_namespace={"struct": struct})  # type: ignore[valid-type]
@@ -1505,8 +1538,14 @@ def test_data_dto_over_union_of_models_raises_at_startup() -> None:
     def create_union_holder(data: JSONBody[UH]) -> None:
         pass
 
-    with pytest.raises(InvalidAnnotationException, match="must be tagged"):
+    with pytest.raises(InvalidAnnotationException, match="must be tagged") as exc_info:
         Litestar(route_handlers=[create_union_holder], openapi_config=None)
+
+    message = str(exc_info.value)
+    assert message.startswith("msgspec cannot decode the transfer model of ")
+    assert f"field 'f' of '{UH.__module__}.UH'" in message
+    assert "tag the union members or decode the body yourself" in message
+    assert "RequestBody" not in message
 
 
 class OwnDecode(DataclassDTO[UH]):
