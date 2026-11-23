@@ -21,7 +21,9 @@
         The codegen backend also read a field with attribute syntax whatever its name. A
         field named after a keyword, such as ``class``, raised a :exc:`SyntaxError` at
         startup, and a field whose name Python normalises as an identifier, such as ``µ``
-        or ``ﬁeld``, returned the value of another field or failed with a 500.
+        or ``ﬁeld``, returned the value of another field or made the request fail.
+        Field names are now quoted in generated code, so an excluded field whose name is
+        not a valid identifier no longer breaks application startup.
 
     .. change:: Add option to run the ASGI lifespan protocol for ``asgi`` handlers
         :type: feature

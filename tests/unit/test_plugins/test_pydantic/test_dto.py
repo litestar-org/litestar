@@ -151,3 +151,23 @@ def test_forbid_unknown_fields_if_forbid_extra_is_set_v2(
     assert dto.config.forbid_unknown_fields is expected_dto_config_option
     # ensure the config is merged
     assert dto.config.experimental_codegen_backend is use_experimental_dto_backend
+
+
+@pytest.mark.parametrize("excluded_name", ["user's note", "other'] = 2 #"])
+def test_excluded_field_name_not_valid_as_string_literal(
+    use_experimental_dto_backend: bool, excluded_name: str
+) -> None:
+    model = pydantic_v2.create_model("QuotedFieldName", **{"other": (int, 0), excluded_name: (int, 0)})  # type: ignore[call-overload]
+    dto_config = DTOConfig(exclude={excluded_name}, experimental_codegen_backend=use_experimental_dto_backend)
+
+    @post(
+        dto=PydanticDTO[Annotated[model, dto_config]], return_dto=None, signature_namespace={"QuotedFieldName": model}
+    )
+    def handler(data: JSONBody[QuotedFieldName]) -> dict[str, int]:  # type: ignore[name-defined]  # noqa: F821
+        return data.model_dump()  # type: ignore[no-any-return]
+
+    with create_test_client(handler) as client:
+        response = client.post("/", json={"other": 1})
+
+    assert response.status_code == HTTP_201_CREATED
+    assert response.json() == {"other": 1, excluded_name: 0}
