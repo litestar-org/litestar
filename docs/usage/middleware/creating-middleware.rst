@@ -177,12 +177,12 @@ Thus, in the following example, the middleware will only run against the handler
 
 .. _asgi-middleware-migration:
 
-Migrating from ``MiddlewareProtocol``, ``AbstractMiddleware`` and ``DefineMiddleware``
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Migrating from ``MiddlewareProtocol`` and ``AbstractMiddleware``
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-``MiddlewareProtocol``, ``AbstractMiddleware`` and ``DefineMiddleware`` have been removed
-in Litestar 3.0, in favour of :class:`~litestar.middleware.ASGIMiddleware`, which was
-introduced in Litestar 2.15.
+``MiddlewareProtocol`` and ``AbstractMiddleware`` have been removed in Litestar 3.0, in
+favour of :class:`~litestar.middleware.ASGIMiddleware`, which was introduced in Litestar
+2.15.
 
 **From MiddlewareProtocol**
 
@@ -210,7 +210,7 @@ introduced in Litestar 2.15.
             :language: python
 
 
-**From AbstractMiddleware and DefineMiddleware**
+**From AbstractMiddleware**
 
 .. tab-set::
 
@@ -260,22 +260,22 @@ as described in :ref:`passing-arguments-to-middleware`.
 
 .. _passing-arguments-to-middleware:
 
-Passing arguments to middleware factories
------------------------------------------
+Using DefineMiddleware to pass arguments
+----------------------------------------
 
-:class:`~litestar.middleware.ASGIMiddleware` subclasses receive their configuration
-through their own ``__init__``. A factory function receives the next ASGI app as its
-first argument; to pass it other arguments, bind them with :func:`functools.partial`:
+Litestar offers a simple way to pass positional arguments (``*args``) and keyword arguments (``**kwargs``) to middleware
+using the :class:`~litestar.middleware.base.DefineMiddleware` class. Let's extend
+the factory function used in the examples above to take some args and kwargs and then use ``DefineMiddleware`` to pass
+these values to our middleware:
 
 .. code-block:: python
 
-   from functools import partial
-
+   from litestar.types import ASGIApp, Scope, Receive, Send
    from litestar import Litestar
-   from litestar.types import ASGIApp, Receive, Scope, Send
+   from litestar.middleware import DefineMiddleware
 
 
-   def middleware_factory(app: ASGIApp, my_arg: int, *, my_kwarg: str) -> ASGIApp:
+   def middleware_factory(my_arg: int, *, app: ASGIApp, my_kwarg: str) -> ASGIApp:
        async def my_middleware(scope: Scope, receive: Receive, send: Send) -> None:
            # here we can use my_arg and my_kwarg for some purpose
            ...
@@ -286,5 +286,9 @@ first argument; to pass it other arguments, bind them with :func:`functools.part
 
    app = Litestar(
        route_handlers=[...],
-       middleware=[partial(middleware_factory, my_arg=1, my_kwarg="abc")],
+       middleware=[DefineMiddleware(middleware_factory, 1, my_kwarg="abc")],
    )
+
+The ``DefineMiddleware`` is a simple container - it takes a middleware callable as a first parameter, and then any
+positional arguments, followed by keyword arguments. The middleware callable will be called with these values as well
+as the next ASGI app, passed as the keyword argument ``app``.

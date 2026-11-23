@@ -6,7 +6,7 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
-    .. change:: Remove ``AbstractMiddleware``, ``MiddlewareProtocol`` and ``DefineMiddleware``
+    .. change:: Remove ``AbstractMiddleware`` and ``MiddlewareProtocol``
         :type: feature
         :issue: 4009
         :breaking:
@@ -18,10 +18,6 @@
           instead.
         - ``MiddlewareProtocol``: middleware classes that take the next ASGI app in their
           constructor keep working without it.
-        - ``DefineMiddleware``: configure an ``ASGIMiddleware`` subclass through its
-          ``__init__``, or bind the arguments of a middleware factory function with
-          :func:`functools.partial`. The factory receives the next ASGI app as its first
-          positional argument instead of an ``app`` keyword argument.
 
     .. change:: Migrate ``OpenTelemetryInstrumentationMiddleware`` to ``ASGIMiddleware``
         :type: feature

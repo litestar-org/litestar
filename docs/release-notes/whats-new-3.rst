@@ -550,8 +550,8 @@ argument matches against the handler's path (e.g. ``/user/{user_id:int}``) at st
     :ref:`asgi-middleware-migration`
 
 
-Removal of ``AbstractMiddleware``, ``MiddlewareProtocol`` and ``DefineMiddleware``
-----------------------------------------------------------------------------------
+Removal of ``AbstractMiddleware`` and ``MiddlewareProtocol``
+------------------------------------------------------------
 
 The legacy middleware API has been removed in favour of
 :class:`~litestar.middleware.ASGIMiddleware`:
@@ -564,11 +564,6 @@ The legacy middleware API has been removed in favour of
 - ``MiddlewareProtocol``. Middleware classes that take the next ASGI app in their
   constructor and implement ``__call__`` keep working without it, but extending
   ``ASGIMiddleware`` is recommended.
-- ``DefineMiddleware``. ``ASGIMiddleware`` subclasses receive their configuration through
-  their own ``__init__``; arguments for a middleware factory function can be bound with
-  :func:`functools.partial`, e.g.
-  ``middleware=[partial(middleware_factory, my_kwarg="abc")]``. The factory receives the
-  next ASGI app as its first positional argument, not as an ``app`` keyword argument.
 
 .. seealso::
     :ref:`asgi-middleware-migration`
