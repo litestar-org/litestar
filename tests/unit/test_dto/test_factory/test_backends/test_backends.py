@@ -542,6 +542,44 @@ def test_codegen_attribute_accessor_not_used_when_default() -> None:
     assert "__getattr_impl" not in encode_source
 
 
+def test_codegen_backend_is_dto_backend() -> None:
+    assert DTOCodegenBackend is DTOBackend
+
+
+def test_dto_backend_transfers_with_generated_functions() -> None:
+    class Factory(DataclassDTO):
+        config = DTOConfig()
+        model_type = DC
+
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=Factory,
+        field_definition=FieldDefinition.from_annotation(DC),
+        model_type=DC,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+
+    assert inspect.getsource(backend._encode_data).startswith("def func(")
+    assert inspect.getsource(backend._transfer_to_model_type).startswith("def func(")
+    assert inspect.getsource(backend._transfer_to_dict).startswith("def func(")
+    assert encode_json(backend.encode_data(STRUCTURED)) == RAW
+
+
+def test_create_for_field_definition_uses_explicit_backend_class() -> None:
+    class CustomBackend(DTOBackend):
+        __slots__ = ()
+
+    class Factory(DataclassDTO[DC]):
+        pass
+
+    Factory.create_for_field_definition(
+        FieldDefinition.from_annotation(DC), handler_id="test", backend_cls=CustomBackend
+    )
+
+    assert type(Factory._dto_backends["test"]["return_backend"]) is CustomBackend
+
+
 def test_parse_model_nested_exclude(create_module: Callable[[str], ModuleType], backend_cls: type[DTOBackend]) -> None:
     module = create_module(
         """
