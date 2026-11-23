@@ -1,9 +1,9 @@
 """Helpers for driving a Litestar app directly through the ASGI interface.
 
 The benchmarks deliberately avoid ``TestClient``: it runs the app behind an anyio
-blocking portal in a separate thread, which adds overhead and is serialised under
-Valgrind. Calling ``app(scope, receive, send)`` on a reused event loop measures only
-Litestar's own request path; ``ASGIRunner.request_many`` batches several requests into
+blocking portal in a separate thread, which adds overhead and thread-scheduling noise.
+Calling ``app(scope, receive, send)`` on a reused event loop measures only Litestar's
+own request path; ``ASGIRunner.request_many`` batches several requests into
 one event-loop entry so a benchmark measures the request path rather than the loop entry.
 
 ``ASGIRunner.lifespan`` starts the app the way a server does, outside the measured call.
