@@ -181,3 +181,24 @@ def test_experimental_codegen_backend_warns_once_with_forbid_extra() -> None:
 
     assert [w.category for w in record] == [LitestarDeprecationWarning]
     assert dto.config.forbid_unknown_fields is True
+
+
+class PInner(pydantic_v2.BaseModel):
+    a: int
+    b: str = "b"
+
+
+class POuter(pydantic_v2.BaseModel):
+    pair: tuple[PInner, int]
+
+
+def test_pydantic_dto_fixed_length_tuple_of_models() -> None:
+    @post(dto=PydanticDTO[Annotated[POuter, DTOConfig(exclude={"pair.0.b"})]])
+    def handler(data: JSONBody[POuter]) -> POuter:
+        return data
+
+    with create_test_client(handler) as client:
+        response = client.post("/", json={"pair": [{"a": 1}, 2]})
+
+    assert response.status_code == HTTP_201_CREATED
+    assert response.json() == {"pair": [{"a": 1}, 2]}
