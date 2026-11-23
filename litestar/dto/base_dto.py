@@ -11,12 +11,18 @@ from typing import TYPE_CHECKING, Generic, NotRequired, TypeVar, get_type_hints
 
 from typing_extensions import TypedDict
 
-from litestar.dto._plan import build_schema_annotation, create_backend
+from litestar.dto._plan import (
+    _direct_direction,
+    _plan_build,
+    build_schema_annotation,
+    create_backend,
+    get_direction_plan,
+)
 from litestar.dto.config import DTOConfig
 from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
 from litestar.enums import RequestEncodingType
-from litestar.exceptions.dto_exceptions import InvalidAnnotationException
+from litestar.exceptions.dto_exceptions import DTOFactoryException, InvalidAnnotationException
 from litestar.params import BodyKwarg
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
@@ -31,6 +37,7 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.dto._backend import DTOBackend
     from litestar.dto.data_structures import DTOFieldDefinition
+    from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
 
@@ -113,18 +120,18 @@ class AbstractDTO(Generic[T]):
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         """Decode a dictionary of Python values into an the DTO's datatype."""
 
-        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
-        return backend.populate_data_from_builtins(value, self.asgi_connection)
+        direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=True, dto=type(self))
+        return direction.backend.populate_data_from_builtins(value, self.asgi_connection)
 
     def decode_bytes(self, value: bytes) -> Any:
         """Decode a byte string into an the DTO's datatype."""
 
-        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
-        return backend.populate_data_from_raw(value, self.asgi_connection)
+        direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=True, dto=type(self))
+        return direction.backend.populate_data_from_raw(value, self.asgi_connection)
 
     def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
-        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["return_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
-        return backend.encode_data(data)
+        direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=False, dto=type(self))
+        return direction.backend.encode_data(data)
 
     @classmethod
     @abstractmethod
@@ -184,12 +191,24 @@ class AbstractDTO(Generic[T]):
             None
         """
 
-        backend_context = cls._dto_backends.setdefault(handler_id, {})
+        build = _plan_build.get()
+        if build is not None and build.dto is cls:
+            _plan_build.set(None)
+            build.backend = create_backend(
+                cls,
+                field_definition,
+                is_data_field=build.is_data_field,
+                handler_id=str(handler_id),
+                backend_cls=backend_cls,
+            )
+            return
+
+        backend_context = cls._dto_backends.setdefault(str(handler_id), {})
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
         key = "data_backend" if is_data_field else "return_backend"
         if key not in backend_context:
             backend_context[key] = create_backend(  # type: ignore[literal-required]
-                cls, field_definition, is_data_field=is_data_field, handler_id=handler_id, backend_cls=backend_cls
+                cls, field_definition, is_data_field=is_data_field, handler_id=str(handler_id), backend_cls=backend_cls
             )
 
     @classmethod
@@ -209,11 +228,22 @@ class AbstractDTO(Generic[T]):
         Returns:
             OpenAPI request body.
         """
-        key = "data_backend" if isinstance(field_definition.kwarg_definition, BodyKwarg) else "return_backend"
-        backend = cls._dto_backends[handler_id][key]  # type: ignore[literal-required]
+        handler: BaseRouteHandler | None = getattr(handler_id, "handler", None)
+        is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg) or (
+            handler is not None and field_definition is handler.parsed_data_field
+        )
+        if handler is not None and handler._dto_plan is not None:
+            direction = get_direction_plan(handler, is_data_field=is_data_field)
+        elif (direct := _direct_direction(cls, handler_id, is_data_field)) is not None:
+            direction = direct
+        else:
+            raise DTOFactoryException(
+                f"No {'data' if is_data_field else 'return'} DTO backend for handler id {handler_id!r}: pass the "
+                "object returned by 'handler.handler_id'"
+            )
         return schema_creator.for_field_definition(
             FieldDefinition.from_annotation(
-                build_schema_annotation(cls, backend, field_definition),
+                build_schema_annotation(cls, direction.backend, field_definition),
                 kwarg_definition=field_definition.kwarg_definition,
             )
         )
@@ -362,3 +392,8 @@ class AbstractDTO(Generic[T]):
                 return cls.resolve_model_type(field_definition.inner_types[0])
 
         return field_definition
+
+
+def _get_direct_backend(dto: type[AbstractDTO[Any]], handler_id: str, is_data_field: bool) -> DTOBackend | None:
+    backends = dto._dto_backends.get(str(handler_id), {})
+    return backends.get("data_backend") if is_data_field else backends.get("return_backend")

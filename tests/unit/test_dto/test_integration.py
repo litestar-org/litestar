@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated
-from unittest.mock import MagicMock
+from typing import TYPE_CHECKING, Annotated
 
 import pytest
 
@@ -14,6 +13,9 @@ from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 
 from . import Model
+
+if TYPE_CHECKING:
+    from litestar.connection import ASGIConnection
 
 
 def test_dto_defined_on_handler(ModelDataDTO: type[AbstractDTO]) -> None:
@@ -75,13 +77,18 @@ def test_set_dto_none_disables_inherited_dto(ModelDataDTO: type[AbstractDTO]) ->
         assert data == {"hello": "world"}
         return data
 
-    mock_dto = MagicMock(spec=ModelDataDTO)
+    instances: list[AbstractDTO] = []
 
-    with create_test_client(route_handlers=handler, dto=mock_dto) as client:
+    class RecordingDTO(ModelDataDTO):
+        def __init__(self, asgi_connection: ASGIConnection) -> None:
+            instances.append(self)
+            super().__init__(asgi_connection)
+
+    with create_test_client(route_handlers=handler, dto=RecordingDTO) as client:
         response = client.post("/", json={"hello": "world"})
         assert response.status_code == 201
         assert response.json() == {"hello": "world"}
-        mock_dto.assert_not_called()
+        assert instances == []
 
 
 def test_dto_and_return_dto(ModelDataDTO: type[AbstractDTO], ModelReturnDTO: type[AbstractDTO]) -> None:

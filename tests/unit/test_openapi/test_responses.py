@@ -6,7 +6,6 @@ from http import HTTPStatus
 from pathlib import Path
 from types import ModuleType
 from typing import Any, TypeAlias, TypedDict, TypeVar
-from unittest.mock import MagicMock
 
 import pytest
 
@@ -17,9 +16,10 @@ from litestar._openapi.responses import (
     create_error_responses,
     pascal_case_to_text,
 )
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar.datastructures import Cookie, ResponseHeader
-from litestar.dto import AbstractDTO
+from litestar.dto import DataclassDTO
 from litestar.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -582,23 +582,41 @@ def handler() -> int:
     assert next(iter(response.content.values())).schema.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
 
 
-def test_response_generation_with_dto(create_factory: CreateFactoryFixture) -> None:
-    mock_dto = MagicMock(spec=AbstractDTO)
-    mock_dto.create_openapi_schema.return_value = Schema()
+@dataclass
+class DTOModel:
+    a: int
 
-    @post(path="/form-upload", return_dto=mock_dto)
-    async def handler(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
-        return data
+
+def test_response_generation_with_dto(create_factory: CreateFactoryFixture) -> None:
+    calls: list[dict[str, Any]] = []
+
+    class RecordingDTO(DataclassDTO[DTOModel]):
+        @classmethod
+        def create_openapi_schema(
+            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+        ) -> Reference | Schema:
+            calls.append(
+                {"field_definition": field_definition, "handler_id": handler_id, "schema_creator": schema_creator}
+            )
+            return Schema()
+
+    @post(path="/form-upload", return_dto=RecordingDTO)
+    async def handler(data: JSONBody[dict[str, Any]]) -> DTOModel:
+        return DTOModel(a=data["a"])
 
     app = Litestar(route_handlers=[handler])
     resolved_handler = app.route_handler_method_map["/form-upload"]["POST"]
 
     factory = create_factory(resolved_handler)
-    field_definition = FieldDefinition.from_annotation(dict[str, Any])
+    field_definition = FieldDefinition.from_annotation(DTOModel)
     factory.create_success_response()
-    mock_dto.create_openapi_schema.assert_called_once_with(
-        field_definition=field_definition, handler_id=resolved_handler.handler_id, schema_creator=factory.schema_creator
-    )
+    assert calls == [
+        {
+            "field_definition": field_definition,
+            "handler_id": resolved_handler.handler_id,
+            "schema_creator": factory.schema_creator,
+        }
+    ]
 
 
 @pytest.mark.parametrize(

@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, NoReturn, cast
 
 from litestar._layers.utils import narrow_dependencies
 from litestar.dto import DTOData
+from litestar.dto._plan import build_dto_plan
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.middleware.constraints import check_middleware_constraints
 from litestar.serialization import default_deserializer, default_serializer
@@ -38,6 +39,7 @@ if TYPE_CHECKING:
     from litestar.di import DependencyKey, DIContext, Provide, Provider
     from litestar.di._route_handler import HandlerInjectionSetup
     from litestar.dto import AbstractDTO
+    from litestar.dto._plan import DTOPlan
     from litestar.router import Router
     from litestar.routes import BaseRoute
     from litestar.types import AsyncAnyCallable, Scope
@@ -45,6 +47,17 @@ if TYPE_CHECKING:
     from litestar.types.empty import EmptyType
 
 __all__ = ("BaseRouteHandler",)
+
+
+class _HandlerId(str):
+    __slots__ = ("handler",)
+    handler: BaseRouteHandler
+
+    def __reduce__(self) -> tuple[type[str], tuple[str]]:
+        return (str, (str(self),))
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> str:
+        return str(self)
 
 
 class BaseRouteHandler:
@@ -55,6 +68,7 @@ class BaseRouteHandler:
 
     __slots__ = (
         "_dto",
+        "_dto_plan",
         "_injection_setup",
         "_parameter_field_definitions",
         "_parsed_data_field",
@@ -76,6 +90,7 @@ class BaseRouteHandler:
         "type_encoders",
     )
 
+    _dto_plan: DTOPlan | None
     _injection_setup: HandlerInjectionSetup
     """What injecting the handler's function takes. Set on registration"""
 
@@ -138,6 +153,7 @@ class BaseRouteHandler:
         self._parsed_return_field: FieldDefinition | EmptyType = Empty
         self._parsed_data_field: FieldDefinition | None = None
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
+        self._dto_plan = None
 
         self.dependencies = narrow_dependencies(dependencies)
         self._dto = dto
@@ -232,8 +248,10 @@ class BaseRouteHandler:
 
     @property
     def handler_id(self) -> str:
-        """A unique identifier used for generation of DTOs."""
-        return f"{self!s}::{id(self)}"
+        """Text identifying the handler's function and instance. It carries the handler; nothing is keyed by it."""
+        handler_id = _HandlerId(f"{self!s}::{id(self)}")
+        handler_id.handler = self
+        return handler_id
 
     @property
     def default_deserializer(self) -> Callable[[Any, Any], Any]:
@@ -367,6 +385,8 @@ class BaseRouteHandler:
 
     @property
     def data_dto(self) -> type[AbstractDTO] | None:
+        if (plan := self._dto_plan) is not None:
+            return plan.data_dto
         if self._dto is Empty:
             self._raise_not_registered()
         return self._dto
@@ -375,39 +395,10 @@ class BaseRouteHandler:
     def resolve_data_dto(self) -> type[AbstractDTO] | None:
         return self.data_dto
 
-    def _resolve_data_dto(self, app: Litestar) -> type[AbstractDTO] | None:
-        """Resolve the data_dto by starting from the route handler and moving up.
-        If a handler is found it is returned, otherwise None is set.
-        This method is memoized so the computation occurs only once.
-
-        Returns:
-            An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
-        """
-        data_dto: type[AbstractDTO] | None = None
-        if (_data_dto := self._dto) is not Empty:
-            data_dto = _data_dto
-        elif self.parsed_data_field and (
-            plugin_for_data_type := next(
-                (
-                    plugin
-                    for plugin in app.plugins.serialization
-                    if self.parsed_data_field.match_predicate_recursively(plugin.supports_type)
-                ),
-                None,
-            )
-        ):
-            data_dto = plugin_for_data_type.create_dto_for_type(self.parsed_data_field)
-
-        if self.parsed_data_field and data_dto:
-            data_dto.create_for_field_definition(
-                field_definition=self.parsed_data_field,
-                handler_id=self.handler_id,
-            )
-
-        return data_dto
-
     @property
     def return_dto(self) -> type[AbstractDTO] | None:
+        if (plan := self._dto_plan) is not None:
+            return plan.return_.dto if plan.return_ is not None else None
         if self._return_dto is Empty:
             self._raise_not_registered()
         return self._return_dto
@@ -415,41 +406,6 @@ class BaseRouteHandler:
     @deprecated("3.0", removal_in="4.0", alternative=".return_dto attribute")
     def resolve_return_dto(self) -> type[AbstractDTO] | None:
         return self.return_dto
-
-    def _resolve_return_dto(self, app: Litestar, data_dto: type[AbstractDTO] | None) -> type[AbstractDTO] | None:
-        """Resolve the return_dto by starting from the route handler and moving up.
-        If a handler is found it is returned, otherwise None is set.
-        This method is memoized so the computation occurs only once.
-
-        Returns:
-            An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
-        """
-        if (_return_dto := self._return_dto) is not Empty:
-            return_dto: type[AbstractDTO] | None = _return_dto
-        elif data_dto is not None and data_dto.is_supported_model_type_field(self.parsed_return_field):
-            return_dto = data_dto
-        elif plugin_for_return_type := next(
-            (
-                plugin
-                for plugin in app.plugins.serialization
-                if self.parsed_return_field.match_predicate_recursively(plugin.supports_type)
-            ),
-            None,
-        ):
-            return_dto = plugin_for_return_type.create_dto_for_type(self.parsed_return_field)
-        else:
-            return_dto = data_dto
-
-        if return_dto and return_dto.is_supported_model_type_field(self.parsed_return_field):
-            return_dto.create_for_field_definition(
-                field_definition=self.parsed_return_field,
-                handler_id=self.handler_id,
-            )
-            resolved_return_dto = return_dto
-        else:
-            resolved_return_dto = None
-
-        return resolved_return_dto
 
     def _create_di_request_context(self, app_ctx: DIContext | None, scope: Scope) -> DIContext:
         """Return the request's dependency context, not yet entered: nested in ``app_ctx`` if the app has one, and
@@ -482,8 +438,7 @@ class BaseRouteHandler:
             None
         """
 
-        self._dto = self._resolve_data_dto(app=app)
-        self._return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
+        self._dto_plan = build_dto_plan(self, app)
 
         self._validate_handler_function()
 
