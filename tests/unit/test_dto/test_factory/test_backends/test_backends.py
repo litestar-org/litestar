@@ -29,7 +29,7 @@ from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.enums import MediaType
-from litestar.exceptions import SerializationException
+from litestar.exceptions import InvalidAnnotationException, SerializationException
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
@@ -933,3 +933,40 @@ def test_transfer_model_field_annotations(
 )
 def test_constraints_for_field_definition(annotation: Any, expected: tuple[Meta, ...]) -> None:
     assert _constraints_for_field_definition(FieldDefinition.from_annotation(annotation)) == expected
+
+
+@dataclass
+class UnionMemberA:
+    a: int
+
+
+@dataclass
+class UnionMemberB:
+    b: int
+
+
+@dataclass
+class UnionHolder:
+    f: Union[UnionMemberA, UnionMemberB]
+
+
+@pytest.mark.parametrize(
+    "method_name", ["parse_raw", "parse_builtins", "populate_data_from_raw", "populate_data_from_builtins"]
+)
+def test_backend_subclass_with_own_parsing_is_not_checked(method_name: str) -> None:
+    def own_parsing(self: DTOBackend, *args: Any) -> Any:
+        return None
+
+    backend_kwargs: dict[str, Any] = {
+        "handler_id": "test",
+        "dto_factory": DataclassDTO[UnionHolder],
+        "field_definition": FieldDefinition.from_annotation(UnionHolder),
+        "model_type": UnionHolder,
+        "wrapper_attribute_name": None,
+        "is_data_field": True,
+    }
+    own_parsing_backend = type("OwnParsingBackend", (DTOBackend,), {method_name: own_parsing})
+
+    own_parsing_backend(**backend_kwargs)
+    with pytest.raises(InvalidAnnotationException):
+        DTOBackend(**backend_kwargs)
