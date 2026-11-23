@@ -20,11 +20,6 @@ class Distinct(Protocol):
     def __call__(self, fn: Fn, /) -> Fn: ...
 
 
-@pytest.fixture(params=[True, False], ids=["codegen", "interp"])
-def codegen(request: pytest.FixtureRequest) -> bool:
-    return bool(request.param)
-
-
 @pytest.fixture
 def distinct(request: pytest.FixtureRequest) -> Distinct:
     suffix = re.sub(r"\W+", "_", request.node.name)
@@ -75,10 +70,8 @@ EXCLUSION_MATRIX: list[tuple[str, dict[str, Any], set[str], set[str]]] = [
     ("config", "accepted", "returned"),
     [pytest.param(config, accepted, returned, id=label) for label, config, accepted, returned in EXCLUSION_MATRIX],
 )
-def test_exclusion_matrix(
-    config: dict[str, Any], accepted: set[str], returned: set[str], codegen: bool, distinct: Distinct
-) -> None:
-    dto = DataclassDTO[Annotated[Account, DTOConfig(**config, experimental_codegen_backend=codegen)]]
+def test_exclusion_matrix(config: dict[str, Any], accepted: set[str], returned: set[str], distinct: Distinct) -> None:
+    dto = DataclassDTO[Annotated[Account, DTOConfig(**config)]]
 
     @post("/", dto=dto, return_dto=None, sync_to_thread=False)
     @distinct
@@ -175,10 +168,8 @@ def _received(sent: dict[str, Any], default: dict[str, Any], depth: int) -> dict
 
 
 @pytest.mark.parametrize("depth", [0, 1, 2, 3])
-def test_fields_beyond_max_nested_depth_are_absent_from_responses(
-    depth: int, codegen: bool, distinct: Distinct
-) -> None:
-    dto = DataclassDTO[Annotated[Level0, DTOConfig(max_nested_depth=depth, experimental_codegen_backend=codegen)]]
+def test_fields_beyond_max_nested_depth_are_absent_from_responses(depth: int, distinct: Distinct) -> None:
+    dto = DataclassDTO[Annotated[Level0, DTOConfig(max_nested_depth=depth)]]
 
     @get("/", return_dto=dto, sync_to_thread=False)
     @distinct
@@ -193,8 +184,8 @@ def test_fields_beyond_max_nested_depth_are_absent_from_responses(
 
 
 @pytest.mark.parametrize("depth", [0, 1, 2, 3])
-def test_fields_beyond_max_nested_depth_are_ignored_in_requests(depth: int, codegen: bool, distinct: Distinct) -> None:
-    dto = DataclassDTO[Annotated[Level0, DTOConfig(max_nested_depth=depth, experimental_codegen_backend=codegen)]]
+def test_fields_beyond_max_nested_depth_are_ignored_in_requests(depth: int, distinct: Distinct) -> None:
+    dto = DataclassDTO[Annotated[Level0, DTOConfig(max_nested_depth=depth)]]
 
     @post("/", dto=dto, return_dto=None, sync_to_thread=False)
     @distinct
@@ -225,8 +216,8 @@ class Fork:
     branch: Branch
 
 
-def test_max_nested_depth_is_cut_per_path(codegen: bool, distinct: Distinct) -> None:
-    dto = DataclassDTO[Annotated[Fork, DTOConfig(experimental_codegen_backend=codegen)]]
+def test_max_nested_depth_is_cut_per_path(distinct: Distinct) -> None:
+    dto = DataclassDTO[Fork]
 
     @get("/", return_dto=dto, sync_to_thread=False)
     @distinct
@@ -249,8 +240,8 @@ class Envelope(Generic[T]):
     count: int
 
 
-def test_generic_wrapper_encoding_replaces_the_wrapped_attribute(codegen: bool, distinct: Distinct) -> None:
-    dto = DataclassDTO[Annotated[User, DTOConfig(exclude={"age"}, experimental_codegen_backend=codegen)]]
+def test_generic_wrapper_encoding_replaces_the_wrapped_attribute(distinct: Distinct) -> None:
+    dto = DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]]
     returned = Envelope(data=User("a", 1), count=1)
 
     @get("/", return_dto=dto, sync_to_thread=False)
@@ -266,8 +257,8 @@ def test_generic_wrapper_encoding_replaces_the_wrapped_attribute(codegen: bool, 
     assert msgspec.to_builtins(replaced) == {"name": "a"}
 
 
-def test_generic_wrapper_as_data_decodes_the_inner_model(codegen: bool, distinct: Distinct) -> None:
-    dto = DataclassDTO[Annotated[User, DTOConfig(exclude={"age"}, experimental_codegen_backend=codegen)]]
+def test_generic_wrapper_as_data_decodes_the_inner_model(distinct: Distinct) -> None:
+    dto = DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]]
 
     @post("/", dto=dto, return_dto=None, sync_to_thread=False)
     @distinct
@@ -282,8 +273,8 @@ def test_generic_wrapper_as_data_decodes_the_inner_model(codegen: bool, distinct
     assert (bare.status_code, bare.text) == (201, "User")
 
 
-def test_response_wrapper_keeps_status_and_headers(codegen: bool, distinct: Distinct) -> None:
-    dto = DataclassDTO[Annotated[User, DTOConfig(exclude={"age"}, experimental_codegen_backend=codegen)]]
+def test_response_wrapper_keeps_status_and_headers(distinct: Distinct) -> None:
+    dto = DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]]
 
     @get("/one", return_dto=dto, sync_to_thread=False)
     @distinct
@@ -303,8 +294,8 @@ def test_response_wrapper_keeps_status_and_headers(codegen: bool, distinct: Dist
     assert several.json() == [{"name": "a"}, {"name": "b"}]
 
 
-def test_msgpack_payload_is_decoded_for_a_json_body(codegen: bool, distinct: Distinct) -> None:
-    dto = DataclassDTO[Annotated[User, DTOConfig(exclude={"age"}, experimental_codegen_backend=codegen)]]
+def test_msgpack_payload_is_decoded_for_a_json_body(distinct: Distinct) -> None:
+    dto = DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]]
 
     @post("/", dto=dto, return_dto=None, sync_to_thread=False)
     @distinct
@@ -357,10 +348,8 @@ def _describe(value: Any) -> Any:
     return value
 
 
-def _dto_data_client(
-    codegen: bool, distinct: Distinct, use: Callable[[DTOData[Person]], Any], **config: Any
-) -> TestClient[Litestar]:
-    dto = DataclassDTO[Annotated[Person, DTOConfig(**config, experimental_codegen_backend=codegen)]]
+def _dto_data_client(distinct: Distinct, use: Callable[[DTOData[Person]], Any], **config: Any) -> TestClient[Litestar]:
+    dto = DataclassDTO[Annotated[Person, DTOConfig(**config)]]
 
     @patch("/", dto=dto, return_dto=None, sync_to_thread=False)
     @distinct
@@ -370,8 +359,8 @@ def _dto_data_client(
     return client(update)
 
 
-def test_dto_data_as_builtins(codegen: bool, distinct: Distinct) -> None:
-    with _dto_data_client(codegen, distinct, lambda data: data.as_builtins(), exclude={"age"}) as test_client:
+def test_dto_data_as_builtins(distinct: Distinct) -> None:
+    with _dto_data_client(distinct, lambda data: data.as_builtins(), exclude={"age"}) as test_client:
         response = test_client.patch("/", json=PERSON_BODY)
 
     assert response.json() == {
@@ -381,9 +370,9 @@ def test_dto_data_as_builtins(codegen: bool, distinct: Distinct) -> None:
     }
 
 
-def test_dto_data_create_instance(codegen: bool, distinct: Distinct) -> None:
+def test_dto_data_create_instance(distinct: Distinct) -> None:
     with _dto_data_client(
-        codegen, distinct, lambda data: data.create_instance(age=7, address__city="x"), exclude={"age"}
+        distinct, lambda data: data.create_instance(age=7, address__city="x"), exclude={"age"}
     ) as test_client:
         response = test_client.patch("/", json=PERSON_BODY)
 
@@ -396,11 +385,11 @@ def test_dto_data_create_instance(codegen: bool, distinct: Distinct) -> None:
     }
 
 
-def test_dto_data_update_instance(codegen: bool, distinct: Distinct) -> None:
+def test_dto_data_update_instance(distinct: Distinct) -> None:
     def use(data: DTOData[Person]) -> Person:
         return data.update_instance(Person(name="old", address=Address("old"), age=1), age=9)
 
-    with _dto_data_client(codegen, distinct, use, partial=True) as test_client:
+    with _dto_data_client(distinct, use, partial=True) as test_client:
         only_name = test_client.patch("/", json={"name": "new"})
         with_address = test_client.patch("/", json={"address": {"street": "s"}})
 
@@ -420,8 +409,8 @@ def test_dto_data_update_instance(codegen: bool, distinct: Distinct) -> None:
     }
 
 
-def test_dto_data_partial_keeps_only_sent_fields(codegen: bool, distinct: Distinct) -> None:
-    with _dto_data_client(codegen, distinct, lambda data: data.as_builtins(), partial=True) as test_client:
+def test_dto_data_partial_keeps_only_sent_fields(distinct: Distinct) -> None:
+    with _dto_data_client(distinct, lambda data: data.as_builtins(), partial=True) as test_client:
         empty = test_client.patch("/", json={})
         nested = test_client.patch("/", json={"address": {"city": "x"}})
         invalid = test_client.patch("/", json={"age": "x"})
@@ -431,9 +420,9 @@ def test_dto_data_partial_keeps_only_sent_fields(codegen: bool, distinct: Distin
     assert invalid.status_code == 400
 
 
-def test_dto_data_uses_model_field_names_for_renamed_fields(codegen: bool, distinct: Distinct) -> None:
+def test_dto_data_uses_model_field_names_for_renamed_fields(distinct: Distinct) -> None:
     with _dto_data_client(
-        codegen, distinct, lambda data: data.as_builtins(), rename_strategy="upper", include={"name", "age"}
+        distinct, lambda data: data.as_builtins(), rename_strategy="upper", include={"name", "age"}
     ) as test_client:
         response = test_client.patch("/", json={"NAME": "a", "AGE": 3})
 

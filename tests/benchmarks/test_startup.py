@@ -13,7 +13,6 @@ from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.di._route_handler import HandlerInjectionSetup, create_handler_injection_setup
 from litestar.dto import DataclassDTO
 from litestar.dto._backend import DTOBackend
-from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.params import FromPath, FromQuery
@@ -96,10 +95,7 @@ class Person:
     tags: list[str]
 
 
-@pytest.mark.parametrize("backend_cls", [DTOBackend, DTOCodegenBackend], ids=["default_backend", "codegen_backend"])
-def test_dto_backend_create(
-    benchmark: BenchmarkFixture, backend_cls: type[DTOBackend], reset_dto_backends: None
-) -> None:
+def test_dto_backend_create(benchmark: BenchmarkFixture, reset_dto_backends: None) -> None:
     class PersonDTO(DataclassDTO[Person]):
         pass
 
@@ -108,12 +104,12 @@ def test_dto_backend_create(
     def create() -> None:
         PersonDTO._dto_backends.clear()
         DTOBackend._seen_model_names = set()
-        PersonDTO.create_for_field_definition(field_definition, handler_id="bench", backend_cls=backend_cls)
+        PersonDTO.create_for_field_definition(field_definition, handler_id="bench")
 
     benchmark(create)
     backend = PersonDTO._dto_backends["bench"].get("return_backend")
     assert backend is not None
-    assert type(backend) is backend_cls
+    assert type(backend) is DTOBackend
 
 
 def test_routing_trie_lookup_500(benchmark: BenchmarkFixture) -> None:
