@@ -22,12 +22,15 @@ if TYPE_CHECKING:
 
 
 def create_handle_receive(listener: WebsocketListenerRouteHandler) -> Callable[[WebSocket], Coroutine[Any, None, None]]:
-    if data_dto := listener.data_dto:
+    if (plan := listener._dto_plan) is None:
+        listener._raise_not_registered()
+
+    if (decode_bytes := plan.decode_bytes) is not None:
 
         async def handle_receive(socket: WebSocket) -> Any:
             received_data = await socket.receive_data(mode=listener._receive_mode)
-            return data_dto(socket).decode_bytes(
-                received_data.encode("utf-8") if isinstance(received_data, str) else received_data
+            return decode_bytes(
+                received_data.encode("utf-8") if isinstance(received_data, str) else received_data, socket
             )
 
     elif listener.parsed_data_field and listener.parsed_data_field.annotation is str:
@@ -56,10 +59,13 @@ def create_handle_send(
 ) -> Callable[[WebSocket, Any], Coroutine[None, None, None]]:
     json_encoder = JsonEncoder(enc_hook=listener.default_serializer)
 
-    if return_dto := listener.return_dto:
+    if (plan := listener._dto_plan) is None:
+        listener._raise_not_registered()
+
+    if (encode := plan.encode) is not None:
 
         async def handle_send(socket: WebSocket, data: Any) -> None:
-            encoded_data = return_dto(socket).data_to_encodable_type(data)
+            encoded_data = encode(data, socket)
             data = json_encoder.encode(encoded_data)
             await socket.send_data(data=data, mode=listener._send_mode)
 

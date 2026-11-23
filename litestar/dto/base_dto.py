@@ -121,17 +121,23 @@ class AbstractDTO(Generic[T]):
         """Decode a dictionary of Python values into an the DTO's datatype."""
 
         direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=True, dto=type(self))
-        return direction.backend.populate_data_from_builtins(value, self.asgi_connection)
+        return type(self)._wrap_decoder(direction.backend.populate_data_from_builtins)(value, self.asgi_connection)
 
     def decode_bytes(self, value: bytes) -> Any:
         """Decode a byte string into an the DTO's datatype."""
 
         direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=True, dto=type(self))
-        return direction.backend.populate_data_from_raw(value, self.asgi_connection)
+        return type(self)._wrap_decoder(direction.backend.populate_data_from_raw)(value, self.asgi_connection)
 
     def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
         direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=False, dto=type(self))
         return direction.backend.encode_data(data)
+
+    @classmethod
+    def _wrap_decoder(
+        cls, decoder: Callable[[Any, ASGIConnection[Any, Any, Any, Any]], Any]
+    ) -> Callable[[Any, ASGIConnection[Any, Any, Any, Any]], Any]:
+        return decoder
 
     @classmethod
     @abstractmethod

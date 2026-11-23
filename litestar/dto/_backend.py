@@ -49,6 +49,7 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.dto import AbstractDTO, RenameStrategy
     from litestar.dto._transfer_codegen import TransferFunctionCache
+    from litestar.types import TypeDecodersSequence
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = ("DTOBackend",)
@@ -68,10 +69,12 @@ class CompositeTypeHandler(Protocol):
 
 class DTOBackend:
     __slots__ = (
+        "_default_deserializer",
         "_encode_data",
         "_transfer_function_cache",
         "_transfer_to_dict",
         "_transfer_to_model_type",
+        "_type_decoders",
         "annotation",
         "attribute_accessor",
         "dto_data_type",
@@ -108,6 +111,8 @@ class DTOBackend:
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure,
                 this is the name of the attribute that the data is stored in.
         """
+        self._type_decoders: TypeDecodersSequence | None = None
+        self._default_deserializer: Callable[[Any, Any], Any] | None = None
         self.dto_factory: Final[type[AbstractDTO]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
         self.is_data_field: Final[bool] = is_data_field
@@ -161,12 +166,19 @@ class DTOBackend:
                 )
         return f"{prefix} {self.model_type.__name__!r}: {exc}"
 
+    def _bind_handler(
+        self, *, type_decoders: TypeDecodersSequence, default_deserializer: Callable[[Any, Any], Any]
+    ) -> None:
+        self._type_decoders = type_decoders
+        self._default_deserializer = default_deserializer
+
     def _decodes_with_annotation(self) -> bool:
         from litestar.dto.base_dto import AbstractDTO
 
         return (
             self.dto_factory.decode_bytes is AbstractDTO.decode_bytes
             and self.dto_factory.decode_builtins is AbstractDTO.decode_builtins
+            and getattr(self.dto_factory._wrap_decoder, "__func__", None) is vars(AbstractDTO)["_wrap_decoder"].__func__
             and all(
                 getattr(type(self), name) is getattr(DTOBackend, name)
                 for name in ("parse_raw", "parse_builtins", "populate_data_from_raw", "populate_data_from_builtins")
@@ -293,7 +305,8 @@ class DTOBackend:
         if (content_type := getattr(asgi_connection, "content_type", None)) and (media_type := content_type[0]):
             request_encoding = media_type
 
-        type_decoders = asgi_connection.route_handler.type_decoders
+        if (type_decoders := self._type_decoders) is None:
+            type_decoders = asgi_connection.route_handler.type_decoders
 
         if request_encoding == RequestEncodingType.MESSAGEPACK:
             result = decode_msgpack(value=raw, target_type=self.annotation, type_decoders=type_decoders, strict=False)
@@ -312,10 +325,12 @@ class DTOBackend:
         Returns:
             The builtin type parsed into transfer model type.
         """
+        if (dec_hook := self._default_deserializer) is None:
+            dec_hook = asgi_connection.route_handler.default_deserializer
         return convert(
             obj=builtins,
             type=self.annotation,
-            dec_hook=asgi_connection.route_handler.default_deserializer,
+            dec_hook=dec_hook,
             strict=False,
             str_keys=True,
         )

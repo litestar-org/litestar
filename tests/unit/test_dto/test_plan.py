@@ -4,13 +4,15 @@ import json
 import pickle
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
-from typing import Annotated, Any, Generic, TypeVar
+from typing import Annotated, Any, ClassVar, Generic, TypeVar
 
+import msgspec
 import pytest
 
 from litestar import Controller, Litestar, Response, get, post, websocket_listener
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
+from litestar.connection import ASGIConnection
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
 from litestar.dto._plan import (
@@ -21,13 +23,14 @@ from litestar.dto._plan import (
     build_schema_annotation,
     create_backend,
 )
+from litestar.enums import RequestEncodingType
 from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, LitestarException, LitestarWarning
 from litestar.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketListenerRouteHandler, websocket_stream
 from litestar.openapi.spec import Reference
-from litestar.params import BodyKwarg, JSONBody
+from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.serialization import encode_json
-from litestar.testing import TestClient, create_test_client
+from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.types import Empty, Method
 from litestar.typing import FieldDefinition
 
@@ -635,3 +638,244 @@ def test_create_openapi_schema_with_plain_string_raises(copy_id: Callable[[str],
             handler_id=copy_id(handler.handler_id),
             schema_creator=SchemaCreator(),
         )
+
+
+class NoInstanceDTO(DataclassDTO[Model]):
+    def __init__(self, asgi_connection: ASGIConnection[Any, Any, Any, Any]) -> None:
+        raise AssertionError("a stock DTO must not be instantiated per request")
+
+
+def test_stock_dto_is_not_instantiated_per_request() -> None:
+    @post("/json", dto=NoInstanceDTO)
+    async def json_handler(data: JSONBody[Model]) -> Model:
+        return data
+
+    @post("/form", dto=NoInstanceDTO)
+    async def form_handler(data: URLEncodedBody[Model]) -> Model:
+        return data
+
+    @websocket_listener("/ws", dto=NoInstanceDTO)
+    async def listener(data: Model) -> Model:
+        return data
+
+    @websocket_stream("/stream", return_dto=NoInstanceDTO)
+    async def stream() -> AsyncGenerator[Model, None]:
+        yield Model(a=1, b="two")
+
+    with create_test_client([json_handler, form_handler, listener, stream]) as client:
+        assert client.post("/json", json={"a": 1, "b": "two"}).json() == {"a": 1, "b": "two"}
+        assert client.post("/form", data={"a": "1", "b": "two"}).json() == {"a": 1, "b": "two"}
+        with client.websocket_connect("/ws") as ws:
+            ws.send_json({"a": 1, "b": "two"})
+            assert ws.receive_json() == {"a": 1, "b": "two"}
+        with client.websocket_connect("/stream") as ws:
+            assert ws.receive_json() == {"a": 1, "b": "two"}
+
+
+class DecodeBytesDTO(DataclassDTO[Model]):
+    calls: ClassVar[list[str]] = []
+
+    def decode_bytes(self, value: bytes) -> Any:
+        self.calls.append("decode_bytes")
+        return super().decode_bytes(value)
+
+
+class DecodeBuiltinsDTO(DataclassDTO[Model]):
+    calls: ClassVar[list[str]] = []
+
+    def decode_builtins(self, value: dict[str, Any]) -> Any:
+        self.calls.append("decode_builtins")
+        return super().decode_builtins(value)
+
+
+class EncodeDTO(DataclassDTO[Model]):
+    calls: ClassVar[list[str]] = []
+
+    def data_to_encodable_type(self, data: Any) -> Any:
+        self.calls.append("data_to_encodable_type")
+        return super().data_to_encodable_type(data)
+
+
+def make_echo_app(dto: type[AbstractDTO[Any]]) -> Litestar:
+    @post("/json", dto=dto)
+    async def json_handler(data: JSONBody[Model]) -> Model:
+        return data
+
+    @post("/form", dto=dto)
+    async def form_handler(data: URLEncodedBody[Model]) -> Model:
+        return data
+
+    return Litestar([json_handler, form_handler])
+
+
+@pytest.mark.parametrize(
+    ("dto", "path", "method"),
+    [
+        pytest.param(DecodeBytesDTO, "/json", "decode_bytes", id="decode_bytes"),
+        pytest.param(DecodeBuiltinsDTO, "/form", "decode_builtins", id="decode_builtins"),
+        pytest.param(EncodeDTO, "/json", "data_to_encodable_type", id="data_to_encodable_type"),
+    ],
+)
+def test_overridden_instance_method_is_called(dto: Any, path: str, method: str) -> None:
+    dto.calls.clear()
+    kwargs: dict[str, Any] = {"json": {"a": 1, "b": "two"}} if path == "/json" else {"data": {"a": "1", "b": "two"}}
+
+    with TestClient(make_echo_app(ModelDTO)) as client:
+        stock = client.post(path, **kwargs)
+    with TestClient(make_echo_app(dto)) as client:
+        response = client.post(path, **kwargs)
+
+    assert dto.calls == [method]
+    assert (response.status_code, response.json()) == (stock.status_code, stock.json())
+
+
+def test_only_the_overridden_method_goes_through_an_instance() -> None:
+    instances: list[AbstractDTO[Any]] = []
+
+    class CountingDTO(DataclassDTO[Model]):
+        def __init__(self, asgi_connection: ASGIConnection[Any, Any, Any, Any]) -> None:
+            instances.append(self)
+            super().__init__(asgi_connection)
+
+        def decode_bytes(self, value: bytes) -> Any:
+            return super().decode_bytes(value)
+
+    with TestClient(make_echo_app(CountingDTO)) as client:
+        assert client.post("/json", json={"a": 1, "b": "two"}).json() == {"a": 1, "b": "two"}
+        assert len(instances) == 1
+        assert client.post("/form", data={"a": "1", "b": "two"}).json() == {"a": 1, "b": "two"}
+        assert len(instances) == 1
+
+
+@pytest.mark.parametrize(
+    ("dto", "return_dto", "body", "returns"),
+    [
+        pytest.param(ModelDTO, Empty, Model, Model, id="both"),
+        pytest.param(ModelDTO, None, Model, Model, id="data-only"),
+        pytest.param(Empty, ModelReadDTO, None, Model, id="return-only"),
+        pytest.param(ModelDTO, Empty, None, None, id="neither"),
+    ],
+)
+def test_plan_callables_match_directions(dto: Any, return_dto: Any, body: Any, returns: Any) -> None:
+    plan = registered(Litestar([make_rule_handler(dto, return_dto, body, returns)]))._dto_plan
+
+    assert (plan.decode_bytes is not None) is (plan.data is not None)
+    assert (plan.decode_builtins is not None) is (plan.data is not None)
+    assert (plan.encode is not None) is (plan.return_ is not None)
+
+
+class Custom:
+    def __init__(self, value: str) -> None:
+        self.value = value
+
+
+@dataclass
+class CustomHolder:
+    custom: Custom
+
+
+CUSTOM_DECODERS = [(lambda target: target is Custom, lambda target, value: Custom(value))]
+
+
+def test_type_decoders_are_bound_at_build() -> None:
+    @post("/", dto=DataclassDTO[CustomHolder], return_dto=None, type_decoders=CUSTOM_DECODERS)
+    async def handler(data: JSONBody[CustomHolder]) -> str:
+        return data.custom.value
+
+    with create_test_client([handler]) as client:
+        registered_handler = registered(client.app)
+        assert registered_handler._dto_plan.data.backend._type_decoders is registered_handler.type_decoders
+        assert client.post("/", json={"custom": "x"}).text == "x"
+
+
+def test_unbound_backend_reads_the_connection() -> None:
+    @post("/", type_decoders=CUSTOM_DECODERS)
+    async def handler(data: JSONBody[CustomHolder]) -> None:
+        return None
+
+    field_definition = FieldDefinition.from_annotation(JSONBody[CustomHolder])
+    backend = create_backend(DataclassDTO[CustomHolder], field_definition, is_data_field=True, handler_id="h")
+    request = RequestFactory().post("/", route_handler=handler)
+
+    assert backend.parse_raw(b'{"custom": "x"}', request).custom.value == "x"  # type: ignore[union-attr]
+    assert backend.parse_builtins({"custom": "y"}, request).custom.value == "y"
+
+
+def test_content_type_selects_msgpack_per_request() -> None:
+    @post("/", dto=ModelDTO)
+    async def handler(data: JSONBody[Model]) -> Model:
+        return data
+
+    with create_test_client([handler]) as client:
+        json_response = client.post("/", json={"a": 1, "b": "two"})
+        msgpack_response = client.post(
+            "/",
+            content=msgspec.msgpack.encode({"a": 1, "b": "two"}),
+            headers={"content-type": RequestEncodingType.MESSAGEPACK},
+        )
+
+    assert (json_response.status_code, json_response.json()) == (201, {"a": 1, "b": "two"})
+    assert (msgpack_response.status_code, msgpack_response.json()) == (201, {"a": 1, "b": "two"})
+
+
+def test_form_bodies_decode_through_the_plan() -> None:
+    @post("/url-encoded", dto=ItemDTO, return_dto=None)
+    async def url_encoded(data: URLEncodedBody[Item]) -> dict[str, Any]:
+        return {"a": data.a, "secret": data.secret}
+
+    @post("/multipart", dto=ItemDTO, return_dto=None)
+    async def multipart(data: MultipartBody[Item]) -> dict[str, Any]:
+        return {"a": data.a, "secret": data.secret}
+
+    with create_test_client([url_encoded, multipart]) as client:
+        form = {"a": "1", "secret": "sent"}
+        assert client.post("/url-encoded", data=form).json() == {"a": 1, "secret": "hidden"}
+        response = client.post("/multipart", data=form, files={"upload": ("f.txt", b"x")})
+        assert response.json() == {"a": 1, "secret": "hidden"}
+
+
+class RecordingBackend(DTOBackend):
+    __slots__ = ()
+    calls: ClassVar[list[tuple[str, Any]]] = []
+
+    def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection[Any, Any, Any, Any]) -> Any:
+        self.calls.append(("populate_data_from_raw", raw))
+        return super().populate_data_from_raw(raw, asgi_connection)
+
+    def encode_data(self, data: Any) -> Any:
+        self.calls.append(("encode_data", data))
+        return super().encode_data(data)
+
+
+def test_backend_subclass_runtime_overrides_are_called() -> None:
+    class RecordingBackendDTO(DataclassDTO[Model]):
+        @classmethod
+        def create_for_field_definition(
+            cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
+        ) -> None:
+            super().create_for_field_definition(
+                field_definition=field_definition, handler_id=handler_id, backend_cls=RecordingBackend
+            )
+
+    @post("/", dto=RecordingBackendDTO)
+    async def handler(data: JSONBody[Model]) -> Model:
+        return data
+
+    RecordingBackend.calls.clear()
+    with create_test_client([handler]) as client:
+        response = client.post("/", content=b'{"a":1,"b":"two"}', headers={"content-type": "application/json"})
+
+    assert response.json() == {"a": 1, "b": "two"}
+    assert RecordingBackend.calls == [
+        ("populate_data_from_raw", b'{"a":1,"b":"two"}'),
+        ("encode_data", Model(a=1, b="two")),
+    ]
+
+
+async def test_to_response_on_unregistered_handler_raises() -> None:
+    @get("/")
+    async def handler() -> Model:
+        return Model(a=1, b="two")
+
+    with pytest.raises(LitestarException):
+        await handler.to_response(Model(a=1, b="two"), RequestFactory().get("/", route_handler=handler))
