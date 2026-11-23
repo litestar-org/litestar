@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.utils.deprecation import warn_deprecation
 
 if TYPE_CHECKING:
     from litestar.dto.types import RenameStrategy
@@ -55,7 +56,11 @@ class DTOConfig:
     underscore_fields_private: bool = True
     """Fields starting with an underscore are considered private and excluded from data transfer."""
     experimental_codegen_backend: bool | None = None
-    """Use the experimental codegen backend"""
+    """Deprecated and without effect: the DTO backend always generates its transfer functions.
+
+    .. deprecated:: 3.0
+        Will be removed in 4.0.
+    """
     forbid_unknown_fields: bool = False
     """Raise an exception for fields present in the raw data that are not defined on the model"""
 
@@ -64,3 +69,13 @@ class DTOConfig:
             raise ImproperlyConfiguredException(
                 "'include' and 'exclude' are mutually exclusive options, please use one of them"
             )
+        if self.experimental_codegen_backend is not None:
+            warn_deprecation(
+                version="3.0",
+                deprecated_name="DTOConfig.experimental_codegen_backend",
+                kind="parameter",
+                removal_in="4.0",
+                info="The option has no effect, the DTO backend always generates its transfer functions",
+                stacklevel=4,
+            )
+            object.__setattr__(self, "experimental_codegen_backend", None)
