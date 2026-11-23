@@ -8,7 +8,7 @@ from dataclasses import dataclass, field, make_dataclass
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import TYPE_CHECKING, Annotated, Generic, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Annotated, Generic, Literal, Optional, TypeVar, Union, cast
 
 import annotated_types
 import msgspec
@@ -22,7 +22,7 @@ from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, DTOField, MsgspecDTO, dto_field
 from litestar.enums import MediaType
 from litestar.exceptions import InvalidAnnotationException
-from litestar.params import JSONBody, MultipartBody, URLEncodedBody
+from litestar.params import JSONBody, MultipartBody, QueryParameter, URLEncodedBody
 from litestar.serialization import encode_json
 from litestar.testing import create_test_client
 from tests.helpers import not_none
@@ -1188,6 +1188,93 @@ def test_dto_ignores_bounds_msgspec_cannot_express(
         assert client.get("/schema/openapi.json").status_code == 200
 
 
+@pytest.mark.parametrize(
+    "dto_type, annotation, partial, invalid, valid",
+    [
+        pytest.param(
+            MsgspecDTO, Annotated[Decimal, annotated_types.Gt(0)], False, "0", "1", id="MsgspecDTO-decimal_gt"
+        ),
+        pytest.param(
+            MsgspecDTO, Annotated[Decimal, annotated_types.Gt(0)], True, "0", "1", id="MsgspecDTO-decimal_gt-partial"
+        ),
+        *(
+            pytest.param(
+                dto_type,
+                list[Annotated[Decimal, annotated_types.Gt(0)]],
+                False,
+                ["0"],
+                ["1"],
+                id=f"{dto_type.__name__}-decimal_gt_item",
+            )
+            for dto_type in (DataclassDTO, MsgspecDTO)
+        ),
+        pytest.param(
+            MsgspecDTO, Annotated[Decimal, QueryParameter(gt=0)], False, "0", "1", id="MsgspecDTO-decimal_parameter_gt"
+        ),
+        pytest.param(MsgspecDTO, Annotated[int, annotated_types.Ge(1.5)], False, 1, 2, id="MsgspecDTO-int_float_bound"),
+        pytest.param(
+            MsgspecDTO,
+            Annotated[timedelta, annotated_types.Ge(0)],
+            False,
+            "-PT1S",
+            "PT1S",
+            id="MsgspecDTO-timedelta_int_bound",
+        ),
+        pytest.param(MsgspecDTO, Annotated[bool, annotated_types.Ge(1)], False, False, True, id="MsgspecDTO-bool_ge"),
+        *(
+            pytest.param(dto_type, annotation, False, invalid, valid, id=f"{dto_type.__name__}-{case_id}")
+            for dto_type in (DataclassDTO, MsgspecDTO)
+            for annotation, invalid, valid, case_id in (
+                (Annotated[Optional[int], annotated_types.Ge(0)], -1, 1, "optional_ge"),
+                (Annotated[Union[str, int], annotated_types.MinLen(2)], "a", "ab", "union_min_len"),
+                (Annotated[Optional[int], QueryParameter(ge=1)], 0, 1, "optional_parameter_ge"),
+                (Annotated[Optional[str], annotated_types.MinLen(5)], "12", None, "optional_min_len"),
+            )
+        ),
+    ],
+)
+def test_dto_does_not_enforce_derived_constraints_msgspec_cannot_express(
+    dto_type: Any, annotation: Any, partial: bool, invalid: Any, valid: Any
+) -> None:
+    model = _make_model(dto_type, annotation)
+
+    if partial:
+
+        @post(
+            "/",
+            dto=dto_type[Annotated[model, DTOConfig(partial=True)]],
+            return_dto=None,
+            signature_namespace={"model": model},
+        )
+        def create_derived_constraint(data: JSONBody[DTOData[model]]) -> None:  # type: ignore[valid-type]
+            pass
+
+    else:
+
+        @post("/", dto=dto_type[model], return_dto=None, signature_namespace={"model": model})
+        def create_derived_constraint(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
+            pass
+
+    with create_test_client([create_derived_constraint], openapi_config=None) as client:
+        assert client.post("/", json={"f": invalid}).status_code == 201
+        assert client.post("/", json={"f": valid}).status_code == 201
+
+
+def test_msgspec_dto_raises_invalid_annotation_for_mixed_type_literal() -> None:
+    annotation: Any = Literal[1, "a"]
+    struct = msgspec.defstruct("Model", [("f", annotation)])
+
+    with pytest.raises(InvalidAnnotationException, match="msgspec cannot inspect") as exc_info:
+
+        @post("/", dto=MsgspecDTO[struct], return_dto=None, signature_namespace={"struct": struct})  # type: ignore[valid-type]
+        def create_mixed_literal(data: JSONBody[struct]) -> None:  # type: ignore[valid-type]
+            pass
+
+        Litestar(route_handlers=[create_mixed_literal], openapi_config=None)
+
+    assert isinstance(exc_info.value.__cause__, TypeError)
+
+
 def test_return_dto_schema_builds_with_field_constraint_msgspec_rejects() -> None:
     misplaced_meta = make_dataclass(
         "MisplacedMeta", [("f", Annotated[Optional[str], Meta(min_length=5)], field(default=None))]
@@ -1231,7 +1318,6 @@ def test_return_dto_schema_builds_with_field_constraint_msgspec_rejects() -> Non
     "annotation",
     [
         pytest.param(Annotated[Optional[str], Meta(min_length=5)], id="optional_meta"),
-        pytest.param(Annotated[Optional[str], annotated_types.MinLen(5)], id="optional_annotated_types"),
         pytest.param(Annotated[int, Meta(min_length=1)], id="int_meta"),
         pytest.param(list[Annotated[int, Meta(min_length=1)]], id="item_meta"),
     ],

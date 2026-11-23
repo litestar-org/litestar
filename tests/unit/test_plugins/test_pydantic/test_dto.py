@@ -5,13 +5,14 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Annotated, Any, Literal, Optional, Union, cast
 
+import msgspec
 import pydantic as pydantic_v2
 import pytest
 from msgspec import UnsetType
 from pydantic import AwareDatetime
 
 from litestar import Litestar, Request, post
-from litestar.dto import DTOConfig
+from litestar.dto import DTOConfig, MsgspecDTO
 from litestar.dto._backend import DTOBackend
 from litestar.params import JSONBody, KwargDefinition
 from litestar.plugins.pydantic import PydanticDTO, _model_dump, _model_dump_json
@@ -212,3 +213,35 @@ def test_transfer_model_field_annotations(partial: bool, expected: Any) -> None:
         is_data_field=True,
     )
     assert backend.transfer_model_type.__annotations__["f"] == expected
+
+
+def test_msgspec_dto_does_not_enforce_pydantic_decimal_constraint() -> None:
+    struct = msgspec.defstruct("Model", [("f", pydantic_v2.condecimal(gt=0))])
+
+    @post("/", dto=MsgspecDTO[struct], return_dto=None, signature_namespace={"struct": struct})  # type: ignore[valid-type]
+    def create_condecimal(data: JSONBody[struct]) -> None:  # type: ignore[valid-type]
+        pass
+
+    with create_test_client(create_condecimal, openapi_config=None) as client:
+        assert client.post("/", json={"f": "0"}).status_code == HTTP_201_CREATED
+        assert client.post("/", json={"f": "1"}).status_code == HTTP_201_CREATED
+
+
+class PUnionMember1(pydantic_v2.BaseModel):
+    a: int
+
+
+class PUnionMember2(pydantic_v2.BaseModel):
+    b: int
+
+
+class PUnionHolder(pydantic_v2.BaseModel):
+    f: Union[PUnionMember1, PUnionMember2]
+
+
+def test_pydantic_dto_over_union_of_models_is_not_checked_at_startup() -> None:
+    @post("/", dto=PydanticDTO[PUnionHolder], return_dto=None)
+    def create_pydantic_union_holder(data: JSONBody[PUnionHolder]) -> None:
+        pass
+
+    Litestar(route_handlers=[create_pydantic_union_holder], openapi_config=None)
