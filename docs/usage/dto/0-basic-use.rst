@@ -85,12 +85,6 @@ introduced by the DTOs, the backend generates optimized Python code to perform a
 necessary operations. The code is generated once for every route handler a DTO applies
 to, when the handler is registered.
 
-.. note::
-
-    Code generation was introduced in ``2.2.0`` as an optional backend, became the
-    default in ``2.8.0`` and is the only backend as of ``3.0.0``.
-    ``DTOConfig(experimental_codegen_backend=...)`` is deprecated and has no effect.
-
 .. seealso::
     If you are interested in technical details, check out
     https://github.com/litestar-org/litestar/pull/2388
