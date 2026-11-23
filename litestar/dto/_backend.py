@@ -574,7 +574,11 @@ def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> Any:
     return field(**kwargs)
 
 
-def _create_struct_field_meta_for_field_definition(field_definition: TransferDTOFieldDefinition) -> msgspec.Meta | None:
+def _numeric_bound(value: Any) -> int | float | None:
+    return value if isinstance(value, (int, float)) else None
+
+
+def _create_struct_field_meta_for_field_definition(field_definition: FieldDefinition) -> msgspec.Meta | None:
     if (kwarg_definition := field_definition.kwarg_definition) is None or not isinstance(
         kwarg_definition, KwargDefinition
     ):
@@ -583,13 +587,13 @@ def _create_struct_field_meta_for_field_definition(field_definition: TransferDTO
     return msgspec.Meta(
         description=kwarg_definition.description,
         examples=[e.value for e in kwarg_definition.examples or []],
-        ge=kwarg_definition.ge,
-        gt=kwarg_definition.gt,
-        le=kwarg_definition.le,
-        lt=kwarg_definition.lt,
-        max_length=kwarg_definition.max_length if not field_definition.is_partial else None,
-        min_length=kwarg_definition.min_length if not field_definition.is_partial else None,
-        multiple_of=kwarg_definition.multiple_of,
+        ge=_numeric_bound(kwarg_definition.ge),
+        gt=_numeric_bound(kwarg_definition.gt),
+        le=_numeric_bound(kwarg_definition.le),
+        lt=_numeric_bound(kwarg_definition.lt),
+        max_length=kwarg_definition.max_length,
+        min_length=kwarg_definition.min_length,
+        multiple_of=_numeric_bound(kwarg_definition.multiple_of),
         pattern=kwarg_definition.pattern,
         title=kwarg_definition.title,
     )
@@ -609,16 +613,13 @@ def _create_struct_for_field_definitions(
         if field_definition.is_excluded:
             continue
 
-        field_type = _create_bare_transfer_model_type_annotation(
+        field_type = _create_transfer_model_type_annotation(
             field_definition.transfer_type, field_definition.passthrough_constraints, is_data_field
         )
         if field_definition.is_partial:
             field_type = Union[field_type, UnsetType]
 
-        if field_definition.passthrough_constraints:
-            if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
-                field_type = Annotated[field_type, field_meta]
-        elif field_definition.kwarg_definition:
+        if not field_definition.passthrough_constraints and field_definition.kwarg_definition:
             field_type = Annotated[field_type, field_definition.kwarg_definition]
 
         struct_fields.append(
@@ -707,11 +708,34 @@ def _should_exclude_field(
     return not is_data_field and field_definition.dto_field.mark is Mark.WRITE_ONLY
 
 
+_DERIVED_META_ATTRIBUTES: Final = (
+    "description",
+    "examples",
+    "ge",
+    "gt",
+    "le",
+    "lt",
+    "max_length",
+    "min_length",
+    "multiple_of",
+    "pattern",
+    "title",
+)
+
 _SCHEMA_META_ATTRIBUTES: Final = ("title", "description", "examples", "extra_json_schema", "extra")
 
 
 def _constraints_for_field_definition(field_definition: FieldDefinition) -> tuple[msgspec.Meta, ...]:
-    return tuple(m for m in field_definition.metadata if isinstance(m, msgspec.Meta))
+    constraints = [m for m in field_definition.metadata if isinstance(m, msgspec.Meta)]
+    if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
+        derived = {
+            name: value
+            for name in _DERIVED_META_ATTRIBUTES
+            if (value := getattr(field_meta, name)) is not None and all(getattr(m, name) is None for m in constraints)
+        }
+        if derived:
+            constraints.append(msgspec.Meta(**derived))
+    return tuple(constraints)
 
 
 def _schema_only_constraints(constraints: tuple[msgspec.Meta, ...]) -> tuple[msgspec.Meta, ...]:

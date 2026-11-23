@@ -4,20 +4,27 @@ from __future__ import annotations
 
 import inspect
 import re
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass, field, make_dataclass
 from types import ModuleType
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Annotated, Optional, Union
 from unittest.mock import MagicMock
 
+import annotated_types
 import msgspec
 import pytest
-from msgspec import Meta, Struct, to_builtins
+from msgspec import UNSET, Meta, Struct, UnsetType, to_builtins
+from typing_extensions import TypeAliasType as TeTypeAliasType
 
 from litestar import Litestar, Request, get, post
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.dto import DataclassDTO, DTOConfig, DTOField, MsgspecDTO
-from litestar.dto._backend import DTOBackend, _create_struct_field_meta_for_field_definition
+from litestar.dto._backend import (
+    DTOBackend,
+    _constraints_for_field_definition,
+    _create_struct_field_meta_for_field_definition,
+)
 from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
 from litestar.dto.data_structures import DTOFieldDefinition
@@ -30,6 +37,11 @@ from litestar.params import JSONBody, KwargDefinition
 from litestar.serialization import encode_json
 from litestar.testing import RequestFactory
 from litestar.typing import FieldDefinition
+
+try:
+    from typing import TypeAliasType  # type: ignore[attr-defined]
+except ImportError:
+    TypeAliasType = TeTypeAliasType
 
 if TYPE_CHECKING:
     from typing import Any
@@ -785,3 +797,139 @@ class Outer:
             wrapper_attribute_name=None,
             is_data_field=True,
         )
+
+
+Limit = TypeAliasType("Limit", Annotated[int, Meta(ge=0)])
+M5 = Meta(min_length=5)
+
+
+@pytest.mark.parametrize(
+    "dto_type, annotation, partial, default, expected",
+    [
+        *(
+            pytest.param(dto_type, annotation, partial, default, expected, id=f"{dto_type.__name__}-{case_id}")
+            for dto_type in (DataclassDTO, MsgspecDTO)
+            for annotation, partial, default, expected, case_id in (
+                (list[Annotated[str, M5]], False, None, list[Annotated[str, M5]], "list_item"),
+                (Union[Annotated[str, M5], int], False, 0, Union[Annotated[str, M5], int], "union_member"),
+                (
+                    Union[Annotated[str, M5], int],
+                    True,
+                    0,
+                    Union[Annotated[str, M5], int, UnsetType],
+                    "union_member_partial",
+                ),
+                (Annotated[int, Meta(ge=1)], False, 1, Annotated[int, Meta(ge=1)], "field_meta"),
+                (
+                    Annotated[int, Meta(ge=1)],
+                    True,
+                    1,
+                    Union[Annotated[int, Meta(ge=1)], UnsetType],
+                    "field_meta_partial",
+                ),
+            )
+        ),
+        pytest.param(
+            MsgspecDTO,
+            Annotated[str, M5],
+            True,
+            "12345",
+            Union[Annotated[str, M5], UnsetType],
+            id="MsgspecDTO-field_length_partial",
+        ),
+        pytest.param(
+            MsgspecDTO,
+            Optional[Annotated[str, Meta(pattern="^a")]],
+            False,
+            None,
+            Optional[Annotated[str, Meta(pattern="^a")]],
+            id="MsgspecDTO-optional_member",
+        ),
+        pytest.param(
+            MsgspecDTO,
+            Optional[Annotated[str, Meta(pattern="^a")]],
+            True,
+            None,
+            Union[Annotated[str, Meta(pattern="^a")], None, UnsetType],
+            id="MsgspecDTO-optional_member_partial",
+        ),
+        pytest.param(
+            MsgspecDTO,
+            Union[Annotated[str, Meta(min_length=8)], UnsetType],
+            False,
+            UNSET,
+            Union[Annotated[str, Meta(min_length=8)], UnsetType],
+            id="MsgspecDTO-unset_union_member",
+        ),
+        pytest.param(
+            MsgspecDTO,
+            Limit,
+            False,
+            0,
+            Limit,
+            id="MsgspecDTO-type_alias",
+            marks=pytest.mark.skipif(sys.version_info < (3, 12), reason="msgspec decodes typing.TypeAliasType only"),
+        ),
+        pytest.param(
+            DataclassDTO,
+            Annotated[str, annotated_types.MinLen(5)],
+            False,
+            "12345",
+            Annotated[str, Meta(min_length=5, examples=[])],
+            id="DataclassDTO-annotated_types",
+        ),
+        pytest.param(
+            DataclassDTO,
+            Annotated[str, annotated_types.MinLen(5)],
+            True,
+            "12345",
+            Union[Annotated[str, Meta(min_length=5, examples=[])], UnsetType],
+            id="DataclassDTO-annotated_types_partial",
+        ),
+        *(
+            pytest.param(
+                DataclassDTO,
+                Annotated[Optional[str], Meta(description="d")],
+                partial,
+                None,
+                expected,
+                id=f"DataclassDTO-optional_schema_meta-{partial}",
+            )
+            for partial, expected in (
+                (False, Annotated[Optional[str], Meta(description="d")]),
+                (True, Union[Annotated[Optional[str], Meta(description="d")], UnsetType]),
+            )
+        ),
+    ],
+)
+def test_transfer_model_field_annotations(
+    dto_type: Any, annotation: Any, partial: bool, default: Any, expected: Any
+) -> None:
+    if dto_type is DataclassDTO:
+        model: Any = make_dataclass("Model", [("f", annotation, field(default=default))])
+    else:
+        model = msgspec.defstruct("Model", [("f", annotation, default)])
+    dto: Any = type("ModelDTO", (dto_type[model],), {"config": DTOConfig(partial=partial)})  # pyright: ignore[reportInvalidTypeArguments]
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=dto,
+        field_definition=FieldDefinition.from_annotation(model),
+        model_type=model,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+    assert backend.transfer_model_type.__annotations__["f"] == expected
+
+
+@pytest.mark.parametrize(
+    "annotation, expected",
+    [
+        (Annotated[int, Meta(ge=1)], (Meta(ge=1),)),
+        (Annotated[int, annotated_types.Ge(1)], (Meta(ge=1, examples=[]),)),
+        (Annotated[int, Meta(ge=1), annotated_types.Ge(3)], (Meta(ge=1), Meta(examples=[]))),
+        (Annotated[int, Meta(ge=1), annotated_types.Le(5)], (Meta(ge=1), Meta(le=5, examples=[]))),
+        (int, ()),
+    ],
+)
+def test_constraints_for_field_definition(annotation: Any, expected: tuple[Meta, ...]) -> None:
+    assert _constraints_for_field_definition(FieldDefinition.from_annotation(annotation)) == expected
