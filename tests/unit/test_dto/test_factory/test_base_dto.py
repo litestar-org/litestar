@@ -109,7 +109,6 @@ async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
 
 def test_config_field_rename(asgi_connection: Request[Any, Any, Any]) -> None:
     config = DTOConfig(rename_fields={"a": "z"})
-    DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.create_for_field_definition(FieldDefinition.from_annotation(JSONBody[Model]), handler_id="handler_id")
     field_definitions = dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions  # pyright: ignore[reportTypedDictNotRequiredAccess]
@@ -147,7 +146,6 @@ def test_raises_invalid_annotation_for_mismatched_types() -> None:
 
 
 def test_sub_types_supported() -> None:
-    DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Model]
 
     @dataclass
