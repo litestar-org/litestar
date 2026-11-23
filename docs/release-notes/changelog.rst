@@ -16,9 +16,10 @@
         default since ``2.8.0``.
 
         ``DTOConfig(experimental_codegen_backend=...)`` is still accepted, but it is
-        deprecated and has no effect: ``experimental_codegen_backend=False`` no longer
-        selects another backend, and any value other than ``None`` emits a deprecation
-        warning. The option will be removed in ``4.0``.
+        deprecated and has no effect, and any value other than ``None`` emits a deprecation
+        warning. The option will be removed in ``4.0``. For the behaviour that differs from
+        the removed backend, see
+        :ref:`release-notes/whats-new-3:Removal of the non-codegen DTO backend`.
 
     .. change:: DTO: Fix slow startup for self-referential and deeply nested models
         :type: bugfix

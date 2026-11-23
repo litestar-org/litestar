@@ -259,18 +259,19 @@ After:
     class UserDTO(DataclassDTO[User]):
         config = DTOConfig(exclude={"id"})
 
-If you disabled code generation to work around a failure, the two known ones are fixed in
-3.0: an application that failed to start with a :exc:`SyntaxError` for nested models, and
-slow startup for models that reference themselves.
+If you disabled code generation to work around a failure, the known ones are fixed in 3.0:
+an application that failed to start with a :exc:`SyntaxError` for nested models, slow
+startup for models that reference themselves, and field names that are Python keywords or
+that change under Unicode normalisation.
 
 A field typed as a union of a nested model and more than one collection type, such as
 ``Inner | list[str] | dict[str, str]``, is not supported and raises a :exc:`RuntimeError`
 when the application starts.
 
-Three details differ from the removed backend: ``DTOData.as_builtins()`` returns an optional
-nested model as an instance whose own nested models are dictionaries, a custom
-``attribute_accessor`` can be called more often for the same response, and the attribute of
-a generic wrapper that holds the data is read with :func:`getattr`, not with the custom
+At a ``max_nested_depth`` of 2 or more, ``DTOData.as_builtins()`` returns an optional nested
+model as an instance whose own nested models are dictionaries. A custom
+``attribute_accessor`` can be called more often for the same response. The attribute of a
+generic wrapper that holds the data is read with :func:`getattr`, not with the custom
 ``attribute_accessor``.
 
 

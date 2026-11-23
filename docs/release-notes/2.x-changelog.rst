@@ -1633,7 +1633,7 @@
 
         .. seealso::
             For more information see
-            :ref:`usage/dto/0-basic-use:Improving performance with the codegen backend`
+            :ref:`usage/dto/0-basic-use:Code generation`
 
 
     .. change:: Improved error messages for missing required parameters
