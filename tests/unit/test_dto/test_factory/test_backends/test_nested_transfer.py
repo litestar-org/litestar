@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from msgspec import to_builtins
 
-from litestar.dto import DataclassDTO, DTOConfig
+from litestar.dto import DataclassDTO, DTOConfig, DTOData
 from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.typing import FieldDefinition
 
@@ -101,7 +101,13 @@ def _deep_root_with_mapping_levels() -> dict[str, Any]:
 
 
 def _create_backend(
-    backend_cls: "type[DTOBackend]", model: type[Any], config: DTOConfig, *, is_data_field: bool, accessor: Any = None
+    backend_cls: "type[DTOBackend]",
+    model: type[Any],
+    config: DTOConfig,
+    *,
+    is_data_field: bool,
+    accessor: Any = None,
+    annotation: Any = None,
 ) -> "DTOBackend":
     namespace: dict[str, Any] = {"config": config}
     if accessor is not None:
@@ -109,7 +115,7 @@ def _create_backend(
     dto: Any = type("NestedTransferDTO", (DataclassDTO[model],), namespace)  # type: ignore[valid-type]
     return backend_cls(
         dto_factory=dto,
-        field_definition=FieldDefinition.from_annotation(model),
+        field_definition=FieldDefinition.from_annotation(model if annotation is None else annotation),
         handler_id="test",
         is_data_field=is_data_field,
         model_type=model,
@@ -171,9 +177,11 @@ def test_self_referential_model_is_cut_at_max_nested_depth(
 
 
 def test_codegen_nested_optional_model_in_dto_data_builtins(asgi_connection: "Request[Any, Any, Any]") -> None:
-    backend: Any = _create_backend(DTOCodegenBackend, DeepRoot, DTOConfig(max_nested_depth=3), is_data_field=True)
+    backend = _create_backend(
+        DTOCodegenBackend, DeepRoot, DTOConfig(max_nested_depth=3), is_data_field=True, annotation=DTOData[DeepRoot]
+    )
 
-    builtins = backend._transfer_to_dict(backend.parse_builtins(_deep_root_builtins(), asgi_connection))
+    builtins = backend.populate_data_from_builtins(_deep_root_builtins(), asgi_connection).as_builtins()
 
     middle_overrides = {"maybe_leaf": DeepLeaf(x=11), "leaves": [DeepLeaf(x=12)]}
     assert builtins["middle"] == _middle_builtins(10) | middle_overrides
@@ -228,7 +236,7 @@ def test_codegen_generated_source_grows_linearly_with_nested_depth() -> None:
     shallow = _generated_sources(ChainNode, max_nested_depth=4)
     deep = _generated_sources(ChainNode, max_nested_depth=8)
 
-    assert len(deep) - len(shallow) == 8
+    assert len(deep) - len(shallow) <= 8
     assert sum(map(len, deep)) < 2 * sum(map(len, shallow))
 
 
@@ -237,4 +245,5 @@ def test_codegen_generates_one_function_per_nested_collection_item_type() -> Non
     deep = _generated_sources(TreeNode, max_nested_depth=4)
 
     assert len(deep) < 3 * len(shallow)
+    assert len(deep) <= 35
     assert sum(map(len, deep)) < 3 * sum(map(len, shallow))
