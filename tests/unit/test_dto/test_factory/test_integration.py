@@ -782,7 +782,7 @@ def test_msgspec_dto_copies_constraints(
 
     @post(
         "/",
-        dto=Annotated[MsgspecDTO[struct], DTOConfig()],  # type: ignore[arg-type, valid-type]
+        dto=MsgspecDTO[struct],  # type: ignore[valid-type]
         signature_namespace={"struct": struct},
     )
     def handler(data: JSONBody[struct]) -> None:  # type: ignore[valid-type]

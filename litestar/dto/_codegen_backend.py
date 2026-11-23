@@ -1,7 +1,8 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-"""DTO backends do the heavy lifting of decoding and validating raw bytes into domain models, and
-back again, to bytes.
+"""Generate the transfer functions used by :class:`~litestar.dto._backend.DTOBackend`.
+
+``DTOCodegenBackend`` is served lazily as the same class, because ``litestar.dto._backend`` imports this module.
 """
 
 from __future__ import annotations
