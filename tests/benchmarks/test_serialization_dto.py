@@ -17,9 +17,7 @@ from pytest_codspeed import BenchmarkFixture
 
 from litestar import Litestar, get, post
 from litestar._request_parameters.validation import RequestParameterValidator
-from litestar.dto import DataclassDTO, DTOConfig
-from litestar.dto._backend import DTOBackend
-from litestar.dto._codegen_backend import DTOCodegenBackend
+from litestar.dto import DataclassDTO
 from litestar.params import FromQuery, JSONBody
 from litestar.serialization import decode_json, encode_json
 from litestar.typing import FieldDefinition
@@ -64,11 +62,6 @@ def make_people(count: int) -> list[Person]:
     ]
 
 
-BACKENDS = pytest.mark.parametrize(
-    "backend_cls", [DTOBackend, DTOCodegenBackend], ids=["default_backend", "codegen_backend"]
-)
-
-
 def test_encode_json_nested(benchmark: BenchmarkFixture) -> None:
     payload: dict[str, Any] = {
         "people": make_people(20),
@@ -99,16 +92,11 @@ def test_decode_json_typed(benchmark: BenchmarkFixture) -> None:
     assert isinstance(people[0].address, Address)
 
 
-@BACKENDS
-def test_dto_encode_list_100(
-    benchmark: BenchmarkFixture, backend_cls: type[DTOBackend], reset_dto_backends: None
-) -> None:
+def test_dto_encode_list_100(benchmark: BenchmarkFixture, reset_dto_backends: None) -> None:
     class PersonDTO(DataclassDTO[Person]):
         pass
 
-    PersonDTO.create_for_field_definition(
-        FieldDefinition.from_annotation(list[Person]), handler_id="bench", backend_cls=backend_cls
-    )
+    PersonDTO.create_for_field_definition(FieldDefinition.from_annotation(list[Person]), handler_id="bench")
     backend = PersonDTO._dto_backends["bench"].get("return_backend")
     assert backend is not None
     people = make_people(100)
@@ -116,12 +104,9 @@ def test_dto_encode_list_100(
     assert len(encoded) == 100
 
 
-@BACKENDS
-def test_dto_request_roundtrip(
-    benchmark: BenchmarkFixture, backend_cls: type[DTOBackend], reset_dto_backends: None, runner: ASGIRunner
-) -> None:
+def test_dto_request_roundtrip(benchmark: BenchmarkFixture, reset_dto_backends: None, runner: ASGIRunner) -> None:
     class PersonDTO(DataclassDTO[Person]):
-        config = DTOConfig(experimental_codegen_backend=backend_cls is DTOCodegenBackend)
+        pass
 
     @post("/people", dto=PersonDTO, return_dto=PersonDTO)
     async def handler(data: JSONBody[Person]) -> Person:

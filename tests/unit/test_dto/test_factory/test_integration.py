@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from litestar import Litestar
 
 
-def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
+def test_url_encoded_form_data() -> None:
     @dataclass()
     class User:
         name: str
@@ -35,7 +35,7 @@ def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
         read_only: str = field(default="read-only", metadata=dto_field("read-only"))
 
     class UserDTO(DataclassDTO[User]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+        pass
 
     @post(dto=UserDTO, signature_types=[User])
     def handler(data: URLEncodedBody[User]) -> User:
@@ -50,7 +50,7 @@ def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
         assert response.json() == {"name": "John", "age": 42, "read_only": "read-only"}
 
 
-async def test_multipart_encoded_form_data(use_experimental_dto_backend: bool) -> None:
+async def test_multipart_encoded_form_data() -> None:
     default_file = UploadFile(content_type="text/plain", filename="forbidden", file_data=b"forbidden")
 
     @dataclass
@@ -62,7 +62,7 @@ async def test_multipart_encoded_form_data(use_experimental_dto_backend: bool) -
         )
 
     class PayloadDTO(DataclassDTO[Payload]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+        pass
 
     @post(dto=PayloadDTO, return_dto=None, signature_types=[Payload], media_type=MediaType.TEXT)
     async def handler(data: MultipartBody[Payload]) -> bytes:
@@ -78,7 +78,7 @@ async def test_multipart_encoded_form_data(use_experimental_dto_backend: bool) -
     await default_file.close()
 
 
-def test_renamed_field_nested(use_experimental_dto_backend: bool, create_module: Callable[[str], ModuleType]) -> None:
+def test_renamed_field_nested(create_module: Callable[[str], ModuleType]) -> None:
     # https://github.com/litestar-org/litestar/issues/2721
     module = create_module(
         """
@@ -101,7 +101,6 @@ class Foo:
 
     config = DTOConfig(
         rename_fields={"id": "foo_id", "bar.id": "bar_id", "bars.0.id": "bars_id"},
-        experimental_codegen_backend=use_experimental_dto_backend,
     )
     dto = DataclassDTO[Annotated[Foo, config]]  # type: ignore[valid-type]
 
@@ -114,14 +113,12 @@ class Foo:
         assert response.json() == {"foo_id": "1", "bar": {"bar_id": "2"}, "bars": [{"bars_id": "3"}]}
 
 
-def test_dto_data_injection(use_experimental_dto_backend: bool) -> None:
+def test_dto_data_injection() -> None:
     @dataclass
     class Foo:
         bar: str
 
-    config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
-
-    @post(dto=DataclassDTO[Annotated[Foo, config]], return_dto=None, signature_types=[Foo])
+    @post(dto=DataclassDTO[Foo], return_dto=None, signature_types=[Foo])
     def handler(data: JSONBody[DTOData[Foo]]) -> Foo:
         assert isinstance(data, DTOData)
         assert data.as_builtins() == {"bar": "hello"}
@@ -144,13 +141,9 @@ class NestingBar:
     foo: NestedFoo
 
 
-def test_dto_data_injection_with_nested_model(use_experimental_dto_backend: bool) -> None:
+def test_dto_data_injection_with_nested_model() -> None:
     @post(
-        dto=DataclassDTO[
-            Annotated[
-                NestingBar, DTOConfig(exclude={"foo.baz"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ],
+        dto=DataclassDTO[Annotated[NestingBar, DTOConfig(exclude={"foo.baz"})]],
         return_dto=None,
     )
     def handler(data: JSONBody[DTOData[NestingBar]]) -> dict[str, Any]:
@@ -163,13 +156,9 @@ def test_dto_data_injection_with_nested_model(use_experimental_dto_backend: bool
         assert resp.json() == {"foo": {"bar": "hello"}}
 
 
-def test_dto_data_create_instance_nested_kwargs(use_experimental_dto_backend: bool) -> None:
+def test_dto_data_create_instance_nested_kwargs() -> None:
     @post(
-        dto=DataclassDTO[
-            Annotated[
-                NestingBar, DTOConfig(exclude={"foo.baz"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ],
+        dto=DataclassDTO[Annotated[NestingBar, DTOConfig(exclude={"foo.baz"})]],
         return_dto=None,
     )
     def handler(data: JSONBody[DTOData[NestingBar]]) -> NestingBar:
@@ -191,10 +180,8 @@ class User:
     read_only: str = field(default="read-only", metadata=dto_field("read-only"))
 
 
-def test_dto_data_with_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
-    config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
-
-    @post(dto=DataclassDTO[Annotated[User, config]])
+def test_dto_data_with_url_encoded_form_data() -> None:
+    @post(dto=DataclassDTO[User])
     def handler(data: URLEncodedBody[DTOData[User]]) -> User:
         return data.create_instance()
 
@@ -227,7 +214,7 @@ class RenamedBar(GenericRenamedBar[InnerBar]):
     pass
 
 
-def test_dto_data_create_instance_renamed_fields(use_experimental_dto_backend: bool) -> None:
+def test_dto_data_create_instance_renamed_fields() -> None:
     @post(
         dto=DataclassDTO[
             Annotated[
@@ -235,14 +222,13 @@ def test_dto_data_create_instance_renamed_fields(use_experimental_dto_backend: b
                 DTOConfig(
                     exclude={"foo_foo"},
                     rename_strategy="camel",
-                    experimental_codegen_backend=use_experimental_dto_backend,
                 ),
             ]
         ],
         return_dto=DataclassDTO[
             Annotated[
                 RenamedBar,
-                DTOConfig(rename_strategy="camel", experimental_codegen_backend=use_experimental_dto_backend),
+                DTOConfig(rename_strategy="camel"),
             ]
         ],
     )
@@ -259,8 +245,8 @@ def test_dto_data_create_instance_renamed_fields(use_experimental_dto_backend: b
         assert response.json() == {"bar": "hello", "fooFoo": "world", "spamBar": {"bestGreeting": "hello world"}}
 
 
-def test_dto_data_with_patch_request(use_experimental_dto_backend: bool) -> None:
-    class PatchDTO(DataclassDTO[Annotated[User, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]]):
+def test_dto_data_with_patch_request() -> None:
+    class PatchDTO(DataclassDTO[User]):
         config = DTOConfig(partial=True)
 
     @patch(dto=PatchDTO, return_dto=None)
@@ -292,13 +278,9 @@ class UniqueModelName:
     foo: str
 
 
-def test_dto_openapi_with_unique_handler_names(use_experimental_dto_backend: bool) -> None:
+def test_dto_openapi_with_unique_handler_names() -> None:
     @post(
-        dto=DataclassDTO[
-            Annotated[
-                UniqueModelName, DTOConfig(exclude={"id"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ],
+        dto=DataclassDTO[Annotated[UniqueModelName, DTOConfig(exclude={"id"})]],
         return_dto=DataclassDTO[UniqueModelName],
         signature_namespace={"UniqueModelName": UniqueModelName},
     )
@@ -319,10 +301,8 @@ class SharedModelName:
     foo: str
 
 
-def test_dto_openapi_without_unique_handler_names(use_experimental_dto_backend: bool) -> None:
-    write_dto = DataclassDTO[
-        Annotated[SharedModelName, DTOConfig(exclude={"id"}, experimental_codegen_backend=use_experimental_dto_backend)]
-    ]
+def test_dto_openapi_without_unique_handler_names() -> None:
+    write_dto = DataclassDTO[Annotated[SharedModelName, DTOConfig(exclude={"id"})]]
     read_dto = DataclassDTO[SharedModelName]
 
     @post(dto=write_dto, return_dto=read_dto)
@@ -352,16 +332,14 @@ def test_dto_openapi_without_unique_handler_names(use_experimental_dto_backend: 
         )
 
 
-def test_url_encoded_form_data_patch_request(use_experimental_dto_backend: bool) -> None:
+def test_url_encoded_form_data_patch_request() -> None:
     @dataclass()
     class User:
         name: str
         age: int
         read_only: str = field(default="read-only", metadata=dto_field("read-only"))
 
-    dto = DataclassDTO[
-        Annotated[User, DTOConfig(partial=True, experimental_codegen_backend=use_experimental_dto_backend)]
-    ]
+    dto = DataclassDTO[Annotated[User, DTOConfig(partial=True)]]
 
     @post(dto=dto, return_dto=None, signature_types=[User])
     def handler(data: URLEncodedBody[DTOData[User]]) -> dict[str, Any]:
@@ -376,14 +354,14 @@ def test_url_encoded_form_data_patch_request(use_experimental_dto_backend: bool)
         assert response.json() == {"name": "John"}
 
 
-def test_dto_with_generic_sequence_annotations(use_experimental_dto_backend: bool) -> None:
+def test_dto_with_generic_sequence_annotations() -> None:
     @dataclass
     class User:
         name: str
         age: int
 
     @post(
-        dto=DataclassDTO[Annotated[User, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
+        dto=DataclassDTO[User],
         signature_types=[User],
     )
     def handler(data: JSONBody[Sequence[User]]) -> Sequence[User]:
@@ -394,7 +372,7 @@ def test_dto_with_generic_sequence_annotations(use_experimental_dto_backend: boo
         assert response.json() == [{"name": "John", "age": 42}]
 
 
-def test_dto_concrete_builtin_collection_types(use_experimental_dto_backend: bool) -> None:
+def test_dto_concrete_builtin_collection_types() -> None:
     @dataclass
     class Foo:
         bar: dict
@@ -404,7 +382,7 @@ def test_dto_concrete_builtin_collection_types(use_experimental_dto_backend: boo
         dto=DataclassDTO[
             Annotated[
                 Foo,
-                DTOConfig(underscore_fields_private=False, experimental_codegen_backend=use_experimental_dto_backend),
+                DTOConfig(underscore_fields_private=False),
             ]
         ],
         signature_types=[Foo],
@@ -435,14 +413,8 @@ class Wrapped(Generic[T, V]):
     other: V
 
 
-def test_dto_generic_dataclass_wrapped_list_response(use_experimental_dto_backend: bool) -> None:
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
+def test_dto_generic_dataclass_wrapped_list_response() -> None:
+    @get(dto=DataclassDTO[Annotated[WrappedUser, DTOConfig(exclude={"age"})]])
     def handler() -> Wrapped[list[WrappedUser], int]:
         return Wrapped(
             data=[WrappedUser(name="John", age=42), WrappedUser(name="Jane", age=43)],
@@ -460,14 +432,8 @@ class WrappedWithCollection(Generic[T, V]):
     other: V
 
 
-def test_dto_generic_dataclass_wrapped_collection_response(use_experimental_dto_backend: bool) -> None:
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
+def test_dto_generic_dataclass_wrapped_collection_response() -> None:
+    @get(dto=DataclassDTO[Annotated[WrappedUser, DTOConfig(exclude={"age"})]])
     def handler() -> WrappedWithCollection[WrappedUser, int]:
         return WrappedWithCollection(
             items=[WrappedUser(name="John", age=42), WrappedUser(name="Jane", age=43)],
@@ -485,16 +451,8 @@ class WrappedWithDict(Generic[K, V, T]):
     other: dict[K, V]
 
 
-def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_data(
-    use_experimental_dto_backend: bool,
-) -> None:
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
+def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_data() -> None:
+    @get(dto=DataclassDTO[Annotated[WrappedUser, DTOConfig(exclude={"age"})]])
     def handler() -> WrappedWithDict[str, int, WrappedUser]:
         return WrappedWithDict(
             data=WrappedUser(name="John", age=42),
@@ -506,14 +464,8 @@ def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_d
         assert response.json() == {"data": {"name": "John"}, "other": {"a": 1, "b": 2}}
 
 
-def test_dto_response_wrapped_scalar_return_type(use_experimental_dto_backend: bool) -> None:
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
+def test_dto_response_wrapped_scalar_return_type() -> None:
+    @get(dto=DataclassDTO[Annotated[WrappedUser, DTOConfig(exclude={"age"})]])
     def handler() -> Response[WrappedUser]:
         return Response(content=WrappedUser(name="John", age=42))
 
@@ -527,14 +479,8 @@ def test_dto_response_wrapped_scalar_return_type(use_experimental_dto_backend: b
         assert schemas[0]["title"] == "HandlerWrappedUserResponseBody"
 
 
-def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backend: bool) -> None:
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
+def test_dto_response_wrapped_collection_return_type() -> None:
+    @get(dto=DataclassDTO[Annotated[WrappedUser, DTOConfig(exclude={"age"})]])
     def handler() -> Response[list[WrappedUser]]:
         return Response(content=[WrappedUser(name="John", age=42), WrappedUser(name="Jane", age=43)])
 
@@ -548,13 +494,13 @@ def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backen
         assert schemas[0]["title"] == "HandlerWrappedUserResponseBody"
 
 
-def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: bool) -> None:
+def test_schema_required_fields_with_msgspec_dto() -> None:
     class MsgspecUser(Struct):
         age: int
         name: str
 
     class UserDTO(MsgspecDTO[MsgspecUser]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+        pass
 
     @post(dto=UserDTO, return_dto=None, signature_types=[MsgspecUser])
     def handler(data: JSONBody[MsgspecUser], request: Request) -> dict:
@@ -573,14 +519,14 @@ def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: b
         assert len(required) == 2
 
 
-def test_schema_required_fields_with_dataclass_dto(use_experimental_dto_backend: bool) -> None:
+def test_schema_required_fields_with_dataclass_dto() -> None:
     @dataclass
     class DataclassUser:
         age: int
         name: str
 
     class UserDTO(DataclassDTO[DataclassUser]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+        pass
 
     @post(dto=UserDTO, return_dto=None, signature_types=[DataclassUser])
     def handler(data: JSONBody[DataclassUser], request: Request) -> dict:
@@ -599,13 +545,13 @@ def test_schema_required_fields_with_dataclass_dto(use_experimental_dto_backend:
         assert len(required) == 2
 
 
-def test_schema_required_fields_with_msgspec_dto_and_default_fields(use_experimental_dto_backend: bool) -> None:
+def test_schema_required_fields_with_msgspec_dto_and_default_fields() -> None:
     class MsgspecUser(Struct):
         age: int
         name: str = "A"
 
     class UserDTO(MsgspecDTO[MsgspecUser]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+        pass
 
     @post(dto=UserDTO, return_dto=None, signature_types=[MsgspecUser])
     def handler(data: JSONBody[MsgspecUser], request: Request) -> dict:
@@ -641,8 +587,8 @@ class Superuser(BoundUser[ClassicNameStyle]):
     pass
 
 
-def test_dto_with_msgspec_with_bound_generic_and_inherited_models(use_experimental_dto_backend: bool) -> None:
-    @post(dto=MsgspecDTO[Annotated[Superuser, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]])
+def test_dto_with_msgspec_with_bound_generic_and_inherited_models() -> None:
+    @post(dto=MsgspecDTO[Superuser])
     def handler(data: JSONBody[Superuser]) -> Superuser:
         return data
 
@@ -656,14 +602,14 @@ def test_dto_with_msgspec_with_bound_generic_and_inherited_models(use_experiment
         assert msgspec.json.decode(received.content, type=Superuser) == data
 
 
-def test_dto_returning_mapping(use_experimental_dto_backend: bool) -> None:
+def test_dto_returning_mapping() -> None:
     @dataclass
     class Lexeme:
         id: int
         name: str
 
     class LexemeDTO(DataclassDTO[Lexeme]):
-        config = DTOConfig(exclude={"id"}, experimental_codegen_backend=use_experimental_dto_backend)
+        config = DTOConfig(exclude={"id"})
 
     @get(return_dto=LexemeDTO, signature_types=[Lexeme])
     async def get_definition() -> dict[str, Lexeme]:
@@ -707,7 +653,7 @@ def test_data_dto_with_default() -> None:
     ],
 )
 def test_msgspec_dto_copies_constraints(
-    field_type: Any, constraint_name: str, constraint_value: Any, request_data: Any, use_experimental_dto_backend: bool
+    field_type: Any, constraint_name: str, constraint_value: Any, request_data: Any
 ) -> None:
     # https://github.com/litestar-org/litestar/issues/3026
     struct = msgspec.defstruct(
@@ -717,7 +663,7 @@ def test_msgspec_dto_copies_constraints(
 
     @post(
         "/",
-        dto=Annotated[MsgspecDTO[struct], DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)],  # type: ignore[arg-type, valid-type]
+        dto=Annotated[MsgspecDTO[struct], DTOConfig()],  # type: ignore[arg-type, valid-type]
         signature_namespace={"struct": struct},
     )
     def handler(data: JSONBody[struct]) -> None:  # type: ignore[valid-type]
@@ -743,9 +689,7 @@ def test_msgspec_dto_dont_copy_length_constraint_for_partial_dto() -> None:
         assert client.post("/", json={"bar": "1", "baz": "123"}).status_code == 201
 
 
-def test_openapi_schema_for_type_with_custom_generic_type(
-    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
-) -> None:
+def test_openapi_schema_for_type_with_custom_generic_type(create_module: Callable[[str], ModuleType]) -> None:
     module = create_module(
         """
 from dataclasses import dataclass
@@ -794,7 +738,7 @@ app = Litestar(route_handlers=[get_users])
 
 
 def test_openapi_schema_for_type_with_litestar_response_generic_type(
-    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+    create_module: Callable[[str], ModuleType],
 ) -> None:
     module = create_module("""
 from dataclasses import dataclass

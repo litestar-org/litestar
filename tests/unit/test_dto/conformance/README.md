@@ -29,8 +29,6 @@ The test asserts that the cell still fails with exactly this text and then repor
 A cell that fails differently, a cell that conforms while it is still listed, and a key that names no
 cell all fail the suite.
 
-A key ending in `@codegen` or `@interp` applies to one DTO backend; a key without suffix applies to both.
-
 ## Flipping a cell
 
 1. Fix the behaviour.

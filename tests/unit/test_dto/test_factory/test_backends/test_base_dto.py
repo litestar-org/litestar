@@ -80,11 +80,9 @@ def fx_field_definitions(data_model_type: type[Model]) -> list[DTOFieldDefinitio
 def fx_backend(
     data_model_type: type[Model],
     field_definitions: list[DTOFieldDefinition],
-    backend_cls: type[DTOBackend],
-    use_experimental_dto_backend: bool,
 ) -> DTOBackend:
     class _Factory(DataclassDTO):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+        config = DTOConfig()
 
         @classmethod
         def generate_field_definitions(
@@ -92,7 +90,7 @@ def fx_backend(
         ) -> Generator[DTOFieldDefinition, None, None]:
             yield from field_definitions
 
-    class _Backend(backend_cls):  # type: ignore[valid-type,misc]
+    class _Backend(DTOBackend):
         def create_transfer_model_type(
             self,
             model_name: str,
