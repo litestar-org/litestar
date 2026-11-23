@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Union
+from typing import Annotated, Any, Union
 
 import pytest
-from msgspec import Struct
+from msgspec import Meta, Struct
 
 from litestar.dto import DTOField
 from litestar.dto._backend import _create_transfer_model_type_annotation, _should_mark_private
@@ -15,6 +15,7 @@ from litestar.dto._types import (
     NestedFieldInfo,
     SimpleType,
     TupleType,
+    UnionType,
 )
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
@@ -127,6 +128,85 @@ def test_create_transfer_model_type_annotation_unexpected_transfer_type() -> Non
     transfer_type = CompositeType(field_definition=FieldDefinition.from_annotation(Union[str, int]), has_nested=False)
     with pytest.raises(RuntimeError):
         _create_transfer_model_type_annotation(transfer_type=transfer_type)
+
+
+def _transfer_type(field_definition: FieldDefinition) -> CompositeType | SimpleType:
+    if field_definition.annotation is DataModel:
+        return SimpleType(
+            field_definition=field_definition,
+            nested_field_info=NestedFieldInfo(model=TransferModel, field_definitions=()),
+        )
+    inner_types = tuple(_transfer_type(t) for t in field_definition.inner_types)
+    if field_definition.is_union:
+        return UnionType(field_definition=field_definition, inner_types=inner_types, has_nested=False)
+    if field_definition.is_mapping:
+        return MappingType(
+            field_definition=field_definition, key_type=inner_types[0], value_type=inner_types[1], has_nested=False
+        )
+    if field_definition.is_tuple:
+        return TupleType(field_definition=field_definition, inner_types=inner_types, has_nested=False)
+    if field_definition.is_non_string_collection:
+        return CollectionType(field_definition=field_definition, inner_type=inner_types[0], has_nested=False)
+    return SimpleType(field_definition=field_definition, nested_field_info=None)
+
+
+@pytest.mark.parametrize(
+    "annotation, expected",
+    [
+        (list[Annotated[str, Meta(min_length=5)]], list[Annotated[str, Meta(min_length=5)]]),
+        (
+            dict[Annotated[str, Meta(min_length=5)], Annotated[int, Meta(ge=1)]],
+            dict[Annotated[str, Meta(min_length=5)], Annotated[int, Meta(ge=1)]],
+        ),
+        (tuple[Annotated[str, Meta(min_length=5)], int], tuple[Annotated[str, Meta(min_length=5)], int]),
+        (Union[Annotated[str, Meta(min_length=5)], int], Union[Annotated[str, Meta(min_length=5)], int]),
+        (list[Annotated[int, Meta(ge=1), Meta(le=5)]], list[Annotated[int, Meta(ge=1), Meta(le=5)]]),
+        (
+            list[Annotated[list[Annotated[int, Meta(ge=1)]], Meta(min_length=1)]],
+            list[Annotated[list[Annotated[int, Meta(ge=1)]], Meta(min_length=1)]],
+        ),
+        (list[Annotated[DataModel, Meta(description="d")]], list[Annotated[TransferModel, Meta(description="d")]]),
+    ],
+)
+def test_create_transfer_model_type_annotation_keeps_member_meta(annotation: Any, expected: Any) -> None:
+    transfer_type = _transfer_type(FieldDefinition.from_annotation(annotation))
+    assert _create_transfer_model_type_annotation(transfer_type) == expected
+
+
+@pytest.mark.parametrize(
+    "annotation, expected",
+    [
+        (list[Annotated[str, Meta(min_length=5)]], list[str]),
+        (dict[Annotated[str, Meta(min_length=5)], Annotated[int, Meta(ge=1)]], dict[str, int]),
+        (tuple[Annotated[str, Meta(min_length=5)], int], tuple[str, int]),
+        (Union[Annotated[str, Meta(min_length=5)], int], Union[str, int]),
+    ],
+)
+def test_create_transfer_model_type_annotation_without_passthrough_drops_member_meta(
+    annotation: Any, expected: Any
+) -> None:
+    transfer_type = _transfer_type(FieldDefinition.from_annotation(annotation))
+    assert _create_transfer_model_type_annotation(transfer_type, passthrough_constraints=False) == expected
+
+
+@pytest.mark.parametrize(
+    "annotation, is_data_field, expected",
+    [
+        (
+            list[Annotated[int, Meta(min_length=1, description="d")]],
+            True,
+            list[Annotated[int, Meta(min_length=1, description="d")]],
+        ),
+        (list[Annotated[int, Meta(min_length=1, description="d")]], False, list[Annotated[int, Meta(description="d")]]),
+        (list[Annotated[int, Meta(min_length=1)]], False, list[int]),
+        (list[Annotated[str, Meta(min_length=5)]], False, list[Annotated[str, Meta(min_length=5)]]),
+    ],
+)
+def test_create_transfer_model_type_annotation_return_direction_keeps_schema_attributes_only(
+    annotation: Any, is_data_field: bool, expected: Any
+) -> None:
+    transfer_type = _transfer_type(FieldDefinition.from_annotation(annotation))
+    assert _create_transfer_model_type_annotation(transfer_type, is_data_field=is_data_field) == expected
 
 
 def test_should_mark_private_underscore_fields_private_true() -> None:

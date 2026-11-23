@@ -234,6 +234,7 @@ class DTOBackend:
             field_definitions=field_definitions,
             rename_strategy=self.dto_factory.config.rename_strategy,
             forbid_unknown_fields=self.dto_factory.config.forbid_unknown_fields,
+            is_data_field=self.is_data_field,
         )
         setattr(struct, "__schema_name__", struct_name)
         return struct
@@ -600,6 +601,7 @@ def _create_struct_for_field_definitions(
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     rename_strategy: RenameStrategy | dict[str, str] | None,
     forbid_unknown_fields: bool,
+    is_data_field: bool = True,
 ) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, type]] = []
 
@@ -607,7 +609,9 @@ def _create_struct_for_field_definitions(
         if field_definition.is_excluded:
             continue
 
-        field_type = _create_transfer_model_type_annotation(field_definition.transfer_type)
+        field_type = _create_bare_transfer_model_type_annotation(
+            field_definition.transfer_type, field_definition.passthrough_constraints, is_data_field
+        )
         if field_definition.is_partial:
             field_type = Union[field_type, UnsetType]
 
@@ -703,51 +707,109 @@ def _should_exclude_field(
     return not is_data_field and field_definition.dto_field.mark is Mark.WRITE_ONLY
 
 
-def _create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:
+_SCHEMA_META_ATTRIBUTES: Final = ("title", "description", "examples", "extra_json_schema", "extra")
+
+
+def _constraints_for_field_definition(field_definition: FieldDefinition) -> tuple[msgspec.Meta, ...]:
+    return tuple(m for m in field_definition.metadata if isinstance(m, msgspec.Meta))
+
+
+def _schema_only_constraints(constraints: tuple[msgspec.Meta, ...]) -> tuple[msgspec.Meta, ...]:
+    return tuple(
+        msgspec.Meta(**schema_attributes)
+        for meta in constraints
+        if (
+            schema_attributes := {
+                name: value for name in _SCHEMA_META_ATTRIBUTES if (value := getattr(meta, name)) is not None
+            }
+        )
+    )
+
+
+def _create_transfer_model_type_annotation(
+    transfer_type: TransferType, passthrough_constraints: bool = True, is_data_field: bool = True
+) -> Any:
     """Create a type annotation for a transfer model.
 
     Uses the parsed type that originates from the data model and the transfer model generated to represent a nested
     type to reconstruct the type annotation for the transfer model.
     """
+    annotation = _create_bare_transfer_model_type_annotation(transfer_type, passthrough_constraints, is_data_field)
+    if not passthrough_constraints or not (
+        constraints := _constraints_for_field_definition(transfer_type.field_definition)
+    ):
+        return annotation
+    constrained: Any = Annotated[(annotation, *constraints)]
+    if is_data_field:
+        return constrained
+    try:
+        msgspec.json.Decoder(constrained)
+    except TypeError:
+        schema_only = _schema_only_constraints(constraints)
+        return Annotated[(annotation, *schema_only)] if schema_only else annotation
+    return constrained
+
+
+def _create_bare_transfer_model_type_annotation(
+    transfer_type: TransferType, passthrough_constraints: bool, is_data_field: bool = True
+) -> Any:
     if isinstance(transfer_type, SimpleType):
         if transfer_type.nested_field_info:
             return transfer_type.nested_field_info.model
         return transfer_type.field_definition.annotation
 
     if isinstance(transfer_type, CollectionType):
-        return _create_transfer_model_collection_type(transfer_type)
+        return _create_transfer_model_collection_type(transfer_type, passthrough_constraints, is_data_field)
 
     if isinstance(transfer_type, MappingType):
-        return _create_transfer_model_mapping_type(transfer_type)
+        return _create_transfer_model_mapping_type(transfer_type, passthrough_constraints, is_data_field)
 
     if isinstance(transfer_type, TupleType):
-        return _create_transfer_model_tuple_type(transfer_type)
+        return _create_transfer_model_tuple_type(transfer_type, passthrough_constraints, is_data_field)
 
     if isinstance(transfer_type, UnionType):
-        return _create_transfer_model_union_type(transfer_type)
+        return _create_transfer_model_union_type(transfer_type, passthrough_constraints, is_data_field)
 
     raise RuntimeError(f"Unexpected transfer type: {type(transfer_type)}")
 
 
-def _create_transfer_model_collection_type(transfer_type: CollectionType) -> Any:
+def _create_transfer_model_collection_type(
+    transfer_type: CollectionType, passthrough_constraints: bool, is_data_field: bool = True
+) -> Any:
     generic_collection_type = transfer_type.field_definition.safe_generic_origin
-    inner_type = _create_transfer_model_type_annotation(transfer_type.inner_type)
+    inner_type = _create_transfer_model_type_annotation(
+        transfer_type.inner_type, passthrough_constraints, is_data_field
+    )
     if transfer_type.field_definition.origin is tuple:
         return generic_collection_type[inner_type, ...]
     return generic_collection_type[inner_type]
 
 
-def _create_transfer_model_tuple_type(transfer_type: TupleType) -> Any:
-    inner_types = tuple(_create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
+def _create_transfer_model_tuple_type(
+    transfer_type: TupleType, passthrough_constraints: bool, is_data_field: bool = True
+) -> Any:
+    inner_types = tuple(
+        _create_transfer_model_type_annotation(t, passthrough_constraints, is_data_field)
+        for t in transfer_type.inner_types
+    )
     return transfer_type.field_definition.safe_generic_origin[inner_types]
 
 
-def _create_transfer_model_union_type(transfer_type: UnionType) -> Any:
-    inner_types = tuple(_create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
+def _create_transfer_model_union_type(
+    transfer_type: UnionType, passthrough_constraints: bool, is_data_field: bool = True
+) -> Any:
+    inner_types = tuple(
+        _create_transfer_model_type_annotation(t, passthrough_constraints, is_data_field)
+        for t in transfer_type.inner_types
+    )
     return transfer_type.field_definition.safe_generic_origin[inner_types]
 
 
-def _create_transfer_model_mapping_type(transfer_type: MappingType) -> Any:
-    key_type = _create_transfer_model_type_annotation(transfer_type.key_type)
-    value_type = _create_transfer_model_type_annotation(transfer_type.value_type)
+def _create_transfer_model_mapping_type(
+    transfer_type: MappingType, passthrough_constraints: bool, is_data_field: bool = True
+) -> Any:
+    key_type = _create_transfer_model_type_annotation(transfer_type.key_type, passthrough_constraints, is_data_field)
+    value_type = _create_transfer_model_type_annotation(
+        transfer_type.value_type, passthrough_constraints, is_data_field
+    )
     return transfer_type.field_definition.safe_generic_origin[key_type, value_type]
