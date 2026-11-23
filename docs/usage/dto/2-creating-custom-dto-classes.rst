@@ -24,3 +24,28 @@ the model fields.
 
 This method receives a :class:`FieldDefinition<litestar.typing.FieldDefinition>` instance and it should return a boolean
 indicating whether the field is a nested model field.
+
+Deprecated entry points
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. deprecated:: 3.0
+    :meth:`AbstractDTO.__init__ <litestar.dto.base_dto.AbstractDTO.__init__>`,
+    :meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
+    :meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
+    :meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type` and
+    :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` are deprecated and will be removed in 4.0.
+    :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` is deprecated and keeps working for tools that
+    pass ``handler.handler_id``.
+
+A DTO is applied through a plan that is built when its route handler is registered, and a DTO class is not
+instantiated per request. A class that overrides one of the deprecated methods is still called through it, and a
+deprecation warning is emitted when the route handler is registered.
+
+The two abstract methods above and the class-level hooks
+:meth:`~litestar.dto.base_dto.AbstractDTO.get_config_for_model_type`,
+:attr:`~litestar.dto.base_dto.AbstractDTO.attribute_accessor`,
+:meth:`~litestar.dto.base_dto.AbstractDTO.get_model_type_hints`,
+:meth:`~litestar.dto.base_dto.AbstractDTO.get_model_namespace`,
+:meth:`~litestar.dto.base_dto.AbstractDTO.get_property_fields`,
+:meth:`~litestar.dto.base_dto.AbstractDTO.resolve_model_type` and
+:meth:`~litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field` remain the extension surface.

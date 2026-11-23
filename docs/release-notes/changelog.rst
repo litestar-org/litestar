@@ -170,6 +170,49 @@
         constraints of a parameter are included in the OpenAPI schema, but not applied
         to the value of a request.
 
+    .. change:: DTO: Build one frozen DTO plan per route handler
+        :type: misc
+
+        DTO backends are now created once per route handler when the handler is
+        registered and stored on the handler, instead of in a process-wide dictionary
+        keyed by ``handler_id``. A handler can no longer be served the backend of
+        another handler, and no DTO instance is created per request.
+
+        The following members of :class:`~litestar.dto.base_dto.AbstractDTO` are
+        deprecated and will be removed in 4.0: ``__init__``,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` and
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. A DTO class
+        that overrides one of them is still called through it, and calling them
+        directly keeps working.
+
+        No public API is removed. Code that relied on the following behaviour needs
+        to change:
+
+        - :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` finds the
+          backends of a registered handler through the object returned by
+          ``handler.handler_id``. A copy of that identifier, such as
+          ``str(handler.handler_id)``, an f-string or a value read back from
+          serialized data, raises :exc:`~litestar.exceptions.dto_exceptions.DTOFactoryException`.
+        - ``handler.handler_id`` is a :class:`str` subclass. ``msgspec.json.encode``
+          rejects it; pass ``str(handler.handler_id)``. Pickling or deep-copying it
+          yields a plain :class:`str`.
+        - A DTO class that overrides
+          :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition`
+          must create its backend by calling the base method. A class that stores
+          backends in the private ``_dto_backends`` attribute itself raises
+          :exc:`~litestar.exceptions.dto_exceptions.DTOFactoryException` when its
+          handler is registered.
+        - Backends created by calling
+          :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition`
+          directly are kept per DTO class and are no longer shared between DTO
+          classes.
+        - The ``parsed_data_field`` of a websocket listener no longer carries a body
+          marker. :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`
+          treats it as the received data only when it is given that very object.
+
     .. change:: DTO: Identify the data a handler receives through its body marker
         :type: misc
         :breaking:
