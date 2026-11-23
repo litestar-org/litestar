@@ -160,6 +160,20 @@ def _truncated(value: Any, depth: int) -> Any:
     }
 
 
+def _received(sent: dict[str, Any], default: dict[str, Any], depth: int) -> dict[str, Any]:
+    if "down" not in sent:
+        return sent
+    if depth == 0:
+        return {**sent, "down": default["down"], "maybe": None, "many": []}
+    nested = default["down"]
+    return {
+        **sent,
+        "down": _received(sent["down"], nested, depth - 1),
+        "maybe": _received(sent["maybe"], nested, depth - 1),
+        "many": [_received(item, nested, depth - 1) for item in sent["many"]],
+    }
+
+
 @pytest.mark.parametrize("depth", [0, 1, 2, 3])
 def test_fields_beyond_max_nested_depth_are_absent_from_responses(
     depth: int, codegen: bool, distinct: Distinct
@@ -176,7 +190,6 @@ def test_fields_beyond_max_nested_depth_are_absent_from_responses(
 
     assert response.status_code == 200
     assert response.json() == _truncated(msgspec.to_builtins(_deep("leak")), depth)
-    assert {int(level) for level in re.findall(r"leak-(\d)", response.text)} == set(range(depth + 1))
 
 
 @pytest.mark.parametrize("depth", [0, 1, 2, 3])
@@ -192,6 +205,7 @@ def test_fields_beyond_max_nested_depth_are_ignored_in_requests(depth: int, code
         response = test_client.post("/", json=msgspec.to_builtins(_deep("sent")))
 
     assert response.status_code == 201
+    assert response.json() == _received(dataclasses.asdict(_deep("sent")), dataclasses.asdict(Level0()), depth)
     assert {int(level) for level in re.findall(r"sent-(\d)", response.text)} == set(range(depth + 1))
 
 

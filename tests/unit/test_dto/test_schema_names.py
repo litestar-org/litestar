@@ -100,8 +100,9 @@ QUALIFIED_SINGLE: dict[str, Any] = {
 
 def describe_in_fresh_process(app_id: str, builds: int = 1) -> Any:
     result = subprocess.run(
-        [sys.executable, "-c", SCRIPT, app_id, str(builds)], cwd=ROOT, capture_output=True, text=True, check=True
+        [sys.executable, "-c", SCRIPT, app_id, str(builds)], cwd=ROOT, capture_output=True, text=True
     )
+    assert result.returncode == 0, result.stderr
     return json.loads(result.stdout)
 
 
