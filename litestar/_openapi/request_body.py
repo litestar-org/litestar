@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.schema_generation import SchemaCreator
+from litestar.dto._plan import create_dto_openapi_schema
 from litestar.enums import RequestEncodingType
 from litestar.openapi.spec.media_type import OpenAPIMediaType
 from litestar.openapi.spec.request_body import RequestBody
@@ -13,14 +14,13 @@ __all__ = ("create_request_body",)
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
-    from litestar.dto import AbstractDTO
+    from litestar.handlers.base import BaseRouteHandler
     from litestar.typing import FieldDefinition
 
 
 def create_request_body(
     context: OpenAPIContext,
-    handler_id: str,
-    resolved_data_dto: type[AbstractDTO] | None,
+    route_handler: BaseRouteHandler,
     data_field: FieldDefinition,
     signature_namespace: dict[str, Any] | None = None,
 ) -> RequestBody:
@@ -28,8 +28,7 @@ def create_request_body(
 
     Args:
         context: The OpenAPIContext instance.
-        handler_id: The handler id.
-        resolved_data_dto: The resolved data dto.
+        route_handler: The route handler.
         data_field: The data field.
         signature_namespace: Additional names for forward reference resolution.
 
@@ -43,12 +42,8 @@ def create_request_body(
     if isinstance(data_field.kwarg_definition, BodyKwarg) and data_field.kwarg_definition.media_type:
         media_type = data_field.kwarg_definition.media_type
 
-    if resolved_data_dto:
-        schema = resolved_data_dto.create_openapi_schema(
-            field_definition=data_field,
-            handler_id=handler_id,
-            schema_creator=schema_creator,
-        )
+    if (plan := route_handler._dto_plan) is not None and plan.data is not None:
+        schema = create_dto_openapi_schema(plan.data, data_field, route_handler, schema_creator)
     else:
         schema = schema_creator.for_field_definition(data_field)
 
