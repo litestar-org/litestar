@@ -433,7 +433,7 @@ class TransferFunctionFactory:
         self._add_stmt(f"{local_dict_name} = {{}}")
 
         if field_definitions := tuple(f for f in field_definitions if self.is_data_field or not f.is_excluded):
-            if len(field_definitions) > 1 and ("." in source_instance_name or "[" in source_instance_name):
+            if len(field_definitions) > 1 and not source_instance_name.isidentifier():
                 # If there's more than one field we have to access, we check if it is
                 # nested. If it is nested, we assign it to a local variable to avoid
                 # repeated lookups. This is only a small performance improvement for
