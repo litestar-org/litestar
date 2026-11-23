@@ -7,9 +7,7 @@ import typing
 from abc import abstractmethod
 from collections.abc import Collection
 from inspect import getmodule
-from typing import TYPE_CHECKING, Generic, NotRequired, TypeVar, get_type_hints
-
-from typing_extensions import TypedDict
+from typing import TYPE_CHECKING, Generic, TypeVar, get_type_hints
 
 from litestar.dto._plan import (
     _direct_direction,
@@ -27,6 +25,7 @@ from litestar.params import BodyKwarg
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
 from litestar.typing import FieldDefinition
+from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
@@ -46,11 +45,6 @@ __all__ = ("AbstractDTO",)
 T = TypeVar("T")
 
 
-class _BackendDict(TypedDict):
-    data_backend: NotRequired[DTOBackend]
-    return_backend: NotRequired[DTOBackend]
-
-
 class AbstractDTO(Generic[T]):
     """Base class for DTO types."""
 
@@ -63,11 +57,15 @@ class AbstractDTO(Generic[T]):
     attribute_accessor: Callable[[object, str], Any] = getattr
     """:func:`getattr` like callable to access attributes on the data source"""
 
-    _dto_backends: ClassVar[dict[str, _BackendDict]] = {}
+    _direct_backends: ClassVar[dict[str, dict[bool, DTOBackend]]]
     __schema_name__: ClassVar[None | str] = None
 
     def __init__(self, asgi_connection: ASGIConnection) -> None:
         """Create an AbstractDTOFactory type.
+
+        .. deprecated:: 3.0
+            A DTO is applied through the plan of its route handler and DTO classes are no longer instantiated per
+            connection. Will be removed in 4.0.
 
         Args:
             asgi_connection: A :class:`ASGIConnection <litestar.connection.base.ASGIConnection>` instance.
@@ -93,7 +91,7 @@ class AbstractDTO(Generic[T]):
                 return cls
             config = cls.config if hasattr(cls, "config") else DTOConfig()
 
-        cls_dict: dict[str, Any] = {"config": config, "_type_backend_map": {}, "_handler_backend_map": {}}
+        cls_dict: dict[str, Any] = {"config": config}
         if not field_definition.is_type_var:
             cls_dict.update(model_type=field_definition.annotation)
 
@@ -118,18 +116,35 @@ class AbstractDTO(Generic[T]):
         return config
 
     def decode_builtins(self, value: dict[str, Any]) -> Any:
-        """Decode a dictionary of Python values into an the DTO's datatype."""
+        """Decode a dictionary of Python values into an the DTO's datatype.
 
+        .. deprecated:: 3.0
+            Will be removed in 4.0. A class that overrides it is still called for every request.
+        """
+        if type(self).decode_builtins is AbstractDTO.decode_builtins:
+            _warn_instance_method("decode_builtins")
         direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=True, dto=type(self))
         return type(self)._wrap_decoder(direction.backend.populate_data_from_builtins)(value, self.asgi_connection)
 
     def decode_bytes(self, value: bytes) -> Any:
-        """Decode a byte string into an the DTO's datatype."""
+        """Decode a byte string into an the DTO's datatype.
 
+        .. deprecated:: 3.0
+            Will be removed in 4.0. A class that overrides it is still called for every request.
+        """
+        if type(self).decode_bytes is AbstractDTO.decode_bytes:
+            _warn_instance_method("decode_bytes")
         direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=True, dto=type(self))
         return type(self)._wrap_decoder(direction.backend.populate_data_from_raw)(value, self.asgi_connection)
 
     def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
+        """Encode data into the DTO's transfer type.
+
+        .. deprecated:: 3.0
+            Will be removed in 4.0. A class that overrides it is still called for every request.
+        """
+        if type(self).data_to_encodable_type is AbstractDTO.data_to_encodable_type:
+            _warn_instance_method("data_to_encodable_type")
         direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=False, dto=type(self))
         return direction.backend.encode_data(data)
 
@@ -187,6 +202,10 @@ class AbstractDTO(Generic[T]):
     ) -> None:
         """Creates a DTO subclass for a field definition.
 
+        .. deprecated:: 3.0
+            Backends are created when a route handler is registered. Will be removed in 4.0. A class that overrides
+            it is still called when a route handler is registered and must call this method to create its backend.
+
         Args:
             field_definition: A :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance. Declared as a
                 body, e.g. ``JSONBody[Model]``, it is the data the handler receives, otherwise the data it returns.
@@ -209,19 +228,31 @@ class AbstractDTO(Generic[T]):
             )
             return
 
-        backend_context = cls._dto_backends.setdefault(str(handler_id), {})
+        warn_deprecation(
+            "3.0",
+            "AbstractDTO.create_for_field_definition",
+            "classmethod",
+            removal_in="4.0",
+            info="Backends are created when a route handler is registered.",
+            stacklevel=3,
+        )
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
-        key = "data_backend" if is_data_field else "return_backend"
-        if key not in backend_context:
-            backend_context[key] = create_backend(  # type: ignore[literal-required]
-                cls, field_definition, is_data_field=is_data_field, handler_id=str(handler_id), backend_cls=backend_cls
-            )
+        backend = create_backend(
+            cls, field_definition, is_data_field=is_data_field, handler_id=str(handler_id), backend_cls=backend_cls
+        )
+        if "_direct_backends" not in vars(cls):
+            cls._direct_backends = {}
+        cls._direct_backends.setdefault(str(handler_id), {})[is_data_field] = backend
 
     @classmethod
     def create_openapi_schema(
         cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
     ) -> Reference | Schema:
         """Create an OpenAPI request body.
+
+        .. deprecated:: 3.0
+            Will be removed in 4.0. It keeps working for a ``handler_id`` that is the object returned by
+            ``handler.handler_id``.
 
         Args:
             field_definition: A parsed type annotation that represents the annotation used on the handler. Declared
@@ -401,5 +432,17 @@ class AbstractDTO(Generic[T]):
 
 
 def _get_direct_backend(dto: type[AbstractDTO[Any]], handler_id: str, is_data_field: bool) -> DTOBackend | None:
-    backends = dto._dto_backends.get(str(handler_id), {})
-    return backends.get("data_backend") if is_data_field else backends.get("return_backend")
+    direct_backends: dict[str, dict[bool, DTOBackend]] = getattr(dto, "_direct_backends", {})
+    return direct_backends.get(str(handler_id), {}).get(is_data_field)
+
+
+def _warn_instance_method(name: str) -> None:
+    warn_deprecation(
+        "3.0",
+        f"AbstractDTO.{name}",
+        "method",
+        removal_in="4.0",
+        info="A DTO is applied through the plan of its route handler; DTO classes are no longer instantiated per "
+        "connection.",
+        stacklevel=4,
+    )

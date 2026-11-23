@@ -28,6 +28,7 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, LitestarException, LitestarWarning
 from litestar.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketListenerRouteHandler, websocket_stream
 from litestar.openapi.spec import Reference, Schema
+from litestar.openapi.spec.enums import OpenAPIType
 from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.serialization import encode_json
@@ -563,6 +564,13 @@ def test_direct_create_for_field_definition_then_shims() -> None:
     dto.create_for_field_definition(field_definition, handler_id="direct")
 
     assert openapi_ref(dto, field_definition, "direct").endswith("ModelRequestBody")
+
+    list_field_definition = FieldDefinition.from_annotation(JSONBody[list[Model]])
+    dto.create_for_field_definition(list_field_definition, handler_id="direct")
+    replaced = dto.create_openapi_schema(list_field_definition, "direct", SchemaCreator(plugins=openapi_schema_plugins))
+
+    assert isinstance(replaced, Schema)
+    assert replaced.type == OpenAPIType.ARRAY
 
 
 def _operation_refs(app: Litestar) -> tuple[str, str]:
