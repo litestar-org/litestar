@@ -11,14 +11,13 @@ from typing import TYPE_CHECKING, Generic, NotRequired, TypeVar, get_type_hints
 
 from typing_extensions import TypedDict
 
-from litestar.dto._backend import DTOBackend
+from litestar.dto._plan import build_schema_annotation, create_backend
 from litestar.dto.config import DTOConfig
 from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
 from litestar.enums import RequestEncodingType
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.params import BodyKwarg
-from litestar.response.base import Response
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
 from litestar.typing import FieldDefinition
@@ -30,6 +29,7 @@ if TYPE_CHECKING:
 
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.connection import ASGIConnection
+    from litestar.dto._backend import DTOBackend
     from litestar.dto.data_structures import DTOFieldDefinition
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
@@ -184,37 +184,12 @@ class AbstractDTO(Generic[T]):
             None
         """
 
-        if handler_id not in cls._dto_backends:
-            cls._dto_backends[handler_id] = {}
-
-        backend_context = cls._dto_backends[handler_id]
+        backend_context = cls._dto_backends.setdefault(handler_id, {})
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
         key = "data_backend" if is_data_field else "return_backend"
-
         if key not in backend_context:
-            model_type_field_definition = cls.resolve_model_type(field_definition=field_definition)
-            wrapper_attribute_name: str | None = None
-
-            if not model_type_field_definition.is_subclass_of(cls.model_type):
-                if resolved_generic_result := cls.resolve_generic_wrapper_type(
-                    field_definition=model_type_field_definition
-                ):
-                    model_type_field_definition, field_definition, wrapper_attribute_name = resolved_generic_result
-                else:
-                    raise InvalidAnnotationException(
-                        f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
-                    )
-
-            if backend_cls is None:
-                backend_cls = DTOBackend
-
-            backend_context[key] = backend_cls(  # type: ignore[literal-required]
-                dto_factory=cls,
-                field_definition=field_definition,
-                model_type=model_type_field_definition.annotation,
-                wrapper_attribute_name=wrapper_attribute_name,
-                is_data_field=is_data_field,
-                handler_id=handler_id,
+            backend_context[key] = create_backend(  # type: ignore[literal-required]
+                cls, field_definition, is_data_field=is_data_field, handler_id=handler_id, backend_cls=backend_cls
             )
 
     @classmethod
@@ -236,23 +211,11 @@ class AbstractDTO(Generic[T]):
         """
         key = "data_backend" if isinstance(field_definition.kwarg_definition, BodyKwarg) else "return_backend"
         backend = cls._dto_backends[handler_id][key]  # type: ignore[literal-required]
-
-        if backend.wrapper_attribute_name and not field_definition.is_subclass_of(Response):
-            # The DTO has been built for a handler that has a DTO supported type wrapped in a generic type.
-            #
-            # The backend doesn't receive the full annotation, only the type of the attribute on the outer type that
-            # holds the DTO supported type.
-            #
-            # This special casing rebuilds the outer generic type annotation with the original model replaced by the DTO
-            # generated transfer model type in the type arguments.
-            transfer_model = backend.transfer_model_type
-            generic_args = tuple(transfer_model if arg is cls.model_type else arg for arg in field_definition.args)
-            annotation = field_definition.safe_generic_origin[generic_args]
-        else:
-            annotation = backend.annotation
-
         return schema_creator.for_field_definition(
-            FieldDefinition.from_annotation(annotation, kwarg_definition=field_definition.kwarg_definition)
+            FieldDefinition.from_annotation(
+                build_schema_annotation(cls, backend, field_definition),
+                kwarg_definition=field_definition.kwarg_definition,
+            )
         )
 
     @classmethod

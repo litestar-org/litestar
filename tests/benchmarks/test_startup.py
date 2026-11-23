@@ -13,6 +13,7 @@ from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.di._route_handler import HandlerInjectionSetup, create_handler_injection_setup
 from litestar.dto import DataclassDTO
 from litestar.dto._backend import DTOBackend
+from litestar.dto._plan import create_backend
 from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.params import FromPath, FromQuery
@@ -101,14 +102,11 @@ def test_dto_backend_create(benchmark: BenchmarkFixture, reset_dto_backends: Non
 
     field_definition = FieldDefinition.from_annotation(list[Person])
 
-    def create() -> None:
-        PersonDTO._dto_backends.clear()
+    def create() -> DTOBackend:
         DTOBackend._seen_model_names = set()
-        PersonDTO.create_for_field_definition(field_definition, handler_id="bench")
+        return create_backend(PersonDTO, field_definition, is_data_field=False, handler_id="bench")
 
-    benchmark(create)
-    backend = PersonDTO._dto_backends["bench"].get("return_backend")
-    assert backend is not None
+    backend = benchmark(create)
     assert type(backend) is DTOBackend
 
 

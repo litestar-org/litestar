@@ -8,6 +8,7 @@ import pytest
 
 from litestar import Request
 from litestar.dto import DataclassDTO, DTOConfig
+from litestar.dto._plan import create_backend
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.params import JSONBody
 from litestar.typing import FieldDefinition
@@ -17,14 +18,7 @@ from . import Model
 if TYPE_CHECKING:
     from typing import Any
 
-    from litestar.dto._backend import DTOBackend
-
 T = TypeVar("T", bound=Model)
-
-
-def get_backend(dto_type: type[DataclassDTO[Any]]) -> DTOBackend:
-    value = next(iter(dto_type._dto_backends.values()))
-    return value["data_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
 
 def test_forward_referenced_type_argument_raises_exception() -> None:
@@ -110,8 +104,10 @@ async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
 def test_config_field_rename(asgi_connection: Request[Any, Any, Any]) -> None:
     config = DTOConfig(rename_fields={"a": "z"})
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.create_for_field_definition(FieldDefinition.from_annotation(JSONBody[Model]), handler_id="handler_id")
-    field_definitions = dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions  # pyright: ignore[reportTypedDictNotRequiredAccess]
+    backend = create_backend(
+        dto_type, FieldDefinition.from_annotation(JSONBody[Model]), is_data_field=True, handler_id="handler_id"
+    )
+    field_definitions = backend.parsed_field_definitions
     assert field_definitions[0].serialization_name == "z"
 
 
@@ -152,12 +148,10 @@ def test_sub_types_supported() -> None:
     class SubType(Model):
         c: int
 
-    dto_type.create_for_field_definition(
-        handler_id="handler_id", field_definition=FieldDefinition.from_annotation(JSONBody[SubType])
+    backend = create_backend(
+        dto_type, FieldDefinition.from_annotation(JSONBody[SubType]), is_data_field=True, handler_id="handler_id"
     )
-    assert (
-        dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions[-1].name == "c"  # pyright: ignore[reportTypedDictNotRequiredAccess]
-    )
+    assert backend.parsed_field_definitions[-1].name == "c"
 
 
 def test_get_config_for_model_type() -> None:
