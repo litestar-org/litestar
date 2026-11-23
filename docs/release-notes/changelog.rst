@@ -28,9 +28,9 @@
           model impossible to create from request data, as it already is when the mark
           is a :class:`~litestar.dto.field.Mark` member. Give the field a default.
 
-        It also fixes
-        ``DataclassDTO`` and ``MsgspecDTO`` requiring a model's properties in request
-        data: they are read-only and are no longer part of the inbound model.
+        It also fixes ``DataclassDTO`` and ``MsgspecDTO`` requiring a model's
+        properties in request data: they are read-only and are no longer part of the
+        inbound model.
 
     .. change:: Enforce ``Annotated`` constraints on every type a DTO rewrites
         :type: bugfix
@@ -39,42 +39,40 @@
         :issue: 4181, 4195, 5025, 5031, 5051
 
         Fix DTOs silently dropping, or rejecting at request time, constraints declared
-        with ``msgspec.Meta`` or ``annotated_types`` metadata. The transfer model now
-        keeps the metadata of every part of a field's type: the field itself, collection
-        items, mapping values, tuple members and union members, including
-        ``Optional[Annotated[str, Meta(pattern=...)]]``. With
+        with ``msgspec.Meta``, ``annotated_types`` metadata or Litestar parameter
+        definitions. The transfer model now keeps them on every part of a field's type:
+        the field itself, collection items, mapping keys and values, tuple members and
+        union members, including ``Optional[Annotated[str, Meta(pattern=...)]]``. With
         ``DTOConfig(partial=True)``, constraints, including ``min_length`` and
-        ``max_length``, apply to every value that is sent.
+        ``max_length``, apply to every value that is sent. Requests that violate such a
+        constraint were accepted before and now receive a ``400 Bad Request`` response.
+        Constraints from ``annotated_types`` metadata and parameter definitions are
+        enforced where msgspec can express them and, as before, not enforced where it
+        cannot.
 
-        Requests that violate such a constraint were accepted before and now receive a
-        ``400 Bad Request`` response, as they do for the same model without a DTO.
+        A ``msgspec.Meta`` in a position msgspec does not support, for example
+        ``Annotated[Optional[str], Meta(min_length=1)]``, was ignored by
+        ``DataclassDTO``. A DTO for inbound data now raises
+        :exc:`~litestar.exceptions.dto_exceptions.InvalidAnnotationException` at startup
+        and names the field; a ``DataclassDTO`` used only for returned data keeps
+        working. ``MsgspecDTO`` already failed at startup for such a model, whichever the
+        direction, and now raises the same exception. The same startup error replaces
+        the ``500`` response every request received for a DTO over a union of models
+        without tags. ``PydanticDTO`` and DTO classes that decode the request body
+        themselves are not checked.
 
-        A constraint in a position msgspec does not support, for example
-        ``Annotated[Optional[str], Meta(min_length=1)]``, is not moved to the member.
-        ``DataclassDTO`` previously ignored such a constraint and accepted the request;
-        a DTO for inbound data now raises
-        :exc:`~litestar.exceptions.dto_exceptions.InvalidAnnotationException` when the
-        application starts, until the constraint is attached to the member, as in
-        ``Optional[Annotated[str, Meta(min_length=1)]]``. ``MsgspecDTO`` already failed
-        at startup for this annotation and now raises the same exception type.
-
-        The same exception is raised at startup for any DTO for inbound data whose type
-        msgspec cannot decode, such as a field typed as a union of two models without
-        tags, where every request received a ``500`` response before. A DTO class that
-        overrides ``decode_bytes`` or ``decode_builtins`` is not checked.
-
-        DTOs used only for returned data are not affected: a constraint msgspec does
-        not support there is left out of the transfer model.
+        When a field carries both a ``msgspec.Meta`` and another constraint for the
+        same attribute, the ``Meta`` now wins; ``DataclassDTO`` enforced the other one.
 
         The OpenAPI schemas of DTO models now document these constraints
         (``minimum``, ``minLength``, ``pattern``, ``minItems``) on the properties
-        concerned; component names are unchanged.
+        concerned; component names are unchanged. The rules are described in
+        :ref:`usage/dto/1-abstract-dto:Constraints`.
 
-        Constraints declared with ``annotated_types`` metadata are enforced by the DTO
-        in the same positions, although msgspec alone ignores them.
-
-        Supersedes the pull requests 4988, 5033 and 5052 by NoiceHax, happykust and
-        blockgroot.
+        Supersedes `#4988 <https://github.com/litestar-org/litestar/pull/4988>`_
+        (NoiceHax), `#5033 <https://github.com/litestar-org/litestar/pull/5033>`_
+        (happykust) and `#5052 <https://github.com/litestar-org/litestar/pull/5052>`_
+        (blockgroot).
 
     .. change:: Apply DTO field filtering to nested models in fixed-length tuples
         :type: bugfix
