@@ -166,3 +166,24 @@ def test_excluded_field_name_not_valid_as_string_literal(excluded_name: str) -> 
 
     assert response.status_code == HTTP_201_CREATED
     assert response.json() == {"other": 1, excluded_name: 0}
+
+
+class PInner(pydantic_v2.BaseModel):
+    a: int
+    b: str = "b"
+
+
+class POuter(pydantic_v2.BaseModel):
+    pair: tuple[PInner, int]
+
+
+def test_pydantic_dto_fixed_length_tuple_of_models() -> None:
+    @post(dto=PydanticDTO[Annotated[POuter, DTOConfig(exclude={"pair.0.b"})]])
+    def handler(data: JSONBody[POuter]) -> POuter:
+        return data
+
+    with create_test_client(handler) as client:
+        response = client.post("/", json={"pair": [{"a": 1}, 2]})
+
+    assert response.status_code == HTTP_201_CREATED
+    assert response.json() == {"pair": [{"a": 1}, 2]}

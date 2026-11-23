@@ -24,6 +24,7 @@ from litestar.dto._types import (
     SimpleType,
     TransferDTOFieldDefinition,
     TransferType,
+    TupleType,
     UnionType,
 )
 from litestar.utils.helpers import unique_name_for_scope
@@ -431,6 +432,25 @@ class TransferFunctionFactory:
                 return
 
             self._add_stmt(f"{assignment_target} = {origin_name}({source_value_name})")
+            return
+
+        if isinstance(transfer_type, TupleType) and transfer_type.has_nested:
+            origin_name = self._add_to_fn_globals("origin", transfer_type.field_definition.instantiable_origin)
+            transfer_fns_name = self._add_to_fn_globals(
+                "transfer_type_data_fns",
+                tuple(
+                    TransferFunctionFactory.create_transfer_type_data(
+                        is_data_field=self.is_data_field,
+                        transfer_type=inner_type,
+                        attribute_accessor=self.attribute_accessor,
+                        cache=self._cache,
+                    )
+                    for inner_type in transfer_type.inner_types
+                ),
+            )
+            self._add_stmt(
+                f"{assignment_target} = {origin_name}(fn(item) for fn, item in zip({transfer_fns_name}, {source_value_name}, strict=True))"
+            )
             return
 
         if isinstance(transfer_type, MappingType):
