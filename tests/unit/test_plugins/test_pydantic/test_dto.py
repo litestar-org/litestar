@@ -3,18 +3,21 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Annotated, Literal, Optional, cast
+from typing import TYPE_CHECKING, Annotated, Any, Literal, Optional, Union, cast
 
 import pydantic as pydantic_v2
 import pytest
+from msgspec import UnsetType
 from pydantic import AwareDatetime
 
 from litestar import Litestar, Request, post
 from litestar.dto import DTOConfig
-from litestar.params import JSONBody
+from litestar.dto._backend import DTOBackend
+from litestar.params import JSONBody, KwargDefinition
 from litestar.plugins.pydantic import PydanticDTO, _model_dump, _model_dump_json
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import create_test_client
+from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -187,3 +190,25 @@ def test_pydantic_dto_fixed_length_tuple_of_models() -> None:
 
     assert response.status_code == HTTP_201_CREATED
     assert response.json() == {"pair": [{"a": 1}, 2]}
+
+
+@pytest.mark.parametrize(
+    "partial, expected",
+    [
+        (False, Annotated[int, KwargDefinition(ge=1)]),
+        (True, Annotated[Union[int, UnsetType], KwargDefinition(ge=1)]),
+    ],
+)
+def test_transfer_model_field_annotations(partial: bool, expected: Any) -> None:
+    field_type: Any = Annotated[int, pydantic_v2.Field(ge=1)]
+    model = pydantic_v2.create_model("Model", f=(field_type, 1))
+    dto = type("ModelDTO", (PydanticDTO[model],), {"config": DTOConfig(partial=partial)})
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=dto,
+        field_definition=FieldDefinition.from_annotation(model),
+        model_type=model,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+    assert backend.transfer_model_type.__annotations__["f"] == expected

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import dataclasses
 from dataclasses import replace
 from typing import TYPE_CHECKING, Generic, TypeVar
 
@@ -50,8 +49,7 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
         for key, field_definition in cls.get_model_type_hints(model_type).items():
             if key not in inspect_fields:
                 continue
-            kwarg_definition, extra = kwarg_definition_from_field(inspect_fields[key])
-            field_definition = dataclasses.replace(field_definition, kwarg_definition=kwarg_definition)
+            _, extra = kwarg_definition_from_field(inspect_fields[key])
             field_definition.extra.update(extra)
             dto_field = extract_dto_field(field_definition, field_definition.extra)
             field_definition.extra.pop(DTO_FIELD_META_KEY, None)
