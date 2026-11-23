@@ -6,6 +6,91 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Honour ``DTOField`` marks given as a string
+        :type: bugfix
+        :breaking:
+        :pr: 5256
+
+        Fix a bug where a mark passed to :class:`~litestar.dto.field.DTOField` as a
+        string, for example ``Annotated[str, DTOField(mark="private")]``, was stored
+        unchanged and then ignored by the DTO: a ``"private"`` or ``"write-only"`` field
+        was returned in responses, and a ``"private"`` or ``"read-only"`` field was
+        accepted from request data. ``DTOField`` now converts the value to
+        :class:`~litestar.dto.field.Mark`, as :func:`~litestar.dto.field.dto_field`
+        always did, and raises :exc:`ValueError` for an unknown mark.
+
+        Fields marked this way are now excluded as documented, which changes the
+        payloads of applications that relied on the previous behaviour:
+
+        - with ``DTOConfig(forbid_unknown_fields=True)``, a client that still sends such
+          a field receives a ``400 Bad Request`` response;
+        - a ``"private"`` or ``"read-only"`` mark on a field without a default makes the
+          model impossible to create from request data, as it already is when the mark
+          is a :class:`~litestar.dto.field.Mark` member. Give the field a default.
+
+        It also fixes
+        ``DataclassDTO`` and ``MsgspecDTO`` requiring a model's properties in request
+        data: they are read-only and are no longer part of the inbound model.
+
+    .. change:: Enforce ``Annotated`` constraints on every type a DTO rewrites
+        :type: bugfix
+        :breaking:
+        :pr: 5256
+        :issue: 4181, 4195, 5025, 5031, 5051
+
+        Fix DTOs silently dropping, or rejecting at request time, constraints declared
+        with ``msgspec.Meta`` or ``annotated_types`` metadata. The transfer model now
+        keeps the metadata of every part of a field's type: the field itself, collection
+        items, mapping values, tuple members and union members, including
+        ``Optional[Annotated[str, Meta(pattern=...)]]``. With
+        ``DTOConfig(partial=True)``, constraints, including ``min_length`` and
+        ``max_length``, apply to every value that is sent.
+
+        Requests that violate such a constraint were accepted before and now receive a
+        ``400 Bad Request`` response, as they do for the same model without a DTO.
+
+        A constraint in a position msgspec does not support, for example
+        ``Annotated[Optional[str], Meta(min_length=1)]``, is not moved to the member.
+        ``DataclassDTO`` previously ignored such a constraint and accepted the request;
+        a DTO for inbound data now raises
+        :exc:`~litestar.exceptions.dto_exceptions.InvalidAnnotationException` when the
+        application starts, until the constraint is attached to the member, as in
+        ``Optional[Annotated[str, Meta(min_length=1)]]``. ``MsgspecDTO`` already failed
+        at startup for this annotation and now raises the same exception type.
+
+        The same exception is raised at startup for any DTO for inbound data whose type
+        msgspec cannot decode, such as a field typed as a union of two models without
+        tags, where every request received a ``500`` response before. A DTO class that
+        overrides ``decode_bytes`` or ``decode_builtins`` is not checked.
+
+        DTOs used only for returned data are not affected: a constraint msgspec does
+        not support there is left out of the transfer model.
+
+        The OpenAPI schemas of DTO models now document these constraints
+        (``minimum``, ``minLength``, ``pattern``, ``minItems``) on the properties
+        concerned; component names are unchanged.
+
+        Constraints declared with ``annotated_types`` metadata are enforced by the DTO
+        in the same positions, although msgspec alone ignores them.
+
+        Supersedes the pull requests 4988, 5033 and 5052 by NoiceHax, happykust and
+        blockgroot.
+
+    .. change:: Apply DTO field filtering to nested models in fixed-length tuples
+        :type: bugfix
+        :breaking:
+        :pr: 5216
+        :issue: 3342
+
+        Fix a bug where DTOs skipped nested models inside fixed-length tuple fields such
+        as ``tuple[Model, int]``, so excluded and private fields were returned in
+        responses, renaming was not applied, and handlers received the internal transfer
+        model instead of ``Model``.
+
+        A handler that returns a tuple whose length differs from its ``tuple[A, B]``
+        annotation now fails with a ``500`` response; the value was previously
+        serialized as returned.
+
     .. change:: DTO: The codegen backend is the only DTO backend
         :type: feature
         :breaking:
