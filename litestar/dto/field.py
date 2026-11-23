@@ -43,6 +43,10 @@ class DTOField:
     mark: Mark | Literal["read-only", "write-only", "private"] | None = None
     """Mark the field as read-only, or private."""
 
+    def __post_init__(self) -> None:
+        if self.mark is not None:
+            self.mark = Mark(self.mark)
+
 
 def dto_field(mark: Literal["read-only", "write-only", "private"] | Mark) -> dict[str, DTOField]:
     """Create a field metadata mapping.
