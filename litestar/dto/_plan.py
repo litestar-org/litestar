@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
 from litestar.dto._backend import DTOBackend
 from litestar.exceptions.dto_exceptions import DTOFactoryException, InvalidAnnotationException
@@ -120,7 +120,42 @@ def build_dto_plan(handler: BaseRouteHandler, app: Litestar) -> DTOPlan:
     if candidate and candidate.is_supported_model_type_field(return_field):
         return_ = _build_direction(candidate, return_field, is_data_field=False, handler=handler)
 
-    return DTOPlan(data=data, return_=return_, data_dto=data_dto)
+    return DTOPlan(
+        data=data,
+        return_=return_,
+        data_dto=data_dto,
+        decode_bytes=_create_decoder(data.dto, "decode_bytes", data.backend.populate_data_from_raw) if data else None,
+        decode_builtins=(
+            _create_decoder(data.dto, "decode_builtins", data.backend.populate_data_from_builtins) if data else None
+        ),
+        encode=_create_encoder(return_.dto, return_.backend) if return_ else None,
+    )
+
+
+def _create_decoder(
+    dto: type[AbstractDTO[Any]], name: Literal["decode_bytes", "decode_builtins"], backend_method: DecodeFn
+) -> DecodeFn:
+    from litestar.dto.base_dto import AbstractDTO
+
+    if getattr(dto, name) is getattr(AbstractDTO, name):
+        return dto._wrap_decoder(backend_method)
+    if name == "decode_bytes":
+        return lambda value, connection: dto(connection).decode_bytes(value)
+    return lambda value, connection: dto(connection).decode_builtins(value)
+
+
+def _create_encoder(dto: type[AbstractDTO[Any]], backend: DTOBackend) -> EncodeFn:
+    from litestar.dto.base_dto import AbstractDTO
+
+    if dto.data_to_encodable_type is not AbstractDTO.data_to_encodable_type:
+        return lambda data, connection: dto(connection).data_to_encodable_type(data)
+
+    encode_data = backend.encode_data
+
+    def encode(data: Any, connection: ASGIConnection[Any, Any, Any, Any]) -> LitestarEncodableType:
+        return encode_data(data)
+
+    return encode
 
 
 def _resolve_data_dto(handler: BaseRouteHandler, app: Litestar) -> type[AbstractDTO[Any]] | None:
@@ -187,6 +222,7 @@ def _build_direction(
             )
         backend = build.backend
 
+    backend._bind_handler(type_decoders=handler.type_decoders, default_deserializer=handler.default_deserializer)
     return DTODirectionPlan(
         dto=dto, backend=backend, schema_annotation=build_schema_annotation(dto, backend, field_definition)
     )

@@ -13,13 +13,14 @@ from msgspec import UnsetType
 from pydantic import AwareDatetime
 
 from litestar import Litestar, Request, post
-from litestar.dto import DTOConfig, MsgspecDTO
+from litestar.dto import AbstractDTO, DTOConfig, MsgspecDTO
 from litestar.dto._backend import DTOBackend
+from litestar.enums import RequestEncodingType
 from litestar.exceptions import LitestarDeprecationWarning
-from litestar.params import JSONBody, KwargDefinition
+from litestar.params import JSONBody, KwargDefinition, URLEncodedBody
 from litestar.plugins.pydantic import PydanticDTO, _model_dump, _model_dump_json
 from litestar.status_codes import HTTP_201_CREATED
-from litestar.testing import create_test_client
+from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -260,3 +261,83 @@ def test_pydantic_dto_over_union_of_models_is_not_checked_at_startup() -> None:
         pass
 
     Litestar(route_handlers=[create_pydantic_union_holder], openapi_config=None)
+
+
+def test_pydantic_dto_stays_exempt_from_startup_decoder_check() -> None:
+    @post("/", dto=PydanticDTO[PUnionHolder], return_dto=None)
+    async def handler(data: JSONBody[PUnionHolder]) -> None:
+        return None
+
+    Litestar(route_handlers=[handler], openapi_config=None)
+
+
+def test_pydantic_dto_does_not_override_instance_methods() -> None:
+    assert PydanticDTO.decode_bytes is AbstractDTO.decode_bytes
+    assert PydanticDTO.decode_builtins is AbstractDTO.decode_builtins
+
+
+class ShortFoo(pydantic_v2.BaseModel):
+    foo: str = pydantic_v2.Field(max_length=2)
+
+
+SHORT_FOO_ERRORS = [
+    {
+        "type": "string_too_long",
+        "loc": ["foo"],
+        "msg": "String should have at most 2 characters",
+        "input": "too long",
+        "ctx": {"max_length": 2},
+    }
+]
+
+
+def post_short_foo(client: TestClient[Any], path: str, body: str) -> Any:
+    payload = {"foo": "too long"}
+    if body == "json":
+        return client.post(path, json=payload)
+    if body == "msgpack":
+        return client.post(
+            path, content=msgspec.msgpack.encode(payload), headers={"content-type": RequestEncodingType.MESSAGEPACK}
+        )
+    return client.post(path, data=payload)
+
+
+@pytest.mark.parametrize("body", ["json", "msgpack", "url-encoded"])
+def test_validation_error_is_converted(body: str) -> None:
+    @post("/json", dto=PydanticDTO[ShortFoo])
+    async def json_handler(data: JSONBody[ShortFoo]) -> ShortFoo:
+        return data
+
+    @post("/url-encoded", dto=PydanticDTO[ShortFoo])
+    async def form_handler(data: URLEncodedBody[ShortFoo]) -> ShortFoo:
+        return data
+
+    with create_test_client([json_handler, form_handler], openapi_config=None) as client:
+        response = post_short_foo(client, "/url-encoded" if body == "url-encoded" else "/json", body)
+
+    extra = response.json()["extra"]
+    extra[0].pop("url")
+    assert response.status_code == 400
+    assert extra == SHORT_FOO_ERRORS
+
+
+def test_subclass_overriding_decode_bytes_keeps_conversion() -> None:
+    calls: list[bytes] = []
+
+    class RecordingPydanticDTO(PydanticDTO[ShortFoo]):
+        def decode_bytes(self, value: bytes) -> Any:
+            calls.append(value)
+            return super().decode_bytes(value)
+
+    @post("/json", dto=RecordingPydanticDTO)
+    async def handler(data: JSONBody[ShortFoo]) -> ShortFoo:
+        return data
+
+    with create_test_client([handler], openapi_config=None) as client:
+        response = post_short_foo(client, "/json", "json")
+
+    extra = response.json()["extra"]
+    extra[0].pop("url")
+    assert response.status_code == 400
+    assert extra == SHORT_FOO_ERRORS
+    assert len(calls) == 1

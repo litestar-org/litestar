@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     from litestar._request_parameters.declarations import RequestParameterDefinition
     from litestar.connection import ASGIConnection, Request
-    from litestar.dto import AbstractDTO
+    from litestar.dto._plan import DecodeFn, DTOPlan
     from litestar.typing import FieldDefinition
 
 __all__ = ("RequestParameterExtractor",)
@@ -122,7 +122,7 @@ async def _extract_multipart(
     body_kwarg_multipart_form_part_limit: int | None,
     field_definition: FieldDefinition,
     is_data_optional: bool,
-    data_dto: type[AbstractDTO] | None,
+    decode_builtins: DecodeFn | None,
 ) -> Any:
     multipart_form_part_limit = (
         body_kwarg_multipart_form_part_limit
@@ -157,8 +157,8 @@ async def _extract_multipart(
     if not form_values and is_data_optional:
         return None
 
-    if data_dto:
-        return data_dto(connection).decode_builtins(form_values)
+    if decode_builtins:
+        return decode_builtins(form_values, connection)
 
     for name, tp in field_definition.get_type_hints().items():
         value = form_values.get(name)
@@ -180,7 +180,7 @@ async def _extract_multipart(
 
 
 def create_multipart_extractor(
-    field_definition: FieldDefinition, body_kwarg: BodyKwarg, is_data_optional: bool, data_dto: type[AbstractDTO] | None
+    field_definition: FieldDefinition, body_kwarg: BodyKwarg, is_data_optional: bool, decode_builtins: DecodeFn | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
@@ -188,7 +188,7 @@ def create_multipart_extractor(
         field_definition: A FieldDefinition instance.
         body_kwarg: The body marker.
         is_data_optional: Boolean dictating whether the field is optional.
-        data_dto: A data DTO type, if configured for handler.
+        decode_builtins: The data DTO's decoder of builtins, if the handler has one.
 
     Returns:
         An extractor function.
@@ -197,7 +197,7 @@ def create_multipart_extractor(
         _extract_multipart,
         body_kwarg_multipart_form_part_limit=body_kwarg.multipart_form_part_limit,
         is_data_optional=is_data_optional,
-        data_dto=data_dto,
+        decode_builtins=decode_builtins,
         field_definition=field_definition,
     )
 
@@ -205,13 +205,13 @@ def create_multipart_extractor(
 
 
 def create_url_encoded_data_extractor(
-    is_data_optional: bool, data_dto: type[AbstractDTO] | None
+    is_data_optional: bool, decode_builtins: DecodeFn | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create extractor for url encoded form-data.
 
     Args:
         is_data_optional: Boolean dictating whether the field is optional.
-        data_dto: A data DTO type, if configured for handler.
+        decode_builtins: The data DTO's decoder of builtins, if the handler has one.
 
     Returns:
         An extractor function.
@@ -231,7 +231,7 @@ def create_url_encoded_data_extractor(
         if not form_values and is_data_optional:
             return None
 
-        return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
+        return decode_builtins(form_values, connection) if decode_builtins else form_values
 
     return cast(
         "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor
@@ -239,7 +239,7 @@ def create_url_encoded_data_extractor(
 
 
 def create_request_body_extractor(
-    field_definition: FieldDefinition, body_kwarg: BodyKwarg, is_data_optional: bool, data_dto: type[AbstractDTO] | None
+    field_definition: FieldDefinition, body_kwarg: BodyKwarg, is_data_optional: bool, dto_plan: DTOPlan | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create an extractor decoding a request's body by the media type of its body marker, or
     with its DTO.
@@ -248,31 +248,33 @@ def create_request_body_extractor(
         field_definition: The declaration of the body.
         body_kwarg: The body marker.
         is_data_optional: Boolean dictating whether the field is optional.
-        data_dto: A data DTO type, if configured for handler.
+        dto_plan: The handler's DTO plan, if it has one.
 
     Returns:
         An extractor function.
     """
     media_type = body_kwarg.media_type
+    decode_builtins = dto_plan.decode_builtins if dto_plan else None
+    decode_bytes = dto_plan.decode_bytes if dto_plan else None
 
     if media_type == RequestEncodingType.MULTI_PART:
         return create_multipart_extractor(
             field_definition=field_definition,
             body_kwarg=body_kwarg,
             is_data_optional=is_data_optional,
-            data_dto=data_dto,
+            decode_builtins=decode_builtins,
         )
     if media_type == RequestEncodingType.URL_ENCODED:
-        return create_url_encoded_data_extractor(is_data_optional=is_data_optional, data_dto=data_dto)
-    if data_dto:
-        return create_dto_extractor(data_dto=data_dto)
+        return create_url_encoded_data_extractor(is_data_optional=is_data_optional, decode_builtins=decode_builtins)
+    if decode_bytes:
+        return create_dto_extractor(decode_bytes=decode_bytes)
     if media_type == RequestEncodingType.MESSAGEPACK:
         return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor)
     return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor)
 
 
 def create_dto_extractor(
-    data_dto: type[AbstractDTO],
+    decode_bytes: DecodeFn,
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a DTO data extractor.
 
@@ -284,7 +286,7 @@ def create_dto_extractor(
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
         if not (body := await connection.body()):
             return Empty
-        return data_dto(connection).decode_bytes(body)
+        return decode_bytes(body, connection)
 
     return dto_extractor  # type:ignore[return-value]
 
@@ -294,14 +296,12 @@ class RequestParameterExtractor:
 
     __slots__ = ("_body", "_names_by_param_type", "_sequence_query_parameter_names")
 
-    def __init__(
-        self, definitions: Iterable[RequestParameterDefinition], *, data_dto: type[AbstractDTO] | None = None
-    ) -> None:
+    def __init__(self, definitions: Iterable[RequestParameterDefinition], *, dto_plan: DTOPlan | None = None) -> None:
         """Create an extractor of the request parameters ``definitions`` define.
 
         Args:
             definitions: The request parameters to read
-            data_dto: The DTO decoding the body, if there is one
+            dto_plan: The DTO plan decoding the body, if there is one
         """
         self._names_by_param_type: dict[ParamType, list[tuple[str, str]]] = {}
         self._body: tuple[str, Callable[[ASGIConnection], Coroutine[Any, Any, Any]]] | None = None
@@ -316,7 +316,7 @@ class RequestParameterExtractor:
                         field_definition=field_definition,
                         body_kwarg=marker,
                         is_data_optional=field_definition.is_optional,
-                        data_dto=data_dto,
+                        dto_plan=dto_plan,
                     ),
                 )
                 continue

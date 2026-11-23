@@ -119,7 +119,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         )
         definitions = self._injection_setup.request_parameter_definitions
         self._validate_request_parameters = (
-            create_request_param_validaton_fn(definitions.values(), data_dto=None, type_decoders=self.type_decoders)
+            create_request_param_validaton_fn(definitions.values(), dto_plan=None, type_decoders=self.type_decoders)
             if definitions
             else None
         )

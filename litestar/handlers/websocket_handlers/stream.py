@@ -20,6 +20,7 @@ from litestar.utils.signature import ParsedSignature
 if TYPE_CHECKING:
     from litestar import Litestar, WebSocket
     from litestar.dto import AbstractDTO
+    from litestar.dto._plan import DTOPlan, EncodeFn
     from litestar.routes import BaseRoute
     from litestar.types import Dependencies, EmptyType, ExceptionHandler, Guard, Middleware, TypeEncodersMap
     from litestar.types.asgi_types import WebSocketMode
@@ -264,7 +265,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         self._parsed_return_field = parsed_stream_fn_signature.return_type.inner_types[0]
 
         json_encoder = JsonEncoder(enc_hook=self.default_serializer)
-        return_dto: type[AbstractDTO] | None = None
+        encode_return: EncodeFn | None = None
 
         # make sure the closure doesn't capture self._ws_stream / self
         send_mode: WebSocketMode = self._ws_stream_options.send_mode  # pyright: ignore[reportAssignmentType]
@@ -276,8 +277,8 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
                 await socket.send_data(data=data, mode=send_mode)
                 return
 
-            if return_dto:
-                encoded_data = return_dto(socket).data_to_encodable_type(data)
+            if encode_return:
+                encoded_data = encode_return(data, socket)
                 data = json_encoder.encode(encoded_data)
                 await socket.send_data(data=data, mode=send_mode)
                 return
@@ -299,7 +300,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
 
         self.fn = handler_fn  # pyright: ignore[reportGeneralTypeIssues]
         super().on_registration(route, app)
-        return_dto = self.return_dto
+        encode_return = cast("DTOPlan", self._dto_plan).encode
 
 
 class _WebSocketStreamOptions:

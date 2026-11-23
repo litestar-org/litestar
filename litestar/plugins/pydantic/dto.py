@@ -15,8 +15,9 @@ from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
-    from collections.abc import Collection, Generator
+    from collections.abc import Callable, Collection, Generator
 
+    from litestar.connection import ASGIConnection
     from litestar.dto import DTOConfig
 
 try:
@@ -65,19 +66,18 @@ def downtype_for_data_transfer(field_definition: FieldDefinition) -> FieldDefini
 class PydanticDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with Pydantic."""
 
+    @classmethod
     @override
-    def decode_builtins(self, value: dict[str, Any]) -> Any:
-        try:
-            return super().decode_builtins(value)
-        except ValidationError as ex:
-            raise ValidationException(extra=convert_validation_error(ex)) from ex
+    def _wrap_decoder(
+        cls, decoder: Callable[[Any, ASGIConnection[Any, Any, Any, Any]], Any]
+    ) -> Callable[[Any, ASGIConnection[Any, Any, Any, Any]], Any]:
+        def decode(value: Any, connection: ASGIConnection[Any, Any, Any, Any]) -> Any:
+            try:
+                return decoder(value, connection)
+            except ValidationError as ex:
+                raise ValidationException(extra=convert_validation_error(ex)) from ex
 
-    @override
-    def decode_bytes(self, value: bytes) -> Any:
-        try:
-            return super().decode_bytes(value)
-        except ValidationError as ex:
-            raise ValidationException(extra=convert_validation_error(ex)) from ex
+        return decode
 
     @classmethod
     def generate_field_definitions(

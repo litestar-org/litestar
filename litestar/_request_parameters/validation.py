@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
     from litestar._request_parameters.declarations import RequestParameterDefinition
     from litestar.connection import ASGIConnection
-    from litestar.dto import AbstractDTO
+    from litestar.dto._plan import DTOPlan
     from litestar.params import KwargDefinition
     from litestar.types import TypeDecodersSequence
     from litestar.typing import FieldDefinition
@@ -288,7 +288,7 @@ def _message(definition: RequestParameterDefinition, path: list[str], message: s
 def create_request_param_validaton_fn(
     definitions: Collection[RequestParameterDefinition],
     *,
-    data_dto: type[AbstractDTO] | None,
+    dto_plan: DTOPlan | None,
     type_decoders: TypeDecodersSequence,
 ) -> Callable[[ASGIConnection], Coroutine[Any, Any, dict[str, Any]]]:
     """Return the validation pass over the request parameters ``definitions`` define: a function
@@ -298,12 +298,14 @@ def create_request_param_validaton_fn(
 
     Args:
         definitions: The request parameters of a handler
-        data_dto: The DTO decoding the body, if there is one
+        dto_plan: The DTO plan decoding the body, if there is one
         type_decoders: The type decoders applied to each parameter
     """
-    extractor = RequestParameterExtractor(definitions, data_dto=data_dto)
+    extractor = RequestParameterExtractor(definitions, dto_plan=dto_plan)
     validator = RequestParameterValidator(
-        definitions, type_decoders=type_decoders, skip_body_validation=data_dto is not None
+        definitions,
+        type_decoders=type_decoders,
+        skip_body_validation=dto_plan is not None and dto_plan.data is not None,
     )
 
     async def validate_request_parameters(connection: ASGIConnection) -> dict[str, Any]:

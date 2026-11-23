@@ -548,7 +548,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         self._validate_request_parameters = (
             create_request_param_validaton_fn(
-                definitions.values(), data_dto=self.data_dto, type_decoders=self.type_decoders
+                definitions.values(), dto_plan=self._dto_plan, type_decoders=self.type_decoders
             )
             if definitions
             else None
@@ -783,8 +783,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             A Response instance
         """
-        if return_dto_type := self.return_dto:
-            data = return_dto_type(request).data_to_encodable_type(data)
+        plan = self._dto_plan
+        if plan is None:
+            self._raise_not_registered()
+        if plan.encode is not None:
+            data = plan.encode(data, request)
 
         handler = cast(
             "Callable[..., Awaitable[ASGIApp]]",
