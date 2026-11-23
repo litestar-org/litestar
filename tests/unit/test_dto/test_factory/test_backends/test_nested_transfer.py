@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import linecache
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any

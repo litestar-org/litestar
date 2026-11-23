@@ -553,7 +553,7 @@ def test_create_for_field_definition_uses_explicit_backend_class() -> None:
         FieldDefinition.from_annotation(DC), handler_id="test", backend_cls=CustomBackend
     )
 
-    assert type(Factory._dto_backends["test"]["return_backend"]) is CustomBackend
+    assert type(Factory._dto_backends["test"].get("return_backend")) is CustomBackend
 
 
 def test_parse_model_nested_exclude(create_module: Callable[[str], ModuleType]) -> None:
