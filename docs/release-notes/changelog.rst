@@ -6,6 +6,20 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Fix slow startup for self-referential and deeply nested models
+        :type: bugfix
+        :issue: 4235
+
+        Fix slow application startup and high memory usage for DTOs of self-referential
+        or deeply nested models with a large ``max_nested_depth``. The DTO backend
+        generated the transfer code of a nested model again for every place it appeared
+        in and for both kinds of source it can be read from, so the amount of generated
+        code grew exponentially with the nesting depth. A nested model that contains
+        other nested models is now transferred by its own function, generated once.
+
+        A custom ``attribute_accessor`` now reads a nested model with more than one field
+        once, where it was called again for every field of that model.
+
     .. change:: Fix the codegen DTO backend crashing for nested models
         :type: bugfix
         :pr: 4670
