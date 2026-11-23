@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import itertools
 from dataclasses import replace
-from typing import TYPE_CHECKING, Annotated, ClassVar
+from typing import TYPE_CHECKING, Annotated, Any, ClassVar, Optional
 from unittest.mock import ANY
 
 import annotated_types
@@ -12,6 +12,7 @@ from msgspec import Meta, Struct, field
 from litestar import Litestar, post
 from litestar.dto import DTOField, Mark, MsgspecDTO, dto_field
 from litestar.dto.data_structures import DTOFieldDefinition
+from litestar.exceptions import InvalidAnnotationException
 from litestar.params import JSONBody, KwargDefinition
 from litestar.typing import FieldDefinition
 
@@ -243,3 +244,19 @@ def test_msgspec_dto_keeps_parsed_kwarg_definition() -> None:
     assert field_defs["a"].kwarg_definition is None
     assert field_defs["b"].kwarg_definition == KwargDefinition(min_length=5)
     assert field_defs["c"].dto_field.mark is Mark.READ_ONLY
+
+
+def test_inspect_error_falls_back_to_msgspec_message_when_field_search_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Rejected(Struct):
+        f: Annotated[Optional[str], Meta(min_length=5)] = None
+
+    def failing_search(*args: Any) -> Any:
+        raise KeyError("f")
+
+    monkeypatch.setattr("litestar.dto.msgspec_dto._rejected_field_message", failing_search)
+
+    with pytest.raises(InvalidAnnotationException) as exc_info:
+        list(MsgspecDTO.generate_field_definitions(Rejected))
+
+    assert isinstance(exc_info.value.__cause__, TypeError)
+    assert str(exc_info.value) == f"msgspec cannot inspect 'Rejected': {exc_info.value.__cause__}"
