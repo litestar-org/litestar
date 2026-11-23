@@ -273,11 +273,11 @@ class TransferFunctionFactory:
         Yields an expression that accesses the mapping item. Content written while
         within this context can use this expression to access the desired value.
         """
-        value_expr = f"{source_name}['{field_name}']"
+        value_expr = f"{source_name}[{field_name!r}]"
 
         # if we expect an optional item, it's faster to check if it exists beforehand
         if expect_optional:
-            with self._start_block(f"if '{field_name}' in {source_name}:"):
+            with self._start_block(f"if {field_name!r} in {source_name}:"):
                 yield value_expr
         # the happy path of a try/except will be faster than that, so we use that if
         # we expect a value
@@ -294,7 +294,7 @@ class TransferFunctionFactory:
         """
 
         if self.attribute_accessor_name:
-            value_expr = f"{self.attribute_accessor_name}({source_name}, '{field_name}')"
+            value_expr = f"{self.attribute_accessor_name}({source_name}, {field_name!r})"
         elif (
             field_name.isidentifier()
             and not keyword.iskeyword(field_name)
@@ -302,11 +302,11 @@ class TransferFunctionFactory:
         ):
             value_expr = f"{source_name}.{field_name}"
         else:
-            value_expr = f"getattr({source_name}, '{field_name}')"
+            value_expr = f"getattr({source_name}, {field_name!r})"
 
         # if we expect an optional attribute it's faster to check with hasattr
         if expect_optional:
-            with self._start_block(f"if hasattr({source_name}, '{field_name}'):"):
+            with self._start_block(f"if hasattr({source_name}, {field_name!r}):"):
                 yield value_expr
         # the happy path of a try/except will be faster than that, so we use that if
         # we expect a value
@@ -497,7 +497,7 @@ class TransferFunctionFactory:
                         transfer_type=field_definition.transfer_type,
                         nested_as_dict=self.nested_as_dict,
                         source_value_name=source_value_name,
-                        assignment_target=f"{local_dict_name}['{field_definition.name}']",
+                        assignment_target=f"{local_dict_name}[{field_definition.name!r}]",
                     )
 
     def _create_transfer_type_data_body(
