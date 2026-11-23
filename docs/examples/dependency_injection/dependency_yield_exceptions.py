@@ -1,7 +1,7 @@
 from collections.abc import Generator
 
 from litestar import Litestar, get
-from litestar.di import NamedDependency, Provide
+from litestar.di import NamedDependency
 from litestar.params import FromPath
 
 STATE = {"result": None, "connection": "closed"}
@@ -22,7 +22,7 @@ def generator_function() -> Generator[str, None, None]:
         STATE["connection"] = "closed"
 
 
-@get("/{name:str}", dependencies={"message": Provide(generator_function)})
+@get("/{name:str}", dependencies={"message": generator_function})
 def index(name: FromPath[str], message: NamedDependency[str]) -> dict[str, str]:
     """If `name` is "John", return a message, otherwise raise an error."""
     if name == "John":

@@ -273,15 +273,38 @@ is shallow, so nested values such as ``scope["state"]`` are still shared. Pass `
 application is meant to communicate with the outer application through the scope, for example by writing
 ``scope["user"]`` for outer middleware to read.
 
+Pass ``copy_state=True`` to give the mounted application a shallow copy of ``scope["state"]`` as well, so the host application
+does not see the values set by the mounted application.
+
 Mounting is especially useful when you need to combine components of other ASGI applications - for example, for third
 party libraries. The following example is identical in principle to the one above, but it uses
-`Starlette <https://www.starlette.io/>`_:
+`Starlette <https://starlette.dev/>`_:
 
 .. dropdown:: Click to see an example of mounting a Starlette app
 
     .. literalinclude:: /examples/routing/mounting_starlette_app.py
        :language: python
        :caption: Mounting a Starlette App
+
+Running the lifespan of a mounted app
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Setting ``lifespan=True`` on the handler will run the ASGI lifespan protocol for the mounted application, as part of
+the host application's lifespan.
+
+.. literalinclude:: /examples/routing/mounting_litestar_app.py
+    :language: python
+    :caption: Mounting a Litestar app
+
+The mounted application starts after the :paramref:`~litestar.app.Litestar.on_startup` hooks of the outer application
+and shuts down before the outer application does.
+
+Startup and shutdown failures of the mounted applications will be passed through, reporting as regular
+``lifespan.startup.failed`` / ``lifespan.shutdown.failed`` events to the server.
+
+Litestar will merge the ``state`` of the ``lifespan`` scope into the outer application's
+state. To isolate state of mounted apps, set ``copy_state=True``, which will pass state
+as a shallow copy.
 
 .. admonition:: Why Litestar uses radix based routing
 

@@ -10,6 +10,7 @@ from litestar.datastructures import MutableScopeHeaders
 from litestar.datastructures.cookie import Cookie
 from litestar.enums import RequestEncodingType, ScopeType
 from litestar.exceptions import PermissionDeniedException
+from litestar.middleware._utils import build_exclude_bypass
 from litestar.middleware.base import ASGIMiddleware
 from litestar.utils.scope.state import ScopeState
 
@@ -82,6 +83,7 @@ class CSRFMiddleware(ASGIMiddleware):
         cookie_domain: str | None = None,
         safe_methods: Iterable[Method] = ("GET", "HEAD", "OPTIONS"),
         exclude: str | list[str] | None = None,
+        exclude_path_pattern: str | list[str] | None = None,
         exclude_opt_key: str = "exclude_from_csrf",
     ) -> None:
         """Initialize ``CSRFMiddleware``.
@@ -96,7 +98,9 @@ class CSRFMiddleware(ASGIMiddleware):
             cookie_samesite: The value to set in the ``SameSite`` attribute of the cookie.
             cookie_domain: Specifies which hosts can receive the cookie.
             safe_methods: A set of "safe methods" that can set the cookie.
-            exclude: A pattern or list of patterns to skip in the CSRF middleware, matched against the handler path.
+            exclude: A pattern or list of patterns to skip in the CSRF middleware, matched against the request path.
+            exclude_path_pattern: A pattern or list of patterns to skip in the CSRF middleware, matched against the
+                handler path at startup. See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
             exclude_opt_key: An identifier to use on routes to disable CSRF for a particular route.
         """
         self.secret = secret
@@ -108,7 +112,12 @@ class CSRFMiddleware(ASGIMiddleware):
         self.cookie_samesite: Literal["lax", "strict", "none"] = cookie_samesite
         self.cookie_domain = cookie_domain
         self.safe_methods = set(safe_methods)
-        self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
+        self.exclude_path_pattern = (
+            tuple(exclude_path_pattern) if isinstance(exclude_path_pattern, list) else exclude_path_pattern
+        )
+        self.should_bypass_for_scope = build_exclude_bypass(
+            exclude, middleware_cls=type(self), also=self.should_bypass_for_scope
+        )
         self.exclude_opt_key = exclude_opt_key
 
     @classmethod
@@ -125,6 +134,7 @@ class CSRFMiddleware(ASGIMiddleware):
             cookie_domain=config.cookie_domain,
             safe_methods=config.safe_methods,
             exclude=config.exclude,
+            exclude_path_pattern=config.exclude_path_pattern,
             exclude_opt_key=config.exclude_from_csrf_key,
         )
 

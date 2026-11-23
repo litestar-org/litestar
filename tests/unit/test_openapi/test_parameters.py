@@ -6,13 +6,13 @@ import pytest
 
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.datastructures import OpenAPIContext
-from litestar._openapi.parameters import ParameterFactory
+from litestar._openapi.parameters import create_parameters_for_handler
 from litestar._openapi.schema_generation.examples import ExampleFactory
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
+from litestar.datastructures import Headers
 from litestar.di import NamedDependency, Provide
 from litestar.enums import ParamType
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.handlers import HTTPRouteHandler
+from litestar.exceptions import LitestarDeprecationWarning
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Example, OpenAPI, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
@@ -25,9 +25,11 @@ from litestar.params import (
     HeaderParameter,
     PathParameter,
     QueryParameter,
+    QueryParams,
+    RequestCookies,
 )
-from litestar.routes import BaseRoute
 from litestar.testing import create_test_client
+from litestar.types import Scope
 from litestar.utils import find_index
 from tests.unit.test_openapi.utils import Gender, LuckyNumber
 
@@ -35,23 +37,17 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 
 
-def create_factory(route: BaseRoute, handler: HTTPRouteHandler) -> ParameterFactory:
-    return ParameterFactory(
-        OpenAPIContext(
-            openapi_config=OpenAPIConfig(title="Test API", version="1.0.0", create_examples=True), plugins=[]
-        ),
-        route_handler=handler,
-        path_parameters=route.path_parameters,
-    )
-
-
 def _create_parameters(app: Litestar, path: str) -> list["OpenAPIParameter"]:
     index = find_index(app.routes, lambda x: x.path_format == path)
     route = app.routes[index]
     route_handler = route.route_handler_map["GET"]  # type: ignore[union-attr]
-    handler = route_handler.fn
-    assert callable(handler)
-    return create_factory(route, route_handler).create_parameters_for_handler()
+    return create_parameters_for_handler(
+        OpenAPIContext(
+            openapi_config=OpenAPIConfig(title="Test API", version="1.0.0", create_examples=True), plugins=[]
+        ),
+        route_handler,
+        route.path_parameters,
+    )
 
 
 def test_create_parameters(person_controller: type[Controller]) -> None:
@@ -191,23 +187,6 @@ def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
     assert {p.name for p in open_api_parameters} == {"query_param", "other_param"}  # type: ignore[union-attr]
 
 
-def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> None:
-    async def a_dep(query_param: FromQuery[int]) -> int:
-        return query_param
-
-    async def b_dep(query_param: FromQuery[str]) -> int:
-        return 1
-
-    @get("/test", dependencies={"a": Provide(a_dep), "b": Provide(b_dep)})
-    def handler(a: NamedDependency[int], b: NamedDependency[int]) -> str:
-        return "OK"
-
-    app = Litestar(route_handlers=[handler])
-
-    with pytest.raises(ImproperlyConfiguredException):
-        app.openapi_schema
-
-
 def test_dependency_params_in_docs_if_dependency_provided() -> None:
     async def produce_dep(param: FromQuery[str]) -> int:
         return 13
@@ -224,7 +203,7 @@ def test_dependency_params_in_docs_if_dependency_provided() -> None:
 
 def test_dependency_not_in_doc_params_if_not_provided() -> None:
     @get()
-    def handler(dep: NamedDependency[Optional[int]]) -> None:
+    def handler(dep: NamedDependency[Optional[int]] = None) -> None:
         return None
 
     app = Litestar(route_handlers=[handler])
@@ -241,6 +220,18 @@ def test_non_dependency_in_doc_params_if_not_provided() -> None:
     assert "param" in param_name_set
 
 
+def test_deprecated_request_values_are_not_documented() -> None:
+    @get("/")
+    async def handler(
+        headers: Headers, query: QueryParams, cookies: RequestCookies, scope: Scope, page: FromQuery[int]
+    ) -> None: ...
+
+    with pytest.warns(LitestarDeprecationWarning, match="which are deprecated"):
+        app = Litestar([handler])
+
+    assert [parameter.name for parameter in _create_parameters(app=app, path="/")] == ["page"]
+
+
 def test_layered_parameters() -> None:
     class MyController(Controller):
         path = "/controller"
@@ -254,7 +245,7 @@ def test_layered_parameters() -> None:
             self,
             local: FromPath[int],
             controller1: FromQuery[int],
-            router1: str,
+            router1: FromQuery[str],
             router2: FromHeader[float],
             app1: FromCookie[str],
             app2: FromQuery[list[str]],
@@ -282,7 +273,7 @@ def test_layered_parameters() -> None:
         ),
         path="/router/controller/{local}",
     )
-    local, app3, controller1, router1, router3, app4, app2, controller3 = tuple(parameters)
+    controller1, controller3, router1, router3, app4, app2, app3, local, controller2 = tuple(parameters)
 
     assert app4.param_in == ParamType.COOKIE
     assert app4.schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
@@ -317,16 +308,61 @@ def test_layered_parameters() -> None:
     assert controller1.schema.exclusive_maximum == 100.0  # type: ignore[union-attr]
     assert controller1.schema.examples  # type: ignore[union-attr]
 
+    assert controller2.param_in == ParamType.QUERY
+    assert controller2.schema.type == OpenAPIType.NUMBER  # type: ignore[union-attr]
+    assert controller2.required
+    assert controller2.schema.minimum == 5.0  # type: ignore[union-attr]
+    assert controller2.schema.examples  # type: ignore[union-attr]
+
     assert controller3.param_in == ParamType.QUERY
-    assert controller3.schema.type == OpenAPIType.NUMBER  # type: ignore[union-attr]
+    assert controller3.schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
     assert controller3.required
-    assert controller3.schema.minimum == 5.0  # type: ignore[union-attr]
     assert controller3.schema.examples  # type: ignore[union-attr]
 
     assert local.param_in == ParamType.PATH
     assert local.schema.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
     assert local.required
     assert local.schema.examples  # type: ignore[union-attr]
+
+
+def test_layer_parameter_bound_by_marker_documents_handler_default() -> None:
+    @get("/")
+    def handler(layer_param: FromQuery[int] = 5) -> None:
+        return None
+
+    app = Litestar(route_handlers=[handler], parameters={"layer_param": QueryParameter(annotation=int)})
+    (parameter,) = app.openapi_schema.to_schema()["paths"]["/"]["get"]["parameters"]
+
+    assert parameter["name"] == "layer_param"
+    assert parameter["required"] is False
+    assert parameter["schema"]["default"] == 5
+
+
+def test_documentation_only_parameter_documents_constraint() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    app = Litestar(
+        route_handlers=[handler],
+        parameters={"limit": QueryParameter(annotation=int, gt=3, documentation_only=True)},
+    )
+    (parameter,) = app.openapi_schema.to_schema()["paths"]["/"]["get"]["parameters"]
+
+    assert parameter["schema"]["exclusiveMinimum"] == 3
+
+
+def test_parameters_of_provider_handler_does_not_use_not_documented() -> None:
+    async def provide_limit(limit: FromQuery[int]) -> int:
+        return limit
+
+    @get("/", dependencies={"limit": Provide(provide_limit)})
+    def handler() -> None:
+        return None
+
+    app = Litestar(route_handlers=[handler])
+
+    assert "parameters" not in app.openapi_schema.to_schema()["paths"]["/"]["get"]
 
 
 def test_parameter_examples() -> None:
@@ -602,7 +638,7 @@ def test_explicit_path_param_excluded_from_routes_without_placeholder() -> None:
     """
 
     @get(path=["/", "/{message:str}"], sync_to_thread=False)
-    def handler(message: FromPath[Optional[str]]) -> str:
+    def handler(message: FromPath[Optional[str]] = None) -> str:
         return message or ""
 
     with create_test_client(handler) as client:

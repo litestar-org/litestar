@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
+from dataclasses import replace
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -9,9 +10,11 @@ from typing import (
     overload,
 )
 
+from litestar._layers.utils import narrow_dependencies
 from litestar.connection import WebSocket
 from litestar.di import NamedDependency
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
+from litestar.params import BodyKwarg
 from litestar.types import (
     AnyCallable,
     Dependencies,
@@ -154,7 +157,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             connection_lifespan: An asynchronous context manager, handling the lifespan of the connection. By default,
                 it calls the ``connection_accept_handler``, ``on_connect`` and ``on_disconnect``. Can request any
                 dependencies, for example the :class:`WebSocket <.connection.WebSocket>` connection
-            dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -198,15 +201,17 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self.on_accept = ensure_async_callable(on_accept) if on_accept else None
         self.on_disconnect = ensure_async_callable(on_disconnect) if on_disconnect else None
 
-        listener_dependencies = dict(dependencies or {})
+        listener_dependencies = narrow_dependencies(dependencies)
 
         listener_dependencies["connection_lifespan_dependencies"] = create_stub_dependency(
-            connection_lifespan or self.default_connection_lifespan
+            connection_lifespan or self.default_connection_lifespan, "connection_lifespan_dependencies"
         )
-
-        listener_dependencies["on_accept_dependencies"] = create_stub_dependency(self.on_accept)
-
-        listener_dependencies["on_disconnect_dependencies"] = create_stub_dependency(self.on_disconnect)
+        listener_dependencies["on_accept_dependencies"] = create_stub_dependency(
+            self.on_accept, "on_accept_dependencies"
+        )
+        listener_dependencies["on_disconnect_dependencies"] = create_stub_dependency(
+            self.on_disconnect, "on_disconnect_dependencies"
+        )
 
         super().__init__(
             fn=fn,
@@ -249,14 +254,11 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         if "data" not in parsed_signature.parameters:
             raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
 
-        for param in ("request", "body"):
-            if param in parsed_signature.parameters:
-                raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket listeners")
-
         # we are manipulating the signature of the decorated function below, so we must store the original values for
         # use elsewhere.
         self._parsed_return_field = parsed_signature.return_type
-        self._parsed_data_field = parsed_signature.parameters.get("data")
+        # a DTO takes a field declared as a body to be the data a handler receives
+        self._parsed_data_field = replace(parsed_signature.parameters["data"], kwarg_definition=BodyKwarg())
         self._parsed_fn_signature = ParsedSignature.from_signature(
             create_handler_signature(parsed_signature.original_signature),
             fn_type_hints={
@@ -321,7 +323,7 @@ class WebsocketListener(ABC):
     path: str | list[str] | None = None
     """A path fragment for the route handler function or a sequence of path fragments. If not given defaults to ``/``"""
     dependencies: Dependencies | None = None
-    """A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances."""
+    """A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables."""
     dto: type[AbstractDTO] | None | EmptyType = Empty
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and validation of request data"""
     exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None
@@ -492,7 +494,7 @@ def websocket_listener(
         connection_lifespan: An asynchronous context manager, handling the lifespan of the connection. By default,
             it calls the ``connection_accept_handler``, ``on_connect`` and ``on_disconnect``. Can request any
             dependencies, for example the :class:`WebSocket <.connection.WebSocket>` connection
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         exception_handlers: A mapping of status codes and/or exception types to handler functions.

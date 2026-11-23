@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
 from functools import partial
@@ -10,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import msgspec.json
 
-from litestar.di import Provide
+from litestar.di import Provider
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.handlers import WebsocketRouteHandler
 from litestar.plugins import InitPlugin
@@ -28,6 +29,8 @@ if TYPE_CHECKING:
     from litestar.params import FromPath
     from litestar.types import LitestarEncodableType, TypeEncodersMap
     from litestar.types.asgi_types import WebSocketMode
+
+logger = logging.getLogger(__name__)
 
 
 class ChannelsException(LitestarException):
@@ -112,8 +115,13 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         return data.encode() if isinstance(data, str) else self._encode_json(data)
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
-        """Plugin hook. Set up a ``channels`` dependency, add route handlers and register application hooks"""
-        app_config.dependencies["channels"] = Provide(lambda: self, use_cache=True, sync_to_thread=False)
+        """Plugin hook. Set up a dependency under the name ``channels`` and the type ``ChannelsPlugin``, add route
+        handlers and register application hooks
+        """
+        app_config.dependencies["channels"] = Provider(lambda: self, key="channels", scope="app", sync_to_thread=False)
+        app_config.dependencies[ChannelsPlugin] = Provider(
+            lambda: self, key=ChannelsPlugin, scope="app", sync_to_thread=False
+        )
         app_config.lifespan.append(self)
         app_config.signature_namespace.update(ChannelsPlugin=ChannelsPlugin)
 
@@ -237,7 +245,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
                 channels_to_unsubscribe.add(channel)
 
         if all(subscriber not in queues for queues in self._channels.values()):
-            await subscriber.put(None)  # this will stop any running task or generator by breaking the inner loop
+            subscriber._close()  # this will stop any running task or generator by breaking the inner loop
             if subscriber.is_running:
                 await subscriber.stop()
 
@@ -280,7 +288,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
         for channel in channels:
             history = await self._backend.get_history(channel, limit)
             for entry in history:
-                await subscriber.put(entry)
+                subscriber.put_nowait(entry)
 
     async def _ws_handler_func(self, channel_name: FromPath[str], socket: WebSocket) -> None:
         await socket.accept()
@@ -293,7 +301,7 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
                 await self.put_subscriber_history(subscriber, channels=channel_name, limit=self._history_limit)
 
             # use the background task, so we can block on receive(), breaking the loop when a connection closes
-            async with subscriber.run_in_background(on_event):
+            async with subscriber.run_in_background(on_event, join=False):
                 while (await socket.receive())["type"] != "websocket.disconnect":
                     continue
 
@@ -306,8 +314,12 @@ class ChannelsPlugin(InitPlugin, AbstractAsyncContextManager):
     async def _pub_worker(self) -> None:
         while self._pub_queue:
             data, channels = await self._pub_queue.get()
-            await self._backend.publish(data, channels)
-            self._pub_queue.task_done()
+            try:
+                await self._backend.publish(data, channels)
+            except Exception:
+                logger.exception("Error while publishing to channels %s", channels)
+            finally:
+                self._pub_queue.task_done()
 
     async def _sub_worker(self) -> None:
         async for channel, payload in self._backend.stream_events():

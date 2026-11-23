@@ -46,8 +46,8 @@ T = TypeVar("T")
 
 class ParameterMarker:
     """Base class of the annotation metadata that marks how Litestar handles a parameter:
-    parameter and body kwargs such as :class:`QueryParameter` and :class:`BodyKwarg`, the
-    marker :data:`~litestar.di.NamedDependency` carries, and :class:`SkipValidationMarker`.
+    parameter and body kwargs such as :class:`QueryParameter` and :class:`BodyKwarg`, and
+    :class:`SkipValidationMarker`.
     """
 
 
@@ -195,10 +195,12 @@ class ParameterKwarg(KwargDefinition, ParameterMarker):
     If set to False, a function parameter receiving it must declare a default, which it receives when the
     parameter is missing from the request. Defaults to True.
     """
+    documentation_only: bool = False
+    """A boolean flag dictating whether the constraints are only documented in the OpenAPI schema, without being
+    applied to the value of the request.
 
-    @property
-    def is_marker(self) -> bool:
-        return not self.is_constrained and not self.name and self.required is None
+    .. versionadded:: 3.0
+    """
 
     def __hash__(self) -> int:  # pragma: no cover
         """Hash the dataclass in a safe way.
@@ -305,12 +307,18 @@ QueryParams = NewType("QueryParams", MultiDict[Any])
 """All query parameters of the request, for the ``query`` parameter
 
 .. versionadded:: 2.25.0
+
+.. deprecated:: 3.0
+    Use the connection's ``query_params``
 """
 
 RequestCookies = NewType("RequestCookies", dict[str, str])
 """All cookies of the request, for the ``cookies`` parameter
 
 .. versionadded:: 2.25.0
+
+.. deprecated:: 3.0
+    Use the connection's ``cookies``
 """
 
 

@@ -1,7 +1,10 @@
 from typing import Annotated
 
+import pytest
+
 from litestar import WebSocket, websocket
 from litestar.datastructures import Headers
+from litestar.exceptions import LitestarDeprecationWarning
 from litestar.params import FromPath, FromQuery, HeaderParameter, QueryParams, RequestCookies
 from litestar.testing import create_test_client
 
@@ -29,7 +32,9 @@ def test_handle_websocket_params_parsing() -> None:
         await socket.send_json({"data": "123"})
         await socket.close()
 
-    with create_test_client(route_handlers=websocket_handler) as client:
+    with pytest.warns(LitestarDeprecationWarning, match="which are deprecated. Use 'socket.headers'"):
+        client = create_test_client(route_handlers=websocket_handler)
+    with client:
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"cookie": "yum"}
 

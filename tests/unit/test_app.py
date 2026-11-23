@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import inspect
+import warnings
 from collections.abc import AsyncGenerator, Callable
-from contextlib import asynccontextmanager
+from contextlib import AbstractContextManager, asynccontextmanager, nullcontext
 from dataclasses import fields
 from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock, Mock, PropertyMock
@@ -16,6 +17,8 @@ from litestar import Litestar, MediaType, Request, Response, get
 from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.datastructures import MutableScopeHeaders, State
+from litestar.di import NamedDependency, Provider
+from litestar.di.exceptions import DivergenceError, DivergenceWarning
 from litestar.events.emitter import SimpleEventEmitter
 from litestar.exceptions import (
     ImproperlyConfiguredException,
@@ -417,8 +420,8 @@ def test_from_scope() -> None:
     mock = MagicMock()
 
     @get()
-    def handler(scope: Scope) -> None:
-        mock(Litestar.from_scope(scope))
+    def handler(request: Request) -> None:
+        mock(Litestar.from_scope(request.scope))
         return
 
     app = Litestar(route_handlers=[handler])
@@ -447,4 +450,113 @@ def test_handler_registration_on_registration_called_only_once(mocker: MockerFix
             ]
         )
         == 1
+    )
+
+
+@pytest.mark.parametrize("charset", ["not-a-charset", "rot13", "base64", "undefined"])
+def test_multipart_form_allowed_charsets_invalid(charset: str) -> None:
+    with pytest.raises(ImproperlyConfiguredException, match="Invalid multipart form charset"):
+        Litestar(multipart_form_allowed_charsets=["utf-8", charset])
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "expectation"),
+    [
+        pytest.param({}, pytest.warns(DivergenceWarning, match="^Provider 'session'"), id="default"),
+        pytest.param(
+            {"di_check_graph_divergence": "warn"},
+            pytest.warns(DivergenceWarning, match="^Provider 'session'"),
+            id="warn",
+        ),
+        pytest.param(
+            {"di_check_graph_divergence": "raise"},
+            pytest.raises(DivergenceError, match="^Provider 'session'"),
+            id="raise",
+        ),
+        pytest.param({"di_check_graph_divergence": False}, nullcontext(), id="false"),
+    ],
+)
+def test_di_check_graph_divergence(kwargs: dict[str, Any], expectation: AbstractContextManager[Any]) -> None:
+    async def provide_engine() -> str:
+        return "engine"
+
+    async def provide_other_engine() -> str:
+        return "other engine"
+
+    async def provide_session(engine: NamedDependency[str]) -> str:
+        return engine
+
+    @get("/one")
+    async def one(session: NamedDependency[str]) -> None: ...
+
+    @get("/two", dependencies=[Provider(provide_other_engine, key="engine", scope="app")])
+    async def two(session: NamedDependency[str]) -> None: ...
+
+    with warnings.catch_warnings():
+        # a DivergenceWarning the expectation does not take fails the test
+        warnings.simplefilter("error", DivergenceWarning)
+        with expectation:
+            Litestar(
+                [one, two],
+                dependencies=[
+                    Provider(provide_session, key="session", scope="app"),
+                    Provider(provide_engine, key="engine", scope="app"),
+                ],
+                openapi_config=None,
+                **kwargs,
+            )
+
+
+def test_di_check_graph_divergence_ignore_key() -> None:
+    async def provide_engine() -> str:
+        return "engine"
+
+    async def provide_other_engine() -> str:
+        return "other engine"
+
+    async def provide_session(engine: NamedDependency[str]) -> str:
+        return engine
+
+    @get("/one")
+    async def one(session: NamedDependency[str]) -> None: ...
+
+    @get("/two", dependencies=[Provider(provide_other_engine, key="engine", scope="app")])
+    async def two(session: NamedDependency[str]) -> None: ...
+
+    Litestar(
+        [one, two],
+        dependencies=[
+            Provider(provide_session, key="session", scope="app"),
+            Provider(provide_engine, key="engine", scope="app"),
+        ],
+        di_check_graph_divergence="raise",
+        di_check_graph_divergence_ignore=["session"],
+        openapi_config=None,
+    )
+
+
+def test_di_check_graph_divergence_ignore_provider() -> None:
+    async def provide_engine() -> str:
+        return "engine"
+
+    async def provide_other_engine() -> str:
+        return "other engine"
+
+    async def provide_session(engine: NamedDependency[str]) -> str:
+        return engine
+
+    @get("/one")
+    async def one(session: NamedDependency[str]) -> None: ...
+
+    @get("/two", dependencies=[Provider(provide_other_engine, key="engine", scope="app")])
+    async def two(session: NamedDependency[str]) -> None: ...
+
+    session_provider = Provider(provide_session, key="session", scope="app")
+
+    Litestar(
+        [one, two],
+        dependencies=[session_provider, Provider(provide_engine, key="engine", scope="app")],
+        di_check_graph_divergence="raise",
+        di_check_graph_divergence_ignore=[session_provider],
+        openapi_config=None,
     )

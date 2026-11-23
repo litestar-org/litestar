@@ -94,19 +94,21 @@ The following sources can be accessed using annotated function :term:`kwargs <ar
 Additionally, you can specify the following special :term:`kwargs <argument>`,
 (known as "reserved keywords arguments"), each declared with its type:
 
-* ``cookies: RequestCookies``: injects the request cookies as a :class:`dictionary <dict>`.
-  See :data:`~.params.RequestCookies`.
-* ``headers: Headers``: injects the request :class:`~.datastructures.headers.Headers`.
-* ``query: QueryParams``: injects the request ``query_params``. See :data:`~.params.QueryParams`.
 * ``request: Request``: injects the :class:`Request <.connection.Request>` instance. Available only for
   `HTTP route handlers`_. With a custom request class, use that class or one it inherits from.
-* ``scope: Scope``: injects the ASGI scope :class:`dictionary <dict>`.
 * ``socket: WebSocket``: injects the :class:`WebSocket <.connection.WebSocket>` instance. Available only for
   `websocket route handlers`_. With a custom websocket class, use that class or one it inherits from.
 * ``state: State``: injects a copy of the application :class:`State <.datastructures.state.State>`.
 * ``body: RawBody``: the raw request body. Available only for `HTTP route handlers`_. See :data:`~.params.RawBody`.
 * ``data``: the parsed request body, declared with a body marker such as :data:`~.params.JSONBody`. See
   :doc:`requests </usage/requests>`.
+
+
+.. warning::
+
+    ``headers: Headers``, ``query: QueryParams``, ``cookies: RequestCookies`` and ``scope: Scope`` are deprecated.
+    Use the :class:`~litestar.connection.ASGIConnection`\ 's ``headers``, ``query_params``,
+    ``cookies``, or ``scope`` attributes instead.
 
 .. tip::
     Note that if your parameters collide with any of the reserved
@@ -119,17 +121,13 @@ For example:
     :caption: Providing an alternative name for a reserved keyword argument
 
     from litestar import Request, get
-    from litestar.datastructures import Headers, State
-    from litestar.params import QueryParams, RequestCookies
+    from litestar.datastructures import State
 
 
     @get(path="/")
     async def my_request_handler(
        state: State,
        request: Request,
-       headers: Headers,
-       query: QueryParams,
-       cookies: RequestCookies,
     ) -> None: ...
 
 .. tip:: You can define a custom typing for your application state and then use it as a type instead of just using the
@@ -388,7 +386,8 @@ an informative exception will be raised.
 The ``scope`` the handler receives is a copy, whether or not the handler is a mount, so top-level keys the wrapped
 application adds, replaces or removes are not seen by the outer application. The copy is shallow, so nested values such
 as ``scope["state"]`` are still shared. Pass ``copy_scope=False`` if the wrapped application is meant to communicate with
-the outer application through the scope.
+the outer application through the scope. If applications should only share the scope, but not its state, set
+``copy_state=True``.
 
 See the :class:`ASGIRouteHandler API reference documentation <.handlers.asgi_handlers.ASGIRouteHandler>` for full
 details on the :func:`@asgi() <.handlers.asgi>` :term:`decorator` and the :term:`kwargs <argument>` it accepts.

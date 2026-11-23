@@ -109,7 +109,7 @@ def model_type(pydantic_version: PydanticVersion) -> type[ModelV2]:
 def model(pydantic_version: PydanticVersion) -> ModelV2:
     return ModelV2(
         path=Path("example"),
-        email_str=pydantic_v2.TypeAdapter(pydantic_v2.EmailStr).validate_python("info@example.org"),
+        email_str=pydantic_v2.TypeAdapter(pydantic_v2.EmailStr).validate_python("info@example.org"),  # pyright: ignore[reportArgumentType]
         name_email=pydantic_v2.NameEmail("info", "info@example.org"),
         color=ColorV2("rgb(255, 255, 255)"),
         bytesize=pydantic_v2.ByteSize(100),

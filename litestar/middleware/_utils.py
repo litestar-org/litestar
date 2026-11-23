@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING
 
 from litestar.exceptions import ImproperlyConfiguredException
 
-__all__ = ("build_exclude_path_pattern", "should_bypass_middleware")
+__all__ = ("build_exclude_bypass", "build_exclude_path_pattern", "should_bypass_middleware")
 
 from litestar.utils.warnings import warn_middleware_excluded_on_all_routes
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
 
     from litestar.types import Method, Scope, Scopes
 
@@ -46,6 +46,35 @@ def build_exclude_path_pattern(
         raise ImproperlyConfiguredException(
             "Unable to compile exclude patterns for middleware. Please make sure you passed a valid regular expression."
         ) from e
+
+
+def build_exclude_bypass(
+    exclude: str | Iterable[str] | None,
+    *,
+    middleware_cls: type | None = None,
+    also: Callable[[Scope], bool] | None = None,
+) -> Callable[[Scope], bool] | None:
+    """Build a ``should_bypass_for_scope`` callable matching ``exclude`` against the request path.
+
+    Args:
+        exclude: A pattern or a list of patterns.
+        middleware_cls: Middleware class this is being called from - used for creating
+            more informative warnings
+        also: An existing bypass callable to combine with; the result bypasses if either matches.
+
+    Returns:
+        A callable receiving the scope, or ``also`` if no pattern is given.
+    """
+    if not exclude:
+        return also
+
+    pattern = build_exclude_path_pattern(exclude=exclude, middleware_cls=middleware_cls)
+    if pattern is None:  # pragma: no cover
+        return also
+
+    if also is None:
+        return lambda scope: match_exclude_path(pattern, scope)
+    return lambda scope: also(scope) or match_exclude_path(pattern, scope)
 
 
 def match_exclude_path(exclude_path_pattern: Pattern, scope: Scope) -> bool:

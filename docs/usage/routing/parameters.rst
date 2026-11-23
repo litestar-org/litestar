@@ -363,3 +363,39 @@ declared in the route handler. Examine these more closely:
 * ``local_param`` is a route-handler-local :ref:`query parameter <usage/routing/parameters:query parameters>`
   (``FromQuery[str]``), and ``path_param`` is a :ref:`path parameter <usage/routing/parameters:path parameters>`
   (``FromPath[int]``).
+
+The type of a layered parameter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The type information of a layer parameter can come from one of two sources:
+
+1. The ``annotation`` parameter on the declaration itself
+2. The type annotation at the corresponding usage site
+
+A layer parameter *must* be declared with a type in at least one of those locations,
+so an OpenAPI schema can be generated for it, and validations performed against it.
+
+If a layer parameter does not have any type information associated with it, an exception
+will be raised at app startup.
+
+
+.. note::
+
+    A parameter declared on the application layer applies to *all* routes, including
+    the automatically generated ``OPTIONS``. Since these handlers don't declare any
+    parameters, layer parameters on the app level always needs to set ``annotation=``
+    explicitly.
+
+
+Documenting constraints without applying them
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Constraints set in layer parameters are enforced by Litestar's validation machinery, but
+should this not be desired, setting ``documentation_only=True`` on the parameter will
+skip this validation step:
+
+.. literalinclude:: /examples/parameters/layered_parameters_documentation_only.py
+    :language: python
+    :caption: Documenting the pattern of a header without validating it
+
+The header is still required, since it is not declared with ``required=False``.

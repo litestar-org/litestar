@@ -1,6 +1,6 @@
 import pytest
 
-from litestar import Router, get
+from litestar import Litestar, Router, get
 from litestar.testing import create_test_client
 
 
@@ -25,3 +25,13 @@ def test_option_handler_inherits_layer_config() -> None:
         res = client.options("/")
         assert res.headers.get("app") == "app"
         assert res.headers.get("router") == "router"
+
+
+def test_option_handler_has_path_of_its_route_under_app_path() -> None:
+    @get("/members")
+    def handler() -> None:
+        return None
+
+    app = Litestar([Router(path="/orgs", route_handlers=[handler])], path="/api")
+
+    assert app.route_handler_method_map["/api/orgs/members"]["OPTIONS"].paths == {"/api/orgs/members"}

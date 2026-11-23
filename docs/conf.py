@@ -158,7 +158,6 @@ nitpick_ignore = [
     (PY_CLASS, "ExceptionT"),
     (PY_CLASS, "NoneType"),
     (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
-    (PY_CLASS, "litestar._signature.model.SignatureModel"),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
     # types in changelog that no longer exist
@@ -356,6 +355,12 @@ html_theme_options = {
             "title": "About",
             "children": [
                 {
+                    "title": "Official Website",
+                    "summary": "The Litestar project website",
+                    "url": "https://litestar.dev",
+                    "icon": "org",
+                },
+                {
                     "title": "Litestar Organization",
                     "summary": "Details about the Litestar organization",
                     "url": "https://litestar.dev/about",
@@ -402,12 +407,6 @@ html_theme_options = {
                     "title": "GitHub Discussions",
                     "summary": "GitHub Discussions",
                     "url": "https://github.com/orgs/litestar-org/discussions",
-                    "icon": "coc",
-                },
-                {
-                    "title": "Stack Overflow",
-                    "summary": "We monitor the <code><b>litestar</b></code> tag on Stack Overflow",
-                    "url": "https://stackoverflow.com/questions/tagged/litestar",
                     "icon": "coc",
                 },
             ],

@@ -4,6 +4,7 @@ from collections.abc import Callable, Mapping, Sequence
 from typing import TYPE_CHECKING, Any
 
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
+from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
 from litestar.controller import Controller
 from litestar.events import SimpleEventEmitter
 from litestar.testing.client import AsyncTestClient, TestClient
@@ -77,6 +78,7 @@ def create_test_client(
     listeners: Sequence[EventListener] | None = None,
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
+    multipart_form_allowed_charsets: Sequence[str] = DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
     on_shutdown: Sequence[LifespanHook] | None = None,
     on_startup: Sequence[LifespanHook] | None = None,
@@ -167,7 +169,7 @@ def create_test_client(
         cors_config: If set, configures CORS handling for the application.
         csrf_config: If set, enables CSRF protection.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
-        dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
@@ -182,6 +184,8 @@ def create_test_client(
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
         multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
             is intended to protect from DoS attacks.
+        multipart_form_allowed_charsets: Charsets accepted for multipart/formdata text fields; others are rejected
+            with a 400. Fields without a charset are decoded as UTF-8.
         on_app_init: A sequence of :class:`OnAppInitHandler <.types.OnAppInitHandler>` instances. Handlers receive
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
@@ -264,6 +268,7 @@ def create_test_client(
         listeners=listeners,
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
+        multipart_form_allowed_charsets=multipart_form_allowed_charsets,
         on_app_init=on_app_init,
         on_shutdown=on_shutdown,
         on_startup=on_startup,
@@ -329,6 +334,7 @@ def create_async_test_client(
     listeners: Sequence[EventListener] | None = None,
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
+    multipart_form_allowed_charsets: Sequence[str] = DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
     on_shutdown: Sequence[LifespanHook] | None = None,
     on_startup: Sequence[LifespanHook] | None = None,
@@ -417,7 +423,7 @@ def create_async_test_client(
         cors_config: If set, configures CORS handling for the application.
         csrf_config: If set, enables CSRF protection.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
-        dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
@@ -432,6 +438,8 @@ def create_async_test_client(
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
         multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
             is intended to protect from DoS attacks.
+        multipart_form_allowed_charsets: Charsets accepted for multipart/formdata text fields; others are rejected
+            with a 400. Fields without a charset are decoded as UTF-8.
         on_app_init: A sequence of :class:`OnAppInitHandler <.types.OnAppInitHandler>` instances. Handlers receive
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
@@ -513,6 +521,7 @@ def create_async_test_client(
         listeners=listeners,
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
+        multipart_form_allowed_charsets=multipart_form_allowed_charsets,
         on_app_init=on_app_init,
         on_shutdown=on_shutdown,
         on_startup=on_startup,

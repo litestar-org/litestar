@@ -102,8 +102,8 @@ class ASGIRouter:
             except KeyError:
                 pass
 
-            asgi_app, route_handler, scope["path"], scope["path_params"], path_template = self.handle_routing(
-                path=normalized_path, method=scope.get("method")
+            asgi_app, route_handler, scope["path"], scope["path_params"], path_template, is_asgi_route = (
+                self.handle_routing(path=normalized_path, method=scope.get("method"))
             )
         except Exception:
             ScopeState.from_scope(scope).exception_handlers = self._app_exception_handlers
@@ -112,11 +112,22 @@ class ASGIRouter:
             ScopeState.from_scope(scope).exception_handlers = route_handler.exception_handlers
             scope["route_handler"] = route_handler
             scope["path_template"] = path_template
-        await asgi_app(scope, receive, send)
+
+        if is_asgi_route:
+            await asgi_app(scope, receive, send)
+            return
+
+        app_context = self.app.dependency_context
+        if app_context is None and self.app.dependency_registry is not None:
+            raise RuntimeError(
+                f"Cannot handle the request to {scope['path']!r}: the lifespan of the app is not running"
+            )
+        async with route_handler._create_di_request_context(app_context, scope):
+            await asgi_app(scope, receive, send)
 
     def _handle_routing(
         self, path: str, method: Method | None
-    ) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
+    ) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str, bool]:
         """Handle routing for a given path / method combo. This method is meant to allow easy caching.
 
         The cached version of this method is available as ``self.handle_routing``,
@@ -127,7 +138,8 @@ class ASGIRouter:
             method: The scope's method, if any.
 
         Returns:
-            A tuple composed of the ASGIApp of the route, the route handler instance, the resolved and normalized path and any parsed path params.
+            A tuple composed of the ASGIApp of the route, the route handler instance, the resolved and normalized path,
+            any parsed path params, the path template, and whether the route is an ASGI route.
         """
         return parse_path_to_route(
             mount_paths_regex=self._mount_paths_regex,

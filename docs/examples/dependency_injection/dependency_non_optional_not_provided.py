@@ -15,5 +15,6 @@ async def hello_world(non_optional_dependency: NamedDependency[int]) -> dict[str
 
 app = Litestar(route_handlers=[hello_world])
 
-# ImproperlyConfiguredException: 500: Explicit dependency 'non_optional_dependency' for 'hello_world' has no default
-# value, or provided dependency.
+# MissingProviderError: Registry "[paths='/', handler='hello_world']" has no provider for dependency
+# 'non_optional_dependency'.
+#   required by: hello_world (.../dependency_non_optional_not_provided.py:7)

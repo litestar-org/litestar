@@ -15,7 +15,7 @@ We're thrilled to introduce some exciting changes in our latest release, version
 The most noteworthy transformation you will notice is the rebranding of our project,
 previously known as Starlite, now stepping into the limelight as Litestar.
 
-The name "Starlite" was chosen as an homage to `Starlette <https://www.starlette.io/>`_,
+The name "Starlite" was chosen as an homage to `Starlette <https://starlette.dev/>`_,
 the ASGI framework and toolkit Starlite was initially based on. Over the course of its
 development, Starlite grew more independent and relied less on Starlette, up to the
 point were Starlette was officially removed as a dependency in November 2022, with the

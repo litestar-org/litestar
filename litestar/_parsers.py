@@ -14,7 +14,6 @@ def parse_qsl(qs: bytes, separator: str) -> list[tuple[str, str]]:
 __all__ = ("parse_cookie_string", "parse_query_string", "parse_url_encoded_form_data")
 
 
-@lru_cache(1024)
 def parse_url_encoded_form_data(encoded_data: bytes) -> dict[str, str | list[str]]:
     """Parse an url encoded form data dict.
 

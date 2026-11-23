@@ -6,8 +6,7 @@ import functools
 from functools import partial
 from typing import TYPE_CHECKING, Any, NoReturn, cast
 
-from litestar._signature import SignatureModel
-from litestar.di import Provide
+from litestar._layers.utils import narrow_dependencies
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.middleware.constraints import check_middleware_constraints
@@ -27,19 +26,21 @@ from litestar.utils import ensure_async_callable, get_name, join_paths, normaliz
 from litestar.utils.deprecation import deprecated
 from litestar.utils.empty import value_or_default
 from litestar.utils.helpers import unwrap_partial
+from litestar.utils.scope.state import ScopeState
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, merge_signature_namespaces
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Mapping, Sequence
+    from collections.abc import Callable, Coroutine, Mapping, Sequence
     from typing import Self
 
-    from litestar._kwargs import KwargsModel
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
+    from litestar.di import DependencyKey, DIContext, Provide, Provider
+    from litestar.di._route_handler import HandlerInjectionSetup
     from litestar.dto import AbstractDTO
     from litestar.router import Router
     from litestar.routes import BaseRoute
-    from litestar.types import AsyncAnyCallable
+    from litestar.types import AsyncAnyCallable, Scope
     from litestar.types.callable_types import AnyCallable, AsyncGuard
     from litestar.types.empty import EmptyType
 
@@ -54,12 +55,13 @@ class BaseRouteHandler:
 
     __slots__ = (
         "_dto",
+        "_injection_setup",
         "_parameter_field_definitions",
         "_parsed_data_field",
         "_parsed_fn_signature",
         "_parsed_return_field",
-        "_resolved_signature_model",
         "_return_dto",
+        "_validate_request_parameters",
         "dependencies",
         "exception_handlers",
         "fn",
@@ -73,6 +75,15 @@ class BaseRouteHandler:
         "type_decoders",
         "type_encoders",
     )
+
+    _injection_setup: HandlerInjectionSetup
+    """What injecting the handler's function takes. Set on registration"""
+
+    _validate_request_parameters: Callable[[ASGIConnection], Coroutine[Any, Any, dict[str, Any]]] | None
+    """The validation pass over the request parameters of the handler's function, dependencies and layers,
+    see :func:`~litestar._request_parameters.validation.create_request_param_validaton_fn`. ``None`` if
+    there are none. Set on registration
+    """
 
     def __init__(
         self,
@@ -102,7 +113,7 @@ class BaseRouteHandler:
             fn: The handler function
 
                 .. versionadded:: 3.0
-            dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -125,18 +136,10 @@ class BaseRouteHandler:
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
         self._parsed_return_field: FieldDefinition | EmptyType = Empty
-        self._parsed_data_field: FieldDefinition | None | EmptyType = Empty
+        self._parsed_data_field: FieldDefinition | None = None
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
-        self._resolved_signature_model: type[SignatureModel] | EmptyType = Empty
 
-        self.dependencies = (
-            {
-                key: provider if isinstance(provider, Provide) else Provide(provider)
-                for key, provider in dependencies.items()
-            }
-            if dependencies
-            else {}
-        )
+        self.dependencies = narrow_dependencies(dependencies)
         self._dto = dto
         self._return_dto = return_dto
         self.exception_handlers = exception_handlers or {}
@@ -253,24 +256,6 @@ class BaseRouteHandler:
         return partial(default_serializer, type_encoders=self.type_encoders)
 
     @property
-    def signature_model(self) -> type[SignatureModel]:
-        """Get the signature model for the route handler.
-
-        Returns:
-            A signature model for the route handler.
-
-        """
-        if self._resolved_signature_model is Empty:
-            self._resolved_signature_model = SignatureModel.create(
-                dependency_name_set=set(self.dependencies.keys()),
-                fn=cast("AnyCallable", self.fn),
-                parsed_signature=self.parsed_fn_signature,
-                data_dto=self.data_dto,
-                type_decoders=self.type_decoders,
-            )
-        return self._resolved_signature_model
-
-    @property
     def parsed_fn_signature(self) -> ParsedSignature:
         """Return the parsed signature of the handler function.
 
@@ -292,8 +277,7 @@ class BaseRouteHandler:
 
     @property
     def parsed_data_field(self) -> FieldDefinition | None:
-        if self._parsed_data_field is Empty:
-            self._parsed_data_field = self.parsed_fn_signature.parameters.get("data")
+        """The request body of an HTTP handler, or the data a websocket listener receives. Set on registration"""
         return self._parsed_data_field
 
     @property
@@ -355,36 +339,10 @@ class BaseRouteHandler:
         return self.guards
 
     @deprecated("3.0", removal_in="4.0", alternative=".dependencies attribute")
-    def resolve_dependencies(self) -> dict[str, Provide]:
+    def resolve_dependencies(self) -> dict[DependencyKey, Provider | Provide | AnyCallable]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
 
         return self.dependencies
-
-    def _finalize_dependencies(self, app: Litestar) -> None:
-        dependencies: dict[str, Provide] = {}
-
-        # keep track of which providers are available for each dependency
-        provider_keys: dict[Any, str] = {}
-
-        for key, provider in self.dependencies.items():
-            # ensure that if a provider for this dependency has already been registered,
-            # registering this provider again is only allowed as an override, i.e. with
-            # the same key
-            if (existing_key := provider_keys.get(provider.dependency)) and existing_key != key:
-                raise ImproperlyConfiguredException(
-                    f"Provider for {provider.dependency!r} with key {key!r} is already defined under a different key "
-                    f"{existing_key!r}. If you wish to override a provider, it must have the same key."
-                )
-
-            provider.finalize(
-                plugins=app.plugins,
-                signature_namespace=self.signature_namespace,
-                data_dto=self.data_dto,
-                dependency_keys=set(self.dependencies),
-                type_decoders=self.type_decoders,
-            )
-            provider_keys[provider.dependency] = key
-            dependencies[key] = provider
 
     @deprecated("3.0", removal_in="4.0", alternative=".middleware attribute")
     def resolve_middleware(self) -> tuple[Middleware, ...]:
@@ -493,6 +451,21 @@ class BaseRouteHandler:
 
         return resolved_return_dto
 
+    def _create_di_request_context(self, app_ctx: DIContext | None, scope: Scope) -> DIContext:
+        """Return the request's dependency context, not yet entered: nested in ``app_ctx`` if the app has one, and
+        resolving through the handler's registry. It is stored in the scope state.
+        """
+        request_ctx = self._injection_setup.request_context.create(app_ctx)
+        ScopeState.from_scope(scope).dependency_context = request_ctx
+        return request_ctx
+
+    def _create_di_handler_context(self, connection: ASGIConnection, seeds: dict[Any, Any]) -> DIContext:
+        """Return the handler's dependency context for ``connection``, not yet entered: nested in the request's
+        and seeded with ``seeds``.
+        """
+        request_ctx = cast("DIContext", ScopeState.from_scope(connection.scope).dependency_context)
+        return self._injection_setup.handler_context.create(request_ctx, seeds)
+
     async def authorize_connection(self, connection: ASGIConnection) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
         for guard in self.guards:
@@ -513,7 +486,6 @@ class BaseRouteHandler:
         self._return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
 
         self._validate_handler_function()
-        self._finalize_dependencies(app=app)
 
         check_middleware_constraints(self.middleware)
 
@@ -536,19 +508,3 @@ class BaseRouteHandler:
         if not hasattr(target, "__qualname__"):
             target = type(target)
         return f"{target.__module__}.{target.__qualname__}"
-
-    def _create_kwargs_model(
-        self,
-        path_parameters: Iterable[str],
-    ) -> KwargsModel:
-        """Create a `KwargsModel` for a given route handler."""
-        from litestar._kwargs import KwargsModel
-
-        return KwargsModel.create_for_signature_model(
-            signature_model=self.signature_model,
-            parsed_signature=self.parsed_fn_signature,
-            dependencies=self.dependencies,
-            path_parameters=set(path_parameters),
-            layered_parameters=self.parameter_field_definitions,
-            ctx=self,
-        )
