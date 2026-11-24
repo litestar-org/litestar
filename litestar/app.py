@@ -20,7 +20,6 @@ from uuid import UUID
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, run_asgi_lifespan, wrap_in_exception_handler
-from litestar._layers.utils import narrow_dependencies
 from litestar._openapi.plugin import OpenAPIPlugin
 from litestar._openapi.schema_generation import openapi_schema_plugins
 from litestar.config.allowed_hosts import AllowedHostsConfig

@@ -170,6 +170,7 @@ nitpick_ignore = [
     (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
+    (PY_CLASS, "named"),  # Dependency.kind rendered as a class reference
     # types in changelog that no longer exist
     (PY_ATTR, "litestar.dto.factory.DTOConfig.underscore_fields_private"),
     (PY_CLASS, "anyio.abc.BlockingPortal"),
