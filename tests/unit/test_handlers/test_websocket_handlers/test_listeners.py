@@ -254,6 +254,21 @@ def test_listener_callback_request_arg_raises() -> None:
         Litestar([handler])
 
 
+def test_listener_dependency_error_names_the_listener() -> None:
+    @websocket_listener("/fn")
+    async def fn_listener(data: str, value: NamedDependency[int]) -> None: ...
+
+    class ClassListener(WebsocketListener):
+        path = "/cls"
+
+        async def on_receive(self, data: str, value: NamedDependency[int]) -> None: ...
+
+    with pytest.raises(MissingProviderError, match=r"^Registry \"\[paths='/fn', handler='fn_listener'\]\" has no"):
+        Litestar([fn_listener])
+    with pytest.raises(MissingProviderError, match=r"^Registry \"\[paths='/cls', handler='ClassListener'\]\" has no"):
+        Litestar([ClassListener])
+
+
 def test_listener_accept_connection_callback() -> None:
     async def accept_connection(socket: WebSocket) -> None:
         await socket.accept(headers={"Cookie": "custom-cookie"})

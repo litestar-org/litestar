@@ -25,6 +25,7 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.utils import ensure_async_callable
+from litestar.utils.helpers import get_name, unwrap_partial
 from litestar.utils.signature import ParsedSignature, get_fn_type_hints
 
 from ._utils import (
@@ -268,6 +269,13 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         return ListenerHandler(
             listener=self, fn=self.fn, parsed_signature=parsed_signature, namespace=self.signature_namespace
         )
+
+    @property
+    def handler_name(self) -> str:
+        """The name of the listener function, or of the :class:`WebsocketListener` class it is a method of."""
+        fn = unwrap_partial(self.fn._wrapped_fn if isinstance(self.fn, ListenerHandler) else self.fn)
+        owner = getattr(fn, "__self__", None)
+        return get_name(type(owner) if isinstance(owner, WebsocketListener) else fn)
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""

@@ -129,7 +129,8 @@ def test_listener_function_dto_data_without_dto_raises_at_startup() -> None:
 
     with pytest.raises(
         MissingDTOError,
-        match=r"^500: \[paths='/ws', handler='\w+'\] Handler function \w+ has a data parameter that is a subclass of DTOData",
+        match=r"^500: \[paths='/ws', handler='listener'\] Handler function listener has a data parameter that is a "
+        r"subclass of DTOData",
     ):
         Litestar([listener], openapi_config=None)
 
@@ -142,7 +143,8 @@ def test_listener_class_dto_data_without_dto_raises_at_startup() -> None:
 
     with pytest.raises(
         MissingDTOError,
-        match=r"^500: \[paths='/ws', handler='\w+'\] Handler function \w+ has a data parameter that is a subclass of DTOData",
+        match=r"^500: \[paths='/ws', handler='Listener'\] Handler function Listener has a data parameter that is a "
+        r"subclass of DTOData",
     ):
         Litestar([Listener], openapi_config=None)
 
