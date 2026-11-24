@@ -105,8 +105,8 @@ class DTOBackend:
         Args:
             dto_factory: The DTO factory class calling this backend.
             field_definition: Parsed type.
-            handler_id: The name of the handler that this backend is for.
-            is_data_field: Whether the field is a subclass of DTOData.
+            handler_id: The handler's identifier.
+            is_data_field: Whether the backend is for the data the handler receives.
             model_type: Model type.
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure,
                 this is the name of the attribute that the data is stored in.

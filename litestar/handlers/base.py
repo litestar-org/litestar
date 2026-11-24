@@ -310,6 +310,11 @@ class BaseRouteHandler:
         """
         return get_name(unwrap_partial(self.fn))
 
+    def _registered_dto_plan(self) -> DTOPlan:
+        if (plan := self._dto_plan) is None:
+            self._raise_not_registered()
+        return plan
+
     def _raise_not_registered(self) -> NoReturn:
         raise LitestarException(
             f"Handler {self!r}: Accessing this attribute is unsafe until the handler has been "

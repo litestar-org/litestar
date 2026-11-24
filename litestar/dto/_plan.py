@@ -20,7 +20,6 @@ if TYPE_CHECKING:
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = (
-    "DTODirectionPlan",
     "DTOPlan",
     "DecodeFn",
     "EncodeFn",
