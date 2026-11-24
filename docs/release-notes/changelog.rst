@@ -11,37 +11,22 @@
         :breaking:
         :pr: 5257
 
-        Litestar no longer calls a DTO class's override of the deprecated DTO entry points
-        listed in "Build one frozen DTO plan per route handler": a route handler decodes,
-        encodes and documents its data with the backends of its DTO plan. A DTO
-        over a type msgspec cannot decode now fails at startup even when the class
-        overrides ``decode_bytes`` or ``decode_builtins``. A DTO class that still
-        overrides one of them emits a deprecation warning per method, once, when a
-        route handler using it is registered, and instantiating a DTO class emits a
-        deprecation warning.
+        Litestar no longer calls a DTO class's overrides of the deprecated DTO entry points, and warns
+        once per overridden method. A DTO over a type msgspec cannot decode now fails at startup even if
+        it overrides ``decode_bytes`` or ``decode_builtins``.
 
     .. change:: DTO: Build one frozen DTO plan per route handler
         :type: misc
         :breaking:
         :pr: 5257
 
-        DTO backends are created once per route handler when the handler is registered
-        and stored on it, instead of in a process-wide dictionary keyed by
-        ``handler_id``, and no DTO instance is created per request. These deprecated DTO
-        entry points will be removed in 4.0: ``AbstractDTO.__init__``,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` and
-        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. Calling them warns,
-        except ``create_openapi_schema``, which plugins call and which has no replacement
-        yet. Code that relied on the following needs to change:
-
-        - ``to_response()`` of a route handler and the DTO handlers of a websocket
-          listener raise a :exc:`~litestar.exceptions.LitestarException` saying the
-          handler is not registered when they are used before registration.
-
-        See :ref:`release-notes/whats-new-3:Overrides of the deprecated DTO entry points are no longer called`.
+        DTO backends are created once per route handler at registration, and no DTO instance is created
+        per request. ``AbstractDTO.__init__``, ``decode_bytes``, ``decode_builtins``,
+        ``data_to_encodable_type``, ``create_for_field_definition`` and ``create_openapi_schema`` are
+        deprecated for removal in 4.0; all but ``create_openapi_schema`` warn when called.
+        ``to_response()`` and the DTO handlers of a websocket listener raise
+        :exc:`~litestar.exceptions.LitestarException` before registration. See
+        :ref:`release-notes/whats-new-3:Overrides of the deprecated DTO entry points are no longer called`.
 
     .. change:: DTO: Honour ``DTOField`` marks given as a string
         :type: bugfix

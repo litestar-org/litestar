@@ -37,16 +37,8 @@ Deprecated entry points
     :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` is deprecated and keeps working for tools that
     pass ``handler.handler_id``.
 
-A DTO is applied through a plan that is built when its route handler is registered, and a DTO class is not
-instantiated per request. Litestar no longer calls these members, nor a DTO class's override of them: a class that
-overrides one of them to change how data is decoded, encoded or documented must move that logic out of the DTO.
-
-Calling them directly keeps working and emits a deprecation warning, except for
-:meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`, which plugins call and which has no replacement yet.
-A class that overrides one of them emits a deprecation warning when a route handler using it is registered. To find the DTO classes a registered route handler
-applies, read ``handler.data_dto`` and ``handler.return_dto``. There is no replacement yet for decoding or encoding
-with a DTO outside a route handler.
-
+Litestar calls neither these members nor a DTO class's override of them; see
+:ref:`release-notes/whats-new-3:Overrides of the deprecated DTO entry points are no longer called`.
 The two abstract methods above and the class-level hooks
 :meth:`~litestar.dto.base_dto.AbstractDTO.get_config_for_model_type`,
 :attr:`~litestar.dto.base_dto.AbstractDTO.attribute_accessor`,
