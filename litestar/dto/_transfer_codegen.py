@@ -16,7 +16,7 @@ from typing import (
     Protocol,
 )
 
-from msgspec import UNSET
+from msgspec import UNSET, Struct
 
 from litestar.dto._types import (
     CollectionType,
@@ -74,6 +74,7 @@ class TransferFunctionFactory:
         self.is_data_field = is_data_field
         self._fn_locals: dict[str, Any] = {
             "Mapping": Mapping,
+            "Struct": Struct,
             "UNSET": UNSET,
         }
         if attribute_accessor is not getattr:
@@ -342,7 +343,8 @@ class TransferFunctionFactory:
 
             for source_type in ("mapping", "object"):
                 if source_type == "mapping":
-                    block_expr = f"if isinstance({source_instance_name}, Mapping):"
+                    struct_check = f"not isinstance({source_instance_name}, Struct) and " if self.is_data_field else ""
+                    block_expr = f"if {struct_check}isinstance({source_instance_name}, Mapping):"
                     access_item = self._access_mapping_item
                 else:
                     block_expr = "else:"
