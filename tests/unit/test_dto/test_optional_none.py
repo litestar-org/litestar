@@ -15,6 +15,7 @@ from litestar.params import JSONBody, MultipartBody, URLEncodedBody
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from tests.helpers import not_none
+from tests.unit.test_dto import registered
 
 T = TypeVar("T")
 
@@ -265,7 +266,7 @@ def test_builtins_decoder_returns_none_for_optional_annotation() -> None:
         return None
 
     app = Litestar([create], openapi_config=None)
-    backend = not_none(not_none(app.route_handler_method_map["/"]["POST"]._dto_plan).data).backend
+    backend = not_none(not_none(registered(app)._dto_plan).data).backend
 
     assert backend.populate_data_from_builtins(None, RequestFactory().get()) is None
 

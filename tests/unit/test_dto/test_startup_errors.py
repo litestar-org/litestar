@@ -25,6 +25,7 @@ from litestar.params import JSONBody
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 from tests.helpers import not_none
+from tests.unit.test_dto import registered
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
@@ -348,7 +349,7 @@ def test_unrelated_type_error_in_schema_generation_is_not_converted() -> None:
         return User(id=1, name="a")
 
     app = Litestar([read], openapi_config=None)
-    handler = app.route_handler_method_map["/"]["GET"]
+    handler = registered(app, method="GET")
     direction_plan = not_none(not_none(handler._dto_plan).return_)
     schema_creator = cast("SchemaCreator", RaisingSchemaCreator())
 
