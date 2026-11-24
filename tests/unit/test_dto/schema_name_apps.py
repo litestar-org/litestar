@@ -1,5 +1,3 @@
-import json
-import sys
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Final, Generic, TypeVar
@@ -190,9 +188,3 @@ def describe(app: Litestar) -> dict[str, Any]:
         for method, operation in item.items()
     }
     return {"components": sorted(document["components"]["schemas"]), "operations": operations}
-
-
-def main(app_id: str, builds: str) -> None:
-    for _ in range(int(builds) - 1):
-        APPS[app_id]()
-    sys.stdout.write(json.dumps(describe(APPS[app_id]())))
