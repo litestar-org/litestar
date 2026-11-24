@@ -5,7 +5,7 @@ from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
 from contextvars import ContextVar
 from dataclasses import dataclass
 from types import NoneType
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
 
 import msgspec
 
@@ -268,8 +268,6 @@ def create_backend(
     backend = backend_cls.__new__(backend_cls)
     if registry is not None:
         backend._naming = TransferModelNaming(registry, name_scope)
-    backend._passes_none = target.passes_none
-    backend._wrapped_passes_none = target.wrapped_passes_none
     backend_cls.__init__(
         backend,
         dto_factory=dto,
@@ -279,6 +277,8 @@ def create_backend(
         is_data_field=is_data_field,
         handler_id=handler_id,
     )
+    backend._passes_none = target.passes_none
+    backend._wrapped_passes_none = target.wrapped_passes_none
     return backend
 
 
@@ -401,7 +401,7 @@ def _resolve_data_dto(
         if data_field is None:
             return dto, None
         if (target := resolve_dto_target(dto, data_field, "data")) is None and declaration.source == "handler":
-            raise _not_applicable(declaration, dto, "data", data_field)
+            raise _not_applicable(declaration, data_field)
         return dto, target
     if data_field is not None and (plugin := _find_serialization_plugin(app, data_field)):
         plugin_dto = plugin.create_dto_for_type(data_field)
@@ -424,7 +424,7 @@ def _resolve_return_dto(
         if (target := resolve_dto_target(dto, return_field, "return")) is not None:
             return dto, target
         if declaration.source == "handler":
-            raise _not_applicable(declaration, dto, "return", return_field)
+            raise _not_applicable(declaration, return_field)
         return None
     if data_dto is not None and (target := resolve_dto_target(data_dto, return_field, "return")) is not None:
         return data_dto, target
@@ -458,12 +458,9 @@ def _not_applicable_reason(
     return None
 
 
-def _not_applicable(
-    declaration: DTODeclaration,
-    dto: type[AbstractDTO[Any]],
-    direction: Literal["data", "return"],
-    field_definition: FieldDefinition,
-) -> DTONotApplicableError:
+def _not_applicable(declaration: DTODeclaration, field_definition: FieldDefinition) -> DTONotApplicableError:
+    dto = cast("type[AbstractDTO[Any]]", declaration.value)
+    direction: Literal["data", "return"] = "data" if declaration.option == "dto" else "return"
     name = dto_name(dto)
     annotation = _format_annotation(field_definition.annotation)
     declared = f"'{declaration.option}={name}' is declared on the handler"
@@ -484,7 +481,6 @@ def _not_applicable(
         message,
         dto=dto,
         option=declaration.option,
-        direction=direction,
         annotation=field_definition.annotation,
     )
 
@@ -520,11 +516,11 @@ def _build_direction(
         except AttributeError as exc:
             if exc.name != "_dto_backends":
                 raise
-            raise _no_backend_error(dto, handler) from exc
+            raise _no_backend_error(dto) from exc
         finally:
             _plan_build.reset(token)
         if build.backend is None:
-            raise _no_backend_error(dto, handler)
+            raise _no_backend_error(dto)
         backend = build.backend
 
     backend._bind_handler(type_decoders=handler.type_decoders, default_deserializer=handler.default_deserializer)
@@ -537,19 +533,16 @@ def dto_name(dto: type[AbstractDTO[Any]]) -> str:
     """Name ``dto`` in an error message: its qualified name, or, for a class created by subscripting a DTO class,
     the name of that class subscripted with the name of the model, such as ``DataclassDTO[User]``.
     """
-    name: str | None = getattr(dto, "__qualname__", None)
-    if name is None:
-        return repr(dto)
+    name = dto.__qualname__
     model_type = getattr(dto, "model_type", None)
     if "[" in name and isinstance(model_type, type):
         return f"{name.split('[', 1)[0]}[{model_type.__qualname__}]"
     return name
 
 
-def _no_backend_error(dto: type[AbstractDTO[Any]], handler: BaseRouteHandler) -> DTOFactoryException:
+def _no_backend_error(dto: type[AbstractDTO[Any]]) -> DTOFactoryException:
     return DTOFactoryException(
-        f"{dto_name(dto)}.create_for_field_definition() created no backend for handler {handler}: an override must "
-        "call the base method"
+        f"{dto_name(dto)}.create_for_field_definition() created no backend: an override must call the base method"
     )
 
 

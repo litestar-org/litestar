@@ -92,13 +92,6 @@ class DTOBackend:
         "wrapper_attribute_name",
     )
 
-    _passes_none: bool
-    """Whether the whole value may be ``None``. Assigned by :func:`~litestar.dto._plan.create_backend`"""
-    _wrapped_passes_none: bool
-    """Whether the value of the wrapper attribute may be ``None``. Assigned by
-    :func:`~litestar.dto._plan.create_backend`
-    """
-
     def __init__(
         self,
         dto_factory: type[AbstractDTO],
@@ -121,6 +114,8 @@ class DTOBackend:
         """
         self._type_decoders: TypeDecodersSequence | None = None
         self._default_deserializer: Callable[[Any, Any], Any] | None = None
+        self._passes_none = False
+        self._wrapped_passes_none = False
         self.dto_factory: Final[type[AbstractDTO]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
         self.is_data_field: Final[bool] = is_data_field
@@ -165,7 +160,7 @@ class DTOBackend:
                 return (
                     f"{prefix} {_qualified_name(self.model_type)!r}: field {field_definition.name!r} of "
                     f"{_qualified_name(owner)!r}, annotated {field_definition.raw!r}, is rejected by msgspec "
-                    f"({_msgspec_reason(field_exc)}){f'; {hint}' if hint else ''} (handler {self.handler_id!r})"
+                    f"({_msgspec_reason(field_exc)}){f'; {hint}' if hint else ''}"
                 )
         return f"{prefix} {self.model_type.__name__!r}: {exc}"
 
@@ -344,7 +339,7 @@ class DTOBackend:
             Instance or collection of ``model_type`` instances.
         """
         parsed = self.parse_builtins(builtins, asgi_connection)
-        if parsed is None and getattr(self, "_passes_none", False):
+        if parsed is None and self._passes_none:
             return None
         if self.dto_data_type:
             return self.dto_data_type(backend=self, data_as_builtins=self._transfer_to_dict(parsed))
@@ -372,7 +367,7 @@ class DTOBackend:
             Instance or collection of ``model_type`` instances.
         """
         parsed: Any = self.parse_raw(raw, asgi_connection)
-        if parsed is None and getattr(self, "_passes_none", False):
+        if parsed is None and self._passes_none:
             return None
         if self.dto_data_type:
             return self.dto_data_type(backend=self, data_as_builtins=self._transfer_to_dict(parsed))
@@ -387,11 +382,11 @@ class DTOBackend:
         Returns:
             Encoded data.
         """
-        if data is None and getattr(self, "_passes_none", False):
+        if data is None and self._passes_none:
             return None
         if self.wrapper_attribute_name:
             wrapped = getattr(data, self.wrapper_attribute_name)
-            if wrapped is None and getattr(self, "_wrapped_passes_none", False):
+            if wrapped is None and self._wrapped_passes_none:
                 return cast("LitestarEncodableType", data)
             setattr(data, self.wrapper_attribute_name, self._encode_data(wrapped))
             return cast("LitestarEncodableType", data)
