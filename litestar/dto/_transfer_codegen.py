@@ -48,17 +48,7 @@ def _is_plain_identifier(name: str) -> bool:
 
 @cache
 def _compile(source: str) -> "CodeType":
-    # add the function to linecache, to get better stacktraces when an error occurs
-    # otherwise, the traceback within the generated code will just point
-    # to '<string>'
-    file_name = f"dto_transfer_function_{hashlib.sha256(source.encode()).hexdigest()[:12]}"
-    linecache.cache[file_name] = (
-        len(source),
-        None,  # mtime: not applicable
-        [line + "\n" for line in source.splitlines()],
-        file_name,
-    )
-    return compile(source, file_name, "exec")
+    return compile(source, f"dto_transfer_function_{hashlib.sha256(source.encode()).hexdigest()[:12]}", "exec")
 
 
 class FieldAccessManager(Protocol):
@@ -109,7 +99,19 @@ class TransferFunctionFactory:
         """Wrap the current body contents in a function definition and turn it into a callable object"""
         source = f"def {fn_name}({source_value_name}):\n{''.join(self._body)} return {return_value_name}"
         ctx: dict[str, Any] = {**self._fn_locals}
-        exec(_compile(source), ctx)  # noqa: S102
+        code = _compile(source)
+
+        # add the function to linecache, to get better stacktraces when an error occurs
+        # otherwise, the traceback within the generated code will just point
+        # to '<string>'
+        if code.co_filename not in linecache.cache:
+            linecache.cache[code.co_filename] = (
+                len(source),
+                None,  # mtime: not applicable
+                [line + "\n" for line in source.splitlines()],
+                code.co_filename,
+            )
+        exec(code, ctx)  # noqa: S102
 
         return ctx["func"]  # type: ignore[no-any-return]
 
