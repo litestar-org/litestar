@@ -307,12 +307,12 @@ are now enforced.
 A ``msgspec.Meta`` that msgspec does not support where it is written, such as
 ``Annotated[str | None, Meta(min_length=2)]``, used to be ignored by ``DataclassDTO``. A
 DTO used for inbound data now fails at startup with
-:exc:`~litestar.exceptions.dto_exceptions.InvalidAnnotationException` until the
-constraint is attached to the member: ``Annotated[str, Meta(min_length=2)] | None``.
-``MsgspecDTO`` already failed at startup for such a model, whichever the direction. The
-same startup error replaces the ``500`` response every request received for a DTO over a
-union of models without tags. ``PydanticDTO`` and DTO classes that decode the request
-body themselves are not checked.
+:exc:`~litestar.exceptions.DTOTransferTypeError`, a subclass of
+``InvalidAnnotationException``, until the constraint is attached to the member:
+``Annotated[str, Meta(min_length=2)] | None``. ``MsgspecDTO`` already failed at startup
+for such a model, whichever the direction. The same startup error replaces the ``500``
+response every request received for a DTO over a union of models without tags. DTO
+classes that decode the request body themselves are not checked.
 
 Constraints from ``annotated_types`` metadata, such as
 ``Annotated[str, annotated_types.MinLen(2)]``, and from parameter definitions are
@@ -841,3 +841,75 @@ parameter and forward it, because :func:`~.handlers.asgi` always passes it.
 .. seealso::
 
     :ref:`usage/routing/handlers:ASGI route handler considerations`
+
+
+DTO applicability and startup errors
+------------------------------------
+
+Litestar decides with one set of rules, in both directions, whether a DTO handles the
+annotation of a handler's request data or return value, see
+:ref:`usage/dto/0-basic-use:When a DTO applies`. A DTO declared on a controller, a router or
+the application that cannot handle an annotation is now skipped for it, where some of
+these cases raised :exc:`~litestar.exceptions.InvalidAnnotationException` when the
+application was created. The same holds for the ``dto`` used for the return value when no
+``return_dto`` is declared, and for a DTO created by a serialization plugin. A skipped
+declaration is not replaced by another source.
+
+.. code-block:: python
+    :caption: Before
+
+    class UserController(Controller):
+        dto = UserDTO
+
+        @post("/search")
+        async def search(self, data: JSONBody[Filter]) -> list[User]: ...
+
+
+    # InvalidAnnotationException: DTO narrowed with '<class 'User'>', handler type is '<class 'Filter'>'
+    app = Litestar([UserController])
+
+.. code-block:: python
+    :caption: After
+
+    class UserController(Controller):
+        dto = UserDTO
+
+        @post("/search")
+        async def search(self, data: JSONBody[Filter]) -> list[User]: ...
+
+
+    # starts: the body is decoded as a plain Filter, the returned users are encoded by UserDTO
+    app = Litestar([UserController])
+
+A DTO declared on the handler itself still raises when it cannot decode the request data,
+now as :exc:`~litestar.exceptions.DTONotApplicableError`, a subclass of
+``InvalidAnnotationException``. Every DTO error raised when the application is created
+starts with ``[paths=..., handler=...]``. Request data annotated with ``DTOData`` without a
+DTO raises :exc:`~litestar.exceptions.MissingDTOError`, a subclass of
+``ImproperlyConfiguredException``, for websocket listeners as well, which used to start.
+:class:`~litestar.plugins.pydantic.PydanticDTO` is now covered by the startup check that
+raises :exc:`~litestar.exceptions.DTOTransferTypeError`.
+
+Two request data shapes are no longer handled by a DTO. A generic wrapper, such as
+``JSONBody[Wrapper[User]]``, used to accept a bare ``User`` and inject it in place of the
+wrapper. A form body annotated with a collection, such as ``MultipartBody[list[User]]``,
+used to inject the raw form values, or to fail with a ``500`` response for URL-encoded
+data. A DTO declared on the handler raises for both; a DTO declared on a layer is skipped.
+
+``-> Optional[Wrapper[User]]`` and ``-> Optional[Response[User]]`` now go through the
+return DTO, which used to be ignored for them: excluded fields disappear from the response
+and renamed fields are renamed. Declare ``return_dto=None`` on the handler to keep the
+previous output. With an optional annotation, ``None`` now passes through a DTO in both
+directions; a websocket listener with a return DTO sends nothing when it returns ``None``,
+where the connection used to fail.
+
+A DTO class that overrides
+:meth:`~litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field` now receives the
+return annotation without its ``Optional``.
+
+Authors of route handler subclasses: ``merge()`` now passes the keywords ``inherited_dto``
+and ``inherited_return_dto`` to the handler's ``__init__``, which carry the DTOs declared on
+the layers above the handler. A subclass whose ``__init__`` forwards ``**kwargs`` to the
+base class works unchanged. One that accepts only named parameters raises
+:exc:`TypeError` when it is registered, and one that accepts ``**kwargs`` without
+forwarding them loses the DTOs of its layers.

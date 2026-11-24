@@ -145,11 +145,14 @@ to it, the DTO will only accept ``User`` types for "data" and return types.
     :linenos:
 
 In the above example, the handler is declared to use ``UserDTO`` which has been type-narrowed with the ``User`` type.
-However, we annotate the handler with the ``Foo`` type. This will raise an error such as this at runtime:
+However, we annotate the handler with the ``Foo`` type. This will raise an error such as this when the application is
+created:
 
-    litestar.exceptions.dto.InvalidAnnotationException: DTO narrowed with
-    '<class 'docs.examples.data_transfer_objects.factory.type_checking.User'>', handler type is
-    '<class 'docs.examples.data_transfer_objects.factory.type_checking.Foo'>'
+    litestar.exceptions.dto_exceptions.DTONotApplicableError: [paths='/users', handler='create_user']
+    'dto=SQLAlchemyDTO[<class 'docs.examples.data_transfer_objects.factory.type_checking.User'>]' is declared on the
+    handler, but cannot decode its request body annotated 'Foo': the DTO handles 'User'.
+
+The rules are described in :ref:`usage/dto/0-basic-use:When a DTO applies`.
 
 Constraints
 -----------
@@ -185,7 +188,8 @@ Constraints are not applied to data returned from a handler.
 
 A ``msgspec.Meta`` stays where it is written; the DTO does not move it. If msgspec does not support it in that position,
 such as a length on a union in ``Annotated[str | None, Meta(min_length=2)]``, a DTO used for inbound data raises
-:exc:`~litestar.exceptions.dto_exceptions.InvalidAnnotationException` when the application starts, naming the field.
+:exc:`~litestar.exceptions.DTOTransferTypeError`, a subclass of ``InvalidAnnotationException``, when the application
+starts, naming the field.
 Attach the constraint to the member it applies to instead, as ``nickname`` does above. A DTO used only for returned
 data keeps the schema attributes of such a ``Meta``, such as its ``description``, and leaves out the rest, except
 :class:`~litestar.dto.msgspec_dto.MsgspecDTO`: msgspec rejects the model itself, whichever the direction.
@@ -198,8 +202,9 @@ When a field carries both a ``msgspec.Meta`` and another constraint for the same
 as ``Annotated[int, Meta(ge=1), annotated_types.Ge(3)]`` or ``Annotated[int, Meta(gt=0), annotated_types.Ge(5)]``, the
 ``Meta`` wins and the other constraint is not enforced.
 
-The startup check does not apply to :class:`~litestar.plugins.pydantic.PydanticDTO` or to DTO classes that decode the
-request body themselves by overriding ``decode_bytes`` or ``decode_builtins``.
+The startup check applies to :class:`~litestar.plugins.pydantic.PydanticDTO` as well, for instance to a field typed as
+a union of models without tags. It does not apply to DTO classes that decode the request body themselves by overriding
+``decode_bytes`` or ``decode_builtins``.
 
 .. note::
 

@@ -67,12 +67,68 @@ defined in the ownership chain, closest to the handler in question.
     :caption: Controller defined DTOs
     :language: python
 
-In this example, the ``User`` instance received by any handler that declares a ``data`` kwarg, is converted by the
-``UserDTO`` type, and all handler return values are converted into an encodable type by ``UserReturnDTO`` (except for
-the ``delete()`` route, which has the ``return_dto`` disabled).
+In this example, the ``User`` instance received by any handler that declares a ``data`` kwarg is converted by the
+``UserWriteDTO`` type, and the handler return values are converted into an encodable type by ``UserReadDTO``, except
+for ``delete_user()``, which returns ``None``, to which no DTO applies (see `When a DTO applies`_).
 
 DTOs can similarly be defined on :class:`Routers <litestar.router.Router>` and
 :class:`The application <litestar.app.Litestar>` itself.
+
+When a DTO applies
+~~~~~~~~~~~~~~~~~~
+
+A DTO narrowed with ``User`` handles request data or a return value annotated with ``User``, ``Optional[User]``, or a
+collection or mapping of ``User`` such as ``list[User]``, ``dict[str, User]`` or ``tuple[User, ...]``, optional or not.
+For request data it also handles ``DTOData[User]``. For a return value it also handles one generic wrapper around these
+annotations, such as ``Response[User]`` or a generic dataclass holding the data in an attribute typed with its type
+variable, optional or not. In an optional union of several types, such as ``Optional[Union[User, Other]]``, only the
+first member that is not ``None`` counts.
+
+What happens when a DTO cannot handle the annotation depends on where it is declared:
+
+.. list-table::
+    :header-rows: 1
+
+    * - Declared on
+      - The DTO handles the annotation
+      - The DTO cannot handle it
+    * - The route handler
+      - Used
+      - For request data, an error when the application is created. For a return value, an error when the
+        annotation contains the DTO's model, such as ``tuple[User, int]`` or ``AsyncGenerator[User, None]``;
+        otherwise the DTO is not used
+    * - A controller, a router or the application
+      - Used
+      - Skipped
+    * - Implicit: the ``dto`` used for the return value when no ``return_dto`` is declared, or a DTO created by a
+        serialization plugin
+      - Used
+      - Skipped
+
+The declaration closest to the handler decides, and ends the search: a ``return_dto`` that is skipped is not replaced by
+the ``dto`` or by a serialization plugin, and a skipped ``dto`` is not replaced by a serialization plugin. A ``dto``
+that is skipped for the request data is still used for the return value if no ``return_dto`` is declared and it can
+handle the return annotation. ``None`` disables DTOs for that direction.
+
+A return annotation of ``None`` never uses a DTO. With an optional annotation, ``None`` passes through the DTO: the
+handler can return ``None``, and a ``null`` request body is injected as ``None``.
+
+URL-encoded and multipart form data is decoded into one model: a DTO does not handle a form body annotated with a
+collection, such as ``MultipartBody[list[User]]``. Invalid form data receives a ``400 Bad Request`` response with the
+same body as invalid JSON data. Streamed responses, server-sent events and the items of an asynchronous generator are
+not transferred by a DTO.
+
+DTO configuration errors raised when the application is created start with the paths and the name of the handler,
+``[paths='/users', handler='create_user']``:
+
+- :exc:`~litestar.exceptions.DTONotApplicableError`: a DTO declared on the handler cannot handle the annotation;
+- :exc:`~litestar.exceptions.MissingDTOError`: request data is annotated with ``DTOData`` but no DTO decodes it;
+- :exc:`~litestar.exceptions.DTOTransferTypeError`: msgspec rejects the model, or the type the DTO transfers for it
+  (see :ref:`usage/dto/1-abstract-dto:Constraints`).
+
+The first and the last are subclasses of :exc:`~litestar.exceptions.InvalidAnnotationException`, and
+:exc:`~litestar.exceptions.MissingDTOError` is a subclass of
+:exc:`~litestar.exceptions.ImproperlyConfiguredException`.
 
 
 Code generation
