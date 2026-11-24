@@ -77,10 +77,12 @@ class DTOBackend:
         "_encode_data",
         "_naming",
         "_nested_model_names",
+        "_passes_none",
         "_transfer_function_cache",
         "_transfer_to_dict",
         "_transfer_to_model_type",
         "_type_decoders",
+        "_wrapped_passes_none",
         "annotation",
         "attribute_accessor",
         "dto_data_type",
@@ -94,6 +96,13 @@ class DTOBackend:
         "transfer_model_type",
         "wrapper_attribute_name",
     )
+
+    _passes_none: bool
+    """Whether the whole value may be ``None``. Assigned by :func:`~litestar.dto._plan.create_backend`"""
+    _wrapped_passes_none: bool
+    """Whether the value of the wrapper attribute may be ``None``. Assigned by
+    :func:`~litestar.dto._plan.create_backend`
+    """
 
     def __init__(
         self,
@@ -345,12 +354,12 @@ class DTOBackend:
         Returns:
             Instance or collection of ``model_type`` instances.
         """
+        parsed = self.parse_builtins(builtins, asgi_connection)
+        if parsed is None and getattr(self, "_passes_none", False):
+            return None
         if self.dto_data_type:
-            return self.dto_data_type(
-                backend=self,
-                data_as_builtins=self._transfer_to_dict(self.parse_builtins(builtins, asgi_connection)),
-            )
-        return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
+            return self.dto_data_type(backend=self, data_as_builtins=self._transfer_to_dict(parsed))
+        return self.transfer_data_from_builtins(parsed)
 
     def transfer_data_from_builtins(self, builtins: Any) -> Any:
         """Populate model instance from builtin types.
@@ -373,12 +382,12 @@ class DTOBackend:
         Returns:
             Instance or collection of ``model_type`` instances.
         """
+        parsed: Any = self.parse_raw(raw, asgi_connection)
+        if parsed is None and getattr(self, "_passes_none", False):
+            return None
         if self.dto_data_type:
-            return self.dto_data_type(
-                backend=self,
-                data_as_builtins=self._transfer_to_dict(self.parse_raw(raw, asgi_connection)),
-            )
-        return self._transfer_to_model_type(self.parse_raw(raw, asgi_connection))
+            return self.dto_data_type(backend=self, data_as_builtins=self._transfer_to_dict(parsed))
+        return self._transfer_to_model_type(parsed)
 
     def encode_data(self, data: Any) -> LitestarEncodableType:
         """Encode data into a ``LitestarEncodableType``.
@@ -389,9 +398,13 @@ class DTOBackend:
         Returns:
             Encoded data.
         """
+        if data is None and getattr(self, "_passes_none", False):
+            return None
         if self.wrapper_attribute_name:
-            wrapped_transfer = self._encode_data(self.attribute_accessor(data, self.wrapper_attribute_name))
-            setattr(data, self.wrapper_attribute_name, wrapped_transfer)
+            wrapped = self.attribute_accessor(data, self.wrapper_attribute_name)
+            if wrapped is None and getattr(self, "_wrapped_passes_none", False):
+                return cast("LitestarEncodableType", data)
+            setattr(data, self.wrapper_attribute_name, self._encode_data(wrapped))
             return cast("LitestarEncodableType", data)
 
         return cast("LitestarEncodableType", self._encode_data(data))

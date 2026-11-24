@@ -240,7 +240,7 @@ def create_backend(
         backend_cls = DTOBackend
 
     keywords: dict[str, Any] = {"naming": naming} if naming is not None else {}
-    return backend_cls(
+    backend = backend_cls(
         dto_factory=dto,
         field_definition=target.transfer_field,
         model_type=target.model_field.annotation,
@@ -249,6 +249,9 @@ def create_backend(
         handler_id=handler_id,
         **keywords,
     )
+    backend._passes_none = target.passes_none
+    backend._wrapped_passes_none = target.wrapped_passes_none
+    return backend
 
 
 def build_schema_annotation(
