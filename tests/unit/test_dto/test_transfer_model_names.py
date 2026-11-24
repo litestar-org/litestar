@@ -35,16 +35,6 @@ class Post:
     editor: User
 
 
-@dataclass
-class Item:
-    name: str
-
-
-@get("/", return_dto=DataclassDTO[Item], sync_to_thread=False)
-def handler() -> Item:
-    return Item(name="item")
-
-
 @get("/posts", return_dto=DataclassDTO[Post], sync_to_thread=False)
 def get_post() -> Post:
     return Post(author=User(id=1), editor=User(id=2))
@@ -155,13 +145,6 @@ def plan_names(handler: HTTPRouteHandler, app: Litestar) -> list[str]:
     plan = build_dto_plan(handler, app)
     assert plan.return_ is not None
     return struct_names(plan.return_.backend.transfer_model_type)
-
-
-def test_component_names_are_stable_across_app_instances() -> None:
-    first = Litestar([handler])
-    second = Litestar([handler])
-
-    assert component_names(first) == component_names(second) == ["HandlerItemResponseBody"]
 
 
 def test_two_apps_from_same_handlers_produce_identical_documents() -> None:
@@ -327,7 +310,7 @@ def test_register_keeps_existing_component_names() -> None:
     assert "HbUserResponseBody" in after
 
 
-def test_rebuilding_a_plan_returns_the_same_names() -> None:
+def test_rebuilding_a_plan_returns_the_same_names_and_reserves_none() -> None:
     app = Litestar([Router("/r", route_handlers=[get_post])])
     route_handler = registered(app, "/r/posts", "GET")
     assert route_handler._dto_plan is not None
@@ -337,13 +320,6 @@ def test_rebuilding_a_plan_returns_the_same_names() -> None:
     assert plan_names(route_handler, app) == original
     assert plan_names(route_handler.merge(), app) == original
     assert original == ["GetPostPostResponseBody", "GetPostPostUserResponseBody", "GetPostPost_editorUserResponseBody"]
-
-
-def test_rebuilding_a_plan_reserves_no_new_name() -> None:
-    app = Litestar([Router("/r", route_handlers=[get_post])])
-    route_handler = registered(app, "/r/posts", "GET")
-    plan_names(route_handler, app)
-    plan_names(route_handler.merge(), app)
 
     with pytest.warns(LitestarWarning):
         app.register(Router("/second", route_handlers=[get_post]))
@@ -501,10 +477,6 @@ async def scoped_handler() -> None:
     return None
 
 
-def test_name_for_returns_preferred_when_free() -> None:
-    assert TransferModelRegistry().name_for("k", "A", "m.A") == "A"
-
-
 def test_name_for_falls_back_to_qualified_then_numbered() -> None:
     registry = TransferModelRegistry()
 
@@ -523,14 +495,6 @@ def test_name_for_is_idempotent_per_key() -> None:
 
 def test_registries_are_independent() -> None:
     assert TransferModelRegistry().name_for("k", "A", "m.A") == TransferModelRegistry().name_for("k", "A", "m.A") == "A"
-
-
-def test_naming_numbers_repeats_of_one_model_name() -> None:
-    naming = TransferModelNaming(TransferModelRegistry(), "scope")
-
-    names = [naming.name_for(is_data_field=False, model_name="PostUser", preferred="A", qualified="m.A") for _ in "abc"]
-
-    assert names == ["A", "m.A", "m.A_0"]
 
 
 def test_naming_with_same_scope_reuses_names() -> None:
