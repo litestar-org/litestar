@@ -4,6 +4,8 @@ from typing import Any
 
 import msgspec
 import pytest
+from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, Request, post
 from litestar._openapi.schema_generation import SchemaCreator
@@ -156,6 +158,16 @@ def test_instance_method_on_registered_handler_without_dto_for_direction_raises(
     )
 
 
+class Base(DeclarativeBase):
+    pass
+
+
+class Row(Base):
+    __tablename__ = "row"
+    a: Mapped[int] = mapped_column(primary_key=True)
+    b: Mapped[str]
+
+
 class StructModel(msgspec.Struct):
     a: int
     b: str
@@ -166,6 +178,8 @@ def in_tree_dto(kind: str) -> tuple[type[AbstractDTO[Any]], type[Any]]:
         return DataclassDTO[Model], Model
     if kind == "msgspec":
         return MsgspecDTO[StructModel], StructModel
+    if kind == "sqlalchemy":
+        return SQLAlchemyDTO[Row], Row
     pydantic = pytest.importorskip("pydantic")
     from litestar.plugins.pydantic import PydanticDTO
 
@@ -173,7 +187,7 @@ def in_tree_dto(kind: str) -> tuple[type[AbstractDTO[Any]], type[Any]]:
     return PydanticDTO[pydantic_model], pydantic_model
 
 
-@pytest.mark.parametrize("kind", ["dataclass", "msgspec", "pydantic"])
+@pytest.mark.parametrize("kind", ["dataclass", "msgspec", "pydantic", "sqlalchemy"])
 def test_in_tree_dtos_emit_no_deprecation_warning(kind: str) -> None:
     with warnings.catch_warnings():
         warnings.simplefilter("error", LitestarDeprecationWarning)
@@ -192,6 +206,29 @@ def test_in_tree_dtos_emit_no_deprecation_warning(kind: str) -> None:
             assert client.post("/json", content=PAYLOAD).json() == {"a": 1, "b": "two"}
             assert client.post("/form", data={"a": "1", "b": "two"}).json() == {"a": 1, "b": "two"}
         assert app.openapi_schema.components.schemas
+
+
+def test_overriding_a_deprecated_entry_point_warns_once_per_class_and_method() -> None:
+    class OverridingDTO(DataclassDTO[Model]):
+        def decode_bytes(self, value: bytes) -> Any:
+            return None
+
+        @classmethod
+        def create_openapi_schema(
+            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+        ) -> Any:
+            return None
+
+    with pytest.warns(LitestarDeprecationWarning) as record:
+        Litestar([make_handler(OverridingDTO, OverridingDTO)])
+        Litestar([make_handler(OverridingDTO, None)])
+
+    assert [str(warning.message) for warning in record] == [
+        f"test_overriding_a_deprecated_entry_point_warns_once_per_class_and_method.<locals>.OverridingDTO overrides "
+        f"AbstractDTO.{name}, which is deprecated since litestar 3.0 and no longer called: the override has no "
+        "effect. The method will be removed in 4.0."
+        for name in ("decode_bytes", "create_openapi_schema")
+    ]
 
 
 class OtherDTO(DataclassDTO[Model]):

@@ -4,17 +4,19 @@ from __future__ import annotations
 
 import dataclasses
 import typing
+import warnings
 from abc import abstractmethod
 from collections.abc import Collection
 from inspect import getmodule
 from typing import TYPE_CHECKING, Final, Generic, TypeVar, get_type_hints
-from weakref import WeakValueDictionary
+from weakref import WeakSet, WeakValueDictionary
 
 from litestar.dto._plan import build_schema_annotation, create_backend, dto_name
 from litestar.dto.config import DTOConfig
 from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import LitestarDeprecationWarning
 from litestar.exceptions.dto_exceptions import DTOFactoryException, InvalidAnnotationException
 from litestar.params import BodyKwarg
 from litestar.types.builtin_types import NoneType
@@ -435,9 +437,42 @@ def _find_backend(
 _registered_handlers: WeakValueDictionary[str, BaseRouteHandler] = WeakValueDictionary()
 
 
+_DEPRECATED_ENTRY_POINTS: Final = (
+    "create_for_field_definition",
+    "decode_bytes",
+    "decode_builtins",
+    "data_to_encodable_type",
+    "create_openapi_schema",
+)
+_warned_dto_classes: WeakSet[type[AbstractDTO[Any]]] = WeakSet()
+
+
 def register_handler_id(handler: BaseRouteHandler) -> None:
-    """Make ``handler`` findable by its ``handler_id`` for the deprecated direct calls, as long as it is alive."""
+    """Make ``handler`` findable by its ``handler_id`` for the deprecated direct calls, as long as it is alive, and
+    warn once for each DTO class of its plan that overrides a deprecated entry point.
+    """
     _registered_handlers[handler.handler_id] = handler
+    if (plan := handler._dto_plan) is not None:
+        for dto in (plan.data_dto, plan.return_.dto if plan.return_ else None):
+            if dto is not None and dto not in _warned_dto_classes:
+                _warned_dto_classes.add(dto)
+                _warn_overridden_entry_points(dto)
+
+
+def _warn_overridden_entry_points(dto: type[AbstractDTO[Any]]) -> None:
+    for name in _DEPRECATED_ENTRY_POINTS:
+        if getattr(getattr(dto, name), "__func__", getattr(dto, name)) is not _base_function(name):
+            warnings.warn(
+                f"{dto_name(dto)} overrides AbstractDTO.{name}, which is deprecated since litestar 3.0 and no longer "
+                "called: the override has no effect. The method will be removed in 4.0.",
+                LitestarDeprecationWarning,
+                stacklevel=4,
+            )
+
+
+def _base_function(name: str) -> Any:
+    member = vars(AbstractDTO)[name]
+    return getattr(member, "__func__", member)
 
 
 _NO_INSTANCE_REPLACEMENT: Final = (
