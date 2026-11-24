@@ -94,9 +94,7 @@ What happens when a DTO cannot handle the annotation depends on where it is decl
       - The DTO cannot handle it
     * - The route handler
       - Used
-      - For request data, an error when the application is created. For a return value, an error when the
-        annotation contains the DTO's model, such as ``tuple[User, int]`` or ``AsyncGenerator[User, None]``;
-        otherwise the DTO is not used
+      - Error when the application is created
     * - A controller, a router or the application
       - Used
       - Skipped
@@ -104,6 +102,11 @@ What happens when a DTO cannot handle the annotation depends on where it is decl
         serialization plugin
       - Used
       - Skipped
+
+A ``return_dto`` declared on a handler must handle its return annotation, including ``None``, ``Any``, a streamed
+response or server-sent events: declare ``return_dto=None`` on such a handler to opt out of a ``return_dto`` declared on
+a layer. A ``dto`` declared on a handler without request data is not an error; it is used for the return value when
+no ``return_dto`` is declared and it can handle the return annotation.
 
 The declaration closest to the handler decides, and ends the search: a ``return_dto`` that is skipped is not replaced by
 the ``dto`` or by a serialization plugin, and a skipped ``dto`` is not replaced by a serialization plugin. A ``dto``
@@ -121,7 +124,8 @@ not transferred by a DTO.
 DTO configuration errors raised when the application is created start with the paths and the name of the handler,
 ``[paths='/users', handler='create_user']``:
 
-- :exc:`~litestar.exceptions.DTONotApplicableError`: a DTO declared on the handler cannot handle the annotation;
+- :exc:`~litestar.exceptions.DTONotApplicableError`: a DTO declared on the handler cannot handle the annotation of
+  its request data or return value;
 - :exc:`~litestar.exceptions.MissingDTOError`: request data is annotated with ``DTOData`` but no DTO decodes it;
 - :exc:`~litestar.exceptions.DTOTransferTypeError`: msgspec rejects the model, or the type the DTO transfers for it
   (see :ref:`usage/dto/1-abstract-dto:Constraints`).

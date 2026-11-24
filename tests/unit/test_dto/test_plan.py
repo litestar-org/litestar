@@ -26,7 +26,13 @@ from litestar.dto._plan import (
     read_dto_declaration,
 )
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, LitestarException, LitestarWarning
+from litestar.exceptions import (
+    DTOFactoryException,
+    DTONotApplicableError,
+    InvalidAnnotationException,
+    LitestarException,
+    LitestarWarning,
+)
 from litestar.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketListenerRouteHandler, websocket_stream
 from litestar.openapi.spec import Reference, Schema
 from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
@@ -320,7 +326,6 @@ def test_return_dto_without_wrapper_match_raises(route_handler: Any) -> None:
 @pytest.mark.parametrize(
     "route_handler",
     [
-        pytest.param(r6_handler, id="R6-handler"),
         pytest.param(ReturnLayerController, id="R6-layer"),
     ],
 )
@@ -330,6 +335,12 @@ def test_return_dto_that_cannot_apply_is_dropped(route_handler: Any) -> None:
         assert registered_handler.return_dto is None
         assert read_dto_declaration(registered_handler, "return_dto").value is ModelReadDTO
         assert client.post("/", json={"a": 1, "b": "two"}).json() == {"a": 1, "b": "two"}
+
+
+@pytest.mark.parametrize("route_handler", [pytest.param(r6_handler, id="R6-handler")])
+def test_handler_return_dto_that_cannot_apply_raises(route_handler: Any) -> None:
+    with pytest.raises(DTONotApplicableError):
+        Litestar([route_handler])
 
 
 def test_registration_does_not_overwrite_configuration() -> None:
