@@ -11,7 +11,6 @@ from typing import (
     TYPE_CHECKING,
     Annotated,
     Any,
-    ClassVar,
     Final,
     Protocol,
     Union,
@@ -22,6 +21,7 @@ import msgspec
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
 
 from litestar.dto._codegen_backend import TransferFunctionFactory
+from litestar.dto._registry import TransferModelNaming, TransferModelRegistry
 from litestar.dto._types import (
     CollectionType,
     CompositeType,
@@ -41,7 +41,6 @@ from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils import unique_name_for_scope
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Collection, Iterator, Mapping, Set
@@ -71,6 +70,7 @@ class DTOBackend:
     __slots__ = (
         "_default_deserializer",
         "_encode_data",
+        "_naming",
         "_transfer_function_cache",
         "_transfer_to_dict",
         "_transfer_to_model_type",
@@ -88,8 +88,6 @@ class DTOBackend:
         "transfer_model_type",
         "wrapper_attribute_name",
     )
-
-    _seen_model_names: ClassVar[set[str]] = set()
 
     def __init__(
         self,
@@ -234,16 +232,15 @@ class DTOBackend:
 
         name_suffix = "RequestBody" if self.is_data_field else "ResponseBody"
 
-        if (short_name := f"{short_name_prefix}{model_name}{name_suffix}") not in self._seen_model_names:
-            name = short_name
-        elif (long_name := f"{long_name_prefix}{model_name}{name_suffix}") not in self._seen_model_names:
-            name = long_name
-        else:
-            name = unique_name_for_scope(long_name, self._seen_model_names)
-
-        self._seen_model_names.add(name)
-
-        return name
+        naming: TransferModelNaming | None = getattr(self, "_naming", None)
+        if naming is None:
+            naming = self._naming = TransferModelNaming(TransferModelRegistry(), self.handler_id)
+        return naming.name_for(
+            is_data_field=self.is_data_field,
+            model_name=model_name,
+            preferred=f"{short_name_prefix}{model_name}{name_suffix}",
+            qualified=f"{long_name_prefix}{model_name}{name_suffix}",
+        )
 
     def create_transfer_model_type(
         self,

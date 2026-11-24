@@ -93,7 +93,7 @@ def test_decode_json_typed(benchmark: BenchmarkFixture) -> None:
     assert isinstance(people[0].address, Address)
 
 
-def test_dto_encode_list_100(benchmark: BenchmarkFixture, reset_dto_backends: None) -> None:
+def test_dto_encode_list_100(benchmark: BenchmarkFixture) -> None:
     class PersonDTO(DataclassDTO[Person]):
         pass
 
@@ -105,7 +105,7 @@ def test_dto_encode_list_100(benchmark: BenchmarkFixture, reset_dto_backends: No
     assert len(encoded) == 100
 
 
-def test_dto_request_roundtrip(benchmark: BenchmarkFixture, reset_dto_backends: None, runner: ASGIRunner) -> None:
+def test_dto_request_roundtrip(benchmark: BenchmarkFixture, runner: ASGIRunner) -> None:
     class PersonDTO(DataclassDTO[Person]):
         pass
 

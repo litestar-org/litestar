@@ -134,7 +134,7 @@ def roundtrip(
     return response_body(messages)
 
 
-def test_dto_nested_roundtrip(benchmark: BenchmarkFixture, reset_dto_backends: None, runner: ASGIRunner) -> None:
+def test_dto_nested_roundtrip(benchmark: BenchmarkFixture, runner: ASGIRunner) -> None:
     config = DTOConfig(
         max_nested_depth=2,
         exclude={"items.0.product.internal_cost"},
@@ -144,14 +144,14 @@ def test_dto_nested_roundtrip(benchmark: BenchmarkFixture, reset_dto_backends: N
     assert b"internal_cost" not in body
 
 
-def test_dto_union_roundtrip(benchmark: BenchmarkFixture, reset_dto_backends: None, runner: ASGIRunner) -> None:
+def test_dto_union_roundtrip(benchmark: BenchmarkFixture, runner: ASGIRunner) -> None:
     config = DTOConfig(exclude={"notes"})
     body = roundtrip(benchmark, runner, DataclassDTO[Annotated[Shipment, config]], Shipment, make_shipment())
     assert body.count(b'"street"') == 11
     assert b"notes" not in body
 
 
-def test_dto_pydantic_roundtrip(benchmark: BenchmarkFixture, reset_dto_backends: None, runner: ASGIRunner) -> None:
+def test_dto_pydantic_roundtrip(benchmark: BenchmarkFixture, runner: ASGIRunner) -> None:
     pydantic = pytest.importorskip("pydantic")
     from litestar.plugins.pydantic import PydanticDTO
 
@@ -180,14 +180,13 @@ def test_dto_pydantic_roundtrip(benchmark: BenchmarkFixture, reset_dto_backends:
 
 
 @pytest.mark.parametrize("depth", [2, 4, 8])
-def test_dto_backend_create_self_referential(benchmark: BenchmarkFixture, depth: int, reset_dto_backends: None) -> None:
+def test_dto_backend_create_self_referential(benchmark: BenchmarkFixture, depth: int) -> None:
     class NodeDTO(DataclassDTO[Node]):
         config = DTOConfig(max_nested_depth=depth)
 
     field_definition = FieldDefinition.from_annotation(Node)
 
     def create() -> DTOBackend:
-        DTOBackend._seen_model_names = set()
         return create_backend(NodeDTO, field_definition, is_data_field=False, handler_id="self_referential")
 
     backend = benchmark(create)

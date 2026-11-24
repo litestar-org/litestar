@@ -225,6 +225,8 @@ class AbstractDTO(Generic[T]):
                 is_data_field=build.is_data_field,
                 handler_id=str(handler_id),
                 backend_cls=backend_cls,
+                registry=build.registry,
+                name_scope=build.name_scope,
             )
             return
 

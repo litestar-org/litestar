@@ -31,6 +31,7 @@ from litestar.connection import Request, WebSocket
 from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
 from litestar.datastructures.state import State
 from litestar.di import check_divergence
+from litestar.dto._registry import TransferModelRegistry
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
     ImproperlyConfiguredException,
@@ -147,6 +148,7 @@ class Litestar(Router):
         "_openapi_schema",
         "_provide_converter",
         "_server_lifespan_managers",
+        "_transfer_model_registry",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
@@ -522,6 +524,7 @@ class Litestar(Router):
             self.dependency_registry.freeze()
         self.dependency_context: DIContext | None = None
         self._provide_converter = ProvideConverter(self.plugins)
+        self._transfer_model_registry = TransferModelRegistry()
 
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute]
         self.routes, all_handlers = self._build_routes(self._reduce_handlers(self.route_handlers))
