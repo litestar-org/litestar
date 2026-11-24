@@ -299,6 +299,16 @@ class AbstractDTO(Generic[T]):
 
     @staticmethod
     def get_model_namespace(model_type: type[Any], namespace: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Build the namespace the type hints of ``model_type`` are resolved in.
+
+        Args:
+            model_type: The model whose type hints are resolved.
+            namespace: Names to start from; a non-empty mapping is updated in place.
+
+        Returns:
+            The names of :mod:`typing`, the DTO configuration types and the module of ``model_type``, added to
+            ``namespace``.
+        """
         namespace = namespace or {}
         namespace.update(vars(typing))
         namespace.update(
@@ -316,6 +326,14 @@ class AbstractDTO(Generic[T]):
 
     @classmethod
     def get_property_fields(cls, model_type: type[Any]) -> dict[str, FieldDefinition]:
+        """Return a field definition for each property of ``model_type``.
+
+        Args:
+            model_type: The model whose properties are read, without those of its base classes.
+
+        Returns:
+            The field definitions keyed by property name, typed with the return annotation of the getter.
+        """
         return {
             name: dataclasses.replace(
                 ParsedSignature.from_property(

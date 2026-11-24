@@ -13,11 +13,6 @@ The following factories are currently available:
 - :class:`PydanticDTO <litestar.plugins.pydantic.PydanticDTO>`
 - :class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>`
 
-.. versionchanged:: 3.0
-    A DTO is applied through a plan that is built when its route handler is registered, and a DTO class is not
-    instantiated per request. The entry points this replaces are listed in
-    :doc:`/usage/dto/2-creating-custom-dto-classes`.
-
 Using DTO Factories
 -------------------
 
