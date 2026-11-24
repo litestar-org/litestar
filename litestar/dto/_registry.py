@@ -5,9 +5,7 @@ from litestar.utils import unique_name_for_scope
 if TYPE_CHECKING:
     from collections.abc import Hashable
 
-    from litestar.handlers.base import BaseRouteHandler
-
-__all__ = ("TransferModelNaming", "TransferModelRegistry", "handler_name_scope")
+__all__ = ("TransferModelNaming", "TransferModelRegistry")
 
 
 class TransferModelRegistry:
@@ -51,13 +49,3 @@ class TransferModelNaming:
         ordinal = self._ordinals.get(model_name, 0)
         self._ordinals[model_name] = ordinal + 1
         return self._registry.name_for((self._scope, is_data_field, model_name, ordinal), preferred, qualified)
-
-
-def handler_name_scope(handler: "BaseRouteHandler") -> "Hashable":
-    """Return the value that identifies ``handler`` for naming, equal for every merge of the same registration."""
-    return (
-        str(handler),
-        type(handler).__qualname__,
-        tuple(sorted(handler.paths)),
-        tuple(sorted(getattr(handler, "http_methods", ()))),
-    )
