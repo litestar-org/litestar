@@ -97,7 +97,8 @@ What happens when a DTO cannot handle the annotation depends on where it is decl
       - Error when the application is created
     * - A controller, a router or the application
       - Used
-      - Skipped
+      - Error when the application is created if the annotation contains the DTO's model, such as
+        ``tuple[User, int]`` or ``Union[User, Other]``; skipped otherwise
     * - Implicit: the ``dto`` used for the return value when no ``return_dto`` is declared, or a DTO created by a
         serialization plugin
       - Used
@@ -116,9 +117,12 @@ the ``dto`` or by a serialization plugin, and a skipped ``dto`` is not replaced 
 that is skipped for the request data is still used for the return value if no ``return_dto`` is declared and it can
 handle the return annotation. ``None`` disables DTOs for that direction.
 
+A DTO declared on a layer is skipped only where the annotation does not contain its model, so that the model is
+never sent or received without it: ``str``, ``None``, ``Any``, another model, a bare ``Response``, a streamed response
+or server-sent events. Declare ``dto=None`` or ``return_dto=None`` on a handler to opt out of a layer's DTO.
+
 No DTO handles a return annotation of ``None``, ``Any``, a streamed response or server-sent events, so a
-``return_dto`` declared on the handler raises for them, and one declared on a layer is skipped; declare
-``return_dto=None`` on such a handler to opt out of a layer's ``return_dto``. With an optional annotation, ``None``
+``return_dto`` declared on the handler raises for them. With an optional annotation, ``None``
 passes through the DTO: the handler can return ``None``, and a ``null`` request body is injected as ``None``.
 
 URL-encoded and multipart form data is decoded into one model: a DTO does not handle a form body annotated with a
@@ -130,7 +134,7 @@ DTO configuration errors raised when the application is created start with the p
 ``[paths='/users', handler='create_user']``:
 
 - :exc:`~litestar.exceptions.DTONotApplicableError`: a DTO declared on the handler cannot handle the annotation of
-  its request data or return value;
+  its request data or return value, or a DTO declared on a layer cannot handle an annotation that contains its model;
 - :exc:`~litestar.exceptions.MissingDTOError`: request data is annotated with ``DTOData`` but no DTO decodes it;
 - :exc:`~litestar.exceptions.DTOTransferTypeError`: msgspec rejects the model, or the type the DTO transfers for it
   (see :ref:`usage/dto/1-abstract-dto:Constraints`).

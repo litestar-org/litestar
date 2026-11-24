@@ -47,7 +47,8 @@
 
         Remove the ``return_dto`` from such a handler, or set ``return_dto=None`` on it
         when it inherits one from a layer. A ``return_dto`` declared on a controller, a
-        router or the application is still skipped where it does not apply.
+        router or the application is skipped where the annotation does not contain its
+        model, and raises where it does.
 
     .. change:: DTOs: typed startup errors
         :type: feature
@@ -80,18 +81,23 @@
         One set of rules, described in :ref:`usage/dto/0-basic-use:When a DTO applies`,
         now decides for request data and for return values whether a DTO is used.
 
-        - A ``dto`` declared on a layer that cannot decode the handler's request data is
-          skipped for it; it raised ``InvalidAnnotationException``. It is still used for
-          the return value when no ``return_dto`` is declared and it can encode it.
-        - A ``return_dto`` declared on a layer, the ``dto`` used for the return value and
-          a DTO created by a serialization plugin are skipped for an annotation they
-          cannot handle, such as ``tuple[Model, int]`` or ``AsyncGenerator[Model, None]``;
-          some of these cases raised. No other source takes the place of a skipped one.
+        - A ``dto`` or ``return_dto`` declared on a layer that cannot handle an
+          annotation containing its model, such as ``tuple[Model, int]``,
+          ``Union[Model, Other]`` or ``AsyncGenerator[Model, None]``, raises
+          ``DTONotApplicableError``; declare ``dto=None`` or ``return_dto=None`` on the
+          handler to opt out. For other annotations, such as ``str``, ``None`` or another
+          model, it is skipped; a layer ``dto`` raised ``InvalidAnnotationException`` for
+          them. A skipped ``dto`` is still used for the return value when no
+          ``return_dto`` is declared and it can encode it.
+        - The ``dto`` used for the return value and a DTO created by a serialization
+          plugin are skipped for an annotation they cannot handle. No other source takes
+          the place of a skipped one.
         - A generic wrapper as request data, such as ``JSONBody[Wrapper[Model]]``, is not
-          handled by a DTO: a DTO declared on the handler raises ``DTONotApplicableError``;
-          a bare model was decoded and injected in place of the wrapper before.
+          handled by a DTO, so a DTO declared on the handler or on a layer raises
+          ``DTONotApplicableError``; a bare model was decoded and injected in place of the
+          wrapper before.
         - A form body annotated with a collection, such as ``MultipartBody[list[Model]]``,
-          is not handled by a DTO: a DTO declared on the handler raises
+          is not handled by a DTO, so a DTO declared on the handler or on a layer raises
           ``DTONotApplicableError``; the raw form values were injected for multipart data
           and URL-encoded data received a ``500`` response before.
         - ``-> Optional[Wrapper[Model]]`` and ``-> Optional[Response[Model]]`` use the

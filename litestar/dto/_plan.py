@@ -348,8 +348,10 @@ def _resolve_data_dto(
     if dto is not Empty:
         if data_field is None:
             return dto, None
-        if (target := resolve_dto_target(dto, data_field, is_data_field=True)) is None and declared_on_handler:
-            raise _not_applicable(dto, data_field, is_data_field=True)
+        if (target := resolve_dto_target(dto, data_field, is_data_field=True)) is None and (
+            declared_on_handler or _mentions_model(data_field, dto)
+        ):
+            raise _not_applicable(dto, data_field, is_data_field=True, declared_on_handler=declared_on_handler)
         return dto, target
     if data_field is not None and (plugin := _find_serialization_plugin(app, data_field)):
         plugin_dto = plugin.create_dto_for_type(data_field)
@@ -370,8 +372,8 @@ def _resolve_return_dto(
     if dto is not Empty:
         if (target := resolve_dto_target(dto, return_field, is_data_field=False)) is not None:
             return dto, target
-        if declared_on_handler:
-            raise _not_applicable(dto, return_field, is_data_field=False)
+        if declared_on_handler or _mentions_model(return_field, dto):
+            raise _not_applicable(dto, return_field, is_data_field=False, declared_on_handler=declared_on_handler)
         return None
     if data_dto is not None and (target := resolve_dto_target(data_dto, return_field, is_data_field=False)) is not None:
         return data_dto, target
@@ -405,13 +407,20 @@ def _not_applicable_reason(
     return None
 
 
+def _mentions_model(field_definition: FieldDefinition, dto: "type[AbstractDTO[Any]]") -> bool:
+    return any(
+        inner.is_subclass_of(dto.model_type) or _mentions_model(inner, dto)  # pyright: ignore[reportGeneralTypeIssues]
+        for inner in field_definition.inner_types
+    )
+
+
 def _not_applicable(
-    dto: "type[AbstractDTO[Any]]", field_definition: FieldDefinition, *, is_data_field: bool
+    dto: "type[AbstractDTO[Any]]", field_definition: FieldDefinition, *, is_data_field: bool, declared_on_handler: bool
 ) -> DTONotApplicableError:
     option: Literal["dto", "return_dto"] = "dto" if is_data_field else "return_dto"
     name = dto_name(dto)
     annotation = _format_annotation(field_definition.annotation)
-    declared = f"'{option}={name}' is declared on the handler"
+    declared = f"'{option}={name}' is declared on {'the handler' if declared_on_handler else 'a layer'}"
     if not is_data_field and _match_target(dto, field_definition, is_data_field=False) is not None:
         message = (
             f"{declared}, but {name}.is_supported_model_type_field() declines its return value annotated "
@@ -425,6 +434,8 @@ def _not_applicable(
         )
         if reason := _not_applicable_reason(dto, field_definition, is_data_field=is_data_field):
             message = f"{message} {reason}"
+    if not declared_on_handler:
+        message = f"{message} Declare '{option}=None' on the handler to opt out."
     return DTONotApplicableError(
         message,
         dto=dto,

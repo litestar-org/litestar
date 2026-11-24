@@ -804,11 +804,11 @@ DTO applicability and startup errors
 
 Whether a DTO is used for a handler's request data or return value now follows the rules
 of :ref:`usage/dto/0-basic-use:When a DTO applies`. A DTO declared on a controller, a router
-or the application that cannot handle an annotation is skipped for it, where some of these
-cases raised :exc:`~litestar.exceptions.InvalidAnnotationException` when the application
-was created. The ``dto`` used for the return value when no ``return_dto`` is declared, and a
-DTO created by a serialization plugin, are skipped in the same way, and nothing takes their
-place.
+or the application that cannot handle an annotation is skipped for it when the annotation
+does not contain its model, where some of these cases raised
+:exc:`~litestar.exceptions.InvalidAnnotationException` when the application was created. The
+``dto`` used for the return value when no ``return_dto`` is declared, and a DTO created by a
+serialization plugin, are skipped in the same way, and nothing takes their place.
 
 .. code-block:: python
     :caption: Before
@@ -836,9 +836,25 @@ place.
     # starts: the body is decoded as a plain Filter, the returned users are encoded by UserDTO
     app = Litestar([UserController])
 
+A DTO declared on a layer that cannot handle an annotation containing its model, such as
+``-> tuple[User, int]`` or ``-> Union[User, Address]`` under an application-level
+``return_dto=UserReadDTO``, raises :exc:`~litestar.exceptions.DTONotApplicableError`, a
+subclass of ``InvalidAnnotationException``, so that the fields the DTO excludes are not sent;
+declare ``return_dto=None`` or ``dto=None`` on the handler to opt out.
+
+.. code-block:: python
+
+    @get("/pair")
+    async def get_pair() -> tuple[User, int]: ...
+
+
+    # DTONotApplicableError: [paths='/pair', handler='get_pair'] 'return_dto=UserReadDTO' is
+    # declared on a layer, but cannot encode its return value annotated 'tuple[app.User, int]':
+    # the DTO handles 'User'. Declare 'return_dto=None' on the handler to opt out.
+    app = Litestar([get_pair], return_dto=UserReadDTO)
+
 A DTO declared on the handler itself still raises when it cannot decode the request data,
-now as :exc:`~litestar.exceptions.DTONotApplicableError`, a subclass of
-``InvalidAnnotationException``. Every DTO error raised when the application is created
+now as ``DTONotApplicableError``. Every DTO error raised when the application is created
 starts with ``[paths=..., handler=...]``. Request data annotated with ``DTOData`` without a
 DTO raises :exc:`~litestar.exceptions.MissingDTOError`, a subclass of
 ``ImproperlyConfiguredException``, for websocket listeners as well, which used to start.
@@ -849,7 +865,7 @@ Two request data shapes are no longer handled by a DTO. A generic wrapper, such 
 ``JSONBody[Wrapper[User]]``, used to accept a bare ``User`` and inject it in place of the
 wrapper. A form body annotated with a collection, such as ``MultipartBody[list[User]]``,
 used to inject the raw form values, or to fail with a ``500`` response for URL-encoded
-data. A DTO declared on the handler raises for both; a DTO declared on a layer is skipped.
+data. A DTO declared on the handler or on a layer raises for both.
 
 The return DTO now also applies to ``-> Optional[Wrapper[User]]`` and
 ``-> Optional[Response[User]]``, so excluded fields disappear from these responses and
@@ -891,6 +907,6 @@ of the returned object, including the ones the DTO excludes
 This includes handlers returning ``None``, ``Any``, ``str``, a bare ``Response`` or a
 ``Redirect``, ``File`` or ``Template`` response with a ``return_dto`` of their own; remove it,
 or declare ``return_dto=None`` to opt out of one inherited from a layer, which is skipped
-where it does not apply. A ``return_dto`` written in the body of a ``WebsocketListener``
+where the annotation does not contain its model. A ``return_dto`` written in the body of a ``WebsocketListener``
 class follows the same rule; one inherited from a base class, a mixin included, is treated like a
 layer declaration. A ``dto`` declared on a handler without request data is not affected.
