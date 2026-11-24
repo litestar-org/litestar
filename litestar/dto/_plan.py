@@ -175,9 +175,19 @@ def resolve_dto_target(
     subclass of the DTO's model type, except for a collection or mapping on a form body. In the return direction
     the DTO must also support that annotation, and it applies to a model wrapped in a generic type.
     """
+    return _resolve_target(dto, field_definition, direction, check_support=True)
+
+
+def _resolve_target(
+    dto: "type[AbstractDTO[Any]]",
+    field_definition: FieldDefinition | None,
+    direction: Literal["data", "return"],
+    *,
+    check_support: bool,
+) -> DTOTarget | None:
     if (inner := _without_optional(field_definition)) is None or field_definition is None:
         return None
-    if direction == "return" and not dto.is_supported_model_type_field(inner):
+    if check_support and direction == "return" and not dto.is_supported_model_type_field(inner):
         return None
 
     passes_none = field_definition.is_optional
@@ -371,8 +381,7 @@ def _resolve_return_dto(
         dto = declaration.value
         if (target := resolve_dto_target(dto, return_field, "return")) is not None:
             return dto, target
-        inner = _without_optional(return_field)
-        if declaration.source == "handler" and inner is not None and dto.is_supported_model_type_field(inner):
+        if declaration.source == "handler":
             raise _not_applicable(declaration, dto, "return", return_field)
         return None
     if data_dto is not None and (target := resolve_dto_target(data_dto, return_field, "return")) is not None:
@@ -385,6 +394,8 @@ def _resolve_return_dto(
 
 
 def _format_annotation(annotation: Any) -> str:
+    if annotation is NoneType:
+        return "None"
     return _format_key(annotation) if isinstance(annotation, type) else repr(annotation)
 
 
@@ -411,14 +422,22 @@ def _not_applicable(
     direction: Literal["data", "return"],
     field_definition: FieldDefinition,
 ) -> DTONotApplicableError:
-    action = "decode its request body" if direction == "data" else "encode its return value"
-    message = (
-        f"'{declaration.option}={_format_key(dto)}' is declared on the handler, but cannot {action} annotated "
-        f"'{_format_annotation(field_definition.annotation)}': the DTO handles "
-        f"'{_format_key(dto.model_type)}'."  # pyright: ignore[reportGeneralTypeIssues]
-    )
-    if reason := _not_applicable_reason(dto, direction, field_definition):
-        message = f"{message} {reason}"
+    name = dto_name(dto)
+    annotation = _format_annotation(field_definition.annotation)
+    declared = f"'{declaration.option}={name}' is declared on the handler"
+    if direction == "return" and _resolve_target(dto, field_definition, direction, check_support=False) is not None:
+        message = (
+            f"{declared}, but {name}.is_supported_model_type_field() declines its return value annotated "
+            f"'{annotation}'."
+        )
+    else:
+        action = "decode its request body" if direction == "data" else "encode its return value"
+        message = (
+            f"{declared}, but cannot {action} annotated '{annotation}': the DTO handles "
+            f"'{_format_key(dto.model_type)}'."  # pyright: ignore[reportGeneralTypeIssues]
+        )
+        if reason := _not_applicable_reason(dto, direction, field_definition):
+            message = f"{message} {reason}"
     return DTONotApplicableError(
         message,
         dto=dto,
@@ -454,8 +473,16 @@ def _build_direction(
 
 
 def dto_name(dto: "type[AbstractDTO[Any]]") -> str:
-    """Name ``dto`` in an error message."""
-    return getattr(dto, "__qualname__", repr(dto))
+    """Name ``dto`` in an error message: its qualified name, or, for a class created by subscripting a DTO class,
+    the name of that class subscripted with the name of the model, such as ``DataclassDTO[User]``.
+    """
+    name: str | None = getattr(dto, "__qualname__", None)
+    if name is None:
+        return repr(dto)
+    model_type = getattr(dto, "model_type", None)
+    if "[" in name and isinstance(model_type, type):
+        return f"{name.split('[', 1)[0]}[{model_type.__qualname__}]"
+    return name
 
 
 def create_dto_openapi_schema(

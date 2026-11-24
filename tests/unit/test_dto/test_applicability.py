@@ -6,12 +6,11 @@ import pytest
 
 from litestar import Controller, Litestar, Response, Router, get, post, websocket_listener
 from litestar.datastructures import UploadFile
-from litestar.di._helpers import _format_key
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData
 from litestar.dto._plan import resolve_dto_target
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import DTONotApplicableError, InvalidAnnotationException, MissingDTOError
-from litestar.handlers import websocket_stream
+from litestar.handlers import WebsocketListener, websocket_stream
 from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.response import ServerSentEvent, Stream
@@ -46,6 +45,7 @@ class Wrapper(Generic[T]):
 UserDTO = DataclassDTO[Annotated[User, DTOConfig(exclude={"secret"})]]
 OtherDTO = DataclassDTO[Annotated[Other, DTOConfig(exclude={"hidden"})]]
 OtherPluginDTO = DataclassDTO[Annotated[Other, DTOConfig(exclude={"a"})]]
+UserReadDTO = DataclassDTO[Annotated[User, DTOConfig(include={"id"})]]
 
 USER = User(id=1, name="a", secret="x")
 USER_IN = {"id": 1, "name": "a", "secret": "x"}
@@ -323,7 +323,7 @@ RETURN_ROWS = [
     pytest.param(
         "handler", {"return_dto": UserDTO}, {}, tuple[User, int], respond_tuple, (), DTONotApplicableError, id="AR2"
     ),
-    pytest.param("handler", {"return_dto": UserDTO}, {}, Other, respond_other, (), OTHER_FULL, id="AR3"),
+    pytest.param("handler", {"return_dto": UserDTO}, {}, Other, respond_other, (), DTONotApplicableError, id="AR3"),
     pytest.param("app", {"return_dto": UserDTO}, {}, User, respond_user, (), USER_ENCODED, id="AR4"),
     pytest.param("app", {"return_dto": UserDTO}, {}, tuple[User, int], respond_tuple, (), TUPLE_FULL, id="AR5"),
     pytest.param(
@@ -531,6 +531,11 @@ def test_async_generator_return(placement: Placement, options: dict[str, Any]) -
 @pytest.mark.parametrize("returns", [ServerSentEvent, Stream])
 @pytest.mark.parametrize("placement", ["handler", "app"])
 def test_server_sent_event_and_stream_returns_start_without_dto(placement: Placement, returns: Any) -> None:
+    if placement == "handler":
+        with pytest.raises(DTONotApplicableError):
+            build_app(placement, method="GET", returns=returns, return_dto=UserDTO)
+        return
+
     app = build_app(placement, method="GET", returns=returns, return_dto=UserDTO)
 
     assert registered(app, "GET").return_dto is None
@@ -657,9 +662,21 @@ class VetoDTO(DataclassDTO[User]):
         return False
 
 
-def test_is_supported_override_vetoes_return_dto() -> None:
-    app = build_app("handler", method="GET", returns=User, respond=respond_user, return_dto=VetoDTO)
+@pytest.mark.parametrize("placement", ["handler", "app"])
+def test_is_supported_override_vetoes_return_dto(placement: Placement) -> None:
+    def build() -> Litestar:
+        return build_app(placement, method="GET", returns=User, respond=respond_user, return_dto=VetoDTO)
 
+    if placement == "handler":
+        with pytest.raises(DTONotApplicableError) as exc_info:
+            build()
+        assert str(exc_info.value) == (
+            "[paths='/', handler='handler'] 'return_dto=VetoDTO' is declared on the handler, but "
+            "VetoDTO.is_supported_model_type_field() declines its return value annotated 'User'."
+        )
+        return
+
+    app = build()
     with TestClient(app) as client:
         assert client.get("/").json() == USER_FULL
     assert registered(app, "GET").return_dto is None
@@ -705,7 +722,7 @@ def test_dto_not_applicable_error_attributes_and_message(
     assert (error.option, error.direction, error.annotation) == (option, direction, annotation)
     assert str(error) == (
         f"[paths='/', handler='{'handler_with_data' if body is not NO_BODY else 'handler'}'] "
-        f"'{option}={_format_key(UserDTO)}' is declared on the handler, but {text}: the DTO handles 'User'."
+        f"'{option}=DataclassDTO[User]' is declared on the handler, but {text}: the DTO handles 'User'."
     )
 
 
@@ -720,3 +737,87 @@ def test_skipped_layer_dto_openapi_documents_plain_model() -> None:
     reference = schema["paths"]["/"]["post"]["requestBody"]["content"]["application/json"]["schema"]["$ref"]
     assert reference.rsplit("/", 1)[-1].endswith("Other")
     assert "RequestBody" not in reference
+
+
+@pytest.mark.parametrize(
+    ("returns", "respond"),
+    [
+        pytest.param(Other, respond_other, id="other-model"),
+        pytest.param(None, lambda data: None, id="none"),
+        pytest.param(Any, respond_user, id="any"),
+        pytest.param(ServerSentEvent, lambda data: ServerSentEvent("x"), id="sse"),
+        pytest.param(Stream, lambda data: Stream(iter([b"x"])), id="stream"),
+    ],
+)
+def test_handler_return_dto_that_does_not_apply_raises(returns: Any, respond: Callable[[Any], Any]) -> None:
+    with pytest.raises(DTONotApplicableError) as exc_info:
+        build_app("handler", method="GET", returns=returns, respond=respond, return_dto=UserDTO)
+
+    error = exc_info.value
+    assert (error.dto, error.option, error.direction) == (UserDTO, "return_dto", "return")
+    assert str(error).startswith("[paths='/', handler='handler'] 'return_dto=DataclassDTO[User]' is declared on the")
+
+
+def test_handler_return_dto_message_names_dto_annotation_and_model() -> None:
+    with pytest.raises(DTONotApplicableError) as exc_info:
+        build_app("handler", method="GET", returns=Other, respond=respond_other, return_dto=UserDTO)
+
+    assert str(exc_info.value) == (
+        "[paths='/', handler='handler'] 'return_dto=DataclassDTO[User]' is declared on the handler, but cannot "
+        "encode its return value annotated 'Other': the DTO handles 'User'."
+    )
+
+
+def test_handler_dto_used_for_return_only_starts() -> None:
+    app = build_app("handler", method="GET", returns=User, respond=respond_user, dto=UserDTO)
+
+    with TestClient(app) as client:
+        assert client.get("/").json() == USER_ENCODED
+
+
+def test_handler_dto_used_for_data_only_starts() -> None:
+    app = build_app("handler", body=JSONBody[User], returns=None, dto=UserDTO)
+
+    with TestClient(app) as client:
+        assert client.post("/", json=USER_IN).status_code == 201
+
+
+def test_handler_dto_without_request_data_under_layer_return_dto_starts() -> None:
+    @get("/", dto=UserDTO)
+    async def read() -> User:
+        return USER
+
+    app = Litestar([Router("/", route_handlers=[read], return_dto=UserReadDTO)], openapi_config=None)
+
+    with TestClient(app) as client:
+        assert client.get("/").json() == {"id": 1}
+    assert registered(app, "GET").return_dto is UserReadDTO
+
+
+@pytest.mark.parametrize("option", ["dto", "return_dto"])
+@pytest.mark.parametrize("placement", ["app", "router", "controller"])
+def test_layer_declarations_never_raise(placement: Placement, option: str) -> None:
+    options: dict[str, Any] = {option: UserDTO}
+    app = build_app(placement, method="GET", returns=Other, respond=respond_other, **options)
+
+    with TestClient(app) as client:
+        assert client.get("/").json() == OTHER_FULL
+
+
+def test_generated_options_handler_starts_with_app_level_dtos() -> None:
+    app = build_app("app", method="GET", returns=User, respond=respond_user, dto=UserDTO, return_dto=UserDTO)
+
+    with TestClient(app) as client:
+        assert client.options("/").status_code == 204
+
+
+def test_listener_class_return_dto_that_does_not_apply_raises() -> None:
+    class Listener(WebsocketListener):
+        path = "/ws"
+        return_dto = UserDTO
+
+        async def on_receive(self, data: str) -> None:
+            return None
+
+    with pytest.raises(DTONotApplicableError, match=r"cannot encode its return value annotated 'None'"):
+        Litestar([Listener], openapi_config=None)

@@ -26,6 +26,22 @@
         once per overridden method. A DTO over a type msgspec cannot decode now fails at startup even if
         it overrides ``decode_bytes`` or ``decode_builtins``.
 
+    .. change:: DTOs: a return_dto declared on a route handler must apply
+        :type: feature
+        :breaking:
+        :pr: 5259
+        :issue: 3485
+
+        A ``return_dto`` declared directly on a route handler, or as the ``return_dto``
+        attribute of a ``WebsocketListener`` class, that cannot handle the handler's
+        return annotation raises :exc:`~litestar.exceptions.DTONotApplicableError` when
+        the application is created. It used to be ignored, so the handler returned its
+        data without the DTO, including fields the DTO excludes. This applies to a
+        return annotation of ``None``, ``Any``, a streamed response or server-sent
+        events as well; declare ``return_dto=None`` on such a handler to opt out of a
+        ``return_dto`` declared on a layer, which is still skipped where it does not
+        apply.
+
     .. change:: DTOs: typed startup errors and explicit applicability rules
         :type: feature
         :breaking:

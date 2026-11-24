@@ -90,8 +90,8 @@ def _listener_class(option: Option) -> Any:
     class Listener(WebsocketListener):
         path = "/ws"
 
-        async def on_receive(self, data: User) -> None:
-            return None
+        async def on_receive(self, data: User) -> User:
+            return data
 
     setattr(Listener, option, UserDTO)
     return Litestar([Listener]).route_handler_method_map["/ws"]["websocket"]

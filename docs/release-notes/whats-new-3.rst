@@ -869,3 +869,34 @@ the layers above the handler. A subclass whose ``__init__`` forwards ``**kwargs`
 base class works unchanged. One that accepts only named parameters raises
 :exc:`TypeError` when it is registered, and one that accepts ``**kwargs`` without
 forwarding them loses the DTOs of its layers.
+
+A ``return_dto`` declared directly on a route handler must now handle the handler's return
+annotation. It used to be ignored when it could not, so the response contained every field
+of the returned object, including the ones the DTO excludes
+(`#3485 <https://github.com/litestar-org/litestar/issues/3485>`_):
+
+.. code-block:: python
+    :caption: Before
+
+    @get("/", return_dto=UserReadDTO)
+    async def get_profile() -> Profile: ...
+
+
+    # starts; the Profile is returned with every field
+    app = Litestar([get_profile])
+
+.. code-block:: python
+    :caption: After
+
+    @get("/", return_dto=UserReadDTO)
+    async def get_profile() -> Profile: ...
+
+
+    # DTONotApplicableError: [paths='/', handler='get_profile'] 'return_dto=UserReadDTO' is declared
+    # on the handler, but cannot encode its return value annotated 'Profile': the DTO handles 'User'.
+    app = Litestar([get_profile])
+
+The rule covers a return annotation of ``None``, ``Any``, a streamed response or server-sent
+events too. A ``return_dto`` declared on a controller, a router or the application is still
+skipped where it does not apply; to opt a handler out of it, declare ``return_dto=None`` on
+the handler. A ``dto`` declared on a handler without request data is not affected.
