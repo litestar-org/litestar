@@ -33,6 +33,7 @@
 
     .. change:: DTO: Stable OpenAPI component names across application instances
         :type: bugfix
+        :breaking:
         :pr: 5258
         :issue: 4699
 
@@ -41,13 +42,9 @@
         built from the same handlers would get module-qualified or numbered OpenAPI
         component names. The names are now tracked per application. The names of an
         application created once in a fresh process do not change, with two
-        exceptions. Two websocket listeners registered on the same path now share the
-        names of their transfer models; a tool that documents listeners, such as
-        litestar-asyncapi, will then publish the model of the first listener for both.
-        A DTO backend constructed directly by third-party code, instead of by Litestar,
-        is now always given the short name; if two such backends in one application
-        end up with the same name, the OpenAPI schema contains the model that was
-        registered first.
+        exceptions: two websocket listeners registered on the same path now share the
+        names of their transfer models, and a DTO backend constructed directly by
+        third-party code, instead of by Litestar, is always given the short name.
 
     .. change:: DTO: Build one frozen DTO plan per route handler
         :type: misc
