@@ -77,15 +77,12 @@ DTOs can similarly be defined on :class:`Routers <litestar.router.Router>` and
 When a DTO applies
 ~~~~~~~~~~~~~~~~~~
 
-A DTO narrowed with ``User`` handles request data or a return value annotated with ``User``, ``Optional[User]``, or a
-collection or mapping of ``User`` such as ``list[User]``, ``dict[str, User]`` or ``tuple[User, ...]``, optional or not.
-For request data it also handles ``DTOData[User]``, which wraps the data of one ``User`` and creates or updates a single
-instance from it. For a return value it also handles one generic wrapper around these
-annotations, such as ``Response[User]`` or a generic dataclass holding the data in an attribute typed with its type
-variable, optional or not. In an optional union of several types, such as ``Optional[Union[User, Other]]``, only the
-first member that is not ``None`` counts.
+A DTO narrowed with ``User`` handles ``User`` and collections or mappings of ``User`` such as ``list[User]``,
+``dict[str, User]`` or ``tuple[User, ...]``, optional or not. For request data it also handles ``DTOData[User]``; for a
+return value, one generic wrapper around these, such as ``Response[User]`` or a generic dataclass holding the data in
+an attribute typed with its type variable. In an optional union, only the first member that is not ``None`` counts.
 
-What happens when a DTO cannot handle the annotation depends on where it is declared:
+When a DTO cannot handle the annotation, the outcome depends on where it is declared:
 
 .. list-table::
     :header-rows: 1
@@ -105,44 +102,25 @@ What happens when a DTO cannot handle the annotation depends on where it is decl
       - Used
       - Skipped
 
-A ``dto`` or ``return_dto`` given to the decorator of a controller method is declared on the handler; the class
-attributes of the controller are declared on a layer. For a :class:`~litestar.handlers.WebsocketListener` class, the
-attributes defined in the body of the class itself are declared on the handler, and the ones inherited from a base
-class, a mixin included, behave like a layer declaration.
+The decorator of a controller method declares on the handler, and the controller's class attributes on a layer. For a
+:class:`~litestar.handlers.WebsocketListener` class, attributes defined in the class body are declared on the handler,
+and inherited ones on a layer.
 
-A ``dto`` declared on a handler without request data is not an error: it is used for the return value when no
-``return_dto`` is declared and it can handle the return annotation.
+The declaration closest to the handler decides: a skipped ``return_dto`` is not replaced by the ``dto`` or a
+serialization plugin, and a skipped ``dto`` is not replaced by a plugin. A ``dto`` skipped for the request data, or
+declared on a handler without request data, is still used for the return value when no ``return_dto`` is declared
+and it handles the return annotation. ``None`` disables DTOs for that direction.
 
-The declaration closest to the handler decides, and ends the search: a ``return_dto`` that is skipped is not replaced by
-the ``dto`` or by a serialization plugin, and a skipped ``dto`` is not replaced by a serialization plugin. A ``dto``
-that is skipped for the request data is still used for the return value if no ``return_dto`` is declared and it can
-handle the return annotation. ``None`` disables DTOs for that direction.
+No DTO handles a return annotation of ``None``, ``Any``, a streamed response or server-sent events, nor the
+asynchronous generators an HTTP handler returns; the items a websocket stream yields are transferred. With an optional
+annotation, ``None`` passes through the DTO in both directions. Form data is decoded into one model, never a
+collection, and invalid form data receives the same ``400`` response as invalid JSON data.
 
-A DTO declared on a layer is skipped only where the annotation does not contain its model, so that the model is
-never sent or received without it: ``str``, ``None``, ``Any``, another model, a bare ``Response``, a streamed response
-or server-sent events. Declare ``dto=None`` or ``return_dto=None`` on a handler to opt out of a layer's DTO.
-
-No DTO handles a return annotation of ``None``, ``Any``, a streamed response or server-sent events, so a
-``return_dto`` declared on the handler raises for them. With an optional annotation, ``None``
-passes through the DTO: the handler can return ``None``, and a ``null`` request body is injected as ``None``.
-
-URL-encoded and multipart form data is decoded into one model: a DTO does not handle a form body annotated with a
-collection, such as ``MultipartBody[list[User]]``. Invalid form data receives a ``400 Bad Request`` response with the
-same body as invalid JSON data. The streamed responses, server-sent events and asynchronous generators an HTTP handler
-returns are not transferred by a DTO; the items a websocket stream yields are.
-
-DTO configuration errors raised when the application is created start with the paths and the name of the handler,
-``[paths='/users', handler='create_user']``:
-
-- :exc:`~litestar.exceptions.DTONotApplicableError`: a DTO declared on the handler cannot handle the annotation of
-  its request data or return value, or a DTO declared on a layer cannot handle an annotation that contains its model;
-- :exc:`~litestar.exceptions.MissingDTOError`: request data is annotated with ``DTOData`` but no DTO decodes it;
-- :exc:`~litestar.exceptions.DTOTransferTypeError`: msgspec rejects the model, or the type the DTO transfers for it
-  (see :ref:`usage/dto/1-abstract-dto:Constraints`).
-
-The first and the last are subclasses of :exc:`~litestar.exceptions.InvalidAnnotationException`, and
-:exc:`~litestar.exceptions.MissingDTOError` is a subclass of
-:exc:`~litestar.exceptions.ImproperlyConfiguredException`.
+DTO errors raised when the application is created start with ``[paths='/users', handler='create_user']``:
+:exc:`~litestar.exceptions.DTONotApplicableError` when a DTO cannot handle an annotation as described above,
+:exc:`~litestar.exceptions.MissingDTOError` when request data is annotated with ``DTOData`` but no DTO decodes it, and
+:exc:`~litestar.exceptions.DTOTransferTypeError` when msgspec rejects the transferred type (see
+:ref:`usage/dto/1-abstract-dto:Constraints`).
 
 
 Code generation

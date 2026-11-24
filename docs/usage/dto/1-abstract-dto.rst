@@ -181,14 +181,14 @@ validated. Data returned from a handler is not validated.
 
 A ``msgspec.Meta`` stays where it is written. If msgspec does not support it there, as in
 ``Annotated[str | None, Meta(min_length=2)]``, a DTO for inbound data raises
-:exc:`~litestar.exceptions.InvalidAnnotationException` at startup, naming the field: attach it to the member, as
-``nickname`` does. A DTO for returned data only keeps the ``Meta``'s schema attributes, such as ``description``, except
+:exc:`~litestar.exceptions.DTOTransferTypeError` at startup, naming the field: attach it to the member, as ``nickname``
+does. A DTO for returned data only keeps the ``Meta``'s schema attributes, such as ``description``, except
 :class:`~litestar.dto.msgspec_dto.MsgspecDTO`, whose model msgspec rejects.
 
 Other constraints are enforced where msgspec can express them, and not otherwise, such as ``gt`` on a ``Decimal``. When
 a ``msgspec.Meta`` and another constraint target the same attribute or conflict, the ``Meta`` wins.
 
-The startup check does not apply to :class:`~litestar.plugins.pydantic.PydanticDTO`.
+The startup check applies to :class:`~litestar.plugins.pydantic.PydanticDTO` as well.
 
 .. note::
 

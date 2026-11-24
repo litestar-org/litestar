@@ -272,7 +272,7 @@ After:
         return normalise(data)
 
 A DTO over a type msgspec cannot decode now fails at startup with
-:exc:`~litestar.exceptions.InvalidAnnotationException` even if it overrides ``decode_bytes`` or
+:exc:`~litestar.exceptions.DTOTransferTypeError` even if it overrides ``decode_bytes`` or
 ``decode_builtins``. ``handler.data_dto`` and ``handler.return_dto`` give the DTO classes of a
 registered handler; decoding or encoding with a DTO outside a route handler has no replacement yet.
 
@@ -288,9 +288,9 @@ attribute, the ``Meta`` wins. See :ref:`usage/dto/1-abstract-dto:Constraints`.
 
 A ``msgspec.Meta`` that msgspec does not support where it is written, such as
 ``Annotated[str | None, Meta(min_length=2)]``, makes a DTO used for inbound data fail at startup
-with :exc:`~litestar.exceptions.InvalidAnnotationException` until it is attached to the member:
-``Annotated[str, Meta(min_length=2)] | None``. A union of models without tags fails at startup the
-same way instead of answering every request with a ``500``. ``PydanticDTO`` is not checked.
+with :exc:`~litestar.exceptions.DTOTransferTypeError`, a subclass of ``InvalidAnnotationException``,
+until it is attached to the member: ``Annotated[str, Meta(min_length=2)] | None``. A union of models
+without tags fails at startup the same way instead of answering every request with a ``500``.
 
 A mark passed to :class:`~litestar.dto.field.DTOField` as a string, such as
 ``DTOField(mark="private")``, is now honoured. With ``DTOConfig(forbid_unknown_fields=True)``, a
@@ -307,118 +307,42 @@ member; component names are unchanged.
 DTO applicability and startup errors
 ------------------------------------
 
-Whether a DTO is used for a handler's request data or return value now follows the rules
-of :ref:`usage/dto/0-basic-use:When a DTO applies`. A DTO declared on a controller, a router
-or the application that cannot handle an annotation is skipped for it when the annotation
-does not contain its model, where some of these cases raised
-:exc:`~litestar.exceptions.InvalidAnnotationException` when the application was created. The
-``dto`` used for the return value when no ``return_dto`` is declared, and a DTO created by a
-serialization plugin, are skipped in the same way, and nothing takes their place.
+Whether a DTO is used now follows :ref:`usage/dto/0-basic-use:When a DTO applies`:
 
-Before:
+- A DTO declared on a layer, the ``dto`` used for the return value when no ``return_dto`` is
+  declared, and a DTO created by a serialization plugin are skipped for an annotation that does not
+  contain their model, where some of these cases raised
+  :exc:`~litestar.exceptions.InvalidAnnotationException`.
+- A DTO declared on a layer that cannot handle an annotation containing its model, such as
+  ``-> tuple[User, int]``, raises :exc:`~litestar.exceptions.DTONotApplicableError`; declare
+  ``return_dto=None`` or ``dto=None`` on the handler.
+- A ``return_dto`` declared on the handler, or in the body of a ``WebsocketListener`` class, must
+  handle the return annotation (`#3485 <https://github.com/litestar-org/litestar/issues/3485>`_); it
+  used to be ignored, so every field was sent. Remove it from handlers returning ``None``, ``Any``,
+  ``str``, a bare ``Response`` or a ``Redirect``, ``File`` or ``Template`` response. One inherited
+  from a base listener class is treated like a layer declaration.
 
-.. code-block:: python
+  .. code-block:: python
 
-    class UserController(Controller):
-        dto = UserDTO
-
-        @post("/search")
-        async def search(self, data: JSONBody[Filter]) -> list[User]: ...
-
-
-    # InvalidAnnotationException: DTO narrowed with '<class 'User'>', handler type is '<class 'Filter'>'
-    app = Litestar([UserController])
-
-After:
-
-.. code-block:: python
-
-    class UserController(Controller):
-        dto = UserDTO
-
-        @post("/search")
-        async def search(self, data: JSONBody[Filter]) -> list[User]: ...
+      @get("/", return_dto=UserReadDTO)
+      async def get_profile() -> Profile: ...
 
 
-    # starts: the body is decoded as a plain Filter, the returned users are encoded by UserDTO
-    app = Litestar([UserController])
+      # DTONotApplicableError: [paths='/', handler='get_profile'] 'return_dto=UserReadDTO' is declared
+      # on the handler, but cannot encode its return value annotated 'Profile': the DTO handles 'User'.
+      app = Litestar([get_profile])
 
-A DTO declared on a layer that cannot handle an annotation containing its model, such as
-``-> tuple[User, int]`` or ``-> Union[User, Address]`` under an application-level
-``return_dto=UserReadDTO``, raises :exc:`~litestar.exceptions.DTONotApplicableError`, a
-subclass of ``InvalidAnnotationException``, so that the fields the DTO excludes are not sent;
-declare ``return_dto=None`` or ``dto=None`` on the handler to opt out.
-
-.. code-block:: python
-
-    @get("/pair")
-    async def get_pair() -> tuple[User, int]: ...
-
-
-    # DTONotApplicableError: [paths='/pair', handler='get_pair'] 'return_dto=UserReadDTO' is
-    # declared on a layer, but cannot encode its return value annotated 'tuple[app.User, int]':
-    # the DTO handles 'User'. Declare 'return_dto=None' on the handler to opt out.
-    app = Litestar([get_pair], return_dto=UserReadDTO)
-
-A DTO declared on the handler itself still raises when it cannot decode the request data,
-now as ``DTONotApplicableError``. Every DTO error raised when the application is created
-starts with ``[paths=..., handler=...]``. Request data annotated with ``DTOData`` without a
-DTO raises :exc:`~litestar.exceptions.MissingDTOError`, a subclass of
-``ImproperlyConfiguredException``, for websocket listeners as well, which used to start.
-:class:`~litestar.plugins.pydantic.PydanticDTO` is now covered by the startup check that
-raises :exc:`~litestar.exceptions.DTOTransferTypeError`.
-
-Two request data shapes are no longer handled by a DTO. A generic wrapper, such as
-``JSONBody[Wrapper[User]]``, used to accept a bare ``User`` and inject it in place of the
-wrapper. A form body annotated with a collection, such as ``MultipartBody[list[User]]``,
-used to inject the raw form values, or to fail with a ``500`` response for URL-encoded
-data. A DTO declared on the handler or on a layer raises for both.
-
-The return DTO now also applies to ``-> Optional[Wrapper[User]]`` and
-``-> Optional[Response[User]]``, so excluded fields disappear from these responses and
-renamed fields are renamed. Declare ``return_dto=None`` on the handler to keep the previous
-output. With an optional annotation, ``None`` now passes through a DTO in both
-directions; a websocket listener with a return DTO sends nothing when it returns ``None``,
-where the connection used to fail.
-
-A DTO class that overrides
-:meth:`~litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field` now receives the
-return annotation without its ``Optional``.
-
-A ``return_dto`` declared directly on a route handler must now handle the handler's return
-annotation. It used to be ignored when it could not, so the response contained every field
-of the returned object, including the ones the DTO excludes
-(`#3485 <https://github.com/litestar-org/litestar/issues/3485>`_):
-
-Before:
-
-.. code-block:: python
-
-    @get("/", return_dto=UserReadDTO)
-    async def get_profile() -> Profile: ...
-
-
-    # starts; the Profile is returned with every field
-    app = Litestar([get_profile])
-
-After:
-
-.. code-block:: python
-
-    @get("/", return_dto=UserReadDTO)
-    async def get_profile() -> Profile: ...
-
-
-    # DTONotApplicableError: [paths='/', handler='get_profile'] 'return_dto=UserReadDTO' is declared
-    # on the handler, but cannot encode its return value annotated 'Profile': the DTO handles 'User'.
-    app = Litestar([get_profile])
-
-This includes handlers returning ``None``, ``Any``, ``str``, a bare ``Response`` or a
-``Redirect``, ``File`` or ``Template`` response with a ``return_dto`` of their own; remove it,
-or declare ``return_dto=None`` to opt out of one inherited from a layer, which is skipped
-where the annotation does not contain its model. A ``return_dto`` written in the body of a ``WebsocketListener``
-class follows the same rule; one inherited from a base class, a mixin included, is treated like a
-layer declaration. A ``dto`` declared on a handler without request data is not affected.
+- DTO startup errors start with ``[paths=..., handler=...]``. ``DTOData`` without a DTO raises
+  :exc:`~litestar.exceptions.MissingDTOError` for websocket listeners too, and
+  :class:`~litestar.plugins.pydantic.PydanticDTO` is covered by the startup check.
+- ``JSONBody[Wrapper[User]]`` and form bodies annotated with a collection, such as
+  ``MultipartBody[list[User]]``, are no longer handled by a DTO and raise.
+- The return DTO now applies to ``-> Optional[Wrapper[User]]`` and ``-> Optional[Response[User]]``;
+  declare ``return_dto=None`` to keep the previous output.
+- ``None`` passes through a DTO for an optional annotation, and a websocket listener with a return
+  DTO sends nothing for ``None``.
+- :meth:`~litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field` receives the return
+  annotation without its ``Optional``.
 
 
 Removal of the ``litestar.pagination`` module
