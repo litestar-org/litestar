@@ -38,8 +38,15 @@ Deprecated entry points
     pass ``handler.handler_id``.
 
 A DTO is applied through a plan that is built when its route handler is registered, and a DTO class is not
-instantiated per request. A class that overrides one of the deprecated methods is still called through it, and a
-deprecation warning is emitted when the route handler is registered.
+instantiated per request.
+
+Overriding :meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
+:meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
+:meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
+:meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` or
+:meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` keeps working and emits no warning: the overriding
+method is still called, and a replacement hook will be provided before these members are removed in 4.0. Calling the
+base implementations directly, outside such an override, emits a deprecation warning.
 
 The two abstract methods above and the class-level hooks
 :meth:`~litestar.dto.base_dto.AbstractDTO.get_config_for_model_type`,
