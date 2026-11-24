@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import dataclasses
+import sys
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -56,7 +58,8 @@ class DTOConfig:
     underscore_fields_private: bool = True
     """Fields starting with an underscore are considered private and excluded from data transfer."""
     experimental_codegen_backend: bool | None = None
-    """Deprecated and without effect: the DTO backend always generates its transfer functions.
+    """Deprecated and without effect: the DTO backend always generates its transfer functions. A value passed is
+    ignored and reads back as ``None``.
 
     .. deprecated:: 3.0
         Will be removed in 4.0.
@@ -70,12 +73,17 @@ class DTOConfig:
                 "'include' and 'exclude' are mutually exclusive options, please use one of them"
             )
         if self.experimental_codegen_backend is not None:
+            stacklevel = 4
+            caller = sys._getframe(2)
+            while caller.f_back is not None and caller.f_code.co_filename == dataclasses.__file__:
+                caller = caller.f_back
+                stacklevel += 1
             warn_deprecation(
                 version="3.0",
                 deprecated_name="DTOConfig.experimental_codegen_backend",
                 kind="parameter",
                 removal_in="4.0",
                 info="The option has no effect, the DTO backend always generates its transfer functions",
-                stacklevel=4,
+                stacklevel=stacklevel,
             )
             object.__setattr__(self, "experimental_codegen_backend", None)
