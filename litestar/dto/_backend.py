@@ -83,7 +83,6 @@ class DTOBackend:
         "_transfer_to_dict",
         "_transfer_to_model_type",
         "_type_decoders",
-        "_wrapped_passes_none",
         "annotation",
         "attribute_accessor",
         "dto_data_type",
@@ -125,7 +124,6 @@ class DTOBackend:
         self._type_decoders: TypeDecodersSequence | None = None
         self._default_deserializer: Callable[[Any, Any], Any] | None = None
         self._passes_none = False
-        self._wrapped_passes_none = False
         self._nested_model_names: set[str] = set()
         self.dto_factory: Final[type[AbstractDTO]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
@@ -400,7 +398,7 @@ class DTOBackend:
             return None
         if self.wrapper_attribute_name:
             wrapped = self.attribute_accessor(data, self.wrapper_attribute_name)
-            if wrapped is None and self._wrapped_passes_none:
+            if wrapped is None and self.field_definition.is_optional:
                 return cast("LitestarEncodableType", data)
             setattr(data, self.wrapper_attribute_name, self._encode_data(wrapped))
             return cast("LitestarEncodableType", data)

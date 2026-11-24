@@ -61,8 +61,11 @@ class DTODirectionPlan:
     """The backend built for the handler's own field in this direction, bound to the handler's type decoders"""
     schema_annotation: Any
     """The annotation the field is documented with in the OpenAPI schema"""
-    passes_none: bool
-    """Whether the annotation is optional, so that ``None`` passes through without the DTO"""
+
+    @property
+    def passes_none(self) -> bool:
+        """Whether the annotation is optional, so that ``None`` passes through without the DTO"""
+        return self.backend._passes_none
 
 
 @dataclass(frozen=True, slots=True)
@@ -116,8 +119,6 @@ class DTOTarget:
     """The attribute of the generic wrapper holding the data, ``None`` without a wrapper"""
     passes_none: bool
     """Whether the whole value may be ``None``"""
-    wrapped_passes_none: bool
-    """Whether the value of the wrapper attribute may be ``None``. ``False`` without a wrapper"""
 
 
 _FORM_MEDIA_TYPES = (RequestEncodingType.URL_ENCODED, RequestEncodingType.MULTI_PART)
@@ -186,7 +187,6 @@ def _match_target(
             transfer_field=field_definition,
             wrapper_attribute_name=None,
             passes_none=passes_none,
-            wrapped_passes_none=False,
         )
 
     if (
@@ -201,7 +201,6 @@ def _match_target(
             transfer_field=transfer_field,
             wrapper_attribute_name=wrapper_attribute_name,
             passes_none=passes_none,
-            wrapped_passes_none=transfer_field.is_optional,
         )
     return None
 
@@ -231,7 +230,6 @@ def create_backend(
         **keywords,
     )
     backend._passes_none = target.passes_none
-    backend._wrapped_passes_none = target.wrapped_passes_none
     return backend
 
 
@@ -444,7 +442,6 @@ def _build_direction(
         dto=dto,
         backend=backend,
         schema_annotation=build_schema_annotation(dto, backend, field_definition),
-        passes_none=target.passes_none,
     )
 
 

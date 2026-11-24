@@ -138,7 +138,8 @@ def _target(annotation: Any, direction: Literal["data", "return"]) -> Any:
     target = resolve_dto_target(UserDTO, FieldDefinition.from_annotation(annotation), is_data_field=direction == "data")
     if target is None:
         return None
-    return target.wrapper_attribute_name, target.passes_none, target.wrapped_passes_none
+    wrapped_passes_none = target.wrapper_attribute_name is not None and target.transfer_field.is_optional
+    return target.wrapper_attribute_name, target.passes_none, wrapped_passes_none
 
 
 PLAIN = (None, False, False)
