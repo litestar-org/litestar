@@ -113,6 +113,12 @@ def test_direct_create_for_field_definition_keeps_shims_working() -> None:
         )
         assert DirectDTO(request).decode_bytes(b"[" + PAYLOAD + b"]") == [Model(a=1, b="two")]
 
+        class ChildDTO(DirectDTO):
+            pass
+
+        with pytest.raises(DTOFactoryException):
+            ChildDTO(request).decode_bytes(PAYLOAD)
+
     assert "_direct_backends" not in vars(AbstractDTO)
     assert "_direct_backends" not in vars(DataclassDTO)
     assert list(vars(DirectDTO)["_direct_backends"]) == [str(handler.handler_id)]
@@ -228,3 +234,41 @@ def test_global_backend_state_is_gone() -> None:
     assert not hasattr(AbstractDTO, "_dto_backends")
     assert "_type_backend_map" not in vars(DataclassDTO[Model])
     assert "_handler_backend_map" not in vars(DataclassDTO[Model])
+
+
+class OtherDTO(DataclassDTO[Model]):
+    pass
+
+
+@pytest.mark.parametrize(
+    ("dto", "return_dto"),
+    [pytest.param(None, None, id="no-dto"), pytest.param(DataclassDTO[Model], None, id="data-dto-only")],
+)
+def test_direct_create_for_field_definition_serves_direction_the_plan_lacks(dto: Any, return_dto: Any) -> None:
+    app = Litestar([make_handler(dto, return_dto)])
+    handler: HTTPRouteHandler = app.route_handler_method_map["/"]["POST"]  # type: ignore[assignment]
+    request = RequestFactory(app=app).post("/", route_handler=handler)
+    return_field = FieldDefinition.from_annotation(Model)
+
+    with pytest.warns(LitestarDeprecationWarning):
+        OtherDTO.create_for_field_definition(return_field, handler_id=handler.handler_id)
+        encoded = OtherDTO(request).data_to_encodable_type(Model(a=1, b="two"))
+    schema = OtherDTO.create_openapi_schema(
+        return_field, handler.handler_id, SchemaCreator(plugins=openapi_schema_plugins)
+    )
+
+    assert msgspec.to_builtins(encoded) == {"a": 1, "b": "two"}
+    assert isinstance(schema, Reference)
+    assert schema.ref.endswith("ModelResponseBody")
+
+
+def test_direct_create_for_field_definition_serves_data_direction_the_plan_lacks() -> None:
+    app = Litestar([make_handler(None, None)])
+    handler: HTTPRouteHandler = app.route_handler_method_map["/"]["POST"]  # type: ignore[assignment]
+    request = RequestFactory(app=app).post("/", route_handler=handler)
+
+    with pytest.warns(LitestarDeprecationWarning):
+        OtherDTO.create_for_field_definition(
+            FieldDefinition.from_annotation(JSONBody[Model]), handler_id=handler.handler_id
+        )
+        assert OtherDTO(request).decode_bytes(PAYLOAD) == Model(a=1, b="two")
