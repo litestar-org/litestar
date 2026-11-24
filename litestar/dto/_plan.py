@@ -1,11 +1,8 @@
-import dataclasses
-from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 from litestar.dto._backend import DTOBackend
-from litestar.exceptions.dto_exceptions import DTOFactoryException, InvalidAnnotationException
-from litestar.params import BodyKwarg
+from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.response.base import Response
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -32,11 +29,10 @@ __all__ = (
     "create_backend",
     "create_dto_openapi_schema",
     "dto_name",
-    "take_plan_build",
 )
 
 DecodeFn: TypeAlias = "Callable[[Any, ASGIConnection[Any, Any, Any, Any]], Any]"
-EncodeFn: TypeAlias = "Callable[[Any, ASGIConnection[Any, Any, Any, Any]], LitestarEncodableType]"
+EncodeFn: TypeAlias = "Callable[[Any], LitestarEncodableType]"
 
 
 @dataclass(frozen=True, slots=True)
@@ -128,25 +124,6 @@ def build_schema_annotation(
     return backend.annotation
 
 
-@dataclass(slots=True)
-class _PlanBuild:
-    dto: "type[AbstractDTO[Any]]"
-    is_data_field: bool
-    backend: DTOBackend | None = None
-
-
-_plan_build: ContextVar[_PlanBuild | None] = ContextVar("_plan_build", default=None)
-
-
-def take_plan_build(dto: "type[AbstractDTO[Any]]") -> _PlanBuild | None:
-    """Return the plan build in progress for ``dto`` and end it, so that a further call sees none."""
-    build = _plan_build.get()
-    if build is None or build.dto is not dto:
-        return None
-    _plan_build.set(None)
-    return build
-
-
 def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
     """Resolve the DTOs of ``handler`` from its configuration and the serialization plugins of ``app``, and build
     their backends. It reads the handler and does not modify it; a second call returns an independent plan.
@@ -166,34 +143,10 @@ def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
         data=data,
         return_=return_,
         data_dto=data_dto,
-        decode_bytes=_create_decoder(data.dto, "decode_bytes", data.backend.populate_data_from_raw) if data else None,
-        decode_builtins=(
-            _create_decoder(data.dto, "decode_builtins", data.backend.populate_data_from_builtins) if data else None
-        ),
-        encode=_create_encoder(return_.dto, return_.backend) if return_ else None,
+        decode_bytes=data.dto._wrap_decoder(data.backend.populate_data_from_raw) if data else None,
+        decode_builtins=data.dto._wrap_decoder(data.backend.populate_data_from_builtins) if data else None,
+        encode=return_.backend.encode_data if return_ else None,
     )
-
-
-def _create_decoder(
-    dto: "type[AbstractDTO[Any]]", name: Literal["decode_bytes", "decode_builtins"], backend_method: DecodeFn
-) -> DecodeFn:
-    if not dto._overrides(name):
-        return dto._wrap_decoder(backend_method)
-    if name == "decode_bytes":
-        return lambda value, connection: dto(connection).decode_bytes(value)
-    return lambda value, connection: dto(connection).decode_builtins(value)
-
-
-def _create_encoder(dto: "type[AbstractDTO[Any]]", backend: DTOBackend) -> EncodeFn:
-    if dto._overrides("data_to_encodable_type"):
-        return lambda data, connection: dto(connection).data_to_encodable_type(data)
-
-    encode_data = backend.encode_data
-
-    def encode(data: Any, connection: "ASGIConnection[Any, Any, Any, Any]") -> "LitestarEncodableType":
-        return encode_data(data)
-
-    return encode
 
 
 def _find_serialization_plugin(app: "Litestar", field_definition: FieldDefinition) -> "SerializationPlugin | None":
@@ -235,26 +188,7 @@ def _build_direction(
     is_data_field: bool,
     handler: "BaseRouteHandler",
 ) -> DTODirectionPlan:
-    if not dto._overrides("create_for_field_definition"):
-        backend = create_backend(dto, field_definition, is_data_field=is_data_field, handler_id=str(handler.handler_id))
-    else:
-        build = _PlanBuild(dto=dto, is_data_field=is_data_field)
-        field = field_definition
-        if is_data_field and not isinstance(field_definition.kwarg_definition, BodyKwarg):
-            field = dataclasses.replace(field_definition, kwarg_definition=BodyKwarg())
-        token = _plan_build.set(build)
-        try:
-            dto.create_for_field_definition(field_definition=field, handler_id=handler.handler_id)
-        except AttributeError as exc:
-            if exc.name != "_dto_backends":
-                raise
-            raise _no_backend_error(dto, handler) from exc
-        finally:
-            _plan_build.reset(token)
-        if build.backend is None:
-            raise _no_backend_error(dto, handler)
-        backend = build.backend
-
+    backend = create_backend(dto, field_definition, is_data_field=is_data_field, handler_id=str(handler.handler_id))
     backend._bind_handler(type_decoders=handler.type_decoders, default_deserializer=handler.default_deserializer)
     return DTODirectionPlan(
         dto=dto, backend=backend, schema_annotation=build_schema_annotation(dto, backend, field_definition)
@@ -266,27 +200,12 @@ def dto_name(dto: "type[AbstractDTO[Any]]") -> str:
     return getattr(dto, "__qualname__", repr(dto))
 
 
-def _no_backend_error(dto: "type[AbstractDTO[Any]]", handler: "BaseRouteHandler") -> DTOFactoryException:
-    return DTOFactoryException(
-        f"{dto_name(dto)}.create_for_field_definition() created no backend for handler {handler}: an override must "
-        "call the base method"
-    )
-
-
 def create_dto_openapi_schema(
     direction: DTODirectionPlan,
     field_definition: FieldDefinition,
-    handler: "BaseRouteHandler",
     schema_creator: "SchemaCreator",
 ) -> "Reference | Schema":
-    """Return the OpenAPI schema of ``field_definition``, the handler's own field in ``direction``. A DTO class that
-    overrides ``create_openapi_schema`` is called through it.
-    """
-    dto = direction.dto
-    if dto._overrides("create_openapi_schema"):
-        return dto.create_openapi_schema(
-            field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
-        )
+    """Return the OpenAPI schema of ``field_definition``, the handler's own field in ``direction``."""
     return schema_creator.for_field_definition(
         FieldDefinition.from_annotation(direction.schema_annotation, kwarg_definition=field_definition.kwarg_definition)
     )

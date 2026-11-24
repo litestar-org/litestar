@@ -6,6 +6,43 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Overrides of the deprecated DTO entry points are no longer called
+        :type: misc
+        :breaking:
+        :pr: 5257
+
+        Litestar no longer calls a DTO class's override of the deprecated DTO entry points
+        listed in "Build one frozen DTO plan per route handler": a route handler decodes,
+        encodes and documents its data with the backends of its DTO plan. A DTO
+        over a type msgspec cannot decode now fails at startup even when the class
+        overrides ``decode_bytes`` or ``decode_builtins``. A DTO class that still
+        overrides one of them emits a deprecation warning per method, once, when a
+        route handler using it is registered, and instantiating a DTO class emits a
+        deprecation warning.
+
+    .. change:: DTO: Build one frozen DTO plan per route handler
+        :type: misc
+        :breaking:
+        :pr: 5257
+
+        DTO backends are created once per route handler when the handler is registered
+        and stored on it, instead of in a process-wide dictionary keyed by
+        ``handler_id``, and no DTO instance is created per request. These deprecated DTO
+        entry points will be removed in 4.0: ``AbstractDTO.__init__``,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` and
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. Calling them warns,
+        except ``create_openapi_schema``, which plugins call and which has no replacement
+        yet. Code that relied on the following needs to change:
+
+        - ``to_response()`` of a route handler and the DTO handlers of a websocket
+          listener raise a :exc:`~litestar.exceptions.LitestarException` saying the
+          handler is not registered when they are used before registration.
+
+        See :ref:`release-notes/whats-new-3:Overrides of the deprecated DTO entry points are no longer called`.
+
     .. change:: DTO: Honour ``DTOField`` marks given as a string
         :type: bugfix
         :breaking:
@@ -122,54 +159,6 @@
         Add :attr:`~litestar.params.ParameterKwarg.documentation_only`. If set, the
         constraints of a parameter are included in the OpenAPI schema, but not applied
         to the value of a request.
-
-    .. change:: DTO: Build one frozen DTO plan per route handler
-        :type: misc
-        :pr: 5257
-
-        DTO backends are now created once per route handler when the handler is
-        registered and stored on the handler, instead of in a process-wide dictionary
-        keyed by ``handler_id``. A handler can no longer be served the backend of
-        another handler, and no DTO instance is created per request.
-
-        The following members of :class:`~litestar.dto.base_dto.AbstractDTO` are
-        deprecated and will be removed in 4.0: ``__init__``,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` and
-        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. Overriding
-        them keeps working and emits no warning: a DTO class that overrides one of
-        them is still called through it, and a replacement hook will be provided
-        before they are removed. Calling the base implementations directly keeps
-        working and emits a deprecation warning.
-
-        No public API is removed. Code that relied on the following behaviour needs
-        to change:
-
-        - :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` finds the
-          backends of a registered handler through the object returned by
-          ``handler.handler_id``. A copy of that identifier, such as
-          ``str(handler.handler_id)``, an f-string or a value read back from
-          serialized data, raises :exc:`~litestar.exceptions.dto_exceptions.DTOFactoryException`.
-        - ``handler.handler_id`` is a :class:`str` subclass. ``msgspec.json.encode``
-          rejects it; pass ``str(handler.handler_id)``. Pickling or deep-copying it
-          yields a plain :class:`str`. The object references its handler, so code
-          that stores such identifiers keeps the handlers alive.
-        - A DTO class that overrides
-          :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition`
-          must create its backend by calling the base method. A class that stores
-          backends in the private ``_dto_backends`` attribute itself raises
-          :exc:`~litestar.exceptions.dto_exceptions.DTOFactoryException` when its
-          handler is registered.
-        - Backends created by calling
-          :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition`
-          directly are kept per DTO class. They are no longer shared between DTO
-          classes and are not inherited by subclasses. They also serve a registered
-          handler for a direction in which it applies no DTO.
-        - The ``parsed_data_field`` of a websocket listener no longer carries a body
-          marker. :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`
-          treats it as the received data only when it is given that very object.
 
     .. change:: DTO: Identify the data a handler receives through its body marker
         :type: misc

@@ -1,7 +1,6 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Annotated, Any, TypedDict
-from unittest.mock import ANY
 
 import pytest
 from typing_extensions import ReadOnly
@@ -9,13 +8,12 @@ from typing_extensions import ReadOnly
 from litestar import Controller, Litestar, post
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.request_body import create_request_body
-from litestar._openapi.schema_generation import SchemaCreator
 from litestar.datastructures.upload_file import UploadFile
 from litestar.di import NamedDependency, Provide
 from litestar.dto import DataclassDTO, DTOConfig, DTOData
 from litestar.handlers import BaseRouteHandler
 from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.spec import Reference, RequestBody, Schema
+from litestar.openapi.spec import RequestBody
 from litestar.params import Body, JSONBody, MultipartBody
 from litestar.typing import FieldDefinition
 
@@ -164,31 +162,17 @@ def test_upload_file_model_schema_generation() -> None:
     }
 
 
-def test_request_body_generation_with_dto(create_request: RequestBodyFactory) -> None:
-    calls: list[dict[str, Any]] = []
-
-    class RecordingDTO(DataclassDTO[DTOModel]):
-        @classmethod
-        def create_openapi_schema(
-            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
-        ) -> Reference | Schema:
-            calls.append(
-                {"field_definition": field_definition, "handler_id": handler_id, "schema_creator": schema_creator}
-            )
-            return Schema()
-
-    @post(path="/form-upload", dto=RecordingDTO)
+def test_request_body_generation_with_dto() -> None:
+    @post(path="/form-upload", dto=DataclassDTO[DTOModel])
     async def handler(data: JSONBody[DTOModel]) -> None:
         return None
 
-    app = Litestar(route_handlers=[handler])
-    resolved_handler = app.route_handler_method_map["/form-upload"]["POST"]
-    field_definition = resolved_handler.parsed_data_field
-    assert field_definition is not None
-    create_request(resolved_handler, field_definition)
-    assert calls == [
-        {"field_definition": field_definition, "handler_id": resolved_handler.handler_id, "schema_creator": ANY}
-    ]
+    schema = Litestar(route_handlers=[handler]).openapi_schema.to_schema()
+
+    assert schema["paths"]["/form-upload"]["post"]["requestBody"]["content"]["application/json"] == {
+        "schema": {"$ref": "#/components/schemas/HandlerDTOModelRequestBody"}
+    }
+    assert set(schema["components"]["schemas"]["HandlerDTOModelRequestBody"]["properties"]) == {"a"}
 
 
 def test_unwrap_read_only() -> None:

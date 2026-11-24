@@ -190,8 +190,7 @@ A ``msgspec.Meta`` stays where it is written. If msgspec does not support it the
 Other constraints are enforced where msgspec can express them, and not otherwise, such as ``gt`` on a ``Decimal``. When
 a ``msgspec.Meta`` and another constraint target the same attribute or conflict, the ``Meta`` wins.
 
-The startup check does not apply to :class:`~litestar.plugins.pydantic.PydanticDTO` or to DTO classes that decode the
-request body themselves by overriding ``decode_bytes`` or ``decode_builtins``.
+The startup check does not apply to :class:`~litestar.plugins.pydantic.PydanticDTO`.
 
 .. note::
 

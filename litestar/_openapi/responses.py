@@ -140,9 +140,7 @@ class ResponseFactory:
             media_type = self.route_handler.media_type
 
             if (plan := self.route_handler._dto_plan) is not None and plan.return_ is not None:
-                result = create_dto_openapi_schema(
-                    plan.return_, self.field_definition, self.route_handler, self.schema_creator
-                )
+                result = create_dto_openapi_schema(plan.return_, self.field_definition, self.schema_creator)
             else:
                 if self.field_definition.is_subclass_of(Template):
                     field_def = FieldDefinition.from_annotation(str)

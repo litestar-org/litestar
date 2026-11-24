@@ -1436,26 +1436,6 @@ def test_data_dto_over_union_of_models_raises_at_startup() -> None:
     assert "RequestBody" not in message
 
 
-class OwnDecode(DataclassDTO[UH]):
-    def decode_bytes(self, value: bytes) -> Any:
-        raw = msgspec.json.decode(value)
-        member = U1(**raw["f"]) if "a" in raw["f"] else U2(**raw["f"])
-        return UH(f=member)
-
-
-def test_data_dto_with_own_decoding_is_not_checked_at_startup() -> None:
-    received: dict[str, UH] = {}
-
-    @post("/", dto=OwnDecode, return_dto=None)
-    def create_own_decoded(data: JSONBody[UH]) -> None:
-        received["data"] = data
-
-    with create_test_client([create_own_decoded], openapi_config=None) as client:
-        assert client.post("/", json={"f": {"a": 1}}).status_code == 201
-
-    assert received["data"] == UH(f=U1(a=1))
-
-
 def test_return_dto_is_not_checked_at_startup() -> None:
     @get("/union", return_dto=DataclassDTO[UH])
     def read_union_holder() -> UH:

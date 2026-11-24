@@ -270,25 +270,3 @@ def test_validation_error_is_converted(body: str) -> None:
     extra[0].pop("url")
     assert response.status_code == 400
     assert extra == SHORT_FOO_ERRORS
-
-
-def test_subclass_overriding_decode_bytes_keeps_conversion() -> None:
-    calls: list[bytes] = []
-
-    class RecordingPydanticDTO(PydanticDTO[ShortFoo]):
-        def decode_bytes(self, value: bytes) -> Any:
-            calls.append(value)
-            return super().decode_bytes(value)
-
-    @post("/json", dto=RecordingPydanticDTO)
-    async def handler(data: JSONBody[ShortFoo]) -> ShortFoo:
-        return data
-
-    with create_test_client([handler], openapi_config=None) as client:
-        response = post_short_foo(client, "/json", "json")
-
-    extra = response.json()["extra"]
-    extra[0].pop("url")
-    assert response.status_code == 400
-    assert extra == SHORT_FOO_ERRORS
-    assert len(calls) == 1

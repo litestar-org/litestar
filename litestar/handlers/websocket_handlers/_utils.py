@@ -65,7 +65,7 @@ def create_handle_send(
     if plan is not None and (encode := plan.encode) is not None:
 
         async def handle_send(socket: WebSocket, data: Any) -> None:
-            encoded_data = encode(data, socket)
+            encoded_data = encode(data)
             data = json_encoder.encode(encoded_data)
             await socket.send_data(data=data, mode=listener._send_mode)
 

@@ -43,7 +43,7 @@ def create_request_body(
         media_type = data_field.kwarg_definition.media_type
 
     if (plan := route_handler._dto_plan) is not None and plan.data is not None:
-        schema = create_dto_openapi_schema(plan.data, data_field, route_handler, schema_creator)
+        schema = create_dto_openapi_schema(plan.data, data_field, schema_creator)
     else:
         schema = schema_creator.for_field_definition(data_field)
 

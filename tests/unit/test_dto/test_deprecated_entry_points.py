@@ -1,6 +1,6 @@
 import warnings
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any
 
 import msgspec
 import pytest
@@ -9,10 +9,9 @@ from litestar import Litestar, Request, post
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar.dto import AbstractDTO, DataclassDTO, MsgspecDTO
-from litestar.dto._backend import DTOBackend
 from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, LitestarDeprecationWarning
 from litestar.handlers import HTTPRouteHandler
-from litestar.openapi.spec import Reference, Schema
+from litestar.openapi.spec import Reference
 from litestar.params import JSONBody, URLEncodedBody
 from litestar.testing import RequestFactory, TestClient
 from litestar.typing import FieldDefinition
@@ -49,16 +48,16 @@ def test_instance_method_called_directly_warns(
     handler, request = registered
     assert handler.data_dto is not None
     assert handler._dto_plan is not None and handler._dto_plan.encode is not None
-    dto = handler.data_dto(request)
+    with pytest.warns(LitestarDeprecationWarning, match="AbstractDTO.__init__") as init_record:
+        dto = handler.data_dto(request)
+    assert init_record[0].filename == __file__
     arguments: dict[str, Any] = {
         "decode_bytes": PAYLOAD,
         "decode_builtins": {"a": 1, "b": "two"},
         "data_to_encodable_type": Model(a=1, b="two"),
     }
     expected = (
-        handler._dto_plan.encode(Model(a=1, b="two"), request)
-        if name == "data_to_encodable_type"
-        else Model(a=1, b="two")
+        handler._dto_plan.encode(Model(a=1, b="two")) if name == "data_to_encodable_type" else Model(a=1, b="two")
     )
 
     with pytest.warns(LitestarDeprecationWarning, match=f"AbstractDTO.{name}") as record:
@@ -66,6 +65,9 @@ def test_instance_method_called_directly_warns(
 
     assert result == expected
     assert record[0].filename == __file__
+    assert "There is no replacement for decoding or encoding with a DTO outside a route handler yet" in str(
+        record[0].message
+    )
 
 
 def test_instance_method_on_unregistered_handler_raises() -> None:
@@ -138,72 +140,17 @@ def test_create_openapi_schema_does_not_warn(registered: tuple[HTTPRouteHandler,
     assert isinstance(schema, Reference)
 
 
-class OverridingDTO(DataclassDTO[Model]):
-    calls: ClassVar[list[str]] = []
-
-    def decode_bytes(self, value: bytes) -> Any:
-        self.calls.append("decode_bytes")
-        return super().decode_bytes(value)
-
-    def decode_builtins(self, value: dict[str, Any]) -> Any:
-        self.calls.append("decode_builtins")
-        return super().decode_builtins(value)
-
-    def data_to_encodable_type(self, data: Any) -> Any:
-        self.calls.append("data_to_encodable_type")
-        return super().data_to_encodable_type(data)
-
-    @classmethod
-    def create_for_field_definition(
-        cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
-    ) -> None:
-        cls.calls.append("create_for_field_definition")
-        super().create_for_field_definition(field_definition=field_definition, handler_id=handler_id)
-
-    @classmethod
-    def create_openapi_schema(
-        cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
-    ) -> Reference | Schema:
-        cls.calls.append("create_openapi_schema")
-        return super().create_openapi_schema(field_definition, handler_id, schema_creator)
-
-
-def test_overriding_class_emits_no_warning_and_is_called() -> None:
-    @post("/json", dto=OverridingDTO)
-    async def json_handler(data: JSONBody[Model]) -> Model:
-        return data
-
-    @post("/form", dto=OverridingDTO, return_dto=None)
-    async def form_handler(data: URLEncodedBody[Model]) -> None:
-        return None
-
-    OverridingDTO.calls.clear()
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        app = Litestar([json_handler, form_handler])
-        assert OverridingDTO.calls == ["create_for_field_definition"] * 3
-        with TestClient(app) as client:
-            assert client.post("/json", content=PAYLOAD).json() == {"a": 1, "b": "two"}
-            assert client.post("/form", data={"a": "1", "b": "two"}).status_code == 201
-        assert app.openapi_schema.components.schemas
-
-    assert OverridingDTO.calls[3:] == [
-        "decode_bytes",
-        "data_to_encodable_type",
-        "decode_builtins",
-        "create_openapi_schema",
-        "create_openapi_schema",
-        "create_openapi_schema",
-    ]
-
-
 def test_instance_method_on_registered_handler_without_dto_for_direction_raises() -> None:
     app = Litestar([make_handler(DataclassDTO[Model], None)])
     handler: HTTPRouteHandler = app.route_handler_method_map["/"]["POST"]  # type: ignore[assignment]
     request = RequestFactory(app=app).post("/", route_handler=handler)
 
-    with pytest.warns(LitestarDeprecationWarning), pytest.raises(DTOFactoryException, match="no return DTO"):
+    with pytest.warns(LitestarDeprecationWarning), pytest.raises(DTOFactoryException) as exc_info:
         OtherDTO(request).data_to_encodable_type(Model(a=1, b="two"))
+
+    assert str(exc_info.value) == (
+        f"Handler {str(handler)!r} has no return DTO, and no backend of OtherDTO was created for it"
+    )
 
 
 class StructModel(msgspec.Struct):
@@ -248,12 +195,8 @@ class OtherDTO(DataclassDTO[Model]):
     pass
 
 
-@pytest.mark.parametrize(
-    ("dto", "return_dto"),
-    [pytest.param(None, None, id="no-dto"), pytest.param(DataclassDTO[Model], None, id="data-dto-only")],
-)
-def test_direct_create_for_field_definition_serves_direction_the_plan_lacks(dto: Any, return_dto: Any) -> None:
-    app = Litestar([make_handler(dto, return_dto)])
+def test_direct_create_for_field_definition_serves_direction_the_plan_lacks() -> None:
+    app = Litestar([make_handler(DataclassDTO[Model], None)])
     handler: HTTPRouteHandler = app.route_handler_method_map["/"]["POST"]  # type: ignore[assignment]
     request = RequestFactory(app=app).post("/", route_handler=handler)
     return_field = FieldDefinition.from_annotation(Model)
@@ -268,15 +211,3 @@ def test_direct_create_for_field_definition_serves_direction_the_plan_lacks(dto:
     assert msgspec.to_builtins(encoded) == {"a": 1, "b": "two"}
     assert isinstance(schema, Reference)
     assert schema.ref.endswith("ModelResponseBody")
-
-
-def test_direct_create_for_field_definition_serves_data_direction_the_plan_lacks() -> None:
-    app = Litestar([make_handler(None, None)])
-    handler: HTTPRouteHandler = app.route_handler_method_map["/"]["POST"]  # type: ignore[assignment]
-    request = RequestFactory(app=app).post("/", route_handler=handler)
-
-    with pytest.warns(LitestarDeprecationWarning):
-        OtherDTO.create_for_field_definition(
-            FieldDefinition.from_annotation(JSONBody[Model]), handler_id=handler.handler_id
-        )
-        assert OtherDTO(request).decode_bytes(PAYLOAD) == Model(a=1, b="two")
