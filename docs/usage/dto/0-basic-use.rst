@@ -93,12 +93,12 @@ When a DTO cannot handle the annotation, the outcome depends on where it is decl
     * - The route handler
       - Used
       - Error when the application is created
-    * - A controller, a router or the application
+    * - A controller, a router or the application, or the ``dto`` used for the return value when no ``return_dto``
+        is declared
       - Used
       - Error when the application is created if the annotation contains the DTO's model, such as
         ``tuple[User, int]`` or ``Union[User, Other]``; skipped otherwise
-    * - Implicit: the ``dto`` used for the return value when no ``return_dto`` is declared, or a DTO created by a
-        serialization plugin
+    * - Implicit: a DTO created by a serialization plugin
       - Used
       - Skipped
 

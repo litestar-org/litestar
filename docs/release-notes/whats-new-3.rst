@@ -313,9 +313,10 @@ Whether a DTO is used now follows :ref:`usage/dto/0-basic-use:When a DTO applies
   declared, and a DTO created by a serialization plugin are skipped for an annotation that does not
   contain their model, where some of these cases raised
   :exc:`~litestar.exceptions.InvalidAnnotationException`.
-- A DTO declared on a layer that cannot handle an annotation containing its model, such as
-  ``-> tuple[User, int]``, raises :exc:`~litestar.exceptions.DTONotApplicableError`; declare
-  ``return_dto=None`` or ``dto=None`` on the handler.
+- A DTO declared on a layer, or the ``dto`` used for the return value, that cannot handle an
+  annotation containing its model, such as ``-> tuple[User, int]``, raises
+  :exc:`~litestar.exceptions.DTONotApplicableError`; declare ``return_dto=None`` or ``dto=None`` on
+  the handler.
 - A ``return_dto`` declared on the handler, or in the body of a ``WebsocketListener`` class, must
   handle the return annotation (`#3485 <https://github.com/litestar-org/litestar/issues/3485>`_); it
   used to be ignored, so every field was sent. Remove it from handlers returning ``None``, ``Any``,

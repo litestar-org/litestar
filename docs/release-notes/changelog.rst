@@ -63,6 +63,16 @@
         ``DTONotApplicableError``: declare ``dto=None`` or ``return_dto=None`` on the handler. See
         :ref:`release-notes/whats-new-3:DTO applicability and startup errors`.
 
+    .. change:: DTO: The ``dto`` used for the return value raises for an annotation containing its model
+        :type: bugfix
+        :breaking:
+        :pr: 5259
+
+        Without a ``return_dto``, a ``dto`` that cannot encode a return annotation containing its model,
+        such as ``Union[int, Model]`` or ``tuple[Model, int]``, now raises
+        :exc:`~litestar.exceptions.DTONotApplicableError` at startup instead of being skipped. Declare
+        ``return_dto=None`` on the handler to opt out.
+
     .. change:: DTO: Pass ``None`` through an optional annotation
         :type: bugfix
         :pr: 5259

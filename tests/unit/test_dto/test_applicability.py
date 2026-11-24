@@ -403,8 +403,8 @@ RETURN_ROWS = [
         tuple[User, int],
         respond_tuple,
         (),
-        TUPLE_FULL,
-        id="data-dto-skipped-for-return-tuple",
+        DTONotApplicableError,
+        id="data-dto-for-return-tuple-raises",
     ),
     pytest.param(
         "app", {}, {}, Other, respond_other, (ModelPlugin(Other, OtherDTO),), {"a": 1}, id="plugin-dto-for-return"
@@ -574,14 +574,11 @@ def test_async_generator_return(placement: Placement, options: dict[str, Any]) -
             placement, method="GET", returns=AsyncGenerator[User, None], respond=lambda data: _users(), **options
         )
 
-    if "return_dto" in options:
-        with pytest.raises(DTONotApplicableError) as exc_info:
-            build()
-        assert exc_info.value.option == "return_dto"
-        assert "Streamed items are not transferred by a DTO." in str(exc_info.value)
-        return
+    with pytest.raises(DTONotApplicableError) as exc_info:
+        build()
 
-    assert registered(build(), method="GET").return_dto is None
+    assert exc_info.value.option == next(iter(options))
+    assert "Streamed items are not transferred by a DTO." in str(exc_info.value)
 
 
 @pytest.mark.parametrize("returns", [ServerSentEvent, Stream])
@@ -679,6 +676,20 @@ def test_layer_dto_raises_for_annotation_containing_its_model(
 
     assert (exc_info.value.option, exc_info.value.annotation) == (option, annotation)
     assert "on a layer" in str(exc_info.value)
+
+
+@pytest.mark.parametrize("placement", ["handler", "app"])
+def test_dto_reused_for_return_raises_for_annotation_containing_its_model(placement: Placement) -> None:
+    with pytest.raises(DTONotApplicableError) as exc_info:
+        build_app(placement, method="GET", returns=Union[int, User], respond=respond_user, dto=UserDTO)
+
+    declared = "the handler" if placement == "handler" else "a layer"
+    assert str(exc_info.value) == (
+        f"[paths='/', handler='handler'] 'dto=DataclassDTO[User]' is declared on {declared}, but cannot encode its "
+        f"return value annotated '{Union[int, User]!r}': the DTO handles 'User'. Declare 'return_dto=None' on the "
+        "handler to opt out."
+    )
+    assert (exc_info.value.option, exc_info.value.annotation) == ("dto", Union[int, User])
 
 
 def test_layer_dto_error_message() -> None:

@@ -368,6 +368,11 @@ def _resolve_return_dto(
         return None
     if data_dto is not None and (target := resolve_dto_target(data_dto, return_field, is_data_field=False)) is not None:
         return data_dto, target
+    declared_dto, dto_on_handler = read_dto_declaration(handler, is_data_field=True)
+    if data_dto is not None and declared_dto is data_dto and _mentions_model(return_field, data_dto):
+        raise _not_applicable(
+            data_dto, return_field, is_data_field=False, declared_on_handler=dto_on_handler, reused=True
+        )
     return _plugin_dto(app, return_field, is_data_field=False)
 
 
@@ -403,9 +408,14 @@ def _mentions_model(field_definition: FieldDefinition, dto: "type[AbstractDTO[An
 
 
 def _not_applicable(
-    dto: "type[AbstractDTO[Any]]", field_definition: FieldDefinition, *, is_data_field: bool, declared_on_handler: bool
+    dto: "type[AbstractDTO[Any]]",
+    field_definition: FieldDefinition,
+    *,
+    is_data_field: bool,
+    declared_on_handler: bool,
+    reused: bool = False,
 ) -> DTONotApplicableError:
-    option: Literal["dto", "return_dto"] = "dto" if is_data_field else "return_dto"
+    option: Literal["dto", "return_dto"] = "dto" if is_data_field or reused else "return_dto"
     name = dto_name(dto)
     annotation = _format_annotation(field_definition.annotation)
     declared = f"'{option}={name}' is declared on {'the handler' if declared_on_handler else 'a layer'}"
@@ -422,8 +432,8 @@ def _not_applicable(
         )
         if reason := _not_applicable_reason(dto, field_definition, is_data_field=is_data_field):
             message = f"{message} {reason}"
-    if not declared_on_handler:
-        message = f"{message} Declare '{option}=None' on the handler to opt out."
+    if not declared_on_handler or reused:
+        message = f"{message} Declare '{'dto' if is_data_field else 'return_dto'}=None' on the handler to opt out."
     return DTONotApplicableError(
         message,
         dto=dto,
