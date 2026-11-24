@@ -144,8 +144,8 @@ However, we annotate the handler with the ``Foo`` type. This will raise an error
 created:
 
     litestar.exceptions.dto_exceptions.DTONotApplicableError: [paths='/users', handler='create_user']
-    'dto=SQLAlchemyDTO[<class 'docs.examples.data_transfer_objects.factory.type_checking.User'>]' is declared on the
-    handler, but cannot decode its request body annotated 'Foo': the DTO handles 'User'.
+    'dto=SQLAlchemyDTO[User]' is declared on the handler, but cannot decode its request body annotated 'Foo': the DTO
+    handles 'User'.
 
 The rules are described in :ref:`usage/dto/0-basic-use:When a DTO applies`.
 

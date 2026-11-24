@@ -103,23 +103,28 @@ What happens when a DTO cannot handle the annotation depends on where it is decl
       - Used
       - Skipped
 
-A ``return_dto`` declared on a handler must handle its return annotation, including ``None``, ``Any``, a streamed
-response or server-sent events: declare ``return_dto=None`` on such a handler to opt out of a ``return_dto`` declared on
-a layer. A ``dto`` declared on a handler without request data is not an error; it is used for the return value when
-no ``return_dto`` is declared and it can handle the return annotation.
+A ``dto`` or ``return_dto`` given to the decorator of a controller method is declared on the handler; the class
+attributes of the controller are declared on a layer. For a :class:`~litestar.handlers.WebsocketListener` class, the
+attributes defined in the body of the class itself are declared on the handler, and the ones inherited from a base
+listener class behave like a layer declaration.
+
+A ``dto`` declared on a handler without request data is not an error: it is used for the return value when no
+``return_dto`` is declared and it can handle the return annotation.
 
 The declaration closest to the handler decides, and ends the search: a ``return_dto`` that is skipped is not replaced by
 the ``dto`` or by a serialization plugin, and a skipped ``dto`` is not replaced by a serialization plugin. A ``dto``
 that is skipped for the request data is still used for the return value if no ``return_dto`` is declared and it can
 handle the return annotation. ``None`` disables DTOs for that direction.
 
-A return annotation of ``None`` never uses a DTO. With an optional annotation, ``None`` passes through the DTO: the
-handler can return ``None``, and a ``null`` request body is injected as ``None``.
+No DTO handles a return annotation of ``None``, ``Any``, a streamed response or server-sent events, so a
+``return_dto`` declared on the handler raises for them, and one declared on a layer is skipped; declare
+``return_dto=None`` on such a handler to opt out of a layer's ``return_dto``. With an optional annotation, ``None``
+passes through the DTO: the handler can return ``None``, and a ``null`` request body is injected as ``None``.
 
 URL-encoded and multipart form data is decoded into one model: a DTO does not handle a form body annotated with a
 collection, such as ``MultipartBody[list[User]]``. Invalid form data receives a ``400 Bad Request`` response with the
-same body as invalid JSON data. Streamed responses, server-sent events and the items of an asynchronous generator are
-not transferred by a DTO.
+same body as invalid JSON data. The streamed responses, server-sent events and asynchronous generators an HTTP handler
+returns are not transferred by a DTO; the items a websocket stream yields are.
 
 DTO configuration errors raised when the application is created start with the paths and the name of the handler,
 ``[paths='/users', handler='create_user']``:
