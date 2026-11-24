@@ -168,16 +168,11 @@ class DTOBackend:
         self._default_deserializer = default_deserializer
 
     def _decodes_with_annotation(self) -> bool:
-        from litestar.dto.base_dto import AbstractDTO
-
-        return (
-            self.dto_factory.decode_bytes is AbstractDTO.decode_bytes
-            and self.dto_factory.decode_builtins is AbstractDTO.decode_builtins
-            and getattr(self.dto_factory._wrap_decoder, "__func__", None) is vars(AbstractDTO)["_wrap_decoder"].__func__
-            and all(
-                getattr(type(self), name) is getattr(DTOBackend, name)
-                for name in ("parse_raw", "parse_builtins", "populate_data_from_raw", "populate_data_from_builtins")
-            )
+        return not any(
+            self.dto_factory._overrides(name) for name in ("decode_bytes", "decode_builtins", "_wrap_decoder")
+        ) and all(
+            getattr(type(self), name) is getattr(DTOBackend, name)
+            for name in ("parse_raw", "parse_builtins", "populate_data_from_raw", "populate_data_from_builtins")
         )
 
     def parse_model(

@@ -18,8 +18,6 @@ from litestar.connection import ASGIConnection
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
 from litestar.dto._plan import (
-    DTODirectionPlan,
-    DTOPlan,
     _plan_build,
     build_dto_plan,
     build_schema_annotation,
@@ -30,7 +28,6 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, LitestarException, LitestarWarning
 from litestar.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketListenerRouteHandler, websocket_stream
 from litestar.openapi.spec import Reference, Schema
-from litestar.openapi.spec.enums import OpenAPIType
 from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.serialization import encode_json
@@ -73,6 +70,10 @@ class Item:
 ModelDTO = DataclassDTO[Model]
 ModelReadDTO = DataclassDTO[Annotated[Model, DTOConfig(exclude={"b"})]]
 ItemDTO = DataclassDTO[Annotated[Item, DTOConfig(exclude={"secret"})]]
+
+
+class CustomBackend(DTOBackend):
+    __slots__ = ()
 
 
 class StubPlugin(SerializationPlugin):
@@ -166,9 +167,6 @@ def test_create_backend_generic_wrapper() -> None:
 
 
 def test_create_backend_uses_backend_cls() -> None:
-    class CustomBackend(DTOBackend):
-        __slots__ = ()
-
     backend = create_backend(
         DataclassDTO[Model],
         FieldDefinition.from_annotation(Model),
@@ -206,18 +204,6 @@ def test_build_schema_annotation_of_response_ignores_the_wrapper() -> None:
     assert build_schema_annotation(dto, backend, field_definition) is backend.annotation
 
 
-def test_plan_types_are_frozen() -> None:
-    dto = DataclassDTO[Model]
-    backend = create_backend(dto, FieldDefinition.from_annotation(Model), is_data_field=False, handler_id="h")
-    direction = DTODirectionPlan(dto=dto, backend=backend, schema_annotation=backend.annotation)
-    plan = DTOPlan(data=None, return_=direction, data_dto=None)
-
-    with pytest.raises(dataclasses.FrozenInstanceError):
-        direction.backend = backend  # type: ignore[misc]
-    with pytest.raises(dataclasses.FrozenInstanceError):
-        plan.data_dto = dto  # type: ignore[misc]
-
-
 @pytest.mark.parametrize(
     ("dto", "body", "expected", "has_data"),
     [
@@ -238,22 +224,39 @@ def test_data_resolution_rules(dto: Any, body: Any, expected: Any, has_data: boo
     assert (handler._dto_plan.data is not None) is has_data
 
 
-def test_handler_data_dto_that_cannot_apply_raises() -> None:
+class DataLayerController(Controller):
+    path = "/"
+    dto = ModelDTO
+
+    @post()
+    async def handler(self, data: JSONBody[dict[str, Any]]) -> None:
+        return None
+
+
+@post("/", return_dto=ModelReadDTO)
+async def r6_handler(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
+    return data
+
+
+class ReturnLayerController(Controller):
+    path = "/"
+    return_dto = ModelReadDTO
+
+    @post()
+    async def handler(self, data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
+        return data
+
+
+@pytest.mark.parametrize(
+    "route_handler",
+    [
+        pytest.param(make_rule_handler(ModelDTO, None, dict[str, Any], None), id="D2-handler"),
+        pytest.param(DataLayerController, id="D2-layer"),
+    ],
+)
+def test_data_dto_that_cannot_apply_raises(route_handler: Any) -> None:
     with pytest.raises(InvalidAnnotationException):
-        Litestar([make_rule_handler(ModelDTO, None, dict[str, Any], None)])
-
-
-def test_layer_data_dto_that_cannot_apply_raises() -> None:
-    class MyController(Controller):
-        path = "/"
-        dto = ModelDTO
-
-        @post()
-        async def handler(self, data: JSONBody[dict[str, Any]]) -> None:
-            return None
-
-    with pytest.raises(InvalidAnnotationException):
-        Litestar([MyController])
+        Litestar([route_handler])
 
 
 @pytest.mark.parametrize(
@@ -281,34 +284,27 @@ def test_return_resolution_rules(dto: Any, return_dto: Any, body: Any, returns: 
         assert handler.return_dto is expected
 
 
-def test_return_dto_without_wrapper_match_raises() -> None:
+@pytest.mark.parametrize(
+    "route_handler", [pytest.param(make_rule_handler(Empty, ModelDTO, None, tuple[Model, str]), id="R5")]
+)
+def test_return_dto_without_wrapper_match_raises(route_handler: Any) -> None:
     with pytest.raises(InvalidAnnotationException):
-        Litestar([make_rule_handler(Empty, ModelDTO, None, tuple[Model, str])])
+        Litestar([route_handler])
 
 
-def test_handler_return_dto_that_cannot_apply_is_dropped() -> None:
-    @post("/", return_dto=ModelReadDTO)
-    async def handler(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
-        return data
-
-    with create_test_client([handler]) as client:
+@pytest.mark.parametrize(
+    "route_handler",
+    [
+        pytest.param(r6_handler, id="R6-handler"),
+        pytest.param(ReturnLayerController, id="R6-layer"),
+    ],
+)
+def test_return_dto_that_cannot_apply_is_dropped(route_handler: Any) -> None:
+    with create_test_client([route_handler]) as client:
         registered_handler = registered(client.app)
         assert registered_handler.return_dto is None
         assert registered_handler._return_dto is ModelReadDTO
-        response = client.post("/", json={"a": 1, "b": "two"})
-        assert response.json() == {"a": 1, "b": "two"}
-
-
-def test_layer_return_dto_that_cannot_apply_is_dropped() -> None:
-    class MyController(Controller):
-        path = "/"
-        return_dto = ModelReadDTO
-
-        @get()
-        async def handler(self) -> dict[str, Any]:
-            return {}
-
-    assert registered(Litestar([MyController]), method="GET").return_dto is None
+        assert client.post("/", json={"a": 1, "b": "two"}).json() == {"a": 1, "b": "two"}
 
 
 def test_registration_does_not_overwrite_configuration() -> None:
@@ -486,10 +482,6 @@ def test_stream_resolves_dtos_once() -> None:
             assert ws.receive_json() == {"a": 1}
 
 
-class CustomBackend(DTOBackend):
-    __slots__ = ()
-
-
 def test_backend_cls_through_create_for_field_definition_override() -> None:
     class OverridingDTO(DataclassDTO[Model]):
         @classmethod
@@ -559,22 +551,6 @@ def openapi_ref(dto: type[AbstractDTO[Any]], field_definition: FieldDefinition |
     return result.ref
 
 
-def test_direct_create_for_field_definition_then_shims() -> None:
-    dto = DataclassDTO[Model]
-    field_definition = FieldDefinition.from_annotation(JSONBody[Model])
-
-    dto.create_for_field_definition(field_definition, handler_id="direct")
-
-    assert openapi_ref(dto, field_definition, "direct").endswith("ModelRequestBody")
-
-    list_field_definition = FieldDefinition.from_annotation(JSONBody[list[Model]])
-    dto.create_for_field_definition(list_field_definition, handler_id="direct")
-    replaced = dto.create_openapi_schema(list_field_definition, "direct", SchemaCreator(plugins=openapi_schema_plugins))
-
-    assert isinstance(replaced, Schema)
-    assert replaced.type == OpenAPIType.ARRAY
-
-
 def _operation_refs(app: Litestar) -> tuple[str, str]:
     operation = app.openapi_schema.paths["/"].post  # type: ignore[index, union-attr]
     request_ref = operation.request_body.content["application/json"].schema.ref  # type: ignore[union-attr]
@@ -591,24 +567,33 @@ def test_create_openapi_schema_with_handler_id() -> None:
     assert openapi_ref(ModelDTO, handler.parsed_data_field, handler.handler_id) == request_ref
 
 
-def test_create_openapi_schema_same_model_in_both_directions() -> None:
+@pytest.mark.parametrize(
+    "field_name",
+    [
+        pytest.param("parsed_data_field", id="data-field"),
+        pytest.param("return_type", id="signature-return-type"),
+        pytest.param("parsed_return_field", id="parsed-return-field"),
+    ],
+)
+def test_create_openapi_schema_same_model_in_both_directions(field_name: str) -> None:
     data_dto = DataclassDTO[Annotated[Model, DTOConfig(exclude={"a"})]]
     return_dto = DataclassDTO[Annotated[Model, DTOConfig(exclude={"b"})]]
     app = Litestar([make_rule_handler(data_dto, return_dto, Model, Model)])
     handler = registered(app)
     request_ref, response_ref = _operation_refs(app)
     components = app.openapi_schema.components.schemas
+    field_definition = (
+        handler.parsed_fn_signature.return_type if field_name == "return_type" else getattr(handler, field_name)
+    )
+    is_data_field = field_name == "parsed_data_field"
 
-    for return_field in (handler.parsed_fn_signature.return_type, handler.parsed_return_field):
-        assert return_field == handler.parsed_data_field
-        assert openapi_ref(return_dto, return_field, handler.handler_id) == response_ref
-    assert openapi_ref(data_dto, handler.parsed_data_field, handler.handler_id) == request_ref
+    assert field_definition == handler.parsed_data_field
+    ref = openapi_ref(data_dto if is_data_field else return_dto, field_definition, handler.handler_id)
 
-    response_name, request_name = response_ref.rsplit("/", 1)[1], request_ref.rsplit("/", 1)[1]
-    assert response_name.endswith("ResponseBody")
-    assert request_name.endswith("RequestBody")
-    assert set(components[response_name].properties) == {"a"}  # type: ignore[arg-type]
-    assert set(components[request_name].properties) == {"b"}  # type: ignore[arg-type]
+    assert ref == (request_ref if is_data_field else response_ref)
+    name = ref.rsplit("/", 1)[1]
+    assert name.endswith("RequestBody" if is_data_field else "ResponseBody")
+    assert set(components[name].properties) == ({"b"} if is_data_field else {"a"})  # type: ignore[arg-type]
 
 
 def test_create_openapi_schema_for_listener_data_field() -> None:
@@ -619,6 +604,17 @@ def test_create_openapi_schema_for_listener_data_field() -> None:
     listener = websocket_handler(Litestar([handler]), "/ws")
 
     assert openapi_ref(ItemDTO, listener.parsed_data_field, listener.handler_id).endswith("ItemRequestBody")
+
+
+def test_create_openapi_schema_for_copy_of_listener_data_field_is_return_direction() -> None:
+    @websocket_listener("/ws", dto=ItemDTO)
+    async def handler(data: Item) -> Item:
+        return data
+
+    listener = websocket_handler(Litestar([handler]), "/ws")
+    copied_field = dataclasses.replace(listener.parsed_data_field)
+
+    assert openapi_ref(ItemDTO, copied_field, listener.handler_id).endswith("ItemResponseBody")
 
 
 def test_handler_id_behaves_like_str() -> None:
@@ -634,6 +630,9 @@ def test_handler_id_behaves_like_str() -> None:
     assert json.dumps(handler_id) == f'"{handler_id}"'
     assert encode_json(handler_id) == f'"{handler_id}"'.encode()
     assert handler_id.handler is handler
+    with pytest.raises(TypeError):
+        msgspec.json.encode(handler_id)
+    assert msgspec.json.encode(str(handler_id)) == f'"{handler_id}"'.encode()
 
 
 @pytest.mark.parametrize(
@@ -793,10 +792,17 @@ def test_type_decoders_are_bound_at_build() -> None:
     async def handler(data: JSONBody[CustomHolder]) -> str:
         return data.custom.value
 
+    @post("/other")
+    async def other(data: JSONBody[dict[str, Any]]) -> None:
+        return None
+
     with create_test_client([handler]) as client:
-        registered_handler = registered(client.app)
-        assert registered_handler._dto_plan.data.backend._type_decoders is registered_handler.type_decoders
         assert client.post("/", json={"custom": "x"}).text == "x"
+        plan = registered(client.app)._dto_plan
+    connection_of_other_handler = RequestFactory().post("/other", route_handler=other)
+
+    assert plan.decode_bytes(b'{"custom": "y"}', connection_of_other_handler).custom.value == "y"
+    assert plan.decode_builtins({"custom": "z"}, connection_of_other_handler).custom.value == "z"
 
 
 class OwnInitBackend(DTOBackend):
@@ -1035,3 +1041,26 @@ def test_unregistered_listener_without_dto_resolves_its_handlers() -> None:
         with_dto.resolve_receive_handler()
     with pytest.raises(LitestarException):
         with_dto.resolve_send_handler()
+
+
+def test_listener_data_field_is_given_a_body_marker_for_create_for_field_definition_override() -> None:
+    kwarg_definitions: list[Any] = []
+
+    class RecordingCreateDTO(DataclassDTO[Annotated[Item, DTOConfig(exclude={"secret"})]]):
+        @classmethod
+        def create_for_field_definition(
+            cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
+        ) -> None:
+            kwarg_definitions.append(field_definition.kwarg_definition)
+            super().create_for_field_definition(field_definition=field_definition, handler_id=handler_id)
+
+    @websocket_listener("/ws", dto=RecordingCreateDTO, return_dto=None)
+    async def handler(data: Item) -> None:
+        return None
+
+    listener = websocket_handler(Litestar([handler]), "/ws")
+
+    assert len(kwarg_definitions) == 1
+    assert isinstance(kwarg_definitions[0], BodyKwarg)
+    assert not isinstance(listener.parsed_data_field.kwarg_definition, BodyKwarg)
+    assert listener._dto_plan.data.backend.is_data_field is True

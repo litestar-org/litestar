@@ -9,13 +9,7 @@ from collections.abc import Collection
 from inspect import getmodule
 from typing import TYPE_CHECKING, Generic, TypeVar, get_type_hints
 
-from litestar.dto._plan import (
-    _direct_direction,
-    _plan_build,
-    build_schema_annotation,
-    create_backend,
-    get_direction_plan,
-)
+from litestar.dto._plan import build_schema_annotation, create_backend, dto_name, take_plan_build
 from litestar.dto.config import DTOConfig
 from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
@@ -39,6 +33,7 @@ if TYPE_CHECKING:
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
+    from litestar.utils.deprecation import DeprecatedKind
 
 __all__ = ("AbstractDTO",)
 
@@ -121,10 +116,10 @@ class AbstractDTO(Generic[T]):
         .. deprecated:: 3.0
             Will be removed in 4.0. A class that overrides it is still called for every request.
         """
-        if type(self).decode_builtins is AbstractDTO.decode_builtins:
-            _warn_instance_method("decode_builtins")
-        direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=True, dto=type(self))
-        return type(self)._wrap_decoder(direction.backend.populate_data_from_builtins)(value, self.asgi_connection)
+        if not type(self)._overrides("decode_builtins"):
+            _warn_deprecated_call("AbstractDTO.decode_builtins", "method")
+        backend = _find_backend(type(self), self.asgi_connection.route_handler.handler_id, is_data_field=True)
+        return type(self)._wrap_decoder(backend.populate_data_from_builtins)(value, self.asgi_connection)
 
     def decode_bytes(self, value: bytes) -> Any:
         """Decode a byte string into an the DTO's datatype.
@@ -132,10 +127,10 @@ class AbstractDTO(Generic[T]):
         .. deprecated:: 3.0
             Will be removed in 4.0. A class that overrides it is still called for every request.
         """
-        if type(self).decode_bytes is AbstractDTO.decode_bytes:
-            _warn_instance_method("decode_bytes")
-        direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=True, dto=type(self))
-        return type(self)._wrap_decoder(direction.backend.populate_data_from_raw)(value, self.asgi_connection)
+        if not type(self)._overrides("decode_bytes"):
+            _warn_deprecated_call("AbstractDTO.decode_bytes", "method")
+        backend = _find_backend(type(self), self.asgi_connection.route_handler.handler_id, is_data_field=True)
+        return type(self)._wrap_decoder(backend.populate_data_from_raw)(value, self.asgi_connection)
 
     def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
         """Encode data into the DTO's transfer type.
@@ -143,16 +138,23 @@ class AbstractDTO(Generic[T]):
         .. deprecated:: 3.0
             Will be removed in 4.0. A class that overrides it is still called for every request.
         """
-        if type(self).data_to_encodable_type is AbstractDTO.data_to_encodable_type:
-            _warn_instance_method("data_to_encodable_type")
-        direction = get_direction_plan(self.asgi_connection.route_handler, is_data_field=False, dto=type(self))
-        return direction.backend.encode_data(data)
+        if not type(self)._overrides("data_to_encodable_type"):
+            _warn_deprecated_call("AbstractDTO.data_to_encodable_type", "method")
+        backend = _find_backend(type(self), self.asgi_connection.route_handler.handler_id, is_data_field=False)
+        return backend.encode_data(data)
 
     @classmethod
     def _wrap_decoder(
         cls, decoder: Callable[[Any, ASGIConnection[Any, Any, Any, Any]], Any]
     ) -> Callable[[Any, ASGIConnection[Any, Any, Any, Any]], Any]:
         return decoder
+
+    @classmethod
+    def _overrides(cls, name: str) -> bool:
+        """Whether the class overrides the member ``name`` of :class:`AbstractDTO`."""
+        attribute = getattr(cls, name)
+        base = vars(AbstractDTO)[name]
+        return getattr(attribute, "__func__", attribute) is not getattr(base, "__func__", base)
 
     @classmethod
     @abstractmethod
@@ -216,9 +218,7 @@ class AbstractDTO(Generic[T]):
             None
         """
 
-        build = _plan_build.get()
-        if build is not None and build.dto is cls:
-            _plan_build.set(None)
+        if (build := take_plan_build(cls)) is not None:
             build.backend = create_backend(
                 cls,
                 field_definition,
@@ -228,14 +228,7 @@ class AbstractDTO(Generic[T]):
             )
             return
 
-        warn_deprecation(
-            "3.0",
-            "AbstractDTO.create_for_field_definition",
-            "classmethod",
-            removal_in="4.0",
-            info="Backends are created when a route handler is registered.",
-            stacklevel=3,
-        )
+        _warn_deprecated_call("AbstractDTO.create_for_field_definition", "classmethod")
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
         backend = create_backend(
             cls, field_definition, is_data_field=is_data_field, handler_id=str(handler_id), backend_cls=backend_cls
@@ -269,18 +262,10 @@ class AbstractDTO(Generic[T]):
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg) or (
             handler is not None and field_definition is handler.parsed_data_field
         )
-        if handler is not None:
-            direction = get_direction_plan(handler, is_data_field=is_data_field, dto=cls)
-        elif (direct := _direct_direction(cls, handler_id, is_data_field)) is not None:
-            direction = direct
-        else:
-            raise DTOFactoryException(
-                f"No {'data' if is_data_field else 'return'} DTO backend for handler id {handler_id!r}: pass the "
-                "object returned by 'handler.handler_id'"
-            )
+        backend = _find_backend(cls, handler_id, is_data_field=is_data_field)
         return schema_creator.for_field_definition(
             FieldDefinition.from_annotation(
-                build_schema_annotation(cls, direction.backend, field_definition),
+                build_schema_annotation(cls, backend, field_definition),
                 kwarg_definition=field_definition.kwarg_definition,
             )
         )
@@ -413,18 +398,31 @@ class AbstractDTO(Generic[T]):
         return field_definition
 
 
-def _get_direct_backend(dto: type[AbstractDTO[Any]], handler_id: str, is_data_field: bool) -> DTOBackend | None:
+def _find_backend(dto: type[AbstractDTO[Any]], handler_id: str, *, is_data_field: bool) -> DTOBackend:
+    """Return the backend of the handler ``handler_id`` carries for the direction: the one in its plan, else the
+    one a direct call of :meth:`AbstractDTO.create_for_field_definition` on ``dto`` stored for ``handler_id``.
+    """
+    handler: BaseRouteHandler | None = getattr(handler_id, "handler", None)
+    if handler is not None and (plan := handler._dto_plan) is not None:
+        direction = plan.data if is_data_field else plan.return_
+        if direction is not None:
+            return direction.backend
     direct_backends: dict[str, dict[bool, DTOBackend]] = vars(dto).get("_direct_backends", {})
-    return direct_backends.get(str(handler_id), {}).get(is_data_field)
+    if (backend := direct_backends.get(str(handler_id), {}).get(is_data_field)) is not None:
+        return backend
+    raise DTOFactoryException(
+        f"Handler {handler or handler_id!r} has no {'data' if is_data_field else 'return'} DTO, and no backend of "
+        f"{dto_name(dto)} was created for it"
+    )
 
 
-def _warn_instance_method(name: str) -> None:
+def _warn_deprecated_call(name: str, kind: DeprecatedKind) -> None:
     warn_deprecation(
         "3.0",
-        f"AbstractDTO.{name}",
-        "method",
+        name,
+        kind,
         removal_in="4.0",
-        info="A DTO is applied through the plan of its route handler; DTO classes are no longer instantiated per "
-        "connection.",
+        info="DTO backends are created when a route handler is registered, and DTO classes are no longer "
+        "instantiated per connection.",
         stacklevel=4,
     )
