@@ -142,7 +142,7 @@ def _is_form_body(field_definition: FieldDefinition) -> bool:
 
 
 def _is_form_collection(field_definition: FieldDefinition, inner: FieldDefinition) -> bool:
-    data = inner.inner_types[0] if inner.is_subclass_of(DTOData) else inner
+    data = inner.inner_types[0] if inner.is_subclass_of(DTOData) and inner.inner_types else inner
     return _is_form_body(field_definition) and data.is_collection
 
 

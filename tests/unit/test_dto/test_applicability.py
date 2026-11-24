@@ -822,6 +822,19 @@ def test_listener_class_return_dto_that_does_not_apply_raises() -> None:
         pytest.param("app", "GET", NO_BODY, dict, "return_dto", id="layer-return-dict"),
         pytest.param("app", "GET", NO_BODY, list, "return_dto", id="layer-return-list"),
         pytest.param("app", "POST", JSONBody[dict], None, "dto", id="layer-body-dict"),
+        *(
+            pytest.param(placement, method, body, returns, option, id=f"{placement}-{name}")
+            for placement in ("handler", "app")
+            for name, method, body, returns, option in (
+                ("return-list-of-dict", "GET", NO_BODY, list[dict], "return_dto"),
+                ("return-dict-of-list", "GET", NO_BODY, dict[str, list], "return_dto"),
+                ("return-tuple-of-dict", "GET", NO_BODY, tuple[dict, ...], "return_dto"),
+                ("return-optional-list-of-dict", "GET", NO_BODY, Optional[list[dict]], "return_dto"),
+                ("body-list-of-dict", "POST", JSONBody[list[dict]], None, "dto"),
+                ("body-list-of-dto-data", "POST", JSONBody[list[DTOData]], None, "dto"),
+            )
+        ),
+        pytest.param("handler", "POST", URLEncodedBody[DTOData], None, "dto", id="handler-form-body-dto-data"),
     ],
 )
 def test_bare_collection_annotation_is_not_applicable(

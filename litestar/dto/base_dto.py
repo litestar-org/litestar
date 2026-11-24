@@ -397,6 +397,9 @@ class AbstractDTO(Generic[T]):
                 next(t for t in field_definition.inner_types if not t.is_subclass_of(NoneType))
             )
 
+        if not field_definition.inner_types:
+            return field_definition
+
         if field_definition.is_subclass_of(DTOData):
             return cls.resolve_model_type(field_definition.inner_types[0])
 
