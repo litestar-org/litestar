@@ -1158,6 +1158,7 @@ UsersAlias = TypeAliasType("UsersAlias", list[User])
 UserAliasAlias = TypeAliasType("UserAliasAlias", UserAlias)
 OptionalUserAlias = TypeAliasType("OptionalUserAlias", Optional[User])
 ForwardAlias = TypeAliasType("ForwardAlias", list["User"])
+StringPageAlias = TypeAliasType("StringPageAlias", "list[T]", type_params=(T,))
 PageAlias = TypeAliasType("PageAlias", list[T], type_params=(T,))
 IdentAlias = TypeAliasType("IdentAlias", T, type_params=(T,))
 D = TypeVar("D", default=User)
@@ -1166,6 +1167,7 @@ Ts = TypeVarTuple("Ts")
 TupleAlias = TypeAliasType("TupleAlias", tuple[*Ts], type_params=(Ts,))
 Json = TypeAliasType("Json", Union[dict[str, "Json"], list["Json"], str, int, None])
 NEEDS_TYPE_STATEMENT = pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword needs 3.12")
+NEEDS_TYPE_PARAMETER_DEFAULTS = pytest.mark.skipif(sys.version_info < (3, 13), reason="defaults need 3.13")
 
 
 def type_statement(source: str) -> Any:
@@ -1206,6 +1208,15 @@ ALIAS_ROWS = [
     ),
     pytest.param("app", "data", lambda: IdentAlias[IdentAlias[User]], User, USER_IN, id="data-generic-alias-in-itself"),
     pytest.param("app", "return", lambda: DefaultPageAlias, list[User], [USER], id="return-bare-alias-with-defaults"),
+    pytest.param("app", "return", lambda: StringPageAlias[User], list[User], [USER], id="return-generic-string-alias"),
+    pytest.param(
+        "app",
+        "reused",
+        lambda: list[StringPageAlias[User]],
+        list[list[User]],
+        [[USER]],
+        id="return-alias-with-reused-dto",
+    ),
 ]
 
 
@@ -1232,8 +1243,8 @@ def test_type_alias_applies_like_its_value(
                 returns=annotation,
                 respond=lambda data: sent,
                 openapi_config=DEFAULT_OPENAPI_CONFIG,
-                signature_namespace={"HiddenUser": User},
-                return_dto=UserDTO,
+                signature_namespace={"HiddenUser": User, "User": Other},
+                **{"dto" if direction == "reused" else "return_dto": UserDTO},
             )
         with TestClient(app) as client:
             response = client.post("/", json=sent) if direction == "data" else client.get("/")
@@ -1267,6 +1278,20 @@ def test_type_alias_applies_like_its_value(
             "return_dto", lambda: TypeAliasType("Alias", list["1/0"]), "division by zero", id="forward-reference-error"
         ),
         pytest.param("return_dto", lambda: TupleAlias[User, int], "type parameters", id="type-var-tuple"),
+        pytest.param(
+            "return_dto",
+            lambda: type_statement("type Alias = dict[str, list['User'] | 'Other']"),
+            "unsupported operand",
+            id="value-error",
+            marks=NEEDS_TYPE_STATEMENT,
+        ),
+        pytest.param(
+            "return_dto",
+            lambda: type_statement("type Alias[X = Missing] = list[X]"),
+            "name 'Missing' is not defined",
+            id="type-parameter-default-error",
+            marks=NEEDS_TYPE_PARAMETER_DEFAULTS,
+        ),
     ],
 )
 def test_unresolvable_type_alias_fails_at_startup(option: str, alias: Callable[[], Any], reason: str) -> None:

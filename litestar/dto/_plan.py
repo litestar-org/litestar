@@ -311,22 +311,23 @@ def _resolve_type_aliases(annotation: Any, namespace: dict[str, Any], expanding:
             return annotation
         params = alias.__type_params__
         args = () if get_args(annotation) == params else get_args(annotation)
-        args += tuple(param.__default__ for param in params[len(args) :] if getattr(param, "has_default", bool)())
+        try:
+            args += tuple(param.__default__ for param in params[len(args) :] if getattr(param, "has_default", bool)())
+            value = alias.__value__
+        except Exception as exc:
+            raise _unresolvable_alias(annotation, exc) from exc
         if len(params) != len(args) or not all(isinstance(param, TypeVar) for param in params):
             raise _unresolvable_alias(annotation, f"each of its type parameters {params!r} needs one type argument")
-        try:
-            value = alias.__value__
-        except NameError as exc:
-            raise _unresolvable_alias(annotation, exc) from exc
-        if params:
-            args = tuple(_resolve_type_aliases(arg, namespace, expanding) for arg in args)
-            value = _substitute_typevars(value, dict(zip(params, args, strict=True)))
-        return _resolve_type_aliases(value, namespace, (*expanding, alias))
+        mapping = dict(zip(params, (_resolve_type_aliases(arg, namespace, expanding) for arg in args), strict=True))
+        if mapping:
+            value = _substitute_typevars(value, mapping)
+        value = _resolve_type_aliases(value, namespace, (*expanding, alias))
+        return _substitute_typevars(value, mapping) if mapping else value
     if expanding and isinstance(annotation, (str, ForwardRef)):
         module = getattr(annotation, "__forward_module__", None) or expanding[-1].__module__
         source = annotation.__forward_arg__ if isinstance(annotation, ForwardRef) else annotation
         try:
-            value = eval(source, {**getattr(sys.modules.get(module), "__dict__", {}), **namespace})  # noqa: S307
+            value = eval(source, {**namespace, **getattr(sys.modules.get(module), "__dict__", {})})  # noqa: S307
         except Exception as exc:
             raise _unresolvable_alias(expanding[-1], exc) from exc
         return _resolve_type_aliases(value, namespace, expanding)
