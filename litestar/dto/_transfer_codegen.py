@@ -2,13 +2,14 @@
 
 """Generate the transfer functions used by :class:`~litestar.dto._backend.DTOBackend`."""
 
+import hashlib
 import keyword
 import linecache
 import re
-import secrets
 import unicodedata
 from collections.abc import Callable, Generator, Mapping
 from contextlib import AbstractContextManager, contextmanager, nullcontext
+from functools import cache
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -30,6 +31,8 @@ from litestar.dto._types import (
 from litestar.utils.helpers import unique_name_for_scope
 
 if TYPE_CHECKING:
+    from types import CodeType
+
     from litestar.typing import FieldDefinition
 
 __all__ = ("TransferFunctionCache", "TransferFunctionFactory")
@@ -37,6 +40,21 @@ __all__ = ("TransferFunctionCache", "TransferFunctionFactory")
 TransferFunctionCache = dict[tuple[Any, ...], Callable[[Any], Any]]
 
 IDENTIFIER_PARTS_PATTERN = re.compile(r"\w+")
+
+
+@cache
+def _compile(source: str) -> "CodeType":
+    # add the function to linecache, to get better stacktraces when an error occurs
+    # otherwise, the traceback within the generated code will just point
+    # to '<string>'
+    file_name = f"dto_transfer_function_{hashlib.sha256(source.encode()).hexdigest()[:12]}"
+    linecache.cache[file_name] = (
+        len(source),
+        None,  # mtime: not applicable
+        [line + "\n" for line in source.splitlines()],
+        file_name,
+    )
+    return compile(source, file_name, "exec")
 
 
 class FieldAccessManager(Protocol):
@@ -86,19 +104,7 @@ class TransferFunctionFactory:
         """Wrap the current body contents in a function definition and turn it into a callable object"""
         source = f"def {fn_name}({source_value_name}):\n{''.join(self._body)} return {return_value_name}"
         ctx: dict[str, Any] = {**self._fn_locals}
-
-        # add the function to linecache, to get better stacktraces when an error occurs
-        # otherwise, the traceback within the generated code will just point
-        # to '<string>'
-        file_name = f"dto_transfer_function_{secrets.token_hex(6)}"
-        linecache.cache[file_name] = (
-            len(source),
-            None,  # mtime: not applicable
-            [line + "\n" for line in source.splitlines()],
-            file_name,
-        )
-        code = compile(source, file_name, "exec")
-        exec(code, ctx)  # noqa: S102
+        exec(_compile(source), ctx)  # noqa: S102
 
         return ctx["func"]  # type: ignore[no-any-return]
 

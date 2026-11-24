@@ -1,6 +1,6 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-import linecache
+import inspect
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -118,13 +118,8 @@ def _create_backend(
 
 
 def _generated_sources(model: type[Any], max_nested_depth: int) -> list[str]:
-    before = set(linecache.cache)
-    _create_backend(model, DTOConfig(max_nested_depth=max_nested_depth), is_data_field=False)
-    return [
-        "".join(linecache.getlines(key))
-        for key in set(linecache.cache) - before
-        if key.startswith("dto_transfer_function_")
-    ]
+    backend = _create_backend(model, DTOConfig(max_nested_depth=max_nested_depth), is_data_field=False)
+    return [inspect.getsource(fn) for fn in backend._transfer_function_cache.values()]
 
 
 @pytest.mark.parametrize("as_mapping", [False, True])
