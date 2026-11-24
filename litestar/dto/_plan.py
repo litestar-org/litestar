@@ -304,7 +304,7 @@ def _unresolvable_alias(annotation: Any, reason: object) -> InvalidAnnotationExc
     return InvalidAnnotationException(f"Cannot resolve the type alias {_format_annotation(annotation)!r}: {reason}")
 
 
-def _resolve_type_aliases(annotation: Any, expanding: tuple[Any, ...] = ()) -> Any:
+def _resolve_type_aliases(annotation: Any, namespace: dict[str, Any], expanding: tuple[Any, ...] = ()) -> Any:
     origin = get_origin(annotation)
     if isinstance(alias := annotation if origin is None else origin, TypeAliasTypes):
         if alias in expanding:
@@ -318,30 +318,30 @@ def _resolve_type_aliases(annotation: Any, expanding: tuple[Any, ...] = ()) -> A
             raise _unresolvable_alias(annotation, exc) from exc
         if params:
             value = _substitute_typevars(value, dict(zip(params, args, strict=True)))
-        return _resolve_type_aliases(value, (*expanding, alias))
+        return _resolve_type_aliases(value, namespace, (*expanding, alias))
     if expanding and isinstance(annotation, (str, ForwardRef)):
-        namespace = getattr(sys.modules.get(expanding[-1].__module__), "__dict__", {})
+        module = getattr(annotation, "__forward_module__", None) or expanding[-1].__module__
         source = annotation.__forward_arg__ if isinstance(annotation, ForwardRef) else annotation
         try:
-            value = eval(source, namespace)  # noqa: S307
-        except (NameError, AttributeError, SyntaxError) as exc:
+            value = eval(source, {**getattr(sys.modules.get(module), "__dict__", {}), **namespace})  # noqa: S307
+        except Exception as exc:
             raise _unresolvable_alias(expanding[-1], exc) from exc
-        return _resolve_type_aliases(value, expanding)
+        return _resolve_type_aliases(value, namespace, expanding)
     args = get_args(annotation)
     if not args or origin is Literal:
         return annotation
     if origin is Annotated:
-        inner = _resolve_type_aliases(args[0], expanding)
+        inner = _resolve_type_aliases(args[0], namespace, expanding)
         return annotation if inner is args[0] else Annotated[(inner, *args[1:])]
-    if (resolved := tuple(_resolve_type_aliases(arg, expanding) for arg in args)) == args:
+    if (resolved := tuple(_resolve_type_aliases(arg, namespace, expanding) for arg in args)) == args:
         return annotation
     if origin in UnionTypes:
         return Union[resolved]
     return annotation.copy_with(resolved) if hasattr(annotation, "copy_with") else origin[resolved]
 
 
-def _without_type_aliases(field_definition: FieldDefinition) -> FieldDefinition:
-    if (raw := _resolve_type_aliases(field_definition.raw)) is field_definition.raw:
+def _without_type_aliases(field_definition: FieldDefinition, namespace: dict[str, Any]) -> FieldDefinition:
+    if (raw := _resolve_type_aliases(field_definition.raw, namespace)) is field_definition.raw:
         return field_definition
     return FieldDefinition.from_kwarg(annotation=raw, name=field_definition.name, default=field_definition.default)
 
@@ -363,9 +363,9 @@ def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
         return_dto, _ = read_dto_declaration(handler, is_data_field=False)
         declares_dto = dto is not None and dto is not Empty
         if data_field is not None and declares_dto:
-            data_field = _without_type_aliases(data_field)
+            data_field = _without_type_aliases(data_field, handler.signature_namespace)
         if return_dto is not None and (return_dto is not Empty or declares_dto):
-            return_field = _without_type_aliases(return_field)
+            return_field = _without_type_aliases(return_field, handler.signature_namespace)
         data_dto, data_target = _resolve_data_dto(handler, app, data_field)
         data: DTODirectionPlan | None = None
         if data_field is not None and data_dto is not None and data_target is not None:

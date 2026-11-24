@@ -1193,6 +1193,14 @@ ALIAS_ROWS = [
     pytest.param("app", "return", lambda: Wrapper[UserAlias], Wrapper[User], Wrapper(USER), id="return-wrapper"),
     pytest.param("app", "return", lambda: UserAliasAlias, User, USER, id="return-alias-of-alias"),
     pytest.param("app", "return", lambda: ForwardAlias, list[User], [USER], id="return-forward-reference"),
+    pytest.param(
+        "app",
+        "return",
+        lambda: TypeAliasType("Alias", list["HiddenUser"]),  # noqa: F821
+        list[User],
+        [USER],
+        id="return-forward-reference-in-signature-namespace",
+    ),
 ]
 
 
@@ -1209,6 +1217,7 @@ def test_type_alias_applies_like_its_value(
                 respond=respond_described,
                 handler_options={"return_dto": None},
                 openapi_config=DEFAULT_OPENAPI_CONFIG,
+                signature_namespace={"HiddenUser": User},
                 dto=UserDTO,
             )
         else:
@@ -1218,6 +1227,7 @@ def test_type_alias_applies_like_its_value(
                 returns=annotation,
                 respond=lambda data: sent,
                 openapi_config=DEFAULT_OPENAPI_CONFIG,
+                signature_namespace={"HiddenUser": User},
                 return_dto=UserDTO,
             )
         with TestClient(app) as client:
@@ -1248,6 +1258,9 @@ def test_type_alias_applies_like_its_value(
             id="forward-reference",
         ),
         pytest.param("return_dto", lambda: PageAlias, "type parameters", id="bare-generic-alias"),
+        pytest.param(
+            "return_dto", lambda: TypeAliasType("Alias", list["1/0"]), "division by zero", id="forward-reference-error"
+        ),
         pytest.param("return_dto", lambda: TupleAlias[User, int], "type parameters", id="type-var-tuple"),
     ],
 )
