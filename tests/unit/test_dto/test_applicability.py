@@ -521,7 +521,7 @@ def test_async_generator_return(placement: Placement, options: dict[str, Any]) -
     if placement == "handler" and "return_dto" in options:
         with pytest.raises(DTONotApplicableError) as exc_info:
             build()
-        assert exc_info.value.direction == "return"
+        assert exc_info.value.option == "return_dto"
         assert str(exc_info.value).endswith("Streamed items are not transferred by a DTO.")
         return
 
@@ -585,7 +585,7 @@ def test_generic_wrapper_is_not_a_data_shape() -> None:
     with pytest.raises(DTONotApplicableError) as exc_info:
         build_app("handler", body=JSONBody[Wrapper[User]], dto=UserDTO)
 
-    assert exc_info.value.direction == "data"
+    assert exc_info.value.option == "dto"
     assert str(exc_info.value).endswith("A generic wrapper is supported for return values only.")
 
 
@@ -690,7 +690,7 @@ def test_is_supported_override_vetoes_return_dto(placement: Placement) -> None:
             JSONBody[dict[str, Any]],
             None,
             {"dto": UserDTO},
-            ("dto", "data", dict[str, Any], "cannot decode its request body annotated 'dict[str, typing.Any]'"),
+            ("dto", dict[str, Any], "cannot decode its request body annotated 'dict[str, typing.Any]'"),
             id="data",
         ),
         pytest.param(
@@ -700,7 +700,6 @@ def test_is_supported_override_vetoes_return_dto(placement: Placement) -> None:
             {"return_dto": UserDTO},
             (
                 "return_dto",
-                "return",
                 tuple[User, int],
                 f"cannot encode its return value annotated '{tuple[User, int]!r}'",
             ),
@@ -711,7 +710,7 @@ def test_is_supported_override_vetoes_return_dto(placement: Placement) -> None:
 def test_dto_not_applicable_error_attributes_and_message(
     method: Any, body: Any, returns: Any, options: dict[str, Any], expected: tuple[Any, ...]
 ) -> None:
-    option, direction, annotation, text = expected
+    option, annotation, text = expected
 
     with pytest.raises(DTONotApplicableError) as exc_info:
         build_app("handler", method=method, body=body, returns=returns, **options)
@@ -719,7 +718,7 @@ def test_dto_not_applicable_error_attributes_and_message(
     error = exc_info.value
     assert isinstance(error, InvalidAnnotationException)
     assert error.dto is UserDTO
-    assert (error.option, error.direction, error.annotation) == (option, direction, annotation)
+    assert (error.option, error.annotation) == (option, annotation)
     assert str(error) == (
         f"[paths='/', handler='{'handler_with_data' if body is not NO_BODY else 'handler'}'] "
         f"'{option}=DataclassDTO[User]' is declared on the handler, but {text}: the DTO handles 'User'."
@@ -754,7 +753,7 @@ def test_handler_return_dto_that_does_not_apply_raises(returns: Any, respond: Ca
         build_app("handler", method="GET", returns=returns, respond=respond, return_dto=UserDTO)
 
     error = exc_info.value
-    assert (error.dto, error.option, error.direction) == (UserDTO, "return_dto", "return")
+    assert (error.dto, error.option) == (UserDTO, "return_dto")
     assert str(error).startswith("[paths='/', handler='handler'] 'return_dto=DataclassDTO[User]' is declared on the")
 
 

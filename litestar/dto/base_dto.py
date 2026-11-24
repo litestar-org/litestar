@@ -18,7 +18,7 @@ from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import LitestarDeprecationWarning
-from litestar.exceptions.dto_exceptions import DTOFactoryException, InvalidAnnotationException
+from litestar.exceptions.dto_exceptions import DTOFactoryException, DTOTransferTypeError, InvalidAnnotationException
 from litestar.params import BodyKwarg
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
@@ -223,9 +223,13 @@ class AbstractDTO(Generic[T]):
             "yet.",
         )
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
-        backend = create_backend(
-            cls, field_definition, is_data_field=is_data_field, handler_id=handler_id, backend_cls=backend_cls
-        )
+        try:
+            backend = create_backend(
+                cls, field_definition, is_data_field=is_data_field, handler_id=handler_id, backend_cls=backend_cls
+            )
+        except DTOTransferTypeError as exc:
+            exc.detail = f"{exc.detail} (handler {str(handler_id)!r})"
+            raise
         if "_direct_backends" not in vars(cls):
             cls._direct_backends = {}
         cls._direct_backends.setdefault(str(handler_id), {})[is_data_field] = backend

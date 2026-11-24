@@ -8,8 +8,6 @@ import pydantic
 import pytest
 from msgspec import Meta
 
-import litestar._layers.errors
-import litestar.di._route_handler
 from litestar import Litestar, get, post, websocket_listener
 from litestar._layers.errors import HandlerErrorPrefix
 from litestar.dto import DataclassDTO, DTOData, DTOFieldDefinition, MsgspecDTO
@@ -19,6 +17,7 @@ from litestar.exceptions import (
     DTOTransferTypeError,
     ImproperlyConfiguredException,
     InvalidAnnotationException,
+    LitestarDeprecationWarning,
     MissingDTOError,
 )
 from litestar.handlers import WebsocketListener
@@ -354,5 +353,18 @@ def test_wrap_dto_exception_leaves_other_exceptions() -> None:
     assert str(error) == "500: bad"
 
 
-def test_di_route_handler_reexports_handler_error_prefix() -> None:
-    assert vars(litestar.di._route_handler)["HandlerErrorPrefix"] is litestar._layers.errors.HandlerErrorPrefix
+def test_startup_error_names_the_handler_once() -> None:
+    with pytest.raises(DTOTransferTypeError) as exc_info:
+        Litestar([_union_of_models_data()], openapi_config=None)
+
+    assert "(handler " not in str(exc_info.value)
+    assert str(exc_info.value).count("create") == 1
+
+
+def test_deprecated_direct_backend_creation_names_the_handler_id() -> None:
+    with pytest.warns(LitestarDeprecationWarning), pytest.raises(DTOTransferTypeError) as exc_info:
+        DataclassDTO[UnionHolder].create_for_field_definition(
+            FieldDefinition.from_annotation(JSONBody[UnionHolder]), "pkg.create::1"
+        )
+
+    assert str(exc_info.value).endswith("(handler 'pkg.create::1')")

@@ -11,9 +11,9 @@ from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData, MsgspecD
 from litestar.dto._backend import DTOBackend
 from litestar.dto._plan import create_backend
 from litestar.handlers import websocket_stream
-from litestar.params import JSONBody
+from litestar.params import JSONBody, URLEncodedBody
 from litestar.plugins.pydantic import PydanticDTO
-from litestar.testing import TestClient, create_test_client
+from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from tests.helpers import not_none
 
@@ -183,7 +183,7 @@ def test_backend_subclass_skipping_base_constructor_with_optional_annotation() -
     assert msgspec.to_builtins(backend.encode_data(DCPerson(id=1, name="a", secret="x"))) == {"id": 1, "name": "a"}
 
 
-def test_backend_built_without_create_backend_reads_flags_as_false() -> None:
+def test_backend_built_without_create_backend_does_not_pass_none() -> None:
     backend = DTOBackend(
         dto_factory=DataclassDTO[DCPerson],
         field_definition=FieldDefinition.from_annotation(Optional[DCPerson]),
@@ -193,8 +193,6 @@ def test_backend_built_without_create_backend_reads_flags_as_false() -> None:
         wrapper_attribute_name=None,
     )
 
-    assert getattr(backend, "_passes_none", False) is False
-    assert getattr(backend, "_wrapped_passes_none", False) is False
     with pytest.raises(TypeError):
         backend.encode_data(None)
 
@@ -278,4 +276,15 @@ def test_flags_are_fixed_when_the_plan_is_built() -> None:
     app = Litestar([read], openapi_config=None)
     backend = not_none(not_none(app.route_handler_method_map["/"]["GET"]._dto_plan).return_).backend
 
-    assert (getattr(backend, "_passes_none"), getattr(backend, "_wrapped_passes_none")) == (False, True)
+    assert (backend._passes_none, backend._wrapped_passes_none) == (False, True)
+
+
+def test_builtins_decoder_returns_none_for_optional_annotation() -> None:
+    @post("/", dto=DataclassDTO[Annotated[DCPerson, EXCLUDE]])
+    async def create(data: URLEncodedBody[Optional[DCPerson]] = None) -> None:
+        return None
+
+    app = Litestar([create], openapi_config=None)
+    backend = not_none(not_none(app.route_handler_method_map["/"]["POST"]._dto_plan).data).backend
+
+    assert backend.populate_data_from_builtins(None, RequestFactory().get()) is None

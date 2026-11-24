@@ -32,8 +32,6 @@ class DTONotApplicableError(InvalidAnnotationException):
     """The declared DTO"""
     option: Literal["dto", "return_dto"]
     """The option the DTO is declared with"""
-    direction: Literal["data", "return"]
-    """The direction the DTO cannot be applied in"""
     annotation: Any
     """The annotation the DTO cannot handle"""
 
@@ -43,7 +41,6 @@ class DTONotApplicableError(InvalidAnnotationException):
         *,
         dto: type[AbstractDTO[Any]],
         option: Literal["dto", "return_dto"],
-        direction: Literal["data", "return"],
         annotation: Any,
     ) -> None:
         """Initialize ``DTONotApplicableError``.
@@ -52,13 +49,11 @@ class DTONotApplicableError(InvalidAnnotationException):
             message: The error message
             dto: The declared DTO
             option: The option the DTO is declared with
-            direction: The direction the DTO cannot be applied in
             annotation: The annotation the DTO cannot handle
         """
         super().__init__(message)
         self.dto = dto
         self.option = option
-        self.direction = direction
         self.annotation = annotation
 
 

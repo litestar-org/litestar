@@ -1,7 +1,7 @@
 from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
 from dataclasses import dataclass
 from types import NoneType
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
 
 import msgspec
 
@@ -363,7 +363,7 @@ def _resolve_data_dto(
         if data_field is None:
             return dto, None
         if (target := resolve_dto_target(dto, data_field, "data")) is None and declaration.source == "handler":
-            raise _not_applicable(declaration, dto, "data", data_field)
+            raise _not_applicable(declaration, data_field)
         return dto, target
     if data_field is not None and (plugin := _find_serialization_plugin(app, data_field)):
         plugin_dto = plugin.create_dto_for_type(data_field)
@@ -386,7 +386,7 @@ def _resolve_return_dto(
         if (target := resolve_dto_target(dto, return_field, "return")) is not None:
             return dto, target
         if declaration.source == "handler":
-            raise _not_applicable(declaration, dto, "return", return_field)
+            raise _not_applicable(declaration, return_field)
         return None
     if data_dto is not None and (target := resolve_dto_target(data_dto, return_field, "return")) is not None:
         return data_dto, target
@@ -420,12 +420,9 @@ def _not_applicable_reason(
     return None
 
 
-def _not_applicable(
-    declaration: DTODeclaration,
-    dto: "type[AbstractDTO[Any]]",
-    direction: Literal["data", "return"],
-    field_definition: FieldDefinition,
-) -> DTONotApplicableError:
+def _not_applicable(declaration: DTODeclaration, field_definition: FieldDefinition) -> DTONotApplicableError:
+    dto = cast("type[AbstractDTO[Any]]", declaration.value)
+    direction: Literal["data", "return"] = "data" if declaration.option == "dto" else "return"
     name = dto_name(dto)
     annotation = _format_annotation(field_definition.annotation)
     declared = f"'{declaration.option}={name}' is declared on the handler"
@@ -446,7 +443,6 @@ def _not_applicable(
         message,
         dto=dto,
         option=declaration.option,
-        direction=direction,
         annotation=field_definition.annotation,
     )
 
@@ -480,9 +476,7 @@ def dto_name(dto: "type[AbstractDTO[Any]]") -> str:
     """Name ``dto`` in an error message: its qualified name, or, for a class created by subscripting a DTO class,
     the name of that class subscripted with the name of the model, such as ``DataclassDTO[User]``.
     """
-    name: str | None = getattr(dto, "__qualname__", None)
-    if name is None:
-        return repr(dto)
+    name = dto.__qualname__
     model_type = getattr(dto, "model_type", None)
     if "[" in name and isinstance(model_type, type):
         return f"{name.split('[', 1)[0]}[{model_type.__qualname__}]"
