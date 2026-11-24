@@ -275,6 +275,44 @@ generic wrapper that holds the data is read with :func:`getattr`, not with the c
 ``attribute_accessor``.
 
 
+Overrides of the deprecated DTO entry points are no longer called
+-----------------------------------------------------------------
+
+A route handler applies its DTOs through a plan built when it is registered, and no DTO
+instance is created per request. Litestar no longer calls a DTO class's override of
+:meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
+:meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
+:meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
+:meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` or
+:meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. These members, and
+``AbstractDTO.__init__``, are deprecated and will be removed in 4.0. Calling them directly
+keeps working and emits a deprecation warning, except for ``create_openapi_schema``.
+
+Before:
+
+.. code-block:: python
+
+    class UserDTO(DataclassDTO[User]):
+        def decode_bytes(self, value: bytes) -> User:
+            # called for every request
+            return normalise(super().decode_bytes(value))
+
+After:
+
+.. code-block:: python
+
+    @post("/users", dto=UserDTO)
+    async def create_user(data: User) -> User:
+        # the DTO decodes the request data, the handler adjusts the result
+        return normalise(data)
+
+A DTO over a type msgspec cannot decode, such as a union of models without tags, used to
+start when the class overrode ``decode_bytes`` or ``decode_builtins``; it now fails at
+startup with :exc:`~litestar.exceptions.DTOTransferTypeError`. To read the DTO classes a
+registered route handler applies, use ``handler.data_dto`` and ``handler.return_dto``.
+There is no replacement yet for decoding or encoding with a DTO outside a route handler.
+
+
 DTOs enforce ``Annotated`` constraints and string marks
 -------------------------------------------------------
 

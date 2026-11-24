@@ -38,15 +38,13 @@ Deprecated entry points
     pass ``handler.handler_id``.
 
 A DTO is applied through a plan that is built when its route handler is registered, and a DTO class is not
-instantiated per request.
+instantiated per request. Litestar no longer calls these members, nor a DTO class's override of them: a class that
+overrides one of them to change how data is decoded, encoded or documented must move that logic out of the DTO.
 
-Overriding :meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
-:meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
-:meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
-:meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` or
-:meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` keeps working and emits no warning: the overriding
-method is still called, and a replacement hook will be provided before these members are removed in 4.0. Calling the
-base implementations directly, outside such an override, emits a deprecation warning.
+Calling them directly keeps working and emits a deprecation warning, except for
+:meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. To find the DTO classes a registered route handler
+applies, read ``handler.data_dto`` and ``handler.return_dto``. There is no replacement yet for decoding or encoding
+with a DTO outside a route handler.
 
 The two abstract methods above and the class-level hooks
 :meth:`~litestar.dto.base_dto.AbstractDTO.get_config_for_model_type`,

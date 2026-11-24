@@ -6,6 +6,21 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Overrides of the deprecated DTO entry points are no longer called
+        :type: misc
+        :breaking:
+
+        Litestar no longer calls a DTO class's override of
+        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` or
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`: a route handler
+        decodes, encodes and documents its data with the backends of its DTO plan. A DTO
+        over a type msgspec cannot decode now fails at startup even when the class
+        overrides ``decode_bytes`` or ``decode_builtins``. Instantiating a DTO class
+        emits a deprecation warning.
+
     .. change:: DTOs: a return_dto declared on a route handler must apply
         :type: feature
         :breaking:
@@ -296,11 +311,9 @@
         :meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
         :meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
         :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` and
-        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. Overriding
-        them keeps working and emits no warning: a DTO class that overrides one of
-        them is still called through it, and a replacement hook will be provided
-        before they are removed. Calling the base implementations directly keeps
-        working and emits a deprecation warning.
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. Calling them
+        directly keeps working and emits a deprecation warning, except for
+        ``create_openapi_schema``.
 
         No public API is removed. Code that relied on the following behaviour needs
         to change:
@@ -314,12 +327,6 @@
           rejects it; pass ``str(handler.handler_id)``. Pickling or deep-copying it
           yields a plain :class:`str`. The object references its handler, so code
           that stores such identifiers keeps the handlers alive.
-        - A DTO class that overrides
-          :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition`
-          must create its backend by calling the base method. A class that stores
-          backends in the private ``_dto_backends`` attribute itself raises
-          :exc:`~litestar.exceptions.dto_exceptions.DTOFactoryException` when its
-          handler is registered.
         - Backends created by calling
           :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition`
           directly are kept per DTO class. They are no longer shared between DTO

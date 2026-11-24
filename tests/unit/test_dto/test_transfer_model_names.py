@@ -84,32 +84,6 @@ class B(Base):
     path = "/b"
 
 
-class OverrideBackend(DTOBackend):
-    pass
-
-
-class OverrideDTO(DataclassDTO[User]):
-    @classmethod
-    def create_for_field_definition(
-        cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
-    ) -> None:
-        super().create_for_field_definition(field_definition, handler_id, backend_cls=OverrideBackend)
-
-
-class OverrideBase(Controller):
-    @get(return_dto=OverrideDTO, sync_to_thread=False)
-    def fetch(self) -> User:
-        return User(id=1)
-
-
-class OverrideA(OverrideBase):
-    path = "/a"
-
-
-class OverrideB(OverrideBase):
-    path = "/b"
-
-
 class RequiredArgumentBackend(DTOBackend):
     def __new__(cls, required: Any) -> RequiredArgumentBackend:
         return super().__new__(cls)
@@ -308,14 +282,6 @@ def test_rebuilding_a_plan_reserves_no_new_name() -> None:
     assert second._dto_plan is not None
     assert second._dto_plan.return_ is not None
     assert second._dto_plan.return_.backend.transfer_model_type.__name__ == f"{get_post!s}PostResponseBody"
-
-
-def test_override_path_uses_the_application_registry() -> None:
-    first = Litestar([OverrideA, OverrideB])
-    second = Litestar([OverrideA, OverrideB])
-
-    assert component_names(first) == ["FetchUserResponseBody", f"{__name__}.OverrideBase.fetchUserResponseBody"]
-    assert first.openapi_schema.to_schema() == second.openapi_schema.to_schema()
 
 
 def test_backend_subclass_with_six_keyword_constructor() -> None:

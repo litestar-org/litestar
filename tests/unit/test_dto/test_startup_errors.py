@@ -278,12 +278,12 @@ def test_pydantic_dto_error_carries_handler_prefix() -> None:
         Litestar([create_holder], openapi_config=None)
 
 
-def test_dto_with_own_decoding_is_exempt_from_startup_check() -> None:
+def test_dto_overriding_decode_bytes_is_checked_at_startup() -> None:
     @post("/", dto=OwnDecodingDTO, return_dto=None)
     async def create(data: JSONBody[UnionHolder]) -> None: ...
 
-    with create_test_client([create], openapi_config=None) as client:
-        assert client.post("/", json={"f": {"b": 1}}).status_code == 201
+    with pytest.raises(DTOTransferTypeError, match="must be tagged"):
+        Litestar([create], openapi_config=None)
 
 
 def test_unrelated_type_error_in_schema_generation_is_not_converted() -> None:

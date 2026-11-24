@@ -6,7 +6,7 @@ import json
 import pickle
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
-from typing import Annotated, Any, ClassVar, Generic, Optional, TypeVar
+from typing import Annotated, Any, Generic, Optional, TypeVar
 
 import msgspec
 import pytest
@@ -18,7 +18,6 @@ from litestar.connection import ASGIConnection
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
 from litestar.dto._plan import (
-    _plan_build,
     build_dto_plan,
     build_schema_annotation,
     create_backend,
@@ -32,7 +31,7 @@ from litestar.exceptions import (
     LitestarWarning,
 )
 from litestar.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketListenerRouteHandler, websocket_stream
-from litestar.openapi.spec import Reference, Schema
+from litestar.openapi.spec import Reference
 from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.serialization import encode_json
@@ -474,64 +473,6 @@ def test_stream_resolves_dtos_once() -> None:
             assert ws.receive_json() == {"a": 1}
 
 
-def test_backend_cls_through_create_for_field_definition_override() -> None:
-    class OverridingDTO(DataclassDTO[Model]):
-        @classmethod
-        def create_for_field_definition(
-            cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
-        ) -> None:
-            super().create_for_field_definition(
-                field_definition=field_definition, handler_id=handler_id, backend_cls=CustomBackend
-            )
-
-    @post("/", dto=OverridingDTO, return_dto=None)
-    async def handler(data: JSONBody[Model]) -> Model:
-        return data
-
-    with create_test_client([handler]) as client:
-        assert type(registered(client.app)._dto_plan.data.backend) is CustomBackend
-        response = client.post("/", json={"a": 1, "b": "two"})
-        assert response.status_code == 201
-        assert response.json() == {"a": 1, "b": "two"}
-
-
-def test_create_for_field_definition_override_without_backend_raises() -> None:
-    class SilentDTO(DataclassDTO[Model]):
-        @classmethod
-        def create_for_field_definition(
-            cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
-        ) -> None:
-            return None
-
-    with pytest.raises(DTOFactoryException):
-        Litestar([make_rule_handler(SilentDTO, None, Model, None)])
-
-
-def test_nested_create_for_field_definition_does_not_inherit_plan_build() -> None:
-    class OtherDTO(DataclassDTO[OtherModel]):
-        pass
-
-    class NestingDTO(DataclassDTO[Model]):
-        @classmethod
-        def create_for_field_definition(
-            cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
-        ) -> None:
-            OtherDTO.create_for_field_definition(FieldDefinition.from_annotation(OtherModel), handler_id="other")
-            super().create_for_field_definition(field_definition=field_definition, handler_id=handler_id)
-            super().create_for_field_definition(
-                field_definition=field_definition, handler_id=handler_id, backend_cls=CustomBackend
-            )
-
-    handler = registered(Litestar([make_rule_handler(NestingDTO, None, Model, None)]))
-    direction = handler._dto_plan.data
-
-    assert direction.dto is NestingDTO
-    assert direction.backend.dto_factory is NestingDTO
-    assert direction.backend.is_data_field is True
-    assert type(direction.backend) is DTOBackend
-    assert _plan_build.get() is None
-
-
 def openapi_ref(dto: type[AbstractDTO[Any]], field_definition: FieldDefinition | None, handler_id: str) -> str:
     assert field_definition is not None
     schema_creator = SchemaCreator(plugins=openapi_schema_plugins)
@@ -674,81 +615,6 @@ def test_stock_dto_is_not_instantiated_per_request() -> None:
             assert ws.receive_json() == {"a": 1, "b": "two"}
 
 
-class DecodeBytesDTO(DataclassDTO[Model]):
-    calls: ClassVar[list[str]] = []
-
-    def decode_bytes(self, value: bytes) -> Any:
-        self.calls.append("decode_bytes")
-        return super().decode_bytes(value)
-
-
-class DecodeBuiltinsDTO(DataclassDTO[Model]):
-    calls: ClassVar[list[str]] = []
-
-    def decode_builtins(self, value: dict[str, Any]) -> Any:
-        self.calls.append("decode_builtins")
-        return super().decode_builtins(value)
-
-
-class EncodeDTO(DataclassDTO[Model]):
-    calls: ClassVar[list[str]] = []
-
-    def data_to_encodable_type(self, data: Any) -> Any:
-        self.calls.append("data_to_encodable_type")
-        return super().data_to_encodable_type(data)
-
-
-def make_echo_app(dto: type[AbstractDTO[Any]]) -> Litestar:
-    @post("/json", dto=dto)
-    async def json_handler(data: JSONBody[Model]) -> Model:
-        return data
-
-    @post("/form", dto=dto)
-    async def form_handler(data: URLEncodedBody[Model]) -> Model:
-        return data
-
-    return Litestar([json_handler, form_handler])
-
-
-@pytest.mark.parametrize(
-    ("dto", "path", "method"),
-    [
-        pytest.param(DecodeBytesDTO, "/json", "decode_bytes", id="decode_bytes"),
-        pytest.param(DecodeBuiltinsDTO, "/form", "decode_builtins", id="decode_builtins"),
-        pytest.param(EncodeDTO, "/json", "data_to_encodable_type", id="data_to_encodable_type"),
-    ],
-)
-def test_overridden_instance_method_is_called(dto: Any, path: str, method: str) -> None:
-    dto.calls.clear()
-    kwargs: dict[str, Any] = {"json": {"a": 1, "b": "two"}} if path == "/json" else {"data": {"a": "1", "b": "two"}}
-
-    with TestClient(make_echo_app(ModelDTO)) as client:
-        stock = client.post(path, **kwargs)
-    with TestClient(make_echo_app(dto)) as client:
-        response = client.post(path, **kwargs)
-
-    assert dto.calls == [method]
-    assert (response.status_code, response.json()) == (stock.status_code, stock.json())
-
-
-def test_only_the_overridden_method_goes_through_an_instance() -> None:
-    instances: list[AbstractDTO[Any]] = []
-
-    class CountingDTO(DataclassDTO[Model]):
-        def __init__(self, asgi_connection: ASGIConnection[Any, Any, Any, Any]) -> None:
-            instances.append(self)
-            super().__init__(asgi_connection)
-
-        def decode_bytes(self, value: bytes) -> Any:
-            return super().decode_bytes(value)
-
-    with TestClient(make_echo_app(CountingDTO)) as client:
-        assert client.post("/json", json={"a": 1, "b": "two"}).json() == {"a": 1, "b": "two"}
-        assert len(instances) == 1
-        assert client.post("/form", data={"a": "1", "b": "two"}).json() == {"a": 1, "b": "two"}
-        assert len(instances) == 1
-
-
 @pytest.mark.parametrize(
     ("dto", "return_dto", "body", "returns"),
     [
@@ -870,44 +736,6 @@ def test_form_bodies_decode_through_the_plan() -> None:
         assert response.json() == {"a": 1, "secret": "hidden"}
 
 
-class RecordingBackend(DTOBackend):
-    __slots__ = ()
-    calls: ClassVar[list[tuple[str, Any]]] = []
-
-    def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection[Any, Any, Any, Any]) -> Any:
-        self.calls.append(("populate_data_from_raw", raw))
-        return super().populate_data_from_raw(raw, asgi_connection)
-
-    def encode_data(self, data: Any) -> Any:
-        self.calls.append(("encode_data", data))
-        return super().encode_data(data)
-
-
-def test_backend_subclass_runtime_overrides_are_called() -> None:
-    class RecordingBackendDTO(DataclassDTO[Model]):
-        @classmethod
-        def create_for_field_definition(
-            cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
-        ) -> None:
-            super().create_for_field_definition(
-                field_definition=field_definition, handler_id=handler_id, backend_cls=RecordingBackend
-            )
-
-    @post("/", dto=RecordingBackendDTO)
-    async def handler(data: JSONBody[Model]) -> Model:
-        return data
-
-    RecordingBackend.calls.clear()
-    with create_test_client([handler]) as client:
-        response = client.post("/", content=b'{"a":1,"b":"two"}', headers={"content-type": "application/json"})
-
-    assert response.json() == {"a": 1, "b": "two"}
-    assert RecordingBackend.calls == [
-        ("populate_data_from_raw", b'{"a":1,"b":"two"}'),
-        ("encode_data", Model(a=1, b="two")),
-    ]
-
-
 async def test_to_response_on_unregistered_handler_raises() -> None:
     @get("/")
     async def handler() -> Model:
@@ -968,56 +796,6 @@ def test_openapi_generation_does_not_call_create_openapi_schema(monkeypatch: pyt
     assert sum(name.endswith("ModelResponseBody") for name in names) == 1
 
 
-def test_openapi_generation_calls_create_openapi_schema_override() -> None:
-    calls: list[dict[str, Any]] = []
-
-    class RecordingSchemaDTO(DataclassDTO[Model]):
-        @classmethod
-        def create_openapi_schema(
-            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
-        ) -> Reference | Schema:
-            calls.append(
-                {"field_definition": field_definition, "handler_id": handler_id, "schema_creator": schema_creator}
-            )
-            return Schema()
-
-    app = Litestar([make_rule_handler(RecordingSchemaDTO, Empty, Model, Model)])
-    handler = registered(app)
-    assert app.openapi_schema
-
-    assert [call["field_definition"] for call in calls] == [
-        handler.parsed_data_field,
-        handler.parsed_fn_signature.return_type,
-    ]
-    assert calls[0]["field_definition"] is handler.parsed_data_field
-    assert all(call["handler_id"] == handler.handler_id for call in calls)
-    assert all(call["handler_id"].handler is handler for call in calls)
-    assert all(isinstance(call["schema_creator"], SchemaCreator) for call in calls)
-
-
-def test_create_for_field_definition_override_writing_dto_backends_raises() -> None:
-    class LegacyStoreDTO(DataclassDTO[Model]):
-        @classmethod
-        def create_for_field_definition(
-            cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
-        ) -> None:
-            is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
-            key = "data_backend" if is_data_field else "return_backend"
-            cls._dto_backends.setdefault(handler_id, {})[key] = DTOBackend(  # type: ignore[attr-defined]
-                dto_factory=cls,
-                field_definition=field_definition,
-                handler_id=handler_id,
-                is_data_field=is_data_field,
-                model_type=Model,
-                wrapper_attribute_name=None,
-            )
-
-    with pytest.raises(DTOFactoryException, match="must call the base method") as exc_info:
-        Litestar([make_rule_handler(LegacyStoreDTO, None, Model, None)])
-
-    assert isinstance(exc_info.value.__cause__, AttributeError)
-
-
 def test_unregistered_listener_without_dto_resolves_its_handlers() -> None:
     @websocket_listener("/ws", dto=None, return_dto=None)
     async def without_dto(data: str) -> str:
@@ -1033,26 +811,3 @@ def test_unregistered_listener_without_dto_resolves_its_handlers() -> None:
         with_dto.resolve_receive_handler()
     with pytest.raises(LitestarException):
         with_dto.resolve_send_handler()
-
-
-def test_listener_data_field_is_given_a_body_marker_for_create_for_field_definition_override() -> None:
-    kwarg_definitions: list[Any] = []
-
-    class RecordingCreateDTO(DataclassDTO[Annotated[Item, DTOConfig(exclude={"secret"})]]):
-        @classmethod
-        def create_for_field_definition(
-            cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
-        ) -> None:
-            kwarg_definitions.append(field_definition.kwarg_definition)
-            super().create_for_field_definition(field_definition=field_definition, handler_id=handler_id)
-
-    @websocket_listener("/ws", dto=RecordingCreateDTO, return_dto=None)
-    async def handler(data: Item) -> None:
-        return None
-
-    listener = websocket_handler(Litestar([handler]), "/ws")
-
-    assert len(kwarg_definitions) == 1
-    assert isinstance(kwarg_definitions[0], BodyKwarg)
-    assert not isinstance(listener.parsed_data_field.kwarg_definition, BodyKwarg)
-    assert listener._dto_plan.data.backend.is_data_field is True

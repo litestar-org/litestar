@@ -176,7 +176,7 @@ class DTOBackend:
         self._default_deserializer = default_deserializer
 
     def _decodes_with_annotation(self) -> bool:
-        return not any(self.dto_factory._overrides(name) for name in ("decode_bytes", "decode_builtins")) and all(
+        return all(
             getattr(type(self), name) is getattr(DTOBackend, name)
             for name in ("parse_raw", "parse_builtins", "populate_data_from_raw", "populate_data_from_builtins")
         )

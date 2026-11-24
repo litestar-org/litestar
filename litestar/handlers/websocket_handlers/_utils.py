@@ -68,7 +68,7 @@ def create_handle_send(
         async def handle_send(socket: WebSocket, data: Any) -> None:
             if data is None and skip_none:
                 return
-            data = json_encoder.encode(encode(data, socket))
+            data = json_encoder.encode(encode(data))
             await socket.send_data(data=data, mode=listener._send_mode)
 
     elif listener.parsed_return_field.is_subclass_of((str, bytes)) or (

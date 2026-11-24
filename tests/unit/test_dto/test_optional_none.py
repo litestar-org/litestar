@@ -11,6 +11,7 @@ import pytest
 from litestar import Litestar, Response, get, post, websocket_listener
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData, MsgspecDTO
 from litestar.dto._backend import DTOBackend
+from litestar.dto._plan import create_backend
 from litestar.handlers import websocket_stream
 from litestar.params import JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins.pydantic import PydanticDTO
@@ -170,33 +171,18 @@ class CopyingBackend(DTOBackend):
                 setattr(self, name, getattr(inner, name))
 
 
-class CopyingBackendDTO(DataclassDTO[Annotated[DCPerson, EXCLUDE]]):
-    @classmethod
-    def create_for_field_definition(
-        cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
-    ) -> None:
-        super().create_for_field_definition(field_definition, handler_id, CopyingBackend)
-
-
 def test_backend_subclass_skipping_base_constructor_with_optional_annotation() -> None:
-    @get("/none", return_dto=CopyingBackendDTO)
-    async def read_none() -> Optional[DCPerson]:
-        return None
-
-    @get("/value", return_dto=CopyingBackendDTO)
-    async def read_value() -> Optional[DCPerson]:
-        return DCPerson(id=1, name="a", secret="x")
-
-    with create_test_client([read_none, read_value]) as client:
-        none = client.get("/none")
-        value = client.get("/value")
-
-    assert (none.status_code, none.json()) == (200, None)
-    assert (value.status_code, value.json()) == (200, {"id": 1, "name": "a"})
-    assert (
-        type(not_none(not_none(client.app.route_handler_method_map["/none"]["GET"]._dto_plan).return_).backend)
-        is CopyingBackend
+    backend = create_backend(
+        DataclassDTO[Annotated[DCPerson, EXCLUDE]],
+        FieldDefinition.from_annotation(Optional[DCPerson]),
+        is_data_field=False,
+        handler_id="h",
+        backend_cls=CopyingBackend,
     )
+
+    assert type(backend) is CopyingBackend
+    assert backend.encode_data(None) is None
+    assert msgspec.to_builtins(backend.encode_data(DCPerson(id=1, name="a", secret="x"))) == {"id": 1, "name": "a"}
 
 
 def test_backend_built_without_create_backend_does_not_pass_none() -> None:

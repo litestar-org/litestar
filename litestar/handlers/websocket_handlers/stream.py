@@ -278,7 +278,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
                 return
 
             if encode_return:
-                encoded_data = encode_return(data, socket)
+                encoded_data = encode_return(data)
                 data = json_encoder.encode(encoded_data)
                 await socket.send_data(data=data, mode=send_mode)
                 return

@@ -9,6 +9,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from litestar import get, post
+from litestar.connection import ASGIConnection
 from litestar.dto import DataclassDTO
 from litestar.params import FromQuery, JSONBody, QueryParameter
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
@@ -166,8 +167,9 @@ def test_dto_data_not_validated_again() -> None:
         a: str
 
     class DTO(DataclassDTO[Test]):
-        def decode_bytes(self, value: bytes) -> Any:
-            return {"a": 1}
+        @classmethod
+        def _wrap_decoder(cls, decoder: Callable[[Any, ASGIConnection], Any]) -> Callable[[Any, ASGIConnection], Any]:
+            return lambda value, connection: {"a": 1}
 
     @post("/", dto=DTO, return_dto=None)
     async def handler(data: JSONBody[Test]) -> Any:

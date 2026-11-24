@@ -203,8 +203,7 @@ as ``Annotated[int, Meta(ge=1), annotated_types.Ge(3)]`` or ``Annotated[int, Met
 ``Meta`` wins and the other constraint is not enforced.
 
 The startup check applies to :class:`~litestar.plugins.pydantic.PydanticDTO` as well, for instance to a field typed as
-a union of models without tags. It does not apply to DTO classes that decode the request body themselves by overriding
-``decode_bytes`` or ``decode_builtins``.
+a union of models without tags.
 
 .. note::
 

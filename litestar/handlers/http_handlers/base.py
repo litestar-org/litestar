@@ -787,7 +787,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         if plan is None:
             self._raise_not_registered()
         if plan.encode is not None:
-            data = plan.encode(data, request)
+            data = plan.encode(data)
 
         handler = cast(
             "Callable[..., Awaitable[ASGIApp]]",

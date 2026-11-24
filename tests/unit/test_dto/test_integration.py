@@ -25,7 +25,7 @@ def test_dto_defined_on_handler(ModelDataDTO: type[AbstractDTO]) -> None:
         return data
 
     with create_test_client(route_handlers=handler) as client:
-        response = client.post("/", json={"what": "ever"})
+        response = client.post("/", json={"a": 1, "b": "2"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
 
@@ -40,7 +40,7 @@ def test_dto_defined_on_controller(ModelDataDTO: type[AbstractDTO]) -> None:
             return data
 
     with create_test_client(route_handlers=MyController) as client:
-        response = client.post("/", json={"what": "ever"})
+        response = client.post("/", json={"a": 1, "b": "2"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
 
@@ -54,7 +54,7 @@ def test_dto_defined_on_router(ModelDataDTO: type[AbstractDTO]) -> None:
     router = Router(path="/", route_handlers=[handler], dto=ModelDataDTO)
 
     with create_test_client(route_handlers=router) as client:
-        response = client.post("/", json={"what": "ever"})
+        response = client.post("/", json={"a": 1, "b": "2"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
 
@@ -66,7 +66,7 @@ def test_dto_defined_on_app(ModelDataDTO: type[AbstractDTO]) -> None:
         return data
 
     with create_test_client(route_handlers=handler, dto=ModelDataDTO) as client:
-        response = client.post("/", json={"what": "ever"})
+        response = client.post("/", json={"a": 1, "b": "2"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
 
@@ -98,7 +98,7 @@ def test_dto_and_return_dto(ModelDataDTO: type[AbstractDTO], ModelReturnDTO: typ
         return data
 
     with create_test_client(route_handlers=handler, dto=ModelDataDTO, return_dto=ModelReturnDTO) as client:
-        response = client.post("/", json={"what": "ever"})
+        response = client.post("/", json={"a": 1, "b": "2"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
 
