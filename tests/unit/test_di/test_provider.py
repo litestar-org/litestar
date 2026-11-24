@@ -481,6 +481,7 @@ def test_parameter_or_body_marker_is_request_parameter(
             request_parameter.name,
         ) == ("value", key, param_type, name)
         assert request_parameter.field_definition.raw == annotation
+        assert request_parameter.marker is request_parameter.field_definition.kwarg_definition
 
 
 def test_parameter_marker_with_default_is_optional_dependency() -> None:

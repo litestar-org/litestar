@@ -325,7 +325,6 @@ class SchemaCreator:
             # optional handler-level upload bodies keep their multipart schema; optionality
             # is expressed through `requestBody.required` instead of a `oneOf` with `null`
             field_definition.is_optional
-            and field_definition.name == "data"
             and isinstance(field_definition.kwarg_definition, BodyKwarg)
             and all(
                 t.is_none_type or t.is_subclass_of(UploadFile) or t.has_inner_subclass_of(UploadFile)
@@ -417,9 +416,7 @@ class SchemaCreator:
         # If the uploadfile is annotated directly on the handler, then the
         # 'properties' needs to be created. Else, the 'properties' will be
         # created by the corresponding plugin.
-        is_defined_on_handler = field_definition.name == "data" and isinstance(
-            field_definition.kwarg_definition, BodyKwarg
-        )
+        is_defined_on_handler = isinstance(field_definition.kwarg_definition, BodyKwarg)
         if is_defined_on_handler:
             return Schema(type=OpenAPIType.OBJECT, properties={property_key: schema})
 

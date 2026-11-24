@@ -37,6 +37,11 @@ class CSRFConfig:
     safe_methods: set[Method] = field(default_factory=lambda: {"GET", "HEAD", "OPTIONS"})
     """A set of "safe methods" that can set the cookie."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns to skip in the CSRF middleware."""
+    """A pattern or list of patterns to skip in the CSRF middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the CSRF middleware, matched against the handler path at startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_from_csrf_key: str = "exclude_from_csrf"
     """An identifier to use on routes to disable CSRF for a particular route."""

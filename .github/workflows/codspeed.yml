@@ -31,13 +31,12 @@ env:
   UV_PYTHON_PREFERENCE: only-system
   UV_PYTHON: "3.15"
   PYTHONHASHSEED: "0"
-  GLIBC_TUNABLES: "glibc.cpu.hwcaps=-AVX512F,-AVX512VL,-AVX512BW,-ERMS,-FSRM:glibc.malloc.mmap_threshold=32768"
 
 jobs:
   benchmarks:
     name: Run benchmarks
     if: github.repository == 'litestar-org/litestar'
-    runs-on: ubuntu-24.04
+    runs-on: codspeed-macro-arm64-graviton-ubuntu-22-04
     timeout-minutes: 30
     steps:
       - name: Check out repository
@@ -64,5 +63,5 @@ jobs:
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v5.6.3
         with:
-          mode: simulation,memory
+          mode: walltime
           run: uv run --no-sync pytest tests/benchmarks --codspeed -n 0

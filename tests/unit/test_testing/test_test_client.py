@@ -27,9 +27,6 @@ import pytest
 
 from litestar import Litestar, get, post
 from litestar.testing import TestClient
-from litestar.utils.helpers import get_exception_group
-
-_ExceptionGroup = get_exception_group()
 
 AnyTestClient = Union[TestClient, AsyncTestClient]
 
@@ -210,13 +207,13 @@ def raise_error(app: Litestar) -> NoReturn:
 
 
 async def test_error_handling_on_startup_async() -> None:
-    with pytest.raises(_ExceptionGroup):
+    with pytest.raises(ExceptionGroup):
         async with AsyncTestClient(Litestar(on_startup=[raise_error])):
             pass
 
 
 def test_error_handling_on_startup() -> None:
-    with pytest.raises(_ExceptionGroup):
+    with pytest.raises(ExceptionGroup):
         with TestClient(Litestar(on_startup=[raise_error])):
             pass
 

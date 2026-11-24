@@ -113,6 +113,37 @@ def test_layer_parameter_with_annotation_differing_from_declaration_raises() -> 
     )
 
 
+@pytest.mark.parametrize(
+    "layer_parameter",
+    [
+        pytest.param(QueryParameter(gt=0), id="constraints-applied"),
+        pytest.param(QueryParameter(gt=0, documentation_only=True), id="documentation-only"),
+    ],
+)
+def test_layer_parameter_without_annotation_not_declared_raises(layer_parameter: QueryParameter) -> None:
+    @get("/")
+    async def handler() -> None: ...
+
+    with pytest.raises(ImproperlyConfiguredException) as exc_info:
+        Litestar([handler], parameters={"limit": layer_parameter}, openapi_config=None)
+    assert exc_info.value.detail == (
+        "[paths='/', handler='handler'] layer parameter 'limit' declares the query parameter 'limit' without "
+        "'annotation', and no parameter of the handler or its dependencies declares it"
+    )
+
+
+def test_app_layer_parameter_without_annotation_on_added_options_handler_raises() -> None:
+    @get("/")
+    async def handler(limit: FromQuery[int]) -> None: ...
+
+    with pytest.raises(ImproperlyConfiguredException) as exc_info:
+        Litestar([handler], parameters={"limit": QueryParameter(gt=0)}, openapi_config=None)
+    assert exc_info.value.detail == (
+        "[paths='/', handler='options_handler'] layer parameter 'limit' declares the query parameter 'limit' without "
+        "'annotation', and no parameter of the handler or its dependencies declares it"
+    )
+
+
 def test_provider_constrained_marker_not_restating_layer_constraint_raises() -> None:
     async def provide_value(limit: Annotated[int, QueryParameter(lt=5)]) -> int:
         return limit

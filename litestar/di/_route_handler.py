@@ -11,7 +11,6 @@ from litestar._request_parameters.declarations import (
     apply_layer_parameters,
     merge_request_parameters,
 )
-from litestar._request_parameters.validation import create_request_param_validaton_fn
 from litestar.connection import WebSocket
 from litestar.datastructures import Headers, ImmutableState
 from litestar.di._helpers import _describe_provider, _format_key
@@ -29,7 +28,7 @@ from litestar.utils.signature import ParsedSignature
 from litestar.utils.warnings import warn_implicit_sync_to_thread
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine, Generator, Iterable, Mapping
+    from collections.abc import Callable, Generator, Iterable, Mapping
 
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
@@ -66,12 +65,6 @@ class HandlerInjectionSetup:
     connection_seed_keys: tuple[DependencyKey, ...]
     """The keys the registry seeds the handler's connection under: its class and each class it inherits
     from up to :class:`~litestar.connection.ASGIConnection`
-    """
-
-    validate_request_parameters: Callable[[ASGIConnection], Coroutine[Any, Any, dict[str, Any]]] | None
-    """The validation pass over the request parameters, see
-    :func:`~litestar._request_parameters.validation.create_validation_pass`. ``None`` if there are
-    no request parameters
     """
 
     fn_seed_parameters: tuple[tuple[str, DependencyKey], ...]
@@ -369,9 +362,6 @@ def create_handler_injection_setup(
     provider_factory = app._builtin_provider_factory
     app_registry = app.dependency_registry
     connection_seeds = provider_factory.connection_seeds(connection_class)
-    # the handler's DTO decodes the body the handler declares; a body only providers declare is decoded
-    # by its type, as the OpenAPI schema documents it
-    handler_declares_body = any(parameter.is_body for parameter in target.request_parameters)
     providers = [
         *(provider_factory.app_seeds if app_registry is not None else ()),
         *connection_seeds,
@@ -418,13 +408,6 @@ def create_handler_injection_setup(
         handler_context=handler_context,
         request_parameter_definitions=definitions,
         connection_seed_keys=connection_seed_keys,
-        validate_request_parameters=create_request_param_validaton_fn(
-            definitions.values(),
-            data_dto=handler.data_dto if handler_declares_body else None,
-            type_decoders=handler.type_decoders,
-        )
-        if definitions
-        else None,
         fn_seed_parameters=fn_seed_parameters,
         fn_has_dependencies_to_resolve=len(target.dependencies) > len(fn_seed_parameters),
     )

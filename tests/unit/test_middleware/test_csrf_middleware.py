@@ -333,7 +333,23 @@ def test_custom_safe_methods_wiring(get_handler: HTTPRouteHandler, post_handler:
         assert response.status_code == HTTP_403_FORBIDDEN
 
 
-def test_exclude_matches_handler_path_template() -> None:
+def test_exclude_matches_request_path() -> None:
+    @post("/user/{user_id:int}")
+    def handler(user_id: FromPath[int], data: URLEncodedBody[dict]) -> dict:
+        return data
+
+    with create_test_client(
+        route_handlers=[handler],
+        csrf_config=CSRFConfig(secret="secret", exclude=["^/user/1$"]),
+    ) as client:
+        response = client.post("/user/1", data={"field": "value"})
+        assert response.status_code == HTTP_201_CREATED
+
+        response = client.post("/user/2", data={"field": "value"})
+        assert response.status_code == HTTP_403_FORBIDDEN
+
+
+def test_exclude_path_pattern_matches_handler_path() -> None:
     @post("/user/{user_id:int}")
     def excluded_handler(user_id: FromPath[int], data: URLEncodedBody[dict]) -> dict:
         return data
@@ -342,23 +358,14 @@ def test_exclude_matches_handler_path_template() -> None:
     def protected_handler(order_id: FromPath[int], data: URLEncodedBody[dict]) -> dict:
         return data
 
-    # exclusion patterns match the handler's path template, not the request path
     with create_test_client(
         route_handlers=[excluded_handler, protected_handler],
-        csrf_config=CSRFConfig(secret="secret", exclude=[r"/user/\{user_id:int\}"]),
+        csrf_config=CSRFConfig(secret="secret", exclude_path_pattern=[r"/user/\{user_id:int\}"]),
     ) as client:
         response = client.post("/user/1", data={"field": "value"})
         assert response.status_code == HTTP_201_CREATED
 
         response = client.post("/order/1", data={"field": "value"})
-        assert response.status_code == HTTP_403_FORBIDDEN
-
-    # a request-path pattern does not match a dynamic handler and excludes nothing
-    with create_test_client(
-        route_handlers=[excluded_handler, protected_handler],
-        csrf_config=CSRFConfig(secret="secret", exclude=["^/user/1$"]),
-    ) as client:
-        response = client.post("/user/1", data={"field": "value"})
         assert response.status_code == HTTP_403_FORBIDDEN
 
 

@@ -14,7 +14,7 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotAuthorizedException, PermissionDeniedException
 from litestar.handlers import HTTPRouteHandler
 from litestar.middleware.logging import LoggingMiddleware
-from litestar.params import Body, JSONBody
+from litestar.params import Body, FromPath, JSONBody
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
 from tests.helpers import cleanup_logging_impl
@@ -146,6 +146,36 @@ def test_logging_middleware_exclude_pattern(caplog: "LogCaptureFixture", handler
         client.cookies = {"request-cookie": "abc"}
 
         response = client.get("/exclude")
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 0
+
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 2
+
+
+@pytest.mark.parametrize(
+    "exclude_kwargs",
+    [{"exclude": ["^/user/1$"]}, {"exclude_path_pattern": [r"^/user/\{user_id:int\}$"]}],
+    ids=["request_path", "handler_path"],
+)
+def test_logging_middleware_exclude_dynamic_path(
+    caplog: "LogCaptureFixture", handler: HTTPRouteHandler, exclude_kwargs: dict[str, Any]
+) -> None:
+    @get("/user/{user_id:int}")
+    def handler2(user_id: FromPath[int]) -> None:
+        return None
+
+    with (
+        create_test_client(
+            route_handlers=[handler, handler2],
+            middleware=[LoggingMiddleware("litestar.test", **exclude_kwargs)],
+        ) as client,
+        caplog.at_level(INFO),
+    ):
+        client.cookies = {"request-cookie": "abc"}
+
+        response = client.get("/user/1")
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 0
 

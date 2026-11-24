@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from litestar._request_parameters.validation import create_request_param_validaton_fn
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
@@ -116,6 +117,12 @@ class WebsocketRouteHandler(BaseRouteHandler):
         self._injection_setup = create_handler_injection_setup(
             self, app, connection_class=self.websocket_class, accepts_body=False
         )
+        definitions = self._injection_setup.request_parameter_definitions
+        self._validate_request_parameters = (
+            create_request_param_validaton_fn(definitions.values(), data_dto=None, type_decoders=self.type_decoders)
+            if definitions
+            else None
+        )
 
     async def handle(self, connection: WebSocket[Any, Any, Any]) -> None:
         """ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function.
@@ -131,7 +138,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             await self.authorize_connection(connection=connection)
 
         setup = self._injection_setup
-        validate = setup.validate_request_parameters
+        validate = self._validate_request_parameters
         seeds: dict[Any, Any] = await validate(connection) if validate else {}
         for key in setup.connection_seed_keys:
             seeds[key] = connection

@@ -12,7 +12,8 @@ from typing import (
 
 from litestar.connection import ASGIConnection
 from litestar.enums import ScopeType
-from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
+from litestar.middleware._utils import build_exclude_bypass
+from litestar.middleware.base import ASGIMiddleware
 from litestar.serialization import decode_json, encode_json
 from litestar.utils import get_serializer_from_scope
 
@@ -64,12 +65,17 @@ class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):
     Defaults to ``lax``.
     """
     exclude: str | list[str] | None
-    """A pattern or list of patterns to skip in the session middleware."""
+    """A pattern or list of patterns to skip in the session middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = None
+    """A pattern or list of patterns to skip in the session middleware, matched against the handler path at startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str
     """An identifier to use on routes to disable the session middleware for a particular route."""
 
     @property
-    def middleware(self) -> DefineMiddleware:
+    def middleware(self) -> SessionMiddleware[BaseSessionBackendT]:
         """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
@@ -78,7 +84,7 @@ class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):
                 from os import urandom
 
                 from litestar import Litestar, Request, get
-                from litestar.middleware.sessions.cookie_backend import CookieBackendConfig
+                from litestar.middleware.session.client_side import CookieBackendConfig
 
                 session_config = CookieBackendConfig(secret=urandom(16))
 
@@ -91,9 +97,9 @@ class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):
 
 
         Returns:
-            An instance of DefineMiddleware including ``self`` as the config kwarg value.
+            A :class:`SessionMiddleware` instance created with a backend built from ``self``.
         """
-        return DefineMiddleware(SessionMiddleware, backend=self._backend_class(config=self))
+        return SessionMiddleware(backend=self._backend_class(config=self))
 
 
 class BaseSessionBackend(ABC, Generic[ConfigT]):
@@ -185,24 +191,35 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         """
 
 
-class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
+class SessionMiddleware(ASGIMiddleware, Generic[BaseSessionBackendT]):
     """Litestar session middleware for storing session data."""
 
-    def __init__(self, app: ASGIApp, backend: BaseSessionBackendT) -> None:
+    def __init__(self, *, backend: BaseSessionBackendT) -> None:
         """Initialize ``SessionMiddleware``
 
         Args:
-            app: An ASGI application
             backend: A :class:`BaseSessionBackend` instance used to store and retrieve session data
         """
-
-        super().__init__(
-            app=app,
-            exclude=backend.config.exclude,
-            exclude_opt_key=backend.config.exclude_opt_key,
-            scopes=backend.config.scopes,
-        )
         self.backend = backend
+        exclude_path_pattern = backend.config.exclude_path_pattern
+        self.exclude_path_pattern = (
+            tuple(exclude_path_pattern) if isinstance(exclude_path_pattern, list) else exclude_path_pattern
+        ) or None
+        self.exclude_opt_key = backend.config.exclude_opt_key
+        # scopes are user-configurable and the middleware serves more than one scope
+        # type, so a startup-time handler bypass cannot represent per-connection scope
+        # types inside ASGI mounts. Keep ASGI handlers wrapped and filter each
+        # connection by its actual scope type at runtime.
+        scope_types = backend.config.scopes or {ScopeType.HTTP, ScopeType.WEBSOCKET}
+        self.scopes = (*scope_types, ScopeType.ASGI)
+        if scope_types != {ScopeType.HTTP, ScopeType.WEBSOCKET}:
+            self.should_bypass_for_scope = self._is_unconfigured_scope_type
+        self.should_bypass_for_scope = build_exclude_bypass(
+            backend.config.exclude, middleware_cls=type(self), also=self.should_bypass_for_scope
+        )
+
+    def _is_unconfigured_scope_type(self, scope: Scope) -> bool:
+        return scope["type"] not in self.scopes
 
     def create_send_wrapper(self, connection: ASGIConnection) -> Callable[[Message], Awaitable[None]]:
         """Create a wrapper for the ASGI send function, which handles setting the cookies on the outgoing response.
@@ -236,13 +253,14 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
 
         return wrapped_send
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """ASGI-callable.
+    async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+        """Handle ASGI call.
 
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.
             send: The ASGI send function.
+            next_app: The next ASGI application in the middleware stack to call.
 
         Returns:
             None
@@ -252,4 +270,4 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
         scope["session"] = await self.backend.load_from_connection(connection)
         connection._connection_state.session_id = self.backend.get_session_id(connection)
 
-        await self.app(scope, receive, self.create_send_wrapper(connection))
+        await next_app(scope, receive, self.create_send_wrapper(connection))

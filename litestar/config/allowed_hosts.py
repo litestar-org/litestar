@@ -26,7 +26,13 @@ class AllowedHostsConfig:
     Use ``*.`` to allow all hosts, or prefix domains with ``*.`` to allow all sub domains.
     """
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns to skip in the Allowed Hosts middleware."""
+    """A pattern or list of patterns to skip in the Allowed Hosts middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the Allowed Hosts middleware, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str | None = field(default=None)
     """An identifier to use on routes to disable hosts check for a particular route."""
     scopes: Scopes | None = field(default=None)

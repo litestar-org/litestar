@@ -9,6 +9,7 @@ from litestar.datastructures.headers import MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.exceptions import LitestarWarning, ValidationException
 from litestar.middleware import AbstractMiddleware, ASGIMiddleware, DefineMiddleware
+from litestar.middleware._utils import build_exclude_bypass
 from litestar.params import FromPath
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_400_BAD_REQUEST
@@ -367,6 +368,45 @@ def test_asgi_middleware_should_exclude_scope() -> None:
         assert client.get("/test.jpg").status_code == 200
 
         mock.assert_called_once_with("/test.txt")
+
+
+@pytest.mark.parametrize("exclude", [None, "", []])
+def test_build_exclude_bypass_without_pattern(exclude: Union[str, list[str], None]) -> None:
+    def also(scope: "Scope") -> bool:
+        return True
+
+    assert build_exclude_bypass(exclude) is None
+    assert build_exclude_bypass(exclude, also=also) is also
+
+
+def test_build_exclude_bypass_combines_with_existing_callable() -> None:
+    bypass = build_exclude_bypass(["^/excluded"], also=lambda scope: scope["type"] == ScopeType.WEBSOCKET)
+
+    assert bypass is not None
+    assert bypass({"type": ScopeType.HTTP, "path": "/excluded"})  # type: ignore[arg-type]
+    assert bypass({"type": ScopeType.WEBSOCKET, "path": "/other"})  # type: ignore[arg-type]
+    assert not bypass({"type": ScopeType.HTTP, "path": "/other"})  # type: ignore[arg-type]
+
+
+def test_build_exclude_bypass_matches_mount_sub_path() -> None:
+    mock = MagicMock()
+
+    class SubclassMiddleware(ASGIMiddleware):
+        should_bypass_for_scope = staticmethod(build_exclude_bypass(r"^/static/public/"))  # type: ignore[arg-type]
+
+        async def handle(self, scope: "Scope", receive: "Receive", send: "Send", next_app: "ASGIApp") -> None:
+            mock(scope["raw_path"])
+            await next_app(scope, receive, send)
+
+    @asgi("/static", is_mount=True)
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        await ASGIResponse(body=b"")(scope, receive, send)
+
+    with create_test_client([handler], middleware=[SubclassMiddleware()]) as client:
+        assert client.get("/static/public/a.css").status_code == 200
+        assert client.get("/static/private/a.css").status_code == 200
+
+        mock.assert_called_once_with(b"/static/private/a.css")
 
 
 @pytest.mark.parametrize("excludes", ["/", ("/", "/foo"), "/*", "/.*"])
