@@ -396,10 +396,10 @@ class RaisingAttribute:
         return object.__getattribute__(self, name)
 
 
-def _optional_field_backend() -> DTOBackend:
+def _optional_field_backend(dto_factory: type[DataclassDTO] = DataclassDTO[OptionalFieldDC]) -> DTOBackend:
     return DTOBackend(
         handler_id="test",
-        dto_factory=DataclassDTO[OptionalFieldDC],
+        dto_factory=dto_factory,
         field_definition=FieldDefinition.from_annotation(OptionalFieldDC),
         model_type=OptionalFieldDC,
         wrapper_attribute_name=None,
@@ -421,6 +421,19 @@ def test_backend_encode_object_lacking_optional_attribute(source: Any) -> None:
 def test_backend_encode_object_lacking_required_attribute(source: Any) -> None:
     with pytest.raises(TypeError, match="Missing required argument 'b'"):
         _optional_field_backend().encode_data(source)
+
+
+def _defaulting_accessor(obj: object, attr: str) -> Any:
+    return getattr(obj, attr, "default")
+
+
+def test_backend_encode_with_custom_accessor_object_lacking_optional_attribute() -> None:
+    class Factory(DataclassDTO[OptionalFieldDC]):
+        attribute_accessor = _defaulting_accessor  # type: ignore[assignment]
+
+    backend = _optional_field_backend(Factory)
+
+    assert to_builtins(backend.encode_data(SimpleNamespace(a=1, b="two"))) == {"a": 1, "b": "two", "c": None}
 
 
 def _custom_accessor(obj: object, attr: str) -> Any:
@@ -482,6 +495,7 @@ def test_backend_transfer_nested_model_behind_non_word_field_name() -> None:
         pytest.param(("class", "b"), id="keyword"),
         pytest.param(("\u00b5", "\u03bc"), id="nfkc_pair"),
         pytest.param(("\ufb01eld",), id="nfkc_unstable"),
+        pytest.param(("__debug__",), id="debug"),
     ],
 )
 def test_backend_transfer_field_name_not_valid_as_attribute_syntax(
@@ -490,7 +504,7 @@ def test_backend_transfer_field_name_not_valid_as_attribute_syntax(
     """Field names may be keywords, or change under the NFKC normalisation Python applies to identifiers."""
 
     class Factory(MsgspecDTO):
-        config = DTOConfig()
+        config = DTOConfig(underscore_fields_private=False)
 
     model_type = msgspec.defstruct("AttributeSyntaxFieldNames", [(name, int) for name in field_names])
     return_backend, data_backend = (

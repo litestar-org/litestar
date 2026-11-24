@@ -197,7 +197,8 @@ class TransferFunctionFactory:
         into the `except` block, or is written unchanged if a field needs more than that.
         """
         if not all(
-            self._is_passed_through(f.transfer_type) and _is_plain_identifier(f.name) for f in field_definitions
+            self._is_passed_through(f.transfer_type) and _is_plain_identifier(f.name) and f.name != "__debug__"
+            for f in field_definitions
         ):
             yield
             return
@@ -381,7 +382,7 @@ class TransferFunctionFactory:
                 else:
                     block_expr = "else:"
                     access_item = self._access_attribute
-                    if not (self.is_data_field or destination_type_is_dict):
+                    if not (self.is_data_field or destination_type_is_dict or self.attribute_accessor_name):
                         keyword_call = self._try_keyword_call(
                             assignment_target=tmp_return_type_name,
                             destination_type_name=destination_type_name,
