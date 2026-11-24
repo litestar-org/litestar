@@ -114,9 +114,9 @@
         :type: bugfix
         :pr: 5260
 
-        A ``type`` statement or ``TypeAliasType`` alias in a handler annotation is now handled like the
-        type it stands for, in both directions and in the OpenAPI schema. An alias that cannot be
-        resolved raises :exc:`~litestar.exceptions.InvalidAnnotationException` at startup.
+        When a DTO is declared, a ``type`` statement or ``TypeAliasType`` alias in a handler annotation
+        is now handled like the type it stands for, in both directions and in the OpenAPI schema. A
+        generic alias used without type arguments fails at startup.
 
     .. change:: DTO: Stable OpenAPI component names across application instances
         :type: bugfix
