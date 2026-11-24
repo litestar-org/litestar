@@ -1011,7 +1011,7 @@ def test_startup_error_falls_back_to_msgspec_message_when_field_search_fails(mon
     def failing_search(*args: Any) -> Any:
         raise KeyError("f")
 
-    monkeypatch.setattr("litestar.dto._backend._find_rejected_field", failing_search)
+    monkeypatch.setattr("litestar.dto._backend.find_rejected_field", failing_search)
 
     with pytest.raises(InvalidAnnotationException) as exc_info:
         DTOBackend(

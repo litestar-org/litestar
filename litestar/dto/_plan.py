@@ -9,7 +9,8 @@ import msgspec
 
 from litestar._layers.errors import HandlerErrorPrefix
 from litestar.di._helpers import _format_key
-from litestar.dto._backend import DTOBackend, _qualified_name
+from litestar.dto._backend import DTOBackend
+from litestar.dto._msgspec_rejection import qualified_name
 from litestar.dto._registry import TransferModelNaming
 from litestar.dto.data_structures import DTOData
 from litestar.enums import RequestEncodingType
@@ -484,7 +485,7 @@ def create_dto_openapi_schema(
                 msgspec.json.Decoder(direction_plan.backend.annotation, strict=False)
             except TypeError as decoder_exc:
                 raise DTOTransferTypeError(
-                    f"msgspec cannot describe the transfer model of {_qualified_name(direction_plan.backend.model_type)!r}: "
+                    f"msgspec cannot describe the transfer model of {qualified_name(direction_plan.backend.model_type)!r}: "
                     f"{exc}"
                 ) from decoder_exc
         raise

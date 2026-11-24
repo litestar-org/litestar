@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 import msgspec.inspect
 from msgspec import NODEFAULT, Struct, structs
 
-from litestar.dto._backend import _CONSTRAINT_HINT, _contains_meta, _msgspec_reason, _qualified_name
+from litestar.dto._msgspec_rejection import CONSTRAINT_HINT, contains_meta, rejected_field_message
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, extract_dto_field
@@ -44,10 +44,12 @@ def _rejected_field_message(
         try:
             msgspec.inspect.type_info(field_definition.raw)
         except TypeError as field_exc:
-            hint = f"; {_CONSTRAINT_HINT}" if _contains_meta(field_definition) else ""
-            return (
-                f"msgspec cannot inspect {_qualified_name(model_type)!r}: field {name!r}, annotated "
-                f"{field_definition.raw!r}, is rejected by msgspec ({_msgspec_reason(field_exc)}){hint}"
+            return rejected_field_message(
+                "msgspec cannot inspect",
+                model_type,
+                field_definition,
+                field_exc,
+                hint=CONSTRAINT_HINT if contains_meta(field_definition) else None,
             )
     return None
 
