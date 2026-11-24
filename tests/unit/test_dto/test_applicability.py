@@ -352,7 +352,9 @@ RETURN_ROWS = [
         id="AR3-stream",
     ),
     pytest.param("app", {"return_dto": UserDTO}, {}, User, respond_user, (), USER_ENCODED, id="AR4"),
-    pytest.param("app", {"return_dto": UserDTO}, {}, tuple[User, int], respond_tuple, (), TUPLE_FULL, id="AR5"),
+    pytest.param(
+        "app", {"return_dto": UserDTO}, {}, tuple[User, int], respond_tuple, (), DTONotApplicableError, id="AR5"
+    ),
     pytest.param(
         "app",
         {"return_dto": UserDTO},
@@ -540,11 +542,11 @@ def test_async_generator_return(placement: Placement, options: dict[str, Any]) -
             placement, method="GET", returns=AsyncGenerator[User, None], respond=lambda data: _users(), **options
         )
 
-    if placement == "handler" and "return_dto" in options:
+    if "return_dto" in options:
         with pytest.raises(DTONotApplicableError) as exc_info:
             build()
         assert exc_info.value.option == "return_dto"
-        assert str(exc_info.value).endswith("Streamed items are not transferred by a DTO.")
+        assert "Streamed items are not transferred by a DTO." in str(exc_info.value)
         return
 
     assert registered(build(), "GET").return_dto is None
@@ -585,12 +587,17 @@ def test_optional_generic_wrapper_return_is_encoded(returns: Any, respond: Calla
     [
         pytest.param("app", User | Other | None, USER_ENCODED, id="model-first-layer"),
         pytest.param("handler", User | Other | None, USER_ENCODED, id="model-first-handler"),
-        pytest.param("app", Other | User | None, USER_FULL, id="other-first-layer"),
+        pytest.param("app", Other | User | None, DTONotApplicableError, id="other-first-layer"),
     ],
 )
 def test_optional_union_resolves_to_first_member_like_baseline(
     placement: Placement, returns: Any, expected: Any
 ) -> None:
+    if expected is DTONotApplicableError:
+        with pytest.raises(DTONotApplicableError):
+            build_app(placement, method="GET", returns=returns, respond=respond_user, return_dto=UserDTO)
+        return
+
     app = build_app(placement, method="GET", returns=returns, respond=respond_user, return_dto=UserDTO)
 
     with TestClient(app) as client:
@@ -614,15 +621,82 @@ def test_generic_wrapper_is_not_a_data_shape() -> None:
     ],
 )
 def test_form_body_with_collection_annotation_is_not_applicable(placement: Placement, body: Any) -> None:
-    if placement == "handler":
-        with pytest.raises(DTONotApplicableError) as exc_info:
-            build_app(placement, body=body, dto=UserDTO)
-        assert str(exc_info.value).endswith("A form body is decoded into one model, not a collection.")
-        return
+    with pytest.raises(DTONotApplicableError) as exc_info:
+        build_app(placement, body=body, dto=UserDTO)
 
-    app = build_app(placement, body=body, dto=UserDTO)
+    assert "A form body is decoded into one model, not a collection." in str(exc_info.value)
+
+
+LAYER_SHAPES_WITH_MODEL = [
+    pytest.param(tuple[User, int], id="tuple"),
+    pytest.param(Union[User, Other], id="union"),
+    pytest.param(dict[str, tuple[User, int]], id="mapping-of-tuple"),
+]
+
+
+@pytest.mark.parametrize("annotation", LAYER_SHAPES_WITH_MODEL)
+@pytest.mark.parametrize("placement", ["app", "controller"])
+def test_layer_return_dto_raises_for_annotation_containing_its_model(placement: Placement, annotation: Any) -> None:
+    with pytest.raises(DTONotApplicableError) as exc_info:
+        build_app(placement, method="GET", returns=annotation, return_dto=UserDTO)
+
+    assert exc_info.value.option == "return_dto"
+    assert "'return_dto=DataclassDTO[User]' is declared on a layer, but cannot encode its return value" in str(
+        exc_info.value
+    )
+    assert str(exc_info.value).endswith("Declare 'return_dto=None' on the handler to opt out.")
+
+
+@pytest.mark.parametrize("annotation", LAYER_SHAPES_WITH_MODEL)
+@pytest.mark.parametrize("placement", ["app", "controller"])
+def test_layer_data_dto_raises_for_annotation_containing_its_model(placement: Placement, annotation: Any) -> None:
+    with pytest.raises(DTONotApplicableError) as exc_info:
+        build_app(placement, body=JSONBody[annotation], dto=UserDTO, handler_options={"return_dto": None})
+
+    assert exc_info.value.option == "dto"
+    assert "'dto=DataclassDTO[User]' is declared on a layer, but cannot decode its request body" in str(exc_info.value)
+    assert str(exc_info.value).endswith("Declare 'dto=None' on the handler to opt out.")
+
+
+@pytest.mark.parametrize(
+    ("returns", "respond", "expected"),
+    [
+        pytest.param(str, lambda data: "text", b"text", id="str"),
+        pytest.param(Other, respond_other, b'{"a":1,"hidden":"x"}', id="other-model"),
+        pytest.param(None, lambda data: None, b"null", id="none"),
+    ],
+)
+def test_layer_return_dto_skipped_for_annotation_without_its_model(
+    returns: Any, respond: Callable[[Any], Any], expected: Any
+) -> None:
+    app = build_app("app", method="GET", returns=returns, respond=respond, return_dto=UserDTO)
+
+    with TestClient(app) as client:
+        response = client.get("/")
+
+    assert registered(app, "GET").return_dto is None
+    assert response.content == expected
+
+
+@pytest.mark.parametrize("body", [pytest.param(JSONBody[str], id="str"), pytest.param(JSONBody[Other], id="other")])
+def test_layer_data_dto_skipped_for_annotation_without_its_model(body: Any) -> None:
+    app = build_app("app", body=body, dto=UserDTO, handler_options={"return_dto": None})
 
     assert registered(app)._dto_plan.data is None
+
+
+def test_handler_none_opts_out_of_layer_dto_for_annotation_containing_its_model() -> None:
+    app = build_app(
+        "app",
+        method="GET",
+        returns=tuple[User, int],
+        respond=respond_tuple,
+        return_dto=UserDTO,
+        handler_options={"return_dto": None},
+    )
+
+    with TestClient(app) as client:
+        assert client.get("/").json() == TUPLE_FULL
 
 
 def test_layer_dto_with_upload_file_body_is_skipped() -> None:

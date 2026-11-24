@@ -248,20 +248,10 @@ def test_data_dto_that_cannot_apply_raises(route_handler: Any) -> None:
         Litestar([route_handler])
 
 
-class ReturnTupleLayerController(Controller):
-    path = "/"
-    return_dto = ModelDTO
-
-    @post()
-    async def handler(self) -> tuple[Model, str]:
-        return Model(a=1, b="two"), "x"
-
-
 @pytest.mark.parametrize(
     ("route_handler", "data_dto", "has_data", "has_return"),
     [
         pytest.param(DataLayerController, ModelDTO, False, False, id="D2-layer"),
-        pytest.param(ReturnTupleLayerController, None, False, False, id="R5-layer"),
     ],
 )
 def test_layer_dto_that_cannot_apply_is_skipped(
