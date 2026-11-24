@@ -20,8 +20,8 @@ from typing import (
 import msgspec
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
 
-from litestar.dto._codegen_backend import TransferFunctionFactory
 from litestar.dto._registry import TransferModelNaming, TransferModelRegistry
+from litestar.dto._transfer_codegen import TransferFunctionFactory
 from litestar.dto._types import (
     CollectionType,
     CompositeType,
@@ -48,7 +48,7 @@ if TYPE_CHECKING:
 
     from litestar.connection import ASGIConnection
     from litestar.dto import AbstractDTO, RenameStrategy
-    from litestar.dto._codegen_backend import TransferFunctionCache
+    from litestar.dto._transfer_codegen import TransferFunctionCache
     from litestar.types import TypeDecodersSequence
     from litestar.types.serialization import LitestarEncodableType
 
