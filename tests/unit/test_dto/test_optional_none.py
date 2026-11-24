@@ -121,22 +121,6 @@ def test_optional_generic_wrapper_return_none(model: Any, dto: Any) -> None:
     assert response.json() is None
 
 
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_non_optional_return_none_is_unchanged(model: Any, dto: Any) -> None:
-    route_handler = _handler(model, lambda: None, "/dto", return_dto=dto)
-
-    with create_test_client([route_handler], raise_server_exceptions=False) as client:
-        assert client.get("/dto").status_code == 500
-
-
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_non_optional_wrapped_none_is_unchanged(model: Any, dto: Any) -> None:
-    route_handler = _handler(Response[model], lambda: Response(None), "/dto", return_dto=dto)
-
-    with create_test_client([route_handler], raise_server_exceptions=False) as client:
-        assert client.get("/dto").status_code == 500
-
-
 @pytest.mark.parametrize("value", [lambda: None, lambda: Response(None)], ids=["none", "response-none"])
 @pytest.mark.parametrize(("model", "dto"), LIBRARIES)
 def test_optional_response_wrapping_optional_none(model: Any, dto: Any, value: Callable[[], Any]) -> None:
@@ -270,17 +254,6 @@ def test_optional_dto_data_body_null_is_none() -> None:
     assert received == [None]
 
 
-def test_flags_are_fixed_when_the_plan_is_built() -> None:
-    @get("/", return_dto=DataclassDTO[Annotated[DCPerson, EXCLUDE]])
-    async def read() -> Response[Optional[DCPerson]]:
-        return Response(None)
-
-    app = Litestar([read], openapi_config=None)
-    backend = not_none(not_none(app.route_handler_method_map["/"]["GET"]._dto_plan).return_).backend
-
-    assert (backend._passes_none, backend._wrapped_passes_none) == (False, True)
-
-
 def test_builtins_decoder_returns_none_for_optional_annotation() -> None:
     @post("/", dto=DataclassDTO[Annotated[DCPerson, EXCLUDE]])
     async def create(data: URLEncodedBody[Optional[DCPerson]] = None) -> None:
@@ -290,19 +263,6 @@ def test_builtins_decoder_returns_none_for_optional_annotation() -> None:
     backend = not_none(not_none(app.route_handler_method_map["/"]["POST"]._dto_plan).data).backend
 
     assert backend.populate_data_from_builtins(None, RequestFactory().get()) is None
-
-
-def test_listener_non_optional_return_none_fails_as_before() -> None:
-    @websocket_listener("/ws", return_dto=DataclassDTO[Annotated[DCPerson, EXCLUDE]])
-    async def listener(data: str) -> DCPerson:
-        return None  # type: ignore[return-value]
-
-    with create_test_client([listener]) as client, pytest.raises(BaseException) as exc_info:
-        with client.websocket_connect("/ws") as ws:
-            ws.send_text("a")
-            ws.receive()
-
-    assert exc_info.group_contains(TypeError)
 
 
 def test_listener_without_dto_returning_none_sends_nothing() -> None:

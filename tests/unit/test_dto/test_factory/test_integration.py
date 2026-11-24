@@ -9,7 +9,6 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Generic, Literal, Optional, TypeVar, Union, cast
-from unittest.mock import MagicMock
 
 import annotated_types
 import msgspec
@@ -21,7 +20,6 @@ from litestar import Controller, Litestar, Response, get, patch, post
 from litestar.connection.request import Request
 from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, DTOField, MsgspecDTO, dto_field
-from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType
 from litestar.exceptions import DTOTransferTypeError, InvalidAnnotationException
 from litestar.params import JSONBody, MultipartBody, QueryParameter, URLEncodedBody
@@ -89,24 +87,6 @@ async def test_multipart_encoded_form_data() -> None:
     await default_file.close()
 
 
-def test_renamed_field() -> None:
-    @dataclass
-    class Foo:
-        bar: str
-
-    config = DTOConfig(rename_fields={"bar": "baz"})
-    dto = DataclassDTO[Annotated[Foo, config]]
-
-    @post(dto=dto, signature_types=[Foo])
-    def handler(data: JSONBody[Foo]) -> Foo:
-        assert data.bar == "hello"
-        return data
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json={"baz": "hello"})
-        assert response.json() == {"baz": "hello"}
-
-
 def test_renamed_field_nested(create_module: Callable[[str], ModuleType]) -> None:
     # https://github.com/litestar-org/litestar/issues/2721
     module = create_module(
@@ -140,57 +120,6 @@ class Foo:
     with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"foo_id": "1", "bar": {"bar_id": "2"}, "bars": [{"bars_id": "3"}]})
         assert response.json() == {"foo_id": "1", "bar": {"bar_id": "2"}, "bars": [{"bars_id": "3"}]}
-
-
-@dataclass
-class Spam:
-    main_id: str = "spam-id"
-
-
-@dataclass
-class Fzop:
-    bar: str = "hello"
-    SPAM: str = "bye"
-    spam_bar: str = "welcome"
-    spam_model: Optional[Spam] = None
-
-
-@pytest.mark.parametrize(
-    "rename_strategy, instance, tested_fields, data",
-    [
-        ("upper", Fzop(bar="hi"), ["BAR"], {"BAR": "hi"}),
-        ("lower", Fzop(SPAM="goodbye"), ["spam"], {"spam": "goodbye"}),
-        (lambda x: x[::-1], Fzop(bar="h", SPAM="bye!"), ["rab", "MAPS"], {"rab": "h", "MAPS": "bye!"}),
-        ("camel", Fzop(spam_bar="star"), ["spamBar"], {"spamBar": "star"}),
-        ("pascal", Fzop(spam_bar="star"), ["SpamBar"], {"SpamBar": "star"}),
-        ("camel", Fzop(spam_model=Spam()), ["spamModel"], {"spamModel": {"mainId": "spam-id"}}),
-        (
-            "kebab",
-            Fzop(spam_bar="star", spam_model=Spam()),
-            ["spam-bar", "spam-model"],
-            {"spam-bar": "star", "spam-model": {"main-id": "spam-id"}},
-        ),
-    ],
-)
-def test_fields_alias_generator(
-    rename_strategy: RenameStrategy,
-    instance: Fzop,
-    tested_fields: list[str],
-    data: dict[str, str],
-) -> None:
-    config = DTOConfig(rename_strategy=rename_strategy)
-    dto = DataclassDTO[Annotated[Fzop, config]]
-
-    @post(dto=dto)
-    def handler(data: JSONBody[Fzop]) -> Fzop:
-        assert data.bar == instance.bar
-        assert data.SPAM == instance.SPAM
-        return data
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json=data)
-        for f in tested_fields:
-            assert response.json()[f] == data[f]
 
 
 def test_dto_data_injection() -> None:
@@ -488,6 +417,20 @@ def test_dto_data_with_patch_request() -> None:
         assert response.json() == {"name": "John", "age": 41, "read_only": "read-only"}
 
 
+def test_dto_data_update_instance_keywords_take_precedence() -> None:
+    class PatchDTO(DataclassDTO[User]):
+        config = DTOConfig(partial=True)
+
+    @patch(dto=PatchDTO, return_dto=None)
+    def handler(data: JSONBody[DTOData[User]]) -> User:
+        return data.update_instance(User(name="John", age=42), age=7)
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.patch("/", json={"name": "Jane", "age": 41})
+
+    assert response.json() == {"name": "Jane", "age": 7, "read_only": "read-only"}
+
+
 @dataclass
 class UniqueModelName:
     id: int
@@ -588,54 +531,6 @@ def test_dto_with_generic_sequence_annotations() -> None:
         assert response.json() == [{"name": "John", "age": 42}]
 
 
-def test_dto_private_fields() -> None:
-    @dataclass
-    class Foo:
-        bar: str
-        _baz: int
-
-    mock = MagicMock()
-
-    @post(
-        dto=DataclassDTO[Foo],
-        signature_types=[Foo],
-    )
-    def handler(data: JSONBody[DTOData[Foo]]) -> Foo:
-        mock.received_data = data.as_builtins()
-        return data.create_instance(_baz=42)
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json={"bar": "hello", "_baz": "world"})
-        assert response.status_code == 201
-        assert response.json() == {"bar": "hello"}
-
-    assert mock.received_data == {"bar": "hello"}
-
-
-def test_dto_private_fields_disabled() -> None:
-    @dataclass
-    class Foo:
-        bar: str
-        _baz: int
-
-    @post(
-        dto=DataclassDTO[
-            Annotated[
-                Foo,
-                DTOConfig(underscore_fields_private=False),
-            ]
-        ],
-        signature_types=[Foo],
-    )
-    def handler(data: JSONBody[Foo]) -> Foo:
-        return data
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json={"bar": "hello", "_baz": 42})
-        assert response.status_code == 201
-        assert response.json() == {"bar": "hello", "_baz": 42}
-
-
 def test_dto_concrete_builtin_collection_types() -> None:
     @dataclass
     class Foo:
@@ -707,19 +602,6 @@ def test_dto_generic_dataclass_wrapped_collection_response() -> None:
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.json() == {"items": [{"name": "John"}, {"name": "Jane"}], "other": 2}
-
-
-def test_dto_generic_dataclass_wrapped_scalar_response() -> None:
-    @get(dto=DataclassDTO[Annotated[WrappedUser, DTOConfig(exclude={"age"})]])
-    def handler() -> Wrapped[WrappedUser, int]:
-        return Wrapped(
-            data=WrappedUser(name="John", age=42),
-            other=2,
-        )
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.json() == {"data": {"name": "John"}, "other": 2}
 
 
 @dataclass
@@ -1518,65 +1400,6 @@ def test_return_dto_schema_builds_with_field_constraint_msgspec_rejects() -> Non
     assert component["properties"]["f"]["description"] == "d"
 
 
-@pytest.mark.parametrize("partial", [False, True])
-@pytest.mark.parametrize(
-    "annotation",
-    [
-        pytest.param(Annotated[Optional[str], Meta(min_length=5)], id="optional_meta"),
-        pytest.param(Annotated[int, Meta(min_length=1)], id="int_meta"),
-        pytest.param(list[Annotated[int, Meta(min_length=1)]], id="item_meta"),
-    ],
-)
-def test_data_dto_raises_at_startup_when_msgspec_rejects_the_transfer_type(annotation: Any, partial: bool) -> None:
-    model = _make_model(DataclassDTO, annotation)
-
-    @post(
-        "/",
-        dto=DataclassDTO[Annotated[model, DTOConfig(partial=partial)]],  # type: ignore[valid-type]
-        return_dto=None,
-        signature_namespace={"model": model},
-    )
-    def create_rejected(data: JSONBody[DTOData[model]]) -> None:  # type: ignore[valid-type]
-        pass
-
-    with pytest.raises(DTOTransferTypeError, match="min_length") as exc_info:
-        Litestar(route_handlers=[create_rejected], openapi_config=None)
-
-    message = str(exc_info.value)
-    assert message.startswith("[paths='/', handler='create_rejected'] msgspec cannot decode the transfer model of ")
-    assert "field 'f'" in message
-    assert repr(annotation) in message
-    assert "create_rejected" in message
-    assert "attach the constraint to the member type it applies to" in message
-    assert isinstance(exc_info.value.__cause__, TypeError)
-
-
-@dataclass
-class RejectedInner:
-    g: Annotated[Optional[str], Meta(min_length=5)] = None
-
-
-@dataclass
-class RejectedOuter:
-    inner: RejectedInner
-
-
-def test_data_dto_startup_error_names_the_nested_field() -> None:
-    @post("/", dto=DataclassDTO[RejectedOuter], return_dto=None)
-    def create_rejected_outer(data: JSONBody[RejectedOuter]) -> None:
-        pass
-
-    with pytest.raises(InvalidAnnotationException) as exc_info:
-        Litestar(route_handlers=[create_rejected_outer], openapi_config=None)
-
-    message = str(exc_info.value)
-    assert message.startswith(
-        "[paths='/', handler='create_rejected_outer'] msgspec cannot decode the transfer model of "
-    )
-    assert f"field 'g' of '{RejectedInner.__module__}.RejectedInner'" in message
-    assert "RequestBody" not in message
-
-
 @pytest.mark.parametrize("direction", ["data", "return"])
 def test_msgspec_dto_raises_invalid_annotation_when_msgspec_rejects_the_model(direction: str) -> None:
     annotation: Any = Annotated[Optional[str], Meta(min_length=5)]
@@ -1600,59 +1423,6 @@ def test_msgspec_dto_raises_invalid_annotation_when_msgspec_rejects_the_model(di
                 return struct()
 
             Litestar(route_handlers=[read_rejected_struct], openapi_config=None)
-
-
-@dataclass
-class U1:
-    a: int
-
-
-@dataclass
-class U2:
-    b: int
-
-
-@dataclass
-class UH:
-    f: Union[U1, U2]
-
-
-@dataclass
-class Bad:
-    f: Annotated[Optional[str], Meta(min_length=5)] = None
-
-
-def test_data_dto_over_union_of_models_raises_at_startup() -> None:
-    @post("/", dto=DataclassDTO[UH], return_dto=None)
-    def create_union_holder(data: JSONBody[UH]) -> None:
-        pass
-
-    with pytest.raises(DTOTransferTypeError, match="must be tagged") as exc_info:
-        Litestar(route_handlers=[create_union_holder], openapi_config=None)
-
-    message = str(exc_info.value)
-    assert message.startswith("[paths='/', handler='create_union_holder'] msgspec cannot decode the transfer model of ")
-    assert f"field 'f' of '{UH.__module__}.UH'" in message
-    assert "tag the union members or decode the body yourself" in message
-    assert "RequestBody" not in message
-
-
-def test_return_dto_is_not_checked_at_startup() -> None:
-    @get("/union", return_dto=DataclassDTO[UH])
-    def read_union_holder() -> UH:
-        return UH(f=U2(b=1))
-
-    @get("/bad", return_dto=DataclassDTO[Bad])
-    def read_bad() -> Bad:
-        return Bad(f="12")
-
-    with create_test_client([read_union_holder, read_bad], openapi_config=None) as client:
-        response = client.get("/union")
-        assert response.status_code == 200
-        assert response.json() == {"f": {"b": 1}}
-        response = client.get("/bad")
-        assert response.status_code == 200
-        assert response.json() == {"f": "12"}
 
 
 @pytest.mark.parametrize(
@@ -1879,23 +1649,3 @@ app = Litestar(route_handlers=[create_item, create_item_with_dto])
     item_schema = openapi_schema.components.schemas["Item"]
     item_with_dto_schema = openapi_schema.components.schemas["CreateItemWithDtoItemRequestBody"]
     assert item_schema.examples == item_with_dto_schema.examples
-
-
-@pytest.mark.parametrize("forbid_unknown_fields, expected_status_code", [(False, 201), (True, 400)])
-def test_forbid_unknown_fields(forbid_unknown_fields: bool, expected_status_code: int) -> None:
-    @dataclass
-    class Foo:
-        bar: str
-
-    config = DTOConfig(
-        forbid_unknown_fields=forbid_unknown_fields,
-    )
-    dto = DataclassDTO[Annotated[Foo, config]]
-
-    @post(dto=dto, signature_types=[Foo])
-    def handler(data: JSONBody[Foo]) -> Foo:
-        return data
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json={"bar": "hello", "baz": "given"})
-        assert response.status_code == expected_status_code

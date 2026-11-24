@@ -394,6 +394,25 @@ feature(
     response={"name": "a"},
 )
 
+
+def _private_and_read_only(m: Maker) -> Case:
+    item = m.model(
+        "Item", F("name", str), F("hidden", Annotated[str, PRIVATE], "h"), F("shown", Annotated[str, READ_ONLY], "r")
+    )
+    return Case(item, lambda: item(name="a", hidden="x", shown="x"))
+
+
+feature(
+    "include_cannot_reinclude_marked",
+    _private_and_read_only,
+    config={"include": {"name", "hidden", "shown"}},
+    requests=(
+        Req("sent", {"name": "a", "hidden": "x", "shown": "x"}, 201, model("Item", name="a", hidden="h", shown="r")),
+    ),
+    response={"name": "a", "shown": "x"},
+)
+
+
 _CHILD_BODY: Final = {"label": "l", "secret": "x"}
 _CHILD_RECEIVED: Final = model("Child", label="l", secret="s")
 _CHILD_SENT: Final = {"label": "l"}

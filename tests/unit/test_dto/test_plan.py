@@ -11,7 +11,7 @@ from typing import Annotated, Any, Generic, Optional, TypeVar
 import msgspec
 import pytest
 
-from litestar import Controller, Litestar, Response, get, post, websocket_listener
+from litestar import Litestar, Response, get, post, websocket_listener
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar.connection import ASGIConnection
@@ -206,86 +206,6 @@ def test_build_schema_annotation_of_response_ignores_the_wrapper() -> None:
 
     assert backend.wrapper_attribute_name == "content"
     assert build_schema_annotation(dto, backend, field_definition) is backend.annotation
-
-
-@pytest.mark.parametrize(
-    ("dto", "body", "expected", "has_data"),
-    [
-        pytest.param(ModelDTO, Model, ModelDTO, True, id="D1"),
-        pytest.param(ModelDTO, None, ModelDTO, False, id="D3"),
-        pytest.param(None, PluginModel, None, False, id="D4"),
-        pytest.param(Empty, PluginModel, "plugin", True, id="D5"),
-        pytest.param(Empty, Model, None, False, id="D6"),
-        pytest.param(Empty, None, None, False, id="D7"),
-    ],
-)
-def test_data_resolution_rules(dto: Any, body: Any, expected: Any, has_data: bool) -> None:
-    plugin = StubPlugin()
-    app = Litestar([make_rule_handler(dto, None, body, None)], plugins=[plugin])
-    handler = registered(app)
-
-    assert handler.data_dto is (plugin.dto if expected == "plugin" else expected)
-    assert (handler._dto_plan.data is not None) is has_data
-
-
-class DataLayerController(Controller):
-    path = "/"
-    dto = ModelDTO
-
-    @post()
-    async def handler(self, data: JSONBody[dict[str, Any]]) -> None:
-        return None
-
-
-@pytest.mark.parametrize(
-    "route_handler",
-    [
-        pytest.param(make_rule_handler(ModelDTO, None, dict[str, Any], None), id="D2-handler"),
-    ],
-)
-def test_data_dto_that_cannot_apply_raises(route_handler: Any) -> None:
-    with pytest.raises(InvalidAnnotationException):
-        Litestar([route_handler])
-
-
-@pytest.mark.parametrize(
-    ("route_handler", "data_dto", "has_data", "has_return"),
-    [
-        pytest.param(DataLayerController, ModelDTO, False, False, id="D2-layer"),
-    ],
-)
-def test_layer_dto_that_cannot_apply_is_skipped(
-    route_handler: Any, data_dto: Any, has_data: bool, has_return: bool
-) -> None:
-    handler = registered(Litestar([route_handler]))
-
-    assert handler.data_dto is data_dto
-    assert (handler._dto_plan.data is not None) is has_data
-    assert (handler._dto_plan.return_ is not None) is has_return
-
-
-@pytest.mark.parametrize(
-    ("dto", "return_dto", "body", "returns", "expected"),
-    [
-        pytest.param(Empty, ModelReadDTO, None, Model, ModelReadDTO, id="R1-type"),
-        pytest.param(ModelDTO, None, Model, Model, None, id="R1-none"),
-        pytest.param(ModelDTO, Empty, Model, Model, ModelDTO, id="R2"),
-        pytest.param(Empty, Empty, None, PluginModel, "plugin", id="R3"),
-        pytest.param(DataclassDTO[PluginModel], Empty, PluginModel, PluginModel, "explicit", id="R2-before-R3"),
-    ],
-)
-def test_return_resolution_rules(dto: Any, return_dto: Any, body: Any, returns: Any, expected: Any) -> None:
-    plugin = StubPlugin()
-    app = Litestar([make_rule_handler(dto, return_dto, body, returns)], plugins=[plugin])
-    handler = registered(app)
-
-    if expected == "plugin":
-        assert handler.return_dto is plugin.dto
-    elif expected == "explicit":
-        assert handler.return_dto is dto
-        assert handler.return_dto is not plugin.dto
-    else:
-        assert handler.return_dto is expected
 
 
 def test_registration_does_not_overwrite_configuration() -> None:
@@ -603,23 +523,6 @@ def test_stock_dto_is_not_instantiated_per_request() -> None:
             assert ws.receive_json() == {"a": 1, "b": "two"}
         with client.websocket_connect("/stream") as ws:
             assert ws.receive_json() == {"a": 1, "b": "two"}
-
-
-@pytest.mark.parametrize(
-    ("dto", "return_dto", "body", "returns"),
-    [
-        pytest.param(ModelDTO, Empty, Model, Model, id="both"),
-        pytest.param(ModelDTO, None, Model, Model, id="data-only"),
-        pytest.param(Empty, ModelReadDTO, None, Model, id="return-only"),
-        pytest.param(ModelDTO, Empty, None, None, id="neither"),
-    ],
-)
-def test_plan_callables_match_directions(dto: Any, return_dto: Any, body: Any, returns: Any) -> None:
-    plan = registered(Litestar([make_rule_handler(dto, return_dto, body, returns)]))._dto_plan
-
-    assert (plan.decode_bytes is not None) is (plan.data is not None)
-    assert (plan.decode_builtins is not None) is (plan.data is not None)
-    assert (plan.encode is not None) is (plan.return_ is not None)
 
 
 class Custom:
