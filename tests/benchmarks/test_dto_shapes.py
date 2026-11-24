@@ -1,11 +1,3 @@
-"""DTO benchmarks for nested, union and pydantic models, and startup with a self-referential model.
-
-The round-trip benchmarks go through the ASGI interface like ``test_dto_request_roundtrip``:
-they start the app and send 10 requests per measured call, each decoded and encoded by the DTO.
-``test_dto_backend_create_self_referential`` measures backend creation only, like
-``test_dto_backend_create``. All of them use the default DTO backend.
-"""
-
 from dataclasses import dataclass, field
 from typing import Annotated, Any
 
