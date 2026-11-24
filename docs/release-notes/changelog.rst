@@ -11,15 +11,9 @@
         :breaking:
         :pr: 5255
 
-        The DTO backend that transferred data by interpreting the field definitions of a
-        model on every request has been removed. The functions that transfer data are
-        always generated when a DTO is set up for a route handler, which has been the
-        default since ``2.8.0``.
-
-        ``DTOConfig(experimental_codegen_backend=...)`` is still accepted, but it is
-        deprecated and has no effect, and any value other than ``None`` emits a deprecation
-        warning. The option will be removed in ``4.0``. For the behaviour that differs from
-        the removed backend, see
+        The DTO backend that interpreted field definitions per request is removed; transfer functions
+        are always generated, the default since ``2.8.0``. ``DTOConfig(experimental_codegen_backend=...)``
+        is deprecated, has no effect and warns for any value other than ``None``. See
         :ref:`release-notes/whats-new-3:Removal of the non-codegen DTO backend`.
 
     .. change:: DTO: Fix slow startup for self-referential and deeply nested models

@@ -237,42 +237,13 @@ After:
 Removal of the non-codegen DTO backend
 --------------------------------------
 
-DTOs have transferred data with generated functions by default since ``2.8.0``. The older
-backend, which interpreted the field definitions of a model on every request and could be
-selected with ``DTOConfig(experimental_codegen_backend=False)``, has been removed.
-
-``experimental_codegen_backend`` is still accepted by
-:class:`~litestar.dto.config.DTOConfig`, but it is deprecated and has no effect. Passing
-``True`` or ``False`` emits a deprecation warning; the option will be removed in 4.0.
-
-Before:
-
-.. code-block:: python
-
-    class UserDTO(DataclassDTO[User]):
-        config = DTOConfig(exclude={"id"}, experimental_codegen_backend=False)
-
-After:
-
-.. code-block:: python
-
-    class UserDTO(DataclassDTO[User]):
-        config = DTOConfig(exclude={"id"})
-
-If you disabled code generation to work around a failure, the known ones are fixed in 3.0:
-an application that failed to start with a :exc:`SyntaxError` for nested models, slow
-startup for models that reference themselves, and field names that are Python keywords or
-that change under Unicode normalisation.
-
-A field typed as a union of a nested model and more than one collection type, such as
-``Inner | list[str] | dict[str, str]``, is not supported and raises a :exc:`RuntimeError`
-when the application starts.
-
-At a ``max_nested_depth`` of 2 or more, ``DTOData.as_builtins()`` returns an optional nested
-model as an instance whose own nested models are dictionaries. A custom
-``attribute_accessor`` can be called more often for the same response. The attribute of a
-generic wrapper that holds the data is read with :func:`getattr`, not with the custom
-``attribute_accessor``.
+The DTO backend selected with ``DTOConfig(experimental_codegen_backend=False)`` is removed; transfer
+functions are always generated, the default since ``2.8.0``. The option is deprecated, has no
+effect, warns and will be removed in 4.0; remove it. Unlike the removed backend, a field typed as a
+union of a nested model and more than one collection type, such as
+``Inner | list[str] | dict[str, str]``, raises a :exc:`RuntimeError` at startup, and at a
+``max_nested_depth`` of 2 or more ``DTOData.as_builtins()`` returns an optional nested model as an
+instance whose own nested models are dictionaries.
 
 
 Removal of the ``litestar.pagination`` module
