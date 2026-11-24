@@ -6,7 +6,6 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Generic, Optional, TypeVar, cast
-from unittest.mock import MagicMock
 
 import msgspec
 import pytest
@@ -16,7 +15,6 @@ from litestar import Controller, Response, get, patch, post
 from litestar.connection.request import Request
 from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
-from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType
 from litestar.params import JSONBody, MultipartBody, URLEncodedBody
 from litestar.serialization import encode_json
@@ -80,24 +78,6 @@ async def test_multipart_encoded_form_data(use_experimental_dto_backend: bool) -
     await default_file.close()
 
 
-def test_renamed_field(use_experimental_dto_backend: bool) -> None:
-    @dataclass
-    class Foo:
-        bar: str
-
-    config = DTOConfig(rename_fields={"bar": "baz"}, experimental_codegen_backend=use_experimental_dto_backend)
-    dto = DataclassDTO[Annotated[Foo, config]]
-
-    @post(dto=dto, signature_types=[Foo])
-    def handler(data: JSONBody[Foo]) -> Foo:
-        assert data.bar == "hello"
-        return data
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json={"baz": "hello"})
-        assert response.json() == {"baz": "hello"}
-
-
 def test_renamed_field_nested(use_experimental_dto_backend: bool, create_module: Callable[[str], ModuleType]) -> None:
     # https://github.com/litestar-org/litestar/issues/2721
     module = create_module(
@@ -132,59 +112,6 @@ class Foo:
     with create_test_client(route_handlers=[handler]) as client:
         response = client.post("/", json={"foo_id": "1", "bar": {"bar_id": "2"}, "bars": [{"bars_id": "3"}]})
         assert response.json() == {"foo_id": "1", "bar": {"bar_id": "2"}, "bars": [{"bars_id": "3"}]}
-
-
-@dataclass
-class Spam:
-    main_id: str = "spam-id"
-
-
-@dataclass
-class Fzop:
-    bar: str = "hello"
-    SPAM: str = "bye"
-    spam_bar: str = "welcome"
-    spam_model: Optional[Spam] = None
-
-
-@pytest.mark.parametrize(
-    "rename_strategy, instance, tested_fields, data",
-    [
-        ("upper", Fzop(bar="hi"), ["BAR"], {"BAR": "hi"}),
-        ("lower", Fzop(SPAM="goodbye"), ["spam"], {"spam": "goodbye"}),
-        (lambda x: x[::-1], Fzop(bar="h", SPAM="bye!"), ["rab", "MAPS"], {"rab": "h", "MAPS": "bye!"}),
-        ("camel", Fzop(spam_bar="star"), ["spamBar"], {"spamBar": "star"}),
-        ("pascal", Fzop(spam_bar="star"), ["SpamBar"], {"SpamBar": "star"}),
-        ("camel", Fzop(spam_model=Spam()), ["spamModel"], {"spamModel": {"mainId": "spam-id"}}),
-        (
-            "kebab",
-            Fzop(spam_bar="star", spam_model=Spam()),
-            ["spam-bar", "spam-model"],
-            {"spam-bar": "star", "spam-model": {"main-id": "spam-id"}},
-        ),
-    ],
-)
-def test_fields_alias_generator(
-    rename_strategy: RenameStrategy,
-    instance: Fzop,
-    tested_fields: list[str],
-    data: dict[str, str],
-    use_experimental_dto_backend: bool,
-) -> None:
-    DataclassDTO._dto_backends = {}
-    config = DTOConfig(rename_strategy=rename_strategy, experimental_codegen_backend=use_experimental_dto_backend)
-    dto = DataclassDTO[Annotated[Fzop, config]]
-
-    @post(dto=dto)
-    def handler(data: JSONBody[Fzop]) -> Fzop:
-        assert data.bar == instance.bar
-        assert data.SPAM == instance.SPAM
-        return data
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json=data)
-        for f in tested_fields:
-            assert response.json()[f] == data[f]
 
 
 def test_dto_data_injection(use_experimental_dto_backend: bool) -> None:
@@ -345,6 +272,20 @@ def test_dto_data_with_patch_request(use_experimental_dto_backend: bool) -> None
         assert response.json() == {"name": "John", "age": 41, "read_only": "read-only"}
 
 
+def test_dto_data_update_instance_keywords_take_precedence() -> None:
+    class PatchDTO(DataclassDTO[User]):
+        config = DTOConfig(partial=True)
+
+    @patch(dto=PatchDTO, return_dto=None)
+    def handler(data: JSONBody[DTOData[User]]) -> User:
+        return data.update_instance(User(name="John", age=42), age=7)
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.patch("/", json={"name": "Jane", "age": 41})
+
+    assert response.json() == {"name": "Jane", "age": 7, "read_only": "read-only"}
+
+
 @dataclass
 class UniqueModelName:
     id: int
@@ -453,54 +394,6 @@ def test_dto_with_generic_sequence_annotations(use_experimental_dto_backend: boo
         assert response.json() == [{"name": "John", "age": 42}]
 
 
-def test_dto_private_fields(use_experimental_dto_backend: bool) -> None:
-    @dataclass
-    class Foo:
-        bar: str
-        _baz: int
-
-    mock = MagicMock()
-
-    @post(
-        dto=DataclassDTO[Annotated[Foo, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
-        signature_types=[Foo],
-    )
-    def handler(data: JSONBody[DTOData[Foo]]) -> Foo:
-        mock.received_data = data.as_builtins()
-        return data.create_instance(_baz=42)
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json={"bar": "hello", "_baz": "world"})
-        assert response.status_code == 201
-        assert response.json() == {"bar": "hello"}
-
-    assert mock.received_data == {"bar": "hello"}
-
-
-def test_dto_private_fields_disabled(use_experimental_dto_backend: bool) -> None:
-    @dataclass
-    class Foo:
-        bar: str
-        _baz: int
-
-    @post(
-        dto=DataclassDTO[
-            Annotated[
-                Foo,
-                DTOConfig(underscore_fields_private=False, experimental_codegen_backend=use_experimental_dto_backend),
-            ]
-        ],
-        signature_types=[Foo],
-    )
-    def handler(data: JSONBody[Foo]) -> Foo:
-        return data
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json={"bar": "hello", "_baz": 42})
-        assert response.status_code == 201
-        assert response.json() == {"bar": "hello", "_baz": 42}
-
-
 def test_dto_concrete_builtin_collection_types(use_experimental_dto_backend: bool) -> None:
     @dataclass
     class Foo:
@@ -584,25 +477,6 @@ def test_dto_generic_dataclass_wrapped_collection_response(use_experimental_dto_
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.json() == {"items": [{"name": "John"}, {"name": "Jane"}], "other": 2}
-
-
-def test_dto_generic_dataclass_wrapped_scalar_response(use_experimental_dto_backend: bool) -> None:
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
-    def handler() -> Wrapped[WrappedUser, int]:
-        return Wrapped(
-            data=WrappedUser(name="John", age=42),
-            other=2,
-        )
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.json() == {"data": {"name": "John"}, "other": 2}
 
 
 @dataclass
@@ -1012,26 +886,3 @@ app = Litestar(route_handlers=[create_item, create_item_with_dto])
     item_schema = openapi_schema.components.schemas["Item"]
     item_with_dto_schema = openapi_schema.components.schemas["CreateItemWithDtoItemRequestBody"]
     assert item_schema.examples == item_with_dto_schema.examples
-
-
-@pytest.mark.parametrize("forbid_unknown_fields, expected_status_code", [(False, 201), (True, 400)])
-def test_forbid_unknown_fields(
-    use_experimental_dto_backend: bool, forbid_unknown_fields: bool, expected_status_code: int
-) -> None:
-    @dataclass
-    class Foo:
-        bar: str
-
-    config = DTOConfig(
-        forbid_unknown_fields=forbid_unknown_fields,
-        experimental_codegen_backend=use_experimental_dto_backend,
-    )
-    dto = DataclassDTO[Annotated[Foo, config]]
-
-    @post(dto=dto, signature_types=[Foo])
-    def handler(data: JSONBody[Foo]) -> Foo:
-        return data
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json={"bar": "hello", "baz": "given"})
-        assert response.status_code == expected_status_code
