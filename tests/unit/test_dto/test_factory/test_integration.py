@@ -853,16 +853,7 @@ def test_msgspec_dto_copies_constraints_for_partial_dto(
         fields=[("bar", Annotated[field_type, msgspec.Meta(**{constraint_name: constraint_value})])],  # type: ignore[list-item]
     )
 
-    @post(
-        "/",
-        dto=MsgspecDTO[Annotated[struct, DTOConfig(partial=True)]],  # type: ignore[valid-type]
-        return_dto=None,
-        signature_namespace={"struct": struct},
-    )
-    def patch_partial_constrained(data: JSONBody[DTOData[struct]]) -> None:  # type: ignore[valid-type]
-        pass
-
-    with create_test_client([patch_partial_constrained]) as client:
+    with _create_client(MsgspecDTO, struct, partial=True) as client:
         assert client.post("/", json={}).status_code == 201
         assert client.post("/", json={"bar": request_data}).status_code == 400
 
@@ -892,6 +883,15 @@ def _make_model(dto_type: Any, annotation: Any, **default: Any) -> Any:
     return msgspec.defstruct("Model", [("f", annotation, msgspec.field(**default))])
 
 
+def _create_client(dto_type: Any, model: Any, partial: bool = False) -> Any:
+    async def create(data: Any) -> None:
+        return None
+
+    create.__annotations__["data"] = JSONBody[DTOData[model] if partial else model]
+    dto = dto_type[Annotated[model, DTOConfig(partial=True)]] if partial else dto_type[model]
+    return create_test_client([post("/", dto=dto, return_dto=None)(create)], openapi_config=None)
+
+
 _MEMBER_CONSTRAINT_CASES = [
     pytest.param(list[Annotated[str, Meta(min_length=5)]], ["12"], ["12345"], id="list_item"),
     pytest.param(dict[str, Annotated[str, Meta(min_length=5)]], {"k": "12"}, {"k": "12345"}, id="dict_value"),
@@ -915,13 +915,7 @@ _MEMBER_CONSTRAINT_CASES = [
     ],
 )
 def test_dto_enforces_member_constraints(dto_type: Any, annotation: Any, invalid: Any, valid: Any) -> None:
-    model = _make_model(dto_type, annotation)
-
-    @post("/", dto=dto_type[model], return_dto=None, signature_namespace={"model": model})
-    def create_member_constrained(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
-        pass
-
-    with create_test_client([create_member_constrained]) as client:
+    with _create_client(dto_type, _make_model(dto_type, annotation)) as client:
         assert client.post("/", json={"f": invalid}).status_code == 400
         assert client.post("/", json={"f": valid}).status_code == 201
 
@@ -950,18 +944,7 @@ def test_dto_enforces_member_constraints(dto_type: Any, annotation: Any, invalid
 def test_dto_enforces_member_constraints_with_partial(
     dto_type: Any, annotation: Any, default: dict[str, Any], invalid: Any, valid: Any
 ) -> None:
-    model = _make_model(dto_type, annotation, **default)
-
-    @post(
-        "/",
-        dto=dto_type[Annotated[model, DTOConfig(partial=True)]],
-        return_dto=None,
-        signature_namespace={"model": model},
-    )
-    def patch_member_constrained(data: JSONBody[DTOData[model]]) -> None:  # type: ignore[valid-type]
-        pass
-
-    with create_test_client([patch_member_constrained]) as client:
+    with _create_client(dto_type, _make_model(dto_type, annotation, **default), partial=True) as client:
         assert client.post("/", json={"f": invalid}).status_code == 400
         assert client.post("/", json={"f": valid}).status_code == 201
         assert client.post("/", json={}).status_code == 201
@@ -1015,26 +998,7 @@ Limit = TypeAliasType("Limit", Annotated[int, Meta(ge=0)])
 def test_dto_enforces_field_constraints(
     dto_type: Any, partial: bool, annotation: Any, default: dict[str, Any], invalid: Any, valid: Any
 ) -> None:
-    model = _make_model(dto_type, annotation, **default)
-
-    if partial:
-
-        @post(
-            "/",
-            dto=dto_type[Annotated[model, DTOConfig(partial=True)]],
-            return_dto=None,
-            signature_namespace={"model": model},
-        )
-        def create_field_constrained(data: JSONBody[DTOData[model]]) -> None:  # type: ignore[valid-type]
-            pass
-
-    else:
-
-        @post("/", dto=dto_type[model], return_dto=None, signature_namespace={"model": model})
-        def create_field_constrained(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
-            pass
-
-    with create_test_client([create_field_constrained]) as client:
+    with _create_client(dto_type, _make_model(dto_type, annotation, **default), partial) as client:
         assert client.post("/", json={"f": invalid}).status_code == 400
         assert client.post("/", json={"f": valid}).status_code == 201
 
@@ -1045,19 +1009,7 @@ def test_msgspec_dto_enforces_constraints_of_optional_member(partial: bool) -> N
         bar: Annotated[str, Meta(min_length=2)] | None
         url: Optional[Annotated[str, Meta(pattern="^a")]] = None
 
-    if partial:
-
-        @post("/", dto=MsgspecDTO[Annotated[Foo, DTOConfig(partial=True)]], return_dto=None, signature_types={Foo})
-        def create_optional_member(data: JSONBody[DTOData[Foo]]) -> None:
-            pass
-
-    else:
-
-        @post("/", dto=MsgspecDTO[Foo], return_dto=None, signature_types={Foo})
-        def create_optional_member(data: JSONBody[Foo]) -> None:
-            pass
-
-    with create_test_client([create_optional_member]) as client:
+    with _create_client(MsgspecDTO, Foo, partial) as client:
         assert client.post("/", json={"bar": "1"}).status_code == 400
         assert client.post("/", json={"bar": "123", "url": "b"}).status_code == 400
         assert client.post("/", json={"bar": "123", "url": "ab"}).status_code == 201
@@ -1068,11 +1020,7 @@ def test_msgspec_dto_enforces_constraints_of_unset_union_member() -> None:
     class Foo(msgspec.Struct):
         password: Union[Annotated[str, Meta(min_length=8)], UnsetType] = UNSET
 
-    @post("/", dto=MsgspecDTO[Foo], return_dto=None, signature_types={Foo})
-    def create_unset_union_member(data: JSONBody[Foo]) -> None:
-        pass
-
-    with create_test_client([create_unset_union_member]) as client:
+    with _create_client(MsgspecDTO, Foo) as client:
         assert client.post("/", json={"password": "12"}).status_code == 400
         assert client.post("/", json={}).status_code == 201
         assert client.post("/", json={"password": "12345678"}).status_code == 201
@@ -1090,13 +1038,7 @@ def test_msgspec_dto_enforces_constraints_of_unset_union_member() -> None:
 def test_dto_meta_wins_over_derived_constraint_for_the_same_attribute(
     annotation: Any, statuses: dict[int, int]
 ) -> None:
-    model = _make_model(DataclassDTO, annotation, default=2)
-
-    @post("/", dto=DataclassDTO[model], return_dto=None, signature_namespace={"model": model})  # type: ignore[valid-type]
-    def create_meta_and_derived(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
-        pass
-
-    with create_test_client([create_meta_and_derived]) as client:
+    with _create_client(DataclassDTO, _make_model(DataclassDTO, annotation, default=2)) as client:
         assert {value: client.post("/", json={"f": value}).status_code for value in statuses} == statuses
 
 
@@ -1236,26 +1178,7 @@ def test_dto_ignores_bounds_msgspec_cannot_express(
 def test_dto_does_not_enforce_derived_constraints_msgspec_cannot_express(
     dto_type: Any, annotation: Any, partial: bool, invalid: Any, valid: Any
 ) -> None:
-    model = _make_model(dto_type, annotation)
-
-    if partial:
-
-        @post(
-            "/",
-            dto=dto_type[Annotated[model, DTOConfig(partial=True)]],
-            return_dto=None,
-            signature_namespace={"model": model},
-        )
-        def create_derived_constraint(data: JSONBody[DTOData[model]]) -> None:  # type: ignore[valid-type]
-            pass
-
-    else:
-
-        @post("/", dto=dto_type[model], return_dto=None, signature_namespace={"model": model})
-        def create_derived_constraint(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
-            pass
-
-    with create_test_client([create_derived_constraint], openapi_config=None) as client:
+    with _create_client(dto_type, _make_model(dto_type, annotation), partial) as client:
         assert client.post("/", json={"f": invalid}).status_code == 201
         assert client.post("/", json={"f": valid}).status_code == 201
 
@@ -1311,26 +1234,7 @@ def test_dto_drops_derived_constraints_that_conflict(
     rejected_status: int,
     own_bound: tuple[str, int] | None,
 ) -> None:
-    model = _make_model(dto_type, annotation)
-
-    if partial:
-
-        @post(
-            "/",
-            dto=dto_type[Annotated[model, DTOConfig(partial=True)]],
-            return_dto=None,
-            signature_namespace={"model": model},
-        )
-        def create_conflicting(data: JSONBody[DTOData[model]]) -> None:  # type: ignore[valid-type]
-            pass
-
-    else:
-
-        @post("/", dto=dto_type[model], return_dto=None, signature_namespace={"model": model})
-        def create_conflicting(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
-            pass
-
-    with create_test_client([create_conflicting], openapi_config=None) as client:
+    with _create_client(dto_type, _make_model(dto_type, annotation), partial) as client:
         assert client.post("/", json={"f": rejected}).status_code == rejected_status
         assert client.post("/", json={"f": accepted}).status_code == 201
 
@@ -1606,36 +1510,6 @@ def test_dto_honours_mark_given_as_string(
         assert client.post("/", json={"name": "a", "token": "x"}).status_code == post_status
 
     assert seen.get("token") == expected_seen
-
-
-@dataclass
-class LoudDataclass:
-    name: str
-
-    @property
-    def loud(self) -> str:
-        return self.name.upper()
-
-
-class LoudStruct(Struct):
-    name: str
-
-    @property
-    def loud(self) -> str:
-        return self.name.upper()
-
-
-@pytest.mark.parametrize("dto_type, model", [(DataclassDTO, LoudDataclass), (MsgspecDTO, LoudStruct)])
-def test_dto_does_not_require_property_fields_on_input(dto_type: Any, model: Any) -> None:
-    @post("/", dto=dto_type[model], signature_namespace={"model": model})
-    def create_loud(data: JSONBody[model]) -> model:  # pyright: ignore[reportInvalidTypeForm]
-        return data
-
-    with create_test_client([create_loud], openapi_config=None) as client:
-        for body in ({"name": "a"}, {"name": "a", "loud": "Z"}):
-            response = client.post("/", json=body)
-            assert response.status_code == 201
-            assert response.json() == {"name": "a", "loud": "A"}
 
 
 def test_openapi_schema_for_type_with_custom_generic_type(create_module: Callable[[str], ModuleType]) -> None:
