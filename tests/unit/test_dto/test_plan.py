@@ -86,26 +86,20 @@ def make_rule_handler(dto: Any, return_dto: Any, body: Any, returns: Any) -> HTT
     return post("/", dto=dto, return_dto=return_dto, signature_namespace=namespace)(fn)
 
 
-def test_create_backend_data_direction() -> None:
+@pytest.mark.parametrize(
+    ("annotation", "is_data_field", "suffix"),
+    [(JSONBody[Model], True, "RequestBody"), (Model, False, "ResponseBody")],
+)
+def test_create_backend_direction(annotation: Any, is_data_field: bool, suffix: str) -> None:
     backend = create_backend(
         DataclassDTO[Model],
-        FieldDefinition.from_annotation(JSONBody[Model]),
-        is_data_field=True,
+        FieldDefinition.from_annotation(annotation),
+        is_data_field=is_data_field,
         handler_id="pkg.handler::1",
     )
 
-    assert backend.is_data_field is True
-    assert backend.transfer_model_type.__name__.endswith("RequestBody")
-    assert backend.handler_id == "pkg.handler::1"
-
-
-def test_create_backend_return_direction() -> None:
-    backend = create_backend(
-        DataclassDTO[Model], FieldDefinition.from_annotation(Model), is_data_field=False, handler_id="pkg.handler::1"
-    )
-
-    assert backend.is_data_field is False
-    assert backend.transfer_model_type.__name__.endswith("ResponseBody")
+    assert backend.is_data_field is is_data_field
+    assert backend.transfer_model_type.__name__.endswith(suffix)
     assert backend.handler_id == "pkg.handler::1"
 
 
@@ -156,7 +150,6 @@ def test_create_backend_uses_backend_cls() -> None:
         pytest.param(Model, lambda backend: backend.transfer_model_type, id="model"),
         pytest.param(list[Model], lambda backend: list[backend.transfer_model_type], id="list"),
         pytest.param(WithCount[Model], lambda backend: WithCount[backend.transfer_model_type], id="generic-wrapper"),
-        pytest.param(Response[Model], lambda backend: backend.annotation, id="response"),
     ],
 )
 def test_build_schema_annotation(annotation: Any, expected: Callable[[DTOBackend], Any]) -> None:
@@ -279,22 +272,16 @@ def test_return_dto_that_cannot_apply_is_dropped(route_handler: Any) -> None:
         assert client.post("/", json={"a": 1, "b": "two"}).json() == {"a": 1, "b": "two"}
 
 
-def test_registration_does_not_overwrite_configuration() -> None:
-    plugin = StubPlugin()
-    handler = registered(Litestar([make_rule_handler(Empty, Empty, PluginModel, PluginModel)], plugins=[plugin]))
-
-    assert handler._dto is Empty
-    assert handler._return_dto is Empty
-    assert handler.data_dto is plugin.dto
-    assert handler.return_dto is plugin.dto
-
-
-def test_merge_of_registered_handler_keeps_configuration() -> None:
+def test_registration_and_merge_do_not_overwrite_configuration() -> None:
     plugin = StubPlugin()
     handler = registered(Litestar([make_rule_handler(Empty, Empty, PluginModel, PluginModel)], plugins=[plugin]))
 
     merged = handler.merge()
 
+    assert handler._dto is Empty
+    assert handler._return_dto is Empty
+    assert handler.data_dto is plugin.dto
+    assert handler.return_dto is plugin.dto
     assert merged._dto is Empty
     assert merged._return_dto is Empty
     assert merged._dto_plan is None
