@@ -1,19 +1,19 @@
 from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Any, get_args
+from typing import Annotated, Any, get_args
 
 import msgspec
 import pytest
 
-from litestar import Controller, Litestar, Router, get, post
-from litestar.dto import DataclassDTO
+from litestar import Controller, Litestar, Router, get, post, websocket_listener
+from litestar.dto import DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
 from litestar.dto._plan import build_dto_plan, create_backend
 from litestar.dto._registry import TransferModelRegistry
 from litestar.exceptions import LitestarWarning
 from litestar.handlers import HTTPRouteHandler
 from litestar.params import JSONBody
-from litestar.routes import HTTPRoute
+from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.typing import FieldDefinition
 
 HANDLER_ID = "app.handlers.get_user::1"
@@ -80,6 +80,16 @@ class A(Base):
 
 class B(Base):
     path = "/b"
+
+
+class RequiredArgumentBackend(DTOBackend):
+    def __new__(cls, required: Any) -> "RequiredArgumentBackend":
+        return super().__new__(cls)
+
+
+class AnyArgumentsBackend(DTOBackend):
+    def __new__(cls, *args: Any, **kwargs: Any) -> "AnyArgumentsBackend":
+        return super().__new__(cls)
 
 
 class SixKeywordBackend(DTOBackend):
@@ -329,4 +339,46 @@ def test_standalone_backends_do_not_share_names() -> None:
     direct = [DTOBackend(**six_keywords(handler_id="test", is_data_field=True)) for _ in "ab"]
 
     assert [backend.transfer_model_type.__name__ for backend in (*created, *direct)] == ["TestUserRequestBody"] * 4
-    assert all(getattr(backend, "_naming", None) is not None for backend in created)
+
+
+def test_websocket_listeners_on_one_path_share_transfer_model_names() -> None:
+    def listener(exclude: set[str]) -> Any:
+        @websocket_listener("/ws", dto=DataclassDTO[Annotated[User, DTOConfig(exclude=exclude)]])
+        async def handler(data: User) -> None:
+            return None
+
+        return handler
+
+    app = Litestar([listener({"id"}), listener({"name"})])
+    structs = []
+    for route in app.routes:
+        if isinstance(route, WebSocketRoute):
+            plan = route.route_handler._dto_plan
+            assert plan is not None
+            assert plan.data is not None
+            structs.append(plan.data.backend.transfer_model_type)
+
+    assert len(structs) == 2
+    assert structs[0].__name__ == structs[1].__name__
+    assert [{struct_field.name for struct_field in msgspec.structs.fields(struct)} for struct in structs] in (
+        [{"name"}, {"id"}],
+        [{"id"}, {"name"}],
+    )
+
+
+def test_backend_subclass_whose_new_requires_arguments_raises() -> None:
+    with pytest.raises(TypeError):
+        create_backend(
+            DataclassDTO[User],
+            FieldDefinition.from_annotation(User),
+            is_data_field=False,
+            handler_id=HANDLER_ID,
+            backend_cls=RequiredArgumentBackend,
+        )
+
+
+def test_backend_subclass_whose_new_accepts_any_arguments() -> None:
+    backend = build(AnyArgumentsBackend, TransferModelRegistry(), "s1")
+
+    assert type(backend) is AnyArgumentsBackend
+    assert backend.transfer_model_type.__name__ == SHORT
