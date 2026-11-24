@@ -823,3 +823,35 @@ def test_listener_class_return_dto_that_does_not_apply_raises() -> None:
 
     with pytest.raises(DTONotApplicableError, match=r"cannot encode its return value annotated 'None'"):
         Litestar([Listener], openapi_config=None)
+
+
+@pytest.mark.parametrize(
+    ("placement", "method", "body", "returns", "option"),
+    [
+        pytest.param("handler", "GET", NO_BODY, dict, "return_dto", id="handler-return-dict"),
+        pytest.param("handler", "GET", NO_BODY, list, "return_dto", id="handler-return-list"),
+        pytest.param("handler", "POST", JSONBody[dict], None, "dto", id="handler-body-dict"),
+        pytest.param("app", "GET", NO_BODY, dict, "return_dto", id="layer-return-dict"),
+        pytest.param("app", "GET", NO_BODY, list, "return_dto", id="layer-return-list"),
+        pytest.param("app", "POST", JSONBody[dict], None, "dto", id="layer-body-dict"),
+    ],
+)
+def test_bare_collection_annotation_is_not_applicable(
+    placement: Placement, method: Any, body: Any, returns: Any, option: str
+) -> None:
+    options: dict[str, Any] = {option: UserDTO}
+
+    def build() -> Litestar:
+        return build_app(
+            placement, method=method, body=body, returns=returns, respond=lambda data: returns(), **options
+        )
+
+    if placement == "handler":
+        with pytest.raises(DTONotApplicableError, match=r"^\[paths='/', handler='\w+'\] "):
+            build()
+        return
+
+    app = build()
+    plan = registered(app, method)._dto_plan
+    assert plan.data is None
+    assert plan.return_ is None

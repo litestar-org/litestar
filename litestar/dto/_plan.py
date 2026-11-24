@@ -181,19 +181,23 @@ def resolve_dto_target(
     subclass of the DTO's model type, except for a collection or mapping on a form body. In the return direction
     the DTO must also support that annotation, and it applies to a model wrapped in a generic type.
     """
-    return _resolve_target(dto, field_definition, direction, check_support=True)
+    if (
+        direction == "return"
+        and (inner := _without_optional(field_definition)) is not None
+        and not dto.is_supported_model_type_field(inner)
+    ):
+        return None
+    return _match_target(dto, field_definition, direction)
 
 
-def _resolve_target(
+def _match_target(
     dto: type[AbstractDTO[Any]],
     field_definition: FieldDefinition | None,
     direction: Literal["data", "return"],
-    *,
-    check_support: bool,
 ) -> DTOTarget | None:
     if (inner := _without_optional(field_definition)) is None or field_definition is None:
         return None
-    if check_support and direction == "return" and not dto.is_supported_model_type_field(inner):
+    if not inner.inner_types and (inner.is_collection or inner.is_subclass_of(DTOData)):
         return None
 
     passes_none = field_definition.is_optional
@@ -463,7 +467,7 @@ def _not_applicable(
     name = dto_name(dto)
     annotation = _format_annotation(field_definition.annotation)
     declared = f"'{declaration.option}={name}' is declared on the handler"
-    if direction == "return" and _resolve_target(dto, field_definition, direction, check_support=False) is not None:
+    if direction == "return" and _match_target(dto, field_definition, direction) is not None:
         message = (
             f"{declared}, but {name}.is_supported_model_type_field() declines its return value annotated "
             f"'{annotation}'."
