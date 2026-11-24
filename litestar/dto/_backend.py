@@ -355,12 +355,7 @@ class DTOBackend:
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        parsed = self.parse_builtins(builtins, asgi_connection)
-        if parsed is None and self._passes_none:
-            return None
-        if self.dto_data_type:
-            return self.dto_data_type(backend=self, data_as_builtins=self._transfer_to_dict(parsed))
-        return self.transfer_data_from_builtins(parsed)
+        return self._populate(self.parse_builtins(builtins, asgi_connection), self.transfer_data_from_builtins)
 
     def transfer_data_from_builtins(self, builtins: Any) -> Any:
         """Populate model instance from builtin types.
@@ -383,12 +378,14 @@ class DTOBackend:
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        parsed: Any = self.parse_raw(raw, asgi_connection)
+        return self._populate(self.parse_raw(raw, asgi_connection), self._transfer_to_model_type)
+
+    def _populate(self, parsed: Any, transfer: Callable[[Any], Any]) -> Any:
         if parsed is None and self._passes_none:
             return None
         if self.dto_data_type:
             return self.dto_data_type(backend=self, data_as_builtins=self._transfer_to_dict(parsed))
-        return self._transfer_to_model_type(parsed)
+        return transfer(parsed)
 
     def encode_data(self, data: Any) -> LitestarEncodableType:
         """Encode data into a ``LitestarEncodableType``.

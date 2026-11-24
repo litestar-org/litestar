@@ -180,6 +180,10 @@ class BaseRouteHandler:
         for other in others:
             handler = handler.merge(other)
 
+        The ``dto`` and ``return_dto`` of the closest layer in ``others`` that declares them are carried as
+        ``inherited_dto`` and ``inherited_return_dto``, which are not constructor keywords: :meth:`_from_merge_opts`
+        removes them from the opts and assigns them to the created handler.
+
         The downside of that approach is that it creates a bunch of intermediate
         instances requires every subclass that adds properties to re-implement all the
         merging logic.

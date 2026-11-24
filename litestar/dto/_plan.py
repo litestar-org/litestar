@@ -31,13 +31,11 @@ if TYPE_CHECKING:
     from litestar.dto.base_dto import AbstractDTO
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
-    from litestar.plugins import SerializationPlugin
     from litestar.types.empty import EmptyType
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = (
     "DTOPlan",
-    "DTOTarget",
     "DecodeFn",
     "EncodeFn",
     "build_dto_plan",
@@ -63,6 +61,8 @@ class DTODirectionPlan:
     """The backend built for the handler's own field in this direction, bound to the handler's type decoders"""
     schema_annotation: Any
     """The annotation the field is documented with in the OpenAPI schema"""
+    passes_none: bool
+    """Whether the annotation is optional, so that ``None`` passes through without the DTO"""
 
 
 @dataclass(frozen=True, slots=True)
@@ -312,8 +312,10 @@ def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
         )
 
 
-def _find_serialization_plugin(app: "Litestar", field_definition: FieldDefinition) -> "SerializationPlugin | None":
-    return next(
+def _plugin_dto(
+    app: "Litestar", field_definition: FieldDefinition, *, is_data_field: bool
+) -> "tuple[type[AbstractDTO[Any]], DTOTarget] | None":
+    plugin = next(
         (
             plugin
             for plugin in app.plugins.serialization
@@ -321,6 +323,11 @@ def _find_serialization_plugin(app: "Litestar", field_definition: FieldDefinitio
         ),
         None,
     )
+    if plugin is not None:
+        plugin_dto = plugin.create_dto_for_type(field_definition)
+        if (target := resolve_dto_target(plugin_dto, field_definition, is_data_field=is_data_field)) is not None:
+            return plugin_dto, target
+    return None
 
 
 def _resolve_data_dto(
@@ -337,10 +344,8 @@ def _resolve_data_dto(
         ):
             raise _not_applicable(dto, data_field, is_data_field=True, declared_on_handler=declared_on_handler)
         return dto, target
-    if data_field is not None and (plugin := _find_serialization_plugin(app, data_field)):
-        plugin_dto = plugin.create_dto_for_type(data_field)
-        if (target := resolve_dto_target(plugin_dto, data_field, is_data_field=True)) is not None:
-            return plugin_dto, target
+    if data_field is not None and (plugin_dto := _plugin_dto(app, data_field, is_data_field=True)):
+        return plugin_dto
     return None, None
 
 
@@ -361,11 +366,7 @@ def _resolve_return_dto(
         return None
     if data_dto is not None and (target := resolve_dto_target(data_dto, return_field, is_data_field=False)) is not None:
         return data_dto, target
-    if plugin := _find_serialization_plugin(app, return_field):
-        plugin_dto = plugin.create_dto_for_type(return_field)
-        if (target := resolve_dto_target(plugin_dto, return_field, is_data_field=False)) is not None:
-            return plugin_dto, target
-    return None
+    return _plugin_dto(app, return_field, is_data_field=False)
 
 
 def _format_annotation(annotation: Any) -> str:
@@ -443,6 +444,7 @@ def _build_direction(
         dto=dto,
         backend=backend,
         schema_annotation=build_schema_annotation(dto, backend, field_definition),
+        passes_none=target.passes_none,
     )
 
 
