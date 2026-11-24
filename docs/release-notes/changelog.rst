@@ -103,6 +103,14 @@
         handler can return ``None`` or ``Response(None)``, a ``null`` body is injected as ``None``, also
         for ``Optional[DTOData[Model]]``, and a websocket listener sends nothing.
 
+    .. change:: DTO: Handle optional and nested collections of the model
+        :type: bugfix
+        :pr: 5261
+
+        An optional or nested collection such as ``Optional[list[Model]]``, ``list[Optional[Model]]`` or
+        ``dict[str, list[Model]]`` holding a value no longer causes a ``500`` in either direction, and a
+        generic wrapper whose attribute is optional, such as ``data: Optional[T] = None``, can hold ``None``.
+
     .. change:: DTO: Answer 400 for invalid form data
         :type: bugfix
         :pr: 5259

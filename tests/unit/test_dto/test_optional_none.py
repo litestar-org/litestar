@@ -39,6 +39,11 @@ class Wrapper(Generic[T]):
     data: T
 
 
+@dataclass
+class OptionalWrapper(Generic[T]):
+    data: Optional[T] = None
+
+
 EXCLUDE = DTOConfig(exclude={"secret"})
 JSON_BODY: Any = JSONBody
 
@@ -271,3 +276,52 @@ def test_optional_body_with_value_is_decoded(body: str, dto_data: bool) -> None:
 
     assert response.status_code == 201
     assert received == [DCPerson(id=1, name="a", secret="s")]
+
+
+PERSON = DCPerson(id=1, name="a")
+SENT = {"id": 1, "name": "a", "secret": "x"}
+ENCODED = {"id": 1, "name": "a"}
+
+
+@pytest.mark.parametrize(
+    ("annotation", "value", "sent", "expected"),
+    [
+        pytest.param(Optional[list[DCPerson]], [PERSON], [SENT], [ENCODED], id="optional-list"),
+        pytest.param(list[DCPerson] | None, [PERSON], [SENT], [ENCODED], id="list-or-none"),
+        pytest.param(Optional[dict[str, DCPerson]], {"k": PERSON}, {"k": SENT}, {"k": ENCODED}, id="optional-dict"),
+        pytest.param(Optional[tuple[DCPerson, ...]], (PERSON,), [SENT], [ENCODED], id="optional-tuple"),
+        pytest.param(list[Optional[DCPerson]], [None, PERSON], [None, SENT], [None, ENCODED], id="list-of-optional"),
+        pytest.param(dict[str, list[DCPerson]], {"k": [PERSON]}, {"k": [SENT]}, {"k": [ENCODED]}, id="dict-of-list"),
+        pytest.param(
+            dict[str, Optional[DCPerson]],
+            {"k": None, "j": PERSON},
+            {"k": None, "j": SENT},
+            {"k": None, "j": ENCODED},
+            id="dict-of-optional",
+        ),
+        pytest.param(OptionalWrapper[DCPerson], OptionalWrapper(), None, {"data": None}, id="optional-wrapper-none"),
+    ],
+)
+def test_optional_and_nested_collections_round_trip(annotation: Any, value: Any, sent: Any, expected: Any) -> None:
+    dto = DataclassDTO[Annotated[DCPerson, EXCLUDE]]
+    received: list[Any] = []
+
+    async def read() -> Any:
+        return value
+
+    async def create(data: Any) -> None:
+        received.append(data)
+
+    read.__annotations__ = {"return": annotation}
+    create.__annotations__ = {"data": JSON_BODY[annotation], "return": None}
+    route_handlers = [get("/", return_dto=dto)(read)]
+    if sent is not None:
+        route_handlers.append(post("/", dto=dto)(create))
+
+    with create_test_client(route_handlers) as client:
+        response = client.get("/")
+        created_status = client.post("/", json=sent).status_code if sent is not None else 201
+
+    assert (response.status_code, response.json()) == (200, expected)
+    assert created_status == 201
+    assert received == ([value] if sent is not None else [])
