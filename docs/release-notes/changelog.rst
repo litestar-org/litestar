@@ -25,13 +25,9 @@
         :type: misc
         :breaking:
 
-        Litestar no longer calls a DTO class's override of
-        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
-        :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` or
-        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`: a route handler
-        decodes, encodes and documents its data with the backends of its DTO plan. A DTO
+        Litestar no longer calls a DTO class's override of the deprecated DTO entry points
+        listed in "Build one frozen DTO plan per route handler": a route handler decodes,
+        encodes and documents its data with the backends of its DTO plan. A DTO
         over a type msgspec cannot decode now fails at startup even when the class
         overrides ``decode_bytes`` or ``decode_builtins``. A DTO class that still
         overrides one of them emits a deprecation warning per method, once, when a
@@ -43,23 +39,13 @@
         :breaking:
         :issue: 3485
 
-        A ``return_dto`` declared directly on a route handler, or in the body of a
-        ``WebsocketListener`` class, that cannot handle the handler's return annotation
-        raises :exc:`~litestar.exceptions.DTONotApplicableError` when the application is
-        created. It used to be ignored, and the handler returned its data without the
-        DTO, including the fields the DTO excludes. Common cases that no longer start:
-
-        - a bare ``Response`` or ``Response[Any]``;
-        - a ``Redirect``, ``File`` or ``Template`` response;
-        - a return annotation of ``None``, as on a ``@delete`` handler;
-        - ``Any``, ``str`` or ``bytes``;
-        - a DTO whose model is a subclass of the return annotation, such as
-          ``DataclassDTO[Admin]`` on ``-> User``.
-
-        Remove the ``return_dto`` from such a handler, or set ``return_dto=None`` on it
-        when it inherits one from a layer. A ``return_dto`` declared on a controller, a
-        router or the application is skipped where the annotation does not contain its
-        model, and raises where it does.
+        A ``return_dto`` declared on a route handler, or in the body of a
+        ``WebsocketListener`` class, that cannot handle the return annotation raises
+        :exc:`~litestar.exceptions.DTONotApplicableError` at startup; it used to be ignored
+        and the excluded fields were returned. Handlers returning ``None``, ``Any``, ``str``,
+        ``bytes``, a bare ``Response`` or a ``Redirect``, ``File`` or ``Template`` response
+        no longer start with a ``return_dto`` of their own: remove it, or set
+        ``return_dto=None`` to opt out of one inherited from a layer.
 
     .. change:: DTO: Typed startup errors
         :type: feature
@@ -82,37 +68,28 @@
         - A DTO used only for return values over a type msgspec rejects raises
           ``DTOTransferTypeError`` when the OpenAPI schema is generated, naming the
           handler and the model; a bare :exc:`TypeError` was raised before.
+        - Errors for a websocket listener name the listener function or the
+          ``WebsocketListener`` class instead of ``ListenerHandler``, which also changes
+          the output of ``litestar routes`` for listeners.
 
     .. change:: DTO: Explicit applicability rules
         :type: feature
         :breaking:
 
-        One set of rules, described in :ref:`usage/dto/0-basic-use:When a DTO applies`,
-        now decides for request data and for return values whether a DTO is used.
+        :ref:`usage/dto/0-basic-use:When a DTO applies` now decides whether a DTO is
+        used; :ref:`release-notes/whats-new-3:DTO applicability and startup errors`
+        lists what changed. To act on:
 
-        - A ``dto`` or ``return_dto`` declared on a layer that cannot handle an
-          annotation containing its model, such as ``tuple[Model, int]``,
-          ``Union[Model, Other]`` or ``AsyncGenerator[Model, None]``, raises
-          ``DTONotApplicableError``; declare ``dto=None`` or ``return_dto=None`` on the
-          handler to opt out. For other annotations, such as ``str``, ``None`` or another
-          model, it is skipped; a layer ``dto`` raised ``InvalidAnnotationException`` for
-          them. A skipped ``dto`` is still used for the return value when no
-          ``return_dto`` is declared and it can encode it, and ``handler.data_dto``
-          returns it after registration.
-        - The ``dto`` used for the return value and a DTO created by a serialization
-          plugin are skipped for an annotation they cannot handle. No other source takes
-          the place of a skipped one.
-        - A generic wrapper as request data, such as ``JSONBody[Wrapper[Model]]``, is not
-          handled by a DTO, so a DTO declared on the handler or on a layer raises
-          ``DTONotApplicableError``; a bare model was decoded and injected in place of the
-          wrapper before.
-        - A form body annotated with a collection, such as ``MultipartBody[list[Model]]``,
-          is not handled by a DTO, so a DTO declared on the handler or on a layer raises
-          ``DTONotApplicableError``; the raw form values were injected for multipart data
-          and URL-encoded data received a ``500`` response before.
-        - ``-> Optional[Wrapper[Model]]`` and ``-> Optional[Response[Model]]`` use the
-          return DTO, which was ignored for them, so its exclusions and renames now apply
-          to these responses.
+        - A ``dto`` or ``return_dto`` declared on a layer raises
+          ``DTONotApplicableError`` for an annotation that contains its model but that it
+          cannot handle, such as ``tuple[Model, int]``, ``Union[Model, Other]``, or
+          ``AsyncGenerator[Model, None]`` returned by an HTTP handler; declare
+          ``dto=None`` or ``return_dto=None`` on the handler. For other annotations it is
+          skipped, where a layer ``dto`` used to raise.
+        - ``JSONBody[Wrapper[Model]]`` and form bodies of a collection, such as
+          ``MultipartBody[list[Model]]``, are not handled by a DTO and raise.
+        - ``-> Optional[Wrapper[Model]]`` and ``-> Optional[Response[Model]]`` now apply
+          the return DTO, so its exclusions and renames reach these responses.
         - :meth:`~litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field`
           receives the return annotation without its ``Optional``.
 
@@ -152,13 +129,9 @@
         built from the same handlers would get module-qualified or numbered OpenAPI
         component names. The names are now tracked per application. The names of an
         application created once in a fresh process do not change, with two
-        exceptions. Two websocket listeners registered on the same path now share the
-        names of their transfer models; a tool that documents listeners, such as
-        litestar-asyncapi, will then publish the model of the first listener for both.
-        A DTO backend constructed directly by third-party code, instead of by Litestar,
-        is now always given the short name; if two such backends in one application
-        end up with the same name, the OpenAPI schema contains the model that was
-        registered first.
+        exceptions: two websocket listeners registered on the same path now share the
+        names of their transfer models, and a DTO backend constructed directly by
+        third-party code, instead of by Litestar, is always given the short name.
 
     .. change:: DTO: Build one frozen DTO plan per route handler
         :type: misc
@@ -166,13 +139,15 @@
 
         DTO backends are created once per route handler when the handler is registered
         and stored on it, instead of in a process-wide dictionary keyed by
-        ``handler_id``, and no DTO instance is created per request. ``AbstractDTO.__init__``,
+        ``handler_id``, and no DTO instance is created per request. These deprecated DTO
+        entry points will be removed in 4.0: ``AbstractDTO.__init__``,
         :meth:`~litestar.dto.base_dto.AbstractDTO.decode_bytes`,
         :meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
         :meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
         :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` and
-        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` are deprecated
-        and will be removed in 4.0. Code that relied on the following needs to change:
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. Calling them warns,
+        except ``create_openapi_schema``, which plugins call and which has no replacement
+        yet. Code that relied on the following needs to change:
 
         - ``to_response()`` of a route handler and the DTO handlers of a websocket
           listener raise a :exc:`~litestar.exceptions.LitestarException` saying the
@@ -278,18 +253,18 @@
         A custom ``attribute_accessor`` now reads a nested model with more than one field
         once, where it was called again for every field of that model.
 
-    .. change:: DTO: Fix the codegen backend crashing for nested models
+    .. change:: DTO: Fix the backend crashing for nested models
         :type: bugfix
 
         An application failed to start with a :exc:`SyntaxError` when a DTO nested models
         more than one level deep behind an intermediate model holding a single field, or
         behind any intermediate model when it declared a custom ``attribute_accessor``. The
-        codegen backend -- the default backend -- derived a local variable name from an
-        access expression without stripping the attribute and item access syntax from it,
-        and raised a :exc:`ValueError` instead for a field name holding a character that is
-        not a word character, such as ``a·b``.
+        DTO backend derived a local variable name from an access expression without
+        stripping the attribute and item access syntax from it, and raised a
+        :exc:`ValueError` instead for a field name holding a character that is not a word
+        character, such as ``a·b``.
 
-        The codegen backend also read a field with attribute syntax whatever its name. A
+        The DTO backend also read a field with attribute syntax whatever its name. A
         field named after a keyword, such as ``class``, raised a :exc:`SyntaxError` at
         startup, and a field whose name Python normalises as an identifier, such as ``µ``
         or ``ﬁeld``, returned the value of another field or made the request fail.

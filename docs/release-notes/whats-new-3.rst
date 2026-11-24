@@ -286,7 +286,9 @@ instance is created per request. Litestar no longer calls a DTO class's override
 :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` or
 :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. These members, and
 ``AbstractDTO.__init__``, are deprecated and will be removed in 4.0. Calling them directly
-keeps working and emits a deprecation warning, except for ``create_openapi_schema``.
+keeps working and emits a deprecation warning, except for ``create_openapi_schema``, which
+plugins call and which has no replacement yet. A DTO class that overrides one of them emits
+a deprecation warning when a route handler using it is registered.
 
 Before:
 
