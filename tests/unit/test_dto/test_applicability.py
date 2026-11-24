@@ -514,7 +514,7 @@ def test_skipped_layer_data_dto_validates_body_without_dto() -> None:
     assert skipped.json() == plain.json()
 
 
-def test_skipped_layer_data_dto_is_still_reused_for_return() -> None:
+def test_skipped_layer_data_dto_is_reused_for_return() -> None:
     app = build_app("controller", body=JSONBody[Other], returns=list[User], respond=lambda data: [USER], dto=UserDTO)
 
     with TestClient(app) as client:

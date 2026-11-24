@@ -35,7 +35,7 @@ def _default_or_none(value: Any) -> Any:
     return None if value is NODEFAULT else value
 
 
-def _rejected_field_message(
+def _uninspectable_field_message(
     model_type: type[Struct], field_names: Collection[str], dto_type: type[MsgspecDTO]
 ) -> str | None:
     type_hints = dto_type.get_model_type_hints(model_type)
@@ -66,7 +66,7 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
         except TypeError as exc:
             message = None
             with suppress(Exception):
-                message = _rejected_field_message(model_type, msgspec_fields, cls)
+                message = _uninspectable_field_message(model_type, msgspec_fields, cls)
             raise DTOTransferTypeError(message or f"msgspec cannot inspect {model_type.__name__!r}: {exc}") from exc
 
         inspect_fields: dict[str, msgspec.inspect.Field] = {

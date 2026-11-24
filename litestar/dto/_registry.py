@@ -47,7 +47,7 @@ class TransferModelNaming:
         self._ordinals: dict[str, int] = {}
 
     def name_for(self, *, is_data_field: bool, model_name: str, preferred: str, qualified: str) -> str:
-        """Return the registry's name for the next request of ``model_name`` in this scope and direction."""
+        """Return the registry's name for the next request of ``model_name`` in this scope with ``is_data_field``."""
         ordinal = self._ordinals.get(model_name, 0)
         self._ordinals[model_name] = ordinal + 1
         return self._registry.name_for((self._scope, is_data_field, model_name, ordinal), preferred, qualified)
