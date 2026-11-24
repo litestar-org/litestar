@@ -215,9 +215,16 @@ def test_overriding_a_deprecated_entry_point_warns_once_per_class_and_method() -
         ) -> Any:
             return None
 
-    with pytest.warns(LitestarDeprecationWarning) as record:
+    with warnings.catch_warnings(record=True) as record:
+        warnings.simplefilter("always")
         Litestar([make_handler(OverridingDTO, OverridingDTO)])
         Litestar([make_handler(OverridingDTO, None)])
+
+    assert {(warning.category, warning.filename) for warning in record} == {(LitestarDeprecationWarning, __file__)}
+    assert [warning.lineno for warning in record] == [
+        OverridingDTO.decode_bytes.__code__.co_firstlineno,
+        OverridingDTO.create_openapi_schema.__func__.__code__.co_firstlineno,
+    ]
 
     assert [str(warning.message) for warning in record] == [
         f"test_overriding_a_deprecated_entry_point_warns_once_per_class_and_method.<locals>.OverridingDTO overrides "
