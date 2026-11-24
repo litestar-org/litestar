@@ -2,11 +2,11 @@ import json
 import sys
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
-from typing import Annotated, Any, Generic, Literal, Optional, TypeVar, Union, cast
+from typing import Annotated, Any, Generic, Literal, Optional, Union, cast
 
 import msgspec
 import pytest
-from typing_extensions import TypeAliasType, TypeVarTuple
+from typing_extensions import TypeAliasType, TypeVar, TypeVarTuple
 
 from litestar import Controller, Litestar, Response, Router, get, post, websocket_listener
 from litestar.app import DEFAULT_OPENAPI_CONFIG
@@ -1159,6 +1159,9 @@ UserAliasAlias = TypeAliasType("UserAliasAlias", UserAlias)
 OptionalUserAlias = TypeAliasType("OptionalUserAlias", Optional[User])
 ForwardAlias = TypeAliasType("ForwardAlias", list["User"])
 PageAlias = TypeAliasType("PageAlias", list[T], type_params=(T,))
+IdentAlias = TypeAliasType("IdentAlias", T, type_params=(T,))
+D = TypeVar("D", default=User)
+DefaultPageAlias = TypeAliasType("DefaultPageAlias", list[D], type_params=(D,))
 Ts = TypeVarTuple("Ts")
 TupleAlias = TypeAliasType("TupleAlias", tuple[*Ts], type_params=(Ts,))
 Json = TypeAliasType("Json", Union[dict[str, "Json"], list["Json"], str, int, None])
@@ -1201,6 +1204,8 @@ ALIAS_ROWS = [
         [USER],
         id="return-forward-reference-in-signature-namespace",
     ),
+    pytest.param("app", "data", lambda: IdentAlias[IdentAlias[User]], User, USER_IN, id="data-generic-alias-in-itself"),
+    pytest.param("app", "return", lambda: DefaultPageAlias, list[User], [USER], id="return-bare-alias-with-defaults"),
 ]
 
 
@@ -1271,7 +1276,7 @@ def test_unresolvable_type_alias_fails_at_startup(option: str, alias: Callable[[
         if option == "dto":
             build_app("app", body=JSONBody[alias()], dto=UserDTO, handler_options={"return_dto": None})
         else:
-            build_app("app", method="GET", returns=alias(), return_dto=UserDTO)
+            build_app("app", method="GET", returns=alias(), return_dto=UserDTO, signature_namespace={"T": T})
 
 
 @pytest.mark.parametrize(

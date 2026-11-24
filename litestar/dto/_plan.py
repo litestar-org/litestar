@@ -309,7 +309,9 @@ def _resolve_type_aliases(annotation: Any, namespace: dict[str, Any], expanding:
     if isinstance(alias := annotation if origin is None else origin, TypeAliasTypes):
         if alias in expanding:
             return annotation
-        params, args = alias.__type_params__, get_args(annotation)
+        params = alias.__type_params__
+        args = () if get_args(annotation) == params else get_args(annotation)
+        args += tuple(param.__default__ for param in params[len(args) :] if getattr(param, "has_default", bool)())
         if len(params) != len(args) or not all(isinstance(param, TypeVar) for param in params):
             raise _unresolvable_alias(annotation, f"each of its type parameters {params!r} needs one type argument")
         try:
@@ -317,6 +319,7 @@ def _resolve_type_aliases(annotation: Any, namespace: dict[str, Any], expanding:
         except NameError as exc:
             raise _unresolvable_alias(annotation, exc) from exc
         if params:
+            args = tuple(_resolve_type_aliases(arg, namespace, expanding) for arg in args)
             value = _substitute_typevars(value, dict(zip(params, args, strict=True)))
         return _resolve_type_aliases(value, namespace, (*expanding, alias))
     if expanding and isinstance(annotation, (str, ForwardRef)):
