@@ -278,12 +278,11 @@ are now enforced.
 A ``msgspec.Meta`` that msgspec does not support where it is written, such as
 ``Annotated[str | None, Meta(min_length=2)]``, used to be ignored by ``DataclassDTO``. A
 DTO used for inbound data now fails at startup with
-:exc:`~litestar.exceptions.dto_exceptions.InvalidAnnotationException` until the
-constraint is attached to the member: ``Annotated[str, Meta(min_length=2)] | None``.
-``MsgspecDTO`` already failed at startup for such a model, whichever the direction. The
-same startup error replaces the ``500`` response every request received for a DTO over a
-union of models without tags. ``PydanticDTO`` and DTO classes that decode the request
-body themselves are not checked.
+:exc:`~litestar.exceptions.InvalidAnnotationException` until the constraint is attached to
+the member: ``Annotated[str, Meta(min_length=2)] | None``. ``MsgspecDTO`` already failed at
+startup for such a model, whichever the direction. The same startup error replaces the
+``500`` response every request received for a DTO over a union of models without tags.
+``PydanticDTO`` and DTO classes that decode the request body themselves are not checked.
 
 Constraints from ``annotated_types`` metadata, such as
 ``Annotated[str, annotated_types.MinLen(2)]``, and from parameter definitions are
