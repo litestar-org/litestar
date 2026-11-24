@@ -110,6 +110,14 @@
         Invalid URL-encoded or multipart data decoded by a DTO now receives the same ``400`` response
         as invalid JSON data, instead of a ``500``.
 
+    .. change:: DTO: Apply a DTO to a handler annotation written as a type alias
+        :type: bugfix
+        :pr: 5260
+
+        A ``type`` statement or ``TypeAliasType`` alias in a handler annotation is now handled like the
+        type it stands for, in both directions and in the OpenAPI schema. An alias that cannot be
+        resolved raises :exc:`~litestar.exceptions.InvalidAnnotationException` at startup.
+
     .. change:: DTO: Stable OpenAPI component names across application instances
         :type: bugfix
         :breaking:

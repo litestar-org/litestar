@@ -1,16 +1,20 @@
+import sys
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from typing import Annotated, Any, Generic, Literal, Optional, TypeVar, Union, cast
 
 import msgspec
 import pytest
+from typing_extensions import TypeAliasType
 
 from litestar import Controller, Litestar, Response, Router, get, post, websocket_listener
+from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData, MsgspecDTO
 from litestar.dto._plan import resolve_dto_target
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import DTONotApplicableError, InvalidAnnotationException, MissingDTOError
 from litestar.handlers import WebsocketListener, websocket_stream
+from litestar.openapi import OpenAPIConfig
 from litestar.params import BodyKwarg, FromQuery, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.response import ServerSentEvent, Stream
@@ -119,6 +123,7 @@ def build_app(
     respond: Callable[[Any], Any] = lambda data: None,
     plugins: tuple[SerializationPlugin, ...] = (),
     handler_options: dict[str, Any] | None = None,
+    openapi_config: OpenAPIConfig | None = None,
     **options: Any,
 ) -> Litestar:
     decorator: Any = post if method == "POST" else get
@@ -138,7 +143,7 @@ def build_app(
         if placement == "router":
             route_handlers = [Router("/", route_handlers=route_handlers, **options)]
             options = {}
-    return Litestar(route_handlers, plugins=list(plugins), openapi_config=None, **options)
+    return Litestar(route_handlers, plugins=list(plugins), openapi_config=openapi_config, **options)
 
 
 def describe(data: Any) -> dict[str, Any]:
@@ -1145,3 +1150,82 @@ def assert_collection_like_model_round_trips(model: Any, dto: type[AbstractDTO[A
 )
 def test_collection_like_model_is_the_model(model: Any, dto: type[AbstractDTO[Any]], placement: Placement) -> None:
     assert_collection_like_model_round_trips(model, dto, placement)
+
+
+def make_alias(kind: Literal["typing_extensions", "statement"], value: Any) -> Any:
+    generic = value == list[T]
+    if kind == "typing_extensions":
+        return TypeAliasType("Alias", value, type_params=(T,) if generic else ())
+    namespace: dict[str, Any] = {"value": value}
+    exec("type Alias[T] = list[T]" if generic else "type Alias = value", namespace)
+    return namespace["Alias"]
+
+
+ALIAS_SHAPES = [
+    pytest.param("data", User, lambda alias: alias, USER_IN, id="data-alias"),
+    pytest.param("data", list[User], lambda alias: alias, [USER_IN], id="data-alias-of-list"),
+    pytest.param("data", User, lambda alias: Optional[alias], USER_IN, id="data-optional-alias"),
+    pytest.param("data", list[T], lambda alias: alias[User], [USER_IN], id="data-generic-alias"),
+    pytest.param("return", User, lambda alias: alias, USER, id="return-alias"),
+    pytest.param("return", list[User], lambda alias: alias, [USER], id="return-alias-of-list"),
+    pytest.param("return", User, lambda alias: list[alias], [USER], id="return-list-of-alias"),
+    pytest.param("return", User, lambda alias: Optional[alias], USER, id="return-optional-alias"),
+    pytest.param("return", list[User], lambda alias: Response[alias], Response([USER]), id="return-response"),
+    pytest.param("return", User, lambda alias: Wrapper[alias], Wrapper(USER), id="return-wrapper"),
+]
+
+
+@pytest.mark.parametrize(
+    "kind",
+    [
+        "typing_extensions",
+        pytest.param(
+            "statement", marks=pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword needs 3.12")
+        ),
+    ],
+)
+@pytest.mark.parametrize("placement", ["handler", "app"])
+@pytest.mark.parametrize(("direction", "value", "shape", "sent"), ALIAS_SHAPES)
+def test_type_alias_applies_like_its_value(
+    direction: str, value: Any, shape: Callable[[Any], Any], sent: Any, placement: Placement, kind: Any
+) -> None:
+    def observe(annotation: Any) -> tuple[int, Any, dict[str, Any]]:
+        if direction == "data":
+            app = build_app(
+                placement,
+                body=JSONBody[annotation],
+                returns=dict[str, Any],
+                respond=respond_described,
+                handler_options={"return_dto": None},
+                openapi_config=DEFAULT_OPENAPI_CONFIG,
+                dto=UserDTO,
+            )
+        else:
+            app = build_app(
+                placement,
+                method="GET",
+                returns=annotation,
+                respond=lambda data: sent,
+                openapi_config=DEFAULT_OPENAPI_CONFIG,
+                return_dto=UserDTO,
+            )
+        with TestClient(app) as client:
+            response = client.post("/", json=sent) if direction == "data" else client.get("/")
+        return response.status_code, response.json(), app.openapi_schema.to_schema()
+
+    assert observe(shape(make_alias(kind, value))) == observe(shape(value))
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword needs 3.12")
+@pytest.mark.parametrize("option", ["dto", "return_dto"])
+@pytest.mark.parametrize("placement", ["handler", "app"])
+def test_unresolvable_type_alias_fails_at_startup(placement: Placement, option: str) -> None:
+    namespace: dict[str, Any] = {}
+    exec("type Alias = list[Missing]", namespace)
+    alias = namespace["Alias"]
+
+    with pytest.raises(InvalidAnnotationException, match=r"^\[paths='/', handler='handler\w*'\] .*'Alias'.*Missing"):
+        if option == "dto":
+            build_app(placement, body=JSONBody[alias], dto=UserDTO, handler_options={"return_dto": None})
+        else:
+            build_app(placement, method="GET", returns=alias, return_dto=UserDTO)

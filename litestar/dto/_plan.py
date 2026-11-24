@@ -1,7 +1,7 @@
 from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
 from dataclasses import dataclass
 from types import NoneType
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias, Union
+from typing import TYPE_CHECKING, Annotated, Any, Literal, TypeAlias, Union, get_args, get_origin
 
 import msgspec
 
@@ -15,12 +15,15 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions.dto_exceptions import (
     DTONotApplicableError,
     DTOTransferTypeError,
+    InvalidAnnotationException,
     MissingDTOError,
 )
 from litestar.params import BodyKwarg
 from litestar.response.base import Response
 from litestar.types import Empty
-from litestar.typing import FieldDefinition
+from litestar.types.builtin_types import UnionTypes
+from litestar.typing import FieldDefinition, TypeAliasTypes
+from litestar.utils.typing import _substitute_typevars
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Hashable
@@ -296,6 +299,34 @@ def handler_name_scope(handler: "BaseRouteHandler") -> "Hashable":
     )
 
 
+def _resolve_type_aliases(annotation: Any) -> Any:
+    origin = get_origin(annotation)
+    try:
+        if isinstance(annotation, TypeAliasTypes):
+            return _resolve_type_aliases(annotation.__value__)
+        if isinstance(origin, TypeAliasTypes):
+            type_vars = dict(zip(origin.__type_params__, get_args(annotation), strict=True))
+            return _resolve_type_aliases(_substitute_typevars(origin.__value__, type_vars))
+    except (NameError, ValueError) as exc:
+        raise InvalidAnnotationException(
+            f"Cannot resolve the type alias {_format_annotation(annotation)!r}: {exc}"
+        ) from exc
+    args = get_args(annotation)
+    if not args or (resolved := tuple(_resolve_type_aliases(arg) for arg in args)) == args:
+        return annotation
+    if origin is Annotated:
+        return Annotated[(resolved[0], *args[1:])]
+    if origin in UnionTypes:
+        return Union[resolved]
+    return annotation.copy_with(resolved) if hasattr(annotation, "copy_with") else origin[resolved]
+
+
+def _without_type_aliases(field_definition: FieldDefinition) -> FieldDefinition:
+    if (raw := _resolve_type_aliases(field_definition.raw)) is field_definition.raw:
+        return field_definition
+    return FieldDefinition.from_kwarg(annotation=raw, name=field_definition.name, default=field_definition.default)
+
+
 def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
     """Resolve the DTOs of ``handler`` from its configuration and the serialization plugins of ``app``, and build
     their backends. It reads the handler and does not modify it; a second call returns an independent plan.
@@ -308,6 +339,11 @@ def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
         registry = app._transfer_model_registry
         name_scope = handler_name_scope(handler)
         data_field = handler.parsed_data_field
+        return_field = handler.parsed_return_field
+        declared = (read_dto_declaration(handler, is_data_field=is_data)[0] for is_data in (True, False))
+        if any(dto is not None and dto is not Empty for dto in declared):
+            data_field = _without_type_aliases(data_field) if data_field is not None else None
+            return_field = _without_type_aliases(return_field)
         data_dto, data_target = _resolve_data_dto(handler, app, data_field)
         data: DTODirectionPlan | None = None
         if data_field is not None and data_dto is not None and data_target is not None:
@@ -332,7 +368,6 @@ def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
             )
 
         return_: DTODirectionPlan | None = None
-        return_field = handler.parsed_return_field
         if resolved := _resolve_return_dto(handler, app, return_field, data_dto):
             return_dto, return_target = resolved
             return_ = _build_direction(
