@@ -12,7 +12,7 @@ from msgspec import UnsetType
 from pydantic import AwareDatetime
 
 from litestar import Litestar, Request, post
-from litestar.dto import AbstractDTO, DTOConfig, MsgspecDTO
+from litestar.dto import DTOConfig, MsgspecDTO
 from litestar.dto._backend import DTOBackend
 from litestar.enums import RequestEncodingType
 from litestar.params import JSONBody, KwargDefinition, URLEncodedBody
@@ -225,19 +225,6 @@ def test_pydantic_dto_over_union_of_models_is_not_checked_at_startup() -> None:
         pass
 
     Litestar(route_handlers=[create_pydantic_union_holder], openapi_config=None)
-
-
-def test_pydantic_dto_stays_exempt_from_startup_decoder_check() -> None:
-    @post("/", dto=PydanticDTO[PUnionHolder], return_dto=None)
-    async def handler(data: JSONBody[PUnionHolder]) -> None:
-        return None
-
-    Litestar(route_handlers=[handler], openapi_config=None)
-
-
-def test_pydantic_dto_does_not_override_instance_methods() -> None:
-    assert PydanticDTO.decode_bytes is AbstractDTO.decode_bytes
-    assert PydanticDTO.decode_builtins is AbstractDTO.decode_builtins
 
 
 class ShortFoo(pydantic_v2.BaseModel):

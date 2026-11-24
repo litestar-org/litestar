@@ -9,7 +9,6 @@ from litestar.params import BodyKwarg
 from litestar.response.base import Response
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.deprecation import warn_deprecation
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -20,8 +19,8 @@ if TYPE_CHECKING:
     from litestar.dto.base_dto import AbstractDTO
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
+    from litestar.plugins import SerializationPlugin
     from litestar.types.serialization import LitestarEncodableType
-    from litestar.utils.deprecation import DeprecatedKind
 
 __all__ = (
     "DTODirectionPlan",
@@ -32,7 +31,8 @@ __all__ = (
     "build_schema_annotation",
     "create_backend",
     "create_dto_openapi_schema",
-    "get_direction_plan",
+    "dto_name",
+    "take_plan_build",
 )
 
 DecodeFn: TypeAlias = "Callable[[Any, ASGIConnection[Any, Any, Any, Any]], Any]"
@@ -41,19 +41,38 @@ EncodeFn: TypeAlias = "Callable[[Any, ASGIConnection[Any, Any, Any, Any]], Lites
 
 @dataclass(frozen=True, slots=True)
 class DTODirectionPlan:
+    """How a route handler applies a DTO in one direction, to the data it receives or to the data it returns."""
+
     dto: "type[AbstractDTO[Any]]"
+    """The DTO class applied in this direction"""
     backend: DTOBackend
+    """The backend built for the handler's own field in this direction, bound to the handler's type decoders"""
     schema_annotation: Any
+    """The annotation the field is documented with in the OpenAPI schema"""
 
 
 @dataclass(frozen=True, slots=True)
 class DTOPlan:
+    """How a route handler applies its DTOs. Built once by :func:`build_dto_plan` when the handler is registered,
+    stored on the handler and never modified.
+    """
+
     data: DTODirectionPlan | None
+    """The DTO applied to the data the handler receives. ``None`` if no DTO applies to it, or if the handler
+    receives no data
+    """
     return_: DTODirectionPlan | None
+    """The DTO applied to the data the handler returns. ``None`` if no DTO applies to it"""
     data_dto: "type[AbstractDTO[Any]] | None"
-    decode_bytes: "DecodeFn | None" = None
-    decode_builtins: "DecodeFn | None" = None
-    encode: "EncodeFn | None" = None
+    """The resolved data DTO class. It may be set while :attr:`data` is ``None``, for a handler configured with a
+    ``dto`` that receives no data
+    """
+    decode_bytes: "DecodeFn | None"
+    """Decode raw request data with the data DTO. Set exactly when :attr:`data` is set"""
+    decode_builtins: "DecodeFn | None"
+    """Decode builtin values, such as form data, with the data DTO. Set exactly when :attr:`data` is set"""
+    encode: "EncodeFn | None"
+    """Encode returned data with the return DTO. Set exactly when :attr:`return_` is set"""
 
 
 def create_backend(
@@ -64,6 +83,12 @@ def create_backend(
     handler_id: str,
     backend_cls: type[DTOBackend] | None = None,
 ) -> DTOBackend:
+    """Create the backend of ``dto`` for ``field_definition``, the data a handler receives if ``is_data_field``,
+    otherwise the data it returns. Every backend of a plan is created here.
+
+    Raises:
+        InvalidAnnotationException: If ``dto`` cannot be applied to ``field_definition``
+    """
     model_type_field_definition = dto.resolve_model_type(field_definition=field_definition)
     model_type = dto.model_type  # pyright: ignore[reportGeneralTypeIssues]
     wrapper_attribute_name: str | None = None
@@ -113,7 +138,19 @@ class _PlanBuild:
 _plan_build: ContextVar[_PlanBuild | None] = ContextVar("_plan_build", default=None)
 
 
+def take_plan_build(dto: "type[AbstractDTO[Any]]") -> _PlanBuild | None:
+    """Return the plan build in progress for ``dto`` and end it, so that a further call sees none."""
+    build = _plan_build.get()
+    if build is None or build.dto is not dto:
+        return None
+    _plan_build.set(None)
+    return build
+
+
 def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
+    """Resolve the DTOs of ``handler`` from its configuration and the serialization plugins of ``app``, and build
+    their backends. It reads the handler and does not modify it; a second call returns an independent plan.
+    """
     data_dto = _resolve_data_dto(handler, app)
     data: DTODirectionPlan | None = None
     if (data_field := handler.parsed_data_field) and data_dto:
@@ -140,21 +177,15 @@ def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
 def _create_decoder(
     dto: "type[AbstractDTO[Any]]", name: Literal["decode_bytes", "decode_builtins"], backend_method: DecodeFn
 ) -> DecodeFn:
-    from litestar.dto.base_dto import AbstractDTO
-
-    if getattr(dto, name) is getattr(AbstractDTO, name):
+    if not dto._overrides(name):
         return dto._wrap_decoder(backend_method)
-    _warn_override(dto, name, "method", "it is still called for every request.")
     if name == "decode_bytes":
         return lambda value, connection: dto(connection).decode_bytes(value)
     return lambda value, connection: dto(connection).decode_builtins(value)
 
 
 def _create_encoder(dto: "type[AbstractDTO[Any]]", backend: DTOBackend) -> EncodeFn:
-    from litestar.dto.base_dto import AbstractDTO
-
-    if dto.data_to_encodable_type is not AbstractDTO.data_to_encodable_type:
-        _warn_override(dto, "data_to_encodable_type", "method", "it is still called for every request.")
+    if dto._overrides("data_to_encodable_type"):
         return lambda data, connection: dto(connection).data_to_encodable_type(data)
 
     encode_data = backend.encode_data
@@ -165,19 +196,21 @@ def _create_encoder(dto: "type[AbstractDTO[Any]]", backend: DTOBackend) -> Encod
     return encode
 
 
+def _find_serialization_plugin(app: "Litestar", field_definition: FieldDefinition) -> "SerializationPlugin | None":
+    return next(
+        (
+            plugin
+            for plugin in app.plugins.serialization
+            if field_definition.match_predicate_recursively(plugin.supports_type)
+        ),
+        None,
+    )
+
+
 def _resolve_data_dto(handler: "BaseRouteHandler", app: "Litestar") -> "type[AbstractDTO[Any]] | None":
     if (configured := handler._dto) is not Empty:
         return configured
-    if (data_field := handler.parsed_data_field) and (
-        plugin := next(
-            (
-                plugin
-                for plugin in app.plugins.serialization
-                if data_field.match_predicate_recursively(plugin.supports_type)
-            ),
-            None,
-        )
-    ):
+    if (data_field := handler.parsed_data_field) and (plugin := _find_serialization_plugin(app, data_field)):
         return plugin.create_dto_for_type(data_field)
     return None
 
@@ -190,14 +223,7 @@ def _resolve_return_dto(
         return configured
     if data_dto is not None and data_dto.is_supported_model_type_field(return_field):
         return data_dto
-    if plugin := next(
-        (
-            plugin
-            for plugin in app.plugins.serialization
-            if return_field.match_predicate_recursively(plugin.supports_type)
-        ),
-        None,
-    ):
+    if plugin := _find_serialization_plugin(app, return_field):
         return plugin.create_dto_for_type(return_field)
     return data_dto
 
@@ -209,17 +235,9 @@ def _build_direction(
     is_data_field: bool,
     handler: "BaseRouteHandler",
 ) -> DTODirectionPlan:
-    from litestar.dto.base_dto import AbstractDTO
-
-    if (
-        getattr(dto.create_for_field_definition, "__func__", None)
-        is vars(AbstractDTO)["create_for_field_definition"].__func__
-    ):
+    if not dto._overrides("create_for_field_definition"):
         backend = create_backend(dto, field_definition, is_data_field=is_data_field, handler_id=str(handler.handler_id))
     else:
-        _warn_override(
-            dto, "create_for_field_definition", "classmethod", "it is still called when a route handler is registered."
-        )
         build = _PlanBuild(dto=dto, is_data_field=is_data_field)
         field = field_definition
         if is_data_field and not isinstance(field_definition.kwarg_definition, BodyKwarg):
@@ -243,42 +261,16 @@ def _build_direction(
     )
 
 
-def _warn_override(dto: "type[AbstractDTO[Any]]", name: str, kind: "DeprecatedKind", when: str) -> None:
-    warn_deprecation(
-        "3.0",
-        f"{dto.__name__}.{name}",
-        kind,
-        removal_in="4.0",
-        info=f"Overriding this method is deprecated; {when}",
-        stacklevel=2,
-    )
+def dto_name(dto: "type[AbstractDTO[Any]]") -> str:
+    """Name ``dto`` in an error message."""
+    return getattr(dto, "__qualname__", repr(dto))
 
 
 def _no_backend_error(dto: "type[AbstractDTO[Any]]", handler: "BaseRouteHandler") -> DTOFactoryException:
     return DTOFactoryException(
-        f"{getattr(dto, '__qualname__', repr(dto))}.create_for_field_definition() created no backend for handler "
-        f"{handler}: an override must call the base method"
+        f"{dto_name(dto)}.create_for_field_definition() created no backend for handler {handler}: an override must "
+        "call the base method"
     )
-
-
-def get_direction_plan(
-    handler: "BaseRouteHandler | None", *, is_data_field: bool, dto: "type[AbstractDTO[Any]] | None" = None
-) -> DTODirectionPlan:
-    if handler is not None:
-        plan = handler._dto_plan
-        if plan is not None and (direction := plan.data if is_data_field else plan.return_) is not None:
-            return direction
-        if dto is not None and (direction := _direct_direction(dto, handler.handler_id, is_data_field)):
-            return direction
-    raise DTOFactoryException(f"Handler {handler} has no {'data' if is_data_field else 'return'} DTO")
-
-
-def _direct_direction(dto: "type[AbstractDTO[Any]]", handler_id: str, is_data_field: bool) -> DTODirectionPlan | None:
-    from litestar.dto.base_dto import _get_direct_backend
-
-    if (backend := _get_direct_backend(dto, handler_id, is_data_field)) is None:
-        return None
-    return DTODirectionPlan(dto=dto, backend=backend, schema_annotation=backend.annotation)
 
 
 def create_dto_openapi_schema(
@@ -287,10 +279,11 @@ def create_dto_openapi_schema(
     handler: "BaseRouteHandler",
     schema_creator: "SchemaCreator",
 ) -> "Reference | Schema":
-    from litestar.dto.base_dto import AbstractDTO
-
+    """Return the OpenAPI schema of ``field_definition``, the handler's own field in ``direction``. A DTO class that
+    overrides ``create_openapi_schema`` is called through it.
+    """
     dto = direction.dto
-    if getattr(dto.create_openapi_schema, "__func__", None) is not vars(AbstractDTO)["create_openapi_schema"].__func__:
+    if dto._overrides("create_openapi_schema"):
         return dto.create_openapi_schema(
             field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
         )

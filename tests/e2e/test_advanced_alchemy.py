@@ -41,7 +41,7 @@ class SmokeBase(DeclarativeBase): ...
 
 
 class SmokeUser(SmokeBase):
-    __tablename__ = "ch06_smoke_user"
+    __tablename__ = "dto_smoke_user"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     password: Mapped[str]

@@ -20,7 +20,7 @@ from litestar.utils.signature import ParsedSignature
 if TYPE_CHECKING:
     from litestar import Litestar, WebSocket
     from litestar.dto import AbstractDTO
-    from litestar.dto._plan import DTOPlan, EncodeFn
+    from litestar.dto._plan import EncodeFn
     from litestar.routes import BaseRoute
     from litestar.types import Dependencies, EmptyType, ExceptionHandler, Guard, Middleware, TypeEncodersMap
     from litestar.types.asgi_types import WebSocketMode
@@ -300,7 +300,9 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
 
         self.fn = handler_fn  # pyright: ignore[reportGeneralTypeIssues]
         super().on_registration(route, app)
-        encode_return = cast("DTOPlan", self._dto_plan).encode
+        if (plan := self._dto_plan) is None:
+            self._raise_not_registered()
+        encode_return = plan.encode
 
 
 class _WebSocketStreamOptions:

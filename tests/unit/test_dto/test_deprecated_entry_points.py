@@ -1,6 +1,6 @@
 import warnings
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, ClassVar
 
 import msgspec
 import pytest
@@ -12,7 +12,7 @@ from litestar.dto import AbstractDTO, DataclassDTO, MsgspecDTO
 from litestar.dto._backend import DTOBackend
 from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, LitestarDeprecationWarning
 from litestar.handlers import HTTPRouteHandler
-from litestar.openapi.spec import Reference
+from litestar.openapi.spec import Reference, Schema
 from litestar.params import JSONBody, URLEncodedBody
 from litestar.testing import RequestFactory, TestClient
 from litestar.typing import FieldDefinition
@@ -138,56 +138,72 @@ def test_create_openapi_schema_does_not_warn(registered: tuple[HTTPRouteHandler,
     assert isinstance(schema, Reference)
 
 
-class DecodeBytesOverrideDTO(DataclassDTO[Model]):
+class OverridingDTO(DataclassDTO[Model]):
+    calls: ClassVar[list[str]] = []
+
     def decode_bytes(self, value: bytes) -> Any:
+        self.calls.append("decode_bytes")
         return super().decode_bytes(value)
 
-
-class DecodeBuiltinsOverrideDTO(DataclassDTO[Model]):
     def decode_builtins(self, value: dict[str, Any]) -> Any:
+        self.calls.append("decode_builtins")
         return super().decode_builtins(value)
 
-
-class EncodeOverrideDTO(DataclassDTO[Model]):
     def data_to_encodable_type(self, data: Any) -> Any:
+        self.calls.append("data_to_encodable_type")
         return super().data_to_encodable_type(data)
 
+    @classmethod
+    def create_for_field_definition(
+        cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
+    ) -> None:
+        cls.calls.append("create_for_field_definition")
+        super().create_for_field_definition(field_definition=field_definition, handler_id=handler_id)
 
-@pytest.mark.parametrize(
-    ("dto", "name"),
-    [
-        pytest.param(DecodeBytesOverrideDTO, "decode_bytes", id="decode_bytes"),
-        pytest.param(DecodeBuiltinsOverrideDTO, "decode_builtins", id="decode_builtins"),
-        pytest.param(EncodeOverrideDTO, "data_to_encodable_type", id="data_to_encodable_type"),
-    ],
-)
-def test_instance_method_override_warns_at_registration(dto: type[AbstractDTO[Any]], name: str) -> None:
-    with pytest.warns(LitestarDeprecationWarning, match=f"{dto.__name__}.{name}"):
-        Litestar([make_handler(dto, dto)])
-
-
-def test_create_for_field_definition_override_warns_at_registration() -> None:
-    class CreateOverrideDTO(DataclassDTO[Model]):
-        @classmethod
-        def create_for_field_definition(
-            cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
-        ) -> None:
-            super().create_for_field_definition(field_definition=field_definition, handler_id=handler_id)
-
-    with pytest.warns(LitestarDeprecationWarning, match="CreateOverrideDTO.create_for_field_definition"):
-        Litestar([make_handler(CreateOverrideDTO, None)])
+    @classmethod
+    def create_openapi_schema(
+        cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+    ) -> Reference | Schema:
+        cls.calls.append("create_openapi_schema")
+        return super().create_openapi_schema(field_definition, handler_id, schema_creator)
 
 
-def test_override_calling_super_does_not_warn_per_request() -> None:
-    with pytest.warns(LitestarDeprecationWarning, match="DecodeBytesOverrideDTO.decode_bytes"):
-        app = Litestar([make_handler(DecodeBytesOverrideDTO, None)])
+def test_overriding_class_emits_no_warning_and_is_called() -> None:
+    @post("/json", dto=OverridingDTO)
+    async def json_handler(data: JSONBody[Model]) -> Model:
+        return data
 
-    with TestClient(app) as client:
-        with warnings.catch_warnings():
-            warnings.simplefilter("error")
-            response = client.post("/", content=PAYLOAD, headers={"content-type": "application/json"})
+    @post("/form", dto=OverridingDTO, return_dto=None)
+    async def form_handler(data: URLEncodedBody[Model]) -> None:
+        return None
 
-    assert response.status_code == 201
+    OverridingDTO.calls.clear()
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        app = Litestar([json_handler, form_handler])
+        assert OverridingDTO.calls == ["create_for_field_definition"] * 3
+        with TestClient(app) as client:
+            assert client.post("/json", content=PAYLOAD).json() == {"a": 1, "b": "two"}
+            assert client.post("/form", data={"a": "1", "b": "two"}).status_code == 201
+        assert app.openapi_schema.components.schemas
+
+    assert OverridingDTO.calls[3:] == [
+        "decode_bytes",
+        "data_to_encodable_type",
+        "decode_builtins",
+        "create_openapi_schema",
+        "create_openapi_schema",
+        "create_openapi_schema",
+    ]
+
+
+def test_instance_method_on_registered_handler_without_dto_for_direction_raises() -> None:
+    app = Litestar([make_handler(DataclassDTO[Model], None)])
+    handler: HTTPRouteHandler = app.route_handler_method_map["/"]["POST"]  # type: ignore[assignment]
+    request = RequestFactory(app=app).post("/", route_handler=handler)
+
+    with pytest.warns(LitestarDeprecationWarning), pytest.raises(DTOFactoryException, match="no return DTO"):
+        OtherDTO(request).data_to_encodable_type(Model(a=1, b="two"))
 
 
 class StructModel(msgspec.Struct):
@@ -226,12 +242,6 @@ def test_in_tree_dtos_emit_no_deprecation_warning(kind: str) -> None:
             assert client.post("/json", content=PAYLOAD).json() == {"a": 1, "b": "two"}
             assert client.post("/form", data={"a": "1", "b": "two"}).json() == {"a": 1, "b": "two"}
         assert app.openapi_schema.components.schemas
-
-
-def test_global_backend_state_is_gone() -> None:
-    assert not hasattr(AbstractDTO, "_dto_backends")
-    assert "_type_backend_map" not in vars(DataclassDTO[Model])
-    assert "_handler_backend_map" not in vars(DataclassDTO[Model])
 
 
 class OtherDTO(DataclassDTO[Model]):

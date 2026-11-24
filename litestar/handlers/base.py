@@ -91,6 +91,9 @@ class BaseRouteHandler:
     )
 
     _dto_plan: DTOPlan | None
+    """How the handler applies its DTOs, see :func:`~litestar.dto._plan.build_dto_plan`. ``None`` until the handler
+    is registered
+    """
     _injection_setup: HandlerInjectionSetup
     """What injecting the handler's function takes. Set on registration"""
 
@@ -224,9 +227,6 @@ class BaseRouteHandler:
                 merge_opts.get("signature_namespace", {}), other.signature_namespace
             )
 
-            # '.dto' on the router is the dto config value supplied by the users,
-            # whereas '.dto' on the handler is the fully resolved dto. The dto config on
-            # the handler is stored under '._dto', so we have to do this little workaround
             if other is not self:
                 other = cast("Router", other)  # mypy cannot narrow with the 'is not self' check
                 merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
@@ -248,7 +248,7 @@ class BaseRouteHandler:
 
     @property
     def handler_id(self) -> str:
-        """Text identifying the handler's function and instance. It carries the handler; nothing is keyed by it."""
+        """Text identifying the handler's function and instance; the returned object carries the handler."""
         handler_id = _HandlerId(f"{self!s}::{id(self)}")
         handler_id.handler = self
         return handler_id
