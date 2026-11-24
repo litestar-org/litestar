@@ -45,7 +45,7 @@ class UserController(Controller):
     def update_user(self, data: JSONBody[User]) -> User:
         return data
 
-    @delete("/{user_id:uuid}", return_dto=None, sync_to_thread=False)
+    @delete("/{user_id:uuid}", sync_to_thread=False)
     def delete_user(self, user_id: FromPath[UUID]) -> None:
         return None
 

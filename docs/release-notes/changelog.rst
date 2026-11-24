@@ -26,6 +26,84 @@
         once per overridden method. A DTO over a type msgspec cannot decode now fails at startup even if
         it overrides ``decode_bytes`` or ``decode_builtins``.
 
+    .. change:: DTOs: typed startup errors and explicit applicability rules
+        :type: feature
+        :breaking:
+        :pr: 5259
+
+        Litestar decides with one set of rules, in both directions, whether a DTO
+        handles the annotation of a handler's request data or return value, as
+        described in :ref:`usage/dto/0-basic-use:When a DTO applies`.
+
+        - DTO errors raised when the application is created start with
+          ``[paths=..., handler=...]``. The new classes
+          :exc:`~litestar.exceptions.DTONotApplicableError` and
+          :exc:`~litestar.exceptions.DTOTransferTypeError` are subclasses of
+          :exc:`~litestar.exceptions.InvalidAnnotationException`, and
+          :exc:`~litestar.exceptions.MissingDTOError` is a subclass of
+          :exc:`~litestar.exceptions.DTOFactoryException` and of
+          :exc:`~litestar.exceptions.ImproperlyConfiguredException`, the exceptions
+          raised before.
+        - A ``dto`` declared on a layer that cannot decode the handler's request data is
+          skipped for it; it raised ``InvalidAnnotationException``. It is still used for
+          the return value when no ``return_dto`` is declared and it can encode it.
+        - A ``return_dto`` declared on a layer, the ``dto`` used for the return value and
+          a DTO created by a serialization plugin are skipped for an annotation they
+          cannot handle, such as ``tuple[Model, int]`` or ``AsyncGenerator[Model, None]``;
+          some of these cases raised. A skipped declaration is not replaced by another
+          source.
+        - Request data annotated with ``DTOData`` without a DTO raises ``MissingDTOError``
+          for websocket listeners too; they started before.
+        - A data DTO over a type msgspec cannot decode raises ``DTOTransferTypeError``
+          when the application starts for ``PydanticDTO`` as well; every request received
+          a ``500`` response before.
+        - A generic wrapper as request data, such as ``JSONBody[Wrapper[Model]]``, is not
+          handled by a DTO: a DTO declared on the handler raises ``DTONotApplicableError``;
+          a bare model was decoded and injected in place of the wrapper before.
+        - A form body annotated with a collection, such as ``MultipartBody[list[Model]]``,
+          is not handled by a DTO: a DTO declared on the handler raises
+          ``DTONotApplicableError``; the raw form values were injected for multipart data
+          and URL-encoded data received a ``500`` response before.
+        - ``-> Optional[Wrapper[Model]]`` and ``-> Optional[Response[Model]]`` go through
+          the return DTO, which was ignored for them: excluded fields disappear from
+          responses that contained them, and renamed fields are renamed.
+        - :meth:`~litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field`
+          receives the return annotation without its ``Optional``.
+        - Route handler subclasses: ``BaseRouteHandler.__init__`` accepts
+          ``inherited_dto`` and ``inherited_return_dto``, which ``merge()`` passes. A
+          subclass whose ``__init__`` does not accept them raises :exc:`TypeError` when it
+          is registered, and one that accepts ``**kwargs`` without forwarding them loses
+          the DTOs of its layers.
+        - A DTO used only for return values over a type msgspec rejects raises
+          ``DTOTransferTypeError`` when the OpenAPI schema is generated, naming the
+          handler and the model; a bare :exc:`TypeError` was raised before.
+
+    .. change:: DTOs: pass None through an optional annotation
+        :type: bugfix
+        :pr: 5259
+        :issue: 3428
+
+        - A handler with a return DTO and an optional return annotation, such as
+          ``Optional[Model]`` or ``Optional[list[Model]]``, can return ``None``, and the
+          response is the one of the same handler without a DTO; it received a ``500``
+          response before.
+        - A ``null`` request body is injected as ``None`` for an optional body annotation
+          with a data DTO, including ``Optional[DTOData[Model]]``; it received a ``500``
+          response before.
+        - ``None`` inside ``Response[Optional[Model]]`` is passed through; it received a
+          ``500`` response before.
+        - A websocket listener with a return DTO sends nothing when the handler returns
+          ``None``; the connection failed before.
+
+    .. change:: DTOs: answer 400 for invalid form data
+        :type: bugfix
+        :pr: 5259
+
+        Invalid URL-encoded or multipart data decoded by a DTO receives a
+        ``400 Bad Request`` response with the body invalid JSON data receives, such as
+        ``{"status_code": 400, "detail": "Object missing required field `id`"}``; it
+        received a ``500`` response before.
+
     .. change:: DTO: Stable OpenAPI component names across application instances
         :type: bugfix
         :breaking:

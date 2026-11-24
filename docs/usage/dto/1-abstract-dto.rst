@@ -140,11 +140,14 @@ to it, the DTO will only accept ``User`` types for "data" and return types.
     :linenos:
 
 In the above example, the handler is declared to use ``UserDTO`` which has been type-narrowed with the ``User`` type.
-However, we annotate the handler with the ``Foo`` type. This will raise an error such as this at runtime:
+However, we annotate the handler with the ``Foo`` type. This will raise an error such as this when the application is
+created:
 
-    litestar.exceptions.dto.InvalidAnnotationException: DTO narrowed with
-    '<class 'docs.examples.data_transfer_objects.factory.type_checking.User'>', handler type is
-    '<class 'docs.examples.data_transfer_objects.factory.type_checking.Foo'>'
+    litestar.exceptions.dto_exceptions.DTONotApplicableError: [paths='/users', handler='create_user']
+    'dto=SQLAlchemyDTO[<class 'docs.examples.data_transfer_objects.factory.type_checking.User'>]' is declared on the
+    handler, but cannot decode its request body annotated 'Foo': the DTO handles 'User'.
+
+The rules are described in :ref:`usage/dto/0-basic-use:When a DTO applies`.
 
 Constraints
 -----------
