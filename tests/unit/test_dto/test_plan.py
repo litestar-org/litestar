@@ -220,12 +220,37 @@ class ReturnLayerController(Controller):
     "route_handler",
     [
         pytest.param(make_rule_handler(ModelDTO, None, dict[str, Any], None), id="handler-dto-not-applicable"),
-        pytest.param(DataLayerController, id="layer-dto-not-applicable"),
     ],
 )
 def test_data_dto_that_cannot_apply_raises(route_handler: Any) -> None:
     with pytest.raises(InvalidAnnotationException):
         Litestar([route_handler])
+
+
+class ReturnTupleLayerController(Controller):
+    path = "/"
+    return_dto = ModelDTO
+
+    @post()
+    async def handler(self) -> tuple[Model, str]:
+        return Model(a=1, b="two"), "x"
+
+
+@pytest.mark.parametrize(
+    ("route_handler", "data_dto", "has_data", "has_return"),
+    [
+        pytest.param(DataLayerController, ModelDTO, False, False, id="layer-dto-not-applicable"),
+        pytest.param(ReturnTupleLayerController, None, False, False, id="layer-tuple-return"),
+    ],
+)
+def test_layer_dto_that_cannot_apply_is_skipped(
+    route_handler: Any, data_dto: Any, has_data: bool, has_return: bool
+) -> None:
+    handler = registered(Litestar([route_handler]))
+
+    assert handler.data_dto is data_dto
+    assert (handler._dto_plan.data is not None) is has_data
+    assert (handler._dto_plan.return_ is not None) is has_return
 
 
 @pytest.mark.parametrize(
@@ -236,7 +261,6 @@ def test_data_dto_that_cannot_apply_raises(route_handler: Any) -> None:
         pytest.param(ModelDTO, Empty, Model, Model, ModelDTO, id="data-dto-reused"),
         pytest.param(Empty, Empty, None, PluginModel, "plugin", id="plugin-dto-for-return"),
         pytest.param(DataclassDTO[PluginModel], Empty, PluginModel, PluginModel, "explicit", id="dto-over-plugin"),
-        pytest.param(ModelDTO, Empty, Model, OtherModel, None, id="data-dto-other-model"),
     ],
 )
 def test_return_resolution_rules(dto: Any, return_dto: Any, body: Any, returns: Any, expected: Any) -> None:

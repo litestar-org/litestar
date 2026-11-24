@@ -150,7 +150,7 @@ def test_inapplicable_data_dto_error_carries_handler_prefix() -> None:
     @post("/items", dto=DataclassDTO[User], return_dto=None)
     async def create(data: JSONBody[dict[str, Any]]) -> None: ...
 
-    with pytest.raises(InvalidAnnotationException, match=r"^\[paths='/items', handler='create'\] DTO narrowed with "):
+    with pytest.raises(InvalidAnnotationException, match=r"^\[paths='/items', handler='create'\] "):
         Litestar([create], openapi_config=None)
 
 

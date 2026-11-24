@@ -1,11 +1,20 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.exceptions import LitestarException
 from litestar.exceptions.http_exceptions import ImproperlyConfiguredException
 
-__all__ = ("DTOFactoryException", "DTOTransferTypeError", "InvalidAnnotationException", "MissingDTOError")
+if TYPE_CHECKING:
+    from litestar.dto.base_dto import AbstractDTO
+
+__all__ = (
+    "DTOFactoryException",
+    "DTONotApplicableError",
+    "DTOTransferTypeError",
+    "InvalidAnnotationException",
+    "MissingDTOError",
+)
 
 
 class DTOFactoryException(LitestarException):
@@ -14,6 +23,43 @@ class DTOFactoryException(LitestarException):
 
 class InvalidAnnotationException(DTOFactoryException):
     """Unexpected DTO type argument."""
+
+
+class DTONotApplicableError(InvalidAnnotationException):
+    """A DTO declared on a route handler cannot handle the annotation it is declared for."""
+
+    dto: type[AbstractDTO[Any]]
+    """The declared DTO"""
+    option: Literal["dto", "return_dto"]
+    """The option the DTO is declared with"""
+    direction: Literal["data", "return"]
+    """The direction the DTO cannot be applied in"""
+    annotation: Any
+    """The annotation the DTO cannot handle"""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        dto: type[AbstractDTO[Any]],
+        option: Literal["dto", "return_dto"],
+        direction: Literal["data", "return"],
+        annotation: Any,
+    ) -> None:
+        """Initialize ``DTONotApplicableError``.
+
+        Args:
+            message: The error message
+            dto: The declared DTO
+            option: The option the DTO is declared with
+            direction: The direction the DTO cannot be applied in
+            annotation: The annotation the DTO cannot handle
+        """
+        super().__init__(message)
+        self.dto = dto
+        self.option = option
+        self.direction = direction
+        self.annotation = annotation
 
 
 class DTOTransferTypeError(InvalidAnnotationException):
