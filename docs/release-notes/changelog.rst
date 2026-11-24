@@ -11,7 +11,9 @@
         :pr: 5262
 
         Applications with many DTO handlers start faster and use less memory, and DTO handlers decode
-        request bodies and encode responses faster, most of all lists of flat models.
+        request bodies and encode responses faster, most of all lists of flat models. An object that
+        lacks an attribute of its model, such as a SQLAlchemy ``Row`` from a select of some columns or
+        a ``SimpleNamespace`` projection, is encoded more slowly than before.
 
     .. change:: DTO: Unique names for nested models of one type under several fields
         :type: bugfix
