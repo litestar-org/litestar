@@ -1,7 +1,5 @@
-import copy
 import dataclasses
-import json
-import pickle
+import gc
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from typing import Annotated, Any, Generic, Optional, TypeVar
@@ -23,11 +21,10 @@ from litestar.dto._plan import (
 )
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, LitestarException, LitestarWarning
-from litestar.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketListenerRouteHandler, websocket_stream
+from litestar.handlers import HTTPRouteHandler, WebsocketListenerRouteHandler, websocket_stream
 from litestar.openapi.spec import Reference
 from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
-from litestar.serialization import encode_json
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -549,37 +546,18 @@ def test_create_openapi_schema_for_copy_of_listener_data_field_is_return_directi
     assert openapi_ref(ItemDTO, copied_field, listener.handler_id).endswith("ItemResponseBody")
 
 
-def test_handler_id_behaves_like_str() -> None:
-    handler = registered(Litestar([make_rule_handler(ModelDTO, None, Model, None)]))
-    handler_id = handler.handler_id
+def test_create_openapi_schema_finds_a_live_handler_by_a_copy_of_its_id() -> None:
+    app = Litestar([make_rule_handler(ModelDTO, None, Model, None)])
+    handler = registered(app)
+    field_definition = handler.parsed_data_field
+    handler_id = f"{handler.handler_id}"
 
-    assert handler_id == str(handler_id)
-    assert hash(handler_id) == hash(str(handler_id))
-    assert handler_id.split("::")[0] == str(handler)
-    assert sorted([handler_id, "a", "zzz"]) == ["a", str(handler_id), "zzz"]
-    assert type(copy.deepcopy(handler_id)) is str
-    assert type(pickle.loads(pickle.dumps(handler_id))) is str
-    assert json.dumps(handler_id) == f'"{handler_id}"'
-    assert encode_json(handler_id) == f'"{handler_id}"'.encode()
-    assert handler_id.handler is handler
-    with pytest.raises(TypeError):
-        msgspec.json.encode(handler_id)
-    assert msgspec.json.encode(str(handler_id)) == f'"{handler_id}"'.encode()
+    assert openapi_ref(ModelDTO, field_definition, handler_id).endswith("ModelRequestBody")
 
-
-@pytest.mark.parametrize(
-    "copy_id",
-    [pytest.param(str, id="str"), pytest.param(lambda handler_id: f"{handler_id}", id="f-string")],
-)
-def test_create_openapi_schema_with_plain_string_raises(copy_id: Callable[[str], str]) -> None:
-    handler: BaseRouteHandler = registered(Litestar([make_rule_handler(ModelDTO, None, Model, None)]))
-
+    del app, handler
+    gc.collect()
     with pytest.raises(DTOFactoryException):
-        ModelDTO.create_openapi_schema(
-            field_definition=handler.parsed_data_field,  # type: ignore[arg-type]
-            handler_id=copy_id(handler.handler_id),
-            schema_creator=SchemaCreator(),
-        )
+        ModelDTO.create_openapi_schema(field_definition, handler_id, SchemaCreator())
 
 
 class NoInstanceDTO(DataclassDTO[Model]):

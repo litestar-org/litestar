@@ -8,6 +8,7 @@ from abc import abstractmethod
 from collections.abc import Collection
 from inspect import getmodule
 from typing import TYPE_CHECKING, Final, Generic, TypeVar, get_type_hints
+from weakref import WeakValueDictionary
 
 from litestar.dto._plan import build_schema_annotation, create_backend, dto_name
 from litestar.dto.config import DTOConfig
@@ -227,7 +228,7 @@ class AbstractDTO(Generic[T]):
         )
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
         backend = create_backend(
-            cls, field_definition, is_data_field=is_data_field, handler_id=str(handler_id), backend_cls=backend_cls
+            cls, field_definition, is_data_field=is_data_field, handler_id=handler_id, backend_cls=backend_cls
         )
         if "_direct_backends" not in vars(cls):
             cls._direct_backends = {}
@@ -240,8 +241,8 @@ class AbstractDTO(Generic[T]):
         """Create an OpenAPI request body.
 
         .. deprecated:: 3.0
-            Will be removed in 4.0. The framework no longer calls it, nor an override of it. It keeps working for a
-            ``handler_id`` that is the object returned by ``handler.handler_id``.
+            Will be removed in 4.0. The framework no longer calls it, nor an override of it. Calling it does not
+            emit a deprecation warning, because plugins call it and there is no replacement yet.
 
         Args:
             field_definition: A parsed type annotation that represents the annotation used on the handler. Declared
@@ -254,7 +255,7 @@ class AbstractDTO(Generic[T]):
         Returns:
             OpenAPI request body.
         """
-        handler: BaseRouteHandler | None = getattr(handler_id, "handler", None)
+        handler = _registered_handlers.get(handler_id)
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg) or (
             handler is not None and field_definition is handler.parsed_data_field
         )
@@ -429,6 +430,14 @@ def _find_backend(
         f"Handler {str(handler or handler_id)!r} has no {'data' if is_data_field else 'return'} DTO, and no backend "
         f"of {dto_name(dto)} was created for it"
     )
+
+
+_registered_handlers: WeakValueDictionary[str, BaseRouteHandler] = WeakValueDictionary()
+
+
+def register_handler_id(handler: BaseRouteHandler) -> None:
+    """Make ``handler`` findable by its ``handler_id`` for the deprecated direct calls, as long as it is alive."""
+    _registered_handlers[handler.handler_id] = handler
 
 
 _NO_INSTANCE_REPLACEMENT: Final = (

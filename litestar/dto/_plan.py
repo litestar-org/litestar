@@ -187,7 +187,7 @@ def _build_direction(
     is_data_field: bool,
     handler: "BaseRouteHandler",
 ) -> DTODirectionPlan:
-    backend = create_backend(dto, field_definition, is_data_field=is_data_field, handler_id=str(handler.handler_id))
+    backend = create_backend(dto, field_definition, is_data_field=is_data_field, handler_id=handler.handler_id)
     backend._bind_handler(type_decoders=handler.type_decoders, default_deserializer=handler.default_deserializer)
     return DTODirectionPlan(
         dto=dto, backend=backend, schema_annotation=build_schema_annotation(dto, backend, field_definition)

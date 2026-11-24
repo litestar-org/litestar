@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, NoReturn, cast
 from litestar._layers.utils import narrow_dependencies
 from litestar.dto import DTOData
 from litestar.dto._plan import build_dto_plan
+from litestar.dto.base_dto import register_handler_id
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.middleware.constraints import check_middleware_constraints
 from litestar.serialization import default_deserializer, default_serializer
@@ -49,17 +50,6 @@ if TYPE_CHECKING:
 __all__ = ("BaseRouteHandler",)
 
 
-class _HandlerId(str):
-    __slots__ = ("handler",)
-    handler: BaseRouteHandler
-
-    def __reduce__(self) -> tuple[type[str], tuple[str]]:
-        return (str, (str(self),))
-
-    def __deepcopy__(self, memo: dict[int, Any]) -> str:
-        return str(self)
-
-
 class BaseRouteHandler:
     """Base route handler.
 
@@ -67,6 +57,7 @@ class BaseRouteHandler:
     """
 
     __slots__ = (
+        "__weakref__",
         "_dto",
         "_dto_plan",
         "_injection_setup",
@@ -248,10 +239,8 @@ class BaseRouteHandler:
 
     @property
     def handler_id(self) -> str:
-        """Text identifying the handler's function and instance; the returned object carries the handler."""
-        handler_id = _HandlerId(f"{self!s}::{id(self)}")
-        handler_id.handler = self
-        return handler_id
+        """A unique identifier used for generation of DTOs."""
+        return f"{self!s}::{id(self)}"
 
     @property
     def default_deserializer(self) -> Callable[[Any, Any], Any]:
@@ -444,6 +433,7 @@ class BaseRouteHandler:
         """
 
         self._dto_plan = build_dto_plan(self, app)
+        register_handler_id(self)
 
         self._validate_handler_function()
 
