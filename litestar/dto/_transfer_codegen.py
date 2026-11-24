@@ -354,7 +354,6 @@ class TransferFunctionFactory:
         destination_type_is_dict: bool,
     ) -> None:
         local_dict_name = self._create_local_name("unstructured_data")
-        self._add_stmt(f"{local_dict_name} = {{}}")
 
         # if the destination type is a dict we can reuse our temporary dictionary of
         # unstructured data as the "return value"
@@ -393,6 +392,7 @@ class TransferFunctionFactory:
                         )
 
                 with self._start_block(expr=block_expr), keyword_call:
+                    self._add_stmt(f"{local_dict_name} = {{}}")
                     self._create_transfer_instance_data_inner(
                         local_dict_name=local_dict_name,
                         field_definitions=field_definitions,
@@ -401,6 +401,7 @@ class TransferFunctionFactory:
                     )
                     self._add_stmt(build_stmt)
         else:
+            self._add_stmt(f"{local_dict_name} = {{}}")
             self._add_stmt(build_stmt)
 
     def _create_transfer_instance_data_inner(
