@@ -184,9 +184,11 @@
         :meth:`~litestar.dto.base_dto.AbstractDTO.decode_builtins`,
         :meth:`~litestar.dto.base_dto.AbstractDTO.data_to_encodable_type`,
         :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` and
-        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. A DTO class
-        that overrides one of them is still called through it, and calling them
-        directly keeps working.
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. Overriding
+        them keeps working and emits no warning: a DTO class that overrides one of
+        them is still called through it, and a replacement hook will be provided
+        before they are removed. Calling the base implementations directly keeps
+        working and emits a deprecation warning.
 
         No public API is removed. Code that relied on the following behaviour needs
         to change:
@@ -198,7 +200,8 @@
           serialized data, raises :exc:`~litestar.exceptions.dto_exceptions.DTOFactoryException`.
         - ``handler.handler_id`` is a :class:`str` subclass. ``msgspec.json.encode``
           rejects it; pass ``str(handler.handler_id)``. Pickling or deep-copying it
-          yields a plain :class:`str`.
+          yields a plain :class:`str`. The object references its handler, so code
+          that stores such identifiers keeps the handlers alive.
         - A DTO class that overrides
           :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition`
           must create its backend by calling the base method. A class that stores
@@ -207,8 +210,9 @@
           handler is registered.
         - Backends created by calling
           :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition`
-          directly are kept per DTO class and are no longer shared between DTO
-          classes.
+          directly are kept per DTO class. They are no longer shared between DTO
+          classes and are not inherited by subclasses. They also serve a registered
+          handler for a direction in which it applies no DTO.
         - The ``parsed_data_field`` of a websocket listener no longer carries a body
           marker. :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`
           treats it as the received data only when it is given that very object.
