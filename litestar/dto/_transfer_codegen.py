@@ -28,6 +28,7 @@ from litestar.dto._types import (
     TupleType,
     UnionType,
 )
+from litestar.types import Empty
 from litestar.utils.helpers import unique_name_for_scope
 
 if TYPE_CHECKING:
@@ -186,6 +187,14 @@ class TransferFunctionFactory:
             with self._try_except_pass("AttributeError"):
                 yield value_expr
 
+    def _keyword_value_expr(self, source_name: str, field_definition: TransferDTOFieldDefinition) -> str:
+        default = UNSET if field_definition.is_partial else field_definition.default
+        if default is Empty or isinstance(default, (list, dict, set, bytearray)):
+            return f"{source_name}.{field_definition.name}"
+        if default is not None and default is not UNSET:
+            default = self._add_to_fn_globals("default", default)
+        return f"getattr({source_name}, {field_definition.name!r}, {default})"
+
     @contextmanager
     def _try_keyword_call(
         self,
@@ -195,8 +204,10 @@ class TransferFunctionFactory:
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
     ) -> Generator[None, None, None]:
         """Enter a `try / except AttributeError` block that builds the destination type in a single keyword call
-        when every field is an attribute passed through unchanged. Content written while inside this context goes
-        into the `except` block, or is written unchanged if a field needs more than that.
+        when every field is an attribute passed through unchanged. A field with a default is read with
+        `getattr(source, name, default)`, so only a missing field without one reaches the `except` block. Content
+        written while inside this context goes into the `except` block, or is written unchanged if a field needs
+        more than that.
         """
         if not all(
             self._is_passed_through(f.transfer_type) and _is_plain_identifier(f.name) and f.name != "__debug__"
@@ -204,7 +215,7 @@ class TransferFunctionFactory:
         ):
             yield
             return
-        kwargs = ", ".join(f"{f.name}={self._attribute_expr(source_instance_name, f.name)}" for f in field_definitions)
+        kwargs = ", ".join(f"{f.name}={self._keyword_value_expr(source_instance_name, f)}" for f in field_definitions)
         with self._start_block("try:"):
             self._add_stmt(f"{assignment_target} = {destination_type_name}({kwargs})")
         with self._start_block("except AttributeError:"):

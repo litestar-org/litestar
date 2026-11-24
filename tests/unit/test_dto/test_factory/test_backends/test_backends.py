@@ -15,6 +15,7 @@ from unittest.mock import MagicMock
 
 import annotated_types
 import msgspec
+import pydantic
 import pytest
 from msgspec import UNSET, Meta, Struct, UnsetType, to_builtins
 from typing_extensions import TypeAliasType as TeTypeAliasType
@@ -36,6 +37,7 @@ from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
 from litestar.params import JSONBody, KwargDefinition
+from litestar.plugins.pydantic import PydanticDTO
 from litestar.serialization import encode_json
 from litestar.testing import RequestFactory
 from litestar.typing import FieldDefinition
@@ -413,6 +415,77 @@ def _optional_field_backend(dto_factory: type[DataclassDTO] = DataclassDTO[Optio
 )
 def test_backend_encode_object_lacking_optional_attribute(source: Any) -> None:
     assert to_builtins(_optional_field_backend().encode_data(source)) == {"a": 1, "b": "two", "c": None}
+
+
+def test_backend_encode_reads_defaulted_attribute_with_its_default() -> None:
+    source = inspect.getsource(_optional_field_backend()._encode_data)
+
+    assert re.search(r"\(a=(\w+)\.a, b=\1\.b, c=getattr\(\1, 'c', None\)\)", source)
+
+
+@dataclass
+class ConstantDefaultDC:
+    a: int
+    d: int = 5
+
+
+class PartialConstantDefaultDTO(DataclassDTO[ConstantDefaultDC]):
+    config = DTOConfig(partial=True)
+
+
+@pytest.mark.parametrize(
+    ("dto_factory", "expected"),
+    [
+        pytest.param(DataclassDTO[ConstantDefaultDC], {"a": 1, "d": 5}, id="default"),
+        pytest.param(PartialConstantDefaultDTO, {"a": 1}, id="partial"),
+    ],
+)
+def test_backend_encode_object_lacking_constant_default_attribute(
+    dto_factory: type[DataclassDTO], expected: dict[str, int]
+) -> None:
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=dto_factory,
+        field_definition=FieldDefinition.from_annotation(ConstantDefaultDC),
+        model_type=ConstantDefaultDC,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+
+    assert to_builtins(backend.encode_data(SimpleNamespace(a=1))) == expected
+
+
+class FactoryValue:
+    pass
+
+
+class MutableDefaultsModel(pydantic.BaseModel):
+    a: int
+    factory: object = pydantic.Field(default_factory=FactoryValue)
+    mutable: object = []
+
+
+@pytest.mark.parametrize(("field_name", "default_type"), [("factory", FactoryValue), ("mutable", list)])
+def test_backend_encode_objects_lacking_mutable_default_attribute_do_not_share_it(
+    field_name: str, default_type: type
+) -> None:
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=PydanticDTO[MutableDefaultsModel],
+        field_definition=FieldDefinition.from_annotation(MutableDefaultsModel),
+        model_type=MutableDefaultsModel,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+
+    sources = [SimpleNamespace(a=1, factory=[1], mutable=[1]) for _ in range(2)]
+    for source in sources:
+        delattr(source, field_name)
+
+    first, second = (getattr(backend.encode_data(source), field_name) for source in sources)
+
+    assert type(first) is type(second) is default_type
+    assert first is not second
 
 
 @pytest.mark.parametrize(
