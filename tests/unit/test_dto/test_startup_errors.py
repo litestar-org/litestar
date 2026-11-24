@@ -141,51 +141,37 @@ def test_dto_data_without_dto_raises_missing_dto_error_with_prefix() -> None:
     assert exc_info.value.annotation == DTOData[User]
 
 
-def test_listener_function_dto_data_without_dto_raises_at_startup() -> None:
-    @websocket_listener("/ws")
-    async def listener(data: DTOData[User]) -> None: ...
+class Listener(WebsocketListener):
+    path = "/ws"
 
+    async def on_receive(self, data: DTOData[User]) -> None: ...
+
+
+@websocket_listener("/ws")
+async def listener(data: DTOData[User]) -> None: ...
+
+
+@pytest.mark.parametrize(("handler", "name"), [(listener, "listener"), (Listener, "Listener")])
+def test_listener_dto_data_without_dto_raises_at_startup(handler: Any, name: str) -> None:
     with pytest.raises(
-        MissingDTOError,
-        match=r"^\[paths='/ws', handler='listener'\] The data it receives is annotated ",
+        MissingDTOError, match=rf"^\[paths='/ws', handler='{name}'\] The data it receives is annotated "
     ):
-        Litestar([listener], openapi_config=None)
+        Litestar([handler], openapi_config=None)
 
 
-def test_listener_class_dto_data_without_dto_raises_at_startup() -> None:
-    class Listener(WebsocketListener):
-        path = "/ws"
-
-        async def on_receive(self, data: DTOData[User]) -> None: ...
-
-    with pytest.raises(
-        MissingDTOError,
-        match=r"^\[paths='/ws', handler='Listener'\] The data it receives is annotated ",
-    ):
-        Litestar([Listener], openapi_config=None)
-
-
-def test_inapplicable_data_dto_error_carries_handler_prefix() -> None:
-    @post("/items", dto=DataclassDTO[User], return_dto=None)
+@pytest.mark.parametrize(
+    ("paths", "options", "prefix"),
+    [
+        ("/items", {}, "[paths='/items', handler='create']"),
+        ("/", {"name": "create-user"}, "[paths='/', handler='create-user']"),
+        (["/b", "/a"], {}, "[paths='/a,/b', handler='create']"),
+    ],
+)
+def test_inapplicable_data_dto_error_carries_handler_prefix(paths: Any, options: dict[str, Any], prefix: str) -> None:
+    @post(paths, dto=DataclassDTO[User], return_dto=None, **options)
     async def create(data: JSONBody[dict[str, Any]]) -> None: ...
 
-    with pytest.raises(InvalidAnnotationException, match=r"^\[paths='/items', handler='create'\] "):
-        Litestar([create], openapi_config=None)
-
-
-def test_prefix_uses_handler_name_option() -> None:
-    @post("/", name="create-user", dto=DataclassDTO[User], return_dto=None)
-    async def create(data: JSONBody[dict[str, Any]]) -> None: ...
-
-    with pytest.raises(InvalidAnnotationException, match=r"^\[paths='/', handler='create-user'\] "):
-        Litestar([create], openapi_config=None)
-
-
-def test_prefix_lists_paths_sorted() -> None:
-    @post(["/b", "/a"], dto=DataclassDTO[User], return_dto=None)
-    async def create(data: JSONBody[dict[str, Any]]) -> None: ...
-
-    with pytest.raises(InvalidAnnotationException, match=r"^\[paths='/a,/b', handler='create'\] "):
+    with pytest.raises(InvalidAnnotationException, match=f"^{re.escape(prefix)} "):
         Litestar([create], openapi_config=None)
 
 
@@ -210,49 +196,35 @@ def test_non_dto_exception_is_not_wrapped() -> None:
         Litestar([create], openapi_config=None)
 
 
-def _rejected_dataclass_data() -> Any:
-    @post("/", dto=DataclassDTO[Rejected], return_dto=None)
-    async def create(data: JSONBody[Rejected]) -> None: ...
-
-    return create
-
-
-def _rejected_struct_data() -> Any:
-    @post("/", dto=MsgspecDTO[RejectedStruct], return_dto=None)
-    async def create(data: JSONBody[RejectedStruct]) -> None: ...
-
-    return create
-
-
-def _rejected_struct_return() -> Any:
-    @get("/", return_dto=MsgspecDTO[RejectedStruct])
-    async def create() -> RejectedStruct:
-        return RejectedStruct()
-
-    return create
-
-
-def _union_of_models_data() -> Any:
-    @post("/", dto=DataclassDTO[UnionHolder], return_dto=None)
-    async def create(data: JSONBody[UnionHolder]) -> None: ...
-
-    return create
-
-
 @pytest.mark.parametrize(
-    ("make_handler", "match"),
+    ("dto", "is_data", "match"),
     [
-        pytest.param(_rejected_dataclass_data, "msgspec cannot decode .*min_length", id="dataclass-data"),
-        pytest.param(_rejected_struct_data, "msgspec cannot inspect .*min_length", id="msgspec-data"),
-        pytest.param(_rejected_struct_return, "msgspec cannot inspect .*min_length", id="msgspec-return"),
-        pytest.param(_union_of_models_data, "msgspec cannot decode .*must be tagged", id="union-of-models-data"),
+        pytest.param(DataclassDTO[Rejected], True, "msgspec cannot decode .*min_length", id="dataclass-data"),
+        pytest.param(MsgspecDTO[RejectedStruct], True, "msgspec cannot inspect .*min_length", id="msgspec-data"),
+        pytest.param(MsgspecDTO[RejectedStruct], False, "msgspec cannot inspect .*min_length", id="msgspec-return"),
+        pytest.param(DataclassDTO[UnionHolder], True, "msgspec cannot decode .*must be tagged", id="union-of-models"),
     ],
 )
-def test_rejected_transfer_type_raises_dto_transfer_type_error(make_handler: Any, match: str) -> None:
+def test_rejected_transfer_type_raises_dto_transfer_type_error(dto: Any, is_data: bool, match: str) -> None:
+    if is_data:
+
+        async def create(data: Any) -> None: ...
+
+        create.__annotations__["data"] = JSONBody[dto.model_type]
+        handler = post("/", dto=dto, return_dto=None)(create)
+    else:
+
+        async def create() -> Any: ...
+
+        create.__annotations__["return"] = dto.model_type
+        handler = get("/", return_dto=dto)(create)
+
     with pytest.raises(DTOTransferTypeError, match=rf"^\[paths='/', handler='create'\] {match}") as exc_info:
-        Litestar([make_handler()], openapi_config=None)
+        Litestar([handler], openapi_config=None)
 
     assert isinstance(exc_info.value.__cause__, TypeError)
+    assert "(handler " not in str(exc_info.value)
+    assert str(exc_info.value).count("create") == 1
 
 
 @dataclass
@@ -434,14 +406,6 @@ def test_wrap_dto_exception_leaves_other_exceptions() -> None:
 
     assert exc_info.value is error
     assert str(error) == "500: bad"
-
-
-def test_startup_error_names_the_handler_once() -> None:
-    with pytest.raises(DTOTransferTypeError) as exc_info:
-        Litestar([_union_of_models_data()], openapi_config=None)
-
-    assert "(handler " not in str(exc_info.value)
-    assert str(exc_info.value).count("create") == 1
 
 
 def test_deprecated_direct_backend_creation_names_the_handler_id() -> None:

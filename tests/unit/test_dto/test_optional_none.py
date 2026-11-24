@@ -11,7 +11,7 @@ from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData, MsgspecD
 from litestar.dto._backend import DTOBackend
 from litestar.handlers import websocket_stream
 from litestar.params import JSONBody, MultipartBody, URLEncodedBody
-from litestar.testing import RequestFactory, TestClient, create_test_client
+from litestar.testing import RequestFactory, create_test_client
 from litestar.typing import FieldDefinition
 from tests.helpers import not_none
 from tests.unit.test_dto import create_backend_for, registered
@@ -75,22 +75,30 @@ def _twins(returns: Any, value: Callable[[], Any], dto: type[AbstractDTO[Any]]) 
     ]
 
 
-def _answers_equal(client: TestClient[Any]) -> Any:
-    with_dto = client.get("/dto")
-    plain = client.get("/plain")
-    assert with_dto.status_code == plain.status_code
+@pytest.mark.parametrize(
+    ("annotation", "value"),
+    [
+        pytest.param(lambda m: Optional[m], lambda: None, id="optional"),
+        pytest.param(lambda m: Optional[list[m]], lambda: None, id="optional-collection"),
+        pytest.param(lambda m: Response[Optional[m]], lambda: Response(None), id="response-optional"),
+        pytest.param(lambda m: Optional[Wrapper[m]], lambda: None, id="optional-wrapper"),
+        pytest.param(lambda m: Optional[Response[Optional[m]]], lambda: None, id="optional-response"),
+        pytest.param(lambda m: Optional[Response[Optional[m]]], lambda: Response(None), id="optional-response-none"),
+    ],
+)
+def test_none_return_matches_handler_without_dto(
+    library: tuple[Any, Any], annotation: Callable[[Any], Any], value: Callable[[], Any]
+) -> None:
+    model, dto = library
+    with create_test_client(_twins(annotation(model), value, dto)) as client:
+        with_dto = client.get("/dto")
+        plain = client.get("/plain")
+
+    assert with_dto.status_code == plain.status_code == 200
     assert with_dto.content == plain.content
     assert with_dto.headers.get("content-type") == plain.headers.get("content-type")
-    return with_dto
-
-
-def test_optional_return_none_matches_handler_without_dto(library: tuple[Any, Any]) -> None:
-    model, dto = library
-    with create_test_client(_twins(Optional[model], lambda: None, dto)) as client:
-        response = _answers_equal(client)
-
-    assert response.status_code == 200
-    assert response.json() is None
+    if value() is None:
+        assert with_dto.json() is None
 
 
 def test_optional_return_value_is_encoded(library: tuple[Any, Any]) -> None:
@@ -99,39 +107,6 @@ def test_optional_return_value_is_encoded(library: tuple[Any, Any]) -> None:
 
     with create_test_client([route_handler]) as client:
         assert client.get("/dto").json() == {"id": 1, "name": "a"}
-
-
-def test_optional_collection_return_none(library: tuple[Any, Any]) -> None:
-    model, dto = library
-    with create_test_client(_twins(Optional[list[model]], lambda: None, dto)) as client:
-        response = _answers_equal(client)
-
-    assert response.json() is None
-
-
-def test_response_wrapping_optional_none(library: tuple[Any, Any]) -> None:
-    model, dto = library
-    with create_test_client(_twins(Response[Optional[model]], lambda: Response(None), dto)) as client:
-        response = _answers_equal(client)
-
-    assert response.status_code == 200
-
-
-def test_optional_generic_wrapper_return_none(library: tuple[Any, Any]) -> None:
-    model, dto = library
-    with create_test_client(_twins(Optional[Wrapper[model]], lambda: None, dto)) as client:
-        response = _answers_equal(client)
-
-    assert response.json() is None
-
-
-@pytest.mark.parametrize("value", [lambda: None, lambda: Response(None)], ids=["none", "response-none"])
-def test_optional_response_wrapping_optional_none(library: tuple[Any, Any], value: Callable[[], Any]) -> None:
-    model, dto = library
-    with create_test_client(_twins(Optional[Response[Optional[model]]], value, dto)) as client:
-        response = _answers_equal(client)
-
-    assert response.status_code == 200
 
 
 class CopyingBackend(DTOBackend):
@@ -213,7 +188,12 @@ def test_stream_optional_item_none_sends_null() -> None:
         assert ws.receive_json() == {"id": 1, "name": "a"}
 
 
-def test_optional_body_null_is_none(library: tuple[Any, Any]) -> None:
+@pytest.mark.parametrize(
+    "request_options",
+    [{"content": b"null", "headers": {"content-type": "application/json"}}, {}],
+    ids=["null", "empty"],
+)
+def test_optional_body_null_or_empty_is_none(library: tuple[Any, Any], request_options: dict[str, Any]) -> None:
     model, dto = library
     received: list[Any] = []
 
@@ -223,23 +203,7 @@ def test_optional_body_null_is_none(library: tuple[Any, Any]) -> None:
     create.__annotations__ = {"data": JSON_BODY[Optional[model]], "return": None}
 
     with create_test_client([post("/", dto=dto)(create)]) as client:
-        response = client.post("/", content=b"null", headers={"content-type": "application/json"})
-
-    assert response.status_code == 201
-    assert received == [None]
-
-
-def test_optional_body_empty_is_none(library: tuple[Any, Any]) -> None:
-    model, dto = library
-    received: list[Any] = []
-
-    async def create(data: Any = None) -> None:
-        received.append(data)
-
-    create.__annotations__ = {"data": JSON_BODY[Optional[model]], "return": None}
-
-    with create_test_client([post("/", dto=dto)(create)]) as client:
-        response = client.post("/")
+        response = client.post("/", **request_options)
 
     assert response.status_code == 201
     assert received == [None]
@@ -281,15 +245,17 @@ def test_listener_without_dto_returning_none_sends_nothing() -> None:
         assert ws.receive_json() == {"id": 1, "name": "a", "secret": "s"}
 
 
+@pytest.mark.parametrize("dto_data", [True, False])
 @pytest.mark.parametrize("body", ["json", "urlencoded", "multipart"])
-def test_optional_dto_data_body_with_value_is_decoded(body: str) -> None:
+def test_optional_body_with_value_is_decoded(body: str, dto_data: bool) -> None:
     received: list[Any] = []
     marker = {"json": JSONBody, "urlencoded": URLEncodedBody, "multipart": MultipartBody}[body]
 
     async def create(data: Any = None) -> None:
-        received.append(data.create_instance())
+        received.append(data.create_instance() if dto_data else data)
 
-    create.__annotations__ = {"data": cast("Any", marker)[Optional[DTOData[DCPerson]]], "return": None}
+    inner = DTOData[DCPerson] if dto_data else DCPerson
+    create.__annotations__ = {"data": cast("Any", marker)[Optional[inner]], "return": None}
 
     with create_test_client([post("/", dto=DataclassDTO[Annotated[DCPerson, EXCLUDE]])(create)]) as client:
         payload = {"id": 1, "name": "a", "secret": "x"}
@@ -302,23 +268,3 @@ def test_optional_dto_data_body_with_value_is_decoded(body: str) -> None:
 
     assert response.status_code == 201
     assert received == [DCPerson(id=1, name="a", secret="s")]
-
-
-@pytest.mark.parametrize("body", ["urlencoded", "multipart"])
-def test_optional_model_form_body_with_value_is_decoded(body: str) -> None:
-    received: list[Any] = []
-    marker = {"urlencoded": URLEncodedBody, "multipart": MultipartBody}[body]
-
-    async def create(data: Any = None) -> None:
-        received.append(data)
-
-    create.__annotations__ = {"data": cast("Any", marker)[Optional[DCPerson]], "return": None}
-
-    with create_test_client([post("/", dto=DataclassDTO[Annotated[DCPerson, EXCLUDE]])(create)]) as client:
-        if body == "urlencoded":
-            response = client.post("/", data={"id": "1", "name": "a"})
-        else:
-            response = client.post("/", files={"id": (None, "1"), "name": (None, "a")})
-
-    assert response.status_code == 201
-    assert received == [DCPerson(id=1, name="a")]

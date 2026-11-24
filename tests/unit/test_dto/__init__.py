@@ -26,7 +26,6 @@ def registered(app: Litestar, path: str = "/", method: Any = "POST") -> Any:
 def create_backend_for(
     dto: type[AbstractDTO[Any]], field_definition: FieldDefinition, *, is_data_field: bool, **kwargs: Any
 ) -> DTOBackend:
-    """Create the backend of ``dto`` for what it resolves to in ``field_definition``."""
     target = resolve_dto_target(dto, field_definition, is_data_field=is_data_field)
     assert target is not None
     return create_backend(dto, target, is_data_field=is_data_field, **kwargs)

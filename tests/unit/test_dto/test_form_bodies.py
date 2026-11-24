@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any, Optional, cast
 
 import pytest
 
@@ -29,22 +29,17 @@ MISSING_ID = {"status_code": 400, "detail": "Object missing required field `id`"
 
 
 def _form_client(encoding: str, received: list[Any]) -> TestClient[Any]:
-    if encoding == "urlencoded":
-
-        @post("/", dto=UserDTO, return_dto=None)
-        async def create(data: URLEncodedBody[User]) -> None:
-            received.append(data)
-
-        return create_test_client([create])
-
-    @post("/", dto=UserDTO, return_dto=None)
-    async def create_multipart(data: MultipartBody[User]) -> None:
+    async def create(data: Any) -> None:
         received.append(data)
 
-    return create_test_client([create_multipart])
+    marker = {"json": JSONBody, "urlencoded": URLEncodedBody, "multipart": MultipartBody}[encoding]
+    create.__annotations__ = {"data": cast("Any", marker)[User], "return": None}
+    return create_test_client([post("/", dto=UserDTO, return_dto=None)(create)])
 
 
 def _send(client: TestClient[Any], encoding: str, payload: dict[str, str] | None) -> Any:
+    if encoding == "json":
+        return client.post("/", json=payload or {})
     if payload is None:
         return client.post("/", headers={"content-type": "application/x-www-form-urlencoded"})
     if encoding == "urlencoded":
@@ -60,7 +55,7 @@ def _send(client: TestClient[Any], encoding: str, payload: dict[str, str] | None
         pytest.param(None, "Object missing required field `id`", id="empty"),
     ],
 )
-@pytest.mark.parametrize("encoding", ["urlencoded", "multipart"])
+@pytest.mark.parametrize("encoding", ["json", "urlencoded", "multipart"])
 def test_form_body_invalid_input_is_400(encoding: str, payload: dict[str, str] | None, detail: str) -> None:
     received: list[Any] = []
 
@@ -70,36 +65,6 @@ def test_form_body_invalid_input_is_400(encoding: str, payload: dict[str, str] |
     assert response.status_code == 400
     assert response.json() == {"status_code": 400, "detail": detail}
     assert received == []
-
-
-def test_form_and_json_error_bodies_are_equal() -> None:
-    @post("/json", dto=UserDTO, return_dto=None)
-    async def create_json(data: JSONBody[User]) -> None: ...
-
-    @post("/urlencoded", dto=UserDTO, return_dto=None)
-    async def create_urlencoded(data: URLEncodedBody[User]) -> None: ...
-
-    @post("/multipart", dto=UserDTO, return_dto=None)
-    async def create_multipart(data: MultipartBody[User]) -> None: ...
-
-    with create_test_client([create_json, create_urlencoded, create_multipart]) as client:
-        json_response = client.post("/json", json={"name": "a"})
-        urlencoded_response = client.post("/urlencoded", data={"name": "a"})
-        multipart_response = client.post("/multipart", files={"name": (None, "a")})
-
-    assert json_response.status_code == urlencoded_response.status_code == multipart_response.status_code == 400
-    assert json_response.json() == urlencoded_response.json() == multipart_response.json() == MISSING_ID
-
-
-@pytest.mark.parametrize("encoding", ["urlencoded", "multipart"])
-def test_form_body_valid_input_applies_dto(encoding: str) -> None:
-    received: list[Any] = []
-
-    with _form_client(encoding, received) as client:
-        response = _send(client, encoding, {"id": "1", "name": "a", "secret": "x"})
-
-    assert response.status_code == 201
-    assert received == [User(id=1, name="a", secret="s")]
 
 
 def test_multipart_dto_data_invalid_input_is_400() -> None:

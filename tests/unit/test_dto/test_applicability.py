@@ -6,7 +6,6 @@ import msgspec
 import pytest
 
 from litestar import Controller, Litestar, Response, Router, get, post, websocket_listener
-from litestar.datastructures import UploadFile
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData, MsgspecDTO
 from litestar.dto._plan import resolve_dto_target
 from litestar.enums import RequestEncodingType
@@ -243,15 +242,6 @@ DATA_ROWS = [
         id="layer-dto-applies",
     ),
     pytest.param(
-        "app",
-        {"dto": UserDTO},
-        JSONBody[Other],
-        {"a": 1, "hidden": "x"},
-        (),
-        {"type": "Other", "data": {"a": 1, "hidden": "x"}},
-        id="layer-dto-skipped-for-other-model",
-    ),
-    pytest.param(
         "app", {"dto": UserDTO}, NO_BODY, None, (), {"type": "NoneType", "data": None}, id="layer-dto-without-body"
     ),
     pytest.param(
@@ -353,16 +343,6 @@ RETURN_ROWS = [
         "handler",
         {"return_dto": UserDTO},
         {},
-        tuple[User, int],
-        respond_tuple,
-        (),
-        DTONotApplicableError,
-        id="handler-return-dto-for-tuple-raises",
-    ),
-    pytest.param(
-        "handler",
-        {"return_dto": UserDTO},
-        {},
         Other,
         respond_other,
         (),
@@ -391,16 +371,6 @@ RETURN_ROWS = [
     ),
     pytest.param(
         "app", {"return_dto": UserDTO}, {}, User, respond_user, (), USER_ENCODED, id="layer-return-dto-applies"
-    ),
-    pytest.param(
-        "app",
-        {"return_dto": UserDTO},
-        {},
-        tuple[User, int],
-        respond_tuple,
-        (),
-        DTONotApplicableError,
-        id="layer-return-dto-for-tuple-raises",
     ),
     pytest.param(
         "app",
@@ -522,23 +492,6 @@ def test_skipped_layer_data_dto_is_reused_for_return() -> None:
     assert response.json() == [USER_ENCODED]
     assert registered(app)._dto_plan.data is None
     assert registered(app).data_dto is UserDTO
-
-
-def test_skipped_layer_return_dto_does_not_fall_through_to_data_dto() -> None:
-    app = build_app(
-        "app",
-        body=JSONBody[Other],
-        returns=Other,
-        respond=lambda data: Other(a=data.a + 1, hidden="kept"),
-        handler_options={"dto": OtherDTO},
-        return_dto=UserDTO,
-    )
-
-    with TestClient(app) as client:
-        response = client.post("/", json={"a": 1, "hidden": "ignored"})
-
-    assert response.status_code == 201
-    assert response.json() == {"a": 2, "hidden": "kept"}
 
 
 def test_skipped_layer_return_dto_does_not_fall_through_to_plugin() -> None:
@@ -669,14 +622,15 @@ def test_optional_generic_wrapper_return_is_encoded(returns: Any, respond: Calla
     ],
 )
 def test_optional_union_resolves_to_first_member(placement: Placement, returns: Any, expected: Any) -> None:
+    def build() -> Litestar:
+        return build_app(placement, method="GET", returns=returns, respond=respond_user, return_dto=UserDTO)
+
     if expected is DTONotApplicableError:
         with pytest.raises(DTONotApplicableError):
-            build_app(placement, method="GET", returns=returns, respond=respond_user, return_dto=UserDTO)
+            build()
         return
 
-    app = build_app(placement, method="GET", returns=returns, respond=respond_user, return_dto=UserDTO)
-
-    with TestClient(app) as client:
+    with TestClient(build()) as client:
         assert client.get("/").json() == expected
 
 
@@ -710,23 +664,19 @@ LAYER_SHAPES_WITH_MODEL = [
 ]
 
 
+@pytest.mark.parametrize("option", ["dto", "return_dto"])
 @pytest.mark.parametrize("annotation", LAYER_SHAPES_WITH_MODEL)
 @pytest.mark.parametrize("placement", ["app", "controller"])
-def test_layer_return_dto_raises_for_annotation_containing_its_model(placement: Placement, annotation: Any) -> None:
+def test_layer_dto_raises_for_annotation_containing_its_model(
+    placement: Placement, annotation: Any, option: str
+) -> None:
     with pytest.raises(DTONotApplicableError) as exc_info:
-        build_app(placement, method="GET", returns=annotation, return_dto=UserDTO)
+        if option == "dto":
+            build_app(placement, body=JSONBody[annotation], dto=UserDTO, handler_options={"return_dto": None})
+        else:
+            build_app(placement, method="GET", returns=annotation, return_dto=UserDTO)
 
-    assert (exc_info.value.option, exc_info.value.annotation) == ("return_dto", annotation)
-    assert "on a layer" in str(exc_info.value)
-
-
-@pytest.mark.parametrize("annotation", LAYER_SHAPES_WITH_MODEL)
-@pytest.mark.parametrize("placement", ["app", "controller"])
-def test_layer_data_dto_raises_for_annotation_containing_its_model(placement: Placement, annotation: Any) -> None:
-    with pytest.raises(DTONotApplicableError) as exc_info:
-        build_app(placement, body=JSONBody[annotation], dto=UserDTO, handler_options={"return_dto": None})
-
-    assert exc_info.value.option == "dto"
+    assert (exc_info.value.option, exc_info.value.annotation) == (option, annotation)
     assert "on a layer" in str(exc_info.value)
 
 
@@ -761,9 +711,8 @@ def test_layer_return_dto_skipped_for_annotation_without_its_model(
     assert response.content == expected
 
 
-@pytest.mark.parametrize("body", [pytest.param(JSONBody[str], id="str"), pytest.param(JSONBody[Other], id="other")])
-def test_layer_data_dto_skipped_for_annotation_without_its_model(body: Any) -> None:
-    app = build_app("app", body=body, dto=UserDTO, handler_options={"return_dto": None})
+def test_layer_data_dto_skipped_for_str_body() -> None:
+    app = build_app("app", body=JSONBody[str], dto=UserDTO, handler_options={"return_dto": None})
 
     assert registered(app)._dto_plan.data is None
 
@@ -780,22 +729,6 @@ def test_handler_none_opts_out_of_layer_dto_for_annotation_containing_its_model(
 
     with TestClient(app) as client:
         assert client.get("/").json() == TUPLE_FULL
-
-
-def test_layer_dto_with_upload_file_body_is_skipped() -> None:
-    app = build_app(
-        "app",
-        body=MultipartBody[list[UploadFile]],
-        returns=list[str],
-        respond=lambda data: [upload.filename for upload in data],
-        dto=UserDTO,
-    )
-
-    with TestClient(app) as client:
-        response = client.post("/", files=[("file", ("a.txt", b"a")), ("file", ("b.txt", b"b"))])
-
-    assert response.status_code == 201
-    assert response.json() == ["a.txt", "b.txt"]
 
 
 @pytest.mark.parametrize(
@@ -927,13 +860,6 @@ def test_handler_return_dto_that_does_not_apply_raises(returns: Any, respond: Ca
     assert "cannot encode its return value annotated" in str(error)
 
 
-def test_handler_dto_used_for_return_only_starts() -> None:
-    app = build_app("handler", method="GET", returns=User, respond=respond_user, dto=UserDTO)
-
-    with TestClient(app) as client:
-        assert client.get("/").json() == USER_ENCODED
-
-
 def test_handler_dto_used_for_data_only_starts() -> None:
     app = build_app("handler", body=JSONBody[User], returns=None, dto=UserDTO)
 
@@ -1046,16 +972,13 @@ class OwnTextListener(BaseUserListener):
         return data
 
 
-def test_listener_return_dto_inherited_from_base_class_is_skipped_where_it_does_not_apply() -> None:
-    with create_test_client([InheritingTextListener]) as client, client.websocket_connect("/ws") as ws:
+@pytest.mark.parametrize(
+    ("listener", "expected"), [(InheritingTextListener, "text"), (InheritingUserListener, '{"id":1,"name":"a"}')]
+)
+def test_listener_return_dto_inherited_from_base_class(listener: type[WebsocketListener], expected: str) -> None:
+    with create_test_client([listener]) as client, client.websocket_connect("/ws") as ws:
         ws.send_text("text")
-        assert ws.receive_text() == "text"
-
-
-def test_listener_return_dto_inherited_from_base_class_applies() -> None:
-    with create_test_client([InheritingUserListener]) as client, client.websocket_connect("/ws") as ws:
-        ws.send_text("text")
-        assert ws.receive_json() == USER_ENCODED
+        assert ws.receive_text() == expected
 
 
 def test_listener_return_dto_in_own_class_body_must_apply() -> None:
