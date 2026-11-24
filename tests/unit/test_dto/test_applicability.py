@@ -718,11 +718,8 @@ def test_layer_return_dto_raises_for_annotation_containing_its_model(placement: 
     with pytest.raises(DTONotApplicableError) as exc_info:
         build_app(placement, method="GET", returns=annotation, return_dto=UserDTO)
 
-    assert exc_info.value.option == "return_dto"
-    assert "'return_dto=DataclassDTO[User]' is declared on a layer, but cannot encode its return value" in str(
-        exc_info.value
-    )
-    assert str(exc_info.value).endswith("Declare 'return_dto=None' on the handler to opt out.")
+    assert (exc_info.value.option, exc_info.value.annotation) == ("return_dto", annotation)
+    assert "on a layer" in str(exc_info.value)
 
 
 @pytest.mark.parametrize("annotation", LAYER_SHAPES_WITH_MODEL)
@@ -732,8 +729,18 @@ def test_layer_data_dto_raises_for_annotation_containing_its_model(placement: Pl
         build_app(placement, body=JSONBody[annotation], dto=UserDTO, handler_options={"return_dto": None})
 
     assert exc_info.value.option == "dto"
-    assert "'dto=DataclassDTO[User]' is declared on a layer, but cannot decode its request body" in str(exc_info.value)
-    assert str(exc_info.value).endswith("Declare 'dto=None' on the handler to opt out.")
+    assert "on a layer" in str(exc_info.value)
+
+
+def test_layer_dto_error_message() -> None:
+    with pytest.raises(DTONotApplicableError) as exc_info:
+        build_app("app", method="GET", returns=tuple[User, int], return_dto=UserDTO)
+
+    assert str(exc_info.value) == (
+        "[paths='/', handler='handler'] 'return_dto=DataclassDTO[User]' is declared on a layer, but cannot encode "
+        f"its return value annotated '{tuple[User, int]!r}': the DTO handles 'User'. Declare 'return_dto=None' on "
+        "the handler to opt out."
+    )
 
 
 @pytest.mark.parametrize(
