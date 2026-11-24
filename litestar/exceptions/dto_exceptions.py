@@ -62,20 +62,24 @@ class DTOTransferTypeError(InvalidAnnotationException):
 
 
 class MissingDTOError(DTOFactoryException, ImproperlyConfiguredException):
-    """Data is annotated with DTOData, but no DTO decodes it."""
+    """Data is annotated with DTOData, but no DTO decodes it.
+
+    It is also an :exc:`~litestar.exceptions.ImproperlyConfiguredException`, the exception raised before, for backward
+    compatibility.
+    """
 
     annotation: Any
     """The annotation of the data"""
 
-    def __init__(self, *, handler_name: str, annotation: Any) -> None:
+    def __init__(self, message: str, *, annotation: Any) -> None:
         """Initialize ``MissingDTOError``.
 
         Args:
-            handler_name: The name of the handler function
+            message: The error message
             annotation: The annotation of the data
         """
-        super().__init__(
-            f"Handler function {handler_name} has a data parameter that is a subclass of DTOData but no DTO has been "
-            "registered for it."
-        )
+        super().__init__(message)
         self.annotation = annotation
+
+    def __str__(self) -> str:
+        return self.detail

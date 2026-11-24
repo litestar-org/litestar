@@ -98,8 +98,9 @@ class OwnDecodingDTO(DataclassDTO[UnionHolder]):
 
 
 def test_missing_dto_error_bases() -> None:
-    error = MissingDTOError(handler_name="handler", annotation=DTOData[User])
+    error = MissingDTOError("no DTO", annotation=DTOData[User])
 
+    assert str(error) == "no DTO"
     assert isinstance(error, ImproperlyConfiguredException)
     assert isinstance(error, DTOFactoryException)
     assert isinstance(error, ValueError)
@@ -115,8 +116,9 @@ def test_dto_data_without_dto_raises_missing_dto_error_with_prefix() -> None:
         Litestar([handler], openapi_config=None)
 
     assert str(exc_info.value) == (
-        "500: [paths='/', handler='handler'] Handler function handler has a data parameter that is a subclass of "
-        "DTOData but no DTO has been registered for it."
+        f"[paths='/', handler='handler'] The data it receives is annotated "
+        f"'litestar.dto.data_structures.DTOData[{__name__}.User]', but no DTO decodes it. Declare 'dto=' on the "
+        "handler with a DTO that handles the model."
     )
     assert exc_info.value.annotation == DTOData[User]
 
@@ -127,8 +129,7 @@ def test_listener_function_dto_data_without_dto_raises_at_startup() -> None:
 
     with pytest.raises(
         MissingDTOError,
-        match=r"^500: \[paths='/ws', handler='listener'\] Handler function listener has a data parameter that is a "
-        r"subclass of DTOData",
+        match=r"^\[paths='/ws', handler='listener'\] The data it receives is annotated ",
     ):
         Litestar([listener], openapi_config=None)
 
@@ -141,8 +142,7 @@ def test_listener_class_dto_data_without_dto_raises_at_startup() -> None:
 
     with pytest.raises(
         MissingDTOError,
-        match=r"^500: \[paths='/ws', handler='Listener'\] Handler function Listener has a data parameter that is a "
-        r"subclass of DTOData",
+        match=r"^\[paths='/ws', handler='Listener'\] The data it receives is annotated ",
     ):
         Litestar([Listener], openapi_config=None)
 
@@ -306,17 +306,15 @@ def test_unrelated_type_error_in_schema_generation_is_not_converted() -> None:
     assert type(exc_info.value) is TypeError
 
 
-MISSING_DTO_MESSAGE = (
-    "Handler function fn has a data parameter that is a subclass of DTOData but no DTO has been registered for it."
-)
+MISSING_DTO_MESSAGE = "The data it receives is annotated 'DTOData[User]', but no DTO decodes it."
 
 
 @pytest.mark.parametrize(
     ("make_error", "expected_str", "expected_args"),
     [
         pytest.param(
-            lambda: MissingDTOError(handler_name="fn", annotation=DTOData[User]),
-            f"500: [paths='/', handler='h'] {MISSING_DTO_MESSAGE}",
+            lambda: MissingDTOError(MISSING_DTO_MESSAGE, annotation=DTOData[User]),
+            f"[paths='/', handler='h'] {MISSING_DTO_MESSAGE}",
             (f"500: [paths='/', handler='h'] {MISSING_DTO_MESSAGE}",),
             id="http-exception",
         ),
