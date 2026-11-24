@@ -7,7 +7,7 @@ from functools import partial
 from typing import TYPE_CHECKING, Any, NoReturn, cast
 
 from litestar._layers.utils import narrow_dependencies
-from litestar.dto._plan import build_dto_plan
+from litestar.dto._plan import build_dto_plan, read_dto_declaration
 from litestar.exceptions import LitestarException
 from litestar.middleware.constraints import check_middleware_constraints
 from litestar.serialization import default_deserializer, default_serializer
@@ -68,6 +68,8 @@ class BaseRouteHandler:
     __slots__ = (
         "_dto",
         "_dto_plan",
+        "_inherited_dto",
+        "_inherited_return_dto",
         "_injection_setup",
         "_parameter_field_definitions",
         "_parsed_data_field",
@@ -120,6 +122,8 @@ class BaseRouteHandler:
         parameters: ParametersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        inherited_dto: type[AbstractDTO] | None | EmptyType = Empty,
+        inherited_return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         **kwargs: Any,
     ) -> None:
         """Initialize ``HTTPRouteHandler``.
@@ -149,6 +153,10 @@ class BaseRouteHandler:
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
+            inherited_dto: The ``dto`` declared by the layers above the handler. Set by ``merge()``, not meant to
+                be passed by applications.
+            inherited_return_dto: The ``return_dto`` declared by the layers above the handler. Set by ``merge()``,
+                not meant to be passed by applications.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
@@ -160,6 +168,8 @@ class BaseRouteHandler:
         self.dependencies = narrow_dependencies(dependencies)
         self._dto = dto
         self._return_dto = return_dto
+        self._inherited_dto = inherited_dto
+        self._inherited_return_dto = inherited_return_dto
         self.exception_handlers = exception_handlers or {}
         self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()  # pyright: ignore[reportAttributeAccessIssue]
         self.middleware = tuple(middleware) if middleware else ()
@@ -211,6 +221,8 @@ class BaseRouteHandler:
             "path": [join_paths([path, p]) for p in self.paths],
         }
 
+        inherited_dto = self._inherited_dto
+        inherited_return_dto = self._inherited_return_dto
         other: BaseRouteHandler | Router
         for other in (self, *others):  # type: ignore[assignment]
             merge_opts["dependencies"] = {**other.dependencies, **merge_opts.get("dependencies", {})}
@@ -228,11 +240,13 @@ class BaseRouteHandler:
 
             if other is not self:
                 other = cast("Router", other)  # mypy cannot narrow with the 'is not self' check
-                merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
-                merge_opts["return_dto"] = value_or_default(merge_opts.get("return_dto", Empty), other.return_dto)
+                inherited_dto = value_or_default(inherited_dto, other.dto)
+                inherited_return_dto = value_or_default(inherited_return_dto, other.return_dto)
 
-        merge_opts["dto"] = value_or_default(self._dto, merge_opts.get("dto", Empty))
-        merge_opts["return_dto"] = value_or_default(self._return_dto, merge_opts.get("return_dto", Empty))
+        merge_opts["dto"] = self._dto
+        merge_opts["return_dto"] = self._return_dto
+        merge_opts["inherited_dto"] = inherited_dto
+        merge_opts["inherited_return_dto"] = inherited_return_dto
 
         return merge_opts
 
@@ -386,9 +400,9 @@ class BaseRouteHandler:
     def data_dto(self) -> type[AbstractDTO] | None:
         if (plan := self._dto_plan) is not None:
             return plan.data_dto
-        if self._dto is Empty:
+        if (declared := read_dto_declaration(self, "dto").value) is Empty:
             self._raise_not_registered()
-        return self._dto
+        return declared
 
     @deprecated("3.0", removal_in="4.0", alternative=".data_dto attribute")
     def resolve_data_dto(self) -> type[AbstractDTO] | None:
@@ -398,9 +412,9 @@ class BaseRouteHandler:
     def return_dto(self) -> type[AbstractDTO] | None:
         if (plan := self._dto_plan) is not None:
             return plan.return_.dto if plan.return_ is not None else None
-        if self._return_dto is Empty:
+        if (declared := read_dto_declaration(self, "return_dto").value) is Empty:
             self._raise_not_registered()
-        return self._return_dto
+        return declared
 
     @deprecated("3.0", removal_in="4.0", alternative=".return_dto attribute")
     def resolve_return_dto(self) -> type[AbstractDTO] | None:
