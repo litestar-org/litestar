@@ -5,9 +5,18 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
-from litestar.dto._backend import DTOBackend
+import msgspec
+
+from litestar._layers.errors import HandlerErrorPrefix
+from litestar.dto._backend import DTOBackend, _qualified_name
 from litestar.dto._registry import TransferModelNaming, TransferModelRegistry, handler_name_scope
-from litestar.exceptions.dto_exceptions import DTOFactoryException, InvalidAnnotationException
+from litestar.dto.data_structures import DTOData
+from litestar.exceptions.dto_exceptions import (
+    DTOFactoryException,
+    DTOTransferTypeError,
+    InvalidAnnotationException,
+    MissingDTOError,
+)
 from litestar.params import BodyKwarg
 from litestar.response.base import Response
 from litestar.types import Empty
@@ -167,32 +176,42 @@ def take_plan_build(dto: type[AbstractDTO[Any]]) -> _PlanBuild | None:
 def build_dto_plan(handler: BaseRouteHandler, app: Litestar) -> DTOPlan:
     """Resolve the DTOs of ``handler`` from its configuration and the serialization plugins of ``app``, and build
     their backends. It reads the handler and does not modify it; a second call returns an independent plan.
+
+    Raises:
+        DTOFactoryException: If a DTO cannot be applied, with the message prefixed by the handler's paths and name
+        MissingDTOError: If the handler's data is annotated with ``DTOData`` and no DTO decodes it
     """
-    data_dto = _resolve_data_dto(handler, app)
-    data: DTODirectionPlan | None = None
-    if (data_field := handler.parsed_data_field) and data_dto:
-        data = _build_direction(
-            data_dto, data_field, is_data_field=True, handler=handler, registry=app._transfer_model_registry
-        )
+    with HandlerErrorPrefix.for_handler(handler).wrap_dto_exception():
+        data_dto = _resolve_data_dto(handler, app)
+        data: DTODirectionPlan | None = None
+        data_field = handler.parsed_data_field
+        if data_field and data_dto:
+            data = _build_direction(
+                data_dto, data_field, is_data_field=True, handler=handler, registry=app._transfer_model_registry
+            )
+        if data is None and data_field is not None and data_field.is_subclass_of(DTOData):
+            raise MissingDTOError(handler_name=handler.handler_name, annotation=data_field.annotation)
 
-    return_: DTODirectionPlan | None = None
-    return_field = handler.parsed_return_field
-    candidate = _resolve_return_dto(handler, app, data_dto)
-    if candidate and candidate.is_supported_model_type_field(return_field):
-        return_ = _build_direction(
-            candidate, return_field, is_data_field=False, handler=handler, registry=app._transfer_model_registry
-        )
+        return_: DTODirectionPlan | None = None
+        return_field = handler.parsed_return_field
+        candidate = _resolve_return_dto(handler, app, data_dto)
+        if candidate and candidate.is_supported_model_type_field(return_field):
+            return_ = _build_direction(
+                candidate, return_field, is_data_field=False, handler=handler, registry=app._transfer_model_registry
+            )
 
-    return DTOPlan(
-        data=data,
-        return_=return_,
-        data_dto=data_dto,
-        decode_bytes=_create_decoder(data.dto, "decode_bytes", data.backend.populate_data_from_raw) if data else None,
-        decode_builtins=(
-            _create_decoder(data.dto, "decode_builtins", data.backend.populate_data_from_builtins) if data else None
-        ),
-        encode=_create_encoder(return_.dto, return_.backend) if return_ else None,
-    )
+        return DTOPlan(
+            data=data,
+            return_=return_,
+            data_dto=data_dto,
+            decode_bytes=(
+                _create_decoder(data.dto, "decode_bytes", data.backend.populate_data_from_raw) if data else None
+            ),
+            decode_builtins=(
+                _create_decoder(data.dto, "decode_builtins", data.backend.populate_data_from_builtins) if data else None
+            ),
+            encode=_create_encoder(return_.dto, return_.backend) if return_ else None,
+        )
 
 
 def _create_decoder(
@@ -317,6 +336,19 @@ def create_dto_openapi_schema(
         return dto.create_openapi_schema(
             field_definition=field_definition, handler_id=handler.handler_id, schema_creator=schema_creator
         )
-    return schema_creator.for_field_definition(
-        FieldDefinition.from_annotation(direction.schema_annotation, kwarg_definition=field_definition.kwarg_definition)
-    )
+    try:
+        return schema_creator.for_field_definition(
+            FieldDefinition.from_annotation(
+                direction.schema_annotation, kwarg_definition=field_definition.kwarg_definition
+            )
+        )
+    except TypeError as exc:
+        with HandlerErrorPrefix.for_handler(handler).wrap_dto_exception():
+            try:
+                msgspec.json.Decoder(direction.backend.annotation, strict=False)
+            except TypeError as decoder_exc:
+                raise DTOTransferTypeError(
+                    f"msgspec cannot describe the transfer model of {_qualified_name(direction.backend.model_type)!r}: "
+                    f"{exc}"
+                ) from decoder_exc
+        raise

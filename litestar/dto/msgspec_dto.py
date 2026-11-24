@@ -11,7 +11,7 @@ from litestar.dto._backend import _CONSTRAINT_HINT, _contains_meta, _msgspec_rea
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, extract_dto_field
-from litestar.exceptions.dto_exceptions import InvalidAnnotationException
+from litestar.exceptions.dto_exceptions import DTOTransferTypeError
 from litestar.plugins.core._msgspec import kwarg_definition_from_field
 from litestar.types.empty import Empty
 
@@ -65,9 +65,7 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
             message = None
             with suppress(Exception):
                 message = _rejected_field_message(model_type, msgspec_fields, cls)
-            raise InvalidAnnotationException(
-                message or f"msgspec cannot inspect {model_type.__name__!r}: {exc}"
-            ) from exc
+            raise DTOTransferTypeError(message or f"msgspec cannot inspect {model_type.__name__!r}: {exc}") from exc
 
         inspect_fields: dict[str, msgspec.inspect.Field] = {
             field.name: field

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import contextlib
 import warnings
 from dataclasses import dataclass, replace
 from inspect import isclass
 from typing import TYPE_CHECKING, Any, Final
 
+from litestar._layers.errors import HandlerErrorPrefix
 from litestar._request_parameters.declarations import (
     RequestParameterDefinition,
     apply_layer_parameters,
@@ -28,7 +28,7 @@ from litestar.utils.signature import ParsedSignature
 from litestar.utils.warnings import warn_implicit_sync_to_thread
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Generator, Iterable, Mapping
+    from collections.abc import Callable, Iterable, Mapping
 
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
@@ -143,33 +143,6 @@ class ProvideConverter:
         target = unwrap_partial(provider.fn)
         plugin = next((plugin for plugin in self._plugins.di if plugin.has_typed_init(target)), None)
         provider.resolve_signature(ParsedSignature.from_signature(*plugin.get_typed_init(target)) if plugin else None)
-
-
-@dataclass
-class HandlerErrorPrefix:
-    handler: str
-    paths: list[str]
-    dependencies: tuple[DependencyKey, ...] = ()
-
-    def format(self, msg: str | None = None) -> str:
-        paths = ",".join(sorted(self.paths))
-        out = f"[paths={paths!r}, handler={self.handler!r}"
-        if self.dependencies:
-            out += f", dependencies={' -> '.join(_format_key(key) for key in reversed(self.dependencies))}"
-        out += "]"
-        if msg:
-            out = f"{out} {msg}"
-        return out
-
-    @contextlib.contextmanager
-    def wrap_config_exception(self) -> Generator[None]:
-        try:
-            yield
-        except ImproperlyConfiguredException as exc:
-            new_msg = self.format(exc.detail)
-            raise ImproperlyConfiguredException(new_msg) from exc
-        except DIRegistrationError as exc:
-            raise DIRegistrationError(self.format(str(exc))) from exc
 
 
 def _has_handler_scope(declaration: Provider | Provide | AnyCallable) -> bool:
@@ -321,7 +294,7 @@ def create_handler_injection_setup(
             without a provider, or a context of the registry cannot be nested in the app's
             context.
     """
-    prefix = HandlerErrorPrefix(handler=handler.name or handler.handler_name, paths=sorted(handler.paths))
+    prefix = HandlerErrorPrefix.for_handler(handler)
     with prefix.wrap_config_exception():
         target = _create_fn_injection_target(handler)
     reached: dict[DependencyKey, Provider] = {}
