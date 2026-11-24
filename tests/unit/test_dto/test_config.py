@@ -24,6 +24,11 @@ def test_experimental_codegen_backend_emits_deprecation_warning(value: bool) -> 
     assert config.experimental_codegen_backend is None
     assert config == DTOConfig()
 
+    with pytest.warns(LitestarDeprecationWarning, match="DTOConfig.experimental_codegen_backend") as record:
+        dataclasses.replace(config, experimental_codegen_backend=value)
+
+    assert record[0].filename == __file__
+
 
 def test_experimental_codegen_backend_unset_does_not_warn() -> None:
     with warnings.catch_warnings():
