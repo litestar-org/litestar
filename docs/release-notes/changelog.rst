@@ -115,9 +115,7 @@
         Invalid URL-encoded or multipart data decoded by a DTO receives a
         ``400 Bad Request`` response with the body invalid JSON data receives, such as
         ``{"status_code": 400, "detail": "Object missing required field `id`"}``; it
-        received a ``500`` response before. The same applies to a partial ``DTOData``
-        body whose nested collection holds a member without a required field, such as
-        ``{"children": [{"size": 1}]}``.
+        received a ``500`` response before.
 
     .. change:: DTO: Stable OpenAPI component names across application instances
         :type: bugfix

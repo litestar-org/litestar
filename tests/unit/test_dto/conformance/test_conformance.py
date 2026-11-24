@@ -9,7 +9,13 @@ from tests.unit.test_dto.conformance.models import Library
 
 def _cells() -> list[Any]:
     return [
-        pytest.param(feature, library, direction, id=f"{feature.id}-{library}-{direction}")
+        pytest.param(
+            feature,
+            library,
+            direction,
+            id=f"{feature.id}-{library}-{direction}",
+            marks=[pytest.mark.xfail(strict=True, reason=feature.xfail[library])] if library in feature.xfail else [],
+        )
         for feature, library, direction in cell_ids()
     ]
 

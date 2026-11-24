@@ -380,11 +380,7 @@ class DTOBackend:
         if parsed is None and self._passes_none:
             return None
         if self.dto_data_type:
-            try:
-                data_as_builtins = self._transfer_to_dict(parsed)
-            except TypeError as exc:
-                raise SerializationException(str(exc)) from exc
-            return self.dto_data_type(backend=self, data_as_builtins=data_as_builtins)
+            return self.dto_data_type(backend=self, data_as_builtins=self._transfer_to_dict(parsed))
         return transfer(parsed)
 
     def encode_data(self, data: Any) -> LitestarEncodableType:

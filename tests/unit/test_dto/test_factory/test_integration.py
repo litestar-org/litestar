@@ -432,6 +432,31 @@ def test_dto_data_update_instance_keywords_take_precedence() -> None:
 
 
 @dataclass
+class FailingMember:
+    label: str
+
+    def __post_init__(self) -> None:
+        raise TypeError("server-side failure")
+
+
+@dataclass
+class FailingMemberParent:
+    members: list[FailingMember]
+
+
+def test_dto_data_nested_member_raising_type_error_is_a_server_error() -> None:
+    @post(dto=DataclassDTO[FailingMemberParent], return_dto=None)
+    def handler(data: JSONBody[DTOData[FailingMemberParent]]) -> None:
+        return None
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.post("/", json={"members": [{"label": "a"}]})
+
+    assert response.status_code == 500
+    assert "server-side failure" not in response.text
+
+
+@dataclass
 class UniqueModelName:
     id: int
     foo: str

@@ -52,6 +52,7 @@ class Feature:
     receive: Callable[[Any], Any] | None = None
     na: Mapping[Library, str] = dataclasses.field(default_factory=dict)
     accessor: Callable[[object, str], Any] | None = None
+    xfail: Mapping[Library, str] = dataclasses.field(default_factory=dict)
 
 
 FEATURES: Final[list[Feature]] = []
@@ -68,8 +69,11 @@ def feature(
     receive: Callable[[Any], Any] | None = None,
     na: Mapping[Library, str] | None = None,
     accessor: Callable[[object, str], Any] | None = None,
+    xfail: Mapping[Library, str] | None = None,
 ) -> None:
-    FEATURES.append(Feature(feature_id, build, requests, response, config or {}, dto_data, receive, na or {}, accessor))
+    FEATURES.append(
+        Feature(feature_id, build, requests, response, config or {}, dto_data, receive, na or {}, accessor, xfail or {})
+    )
 
 
 def model(name: str, /, **fields: Any) -> dict[str, Any]:
@@ -809,9 +813,21 @@ feature(
             201,
             {"children": [model("Child", label="l", size=1)]},
         ),
-        Req("incomplete_item", {"children": [{"size": 1}]}, 400),
     ),
     response={"name": "a", "children": [{"label": "l", "size": 1}]},
+)
+_INCOMPLETE_MEMBER: Final = (
+    "an incomplete member of a nested collection in a partial DTOData is instantiated and fails with a 500"
+)
+feature(
+    "partial_nested_list_incomplete_member",
+    _partial_children,
+    config={"partial": True},
+    dto_data=True,
+    receive=_builtins,
+    requests=(Req("incomplete_item", {"children": [{"size": 1}]}, 400),),
+    response=NA("the response is the one of partial_nested_list"),
+    xfail={"dc": _INCOMPLETE_MEMBER, "ms": _INCOMPLETE_MEMBER},
 )
 
 
