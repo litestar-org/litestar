@@ -63,7 +63,7 @@ def create_handle_send(
         listener._raise_not_registered()
 
     if plan is not None and (encode := plan.encode) is not None:
-        skip_none = plan.return_ is not None and plan.return_.backend._passes_none
+        skip_none = plan.return_ is not None and plan.return_.passes_none
 
         async def handle_send(socket: WebSocket, data: Any) -> None:
             if data is None and skip_none:

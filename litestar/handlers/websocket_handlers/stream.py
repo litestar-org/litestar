@@ -300,9 +300,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
 
         self.fn = handler_fn  # pyright: ignore[reportGeneralTypeIssues]
         super().on_registration(route, app)
-        if (plan := self._dto_plan) is None:
-            self._raise_not_registered()
-        encode_return = plan.encode
+        encode_return = self._registered_dto_plan().encode
 
 
 class _WebSocketStreamOptions:

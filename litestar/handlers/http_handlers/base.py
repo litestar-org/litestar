@@ -783,11 +783,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             A Response instance
         """
-        plan = self._dto_plan
-        if plan is None:
-            self._raise_not_registered()
-        if plan.encode is not None:
-            data = plan.encode(data)
+        if (encode := self._registered_dto_plan().encode) is not None:
+            data = encode(data)
 
         handler = cast(
             "Callable[..., Awaitable[ASGIApp]]",
