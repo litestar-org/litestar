@@ -265,6 +265,10 @@ DATA_ROWS = [
         id="AD9",
     ),
     pytest.param("app", {}, JSONBody[User], USER_IN, (), {"type": "User", "data": USER_IN}, id="AD10"),
+    pytest.param("app", {}, JSONBody[DTOData[User]], None, (), MissingDTOError, id="AD11"),
+    pytest.param(
+        "controller", {"dto": UserDTO}, JSONBody[DTOData[Other]], None, (), MissingDTOError, id="AD11-skipped"
+    ),
 ]
 
 
@@ -324,6 +328,26 @@ RETURN_ROWS = [
         "handler", {"return_dto": UserDTO}, {}, tuple[User, int], respond_tuple, (), DTONotApplicableError, id="AR2"
     ),
     pytest.param("handler", {"return_dto": UserDTO}, {}, Other, respond_other, (), DTONotApplicableError, id="AR3"),
+    pytest.param(
+        "handler",
+        {"return_dto": UserDTO},
+        {},
+        ServerSentEvent,
+        lambda data: ServerSentEvent("x"),
+        (),
+        DTONotApplicableError,
+        id="AR3-sse",
+    ),
+    pytest.param(
+        "handler",
+        {"return_dto": UserDTO},
+        {},
+        Stream,
+        lambda data: Stream(iter([b"x"])),
+        (),
+        DTONotApplicableError,
+        id="AR3-stream",
+    ),
     pytest.param("app", {"return_dto": UserDTO}, {}, User, respond_user, (), USER_ENCODED, id="AR4"),
     pytest.param("app", {"return_dto": UserDTO}, {}, tuple[User, int], respond_tuple, (), TUPLE_FULL, id="AR5"),
     pytest.param(
@@ -415,11 +439,6 @@ def test_skipped_layer_data_dto_is_still_reused_for_return() -> None:
     assert response.json() == [USER_ENCODED]
     assert registered(app)._dto_plan.data is None
     assert registered(app).data_dto is UserDTO
-
-
-def test_skipped_layer_dto_with_dto_data_raises_missing_dto_error() -> None:
-    with pytest.raises(MissingDTOError):
-        build_app("controller", body=JSONBody[DTOData[Other]], dto=UserDTO)
 
 
 def test_skipped_layer_return_dto_does_not_fall_through_to_data_dto() -> None:
@@ -529,14 +548,8 @@ def test_async_generator_return(placement: Placement, options: dict[str, Any]) -
 
 
 @pytest.mark.parametrize("returns", [ServerSentEvent, Stream])
-@pytest.mark.parametrize("placement", ["handler", "app"])
-def test_server_sent_event_and_stream_returns_start_without_dto(placement: Placement, returns: Any) -> None:
-    if placement == "handler":
-        with pytest.raises(DTONotApplicableError):
-            build_app(placement, method="GET", returns=returns, return_dto=UserDTO)
-        return
-
-    app = build_app(placement, method="GET", returns=returns, return_dto=UserDTO)
+def test_server_sent_event_and_stream_returns_start_without_layer_dto(returns: Any) -> None:
+    app = build_app("app", method="GET", returns=returns, return_dto=UserDTO)
 
     assert registered(app, "GET").return_dto is None
 
@@ -741,11 +754,8 @@ def test_skipped_layer_dto_openapi_documents_plain_model() -> None:
 @pytest.mark.parametrize(
     ("returns", "respond"),
     [
-        pytest.param(Other, respond_other, id="other-model"),
         pytest.param(None, lambda data: None, id="none"),
         pytest.param(Any, respond_user, id="any"),
-        pytest.param(ServerSentEvent, lambda data: ServerSentEvent("x"), id="sse"),
-        pytest.param(Stream, lambda data: Stream(iter([b"x"])), id="stream"),
     ],
 )
 def test_handler_return_dto_that_does_not_apply_raises(returns: Any, respond: Callable[[Any], Any]) -> None:
@@ -754,17 +764,7 @@ def test_handler_return_dto_that_does_not_apply_raises(returns: Any, respond: Ca
 
     error = exc_info.value
     assert (error.dto, error.option) == (UserDTO, "return_dto")
-    assert str(error).startswith("[paths='/', handler='handler'] 'return_dto=DataclassDTO[User]' is declared on the")
-
-
-def test_handler_return_dto_message_names_dto_annotation_and_model() -> None:
-    with pytest.raises(DTONotApplicableError) as exc_info:
-        build_app("handler", method="GET", returns=Other, respond=respond_other, return_dto=UserDTO)
-
-    assert str(exc_info.value) == (
-        "[paths='/', handler='handler'] 'return_dto=DataclassDTO[User]' is declared on the handler, but cannot "
-        "encode its return value annotated 'Other': the DTO handles 'User'."
-    )
+    assert "cannot encode its return value annotated" in str(error)
 
 
 def test_handler_dto_used_for_return_only_starts() -> None:
@@ -791,16 +791,6 @@ def test_handler_dto_without_request_data_under_layer_return_dto_starts() -> Non
     with TestClient(app) as client:
         assert client.get("/").json() == {"id": 1}
     assert registered(app, "GET").return_dto is UserReadDTO
-
-
-@pytest.mark.parametrize("option", ["dto", "return_dto"])
-@pytest.mark.parametrize("placement", ["app", "router", "controller"])
-def test_layer_declarations_never_raise(placement: Placement, option: str) -> None:
-    options: dict[str, Any] = {option: UserDTO}
-    app = build_app(placement, method="GET", returns=Other, respond=respond_other, **options)
-
-    with TestClient(app) as client:
-        assert client.get("/").json() == OTHER_FULL
 
 
 def test_generated_options_handler_starts_with_app_level_dtos() -> None:

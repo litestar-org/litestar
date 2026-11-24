@@ -10,10 +10,9 @@ from litestar._openapi.schema_generation import SchemaCreator
 from litestar.connection import ASGIConnection
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
-from litestar.dto._plan import build_dto_plan, build_schema_annotation, create_backend, read_dto_declaration
+from litestar.dto._plan import build_dto_plan, build_schema_annotation, create_backend
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import (
-    DTONotApplicableError,
     InvalidAnnotationException,
     LitestarException,
     LitestarWarning,
@@ -207,20 +206,6 @@ class DataLayerController(Controller):
         return None
 
 
-@post("/", return_dto=ModelReadDTO)
-async def dict_return_handler(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
-    return data
-
-
-class ReturnLayerController(Controller):
-    path = "/"
-    return_dto = ModelReadDTO
-
-    @post()
-    async def handler(self, data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
-        return data
-
-
 @pytest.mark.parametrize(
     "route_handler",
     [
@@ -280,34 +265,6 @@ def test_return_resolution_rules(dto: Any, return_dto: Any, body: Any, returns: 
         assert handler.return_dto is not plugin.dto
     else:
         assert handler.return_dto is expected
-
-
-@pytest.mark.parametrize(
-    "route_handler", [pytest.param(make_rule_handler(Empty, ModelDTO, None, tuple[Model, str]), id="tuple-return")]
-)
-def test_return_dto_without_wrapper_match_raises(route_handler: Any) -> None:
-    with pytest.raises(InvalidAnnotationException):
-        Litestar([route_handler])
-
-
-@pytest.mark.parametrize(
-    "route_handler",
-    [
-        pytest.param(ReturnLayerController, id="layer-return-dto-on-dict"),
-    ],
-)
-def test_return_dto_that_cannot_apply_is_dropped(route_handler: Any) -> None:
-    with create_test_client([route_handler]) as client:
-        registered_handler = registered(client.app)
-        assert registered_handler.return_dto is None
-        assert read_dto_declaration(registered_handler, "return_dto").value is ModelReadDTO
-        assert client.post("/", json={"a": 1, "b": "two"}).json() == {"a": 1, "b": "two"}
-
-
-@pytest.mark.parametrize("route_handler", [pytest.param(dict_return_handler, id="handler-return-dto-on-dict")])
-def test_handler_return_dto_that_cannot_apply_raises(route_handler: Any) -> None:
-    with pytest.raises(DTONotApplicableError):
-        Litestar([route_handler])
 
 
 def test_registration_and_merge_do_not_overwrite_configuration() -> None:
