@@ -2,13 +2,14 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, TypeAlias
 
 from litestar.dto._backend import DTOBackend
+from litestar.dto._registry import TransferModelNaming, TransferModelRegistry, handler_name_scope
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.response.base import Response
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Hashable
 
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.app import Litestar
@@ -77,13 +78,22 @@ def create_backend(
     is_data_field: bool,
     handler_id: str,
     backend_cls: type[DTOBackend] | None = None,
+    registry: TransferModelRegistry | None = None,
+    name_scope: "Hashable | None" = None,
 ) -> DTOBackend:
     """Create the backend of ``dto`` for ``field_definition``, the data a handler receives if ``is_data_field``,
     otherwise the data it returns. Every backend of a plan is created here.
 
+    The backend names its transfer models in ``registry`` under ``name_scope``, which are given together; without
+    them it names them in a registry of its own.
+
     Raises:
         InvalidAnnotationException: If ``dto`` cannot be applied to ``field_definition``
+        TypeError: If only one of ``registry`` and ``name_scope`` is given
     """
+    if (registry is None) != (name_scope is None):
+        raise TypeError("create_backend() takes both 'registry' and 'name_scope', or neither")
+
     model_type_field_definition = dto.resolve_model_type(field_definition=field_definition)
     model_type = dto.model_type  # pyright: ignore[reportGeneralTypeIssues]
     wrapper_attribute_name: str | None = None
@@ -99,7 +109,13 @@ def create_backend(
     if backend_cls is None:
         backend_cls = DTOBackend
 
-    return backend_cls(
+    backend = backend_cls.__new__(backend_cls)
+    if registry is not None:
+        backend._naming = TransferModelNaming(registry, name_scope)
+    else:
+        backend._naming = TransferModelNaming(TransferModelRegistry(), handler_id)
+    backend_cls.__init__(
+        backend,
         dto_factory=dto,
         field_definition=field_definition,
         model_type=model_type_field_definition.annotation,
@@ -107,6 +123,7 @@ def create_backend(
         is_data_field=is_data_field,
         handler_id=handler_id,
     )
+    return backend
 
 
 def build_schema_annotation(
@@ -130,13 +147,17 @@ def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
     data_dto = _resolve_data_dto(handler, app)
     data: DTODirectionPlan | None = None
     if (data_field := handler.parsed_data_field) and data_dto:
-        data = _build_direction(data_dto, data_field, is_data_field=True, handler=handler)
+        data = _build_direction(
+            data_dto, data_field, is_data_field=True, handler=handler, registry=app._transfer_model_registry
+        )
 
     return_: DTODirectionPlan | None = None
     return_field = handler.parsed_return_field
     candidate = _resolve_return_dto(handler, app, data_dto)
     if candidate and candidate.is_supported_model_type_field(return_field):
-        return_ = _build_direction(candidate, return_field, is_data_field=False, handler=handler)
+        return_ = _build_direction(
+            candidate, return_field, is_data_field=False, handler=handler, registry=app._transfer_model_registry
+        )
 
     return DTOPlan(
         data=data,
@@ -186,8 +207,16 @@ def _build_direction(
     *,
     is_data_field: bool,
     handler: "BaseRouteHandler",
+    registry: TransferModelRegistry,
 ) -> DTODirectionPlan:
-    backend = create_backend(dto, field_definition, is_data_field=is_data_field, handler_id=handler.handler_id)
+    backend = create_backend(
+        dto,
+        field_definition,
+        is_data_field=is_data_field,
+        handler_id=handler.handler_id,
+        registry=registry,
+        name_scope=handler_name_scope(handler),
+    )
     backend._bind_handler(type_decoders=handler.type_decoders, default_deserializer=handler.default_deserializer)
     return DTODirectionPlan(
         dto=dto, backend=backend, schema_annotation=build_schema_annotation(dto, backend, field_definition)

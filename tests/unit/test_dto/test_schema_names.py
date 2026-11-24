@@ -78,24 +78,6 @@ EXPECTED: dict[str, dict[str, Any]] = {
         "operations": {"GET /pets": ["GetPetPetResponseBody"]},
     },
 }
-QUALIFIED_SINGLE: dict[str, Any] = {
-    "components": [
-        "tests.unit.test_dto.schema_name_apps.single.create_userUserRequestBody",
-        "tests.unit.test_dto.schema_name_apps.single.create_userUserResponseBody",
-        "tests.unit.test_dto.schema_name_apps.single.get_userUserResponseBody",
-        "tests.unit.test_dto.schema_name_apps.single.list_usersUserResponseBody",
-        "tests.unit.test_dto.schema_name_apps.single.patch_userUserRequestBody",
-    ],
-    "operations": {
-        "GET /users": ["tests.unit.test_dto.schema_name_apps.single.get_userUserResponseBody"],
-        "POST /users": [
-            "tests.unit.test_dto.schema_name_apps.single.create_userUserRequestBody",
-            "tests.unit.test_dto.schema_name_apps.single.create_userUserResponseBody",
-        ],
-        "POST /users/partial": ["tests.unit.test_dto.schema_name_apps.single.patch_userUserRequestBody"],
-        "GET /users/all": ["tests.unit.test_dto.schema_name_apps.single.list_usersUserResponseBody"],
-    },
-}
 
 
 def describe_in_fresh_process(app_id: str, builds: int = 1) -> Any:
@@ -113,5 +95,5 @@ def test_component_names_in_fresh_process(app_id: str) -> None:
     assert describe_in_fresh_process(app_id) == EXPECTED[app_id]
 
 
-def test_second_build_in_same_process_gets_qualified_names() -> None:
-    assert describe_in_fresh_process("single", builds=2) == QUALIFIED_SINGLE
+def test_second_build_in_same_process_gets_the_same_names() -> None:
+    assert describe_in_fresh_process("single", builds=2) == EXPECTED["single"]

@@ -4,7 +4,6 @@ from collections.abc import Iterator
 
 import pytest
 
-from litestar.dto._backend import DTOBackend
 from tests.benchmarks.helpers import ASGIRunner
 
 
@@ -13,10 +12,3 @@ def runner() -> Iterator[ASGIRunner]:
     asgi_runner = ASGIRunner()
     yield asgi_runner
     asgi_runner.close()
-
-
-@pytest.fixture
-def reset_dto_backends() -> Iterator[None]:
-    DTOBackend._seen_model_names = set()
-    yield
-    DTOBackend._seen_model_names = set()

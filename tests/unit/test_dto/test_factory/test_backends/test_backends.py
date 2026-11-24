@@ -276,7 +276,6 @@ def test_backend_model_name_uniqueness(dto_factory: type[DataclassDTO]) -> None:
         wrapper_attribute_name=None,
         is_data_field=True,
     )
-    backend._seen_model_names.clear()
     unique_names: set = set()
 
     field_definition = TransferDTOFieldDefinition.from_dto_field_definition(
@@ -297,7 +296,6 @@ def test_backend_model_name_uniqueness(dto_factory: type[DataclassDTO]) -> None:
         unique_names.add(model_class.__name__)
 
     assert len(unique_names) == 100
-    assert backend._seen_model_names == unique_names
 
 
 def test_backend_populate_data_from_raw(
