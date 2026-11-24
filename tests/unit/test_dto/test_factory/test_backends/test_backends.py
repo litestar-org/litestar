@@ -335,7 +335,7 @@ def test_backend_encode_data(dto_factory: type[DataclassDTO], asgi_connection: R
         field_definition=FieldDefinition.from_annotation(DC),
         model_type=DC,
         wrapper_attribute_name=None,
-        is_data_field=True,
+        is_data_field=False,
     )
     data = backend.encode_data(STRUCTURED)
     assert encode_json(data) == RAW
@@ -350,7 +350,7 @@ def test_backend_encode_collection_data(
         field_definition=FieldDefinition.from_annotation(list[DC]),
         model_type=DC,
         wrapper_attribute_name=None,
-        is_data_field=True,
+        is_data_field=False,
     )
     data = backend.encode_data([STRUCTURED])
     assert encode_json(data) == COLLECTION_RAW
@@ -390,19 +390,22 @@ def test_backend_transfer_nested_model_through_access_chain(
         config = DTOConfig(max_nested_depth=2)
         attribute_accessor = accessor  # type: ignore[assignment]
 
-    backend = DTOBackend(
-        handler_id="test",
-        dto_factory=Factory,
-        field_definition=FieldDefinition.from_annotation(DeepNestedOuter),
-        model_type=DeepNestedOuter,
-        wrapper_attribute_name=None,
-        is_data_field=True,
+    return_backend, data_backend = (
+        DTOBackend(
+            handler_id="test",
+            dto_factory=Factory,
+            field_definition=FieldDefinition.from_annotation(DeepNestedOuter),
+            model_type=DeepNestedOuter,
+            wrapper_attribute_name=None,
+            is_data_field=is_data_field,
+        )
+        for is_data_field in (False, True)
     )
     structured = DeepNestedOuter(name="test", middle=DeepNestedMiddle(inner=NestedDC(a=1, b="two")))
     destructured = {"name": "test", "middle": {"inner": {"a": 1, "b": "two"}}}
 
-    assert to_builtins(backend.encode_data(structured)) == destructured
-    assert backend.populate_data_from_builtins(destructured, asgi_connection) == structured
+    assert to_builtins(return_backend.encode_data(structured)) == destructured
+    assert data_backend.populate_data_from_builtins(destructured, asgi_connection) == structured
 
 
 def test_backend_transfer_nested_model_behind_non_word_field_name() -> None:
@@ -443,19 +446,22 @@ def test_backend_transfer_field_name_not_valid_as_attribute_syntax(
         config = DTOConfig()
 
     model_type = msgspec.defstruct("AttributeSyntaxFieldNames", [(name, int) for name in field_names])
-    backend = DTOBackend(
-        handler_id="test",
-        dto_factory=Factory,
-        field_definition=FieldDefinition.from_annotation(model_type),
-        model_type=model_type,
-        wrapper_attribute_name=None,
-        is_data_field=True,
+    return_backend, data_backend = (
+        DTOBackend(
+            handler_id="test",
+            dto_factory=Factory,
+            field_definition=FieldDefinition.from_annotation(model_type),
+            model_type=model_type,
+            wrapper_attribute_name=None,
+            is_data_field=is_data_field,
+        )
+        for is_data_field in (False, True)
     )
     destructured = {name: index for index, name in enumerate(field_names, start=1)}
     structured = model_type(**destructured)
 
-    assert to_builtins(backend.encode_data(structured)) == destructured
-    assert backend.populate_data_from_builtins(destructured, asgi_connection) == structured
+    assert to_builtins(return_backend.encode_data(structured)) == destructured
+    assert data_backend.populate_data_from_builtins(destructured, asgi_connection) == structured
 
 
 def test_transfer_only_touches_included_attributes() -> None:
@@ -532,17 +538,20 @@ def test_codegen_attribute_accessor_not_used_when_default() -> None:
     class Factory(DataclassDTO):
         config = DTOConfig()
 
-    backend = DTOBackend(
-        handler_id="test",
-        dto_factory=Factory,
-        field_definition=TransferDTOFieldDefinition.from_annotation(Foo),
-        model_type=Foo,
-        wrapper_attribute_name=None,
-        is_data_field=False,
+    return_backend, data_backend = (
+        DTOBackend(
+            handler_id="test",
+            dto_factory=Factory,
+            field_definition=TransferDTOFieldDefinition.from_annotation(Foo),
+            model_type=Foo,
+            wrapper_attribute_name=None,
+            is_data_field=is_data_field,
+        )
+        for is_data_field in (False, True)
     )
 
-    to_model_source = inspect.getsource(backend._transfer_to_model_type)
-    encode_source = inspect.getsource(backend._encode_data)
+    to_model_source = inspect.getsource(data_backend._transfer_to_model_type)
+    encode_source = inspect.getsource(return_backend._encode_data)
 
     assert ".some_field" in to_model_source
     assert ".some_field" in encode_source

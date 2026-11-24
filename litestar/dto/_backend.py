@@ -155,9 +155,12 @@ class DTOBackend:
 
         self.annotation = build_annotation_for_backend(model_type, field_definition, self.transfer_model_type)
         self._transfer_function_cache: TransferFunctionCache = {}
-        self._transfer_to_dict = self._create_transfer_data_fn(destination_type=dict)
-        self._transfer_to_model_type = self._create_transfer_data_fn(destination_type=self.model_type)
-        self._encode_data = self._create_transfer_data_fn(destination_type=self.transfer_model_type)
+        if not is_data_field:
+            self._encode_data = self._create_transfer_data_fn(destination_type=self.transfer_model_type)
+        else:
+            self._transfer_to_model_type = self._create_transfer_data_fn(destination_type=self.model_type)
+            if self.dto_data_type:
+                self._transfer_to_dict = self._create_transfer_data_fn(destination_type=dict)
         if self.is_data_field and self._decodes_with_annotation():
             try:
                 msgspec.json.Decoder(self.annotation, strict=False)
