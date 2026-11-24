@@ -863,13 +863,6 @@ A DTO class that overrides
 :meth:`~litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field` now receives the
 return annotation without its ``Optional``.
 
-Authors of route handler subclasses: ``merge()`` now passes the keywords ``inherited_dto``
-and ``inherited_return_dto`` to the handler's ``__init__``, which carry the DTOs declared on
-the layers above the handler. A subclass whose ``__init__`` forwards ``**kwargs`` to the
-base class works unchanged. One that accepts only named parameters raises
-:exc:`TypeError` when it is registered, and one that accepts ``**kwargs`` without
-forwarding them loses the DTOs of its layers.
-
 A ``return_dto`` declared directly on a route handler must now handle the handler's return
 annotation. It used to be ignored when it could not, so the response contained every field
 of the returned object, including the ones the DTO excludes

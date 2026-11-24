@@ -85,11 +85,6 @@
           responses that contained them, and renamed fields are renamed.
         - :meth:`~litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field`
           receives the return annotation without its ``Optional``.
-        - Route handler subclasses: ``BaseRouteHandler.__init__`` accepts
-          ``inherited_dto`` and ``inherited_return_dto``, which ``merge()`` passes. A
-          subclass whose ``__init__`` does not accept them raises :exc:`TypeError` when it
-          is registered, and one that accepts ``**kwargs`` without forwarding them loses
-          the DTOs of its layers.
         - A DTO used only for return values over a type msgspec rejects raises
           ``DTOTransferTypeError`` when the OpenAPI schema is generated, naming the
           handler and the model; a bare :exc:`TypeError` was raised before.
