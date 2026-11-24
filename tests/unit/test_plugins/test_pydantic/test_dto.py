@@ -260,7 +260,11 @@ def test_pydantic_dto_is_checked_at_startup() -> None:
     def create_pydantic_union_holder(data: JSONBody[PUnionHolder]) -> None:
         pass
 
-    with pytest.raises(DTOTransferTypeError, match="must be tagged"):
+    with pytest.raises(
+        DTOTransferTypeError,
+        match=r"^\[paths='/', handler='create_pydantic_union_holder'\] msgspec cannot decode the transfer model .*"
+        r"must be tagged",
+    ):
         Litestar(route_handlers=[create_pydantic_union_holder], openapi_config=None)
 
 
