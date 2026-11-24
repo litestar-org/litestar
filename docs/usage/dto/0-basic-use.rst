@@ -79,7 +79,8 @@ When a DTO applies
 
 A DTO narrowed with ``User`` handles request data or a return value annotated with ``User``, ``Optional[User]``, or a
 collection or mapping of ``User`` such as ``list[User]``, ``dict[str, User]`` or ``tuple[User, ...]``, optional or not.
-For request data it also handles ``DTOData[User]``. For a return value it also handles one generic wrapper around these
+For request data it also handles ``DTOData[User]``, which wraps the data of one ``User`` and creates or updates a single
+instance from it. For a return value it also handles one generic wrapper around these
 annotations, such as ``Response[User]`` or a generic dataclass holding the data in an attribute typed with its type
 variable, optional or not. In an optional union of several types, such as ``Optional[Union[User, Other]]``, only the
 first member that is not ``None`` counts.

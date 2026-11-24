@@ -26,31 +26,21 @@
         once per overridden method. A DTO over a type msgspec cannot decode now fails at startup even if
         it overrides ``decode_bytes`` or ``decode_builtins``.
 
-    .. change:: DTOs: a return_dto declared on a route handler must apply
+    .. change:: DTO: A ``return_dto`` declared on a route handler must apply
         :type: feature
         :breaking:
         :pr: 5259
         :issue: 3485
 
-        A ``return_dto`` declared directly on a route handler, or in the body of a
-        ``WebsocketListener`` class, that cannot handle the handler's return annotation
-        raises :exc:`~litestar.exceptions.DTONotApplicableError` when the application is
-        created. It used to be ignored, and the handler returned its data without the
-        DTO, including the fields the DTO excludes. Common cases that no longer start:
+        A ``return_dto`` declared on a route handler, or in the body of a
+        ``WebsocketListener`` class, that cannot handle the return annotation raises
+        :exc:`~litestar.exceptions.DTONotApplicableError` at startup; it used to be ignored
+        and the excluded fields were returned. Handlers returning ``None``, ``Any``, ``str``,
+        ``bytes``, a bare ``Response`` or a ``Redirect``, ``File`` or ``Template`` response
+        no longer start with a ``return_dto`` of their own: remove it, or set
+        ``return_dto=None`` to opt out of one inherited from a layer.
 
-        - a bare ``Response`` or ``Response[Any]``;
-        - a ``Redirect``, ``File`` or ``Template`` response;
-        - a return annotation of ``None``, as on a ``@delete`` handler;
-        - ``str`` or ``bytes``;
-        - a DTO whose model is a subclass of the return annotation, such as
-          ``DataclassDTO[Admin]`` on ``-> User``.
-
-        Remove the ``return_dto`` from such a handler, or set ``return_dto=None`` on it
-        when it inherits one from a layer. A ``return_dto`` declared on a controller, a
-        router or the application is skipped where the annotation does not contain its
-        model, and raises where it does.
-
-    .. change:: DTOs: typed startup errors
+    .. change:: DTO: Typed startup errors
         :type: feature
         :breaking:
         :pr: 5259
@@ -72,41 +62,33 @@
         - A DTO used only for return values over a type msgspec rejects raises
           ``DTOTransferTypeError`` when the OpenAPI schema is generated, naming the
           handler and the model; a bare :exc:`TypeError` was raised before.
+        - Errors for a websocket listener name the listener function or the
+          ``WebsocketListener`` class instead of ``ListenerHandler``, which also changes
+          the output of ``litestar routes`` for listeners.
 
-    .. change:: DTOs: explicit applicability rules
+    .. change:: DTO: Explicit applicability rules
         :type: feature
         :breaking:
         :pr: 5259
 
-        One set of rules, described in :ref:`usage/dto/0-basic-use:When a DTO applies`,
-        now decides for request data and for return values whether a DTO is used.
+        :ref:`usage/dto/0-basic-use:When a DTO applies` now decides whether a DTO is
+        used; :ref:`release-notes/whats-new-3:DTO applicability and startup errors`
+        lists what changed. To act on:
 
-        - A ``dto`` or ``return_dto`` declared on a layer that cannot handle an
-          annotation containing its model, such as ``tuple[Model, int]``,
-          ``Union[Model, Other]`` or ``AsyncGenerator[Model, None]``, raises
-          ``DTONotApplicableError``; declare ``dto=None`` or ``return_dto=None`` on the
-          handler to opt out. For other annotations, such as ``str``, ``None`` or another
-          model, it is skipped; a layer ``dto`` raised ``InvalidAnnotationException`` for
-          them. A skipped ``dto`` is still used for the return value when no
-          ``return_dto`` is declared and it can encode it.
-        - The ``dto`` used for the return value and a DTO created by a serialization
-          plugin are skipped for an annotation they cannot handle. No other source takes
-          the place of a skipped one.
-        - A generic wrapper as request data, such as ``JSONBody[Wrapper[Model]]``, is not
-          handled by a DTO, so a DTO declared on the handler or on a layer raises
-          ``DTONotApplicableError``; a bare model was decoded and injected in place of the
-          wrapper before.
-        - A form body annotated with a collection, such as ``MultipartBody[list[Model]]``,
-          is not handled by a DTO, so a DTO declared on the handler or on a layer raises
-          ``DTONotApplicableError``; the raw form values were injected for multipart data
-          and URL-encoded data received a ``500`` response before.
-        - ``-> Optional[Wrapper[Model]]`` and ``-> Optional[Response[Model]]`` use the
-          return DTO, which was ignored for them, so its exclusions and renames now apply
-          to these responses.
+        - A ``dto`` or ``return_dto`` declared on a layer raises
+          ``DTONotApplicableError`` for an annotation that contains its model but that it
+          cannot handle, such as ``tuple[Model, int]``, ``Union[Model, Other]``, or
+          ``AsyncGenerator[Model, None]`` returned by an HTTP handler; declare
+          ``dto=None`` or ``return_dto=None`` on the handler. For other annotations it is
+          skipped, where a layer ``dto`` used to raise.
+        - ``JSONBody[Wrapper[Model]]`` and form bodies of a collection, such as
+          ``MultipartBody[list[Model]]``, are not handled by a DTO and raise.
+        - ``-> Optional[Wrapper[Model]]`` and ``-> Optional[Response[Model]]`` now apply
+          the return DTO, so its exclusions and renames reach these responses.
         - :meth:`~litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field`
           receives the return annotation without its ``Optional``.
 
-    .. change:: DTOs: pass None through an optional annotation
+    .. change:: DTO: Pass ``None`` through an optional annotation
         :type: bugfix
         :pr: 5259
         :issue: 3428
@@ -123,7 +105,7 @@
         - A websocket listener with a return DTO sends nothing when the handler returns
           ``None``; the connection failed before.
 
-    .. change:: DTOs: answer 400 for invalid form data
+    .. change:: DTO: Answer 400 for invalid form data
         :type: bugfix
         :pr: 5259
 
